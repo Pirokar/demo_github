@@ -224,8 +224,8 @@ class MessagesTable(
                     id,
                     cursorGetString(c, COLUMN_CONSULT_STATUS),
                     cursorGetString(c, COLUMN_CONSULT_ORG_UNIT),
-                    cursorGetString(c, COLUMN_CONSULT_ROLE),
-                    cursorGetString(c, COLUMN_AVATAR_PATH)
+                    cursorGetString(c, COLUMN_AVATAR_PATH),
+                    cursorGetString(c, COLUMN_CONSULT_ROLE)
                 )
             }
         }
