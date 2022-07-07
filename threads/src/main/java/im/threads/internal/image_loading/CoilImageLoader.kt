@@ -154,21 +154,19 @@ class CoilImageLoader : ImageLoader {
         resourceId?.let { builder.data(it) }
         scale?.let { builder.scale(getCoilScale(it)) }
         errorDrawableResId?.let { builder.error(it) }
-        callback?.let { callback ->
-            builder.target(
-                onError = {
-                    callback.onImageLoadError()
-                },
-                onSuccess = {
-                    callback.onImageLoaded(it)
-                    try {
-                        imageView?.setImageDrawable(it)
-                    } catch (exc: Exception) {
-                        Log.e(tag, "Error when trying to apply downloaded drawable", exc)
-                    }
+        builder.target(
+            onError = {
+                callback?.onImageLoadError()
+            },
+            onSuccess = {
+                callback?.onImageLoaded(it)
+                try {
+                    imageView?.setImageDrawable(it)
+                } catch (exc: Exception) {
+                    Log.e(tag, "Error when trying to apply downloaded drawable", exc)
                 }
-            )
-        }
+            }
+        )
 
         return builder
     }

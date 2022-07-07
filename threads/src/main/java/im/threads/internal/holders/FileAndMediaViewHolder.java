@@ -5,10 +5,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import java.text.SimpleDateFormat;
@@ -80,21 +78,7 @@ public final class FileAndMediaViewHolder extends BaseHolder {
             } else if (fileDescription.getDownloadPath() != null) {
                 downloadPath = fileDescription.getDownloadPath();
             }
-            imageLoader.loadImageWithCallback(
-                    mImageButton,
-                    downloadPath,
-                    ImageScale.FIT,
-                    null,
-                    new ImageLoader.ImageLoaderCallback() {
-                        @Override
-                        public void onImageLoaded(@NonNull Drawable drawable) {
-                            mImageButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-                        }
-
-                        @Override
-                        public void onImageLoadError() {}
-                    }
-            );
+            imageLoader.loadImage(mImageButton, downloadPath, ImageScale.FIT, null);
         } else {
             mImageButton.setImageDrawable(tintedDrawable);
         }

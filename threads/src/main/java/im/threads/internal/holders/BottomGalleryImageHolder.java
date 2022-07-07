@@ -38,21 +38,7 @@ public final class BottomGalleryImageHolder extends BaseHolder {
             vg.getChildAt(i).setOnClickListener(listener);
         }
         setChosenMarkBackgroundDrawable(item);
-        imageLoader.loadImageWithCallback(
-                image,
-                item.getImagePath().toString(),
-                ImageScale.FIT,
-                null,
-                new ImageLoader.ImageLoaderCallback() {
-                    @Override
-                    public void onImageLoaded(@NonNull Drawable drawable) {
-                        image.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                    }
-
-                    @Override
-                    public void onImageLoadError() {}
-                }
-        );
+        imageLoader.loadImage(image, item.getImagePath().toString(), ImageScale.FIT, null);
     }
 
     private void setChosenMarkBackgroundDrawable(@NonNull BottomGalleryItem item) {
