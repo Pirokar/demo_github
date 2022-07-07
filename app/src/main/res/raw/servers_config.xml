@@ -1,0 +1,5 @@
+<?xml version='1.0' encoding='utf-8' standalone='yes' ?>
+<map>
+    <string name="Debug">{&quot;datastoreUrl&quot;:&quot;http://datastore.mobile1.chc.dte/&quot;,&quot;filesAndMediaMenuItemEnabled&quot;:false,&quot;isFromApp&quot;:false,&quot;name&quot;:&quot;Mobile 1&quot;,&quot;newChatCenterApi&quot;:false,&quot;serverBaseUrl&quot;:&quot;http://datastore.mobile1.chc.dte/&quot;,&quot;threadsGateProviderUid&quot;:&quot;MOBILE1_93jLrvripZeDXSKJzdRfEu9QpMMvIe5LKKHQl&quot;,&quot;threadsGateUrl&quot;:&quot;http://tg.mobile1.chc.dte/socket&quot;}</string>
+    <string name="PROD">{&quot;datastoreUrl&quot;:&quot;https://beta-prod.edna.ru/&quot;,&quot;filesAndMediaMenuItemEnabled&quot;:true,&quot;isFromApp&quot;:false,&quot;name&quot;:&quot;PROD&quot;,&quot;newChatCenterApi&quot;:false,&quot;serverBaseUrl&quot;:&quot;https://beta-prod.edna.ru&quot;,&quot;threadsGateProviderUid&quot;:&quot;YmV0YS1wcm9kLmVkbmEucnU7O2FuZHJvaWQ7OzIwMjIwMzI4&quot;,&quot;threadsGateUrl&quot;:&quot;wss://beta-prod.edna.ru/socket&quot;}</string>
+</map>
