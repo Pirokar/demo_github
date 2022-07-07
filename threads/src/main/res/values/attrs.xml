@@ -7,6 +7,6 @@
     </declare-styleable>
 
     <declare-styleable name="BubbleMessageTextView">
-        <attr name="last_line_padding_symbols" format="integer"/>
+        <attr name="last_line_extra_padding_symbols" format="integer"/>
     </declare-styleable>
 </resources>

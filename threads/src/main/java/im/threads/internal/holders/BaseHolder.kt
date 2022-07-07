@@ -23,6 +23,7 @@ import im.threads.internal.model.ConsultPhrase
 import im.threads.internal.model.ErrorStateEnum
 import im.threads.internal.utils.ColorsHelper
 import im.threads.internal.views.CircularProgressButton
+import im.threads.internal.widget.text_view.BubbleMessageTextView
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 
@@ -84,7 +85,7 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
         phrase: ConsultPhrase
     ) {
         if (phrase.formattedPhrase.isNullOrBlank()) {
-            textView.text = phrase.phraseText?.trim()
+            textView.setText(phrase.phraseText, TextView.BufferType.NORMAL)
             setTextWithHighlighting(
                 textView,
                 Config.instance.chatStyle.incomingMarkdownConfiguration.isLinkUnderlined
@@ -100,10 +101,10 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
      * @param phrase текст для отображение во вью
      */
     protected fun highlightClientText(
-        textView: TextView,
+        textView: BubbleMessageTextView,
         phrase: String
     ) {
-        textView.text = phrase
+        textView.setText(phrase, TextView.BufferType.NORMAL)
         setTextWithHighlighting(
             textView,
             Config.instance.chatStyle.outgoingMarkdownConfiguration.isLinkUnderlined
