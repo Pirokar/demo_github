@@ -69,7 +69,7 @@ public final class ImageFragment extends Fragment {
             imageLoader.loadImage(
                     imageView,
                     fd.getFileUri().toString(),
-                    List.of(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_INSIDE),
+                    List.of(ImageView.ScaleType.FIT_CENTER),
                     style.imagePlaceholder
             );
         }
