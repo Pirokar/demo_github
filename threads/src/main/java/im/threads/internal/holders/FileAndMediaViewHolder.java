@@ -5,12 +5,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import im.threads.ChatStyle;
@@ -18,7 +20,6 @@ import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.image_loading.CoilImageLoader;
 import im.threads.internal.image_loading.ImageLoader;
-import im.threads.internal.image_loading.ImageScale;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.utils.ColorsHelper;
 import im.threads.internal.utils.FileUtils;
@@ -78,7 +79,12 @@ public final class FileAndMediaViewHolder extends BaseHolder {
             } else if (fileDescription.getDownloadPath() != null) {
                 downloadPath = fileDescription.getDownloadPath();
             }
-            imageLoader.loadImage(mImageButton, downloadPath, ImageScale.FIT, null);
+            imageLoader.loadImage(
+                    mImageButton,
+                    downloadPath,
+                    List.of(ImageView.ScaleType.FIT_XY),
+                    null
+            );
         } else {
             mImageButton.setImageDrawable(tintedDrawable);
         }

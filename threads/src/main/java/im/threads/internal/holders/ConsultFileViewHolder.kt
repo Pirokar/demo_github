@@ -20,7 +20,6 @@ import im.threads.ChatStyle
 import im.threads.R
 import im.threads.internal.Config
 import im.threads.internal.image_loading.ImageModifications
-import im.threads.internal.image_loading.ImageScale
 import im.threads.internal.image_loading.loadUrl
 import im.threads.internal.model.AttachmentStateEnum
 import im.threads.internal.model.ConsultPhrase
@@ -166,7 +165,7 @@ class ConsultFileViewHolder(parent: ViewGroup) : BaseHolder(
             if (!TextUtils.isEmpty(consultPhrase.avatarPath)) {
                 mConsultAvatar.loadUrl(
                     FileUtils.convertRelativeUrlToAbsolute(consultPhrase.avatarPath),
-                    ImageScale.FIT,
+                    listOf(ImageView.ScaleType.FIT_XY),
                     transformations = listOf(ImageModifications.CircleCropModification)
                 )
             }

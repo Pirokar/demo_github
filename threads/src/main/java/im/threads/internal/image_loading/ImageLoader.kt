@@ -8,12 +8,17 @@ import java.io.File
 
 // TODO: rewrite it with one fun when everything will be in kotlin
 interface ImageLoader {
-    fun loadImage(imageView: ImageView, imageUrl: String?, scale: ImageScale?, errorDrawableResId: Int?)
+    fun loadImage(
+        imageView: ImageView,
+        imageUrl: String?,
+        scales: List<ImageView.ScaleType>?,
+        errorDrawableResId: Int?
+    )
 
     fun loadFile(
         imageView: ImageView,
         file: File,
-        scale: ImageScale?,
+        scales: List<ImageView.ScaleType>?,
         errorDrawableResId: Int?,
         modifications: List<ImageModifications>?
     )
@@ -21,7 +26,7 @@ interface ImageLoader {
     fun loadImageWithCallback(
         imageView: ImageView,
         imageUrl: String?,
-        scale: ImageScale?,
+        scales: List<ImageView.ScaleType>?,
         errorDrawableResId: Int?,
         callback: ImageLoaderCallback
     )
@@ -29,7 +34,7 @@ interface ImageLoader {
     fun loadWithModifications(
         imageView: ImageView,
         imageUrl: String?,
-        scale: ImageScale?,
+        scales: List<ImageView.ScaleType>?,
         errorDrawableResId: Int?,
         modifications: List<ImageModifications>,
         callback: ImageLoaderCallback?

@@ -33,7 +33,6 @@ import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.image_loading.CoilImageLoader;
 import im.threads.internal.image_loading.ImageLoader;
 import im.threads.internal.image_loading.ImageModifications;
-import im.threads.internal.image_loading.ImageScale;
 import im.threads.internal.model.InputFieldEnableModel;
 import im.threads.internal.useractivity.LastUserActivityTimeCounter;
 import im.threads.internal.useractivity.LastUserActivityTimeCounterSingletonProvider;
@@ -84,7 +83,7 @@ public final class QuickAnswerFragment extends BaseDialogFragment {
                 imageLoader.loadWithModifications(
                         imageView,
                         avatarPath,
-                        ImageScale.FIT,
+                        List.of(ImageView.ScaleType.FIT_XY),
                         null,
                         List.of(ImageModifications.CircleCropModification.INSTANCE),
                         null

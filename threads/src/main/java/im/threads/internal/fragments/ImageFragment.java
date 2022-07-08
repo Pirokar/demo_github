@@ -1,6 +1,5 @@
 package im.threads.internal.fragments;
 
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +12,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.Locale;
 
 import im.threads.ChatStyle;
@@ -21,7 +21,6 @@ import im.threads.internal.Config;
 import im.threads.internal.formatters.RussianFormatSymbols;
 import im.threads.internal.image_loading.CoilImageLoader;
 import im.threads.internal.image_loading.ImageLoader;
-import im.threads.internal.image_loading.ImageScale;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.utils.FileUtils;
 
@@ -67,20 +66,11 @@ public final class ImageFragment extends Fragment {
             date.setText("");
         }
         if (FileUtils.isImage(fd)) {
-            imageLoader.loadImageWithCallback(
+            imageLoader.loadImage(
                     imageView,
                     fd.getFileUri().toString(),
-                    ImageScale.FIT,
-                    style.imagePlaceholder,
-                    new ImageLoader.ImageLoaderCallback() {
-                        @Override
-                        public void onImageLoaded(@NonNull Drawable drawable) {
-                            imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-                        }
-
-                        @Override
-                        public void onImageLoadError() {}
-                    }
+                    List.of(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_INSIDE),
+                    style.imagePlaceholder
             );
         }
         v.setBackgroundColor(ContextCompat.getColor(getActivity(), style.imagesScreenBackgroundColor));

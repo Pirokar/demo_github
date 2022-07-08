@@ -5,7 +5,7 @@ import android.widget.ImageView
 // TODO: rewrite it with one fun when everything will be in kotlin
 internal fun ImageView.loadUrl(
     imageUrl: String?,
-    scale: ImageScale? = null,
+    scales: List<ImageView.ScaleType>? = null,
     errorDrawableResId: Int? = null,
     transformations: List<ImageModifications>? = null,
     callback: ImageLoader.ImageLoaderCallback? = null
@@ -14,7 +14,7 @@ internal fun ImageView.loadUrl(
         ImageLoaderExtensionsHelper.Companion.imageLoader.loadWithModifications(
             this,
             imageUrl,
-            scale,
+            scales,
             errorDrawableResId,
             transformations,
             callback
@@ -23,7 +23,7 @@ internal fun ImageView.loadUrl(
         ImageLoaderExtensionsHelper.Companion.imageLoader.loadImageWithCallback(
             this,
             imageUrl,
-            scale,
+            scales,
             errorDrawableResId,
             callback
         )
@@ -31,7 +31,7 @@ internal fun ImageView.loadUrl(
         ImageLoaderExtensionsHelper.Companion.imageLoader.loadImage(
             this,
             imageUrl,
-            scale,
+            scales,
             errorDrawableResId
         )
     }

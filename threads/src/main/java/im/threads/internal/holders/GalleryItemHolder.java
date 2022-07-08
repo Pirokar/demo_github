@@ -11,12 +11,13 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.AppCompatCheckBox;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.List;
+
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.image_loading.CoilImageLoader;
 import im.threads.internal.image_loading.ImageLoader;
-import im.threads.internal.image_loading.ImageScale;
 import im.threads.internal.utils.ColorsHelper;
 
 public final class GalleryItemHolder extends RecyclerView.ViewHolder {
@@ -39,7 +40,7 @@ public final class GalleryItemHolder extends RecyclerView.ViewHolder {
             imageLoader.loadImage(
                     mImageView,
                     imagePath.toString(),
-                    ImageScale.FIT,
+                    List.of(ImageView.ScaleType.CENTER_INSIDE, ImageView.ScaleType.CENTER_CROP),
                     null
             );
             mCheckBox.setChecked(isChecked);

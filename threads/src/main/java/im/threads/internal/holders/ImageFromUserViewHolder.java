@@ -22,6 +22,7 @@ import androidx.core.content.ContextCompat;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import im.threads.ChatStyle;
@@ -30,7 +31,6 @@ import im.threads.internal.Config;
 import im.threads.internal.image_loading.CoilImageLoader;
 import im.threads.internal.image_loading.ImageLoader;
 import im.threads.internal.image_loading.ImageModifications;
-import im.threads.internal.image_loading.ImageScale;
 import im.threads.internal.model.AttachmentStateEnum;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.MessageState;
@@ -109,7 +109,7 @@ public final class ImageFromUserViewHolder extends BaseHolder {
             imageLoader.loadWithModifications(
                     mImage,
                     fileDescription.getFileUri().toString(),
-                    ImageScale.FIT,
+                    List.of(ImageView.ScaleType.FIT_END, ImageView.ScaleType.CENTER_CROP),
                     style.imagePlaceholder,
                     Collections.singletonList(maskedTransformation),
                     null

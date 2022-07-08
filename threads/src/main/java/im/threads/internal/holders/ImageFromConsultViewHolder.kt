@@ -18,7 +18,6 @@ import im.threads.R
 import im.threads.internal.Config
 import im.threads.internal.image_loading.ImageLoader
 import im.threads.internal.image_loading.ImageModifications
-import im.threads.internal.image_loading.ImageScale
 import im.threads.internal.image_loading.loadUrl
 import im.threads.internal.model.AttachmentStateEnum
 import im.threads.internal.model.ConsultPhrase
@@ -32,7 +31,11 @@ class ImageFromConsultViewHolder(
     private val maskedTransformation: ImageModifications.MaskedModification
 ) :
     BaseHolder(
-        LayoutInflater.from(parent.context).inflate(R.layout.item_image_from_consult, parent, false)
+        LayoutInflater.from(parent.context).inflate(
+            R.layout.item_image_from_consult,
+            parent,
+            false
+        )
     ) {
 
     private val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
@@ -107,7 +110,7 @@ class ImageFromConsultViewHolder(
                 startLoaderAnimation()
                 mImage.loadUrl(
                     fileUri,
-                    ImageScale.FIT,
+                    listOf(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP),
                     style.imagePlaceholder,
                     transformations = listOf(maskedTransformation),
                     callback = object : ImageLoader.ImageLoaderCallback {
@@ -132,7 +135,7 @@ class ImageFromConsultViewHolder(
             if (avatarPath != null) {
                 mConsultAvatar.loadUrl(
                     FileUtils.convertRelativeUrlToAbsolute(avatarPath),
-                    ImageScale.FIT,
+                    listOf(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_INSIDE),
                     transformations = listOf(ImageModifications.CircleCropModification)
                 )
             }

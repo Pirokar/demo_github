@@ -142,7 +142,6 @@
                         android:layout_height="64dp"
                         android:minWidth="1dp"
                         android:padding="@dimen/margin_half"
-                        android:scaleType="centerCrop"
                         android:visibility="gone" />
 
                     <ImageView

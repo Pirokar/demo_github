@@ -23,7 +23,6 @@ import im.threads.internal.Config
 import im.threads.internal.formatters.RussianFormatSymbols
 import im.threads.internal.image_loading.ImageLoader
 import im.threads.internal.image_loading.ImageModifications
-import im.threads.internal.image_loading.ImageScale
 import im.threads.internal.image_loading.loadUrl
 import im.threads.internal.model.AttachmentStateEnum
 import im.threads.internal.model.ConsultPhrase
@@ -228,7 +227,7 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
                         mFileImage.visibility = View.VISIBLE
                         mFileImage.loadUrl(
                             quoteFileDescription.downloadPath,
-                            ImageScale.FIT,
+                            listOf(ImageView.ScaleType.FIT_CENTER, ImageView.ScaleType.CENTER_CROP),
                             style.imagePlaceholder
                         )
                         mFileImage.setOnClickListener(onQuoteClickListener)
@@ -258,15 +257,14 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
                 startLoaderAnimation()
                 mImage.loadUrl(
                     fileDescription.downloadPath,
+                    scales = listOf(ImageView.ScaleType.FIT_CENTER, ImageView.ScaleType.CENTER_CROP),
                     errorDrawableResId = style.imagePlaceholder,
                     callback = object : ImageLoader.ImageLoaderCallback {
                         override fun onImageLoaded(drawable: Drawable) {
-                            mImage.scaleType = ImageView.ScaleType.CENTER_CROP
                             stopLoaderAnimation()
                         }
 
                         override fun onImageLoadError() {
-                            mImage.scaleType = ImageView.ScaleType.FIT_CENTER
                             stopLoaderAnimation()
                         }
                     }
@@ -312,7 +310,7 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
             if (!TextUtils.isEmpty(consultPhrase.avatarPath)) {
                 mConsultAvatar.loadUrl(
                     FileUtils.convertRelativeUrlToAbsolute(consultPhrase.avatarPath),
-                    ImageScale.FIT,
+                    listOf(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP),
                     transformations = listOf(ImageModifications.CircleCropModification)
                 )
             }
@@ -374,12 +372,11 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
         } else {
             ogImage.loadUrl(
                 ogData.imageUrl,
-                ImageScale.FIT,
+                listOf(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_INSIDE),
                 style.imagePlaceholder,
                 callback = object : ImageLoader.ImageLoaderCallback {
                     override fun onImageLoaded(drawable: Drawable) {
                         ogImage.visibility = View.VISIBLE
-                        ogImage.scaleType = ImageView.ScaleType.CENTER_INSIDE
                     }
 
                     override fun onImageLoadError() {

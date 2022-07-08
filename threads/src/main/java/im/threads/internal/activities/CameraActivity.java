@@ -34,7 +34,6 @@ import im.threads.R;
 import im.threads.internal.helpers.FileHelper;
 import im.threads.internal.image_loading.CoilImageLoader;
 import im.threads.internal.image_loading.ImageLoader;
-import im.threads.internal.image_loading.ImageScale;
 import im.threads.internal.utils.ThreadsLogger;
 
 public final class CameraActivity extends BaseActivity {
@@ -267,7 +266,7 @@ public final class CameraActivity extends BaseActivity {
         imageLoader.loadFile(
                 image,
                 new File(imagePath),
-                ImageScale.FIT,
+                List.of(ImageView.ScaleType.FIT_XY),
                 null,
                 null
         );

@@ -24,6 +24,7 @@ import com.google.android.material.slider.Slider;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import im.threads.ChatStyle;
@@ -32,7 +33,6 @@ import im.threads.internal.Config;
 import im.threads.internal.formatters.RussianFormatSymbols;
 import im.threads.internal.image_loading.CoilImageLoader;
 import im.threads.internal.image_loading.ImageLoader;
-import im.threads.internal.image_loading.ImageScale;
 import im.threads.internal.markdown.MarkdownProcessor;
 import im.threads.internal.markdown.MarkwonMarkdownProcessor;
 import im.threads.internal.model.CampaignMessage;
@@ -226,7 +226,7 @@ public final class UserPhraseViewHolder extends VoiceMessageBaseHolder {
                     imageLoader.loadImage(
                         mImage,
                         downloadPath,
-                        ImageScale.FIT,
+                        List.of(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP),
                         style.imagePlaceholder
                     );
                 } else {
@@ -291,7 +291,7 @@ public final class UserPhraseViewHolder extends VoiceMessageBaseHolder {
                 imageLoader.loadImage(
                         quoteImage,
                         downloadPath,
-                        ImageScale.FIT,
+                        List.of(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP),
                         style.imagePlaceholder
                 );
                 if (onQuoteClickListener != null) {

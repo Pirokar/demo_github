@@ -9,12 +9,13 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import java.util.List;
+
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.image_loading.CoilImageLoader;
 import im.threads.internal.image_loading.ImageLoader;
-import im.threads.internal.image_loading.ImageScale;
 import im.threads.internal.model.BottomGalleryItem;
 import im.threads.internal.utils.ColorsHelper;
 
@@ -38,7 +39,12 @@ public final class BottomGalleryImageHolder extends BaseHolder {
             vg.getChildAt(i).setOnClickListener(listener);
         }
         setChosenMarkBackgroundDrawable(item);
-        imageLoader.loadImage(image, item.getImagePath().toString(), ImageScale.FIT, null);
+        imageLoader.loadImage(
+                image,
+                item.getImagePath().toString(),
+                List.of(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP),
+                null
+        );
     }
 
     private void setChosenMarkBackgroundDrawable(@NonNull BottomGalleryItem item) {

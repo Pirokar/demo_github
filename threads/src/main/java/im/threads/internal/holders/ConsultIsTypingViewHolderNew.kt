@@ -11,7 +11,6 @@ import im.threads.ChatStyle
 import im.threads.R
 import im.threads.internal.Config
 import im.threads.internal.image_loading.ImageModifications
-import im.threads.internal.image_loading.ImageScale
 import im.threads.internal.image_loading.loadUrl
 import im.threads.internal.model.ConsultTyping
 import im.threads.internal.utils.FileUtils
@@ -49,7 +48,7 @@ class ConsultIsTypingViewHolderNew(parent: ViewGroup) : RecyclerView.ViewHolder(
         mConsultAvatar.setImageResource(style.defaultOperatorAvatar)
         mConsultAvatar.loadUrl(
             FileUtils.convertRelativeUrlToAbsolute(consultTyping.avatarPath),
-            ImageScale.FIT,
+            listOf(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP),
             transformations = listOf(ImageModifications.CircleCropModification)
         )
     }

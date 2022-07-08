@@ -7,13 +7,10 @@ import android.graphics.drawable.Drawable
 import android.util.Log
 import android.widget.ImageView
 import coil.executeBlocking
-import coil.load
 import coil.request.ImageRequest
-import coil.size.Scale
 import coil.transform.CircleCropTransformation
 import coil.transform.Transformation
 import java.io.File
-import java.lang.Exception
 
 class CoilImageLoader : ImageLoader {
     private val tag = "ImageLoader"
@@ -22,33 +19,40 @@ class CoilImageLoader : ImageLoader {
     override fun loadImage(
         imageView: ImageView,
         imageUrl: String?,
-        scale: ImageScale?,
+        scales: List<ImageView.ScaleType>?,
         errorDrawableResId: Int?
     ) {
-        imageView.load(imageUrl) {
-            scale(getCoilScale(scale))
-            errorDrawableResId?.let { error(it) }
-        }
+        val request = getImageRequestBuilder(
+            imageView,
+            imageView.context,
+            imageUrl,
+            scales = scales,
+            errorDrawableResId = errorDrawableResId
+        ).build()
+        getCoil(imageView.context).enqueue(request)
     }
 
     override fun loadFile(
         imageView: ImageView,
         file: File,
-        scale: ImageScale?,
+        scales: List<ImageView.ScaleType>?,
         errorDrawableResId: Int?,
         modifications: List<ImageModifications>?
     ) {
-        imageView.load(file) {
-            scale(getCoilScale(scale))
-            errorDrawableResId?.let { error(it) }
-            modifications?.let { transformations(getCoilTransformations(it)) }
-        }
+        val request = getImageRequestBuilder(
+            imageView,
+            imageView.context,
+            file = file,
+            scales = scales,
+            errorDrawableResId = errorDrawableResId
+        ).build()
+        getCoil(imageView.context).enqueue(request)
     }
 
     override fun loadImageWithCallback(
         imageView: ImageView,
         imageUrl: String?,
-        scale: ImageScale?,
+        scales: List<ImageView.ScaleType>?,
         errorDrawableResId: Int?,
         callback: ImageLoader.ImageLoaderCallback
     ) {
@@ -56,7 +60,7 @@ class CoilImageLoader : ImageLoader {
             imageView,
             imageView.context,
             imageUrl,
-            scale = scale,
+            scales = scales,
             errorDrawableResId = errorDrawableResId,
             callback = callback
         ).build()
@@ -66,7 +70,7 @@ class CoilImageLoader : ImageLoader {
     override fun loadWithModifications(
         imageView: ImageView,
         imageUrl: String?,
-        scale: ImageScale?,
+        scales: List<ImageView.ScaleType>?,
         errorDrawableResId: Int?,
         modifications: List<ImageModifications>,
         callback: ImageLoader.ImageLoaderCallback?
@@ -75,7 +79,7 @@ class CoilImageLoader : ImageLoader {
             imageView,
             imageView.context,
             imageUrl,
-            scale = scale,
+            scales = scales,
             errorDrawableResId = errorDrawableResId,
             callback = callback
         )
@@ -144,7 +148,8 @@ class CoilImageLoader : ImageLoader {
         context: Context,
         imageUrl: String? = null,
         resourceId: Int? = null,
-        scale: ImageScale? = null,
+        file: File? = null,
+        scales: List<ImageView.ScaleType>? = null,
         errorDrawableResId: Int? = null,
         callback: ImageLoader.ImageLoaderCallback? = null,
     ): ImageRequest.Builder {
@@ -152,7 +157,7 @@ class CoilImageLoader : ImageLoader {
 
         imageUrl?.let { builder.data(it) }
         resourceId?.let { builder.data(it) }
-        scale?.let { builder.scale(getCoilScale(it)) }
+        file?.let { builder.data(it) }
         errorDrawableResId?.let { builder.error(it) }
         builder.target(
             onError = {
@@ -162,6 +167,11 @@ class CoilImageLoader : ImageLoader {
                 callback?.onImageLoaded(it)
                 try {
                     imageView?.setImageDrawable(it)
+                    scales?.let { scales ->
+                        scales.forEach { scale ->
+                            imageView?.scaleType = scale
+                        }
+                    }
                 } catch (exc: Exception) {
                     Log.e(tag, "Error when trying to apply downloaded drawable", exc)
                 }
@@ -181,14 +191,6 @@ class CoilImageLoader : ImageLoader {
             coilImageLoader!!
         } else {
             coilImageLoader!!
-        }
-    }
-
-    private fun getCoilScale(scale: ImageScale?): Scale {
-        return if (scale == ImageScale.FILL) {
-            Scale.FILL
-        } else {
-            Scale.FIT
         }
     }
 

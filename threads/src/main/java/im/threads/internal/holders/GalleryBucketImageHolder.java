@@ -9,10 +9,11 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.List;
+
 import im.threads.R;
 import im.threads.internal.image_loading.CoilImageLoader;
 import im.threads.internal.image_loading.ImageLoader;
-import im.threads.internal.image_loading.ImageScale;
 
 public final class GalleryBucketImageHolder extends RecyclerView.ViewHolder {
     private ImageView mImageView;
@@ -38,7 +39,7 @@ public final class GalleryBucketImageHolder extends RecyclerView.ViewHolder {
         imageLoader.loadImage(
                 mImageView,
                 imagePath.toString(),
-                ImageScale.FIT,
+                List.of(ImageView.ScaleType.FIT_CENTER, ImageView.ScaleType.CENTER_CROP),
                 null
         );
 

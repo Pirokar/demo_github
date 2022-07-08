@@ -37,6 +37,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -77,9 +78,9 @@ import im.threads.R;
 import im.threads.databinding.FragmentChatBinding;
 import im.threads.internal.Config;
 import im.threads.internal.activities.CameraActivity;
-import im.threads.internal.activities.files_activity.FilesActivity;
 import im.threads.internal.activities.GalleryActivity;
 import im.threads.internal.activities.ImagesActivity;
+import im.threads.internal.activities.files_activity.FilesActivity;
 import im.threads.internal.adapters.ChatAdapter;
 import im.threads.internal.broadcastReceivers.ProgressReceiver;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
@@ -93,7 +94,6 @@ import im.threads.internal.helpers.FileProviderHelper;
 import im.threads.internal.helpers.MediaHelper;
 import im.threads.internal.image_loading.CoilImageLoader;
 import im.threads.internal.image_loading.ImageLoader;
-import im.threads.internal.image_loading.ImageScale;
 import im.threads.internal.media.ChatCenterAudioConverter;
 import im.threads.internal.media.ChatCenterAudioConverterCallback;
 import im.threads.internal.media.FileDescriptionMediaPlayer;
@@ -2525,7 +2525,7 @@ public final class ChatFragment extends BaseFragment implements
                 imageLoader.loadImage(
                         binding.quoteImage,
                         imagePath.toString(),
-                        ImageScale.FIT,
+                        List.of(ImageView.ScaleType.FIT_CENTER, ImageView.ScaleType.CENTER_CROP),
                         null
                 );
             } else {
