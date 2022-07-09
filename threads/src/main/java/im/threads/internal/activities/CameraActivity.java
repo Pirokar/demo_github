@@ -32,7 +32,6 @@ import java.util.concurrent.Executors;
 
 import im.threads.R;
 import im.threads.internal.helpers.FileHelper;
-import im.threads.internal.image_loading.CoilImageLoader;
 import im.threads.internal.image_loading.ImageLoader;
 import im.threads.internal.utils.ThreadsLogger;
 
@@ -51,7 +50,6 @@ public final class CameraActivity extends BaseActivity {
     private String mCurrentPhoto;
     private Executor mExecutor = Executors.newSingleThreadExecutor();
     private boolean selfieMode = false;
-    private ImageLoader imageLoader = new CoilImageLoader();
 
     public static Intent getStartIntent(Context context, boolean selfieMode) {
         Intent intent = new Intent(context, CameraActivity.class);
@@ -263,13 +261,10 @@ public final class CameraActivity extends BaseActivity {
         findViewById(R.id.bottom_buttons_photo).setVisibility(View.GONE);
         ImageView image = findViewById(R.id.photo_preview);
         image.setVisibility(View.VISIBLE);
-        imageLoader.loadFile(
-                image,
-                new File(imagePath),
-                List.of(ImageView.ScaleType.FIT_XY),
-                null,
-                null
-        );
+        ImageLoader.get()
+                .load(new File(imagePath))
+                .scales(ImageView.ScaleType.FIT_XY)
+                .into(image);
         findViewById(R.id.bottom_buttons_image).setVisibility(View.VISIBLE);
         Button retakeButton = findViewById(R.id.retake);
         retakeButton.setOnClickListener(v -> {

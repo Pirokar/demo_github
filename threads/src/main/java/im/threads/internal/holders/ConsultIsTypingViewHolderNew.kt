@@ -11,7 +11,7 @@ import im.threads.ChatStyle
 import im.threads.R
 import im.threads.internal.Config
 import im.threads.internal.image_loading.ImageModifications
-import im.threads.internal.image_loading.loadUrl
+import im.threads.internal.image_loading.setImage
 import im.threads.internal.model.ConsultTyping
 import im.threads.internal.utils.FileUtils
 
@@ -46,10 +46,10 @@ class ConsultIsTypingViewHolderNew(parent: ViewGroup) : RecyclerView.ViewHolder(
     fun onBind(consultTyping: ConsultTyping, consultClickListener: View.OnClickListener) {
         mConsultAvatar.setOnClickListener(consultClickListener)
         mConsultAvatar.setImageResource(style.defaultOperatorAvatar)
-        mConsultAvatar.loadUrl(
+        mConsultAvatar.setImage(
             FileUtils.convertRelativeUrlToAbsolute(consultTyping.avatarPath),
             listOf(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP),
-            transformations = listOf(ImageModifications.CircleCropModification)
+            modifications = listOf(ImageModifications.CircleCropModification)
         )
     }
 }

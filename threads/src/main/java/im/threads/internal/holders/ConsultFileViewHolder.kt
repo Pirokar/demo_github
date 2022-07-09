@@ -20,7 +20,7 @@ import im.threads.ChatStyle
 import im.threads.R
 import im.threads.internal.Config
 import im.threads.internal.image_loading.ImageModifications
-import im.threads.internal.image_loading.loadUrl
+import im.threads.internal.image_loading.setImage
 import im.threads.internal.model.AttachmentStateEnum
 import im.threads.internal.model.ConsultPhrase
 import im.threads.internal.utils.FileUtils
@@ -163,10 +163,10 @@ class ConsultFileViewHolder(parent: ViewGroup) : BaseHolder(
             mConsultAvatar.setOnClickListener(onAvatarClickListener)
             mConsultAvatar.setImageResource(style.defaultOperatorAvatar)
             if (!TextUtils.isEmpty(consultPhrase.avatarPath)) {
-                mConsultAvatar.loadUrl(
+                mConsultAvatar.setImage(
                     FileUtils.convertRelativeUrlToAbsolute(consultPhrase.avatarPath),
                     listOf(ImageView.ScaleType.FIT_XY),
-                    transformations = listOf(ImageModifications.CircleCropModification)
+                    modifications = listOf(ImageModifications.CircleCropModification)
                 )
             }
         } else {

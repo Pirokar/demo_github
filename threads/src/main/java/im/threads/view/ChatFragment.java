@@ -92,7 +92,6 @@ import im.threads.internal.fragments.PermissionDescriptionAlertDialogFragment;
 import im.threads.internal.helpers.FileHelper;
 import im.threads.internal.helpers.FileProviderHelper;
 import im.threads.internal.helpers.MediaHelper;
-import im.threads.internal.image_loading.CoilImageLoader;
 import im.threads.internal.image_loading.ImageLoader;
 import im.threads.internal.media.ChatCenterAudioConverter;
 import im.threads.internal.media.ChatCenterAudioConverterCallback;
@@ -217,8 +216,6 @@ public final class ChatFragment extends BaseFragment implements
 
     private QuickReplyItem quickReplyItem = null;
     private int previousChatItemsCount = 0;
-
-    private ImageLoader imageLoader = new CoilImageLoader();
 
     public static ChatFragment newInstance() {
         return newInstance(OpenWay.DEFAULT);
@@ -2522,12 +2519,11 @@ public final class ChatFragment extends BaseFragment implements
             binding.quoteText.setText(text);
             if (imagePath != null) {
                 binding.quoteImage.setVisibility(View.VISIBLE);
-                imageLoader.loadImage(
-                        binding.quoteImage,
-                        imagePath.toString(),
-                        List.of(ImageView.ScaleType.FIT_CENTER, ImageView.ScaleType.CENTER_CROP),
-                        null
-                );
+                ImageLoader
+                        .get()
+                        .load(imagePath.toString())
+                        .scales(ImageView.ScaleType.FIT_CENTER, ImageView.ScaleType.CENTER_CROP)
+                        .into(binding.quoteImage);
             } else {
                 binding.quoteImage.setVisibility(View.GONE);
             }

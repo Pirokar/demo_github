@@ -9,18 +9,13 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.List;
-
 import im.threads.R;
-import im.threads.internal.image_loading.CoilImageLoader;
 import im.threads.internal.image_loading.ImageLoader;
 
 public final class GalleryBucketImageHolder extends RecyclerView.ViewHolder {
     private ImageView mImageView;
     private TextView mNameTextView;
     private TextView mSizeTextView;
-
-    private ImageLoader imageLoader = new CoilImageLoader();
 
     public GalleryBucketImageHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_gallery_bucket, parent, false));
@@ -36,12 +31,11 @@ public final class GalleryBucketImageHolder extends RecyclerView.ViewHolder {
                 vg.getChildAt(i).setOnClickListener(itemClickListener);
         }
 
-        imageLoader.loadImage(
-                mImageView,
-                imagePath.toString(),
-                List.of(ImageView.ScaleType.FIT_CENTER, ImageView.ScaleType.CENTER_CROP),
-                null
-        );
+        ImageLoader
+                .get()
+                .load(imagePath.toString())
+                .scales(ImageView.ScaleType.FIT_CENTER, ImageView.ScaleType.CENTER_CROP)
+                .into(mImageView);
 
         mNameTextView.setText(title);
         mSizeTextView.setText(count);

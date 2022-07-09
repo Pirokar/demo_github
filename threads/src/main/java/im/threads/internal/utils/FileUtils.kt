@@ -16,7 +16,6 @@ import android.text.TextUtils
 import android.webkit.MimeTypeMap
 import im.threads.R
 import im.threads.internal.Config
-import im.threads.internal.image_loading.CoilImageLoader
 import im.threads.internal.image_loading.ImageLoader
 import im.threads.internal.model.FileDescription
 import java.io.ByteArrayOutputStream
@@ -35,7 +34,6 @@ object FileUtils {
     private const val OTHER_DOC_FORMATS = 4
     private const val UNKNOWN = -1
     private const val UNKNOWN_MIME_TYPE = "*/*"
-    private val imageLoader: ImageLoader = CoilImageLoader()
 
     @JvmStatic
     fun getFileName(fd: FileDescription): String {
@@ -261,43 +259,49 @@ object FileUtils {
 
     @Throws(IOException::class)
     private fun saveToFile(uri: Uri?, outputFile: File) {
-        imageLoader.getBitmap(Config.instance.context, uri.toString())?.let { drawable ->
-            val bitmap = (drawable as BitmapDrawable).bitmap
-            val byteArrayOutputStream = ByteArrayOutputStream()
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
-            try {
-                FileOutputStream(outputFile).use { fileOutputStream ->
-                    fileOutputStream.write(byteArrayOutputStream.toByteArray())
-                    fileOutputStream.flush()
+        ImageLoader
+            .get()
+            .load(uri.toString())
+            .getBitmapSync(Config.instance.context)?.let { drawable ->
+                val bitmap = (drawable as BitmapDrawable).bitmap
+                val byteArrayOutputStream = ByteArrayOutputStream()
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
+                try {
+                    FileOutputStream(outputFile).use { fileOutputStream ->
+                        fileOutputStream.write(byteArrayOutputStream.toByteArray())
+                        fileOutputStream.flush()
+                        bitmap.recycle()
+                    }
+                } catch (e: IOException) {
+                    ThreadsLogger.e(TAG, "saveToFile", e)
                     bitmap.recycle()
                 }
-            } catch (e: IOException) {
-                ThreadsLogger.e(TAG, "saveToFile", e)
-                bitmap.recycle()
             }
-        }
     }
 
     @Throws(IOException::class)
     private fun saveToUri(uri: Uri?, outputUri: Uri?) {
         val resolver = Config.instance.context.contentResolver
-        imageLoader.getBitmap(Config.instance.context, uri.toString())?.let { drawable ->
-            val bitmap = (drawable as BitmapDrawable).bitmap
-            val byteArrayOutputStream = ByteArrayOutputStream()
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
-            try {
-                resolver.openOutputStream(outputUri!!).use { fileOutputStream ->
-                    if (fileOutputStream != null) {
-                        fileOutputStream.write(byteArrayOutputStream.toByteArray())
-                        fileOutputStream.flush()
-                        bitmap.recycle()
+        ImageLoader
+            .get()
+            .load(uri.toString())
+            .getBitmapSync(Config.instance.context)?.let { drawable ->
+                val bitmap = (drawable as BitmapDrawable).bitmap
+                val byteArrayOutputStream = ByteArrayOutputStream()
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
+                try {
+                    resolver.openOutputStream(outputUri!!).use { fileOutputStream ->
+                        if (fileOutputStream != null) {
+                            fileOutputStream.write(byteArrayOutputStream.toByteArray())
+                            fileOutputStream.flush()
+                            bitmap.recycle()
+                        }
                     }
+                } catch (e: IOException) {
+                    ThreadsLogger.e(TAG, "saveToUri", e)
+                    bitmap.recycle()
                 }
-            } catch (e: IOException) {
-                ThreadsLogger.e(TAG, "saveToUri", e)
-                bitmap.recycle()
             }
-        }
     }
 
     @JvmStatic

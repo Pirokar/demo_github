@@ -30,7 +30,6 @@ import im.threads.internal.Config
 import im.threads.internal.activities.QuickAnswerActivity
 import im.threads.internal.controllers.UnreadMessagesController
 import im.threads.internal.formatters.MessageFormatter
-import im.threads.internal.image_loading.CoilImageLoader
 import im.threads.internal.image_loading.ImageLoader
 import im.threads.internal.image_loading.ImageModifications
 import im.threads.internal.utils.FileUtils.convertRelativeUrlToAbsolute
@@ -47,7 +46,6 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
     Worker(context, workerParameters) {
 
     private val executor = Executors.newSingleThreadExecutor()
-    private val imageLoader: ImageLoader = CoilImageLoader()
 
     private var notificationChannel: NotificationChannel? = null
     private var style: ChatStyle = Config.instance.chatStyle
@@ -320,11 +318,11 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
         pushSmall: RemoteViews,
         pushBig: RemoteViews
     ) {
-        imageLoader.getDrawableAsync(
-            context,
-            operatorAvatarUrl,
-            listOf(ImageModifications.CircleCropModification),
-            object : ImageLoader.ImageLoaderCallback {
+        ImageLoader
+            .get()
+            .load(operatorAvatarUrl)
+            .modifications(ImageModifications.CircleCropModification)
+            .callback(object : ImageLoader.ImageLoaderCallback {
                 override fun onImageLoaded(drawable: Drawable) {
                     onImageLoaded(drawable, pushSmall, pushBig, R.id.icon_large)
                 }
@@ -332,19 +330,19 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
                 override fun onImageLoadError() {
                     onImageLoadError(pushSmall, pushBig, R.id.icon_large)
                 }
-            }
-        )
+            })
+            .getDrawableAsync(context)
     }
 
     private fun showPreNStyleSmallIcon(pushSmall: RemoteViews, pushBig: RemoteViews) {
-        val drawable = imageLoader.getBitmapFromResource(
-            context,
-            style.defPushIconResId,
-            listOf(ImageModifications.CircleCropModification)
-        )
-        val bitmap = (drawable as BitmapDrawable).bitmap
-        pushSmall.setImageViewBitmap(R.id.icon_small_corner, bitmap)
-        pushBig.setImageViewBitmap(R.id.icon_small_corner, bitmap)
+        ImageLoader
+            .get()
+            .errorDrawableResourceId(style.defPushIconResId)
+            .modifications(ImageModifications.CircleCropModification)
+            .getBitmapSync(context)?.let {
+                pushSmall.setImageViewBitmap(R.id.icon_small_corner, it)
+                pushBig.setImageViewBitmap(R.id.icon_small_corner, it)
+            }
     }
 
     private fun onImageLoaded(
@@ -436,7 +434,11 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
 
     private fun getBitmapFromUrl(url: String?): Bitmap? {
         return if (url.isNullOrEmpty()) null else try {
-            imageLoader.getBitmap(context, url, listOf(ImageModifications.CircleCropModification))
+            ImageLoader
+                .get()
+                .load(url)
+                .modifications(ImageModifications.CircleCropModification)
+                .getBitmapSync(context)
         } catch (e: IOException) {
             ThreadsLogger.e(TAG, "getBitmapFromUrl", e)
             null

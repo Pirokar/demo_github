@@ -20,15 +20,12 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 
 import java.text.SimpleDateFormat;
-import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
-import im.threads.internal.image_loading.CoilImageLoader;
 import im.threads.internal.image_loading.ImageLoader;
 import im.threads.internal.image_loading.ImageModifications;
 import im.threads.internal.model.AttachmentStateEnum;
@@ -46,7 +43,6 @@ public final class ImageFromUserViewHolder extends BaseHolder {
     private ChatStyle style;
     private ImageView loader;
     private RelativeLayout loaderLayout;
-    private ImageLoader imageLoader = new CoilImageLoader();
 
     public ImageFromUserViewHolder(ViewGroup parent, ImageModifications.MaskedModification maskedTransformation) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_user_image_from, parent, false));
@@ -106,14 +102,13 @@ public final class ImageFromUserViewHolder extends BaseHolder {
         }
 
         if (fileDescription.getFileUri() != null && !isDownloadError) {
-            imageLoader.loadWithModifications(
-                    mImage,
-                    fileDescription.getFileUri().toString(),
-                    List.of(ImageView.ScaleType.FIT_END, ImageView.ScaleType.CENTER_CROP),
-                    style.imagePlaceholder,
-                    Collections.singletonList(maskedTransformation),
-                    null
-            );
+            ImageLoader
+                    .get()
+                    .load(fileDescription.getFileUri().toString())
+                    .scales(ImageView.ScaleType.FIT_END, ImageView.ScaleType.CENTER_CROP)
+                    .modifications(maskedTransformation)
+                    .errorDrawableResourceId(style.imagePlaceholder)
+                    .into(mImage);
         } else if (isDownloadError) {
             mImage.setImageResource(style.imagePlaceholder);
         }

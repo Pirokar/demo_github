@@ -18,7 +18,7 @@ import im.threads.R
 import im.threads.internal.Config
 import im.threads.internal.image_loading.ImageLoader
 import im.threads.internal.image_loading.ImageModifications
-import im.threads.internal.image_loading.loadUrl
+import im.threads.internal.image_loading.setImage
 import im.threads.internal.model.AttachmentStateEnum
 import im.threads.internal.model.ConsultPhrase
 import im.threads.internal.utils.FileUtils
@@ -108,11 +108,11 @@ class ImageFromConsultViewHolder(
             val isStateReady = fileDescription.state == AttachmentStateEnum.READY
             if (isStateReady && fileUri != null && !fileDescription.isDownloadError) {
                 startLoaderAnimation()
-                mImage.loadUrl(
+                mImage.setImage(
                     fileUri,
                     listOf(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP),
                     style.imagePlaceholder,
-                    transformations = listOf(maskedTransformation),
+                    modifications = listOf(maskedTransformation),
                     callback = object : ImageLoader.ImageLoaderCallback {
                         override fun onImageLoaded(drawable: Drawable) {
                             stopLoaderAnimation()
@@ -133,10 +133,10 @@ class ImageFromConsultViewHolder(
             mConsultAvatar.setOnClickListener(onAvatarClickListener)
             mConsultAvatar.setImageResource(style.defaultOperatorAvatar)
             if (avatarPath != null) {
-                mConsultAvatar.loadUrl(
+                mConsultAvatar.setImage(
                     FileUtils.convertRelativeUrlToAbsolute(avatarPath),
                     listOf(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_INSIDE),
-                    transformations = listOf(ImageModifications.CircleCropModification)
+                    modifications = listOf(ImageModifications.CircleCropModification)
                 )
             }
         } else {

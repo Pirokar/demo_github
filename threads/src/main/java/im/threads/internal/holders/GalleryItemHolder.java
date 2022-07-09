@@ -11,12 +11,9 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.AppCompatCheckBox;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.List;
-
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
-import im.threads.internal.image_loading.CoilImageLoader;
 import im.threads.internal.image_loading.ImageLoader;
 import im.threads.internal.utils.ColorsHelper;
 
@@ -24,8 +21,6 @@ public final class GalleryItemHolder extends RecyclerView.ViewHolder {
     private final ImageView mImageView;
     private final AppCompatCheckBox mCheckBox;
     private final ChatStyle mStyle;
-
-    private ImageLoader imageLoader = new CoilImageLoader();
 
     public GalleryItemHolder(final ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_gallery_image, parent, false));
@@ -37,12 +32,11 @@ public final class GalleryItemHolder extends RecyclerView.ViewHolder {
 
     public void onBind(final Uri imagePath, final View.OnClickListener listener, final boolean isChecked) {
         if (mImageView != null) {
-            imageLoader.loadImage(
-                    mImageView,
-                    imagePath.toString(),
-                    List.of(ImageView.ScaleType.CENTER_INSIDE, ImageView.ScaleType.CENTER_CROP),
-                    null
-            );
+            ImageLoader
+                    .get()
+                    .load(imagePath.toString())
+                    .scales(ImageView.ScaleType.CENTER_INSIDE, ImageView.ScaleType.CENTER_CROP)
+                    .into(mImageView);
             mCheckBox.setChecked(isChecked);
             setButtonDrawable(isChecked);
             mCheckBox.setOnClickListener(listener);

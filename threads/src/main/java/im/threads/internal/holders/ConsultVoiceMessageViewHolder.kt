@@ -18,7 +18,7 @@ import im.threads.R
 import im.threads.internal.Config
 import im.threads.internal.formatters.SpeechStatus
 import im.threads.internal.image_loading.ImageModifications
-import im.threads.internal.image_loading.loadUrl
+import im.threads.internal.image_loading.setImage
 import im.threads.internal.model.ConsultPhrase
 import im.threads.internal.model.FileDescription
 import im.threads.internal.utils.FileUtils.convertRelativeUrlToAbsolute
@@ -180,10 +180,10 @@ class ConsultVoiceMessageViewHolder(parent: ViewGroup) : VoiceMessageBaseHolder(
             mConsultAvatar.visibility = View.VISIBLE
             mConsultAvatar.setImageResource(style.defaultOperatorAvatar)
             if (consultPhrase.avatarPath != null) {
-                mConsultAvatar.loadUrl(
+                mConsultAvatar.setImage(
                     convertRelativeUrlToAbsolute(consultPhrase.avatarPath),
                     listOf(ImageView.ScaleType.FIT_XY),
-                    transformations = listOf(ImageModifications.CircleCropModification)
+                    modifications = listOf(ImageModifications.CircleCropModification)
                 )
             }
         } else {

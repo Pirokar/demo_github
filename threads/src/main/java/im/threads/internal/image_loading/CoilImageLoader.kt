@@ -5,171 +5,46 @@ import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.Log
-import android.widget.ImageView
 import coil.executeBlocking
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
 import coil.transform.Transformation
-import java.io.File
 
-class CoilImageLoader : ImageLoader {
-    private val tag = "ImageLoader"
+class CoilImageLoader : ImageLoaderRealisation {
+    private val tag = CoilImageLoader::class.java.simpleName
     private var coilImageLoader: coil.ImageLoader? = null
 
-    override fun loadImage(
-        imageView: ImageView,
-        imageUrl: String?,
-        scales: List<ImageView.ScaleType>?,
-        errorDrawableResId: Int?
-    ) {
-        val request = getImageRequestBuilder(
-            imageView,
-            imageView.context,
-            imageUrl,
-            scales = scales,
-            errorDrawableResId = errorDrawableResId
-        ).build()
-        getCoil(imageView.context).enqueue(request)
+    override fun load(config: ImageLoader.Config) {
+        val request = getImageRequestBuilder(config).build()
+        getCoil(config.context).enqueue(request)
     }
 
-    override fun loadFile(
-        imageView: ImageView,
-        file: File,
-        scales: List<ImageView.ScaleType>?,
-        errorDrawableResId: Int?,
-        modifications: List<ImageModifications>?
-    ) {
-        val request = getImageRequestBuilder(
-            imageView,
-            imageView.context,
-            file = file,
-            scales = scales,
-            errorDrawableResId = errorDrawableResId
-        ).build()
-        getCoil(imageView.context).enqueue(request)
-    }
-
-    override fun loadImageWithCallback(
-        imageView: ImageView,
-        imageUrl: String?,
-        scales: List<ImageView.ScaleType>?,
-        errorDrawableResId: Int?,
-        callback: ImageLoader.ImageLoaderCallback
-    ) {
-        val request = getImageRequestBuilder(
-            imageView,
-            imageView.context,
-            imageUrl,
-            scales = scales,
-            errorDrawableResId = errorDrawableResId,
-            callback = callback
-        ).build()
-        getCoil(imageView.context).enqueue(request)
-    }
-
-    override fun loadWithModifications(
-        imageView: ImageView,
-        imageUrl: String?,
-        scales: List<ImageView.ScaleType>?,
-        errorDrawableResId: Int?,
-        modifications: List<ImageModifications>,
-        callback: ImageLoader.ImageLoaderCallback?
-    ) {
-        val request = getImageRequestBuilder(
-            imageView,
-            imageView.context,
-            imageUrl,
-            scales = scales,
-            errorDrawableResId = errorDrawableResId,
-            callback = callback
-        )
-            .transformations(getCoilTransformations(modifications))
-            .build()
-        getCoil(imageView.context).enqueue(request)
-    }
-
-    override fun getBitmap(
-        context: Context,
-        imageUrl: String?
-    ): Bitmap? {
-        val request = getImageRequestBuilder(
-            context = context,
-            imageUrl = imageUrl
-        ).build()
-        val drawable = getCoil(context).executeBlocking(request).drawable
+    override fun getBitmapSync(config: ImageLoader.Config): Bitmap? {
+        val request = getImageRequestBuilder(config).build()
+        val drawable = getCoil(config.context).executeBlocking(request).drawable
         return getBitmap(drawable)
     }
 
-    override fun getBitmap(
-        context: Context,
-        imageUrl: String?,
-        modifications: List<ImageModifications>?
-    ): Bitmap? {
-        val request = getImageRequestBuilder(
-            context = context,
-            imageUrl = imageUrl
-        )
-        modifications?.let { request.transformations(getCoilTransformations(it)) }
-        val drawable = getCoil(context).executeBlocking(request.build()).drawable
-        return getBitmap(drawable)
-    }
+    private fun getImageRequestBuilder(config: ImageLoader.Config): ImageRequest.Builder {
+        val builder = ImageRequest.Builder(config.context)
 
-    override fun getDrawableAsync(
-        context: Context,
-        imageUrl: String?,
-        modifications: List<ImageModifications>?,
-        callback: ImageLoader.ImageLoaderCallback
-    ) {
-        val request = getImageRequestBuilder(
-            context = context,
-            imageUrl = imageUrl,
-            callback = callback
-        )
-        modifications?.let { request.transformations(getCoilTransformations(it)) }
-        getCoil(context).enqueue(request.build())
-    }
+        config.url?.let { builder.data(it) }
+        config.resourceId?.let { builder.data(it) }
+        config.file?.let { builder.data(it) }
+        config.errorDrawableResourceId?.let { builder.error(it) }
+        config.modifications?.let { builder.transformations(getCoilTransformations(it.toList())) }
 
-    override fun getBitmapFromResource(
-        context: Context,
-        resourceId: Int,
-        modifications: List<ImageModifications>?
-    ): Bitmap? {
-        val request = getImageRequestBuilder(
-            context = context,
-            resourceId = resourceId
-        )
-        modifications?.let { request.transformations(getCoilTransformations(modifications)) }
-        val drawable = getCoil(context).executeBlocking(request.build()).drawable
-        return getBitmap(drawable)
-    }
-
-    private fun getImageRequestBuilder(
-        imageView: ImageView? = null,
-        context: Context,
-        imageUrl: String? = null,
-        resourceId: Int? = null,
-        file: File? = null,
-        scales: List<ImageView.ScaleType>? = null,
-        errorDrawableResId: Int? = null,
-        callback: ImageLoader.ImageLoaderCallback? = null,
-    ): ImageRequest.Builder {
-        val builder = ImageRequest.Builder(context)
-
-        imageUrl?.let { builder.data(it) }
-        resourceId?.let { builder.data(it) }
-        file?.let { builder.data(it) }
-        errorDrawableResId?.let { builder.error(it) }
         builder.target(
             onError = {
-                callback?.onImageLoadError()
+                config.callback?.onImageLoadError()
             },
             onSuccess = {
-                callback?.onImageLoaded(it)
+                config.callback?.onImageLoaded(it)
                 try {
-                    imageView?.setImageDrawable(it)
-                    scales?.let { scales ->
+                    config.imageView?.setImageDrawable(it)
+                    config.scales?.let { scales ->
                         scales.forEach { scale ->
-                            imageView?.scaleType = scale
+                            config.imageView?.scaleType = scale
                         }
                     }
                 } catch (exc: Exception) {

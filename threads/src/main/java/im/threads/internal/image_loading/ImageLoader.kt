@@ -6,126 +6,87 @@ import android.graphics.drawable.Drawable
 import android.widget.ImageView
 import java.io.File
 
-// TODO: rewrite it with one fun when everything will be in kotlin
-/**
- * Загрузчик изображений
- */
-interface ImageLoader {
-    /**
-     * Загружает изображение асинхронно
-     * @param imageView контейнер, в который необходимо загрузить изображение
-     * @param imageUrl url, который представляет изображение
-     * @param scales список Scale, которые применятся последовательно к ImageView
-     * @param errorDrawableResId ссылка на ресурс Drawable, который будет отображен в случае ошибки
-     * загрузки (напр., R.drawable.error_example)
-     */
-    fun loadImage(
-        imageView: ImageView,
-        imageUrl: String?,
-        scales: List<ImageView.ScaleType>?,
-        errorDrawableResId: Int?
-    )
+class ImageLoader private constructor() {
+    private val config = ImageLoader.Config()
+    private val currentImageLoader: ImageLoaderRealisation = CoilImageLoader()
 
-    /**
-     * Загружает изображение асинхронно
-     * @param imageView контейнер, в который необходимо загрузить изображение
-     * @param file файл, который представляет изображение
-     * @param scales список Scale, которые применятся последовательно к ImageView
-     * @param errorDrawableResId ссылка на ресурс Drawable, который будет отображен в случае ошибки
-     * загрузки (напр., R.drawable.error_example)
-     * @param modifications Список трансофрмаций, которые будут последовательно применены к ImageView
-     */
-    fun loadFile(
-        imageView: ImageView,
-        file: File,
-        scales: List<ImageView.ScaleType>?,
-        errorDrawableResId: Int?,
-        modifications: List<ImageModifications>?
-    )
+    fun load(url: String?): ImageLoader {
+        config.url = url
+        return this
+    }
 
-    /**
-     * Загружает изображение асинхронно
-     * @param imageView контейнер, в который необходимо загрузить изображение
-     * @param imageUrl url, который представляет изображение
-     * @param scales список Scale, которые применятся последовательно к ImageView
-     * @param errorDrawableResId ссылка на ресурс Drawable, который будет отображен в случае ошибки
-     * загрузки (напр., R.drawable.error_example)
-     * @param callback будет вызван, когда изображение загрузится или случится ошибка при загрузке
-     */
-    fun loadImageWithCallback(
-        imageView: ImageView,
-        imageUrl: String?,
-        scales: List<ImageView.ScaleType>?,
-        errorDrawableResId: Int?,
-        callback: ImageLoaderCallback
-    )
+    fun load(file: File): ImageLoader {
+        config.file = file
+        return this
+    }
 
-    /**
-     * Загружает изображение асинхронно
-     * @param imageView контейнер, в который необходимо загрузить изображение
-     * @param imageUrl url, который представляет изображение
-     * @param scales список Scale, которые применятся последовательно к ImageView
-     * @param errorDrawableResId ссылка на ресурс Drawable, который будет отображен в случае ошибки
-     * загрузки (напр., R.drawable.error_example)
-     * @param modifications список трансофрмаций, которые будут последовательно применены к ImageView
-     * @param callback будет вызван, когда изображение загрузится или случится ошибка при загрузке
-     */
-    fun loadWithModifications(
-        imageView: ImageView,
-        imageUrl: String?,
-        scales: List<ImageView.ScaleType>?,
-        errorDrawableResId: Int?,
-        modifications: List<ImageModifications>,
-        callback: ImageLoaderCallback?
-    )
+    fun load(resourceId: Int): ImageLoader {
+        config.resourceId = resourceId
+        return this
+    }
 
-    /**
-     * Загружает Bitmap из url синхронно
-     * @param context контекст Android
-     * @param imageUrl url, который представляет изображение
-     */
-    fun getBitmap(
-        context: Context,
-        imageUrl: String?
-    ): Bitmap?
+    fun errorDrawableResourceId(resourceId: Int?): ImageLoader {
+        config.errorDrawableResourceId = resourceId
+        return this
+    }
 
-    /**
-     * Загружает Bitmap из url синхронно
-     * @param context контекст Android
-     * @param imageUrl url, который представляет изображение
-     * @param modifications список трансофрмаций, которые будут последовательно применены к Bitmap
-     */
-    fun getBitmap(
-        context: Context,
-        imageUrl: String?,
-        modifications: List<ImageModifications>?
-    ): Bitmap?
+    fun scales(vararg scales: ImageView.ScaleType): ImageLoader {
+        config.scales = scales
+        return this
+    }
 
-    /**
-     * Получает Drawable из url асинхронно
-     * @param context контекст Android
-     * @param imageUrl url, который представляет изображение
-     * @param modifications список трансофрмаций, которые будут последовательно применены к Bitmap
-     * @param callback будет вызван, когда изображение загрузится или случится ошибка при загрузке
-     */
-    fun getDrawableAsync(
-        context: Context,
-        imageUrl: String?,
-        modifications: List<ImageModifications>?,
-        callback: ImageLoaderCallback
-    )
+    fun scales(scales: List<ImageView.ScaleType>?): ImageLoader {
+        scales?.let {
+            config.scales = it.toTypedArray()
+        }
+        return this
+    }
 
-    /**
-     * Получает Bitmap из переданной ссылки на ресурс изображения
-     * @param context контекст Android
-     * @param resourceId ссылка на ресурс изображения (напр., R.drawable.image_example)
-     * @param modifications список трансофрмаций, которые будут последовательно применены к Bitmap
-     */
-    fun getBitmapFromResource(
-        context: Context,
-        resourceId: Int,
-        modifications: List<ImageModifications>?
-    ): Bitmap?
+    fun modifications(vararg modifications: ImageModifications): ImageLoader {
+        config.modifications = modifications
+        return this
+    }
+
+    fun modifications(modifications: List<ImageModifications>?): ImageLoader {
+        modifications?.let {
+            config.modifications = it.toTypedArray()
+        }
+        return this
+    }
+
+    fun callback(callback: ImageLoaderCallback?): ImageLoader {
+        config.callback = callback
+        return this
+    }
+
+    fun into(imageView: ImageView) {
+        config.imageView = imageView
+        config.context = imageView.context
+
+        currentImageLoader.load(config)
+    }
+
+    fun getBitmapSync(context: Context): Bitmap? {
+        config.context = context
+        return currentImageLoader.getBitmapSync(config)
+    }
+
+    fun getDrawableAsync(context: Context) {
+        config.context = context
+        return currentImageLoader.load(config)
+    }
+
+    class Config {
+        lateinit var context: Context
+        var url: String? = null
+        var file: File? = null
+        var resourceId: Int? = null
+        var errorDrawableResourceId: Int? = null
+        var scales: Array<out ImageView.ScaleType>? = null
+        var modifications: Array<out ImageModifications>? = null
+        var imageView: ImageView? = null
+        var callback: ImageLoaderCallback? = null
+    }
 
     interface ImageLoaderCallback {
         /**
@@ -138,5 +99,10 @@ interface ImageLoader {
          * Вызывается в случае ошибки при загрзуке изображения
          */
         fun onImageLoadError() {}
+    }
+
+    companion object {
+        @JvmStatic
+        fun get() = ImageLoader()
     }
 }

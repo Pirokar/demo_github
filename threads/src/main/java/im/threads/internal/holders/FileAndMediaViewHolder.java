@@ -12,13 +12,11 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
-import im.threads.internal.image_loading.CoilImageLoader;
 import im.threads.internal.image_loading.ImageLoader;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.utils.ColorsHelper;
@@ -33,7 +31,6 @@ public final class FileAndMediaViewHolder extends BaseHolder {
     private TextView timeStampTextView;
     private SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
     private Drawable tintedDrawable;
-    private ImageLoader imageLoader = new CoilImageLoader();
 
     public FileAndMediaViewHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_file_and_media, parent, false));
@@ -79,12 +76,11 @@ public final class FileAndMediaViewHolder extends BaseHolder {
             } else if (fileDescription.getDownloadPath() != null) {
                 downloadPath = fileDescription.getDownloadPath();
             }
-            imageLoader.loadImage(
-                    mImageButton,
-                    downloadPath,
-                    List.of(ImageView.ScaleType.FIT_XY),
-                    null
-            );
+            ImageLoader
+                    .get()
+                    .load(downloadPath)
+                    .scales(ImageView.ScaleType.FIT_XY)
+                    .into(mImageButton);
         } else {
             mImageButton.setImageDrawable(tintedDrawable);
         }
