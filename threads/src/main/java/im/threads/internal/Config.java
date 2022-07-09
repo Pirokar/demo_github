@@ -74,7 +74,6 @@ public final class Config {
     public final int historyLoadingCount;
 
     public final int surveyCompletionDelay;
-    public final boolean clientIdIgnoreEnabled;
 
     public final boolean newChatCenterApi;
 
@@ -105,7 +104,6 @@ public final class Config {
         this.unreadMessagesCountListener = unreadMessagesCountListener;
         this.networkInterceptor = networkInterceptor;
         this.isDebugLoggingEnabled = isDebugLoggingEnabled;
-        this.clientIdIgnoreEnabled = MetaDataUtils.getClientIdIgnoreEnabled(this.context);
         this.newChatCenterApi = MetaDataUtils.getNewChatCenterApi(this.context);
         this.attachmentEnabled = MetaDataUtils.getAttachmentEnabled(this.context);
         this.filesAndMediaMenuItemEnabled = MetaDataUtils.getFilesAndMeniaMenuItemEnabled(this.context);

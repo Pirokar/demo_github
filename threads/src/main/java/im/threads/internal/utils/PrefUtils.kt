@@ -274,7 +274,7 @@ class PrefUtils private constructor() {
 
         @JvmStatic
         val isClientIdEmpty: Boolean
-            get() = clientID.isEmpty() && !Config.instance.clientIdIgnoreEnabled
+            get() = clientID.isEmpty()
 
         @JvmStatic
         val incomingStyle: ChatStyle?

@@ -448,29 +448,20 @@ class ThreadsGateTransport(
                                     message.content,
                                     TypingContent::class.java
                                 )
-                                if (content.clientId != null || Config.instance.clientIdIgnoreEnabled) {
-                                    ChatUpdateProcessor.getInstance().postTyping(content.clientId)
-                                }
+                                ChatUpdateProcessor.getInstance().postTyping(content.clientId)
                             } else if (ChatItemType.ATTACHMENT_SETTINGS == type) {
                                 val attachmentSettings = Config.instance.gson.fromJson(
                                     message.content,
                                     AttachmentSettings::class.java
                                 )
-                                if (attachmentSettings.clientId != null || Config.instance.clientIdIgnoreEnabled) {
-                                    ChatUpdateProcessor.getInstance()
-                                        .postAttachmentSettings(attachmentSettings)
-                                }
+                                ChatUpdateProcessor.getInstance().postAttachmentSettings(attachmentSettings)
                             } else if (ChatItemType.SPEECH_MESSAGE_UPDATED == type) {
                                 val chatItem = ThreadsGateMessageParser.format(message)
                                 if (chatItem is SpeechMessageUpdate) {
                                     ChatUpdateProcessor.getInstance()
                                         .postSpeechMessageUpdate(chatItem)
                                 }
-                            } else if (ThreadsGateMessageParser.checkId(
-                                    message,
-                                    PrefUtils.clientID
-                                )
-                            ) {
+                            } else {
                                 val chatItem = ThreadsGateMessageParser.format(message)
                                 if (chatItem != null) {
                                     ChatUpdateProcessor.getInstance().postNewMessage(chatItem)
