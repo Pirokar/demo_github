@@ -8,8 +8,6 @@ import android.util.Log
 import androidx.preference.PreferenceManager
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
-import com.google.android.gms.tasks.Task
-import com.google.firebase.installations.FirebaseInstallations
 import com.google.gson.JsonSyntaxException
 import im.threads.ChatStyle
 import im.threads.internal.Config
@@ -495,11 +493,6 @@ class PrefUtils private constructor() {
                 .edit()
                 .putString(key, Config.instance.gson.toJson(style))
                 .commit()
-        }
-
-        private fun resetPushToken() {
-            FirebaseInstallations.getInstance().delete()
-                .addOnCompleteListener { task: Task<Void?>? -> FirebaseInstallations.getInstance().id }
         }
 
         private fun movePreferences(fromPrefs: SharedPreferences, toPrefs: SharedPreferences) {
