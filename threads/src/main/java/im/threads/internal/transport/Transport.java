@@ -6,7 +6,6 @@ import androidx.lifecycle.Lifecycle;
 
 import java.util.List;
 
-import im.threads.ConfigBuilder;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.model.ClientNotificationDisplayType;
 import im.threads.internal.model.ConsultInfo;
@@ -103,8 +102,6 @@ public abstract class Transport {
     public abstract void sendRatingReceived(Survey survey);
 
     public abstract void sendClientOffline(String clientId);
-
-    public abstract ConfigBuilder.TransportType getType();
 
     @NonNull
     public abstract String getToken() throws TransportException;
