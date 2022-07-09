@@ -1,10 +1,8 @@
 package im.threads.internal.holders
 
-import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.text.method.LinkMovementMethod
 import android.view.View
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
