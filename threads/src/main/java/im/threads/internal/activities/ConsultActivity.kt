@@ -14,6 +14,7 @@ import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
+import androidx.core.view.isVisible
 import com.squareup.picasso.Picasso
 import im.threads.ChatStyle
 import im.threads.R
@@ -133,7 +134,12 @@ internal open class ConsultActivity : BaseActivity() {
         setSupportActionBar(toolbar)
         toolbar.setNavigationOnClickListener { finish() }
         toolbar.showOverflowMenu()
-        toolbar.overflowIcon?.setColorFilter(ContextCompat.getColor(baseContext, android.R.color.white))
+        toolbar.overflowIcon?.setColorFilter(
+            ContextCompat.getColor(
+                baseContext,
+                android.R.color.white
+            )
+        )
 
         val layoutParams = RelativeLayout.LayoutParams(
             RelativeLayout.LayoutParams.MATCH_PARENT,
@@ -145,9 +151,12 @@ internal open class ConsultActivity : BaseActivity() {
     }
 
     private fun setTextForConsultInfo(intentKey: String, textView: TextView) {
-        val text = intent.getStringExtra(intentKey)
+        var text = intent.getStringExtra(intentKey)
         if (null != text && text != "null") {
             textView.text = text
+            textView.isVisible = true
+        } else {
+            textView.isVisible = false
         }
     }
 
@@ -159,7 +168,9 @@ internal open class ConsultActivity : BaseActivity() {
 
         /**
          * Запускает текущую активити.
-         * @param activity активити, из которой будет произведен запуск ConsultActivity.
+         *
+         * @param activity активити, из которой будет произведен запуск
+         *     ConsultActivity.
          * @param avatarPath путь к аватару
          * @param name имя оператора
          * @param status статус оператора.
@@ -182,7 +193,9 @@ internal open class ConsultActivity : BaseActivity() {
 
         /**
          * Запускает текущую активити.
-         * @param activity активити, из которой будет произведен запуск ConsultActivity.
+         *
+         * @param activity активити, из которой будет произведен запуск
+         *     ConsultActivity.
          */
         @JvmStatic
         fun startActivity(activity: Activity?) {
