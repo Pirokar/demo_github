@@ -48,7 +48,7 @@ internal open class ConsultActivity : BaseActivity() {
         val searchMenuItem = menu.getItem(0)
         val searchMenuSpannable = SpannableString(searchMenuItem.title)
         searchMenuSpannable.setSpan(
-            ForegroundColorSpan(ContextCompat.getColor(this, style!!.menuItemTextColorResId)),
+            ForegroundColorSpan(ContextCompat.getColor(this, style.menuItemTextColorResId)),
             0,
             searchMenuSpannable.length,
             0
@@ -151,7 +151,7 @@ internal open class ConsultActivity : BaseActivity() {
     }
 
     private fun setTextForConsultInfo(intentKey: String, textView: TextView) {
-        var text = intent.getStringExtra(intentKey)
+        val text = intent.getStringExtra(intentKey)
         if (null != text && text != "null") {
             textView.text = text
             textView.isVisible = true
@@ -161,7 +161,6 @@ internal open class ConsultActivity : BaseActivity() {
     }
 
     companion object {
-        private const val TAG = "ConsultActivity "
         const val imageUrlKey = "imagePath"
         const val titleKey = "title"
         const val statusKey = "status"
@@ -169,8 +168,7 @@ internal open class ConsultActivity : BaseActivity() {
         /**
          * Запускает текущую активити.
          *
-         * @param activity активити, из которой будет произведен запуск
-         *     ConsultActivity.
+         * @param activity активити, из которой будет произведен запуск ConsultActivity.
          * @param avatarPath путь к аватару
          * @param name имя оператора
          * @param status статус оператора.
@@ -194,8 +192,7 @@ internal open class ConsultActivity : BaseActivity() {
         /**
          * Запускает текущую активити.
          *
-         * @param activity активити, из которой будет произведен запуск
-         *     ConsultActivity.
+         * @param activity активити, из которой будет произведен запуск ConsultActivity.
          */
         @JvmStatic
         fun startActivity(activity: Activity?) {
