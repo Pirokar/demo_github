@@ -13,7 +13,7 @@ public class MetaDataUtils {
     private static final String TAG = MetaDataUtils.class.getSimpleName();
 
     private static final String DATASTORE_URL = "im.threads.getDatastoreUrl";
-    private static final String SERVER_BASE_URL = "im.threads.getServerBaseUrl";
+    private static final String SERVER_BASE_URL = "im.threads.getServerUrl";
     private static final String THREADS_GATE_URL = "im.threads.threadsGateUrl";
     private static final String THREADS_GATE_PROVIDER_UID = "im.threads.threadsGateProviderUid";
     private static final String THREADS_GATE_HCM_PROVIDER_UID = "im.threads.threadsGateHCMProviderUid";

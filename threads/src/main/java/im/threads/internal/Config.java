@@ -289,7 +289,7 @@ public final class Config {
     private String getServerBaseUrl(@Nullable String serverBaseUrl) {
         String baseUrl = TextUtils.isEmpty(serverBaseUrl) ? MetaDataUtils.getServerBaseUrl(this.context) : serverBaseUrl;
         if (baseUrl == null) {
-            throw new MetaConfigurationException("Neither im.threads.getServerBaseUrl meta variable, nor datastoreUrl were provided");
+            throw new MetaConfigurationException("Neither im.threads.getServerUrl meta variable, nor datastoreUrl were provided");
         }
         if (!baseUrl.endsWith("/")) {
             baseUrl = baseUrl + "/";
