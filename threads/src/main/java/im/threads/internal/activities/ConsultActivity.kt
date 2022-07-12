@@ -14,6 +14,7 @@ import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
+import androidx.core.view.isVisible
 import com.squareup.picasso.Picasso
 import im.threads.ChatStyle
 import im.threads.R
@@ -47,7 +48,7 @@ internal open class ConsultActivity : BaseActivity() {
         val searchMenuItem = menu.getItem(0)
         val searchMenuSpannable = SpannableString(searchMenuItem.title)
         searchMenuSpannable.setSpan(
-            ForegroundColorSpan(ContextCompat.getColor(this, style!!.menuItemTextColorResId)),
+            ForegroundColorSpan(ContextCompat.getColor(this, style.menuItemTextColorResId)),
             0,
             searchMenuSpannable.length,
             0
@@ -133,7 +134,12 @@ internal open class ConsultActivity : BaseActivity() {
         setSupportActionBar(toolbar)
         toolbar.setNavigationOnClickListener { finish() }
         toolbar.showOverflowMenu()
-        toolbar.overflowIcon?.setColorFilter(ContextCompat.getColor(baseContext, android.R.color.white))
+        toolbar.overflowIcon?.setColorFilter(
+            ContextCompat.getColor(
+                baseContext,
+                android.R.color.white
+            )
+        )
 
         val layoutParams = RelativeLayout.LayoutParams(
             RelativeLayout.LayoutParams.MATCH_PARENT,
@@ -148,17 +154,20 @@ internal open class ConsultActivity : BaseActivity() {
         val text = intent.getStringExtra(intentKey)
         if (null != text && text != "null") {
             textView.text = text
+            textView.isVisible = true
+        } else {
+            textView.isVisible = false
         }
     }
 
     companion object {
-        private const val TAG = "ConsultActivity "
         const val imageUrlKey = "imagePath"
         const val titleKey = "title"
         const val statusKey = "status"
 
         /**
          * Запускает текущую активити.
+         *
          * @param activity активити, из которой будет произведен запуск ConsultActivity.
          * @param avatarPath путь к аватару
          * @param name имя оператора
@@ -182,6 +191,7 @@ internal open class ConsultActivity : BaseActivity() {
 
         /**
          * Запускает текущую активити.
+         *
          * @param activity активити, из которой будет произведен запуск ConsultActivity.
          */
         @JvmStatic
