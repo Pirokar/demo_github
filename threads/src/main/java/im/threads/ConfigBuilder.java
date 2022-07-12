@@ -41,6 +41,8 @@ public final class ConfigBuilder {
     @Nullable
     private String serverBaseUrl = null;
     @Nullable
+    private String datastoreUrl = null;
+    @Nullable
     private ConfigBuilder.TransportType transportType = null;
     @Nullable
     private String threadsGateUrl = null;
@@ -60,6 +62,11 @@ public final class ConfigBuilder {
 
     public ConfigBuilder serverBaseUrl(String serverBaseUrl) {
         this.serverBaseUrl = serverBaseUrl;
+        return this;
+    }
+
+    public ConfigBuilder datastoreUrl(String datastoreUrl) {
+        this.datastoreUrl = datastoreUrl;
         return this;
     }
 
@@ -127,6 +134,7 @@ public final class ConfigBuilder {
         return new Config(
                 context,
                 serverBaseUrl,
+                datastoreUrl,
                 transportType,
                 threadsGateUrl,
                 threadsGateProviderUid,

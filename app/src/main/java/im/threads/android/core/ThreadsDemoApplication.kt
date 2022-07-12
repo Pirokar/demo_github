@@ -68,6 +68,7 @@ class ThreadsDemoApplication : MultiDexApplication() {
         val transportConfig = getTransportConfig(this)
         if (transportConfig != null) {
             configBuilder.serverBaseUrl(transportConfig.baseUrl)
+                .datastoreUrl(transportConfig.datastoreUrl)
                 .threadsGateUrl(transportConfig.threadsGateUrl)
                 .threadsGateProviderUid(transportConfig.threadsGateProviderUid)
                 .threadsGateHCMProviderUid(transportConfig.threadsGateHCMProviderUid)

@@ -1,72 +1,68 @@
-package im.threads.internal.retrofit;
+package im.threads.internal.retrofit
 
-import android.util.Log;
+import im.threads.internal.Config
+import im.threads.internal.model.FileUploadResponse
+import im.threads.internal.model.HistoryResponse
+import im.threads.internal.model.SettingsResponse
+import im.threads.internal.opengraph.OGResponse
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import retrofit2.Call
+import retrofit2.http.Part
 
-import androidx.annotation.NonNull;
-
-import java.util.List;
-
-import im.threads.internal.Config;
-import im.threads.internal.model.FileUploadResponse;
-import im.threads.internal.model.HistoryResponse;
-import im.threads.internal.model.SettingsResponse;
-import im.threads.internal.opengraph.OGResponse;
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
-import retrofit2.Call;
-
-public final class ThreadsApi {
-
-    private static final String SIGNATURE_STRING = "super-duper-signature-string:";
-
-    @NonNull
-    private final OldThreadsApi oldThreadsApi;
-
-    @NonNull
-    private final NewThreadsApi newThreadsApi;
-
-    public ThreadsApi(@NonNull OldThreadsApi oldThreadsApi, @NonNull NewThreadsApi newThreadsApi) {
-        this.oldThreadsApi = oldThreadsApi;
-        this.newThreadsApi = newThreadsApi;
-    }
-
-    public Call<SettingsResponse> settings() {
-        if (Config.instance.newChatCenterApi) {
-            return newThreadsApi.settings();
+class ThreadsApi(
+    private val oldThreadsApi: OldThreadsBackendApi? = null,
+    private val newThreadsApi: NewThreadsBackendApi? = null,
+    private val datastoreApi: ThreadsDatastoreApi? = null
+) {
+    fun settings(): Call<SettingsResponse?>? {
+        return if (Config.instance.newChatCenterApi) {
+            newThreadsApi?.settings()
         } else {
-            return oldThreadsApi.settings();
+            oldThreadsApi?.settings()
         }
     }
 
-    public Call<HistoryResponse> history(String token, String beforeDate, Integer count, String version) {
-        if (Config.instance.newChatCenterApi) {
-            return newThreadsApi.history(token, beforeDate, count, version);
+    fun history(
+        token: String?,
+        beforeDate: String?,
+        count: Int?,
+        version: String?
+    ): Call<HistoryResponse?>? {
+        return if (Config.instance.newChatCenterApi) {
+            newThreadsApi?.history(token, beforeDate, count, version)
         } else {
-            return oldThreadsApi.history(token, beforeDate, count, version, OldThreadsApi.API_VERSION);
+            oldThreadsApi?.history(
+                token,
+                beforeDate,
+                count,
+                version,
+                OldThreadsBackendApi.API_VERSION
+            )
         }
     }
 
-    public Call<Void> markMessageAsRead(List<String> ids) {
-        if (Config.instance.newChatCenterApi) {
-            return newThreadsApi.markMessageAsRead(ids);
+    fun markMessageAsRead(ids: List<String?>?): Call<Void?>? {
+        return if (Config.instance.newChatCenterApi) {
+            newThreadsApi?.markMessageAsRead(ids)
         } else {
-            return oldThreadsApi.markMessageAsRead(ids);
+            oldThreadsApi?.markMessageAsRead(ids)
         }
     }
 
-    public Call<OGResponse> openGraph(String url) {
-        if (Config.instance.newChatCenterApi) {
-            return newThreadsApi.openGraph(url);
+    fun openGraph(url: String?): Call<OGResponse?>? {
+        return if (Config.instance.newChatCenterApi) {
+            newThreadsApi?.openGraph(url)
         } else {
-            return oldThreadsApi.openGraph(url);
+            oldThreadsApi?.openGraph(url)
         }
     }
 
-    public Call<FileUploadResponse> upload(MultipartBody.Part file, RequestBody agent, String token) {
-        if (Config.instance.newChatCenterApi) {
-            return newThreadsApi.upload(file, agent, SIGNATURE_STRING + token);
-        } else {
-            return oldThreadsApi.upload(file, agent, SIGNATURE_STRING + token);
-        }
+    fun upload(file: MultipartBody.Part?, agent: RequestBody?, token: String): Call<FileUploadResponse?>? {
+        return datastoreApi?.upload(file, agent, SIGNATURE_STRING + token)
+    }
+
+    companion object {
+        private const val SIGNATURE_STRING = "super-duper-signature-string:"
     }
 }

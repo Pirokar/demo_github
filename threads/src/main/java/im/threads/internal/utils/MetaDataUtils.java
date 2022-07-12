@@ -12,7 +12,8 @@ public class MetaDataUtils {
 
     private static final String TAG = MetaDataUtils.class.getSimpleName();
 
-    private static final String DATASTORE_URL = "im.threads.getServerUrl";
+    private static final String DATASTORE_URL = "im.threads.getDatastoreUrl";
+    private static final String SERVER_BASE_URL = "im.threads.getServerBaseUrl";
     private static final String THREADS_GATE_URL = "im.threads.threadsGateUrl";
     private static final String THREADS_GATE_PROVIDER_UID = "im.threads.threadsGateProviderUid";
     private static final String THREADS_GATE_HCM_PROVIDER_UID = "im.threads.threadsGateHCMProviderUid";
@@ -28,6 +29,15 @@ public class MetaDataUtils {
         Bundle metaData = getMetaData(context);
         if (metaData != null && metaData.containsKey(DATASTORE_URL)) {
             return metaData.getString(DATASTORE_URL);
+        }
+        return null;
+    }
+
+    @Nullable
+    public static String getServerBaseUrl(@NonNull Context context) {
+        Bundle metaData = getMetaData(context);
+        if (metaData != null && metaData.containsKey(SERVER_BASE_URL)) {
+            return metaData.getString(SERVER_BASE_URL);
         }
         return null;
     }
