@@ -4,6 +4,7 @@ import im.threads.ConfigBuilder
 
 data class TransportConfig(
     val baseUrl: String,
+    val datastoreUrl: String,
     @Deprecated("only THREADS_GATE transport is supported")
     val transportType: ConfigBuilder.TransportType = ConfigBuilder.TransportType.THREADS_GATE,
     val threadsGateUrl: String,

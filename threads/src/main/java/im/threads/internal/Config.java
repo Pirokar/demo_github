@@ -66,6 +66,8 @@ public final class Config {
     public final Transport transport;
     @NonNull
     public final String serverBaseUrl;
+    @NonNull
+    public final String datastoreUrl;
 
     public final boolean isDebugLoggingEnabled;
     /**
@@ -88,6 +90,7 @@ public final class Config {
 
     public Config(@NonNull Context context,
                   @Nullable String serverBaseUrl,
+                  @Nullable String datastoreUrl,
                   @Nullable ConfigBuilder.TransportType transportType,
                   @Nullable String threadsGateUrl,
                   @Nullable String threadsGateProviderUid,
@@ -115,6 +118,7 @@ public final class Config {
         this.transport = getTransport(transportType, threadsGateUrl, threadsGateProviderUid,
                 threadsGateHCMProviderUid, requestConfig.getSocketClientSettings());
         this.serverBaseUrl = getServerBaseUrl(serverBaseUrl);
+        this.datastoreUrl = getDatastoreUrl(datastoreUrl);
         this.requestConfig = requestConfig;
         setPicasso(this.context, requestConfig.getPicassoHttpClientSettings(), sslSocketFactoryConfig);
     }
@@ -283,13 +287,25 @@ public final class Config {
 
     @NonNull
     private String getServerBaseUrl(@Nullable String serverBaseUrl) {
-        String baseUrl = TextUtils.isEmpty(serverBaseUrl) ? MetaDataUtils.getDatastoreUrl(this.context) : serverBaseUrl;
+        String baseUrl = TextUtils.isEmpty(serverBaseUrl) ? MetaDataUtils.getServerBaseUrl(this.context) : serverBaseUrl;
         if (baseUrl == null) {
-            throw new MetaConfigurationException("Neither im.threads.getServerUrl meta variable, nor serverBaseUrl were provided");
+            throw new MetaConfigurationException("Neither im.threads.getServerUrl meta variable, nor datastoreUrl were provided");
         }
         if (!baseUrl.endsWith("/")) {
             baseUrl = baseUrl + "/";
         }
         return baseUrl;
+    }
+
+    @NonNull
+    private String getDatastoreUrl(@Nullable String dataStoreUrl) {
+        String datastoreUrl = TextUtils.isEmpty(dataStoreUrl) ? MetaDataUtils.getDatastoreUrl(this.context) : dataStoreUrl;
+        if (datastoreUrl == null) {
+            throw new MetaConfigurationException("Neither im.threads.getDatastoreUrl meta variable, nor datastoreUrl were provided");
+        }
+        if (!datastoreUrl.endsWith("/")) {
+            datastoreUrl = datastoreUrl + "/";
+        }
+        return datastoreUrl;
     }
 }

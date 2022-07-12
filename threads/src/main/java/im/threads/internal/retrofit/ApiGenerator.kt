@@ -8,20 +8,36 @@ import im.threads.internal.utils.DeviceInfoHelper
 import im.threads.internal.utils.SSLCertificateInterceptor
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
-import okhttp3.OkHttpClient.Builder
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.net.ssl.SSLSession
 
-class ApiGenerator private constructor() {
-    private val threadsApi: ThreadsApi
+abstract class ApiGenerator protected constructor(private val baseUrl: String) {
+    protected lateinit var threadsApi: ThreadsApi
+    protected lateinit var apiBuild: Retrofit
+
+    private val userAgent: String
+        get() = String.format(
+            Config.instance.context.resources.getString(R.string.threads_user_agent),
+            DeviceInfoHelper.getOsVersion(),
+            DeviceInfoHelper.getDeviceName(),
+            DeviceInfoHelper.getIpAddress(),
+            AppInfoHelper.getAppVersion(),
+            AppInfoHelper.getAppId(),
+            AppInfoHelper.getLibVersion()
+        )
+
+    init { init() }
+
+    abstract fun createThreadsApi()
+
     private fun createOkHttpClient(): OkHttpClient {
         val config = Config.instance
         val (connectTimeoutMillis, readTimeoutMillis, writeTimeoutMillis) =
             config.requestConfig.threadsApiHttpClientSettings
-        val httpClientBuilder: Builder = Builder()
+        val httpClientBuilder: OkHttpClient.Builder = OkHttpClient.Builder()
             .addInterceptor(
                 Interceptor { chain: Interceptor.Chain ->
                     chain.proceed(
@@ -54,38 +70,16 @@ class ApiGenerator private constructor() {
         return httpClientBuilder.build()
     }
 
-    private val userAgent: String
-        private get() = String.format(
-            Config.instance.context.resources.getString(R.string.threads_user_agent),
-            DeviceInfoHelper.getOsVersion(),
-            DeviceInfoHelper.getDeviceName(),
-            DeviceInfoHelper.getIpAddress(),
-            AppInfoHelper.getAppVersion(),
-            AppInfoHelper.getAppId(),
-            AppInfoHelper.getLibVersion()
-        )
-
-    companion object {
-        private const val USER_AGENT_HEADER = "User-Agent"
-        private var apiGenerator: ApiGenerator? = null
-        @JvmStatic
-        fun getThreadsApi(): ThreadsApi {
-            if (apiGenerator == null) {
-                apiGenerator = ApiGenerator()
-            }
-            return apiGenerator!!.threadsApi
-        }
-    }
-
-    init {
-        val build = Retrofit.Builder()
-            .baseUrl(Config.instance.serverBaseUrl)
+    private fun init() {
+        apiBuild = Retrofit.Builder()
+            .baseUrl(baseUrl)
             .addConverterFactory(GsonConverterFactory.create())
             .client(createOkHttpClient())
             .build()
-        threadsApi = ThreadsApi(
-            build.create(OldThreadsApi::class.java),
-            build.create(NewThreadsApi::class.java)
-        )
+        createThreadsApi()
+    }
+
+    companion object {
+        private const val USER_AGENT_HEADER = "User-Agent"
     }
 }
