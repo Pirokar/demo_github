@@ -104,6 +104,8 @@ public abstract class Transport {
 
     public abstract void sendClientOffline(String clientId);
 
+    public abstract void updateLocation(Long latitude, Long longitude);
+
     public abstract ConfigBuilder.TransportType getType();
 
     @NonNull

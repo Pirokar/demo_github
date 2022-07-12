@@ -78,9 +78,9 @@ import im.threads.R;
 import im.threads.databinding.FragmentChatBinding;
 import im.threads.internal.Config;
 import im.threads.internal.activities.CameraActivity;
-import im.threads.internal.activities.files_activity.FilesActivity;
 import im.threads.internal.activities.GalleryActivity;
 import im.threads.internal.activities.ImagesActivity;
+import im.threads.internal.activities.files_activity.FilesActivity;
 import im.threads.internal.adapters.ChatAdapter;
 import im.threads.internal.broadcastReceivers.ProgressReceiver;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
@@ -1898,6 +1898,16 @@ public final class ChatFragment extends BaseFragment implements
         if (null != chatAdapter) {
             setMessagesAsRead();
         }
+    }
+
+    /**
+     * Отправляет координаты устройства на сервер.
+     *
+     * @param latitude
+     * @param longitude
+     */
+    public void updateLocation(Long latitude, Long longitude) {
+        Config.instance.transport.updateLocation(latitude, longitude);
     }
 
     @Override

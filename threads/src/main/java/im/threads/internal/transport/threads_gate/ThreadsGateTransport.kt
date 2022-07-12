@@ -196,6 +196,18 @@ class ThreadsGateTransport(
         sendMessage(content, sendInit = false)
     }
 
+    override fun updateLocation(latitude: Long, longitude: Long) {
+        val content = OutgoingMessageCreator.createMessageUpdateLocation(
+            latitude,
+            longitude,
+            PrefUtils.userName,
+            PrefUtils.clientID,
+            PrefUtils.clientIDEncrypted,
+            Config.instance.context
+        )
+        sendMessage(content, sendInit = false)
+    }
+
     override fun getType(): TransportType {
         return TransportType.THREADS_GATE
     }
