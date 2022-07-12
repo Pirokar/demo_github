@@ -15,7 +15,7 @@ object PrefUtilsApp {
     private const val TAG = "DemoAppPrefUtils "
     private const val PREF_CARDS_LIST = "PREF_CARDS_LIST"
     private const val PREF_SERVER_BASE_URL = "PREF_SERVER_BASE_URL"
-    private const val PREF_DATASTORE_URL = "PREF_SERVER_BASE_URL"
+    private const val PREF_DATASTORE_URL = "PREF_DATASTORE_URL"
     private const val PREF_THREADS_GATE_URL = "PREF_THREADS_GATE_URL"
     private const val PREF_THREADS_GATE_PROVIDER_UID = "PREF_THREADS_GATE_PROVIDER_UID"
     private const val PREF_THREADS_GATE_HCM_PROVIDER_UID = "PREF_THREADS_GATE_HCM_PROVIDER_UID"
