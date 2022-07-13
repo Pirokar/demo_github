@@ -4,7 +4,7 @@ import android.util.Log
 import android.widget.ImageView
 import java.io.File
 
-internal fun ImageView.setImage(
+internal fun ImageView.loadImage(
     data: Any? = null,
     scales: List<ImageView.ScaleType>? = null,
     errorDrawableResId: Int? = null,

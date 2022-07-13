@@ -23,7 +23,7 @@ import im.threads.internal.Config
 import im.threads.internal.formatters.RussianFormatSymbols
 import im.threads.internal.image_loading.ImageLoader
 import im.threads.internal.image_loading.ImageModifications
-import im.threads.internal.image_loading.setImage
+import im.threads.internal.image_loading.loadImage
 import im.threads.internal.model.AttachmentStateEnum
 import im.threads.internal.model.ConsultPhrase
 import im.threads.internal.opengraph.OGData
@@ -225,7 +225,7 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
                 } else {
                     if (isImage(quote.fileDescription)) {
                         mFileImage.visibility = View.VISIBLE
-                        mFileImage.setImage(
+                        mFileImage.loadImage(
                             quoteFileDescription.downloadPath,
                             listOf(ImageView.ScaleType.FIT_CENTER, ImageView.ScaleType.CENTER_CROP),
                             style.imagePlaceholder
@@ -255,7 +255,7 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
                 mImage.setOnClickListener(imageClickListener)
 
                 startLoaderAnimation()
-                mImage.setImage(
+                mImage.loadImage(
                     fileDescription.downloadPath,
                     scales = listOf(ImageView.ScaleType.FIT_CENTER, ImageView.ScaleType.CENTER_CROP),
                     errorDrawableResId = style.imagePlaceholder,
@@ -308,7 +308,7 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
             mConsultAvatar.setOnClickListener(onAvatarClickListener)
             showDefIcon()
             if (!TextUtils.isEmpty(consultPhrase.avatarPath)) {
-                mConsultAvatar.setImage(
+                mConsultAvatar.loadImage(
                     FileUtils.convertRelativeUrlToAbsolute(consultPhrase.avatarPath),
                     listOf(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP),
                     modifications = listOf(ImageModifications.CircleCropModification)
@@ -370,7 +370,7 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
         if (TextUtils.isEmpty(ogData.imageUrl)) {
             ogImage.visibility = View.GONE
         } else {
-            ogImage.setImage(
+            ogImage.loadImage(
                 ogData.imageUrl,
                 listOf(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_INSIDE),
                 style.imagePlaceholder,
