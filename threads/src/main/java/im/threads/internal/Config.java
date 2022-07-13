@@ -91,7 +91,6 @@ public final class Config {
     public Config(@NonNull Context context,
                   @Nullable String serverBaseUrl,
                   @Nullable String datastoreUrl,
-                  @Nullable ConfigBuilder.TransportType transportType,
                   @Nullable String threadsGateUrl,
                   @Nullable String threadsGateProviderUid,
                   @Nullable String threadsGateHCMProviderUid,
@@ -115,7 +114,7 @@ public final class Config {
         this.historyLoadingCount = historyLoadingCount;
         this.surveyCompletionDelay = surveyCompletionDelay;
         this.sslSocketFactoryConfig = getSslSocketFactoryConfig(certificateRawResIds);
-        this.transport = getTransport(transportType, threadsGateUrl, threadsGateProviderUid,
+        this.transport = getTransport(threadsGateUrl, threadsGateProviderUid,
                 threadsGateHCMProviderUid, requestConfig.getSocketClientSettings());
         this.serverBaseUrl = getServerBaseUrl(serverBaseUrl);
         this.datastoreUrl = getDatastoreUrl(datastoreUrl);
@@ -240,30 +239,10 @@ public final class Config {
         return localInstance;
     }
 
-    private Transport getTransport(@Nullable ConfigBuilder.TransportType providedTransportType,
-                                   @Nullable String providedThreadsGateUrl,
+    private Transport getTransport(@Nullable String providedThreadsGateUrl,
                                    @Nullable String providedThreadsGateProviderUid,
                                    @Nullable String providedThreadsGateHCMProviderUid,
                                    SocketClientSettings socketClientSettings) {
-        ConfigBuilder.TransportType transportType;
-        if (providedTransportType != null) {
-            transportType = providedTransportType;
-        } else {
-            transportType = ConfigBuilder.TransportType.THREADS_GATE;
-            String transportTypeValue = MetaDataUtils.getThreadsTransportType(this.context);
-            if (!TextUtils.isEmpty(transportTypeValue)) {
-                try {
-                    transportType = ConfigBuilder.TransportType.fromString(transportTypeValue);
-                } catch (IllegalArgumentException e) {
-                    ThreadsLogger.e(TAG, "Transport type has incorrect value (correct value: THREADS_GATE). Default to THREADS_GATE");
-                }
-            } else {
-                ThreadsLogger.e(TAG, "Transport type value is not set (correct value: THREADS_GATE). Default to THREADS_GATE");
-            }
-        }
-        if (ConfigBuilder.TransportType.MFMS_PUSH == transportType) {
-            throw new MetaConfigurationException("MFMS push transport is not supported anymore");
-        }
         if (TextUtils.isEmpty(providedThreadsGateUrl)) {
             throw new MetaConfigurationException("Threads gate url is not set");
         }
@@ -276,20 +255,22 @@ public final class Config {
         if (TextUtils.isEmpty(threadsGateProviderUid)) {
             throw new MetaConfigurationException("Threads gate provider uid is not set");
         }
-        return new ThreadsGateTransport(providedThreadsGateUrl,
+        return new ThreadsGateTransport(
+                providedThreadsGateUrl,
                 threadsGateProviderUid,
                 threadsGateHCMProviderUid,
                 isDebugLoggingEnabled,
                 socketClientSettings,
                 sslSocketFactoryConfig,
-                networkInterceptor);
+                networkInterceptor
+        );
     }
 
     @NonNull
     private String getServerBaseUrl(@Nullable String serverBaseUrl) {
         String baseUrl = TextUtils.isEmpty(serverBaseUrl) ? MetaDataUtils.getServerBaseUrl(this.context) : serverBaseUrl;
         if (baseUrl == null) {
-            throw new MetaConfigurationException("Neither im.threads.getServerUrl meta variable, nor datastoreUrl were provided");
+            throw new MetaConfigurationException("Neither im.threads.getServerUrl meta variable, nor serverBaseUrl were provided");
         }
         if (!baseUrl.endsWith("/")) {
             baseUrl = baseUrl + "/";

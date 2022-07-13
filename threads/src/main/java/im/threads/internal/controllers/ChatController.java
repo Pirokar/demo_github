@@ -173,15 +173,6 @@ public final class ChatController {
                 })
         );
         subscribeToChatEvents();
-        subscribe(
-                Completable.fromAction(PrefUtils::migrateTransportIfNeeded)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                () -> {
-                                },
-                                e -> ThreadsLogger.e(TAG, e.getMessage()))
-        );
     }
 
     public static ChatController getInstance() {
