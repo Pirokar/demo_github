@@ -219,11 +219,12 @@ object OutgoingMessageCreator {
         formattedMessage.add(MessageAttributes.QUOTES, quotes)
 
         fileDescription?.let {
-            if (!mfmsFilePath.isNullOrEmpty())
+            if (!mfmsFilePath.isNullOrEmpty()) {
                 formattedMessage.add(
                     MessageAttributes.ATTACHMENTS,
                     attachmentsFromFileDescription(fileDescription, mfmsFilePath)
                 )
+            }
         }
         return formattedMessage
     }

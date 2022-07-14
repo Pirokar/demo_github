@@ -9,7 +9,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import com.google.gson.JsonObject
-import im.threads.ConfigBuilder.TransportType
 import im.threads.config.SocketClientSettings
 import im.threads.internal.Config
 import im.threads.internal.chat_updates.ChatUpdateProcessor
@@ -206,10 +205,6 @@ class ThreadsGateTransport(
             Config.instance.context
         )
         sendMessage(content, sendInit = false)
-    }
-
-    override fun getType(): TransportType {
-        return TransportType.THREADS_GATE
     }
 
     override fun getToken(): String {
@@ -409,7 +404,9 @@ class ThreadsGateTransport(
                                 ChatUpdateProcessor.getInstance()
                                     .postChatItemSendSuccess(
                                         ChatItemProviderData(
-                                            tokens[1], data.messageId, data.sentAt.time
+                                            tokens[1],
+                                            data.messageId,
+                                            data.sentAt.time
                                         )
                                     )
                             }

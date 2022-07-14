@@ -106,8 +106,6 @@ public abstract class Transport {
 
     public abstract void updateLocation(Long latitude, Long longitude);
 
-    public abstract ConfigBuilder.TransportType getType();
-
     @NonNull
     public abstract String getToken() throws TransportException;
 
