@@ -1900,16 +1900,6 @@ public final class ChatFragment extends BaseFragment implements
         }
     }
 
-    /**
-     * Отправляет координаты устройства на сервер.
-     *
-     * @param latitude
-     * @param longitude
-     */
-    public void updateLocation(Long latitude, Long longitude) {
-        Config.instance.transport.updateLocation(latitude, longitude);
-    }
-
     @Override
     public void updateProgress(FileDescription filedescription) {
         chatAdapter.updateProgress(filedescription);
