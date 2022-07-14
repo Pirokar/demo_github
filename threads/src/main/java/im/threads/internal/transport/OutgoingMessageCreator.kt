@@ -237,9 +237,9 @@ object OutgoingMessageCreator {
             val optional = JsonObject().apply {
                 addProperty(MessageAttributes.TYPE, getMimeType(it))
                 val fileUri = fileDescription.fileUri
-                if (fileUri != null) {
-                    addProperty("name", getFileName(fileUri))
-                    addProperty("size", getFileSize(fileUri))
+                fileUri?.let {
+                    addProperty("name", getFileName(it))
+                    addProperty("size", getFileSize(it))
                 }
                 addProperty("lastModified", 0)
             }
