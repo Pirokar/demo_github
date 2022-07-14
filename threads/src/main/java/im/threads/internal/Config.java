@@ -243,20 +243,23 @@ public final class Config {
                                    @Nullable String providedThreadsGateProviderUid,
                                    @Nullable String providedThreadsGateHCMProviderUid,
                                    SocketClientSettings socketClientSettings) {
-        if (TextUtils.isEmpty(providedThreadsGateUrl)) {
-            throw new MetaConfigurationException("Threads gate url is not set");
-        }
         String threadsGateProviderUid = !TextUtils.isEmpty(providedThreadsGateProviderUid)
                 ? providedThreadsGateProviderUid
                 : MetaDataUtils.getThreadsGateProviderUid(this.context);
         String threadsGateHCMProviderUid = !TextUtils.isEmpty(providedThreadsGateHCMProviderUid)
                 ? providedThreadsGateHCMProviderUid
                 : MetaDataUtils.getThreadsGateHCMProviderUid(this.context);
+        String threadsGateUrl = !TextUtils.isEmpty(providedThreadsGateUrl)
+                ? providedThreadsGateUrl
+                : MetaDataUtils.getThreadsGateUrl(this.context);
+        if (TextUtils.isEmpty(threadsGateUrl)) {
+            throw new MetaConfigurationException("Threads gate url is not set");
+        }
         if (TextUtils.isEmpty(threadsGateProviderUid)) {
             throw new MetaConfigurationException("Threads gate provider uid is not set");
         }
         return new ThreadsGateTransport(
-                providedThreadsGateUrl,
+                threadsGateUrl,
                 threadsGateProviderUid,
                 threadsGateHCMProviderUid,
                 isDebugLoggingEnabled,
