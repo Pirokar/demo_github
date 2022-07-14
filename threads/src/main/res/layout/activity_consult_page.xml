@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -10,41 +9,46 @@
         android:id="@+id/consultImage"
         android:layout_width="match_parent"
         android:layout_height="280dp"
+        android:contentDescription="@string/threads_consult_portrait"
         android:scaleType="centerCrop"
-        app:srcCompat="@drawable/threads_operator_avatar_placeholder"
-        android:contentDescription="@string/threads_consult_portrait" />
+        app:srcCompat="@drawable/threads_operator_avatar_placeholder" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:layout_alignParentTop="true"
-        android:background="@drawable/background_gradient_black_top_bottom"/>
+        android:background="@drawable/background_gradient_black_top_bottom" />
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:navigationIcon="@drawable/ic_arrow_back_white_24dp"/>
+        app:navigationIcon="@drawable/ic_arrow_back_white_24dp" />
 
-    <im.threads.internal.widget.CustomFontTextView
-        android:id="@+id/consultTitle"
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@id/consultImage"
-        android:background="@drawable/background_gradient_black_bottom_top"
-        android:gravity="center_horizontal"
-        android:paddingTop="100dp"
-        android:paddingBottom="@dimen/margin_big"
-        android:textColor="@color/threads_chat_toolbar_text"
-        android:textSize="@dimen/text_medium"/>
+        android:layout_alignBottom="@+id/consultImage"
+        android:background="@color/threads_outgoing_time_underlay"
+        android:orientation="vertical"
+        android:paddingLeft="@dimen/margin_material"
+        android:paddingTop="@dimen/margin_material"
+        android:paddingRight="@dimen/margin_material"
+        android:paddingBottom="@dimen/margin_material">
 
-    <im.threads.internal.widget.CustomFontTextView
-        android:id="@+id/consult_status"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/consultImage"
-        android:padding="@dimen/margin_big"
-        android:textColor="@color/threads_chat_toolbar_text"
-        android:textSize="@dimen/text_regular"/>
+        <im.threads.internal.widget.CustomFontTextView
+            android:id="@+id/consultTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/threads_chat_toolbar_text"
+            android:textSize="@dimen/text_medium" />
 
+        <im.threads.internal.widget.CustomFontTextView
+            android:id="@+id/consult_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/threads_chat_toolbar_text"
+            android:textSize="@dimen/text_regular" />
+    </LinearLayout>
 </RelativeLayout>

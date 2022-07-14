@@ -41,7 +41,7 @@ public final class ConfigBuilder {
     @Nullable
     private String serverBaseUrl = null;
     @Nullable
-    private ConfigBuilder.TransportType transportType = null;
+    private String datastoreUrl = null;
     @Nullable
     private String threadsGateUrl = null;
     @Nullable
@@ -63,8 +63,8 @@ public final class ConfigBuilder {
         return this;
     }
 
-    public ConfigBuilder transportType(ConfigBuilder.TransportType transportType) {
-        this.transportType = transportType;
+    public ConfigBuilder datastoreUrl(String datastoreUrl) {
+        this.datastoreUrl = datastoreUrl;
         return this;
     }
 
@@ -127,7 +127,7 @@ public final class ConfigBuilder {
         return new Config(
                 context,
                 serverBaseUrl,
-                transportType,
+                datastoreUrl,
                 threadsGateUrl,
                 threadsGateProviderUid,
                 threadsGateHCMProviderUid,
@@ -140,16 +140,5 @@ public final class ConfigBuilder {
                 requestConfig,
                 certificateRawResIds
         );
-    }
-
-    public enum TransportType {
-        @Deprecated
-        MFMS_PUSH,
-        THREADS_GATE;
-
-        @NonNull
-        public static TransportType fromString(@NonNull String name) {
-            return valueOf(name);
-        }
     }
 }

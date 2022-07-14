@@ -5,7 +5,7 @@ import com.annimon.stream.Optional;
 import java.io.IOException;
 import java.util.concurrent.Callable;
 
-import im.threads.internal.retrofit.ApiGenerator;
+import im.threads.internal.retrofit.BackendApiGenerator;
 import im.threads.internal.utils.ThreadsLogger;
 import io.reactivex.Maybe;
 import io.reactivex.Single;
@@ -34,13 +34,13 @@ public final class OGDataProvider {
                 .fromCallable((Callable<Optional<OGResponse>>) () -> {
                     try {
                         if (!url.toLowerCase().startsWith("http")) {
-                            OGResponse ogResponse = ApiGenerator.getThreadsApi().openGraph("http://" + url).execute().body();
+                            OGResponse ogResponse = BackendApiGenerator.getApi().openGraph("http://" + url).execute().body();
                             if (ogResponse == null || ogResponse.getOgdata() == null) {
-                                ogResponse = ApiGenerator.getThreadsApi().openGraph("https://" + url).execute().body();
+                                ogResponse = BackendApiGenerator.getApi().openGraph("https://" + url).execute().body();
                             }
                             return Optional.ofNullable(ogResponse);
                         } else {
-                            return Optional.ofNullable(ApiGenerator.getThreadsApi().openGraph(url).execute().body());
+                            return Optional.ofNullable(BackendApiGenerator.getApi().openGraph(url).execute().body());
                         }
                     } catch (IOException e) {
                         ThreadsLogger.e(TAG, "getOGData failed: ", e);

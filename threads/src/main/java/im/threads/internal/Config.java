@@ -66,6 +66,8 @@ public final class Config {
     public final Transport transport;
     @NonNull
     public final String serverBaseUrl;
+    @NonNull
+    public final String datastoreUrl;
 
     public final boolean isDebugLoggingEnabled;
     /**
@@ -88,7 +90,7 @@ public final class Config {
 
     public Config(@NonNull Context context,
                   @Nullable String serverBaseUrl,
-                  @Nullable ConfigBuilder.TransportType transportType,
+                  @Nullable String datastoreUrl,
                   @Nullable String threadsGateUrl,
                   @Nullable String threadsGateProviderUid,
                   @Nullable String threadsGateHCMProviderUid,
@@ -112,9 +114,10 @@ public final class Config {
         this.historyLoadingCount = historyLoadingCount;
         this.surveyCompletionDelay = surveyCompletionDelay;
         this.sslSocketFactoryConfig = getSslSocketFactoryConfig(certificateRawResIds);
-        this.transport = getTransport(transportType, threadsGateUrl, threadsGateProviderUid,
+        this.transport = getTransport(threadsGateUrl, threadsGateProviderUid,
                 threadsGateHCMProviderUid, requestConfig.getSocketClientSettings());
         this.serverBaseUrl = getServerBaseUrl(serverBaseUrl);
+        this.datastoreUrl = getDatastoreUrl(datastoreUrl);
         this.requestConfig = requestConfig;
         setPicasso(this.context, requestConfig.getPicassoHttpClientSettings(), sslSocketFactoryConfig);
     }
@@ -236,54 +239,39 @@ public final class Config {
         return localInstance;
     }
 
-    private Transport getTransport(@Nullable ConfigBuilder.TransportType providedTransportType,
-                                   @Nullable String providedThreadsGateUrl,
+    private Transport getTransport(@Nullable String providedThreadsGateUrl,
                                    @Nullable String providedThreadsGateProviderUid,
                                    @Nullable String providedThreadsGateHCMProviderUid,
                                    SocketClientSettings socketClientSettings) {
-        ConfigBuilder.TransportType transportType;
-        if (providedTransportType != null) {
-            transportType = providedTransportType;
-        } else {
-            transportType = ConfigBuilder.TransportType.THREADS_GATE;
-            String transportTypeValue = MetaDataUtils.getThreadsTransportType(this.context);
-            if (!TextUtils.isEmpty(transportTypeValue)) {
-                try {
-                    transportType = ConfigBuilder.TransportType.fromString(transportTypeValue);
-                } catch (IllegalArgumentException e) {
-                    ThreadsLogger.e(TAG, "Transport type has incorrect value (correct value: THREADS_GATE). Default to THREADS_GATE");
-                }
-            } else {
-                ThreadsLogger.e(TAG, "Transport type value is not set (correct value: THREADS_GATE). Default to THREADS_GATE");
-            }
-        }
-        if (ConfigBuilder.TransportType.MFMS_PUSH == transportType) {
-            throw new MetaConfigurationException("MFMS push transport is not supported anymore");
-        }
-        if (TextUtils.isEmpty(providedThreadsGateUrl)) {
-            throw new MetaConfigurationException("Threads gate url is not set");
-        }
         String threadsGateProviderUid = !TextUtils.isEmpty(providedThreadsGateProviderUid)
                 ? providedThreadsGateProviderUid
                 : MetaDataUtils.getThreadsGateProviderUid(this.context);
         String threadsGateHCMProviderUid = !TextUtils.isEmpty(providedThreadsGateHCMProviderUid)
                 ? providedThreadsGateHCMProviderUid
                 : MetaDataUtils.getThreadsGateHCMProviderUid(this.context);
+        String threadsGateUrl = !TextUtils.isEmpty(providedThreadsGateUrl)
+                ? providedThreadsGateUrl
+                : MetaDataUtils.getThreadsGateUrl(this.context);
+        if (TextUtils.isEmpty(threadsGateUrl)) {
+            throw new MetaConfigurationException("Threads gate url is not set");
+        }
         if (TextUtils.isEmpty(threadsGateProviderUid)) {
             throw new MetaConfigurationException("Threads gate provider uid is not set");
         }
-        return new ThreadsGateTransport(providedThreadsGateUrl,
+        return new ThreadsGateTransport(
+                threadsGateUrl,
                 threadsGateProviderUid,
                 threadsGateHCMProviderUid,
                 isDebugLoggingEnabled,
                 socketClientSettings,
                 sslSocketFactoryConfig,
-                networkInterceptor);
+                networkInterceptor
+        );
     }
 
     @NonNull
     private String getServerBaseUrl(@Nullable String serverBaseUrl) {
-        String baseUrl = TextUtils.isEmpty(serverBaseUrl) ? MetaDataUtils.getDatastoreUrl(this.context) : serverBaseUrl;
+        String baseUrl = TextUtils.isEmpty(serverBaseUrl) ? MetaDataUtils.getServerBaseUrl(this.context) : serverBaseUrl;
         if (baseUrl == null) {
             throw new MetaConfigurationException("Neither im.threads.getServerUrl meta variable, nor serverBaseUrl were provided");
         }
@@ -291,5 +279,17 @@ public final class Config {
             baseUrl = baseUrl + "/";
         }
         return baseUrl;
+    }
+
+    @NonNull
+    private String getDatastoreUrl(@Nullable String dataStoreUrl) {
+        String datastoreUrl = TextUtils.isEmpty(dataStoreUrl) ? MetaDataUtils.getDatastoreUrl(this.context) : dataStoreUrl;
+        if (datastoreUrl == null) {
+            throw new MetaConfigurationException("Neither im.threads.getDatastoreUrl meta variable, nor datastoreUrl were provided");
+        }
+        if (!datastoreUrl.endsWith("/")) {
+            datastoreUrl = datastoreUrl + "/";
+        }
+        return datastoreUrl;
     }
 }

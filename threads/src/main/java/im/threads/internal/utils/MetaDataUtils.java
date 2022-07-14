@@ -12,12 +12,12 @@ public class MetaDataUtils {
 
     private static final String TAG = MetaDataUtils.class.getSimpleName();
 
-    private static final String DATASTORE_URL = "im.threads.getServerUrl";
+    private static final String DATASTORE_URL = "im.threads.getDatastoreUrl";
+    private static final String SERVER_BASE_URL = "im.threads.getServerUrl";
     private static final String THREADS_GATE_URL = "im.threads.threadsGateUrl";
     private static final String THREADS_GATE_PROVIDER_UID = "im.threads.threadsGateProviderUid";
     private static final String THREADS_GATE_HCM_PROVIDER_UID = "im.threads.threadsGateHCMProviderUid";
     @Deprecated
-    private static final String THREADS_TRANSPORT_TYPE = "im.threads.threadsTransportType";
     private static final String CLIENT_ID_IGNORE_ENABLED = "im.threads.clientIdIgnoreEnabled";
     private static final String NEW_CHAT_CENTER_API = "im.threads.newChatCenterApi";
     private static final String ATTACHMENT_ENABLED = "im.threads.attachmentEnabled";
@@ -28,6 +28,15 @@ public class MetaDataUtils {
         Bundle metaData = getMetaData(context);
         if (metaData != null && metaData.containsKey(DATASTORE_URL)) {
             return metaData.getString(DATASTORE_URL);
+        }
+        return null;
+    }
+
+    @Nullable
+    public static String getServerBaseUrl(@NonNull Context context) {
+        Bundle metaData = getMetaData(context);
+        if (metaData != null && metaData.containsKey(SERVER_BASE_URL)) {
+            return metaData.getString(SERVER_BASE_URL);
         }
         return null;
     }
@@ -55,15 +64,6 @@ public class MetaDataUtils {
         Bundle metaData = getMetaData(context);
         if (metaData != null && metaData.containsKey(THREADS_GATE_HCM_PROVIDER_UID)) {
             return metaData.getString(THREADS_GATE_HCM_PROVIDER_UID);
-        }
-        return null;
-    }
-
-    @Nullable
-    public static String getThreadsTransportType(@NonNull Context context) {
-        Bundle metaData = getMetaData(context);
-        if (metaData != null && metaData.containsKey(THREADS_TRANSPORT_TYPE)) {
-            return metaData.getString(THREADS_TRANSPORT_TYPE);
         }
         return null;
     }
