@@ -12,8 +12,11 @@ enum class ChatItemType {
     ON_HOLD,
     NONE,
     MESSAGES_READ,
+    REMOVE_PUSHES,
+    UNREAD_MESSAGE_NOTIFICATION,
     CLIENT_BLOCKED,
     SCENARIO,
+    CHAT_PUSH,
 
     // system
     THREAD_ENQUEUED,
@@ -40,9 +43,9 @@ enum class ChatItemType {
 
     companion object {
         @JvmStatic
-        fun fromString(name: String?): ChatItemType {
+        fun fromString(name: String): ChatItemType {
             return try {
-                valueOf(name!!)
+                valueOf(name)
             } catch (ex: IllegalArgumentException) {
                 UNKNOWN
             }
