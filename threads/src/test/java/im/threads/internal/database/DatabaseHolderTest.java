@@ -1,10 +1,30 @@
 package im.threads.internal.database;
 
+import android.content.Context;
+
+import junit.framework.Assert;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.ParameterizedRobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
 
-@RunWith(ParameterizedRobolectricTestRunner.class)
-public class DatabaseHolderTest {
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
+import im.threads.internal.model.ChatItem;
+import im.threads.internal.model.ConsultPhrase;
+import im.threads.internal.model.FileDescription;
+import im.threads.internal.model.MessageState;
+import im.threads.internal.model.Quote;
+import im.threads.internal.model.UserPhrase;
+import im.threads.internal.secureDatabase.DatabaseHolder;
+//
+//@RunWith(ParameterizedRobolectricTestRunner.class)
+//public class DatabaseHolderTest {
     // TODO: error when building. Rewrite it
     /* private Context appContext;
     private ChatItem chatItem;
@@ -306,4 +326,4 @@ public class DatabaseHolderTest {
                 MessageState.STATE_SENDING
         );
     }*/
-}
+//}
