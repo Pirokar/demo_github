@@ -1,8 +1,8 @@
 package im.threads.internal.holders
 
+import android.graphics.Bitmap
 import android.graphics.PorterDuff
 import android.graphics.Typeface
-import android.graphics.drawable.Drawable
 import android.text.TextUtils
 import android.text.format.Formatter
 import android.util.TypedValue
@@ -21,9 +21,9 @@ import androidx.core.content.ContextCompat
 import im.threads.R
 import im.threads.internal.Config
 import im.threads.internal.formatters.RussianFormatSymbols
-import im.threads.internal.image_loading.ImageLoader
-import im.threads.internal.image_loading.ImageModifications
-import im.threads.internal.image_loading.loadImage
+import im.threads.internal.imageLoading.ImageLoader
+import im.threads.internal.imageLoading.ImageModifications
+import im.threads.internal.imageLoading.loadImage
 import im.threads.internal.model.AttachmentStateEnum
 import im.threads.internal.model.ConsultPhrase
 import im.threads.internal.opengraph.OGData
@@ -260,7 +260,7 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
                     scales = listOf(ImageView.ScaleType.FIT_CENTER, ImageView.ScaleType.CENTER_CROP),
                     errorDrawableResId = style.imagePlaceholder,
                     callback = object : ImageLoader.ImageLoaderCallback {
-                        override fun onImageLoaded(drawable: Drawable) {
+                        override fun onImageLoaded(bitmap: Bitmap) {
                             stopLoaderAnimation()
                         }
 
@@ -375,7 +375,7 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
                 listOf(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_INSIDE),
                 style.imagePlaceholder,
                 callback = object : ImageLoader.ImageLoaderCallback {
-                    override fun onImageLoaded(drawable: Drawable) {
+                    override fun onImageLoaded(bitmap: Bitmap) {
                         ogImage.visibility = View.VISIBLE
                     }
 

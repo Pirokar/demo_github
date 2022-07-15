@@ -10,7 +10,7 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import im.threads.R;
-import im.threads.internal.image_loading.ImageLoader;
+import im.threads.internal.imageLoading.ImageLoader;
 
 public final class GalleryBucketImageHolder extends RecyclerView.ViewHolder {
     private ImageView mImageView;

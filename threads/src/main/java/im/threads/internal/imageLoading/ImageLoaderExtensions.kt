@@ -1,4 +1,4 @@
-package im.threads.internal.image_loading
+package im.threads.internal.imageLoading
 
 import android.util.Log
 import android.widget.ImageView

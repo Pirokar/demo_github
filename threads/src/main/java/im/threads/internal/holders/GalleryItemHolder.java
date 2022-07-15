@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
-import im.threads.internal.image_loading.ImageLoader;
+import im.threads.internal.imageLoading.ImageLoader;
 import im.threads.internal.utils.ColorsHelper;
 
 public final class GalleryItemHolder extends RecyclerView.ViewHolder {
@@ -35,7 +35,7 @@ public final class GalleryItemHolder extends RecyclerView.ViewHolder {
             ImageLoader
                     .get()
                     .load(imagePath.toString())
-                    .scales(ImageView.ScaleType.CENTER_INSIDE, ImageView.ScaleType.CENTER_CROP)
+                    .scales(ImageView.ScaleType.FIT_CENTER, ImageView.ScaleType.CENTER_CROP)
                     .into(mImageView);
             mCheckBox.setChecked(isChecked);
             setButtonDrawable(isChecked);

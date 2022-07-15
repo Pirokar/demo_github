@@ -5,7 +5,6 @@ import android.app.DownloadManager
 import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Build
@@ -16,7 +15,7 @@ import android.text.TextUtils
 import android.webkit.MimeTypeMap
 import im.threads.R
 import im.threads.internal.Config
-import im.threads.internal.image_loading.ImageLoader
+import im.threads.internal.imageLoading.ImageLoader
 import im.threads.internal.model.FileDescription
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -262,8 +261,7 @@ object FileUtils {
         ImageLoader
             .get()
             .load(uri.toString())
-            .getBitmapSync(Config.instance.context)?.let { drawable ->
-                val bitmap = (drawable as BitmapDrawable).bitmap
+            .getBitmapSync(Config.instance.context)?.let { bitmap ->
                 val byteArrayOutputStream = ByteArrayOutputStream()
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
                 try {
@@ -285,8 +283,7 @@ object FileUtils {
         ImageLoader
             .get()
             .load(uri.toString())
-            .getBitmapSync(Config.instance.context)?.let { drawable ->
-                val bitmap = (drawable as BitmapDrawable).bitmap
+            .getBitmapSync(Config.instance.context)?.let { bitmap ->
                 val byteArrayOutputStream = ByteArrayOutputStream()
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
                 try {
@@ -298,7 +295,7 @@ object FileUtils {
                         }
                     }
                 } catch (e: IOException) {
-                    ThreadsLogger.e(TAG, "saveToUri", e)
+                    ThreadsLogger.e(TAG, "cannot get bitmap in saveToUri", e)
                     bitmap.recycle()
                 }
             }

@@ -1,4 +1,4 @@
-package im.threads.internal.image_loading
+package im.threads.internal.imageLoading
 
 import android.graphics.Bitmap
 
@@ -13,7 +13,13 @@ interface ImageLoaderRealisation {
     fun load(config: ImageLoader.Config)
 
     /**
-     * Загружает Bitmap синхронно согласно переданной конфигурации
+     * Загружает Bitmap согласно переданной конфигурации. Предоставьте callback для результата
+     * @param config конфигурация для загрузки
+     */
+    fun getBitmap(config: ImageLoader.Config)
+
+    /**
+     * Загружает Bitmap согласно переданной конфигурации синхронно.
      * @param config конфигурация для загрузки
      */
     fun getBitmapSync(config: ImageLoader.Config): Bitmap?

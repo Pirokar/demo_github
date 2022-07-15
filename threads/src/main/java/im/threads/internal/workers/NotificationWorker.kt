@@ -16,6 +16,7 @@ import android.widget.RemoteViews
 import androidx.annotation.RequiresApi
 import androidx.annotation.RestrictTo
 import androidx.core.app.NotificationCompat
+import androidx.core.graphics.drawable.toDrawable
 import androidx.core.util.Consumer
 import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
@@ -30,8 +31,8 @@ import im.threads.internal.Config
 import im.threads.internal.activities.QuickAnswerActivity
 import im.threads.internal.controllers.UnreadMessagesController
 import im.threads.internal.formatters.MessageFormatter
-import im.threads.internal.image_loading.ImageLoader
-import im.threads.internal.image_loading.ImageModifications
+import im.threads.internal.imageLoading.ImageLoader
+import im.threads.internal.imageLoading.ImageModifications
 import im.threads.internal.utils.FileUtils.convertRelativeUrlToAbsolute
 import im.threads.internal.utils.ThreadsLogger
 import im.threads.internal.utils.WorkerUtils
@@ -78,22 +79,25 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
                 if (Build.VERSION.SDK_INT < 24) {
                     notifyUnreadMessagesCountChanged(
                         notificationManager,
-                        getPreNStyleNotification(inputData, null, message), notificationId
+                        getPreNStyleNotification(inputData, null, message),
+                        notificationId
                     )
                 } else {
                     getNStyleNotification(
-                        inputData, null,
+                        inputData,
+                        null,
                         { notification: Notification ->
                             notifyUnreadMessagesCountChanged(
                                 notificationManager,
-                                notification, notificationId
+                                notification,
+                                notificationId
                             )
-                        }, message
+                        },
+                        message
                     )
                 }
             }
             ACTION_ADD_UNREAD_MESSAGE_LIST -> {
-
                 val data = inputData.getByteArray(EXTRA_MESSAGE_CONTENT)?.let { unmarshall(it) }
                 val messageContent: MessageFormatter.MessageContent =
                     MessageFormatter.MessageContent.CREATOR.createFromParcel(data)
@@ -107,13 +111,16 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
                     )
                 } else {
                     getNStyleNotification(
-                        inputData, messageContent,
+                        inputData,
+                        messageContent,
                         { notification: Notification ->
                             notifyUnreadMessagesCountChanged(
                                 notificationManager,
-                                notification, Date().hashCode()
+                                notification,
+                                Date().hashCode()
                             )
-                        }, null
+                        },
+                        null
                     )
                 }
             }
@@ -323,15 +330,20 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
             .load(operatorAvatarUrl)
             .modifications(ImageModifications.CircleCropModification)
             .callback(object : ImageLoader.ImageLoaderCallback {
-                override fun onImageLoaded(drawable: Drawable) {
-                    onImageLoaded(drawable, pushSmall, pushBig, R.id.icon_large)
+                override fun onImageLoaded(bitmap: Bitmap) {
+                    onImageLoaded(
+                        bitmap.toDrawable(context.resources),
+                        pushSmall,
+                        pushBig,
+                        R.id.icon_large
+                    )
                 }
 
                 override fun onImageLoadError() {
                     onImageLoadError(pushSmall, pushBig, R.id.icon_large)
                 }
             })
-            .getDrawableAsync(context)
+            .getBitmap(context)
     }
 
     private fun showPreNStyleSmallIcon(pushSmall: RemoteViews, pushBig: RemoteViews) {

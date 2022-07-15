@@ -53,7 +53,7 @@ import im.threads.internal.holders.UnreadMessageViewHolder;
 import im.threads.internal.holders.UserFileViewHolder;
 import im.threads.internal.holders.UserPhraseViewHolder;
 import im.threads.internal.holders.VoiceMessageBaseHolder;
-import im.threads.internal.image_loading.ImageModifications;
+import im.threads.internal.imageLoading.ImageModifications;
 import im.threads.internal.media.FileDescriptionMediaPlayer;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ChatPhrase;

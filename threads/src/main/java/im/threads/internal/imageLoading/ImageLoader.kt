@@ -1,8 +1,7 @@
-package im.threads.internal.image_loading
+package im.threads.internal.imageLoading
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
 import android.widget.ImageView
 import java.io.File
 
@@ -12,7 +11,7 @@ import java.io.File
  */
 class ImageLoader private constructor() {
     private val config = ImageLoader.Config()
-    private val currentImageLoader: ImageLoaderRealisation = CoilImageLoader()
+    private val currentImageLoader: ImageLoaderRealisation = PicassoImageLoader()
 
     /**
      * Указывает url для загрузки
@@ -112,21 +111,21 @@ class ImageLoader private constructor() {
     }
 
     /**
-     * Загружает Bitmap синхронно и возвращает его
+     * Загружает Bitmap асинхронно и возвращает его. Передайте коллбэк для результата
+     * @param context android context
+     */
+    fun getBitmap(context: Context) {
+        config.context = context
+        return currentImageLoader.getBitmap(config)
+    }
+
+    /**
+     * Загружает Bitmap синхронно и возвращает его.
      * @param context android context
      */
     fun getBitmapSync(context: Context): Bitmap? {
         config.context = context
         return currentImageLoader.getBitmapSync(config)
-    }
-
-    /**
-     * Загружает Drawable асинхронно. Необходимо дополнительно указать callback для получения резульата
-     * @param context android context
-     */
-    fun getDrawableAsync(context: Context) {
-        config.context = context
-        return currentImageLoader.load(config)
     }
 
     /**
@@ -149,7 +148,7 @@ class ImageLoader private constructor() {
          * Вызывается по окончанию загрзуки изображений
          * @param drawable загруженное изображение
          */
-        fun onImageLoaded(drawable: Drawable) {}
+        fun onImageLoaded(bitmap: Bitmap) {}
 
         /**
          * Вызывается в случае ошибки при загрзуке изображения

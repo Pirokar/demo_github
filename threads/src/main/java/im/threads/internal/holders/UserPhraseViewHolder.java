@@ -1,6 +1,7 @@
 package im.threads.internal.holders;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -30,7 +31,7 @@ import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.formatters.RussianFormatSymbols;
-import im.threads.internal.image_loading.ImageLoader;
+import im.threads.internal.imageLoading.ImageLoader;
 import im.threads.internal.markdown.MarkdownProcessor;
 import im.threads.internal.markdown.MarkwonMarkdownProcessor;
 import im.threads.internal.model.CampaignMessage;
@@ -429,9 +430,9 @@ public final class UserPhraseViewHolder extends VoiceMessageBaseHolder {
                     .load(ogData.getImageUrl())
                     .callback(new ImageLoader.ImageLoaderCallback() {
                         @Override
-                        public void onImageLoaded(@NonNull Drawable drawable) {
+                        public void onImageLoaded(@NonNull Bitmap bitmap) {
                             ogImage.setVisibility(View.VISIBLE);
-                            ogImage.setImageDrawable(drawable);
+                            ogImage.setImageBitmap(bitmap);
                         }
 
                         @Override
@@ -441,7 +442,7 @@ public final class UserPhraseViewHolder extends VoiceMessageBaseHolder {
                                     + UserPhraseViewHolder.class.getSimpleName());
                         }
                     })
-                    .getDrawableAsync(context);
+                    .getBitmap(context);
         }
     }
 

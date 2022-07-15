@@ -1,7 +1,7 @@
 package im.threads.internal.holders
 
+import android.graphics.Bitmap
 import android.graphics.PorterDuff
-import android.graphics.drawable.Drawable
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -16,9 +16,9 @@ import androidx.core.content.ContextCompat
 import im.threads.ChatStyle
 import im.threads.R
 import im.threads.internal.Config
-import im.threads.internal.image_loading.ImageLoader
-import im.threads.internal.image_loading.ImageModifications
-import im.threads.internal.image_loading.loadImage
+import im.threads.internal.imageLoading.ImageLoader
+import im.threads.internal.imageLoading.ImageModifications
+import im.threads.internal.imageLoading.loadImage
 import im.threads.internal.model.AttachmentStateEnum
 import im.threads.internal.model.ConsultPhrase
 import im.threads.internal.utils.FileUtils
@@ -114,7 +114,7 @@ class ImageFromConsultViewHolder(
                     style.imagePlaceholder,
                     modifications = listOf(maskedTransformation),
                     callback = object : ImageLoader.ImageLoaderCallback {
-                        override fun onImageLoaded(drawable: Drawable) {
+                        override fun onImageLoaded(bitmap: Bitmap) {
                             stopLoaderAnimation()
                         }
                     }

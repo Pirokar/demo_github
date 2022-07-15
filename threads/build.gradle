@@ -156,7 +156,7 @@ dependencies {
     implementation "io.noties.markwon:ext-strikethrough:$markwonVersion"
 
     //Coil
-    implementation "io.coil-kt:coil:$coil_version"
+    implementation "com.squareup.picasso:picasso:$picasso_version"
 
     testImplementation "org.robolectric:robolectric:$rootProject.robolectricVersion"
     testImplementation "androidx.test.ext:junit:$rootProject.androidXJunitVersion"

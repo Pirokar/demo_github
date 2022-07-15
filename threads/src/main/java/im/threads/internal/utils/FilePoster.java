@@ -13,7 +13,7 @@ import java.io.InputStream;
 import java.net.URLEncoder;
 
 import im.threads.internal.Config;
-import im.threads.internal.image_loading.ImageLoader;
+import im.threads.internal.imageLoading.ImageLoader;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.FileUploadResponse;
 import im.threads.internal.retrofit.DatastoreApiGenerator;

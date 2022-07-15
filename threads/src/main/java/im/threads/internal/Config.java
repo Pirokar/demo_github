@@ -23,7 +23,7 @@ import im.threads.ThreadsLib;
 import im.threads.config.RequestConfig;
 import im.threads.config.SocketClientSettings;
 import im.threads.internal.exceptions.MetaConfigurationException;
-import im.threads.internal.image_loading.ImageLoaderOkHttpProvider;
+import im.threads.internal.imageLoading.ImageLoaderOkHttpProvider;
 import im.threads.internal.model.SslSocketFactoryConfig;
 import im.threads.internal.model.gson.UriDeserializer;
 import im.threads.internal.model.gson.UriSerializer;
@@ -120,6 +120,7 @@ public final class Config {
         this.datastoreUrl = getDatastoreUrl(datastoreUrl);
         this.requestConfig = requestConfig;
         ImageLoaderOkHttpProvider.INSTANCE.createOkHttpClient(
+                context,
                 requestConfig.getPicassoHttpClientSettings(),
                 sslSocketFactoryConfig
         );
