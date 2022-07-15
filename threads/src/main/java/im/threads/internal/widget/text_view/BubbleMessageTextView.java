@@ -23,7 +23,7 @@ public final class BubbleMessageTextView extends CustomFontTextView {
 
     private boolean mHasImageInText;
     private String lastLinePadding = "";
-    private int lastLineExtraPaddingSymbolsCount = 0;
+    private float lastLineExtraPaddingSymbolsCount = 0;
 
     public BubbleMessageTextView(Context context) {
         super(context);
@@ -90,7 +90,7 @@ public final class BubbleMessageTextView extends CustomFontTextView {
     private void fetchLastLinePadding(Context context, AttributeSet attrs) {
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.BubbleMessageTextView);
         try {
-            lastLineExtraPaddingSymbolsCount = typedArray.getInt(
+            lastLineExtraPaddingSymbolsCount = typedArray.getFloat(
                     R.styleable.BubbleMessageTextView_last_line_extra_padding_symbols,
                     0
             );
