@@ -1,9 +1,8 @@
 # Основные шаги
 stages:
-  - environment
-  - build
+  # - environment
+  # - build
   - test
-  - deploy
 
 
 # .updateContainerJob:
@@ -62,10 +61,10 @@ stages:
 #   environment:
 #     name: production
 
-testDebug:
+unitTests:
   # image: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
   stage: test
-  dependencies:
-    - buildDebug
+  # dependencies:
+  #   - buildDebug
   script:
     - bundle exec fastlane sdkUnitTests
