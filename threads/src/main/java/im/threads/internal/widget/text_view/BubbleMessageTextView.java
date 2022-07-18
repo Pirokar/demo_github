@@ -11,10 +11,13 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.widget.TextView;
 
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
+import im.threads.internal.markdown.MarkdownProcessor;
+import im.threads.internal.markdown.MarkwonMarkdownProcessor;
 import im.threads.internal.widget.CustomFontTextView;
 
 public final class BubbleMessageTextView extends CustomFontTextView {
@@ -24,6 +27,8 @@ public final class BubbleMessageTextView extends CustomFontTextView {
     private boolean mHasImageInText;
     private String lastLinePadding = "";
     private float lastLineExtraPaddingSymbolsCount = 0;
+
+    private MarkdownProcessor markdownProcessor = new MarkwonMarkdownProcessor();
 
     public BubbleMessageTextView(Context context) {
         super(context);
@@ -78,6 +83,19 @@ public final class BubbleMessageTextView extends CustomFontTextView {
         super.setText(text, type);
     }
 
+    public void setFormattedText(CharSequence text, Boolean isOperatorMessage) {
+        if (!TextUtils.isEmpty(text) && !TextUtils.isEmpty(lastLinePadding)) {
+            text = text.toString().replaceAll(SPACE.toString(), " ");
+            text = text.toString().trim();
+            text = new SpannableStringBuilder(text).append(lastLinePadding);
+        }
+        Spanned spannedText = getSpanned(text, isOperatorMessage);
+        if (mHasImageInText) {
+            mHasImageInText = false;
+        }
+        super.setText(spannedText, TextView.BufferType.NORMAL);
+    }
+
     @Override
     public void invalidateDrawable(Drawable dr) {
         if (mHasImageInText) {
@@ -97,6 +115,16 @@ public final class BubbleMessageTextView extends CustomFontTextView {
         } finally {
             typedArray.recycle();
         }
+    }
+
+    private Spanned getSpanned(CharSequence text, Boolean isOperatorMessage) {
+        Spanned spannedText;
+        if (isOperatorMessage) {
+            spannedText = markdownProcessor.parseOperatorMessage(text.toString());
+        } else {
+            spannedText = markdownProcessor.parseClientMessage(text.toString());
+        }
+        return spannedText;
     }
 
 }
