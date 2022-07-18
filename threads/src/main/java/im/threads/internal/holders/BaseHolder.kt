@@ -18,7 +18,6 @@ import im.threads.R
 import im.threads.internal.Config
 import im.threads.internal.markdown.LinkifyLinksHighlighter
 import im.threads.internal.markdown.LinksHighlighter
-import im.threads.internal.markdown.MarkdownProcessor
 import im.threads.internal.model.ConsultPhrase
 import im.threads.internal.model.ErrorStateEnum
 import im.threads.internal.utils.ColorsHelper
@@ -91,7 +90,10 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
                 Config.instance.chatStyle.incomingMarkdownConfiguration.isLinkUnderlined
             )
         } else {
-            setTextWithMarkdown(textView, phrase.formattedPhrase)
+            (textView as? BubbleMessageTextView)?.let {
+                setMovementMethod(it)
+                it.setFormattedText(phrase.formattedPhrase, true)
+            }
         }
     }
 
@@ -114,11 +116,6 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
     private fun setTextWithHighlighting(textView: TextView, isUnderlined: Boolean) {
         setMovementMethod(textView)
         linksHighlighter.highlightAllTypeOfLinks(textView, isUnderlined)
-    }
-
-    private fun setTextWithMarkdown(textView: TextView, text: String) {
-        setMovementMethod(textView)
-        textView.text = MarkdownProcessor.instance.parseOperatorMessage(text.trim { it <= ' ' })
     }
 
     private fun setMovementMethod(textView: TextView) {
