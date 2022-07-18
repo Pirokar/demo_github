@@ -50,6 +50,8 @@ public final class ConfigBuilder {
     private String threadsGateHCMProviderUid = null;
     @Nullable
     private Interceptor networkInterceptor = null;
+    @Nullable
+    private Boolean isNewChatCenterApi = false;
 
     private RequestConfig requestConfig = new RequestConfig();
     private List<Integer> certificateRawResIds = Collections.emptyList();
@@ -123,6 +125,11 @@ public final class ConfigBuilder {
         return this;
     }
 
+    public ConfigBuilder setNewChatCenterApi() {
+        this.isNewChatCenterApi = true;
+        return this;
+    }
+
     Config build() {
         return new Config(
                 context,
@@ -131,6 +138,7 @@ public final class ConfigBuilder {
                 threadsGateUrl,
                 threadsGateProviderUid,
                 threadsGateHCMProviderUid,
+                isNewChatCenterApi,
                 pendingIntentCreator,
                 unreadMessagesCountListener,
                 networkInterceptor,

@@ -19,6 +19,7 @@ object PrefUtilsApp {
     private const val PREF_THREADS_GATE_URL = "PREF_THREADS_GATE_URL"
     private const val PREF_THREADS_GATE_PROVIDER_UID = "PREF_THREADS_GATE_PROVIDER_UID"
     private const val PREF_THREADS_GATE_HCM_PROVIDER_UID = "PREF_THREADS_GATE_HCM_PROVIDER_UID"
+    private const val PREF_IS_NEW_CHAT_CENTER_API = "PREF_IS_NEW_CHAT_CENTER_API"
     private const val PREF_THEME = "PREF_THEME"
     private const val PREF_SERVERS_LIST = "SERVERS_LIST_PREFS"
     private const val PREF_SELECTED_SERVER_NAME = "SELECTED_SERVER_NAME_PREFS"
@@ -61,6 +62,7 @@ object PrefUtilsApp {
             PREF_THREADS_GATE_HCM_PROVIDER_UID,
             transportConfig.threadsGateHCMProviderUid
         )
+        editor.putBoolean(PREF_IS_NEW_CHAT_CENTER_API, transportConfig.isNewChatCenterApi)
         editor.commit()
     }
 
@@ -78,12 +80,14 @@ object PrefUtilsApp {
                 ?: return null
         val threadsGateHCMProviderUid =
             sharedPreferences.getString(PREF_THREADS_GATE_HCM_PROVIDER_UID, null)
+        val isNewChatCenterApi = sharedPreferences.getBoolean(PREF_IS_NEW_CHAT_CENTER_API, false)
         return TransportConfig(
             baseUrl = baseUrl,
             datastoreUrl = datastoreUrl,
             threadsGateUrl = threadsGateUrl,
             threadsGateProviderUid = threadsGateProviderUid,
-            threadsGateHCMProviderUid = threadsGateHCMProviderUid
+            threadsGateHCMProviderUid = threadsGateHCMProviderUid,
+            isNewChatCenterApi
         )
     }
 
