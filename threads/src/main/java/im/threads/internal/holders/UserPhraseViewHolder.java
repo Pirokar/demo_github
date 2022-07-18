@@ -225,6 +225,7 @@ public final class UserPhraseViewHolder extends VoiceMessageBaseHolder {
                     ImageLoader
                             .get()
                             .load(downloadPath)
+                            .autoRotateWithExif(true)
                             .scales(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP)
                             .errorDrawableResourceId(style.imagePlaceholder)
                             .into(mImage);
@@ -290,6 +291,7 @@ public final class UserPhraseViewHolder extends VoiceMessageBaseHolder {
 
                 ImageLoader
                         .get()
+                        .autoRotateWithExif(true)
                         .load(downloadPath)
                         .scales(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP)
                         .errorDrawableResourceId(style.imagePlaceholder)
@@ -428,6 +430,7 @@ public final class UserPhraseViewHolder extends VoiceMessageBaseHolder {
             ImageLoader
                     .get()
                     .load(ogData.getImageUrl())
+                    .autoRotateWithExif(true)
                     .callback(new ImageLoader.ImageLoaderCallback() {
                         @Override
                         public void onImageLoaded(@NonNull Bitmap bitmap) {

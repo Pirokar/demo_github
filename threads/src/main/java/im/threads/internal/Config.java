@@ -120,7 +120,6 @@ public final class Config {
         this.datastoreUrl = getDatastoreUrl(datastoreUrl);
         this.requestConfig = requestConfig;
         ImageLoaderOkHttpProvider.INSTANCE.createOkHttpClient(
-                context,
                 requestConfig.getPicassoHttpClientSettings(),
                 sslSocketFactoryConfig
         );

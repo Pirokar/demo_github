@@ -112,6 +112,7 @@ class ImageFromConsultViewHolder(
                     fileUri,
                     listOf(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP),
                     style.imagePlaceholder,
+                    autoRotateWithExif = true,
                     modifications = listOf(maskedTransformation),
                     callback = object : ImageLoader.ImageLoaderCallback {
                         override fun onImageLoaded(bitmap: Bitmap) {

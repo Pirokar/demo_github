@@ -104,6 +104,7 @@ public final class ImageFromUserViewHolder extends BaseHolder {
         if (fileDescription.getFileUri() != null && !isDownloadError) {
             ImageLoader
                     .get()
+                    .autoRotateWithExif(true)
                     .load(fileDescription.getFileUri().toString())
                     .scales(ImageView.ScaleType.FIT_END, ImageView.ScaleType.CENTER_CROP)
                     .modifications(maskedTransformation)

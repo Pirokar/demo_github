@@ -3,7 +3,9 @@ package im.threads.internal.imageLoading
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.widget.ImageView
+import androidx.exifinterface.media.ExifInterface
 import com.squareup.picasso.OkHttp3Downloader
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.RequestCreator
@@ -37,9 +39,21 @@ class PicassoImageLoader : ImageLoaderRealisation {
 
     private fun getImageRequestBuilder(config: ImageLoader.Config): RequestCreator? {
         var builder: RequestCreator? = null
-        config.url?.let { builder = getLoader(config.context).load(it) }
-        config.resourceId?.let { builder = getLoader(config.context).load(it) }
-        config.file?.let { builder = getLoader(config.context).load(it) }
+        config.url?.let {
+            builder = getLoader(config.context).load(it)
+            if (config.autoRotateWithExif) {
+                builder!!.rotate(getRightAngleImage(it))
+            }
+        }
+        config.resourceId?.let {
+            builder = getLoader(config.context).load(it)
+        }
+        config.file?.let {
+            builder = getLoader(config.context).load(it)
+            if (config.autoRotateWithExif) {
+                builder!!.rotate(getRightAngleImage(it.absolutePath))
+            }
+        }
         config.errorDrawableResourceId?.let { builder?.error(it) }
         config.modifications?.let {
             builder?.transform(getTransformations(it.toList()))
@@ -105,5 +119,22 @@ class PicassoImageLoader : ImageLoaderRealisation {
             loader = builder.build()
         }
         return loader!!
+    }
+
+    private fun getRightAngleImage(photoPath: String): Float {
+        return try {
+            val ei = ExifInterface(Config.instance.context.contentResolver.openInputStream(Uri.parse(photoPath))!!)
+            when (ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)) {
+                ExifInterface.ORIENTATION_NORMAL -> 0f
+                ExifInterface.ORIENTATION_ROTATE_90 -> 90f
+                ExifInterface.ORIENTATION_ROTATE_180 -> 180f
+                ExifInterface.ORIENTATION_ROTATE_270 -> 270f
+                ExifInterface.ORIENTATION_UNDEFINED -> 0f
+                else -> 90f
+            }
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+            0f
+        }
     }
 }

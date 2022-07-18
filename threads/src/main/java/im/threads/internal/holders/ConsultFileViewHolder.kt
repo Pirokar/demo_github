@@ -166,6 +166,7 @@ class ConsultFileViewHolder(parent: ViewGroup) : BaseHolder(
                 mConsultAvatar.loadImage(
                     FileUtils.convertRelativeUrlToAbsolute(consultPhrase.avatarPath),
                     listOf(ImageView.ScaleType.FIT_XY),
+                    autoRotateWithExif = true,
                     modifications = listOf(ImageModifications.CircleCropModification)
                 )
             }

@@ -66,7 +66,8 @@ public final class ImageFragment extends Fragment {
             ImageLoader
                     .get()
                     .load(fd.getFileUri().toString())
-                    .scales(ImageView.ScaleType.FIT_CENTER)
+                    .autoRotateWithExif(true)
+                    .scales(ImageView.ScaleType.FIT_CENTER, ImageView.ScaleType.CENTER_INSIDE)
                     .errorDrawableResourceId(style.imagePlaceholder)
                     .into(imageView);
         }

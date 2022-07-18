@@ -9,7 +9,8 @@ internal fun ImageView.loadImage(
     scales: List<ImageView.ScaleType>? = null,
     errorDrawableResId: Int? = null,
     modifications: List<ImageModifications>? = null,
-    callback: ImageLoader.ImageLoaderCallback? = null
+    callback: ImageLoader.ImageLoaderCallback? = null,
+    autoRotateWithExif: Boolean = false
 ) {
     data?.let {
         when (data) {
@@ -21,6 +22,7 @@ internal fun ImageView.loadImage(
             ?.errorDrawableResourceId(errorDrawableResId)
             ?.modifications(modifications)
             ?.callback(callback)
+            ?.autoRotateWithExif(autoRotateWithExif)
             ?.into(this)
             ?: Log.e("ImageLoading", "Data is empty, nothing to load")
     }

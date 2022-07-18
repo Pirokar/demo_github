@@ -100,6 +100,15 @@ class ImageLoader private constructor() {
     }
 
     /**
+     * Учитывает [ExifInterface] файла для автоматического разворота изображения. По умолчанию отключено.
+     * @param rotate включение или отключение автоповорота
+     */
+    fun autoRotateWithExif(rotate: Boolean): ImageLoader {
+        config.autoRotateWithExif = rotate
+        return this
+    }
+
+    /**
      * Указывает контейнер, в который необходимо загрузить изображение
      * @param imageView целевой контейнер
      */
@@ -141,6 +150,7 @@ class ImageLoader private constructor() {
         var modifications: Array<out ImageModifications>? = null
         var imageView: ImageView? = null
         var callback: ImageLoaderCallback? = null
+        var autoRotateWithExif = false
     }
 
     interface ImageLoaderCallback {

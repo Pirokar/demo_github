@@ -228,7 +228,8 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
                         mFileImage.loadImage(
                             quoteFileDescription.downloadPath,
                             listOf(ImageView.ScaleType.FIT_CENTER, ImageView.ScaleType.CENTER_CROP),
-                            style.imagePlaceholder
+                            style.imagePlaceholder,
+                            autoRotateWithExif = true
                         )
                         mFileImage.setOnClickListener(onQuoteClickListener)
                     } else {
@@ -259,6 +260,7 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
                     fileDescription.downloadPath,
                     scales = listOf(ImageView.ScaleType.FIT_CENTER, ImageView.ScaleType.CENTER_CROP),
                     errorDrawableResId = style.imagePlaceholder,
+                    autoRotateWithExif = true,
                     callback = object : ImageLoader.ImageLoaderCallback {
                         override fun onImageLoaded(bitmap: Bitmap) {
                             stopLoaderAnimation()
@@ -374,6 +376,7 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
                 ogData.imageUrl,
                 listOf(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_INSIDE),
                 style.imagePlaceholder,
+                autoRotateWithExif = true,
                 callback = object : ImageLoader.ImageLoaderCallback {
                     override fun onImageLoaded(bitmap: Bitmap) {
                         ogImage.visibility = View.VISIBLE
