@@ -58,10 +58,7 @@ class ConsultVoiceMessageViewHolder(parent: ViewGroup) : VoiceMessageBaseHolder(
         itemView.findViewById<TextView>(R.id.timestamp).apply {
             setTextColor(getColorInt(style.incomingMessageTimeColor))
             if (style.incomingMessageTimeTextSize > 0)
-                setTextSize(
-                    TypedValue.COMPLEX_UNIT_PX,
-                    itemView.context.resources.getDimension(style.incomingMessageTimeTextSize)
-                )
+                setTextSize(TypedValue.COMPLEX_UNIT_PX, itemView.context.resources.getDimension(style.incomingMessageTimeTextSize))
         }
     private val filterView = itemView.findViewById<View>(R.id.filter).apply {
         setBackgroundColor(
@@ -92,7 +89,6 @@ class ConsultVoiceMessageViewHolder(parent: ViewGroup) : VoiceMessageBaseHolder(
 
     init {
         context = parent.context
-        initSliderView(context, style, slider)
         itemView.findViewById<View>(R.id.bubble).apply {
             background =
                 AppCompatResources.getDrawable(
