@@ -72,11 +72,7 @@ public final class BubbleMessageTextView extends CustomFontTextView {
 
     @Override
     public void setText(CharSequence text, BufferType type) {
-        if (!TextUtils.isEmpty(text) && !TextUtils.isEmpty(lastLinePadding)) {
-            text = text.toString().replaceAll(SPACE.toString(), " ");
-            text = text.toString().trim();
-            text = new SpannableStringBuilder(text).append(lastLinePadding);
-        }
+        text = addPadding(text);
         if (mHasImageInText) {
             mHasImageInText = false;
         }
@@ -84,11 +80,7 @@ public final class BubbleMessageTextView extends CustomFontTextView {
     }
 
     public void setFormattedText(CharSequence text, Boolean isOperatorMessage) {
-        if (!TextUtils.isEmpty(text) && !TextUtils.isEmpty(lastLinePadding)) {
-            text = text.toString().replaceAll(SPACE.toString(), " ");
-            text = text.toString().trim();
-            text = new SpannableStringBuilder(text).append(lastLinePadding);
-        }
+        text = addPadding(text);
         Spanned spannedText = getSpanned(text, isOperatorMessage);
         if (mHasImageInText) {
             mHasImageInText = false;
@@ -115,6 +107,15 @@ public final class BubbleMessageTextView extends CustomFontTextView {
         } finally {
             typedArray.recycle();
         }
+    }
+
+    private CharSequence addPadding(CharSequence text) {
+        if (!TextUtils.isEmpty(text) && !TextUtils.isEmpty(lastLinePadding)) {
+            text = text.toString().replaceAll(SPACE.toString(), " ");
+            text = text.toString().trim();
+            text = new SpannableStringBuilder(text).append(lastLinePadding);
+        }
+        return text;
     }
 
     private Spanned getSpanned(CharSequence text, Boolean isOperatorMessage) {

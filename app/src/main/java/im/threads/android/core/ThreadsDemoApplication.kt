@@ -72,6 +72,10 @@ class ThreadsDemoApplication : MultiDexApplication() {
                 .threadsGateUrl(transportConfig.threadsGateUrl)
                 .threadsGateProviderUid(transportConfig.threadsGateProviderUid)
                 .threadsGateHCMProviderUid(transportConfig.threadsGateHCMProviderUid)
+
+            if (transportConfig.isNewChatCenterApi) {
+                configBuilder.setNewChatCenterApi()
+            }
         }
 
         developerOptions.configureDebugMenu()
@@ -129,6 +133,7 @@ class ThreadsDemoApplication : MultiDexApplication() {
     companion object {
         @JvmStatic
         val unreadMessagesSubject = BehaviorSubject.create<Int>()
+
         @JvmStatic
         lateinit var appContext: Context
     }
