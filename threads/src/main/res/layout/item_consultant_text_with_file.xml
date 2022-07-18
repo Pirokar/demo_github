@@ -139,18 +139,20 @@
                 android:layout_marginStart="8dp"
                 android:lineSpacingMultiplier="1.25"
                 android:paddingStart="4dp"
+                android:paddingEnd="0dp"
                 android:paddingTop="5dp"
                 android:textColor="@color/threads_incoming_message_text"
                 android:textSize="16sp"
-                app:last_line_padding_symbols="10"
+                app:last_line_extra_padding_symbols="@dimen/last_line_extra_padding_symbols"
                 tools:text="text text text text google.com" />
 
             <im.threads.internal.widget.text_view.BubbleTimeTextView
                 android:id="@+id/timestamp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom|right"
+                android:layout_gravity="bottom|end"
                 android:paddingEnd="4dp"
+                android:paddingStart="0dp"
                 android:textColor="@color/threads_operator_message_timestamp"
                 tools:text="10:19" />
 
