@@ -4,11 +4,9 @@ import im.threads.internal.Config
 import im.threads.internal.model.FileUploadResponse
 import im.threads.internal.model.HistoryResponse
 import im.threads.internal.model.SettingsResponse
-import im.threads.internal.opengraph.OGResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Call
-import retrofit2.http.Part
 
 class ThreadsApi(
     private val oldThreadsApi: OldThreadsBackendApi? = null,
@@ -47,14 +45,6 @@ class ThreadsApi(
             newThreadsApi?.markMessageAsRead(ids)
         } else {
             oldThreadsApi?.markMessageAsRead(ids)
-        }
-    }
-
-    fun openGraph(url: String?): Call<OGResponse?>? {
-        return if (Config.instance.newChatCenterApi) {
-            newThreadsApi?.openGraph(url)
-        } else {
-            oldThreadsApi?.openGraph(url)
         }
     }
 

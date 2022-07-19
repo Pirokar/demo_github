@@ -20,14 +20,16 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import im.threads.R
 import im.threads.internal.Config
+import im.threads.internal.domain.ogParser.OGData
+import im.threads.internal.domain.ogParser.OpenGraphParser
+import im.threads.internal.domain.ogParser.OpenGraphParserJsoupImpl
 import im.threads.internal.formatters.RussianFormatSymbols
 import im.threads.internal.imageLoading.ImageLoader
 import im.threads.internal.imageLoading.ImageModifications
 import im.threads.internal.imageLoading.loadImage
 import im.threads.internal.model.AttachmentStateEnum
 import im.threads.internal.model.ConsultPhrase
-import im.threads.internal.opengraph.OGData
-import im.threads.internal.opengraph.OGDataProvider
+import im.threads.internal.utils.CircleTransformation
 import im.threads.internal.utils.FileUtils
 import im.threads.internal.utils.FileUtils.isImage
 import im.threads.internal.utils.ThreadsLogger
@@ -36,8 +38,6 @@ import im.threads.internal.utils.ViewUtils
 import im.threads.internal.views.CircularProgressButton
 import im.threads.internal.widget.text_view.BubbleMessageTextView
 import im.threads.internal.widget.text_view.BubbleTimeTextView
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -117,7 +117,7 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
         setTextColor(getColorInt(style.incomingMessageTimeColor))
     }
 
-    private val context = parent.context
+    private val openGraphParser: OpenGraphParser = OpenGraphParserJsoupImpl()
 
     init {
         itemView.findViewById<View>(R.id.bubble).apply {
@@ -182,16 +182,10 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
         } else {
             mPhraseTextView.bindTimestampView(mTimeStampTextView)
             mPhraseTextView.visibility = View.VISIBLE
-            val deepLink = UrlUtils.extractDeepLink(phrase)
             val url = UrlUtils.extractLink(phrase)
             highlightOperatorText(mPhraseTextView, consultPhrase)
             if (url != null) {
-                val ogData = consultPhrase.ogData
-                if (ogData == null) {
-                    loadOGData(consultPhrase, url)
-                } else {
-                    bindOGData(ogData, url)
-                }
+                openGraphParser.getContents(url)?.let { ogData -> bindOGData(ogData, url) }
                 ViewUtils.setClickListener(
                     ogDataLayout,
                     View.OnClickListener {
@@ -325,28 +319,6 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
 
     private fun showDefIcon() {
         mConsultAvatar.setImageResource(style.defaultOperatorAvatar)
-    }
-
-    private fun loadOGData(chatItem: ConsultPhrase, url: String) {
-        hideOGView()
-        subscribe(
-            OGDataProvider.getInstance().getOGData(url)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { ogData: OGData ->
-                        ThreadsLogger.d(TAG, "OGData for url: $url\n received: $ogData")
-                        if (!ogData.isEmpty) {
-                            chatItem.ogData = ogData
-                            chatItem.ogUrl = url
-                        }
-                        bindOGData(ogData, url)
-                    },
-                    { e: Throwable ->
-                        ThreadsLogger.e(TAG, "OpenGraph data load failed: ", e)
-                    }
-                )
-        )
     }
 
     private fun bindOGData(ogData: OGData, url: String) {

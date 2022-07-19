@@ -2,7 +2,6 @@ package im.threads.internal.retrofit
 
 import im.threads.internal.model.HistoryResponse
 import im.threads.internal.model.SettingsResponse
-import im.threads.internal.opengraph.OGResponse
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -24,7 +23,4 @@ interface NewThreadsBackendApi {
 
     @POST("api/messages/read")
     fun markMessageAsRead(@Body ids: List<String?>?): Call<Void?>?
-
-    @GET("opengraph")
-    fun openGraph(@Query(value = "href", encoded = true) url: String?): Call<OGResponse?>?
 }

@@ -30,6 +30,9 @@ import java.util.Locale;
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
+import im.threads.internal.domain.ogParser.OGData;
+import im.threads.internal.domain.ogParser.OpenGraphParser;
+import im.threads.internal.domain.ogParser.OpenGraphParserJsoupImpl;
 import im.threads.internal.formatters.RussianFormatSymbols;
 import im.threads.internal.imageLoading.ImageLoader;
 import im.threads.internal.markdown.MarkdownProcessor;
@@ -39,8 +42,6 @@ import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.MessageState;
 import im.threads.internal.model.Quote;
 import im.threads.internal.model.UserPhrase;
-import im.threads.internal.opengraph.OGData;
-import im.threads.internal.opengraph.OGDataProvider;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.ThreadsLogger;
 import im.threads.internal.utils.UrlUtils;
@@ -50,8 +51,6 @@ import im.threads.internal.views.VoiceTimeLabelFormatter;
 import im.threads.internal.views.VoiceTimeLabelFormatterKt;
 import im.threads.internal.widget.text_view.BubbleMessageTextView;
 import im.threads.internal.widget.text_view.BubbleTimeTextView;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 
 /**
  * layout/item_user_text_with_file.xml
@@ -88,11 +87,12 @@ public final class UserPhraseViewHolder extends VoiceMessageBaseHolder {
     private final ImageView buttonPlayPause;
     private final TextView fileSizeTextView;
 
-    private Context context;
+    private final Context context;
     private FileDescription fileDescription = null;
     @NonNull
     private String formattedDuration = "";
-    private MarkdownProcessor markdownProcessor = new MarkwonMarkdownProcessor();
+    private final MarkdownProcessor markdownProcessor = new MarkwonMarkdownProcessor();
+    private final OpenGraphParser openGraphParser = new OpenGraphParserJsoupImpl();
 
     public UserPhraseViewHolder(final ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_user_text_with_file, parent, false));
@@ -190,10 +190,9 @@ public final class UserPhraseViewHolder extends VoiceMessageBaseHolder {
             String url = UrlUtils.extractLink(phrase);
             highlightClientText(mPhraseTextView, phrase);
             if (url != null) {
-                if (userPhrase.ogData == null) {
-                    loadOGData(userPhrase, url);
-                } else {
-                    bindOGData(userPhrase.ogData, url);
+                OGData ogData = openGraphParser.getContents(url);
+                if (ogData != null) {
+                    bindOGData(ogData, url);
                 }
             } else {
                 hideOGView();
@@ -381,26 +380,6 @@ public final class UserPhraseViewHolder extends VoiceMessageBaseHolder {
                 ogTimestamp.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
                 break;
         }
-    }
-
-    private void loadOGData(final UserPhrase chatItem, final String url) {
-        hideOGView();
-        subscribe(
-                OGDataProvider.getInstance().getOGData(url)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                ogData -> {
-                                    ThreadsLogger.d(TAG, "OGData for url: " + url + "\n received: " + ogData);
-                                    if (!ogData.isEmpty()) {
-                                        chatItem.ogData = ogData;
-                                        chatItem.ogUrl = url;
-                                    }
-                                    bindOGData(ogData, url);
-                                },
-                                e -> ThreadsLogger.e(TAG, "OpenGraph data load failed: ", e)
-                        )
-        );
     }
 
     private void bindOGData(final OGData ogData, String url) {
