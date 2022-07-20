@@ -1,6 +1,7 @@
 package im.threads.internal.holders;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -21,8 +22,6 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.material.slider.Slider;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -32,6 +31,7 @@ import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.formatters.RussianFormatSymbols;
+import im.threads.internal.imageLoading.ImageLoader;
 import im.threads.internal.markdown.MarkdownProcessor;
 import im.threads.internal.markdown.MarkwonMarkdownProcessor;
 import im.threads.internal.model.CampaignMessage;
@@ -215,21 +215,20 @@ public final class UserPhraseViewHolder extends VoiceMessageBaseHolder {
                     mImage.setVisibility(View.VISIBLE);
                     mImage.setOnClickListener(imageClickListener);
                     // User image can be already available locally
+                    String downloadPath;
                     if (fileDescription.getFileUri() == null) {
-                        Picasso.get()
-                                .load(fileDescription.getDownloadPath())
-                                .error(style.imagePlaceholder)
-                                .fit()
-                                .centerCrop()
-                                .into(mImage);
+                        downloadPath = fileDescription.getDownloadPath();
                     } else {
-                        Picasso.get()
-                                .load(fileDescription.getFileUri())
-                                .error(style.imagePlaceholder)
-                                .fit()
-                                .centerCrop()
-                                .into(mImage);
+                        downloadPath = fileDescription.getFileUri().toString();
                     }
+
+                    ImageLoader
+                            .get()
+                            .load(downloadPath)
+                            .autoRotateWithExif(true)
+                            .scales(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP)
+                            .errorDrawableResourceId(style.imagePlaceholder)
+                            .into(mImage);
                 } else {
                     if (fileDescription.getFileUri() != null) {
                         fileDescription.setDownloadProgress(100);
@@ -283,21 +282,20 @@ public final class UserPhraseViewHolder extends VoiceMessageBaseHolder {
         if (quote.getFileDescription() != null) {
             if (FileUtils.isImage(quote.getFileDescription())) {
                 quoteImage.setVisibility(View.VISIBLE);
+                String downloadPath = "";
                 if (quote.getFileDescription().getFileUri() != null) {
-                    Picasso.get()
-                            .load(quote.getFileDescription().getFileUri())
-                            .error(style.imagePlaceholder)
-                            .fit()
-                            .centerCrop()
-                            .into(quoteImage);
+                    downloadPath = quote.getFileDescription().getFileUri().toString();
                 } else if (quote.getFileDescription().getDownloadPath() != null) {
-                    Picasso.get()
-                            .load(quote.getFileDescription().getDownloadPath())
-                            .error(style.imagePlaceholder)
-                            .fit()
-                            .centerCrop()
-                            .into(quoteImage);
+                    downloadPath = quote.getFileDescription().getDownloadPath();
                 }
+
+                ImageLoader
+                        .get()
+                        .autoRotateWithExif(true)
+                        .load(downloadPath)
+                        .scales(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP)
+                        .errorDrawableResourceId(style.imagePlaceholder)
+                        .into(quoteImage);
                 if (onQuoteClickListener != null) {
                     quoteImage.setOnClickListener(onQuoteClickListener);
                 }
@@ -429,26 +427,25 @@ public final class UserPhraseViewHolder extends VoiceMessageBaseHolder {
         if (TextUtils.isEmpty(ogData.getImageUrl())) {
             ogImage.setVisibility(View.GONE);
         } else {
-            Picasso.get()
+            ImageLoader
+                    .get()
                     .load(ogData.getImageUrl())
-                    .fetch(new Callback() {
+                    .autoRotateWithExif(true)
+                    .callback(new ImageLoader.ImageLoaderCallback() {
                         @Override
-                        public void onSuccess() {
+                        public void onImageLoaded(@NonNull Bitmap bitmap) {
                             ogImage.setVisibility(View.VISIBLE);
-                            Picasso.get()
-                                    .load(ogData.getImageUrl())
-                                    .error(style.imagePlaceholder)
-                                    .fit()
-                                    .centerInside()
-                                    .into(ogImage);
+                            ogImage.setImageBitmap(bitmap);
                         }
 
                         @Override
-                        public void onError(Exception e) {
+                        public void onImageLoadError() {
                             ogImage.setVisibility(View.GONE);
-                            ThreadsLogger.d(TAG, "Could not load OpenGraph image: " + e.getLocalizedMessage());
+                            ThreadsLogger.d(TAG, "Could not load OpenGraph image in "
+                                    + UserPhraseViewHolder.class.getSimpleName());
                         }
-                    });
+                    })
+                    .getBitmap(context);
         }
     }
 

@@ -21,8 +21,6 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
-import com.squareup.picasso.Picasso;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -34,6 +32,7 @@ import java.util.concurrent.Executors;
 
 import im.threads.R;
 import im.threads.internal.helpers.FileHelper;
+import im.threads.internal.imageLoading.ImageLoader;
 import im.threads.internal.utils.ThreadsLogger;
 
 public final class CameraActivity extends BaseActivity {
@@ -262,9 +261,9 @@ public final class CameraActivity extends BaseActivity {
         findViewById(R.id.bottom_buttons_photo).setVisibility(View.GONE);
         ImageView image = findViewById(R.id.photo_preview);
         image.setVisibility(View.VISIBLE);
-        Picasso.get()
+        ImageLoader.get()
                 .load(new File(imagePath))
-                .fit()
+                .scales(ImageView.ScaleType.FIT_XY)
                 .into(image);
         findViewById(R.id.bottom_buttons_image).setVisibility(View.VISIBLE);
         Button retakeButton = findViewById(R.id.retake);

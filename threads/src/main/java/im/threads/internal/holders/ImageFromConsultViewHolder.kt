@@ -1,5 +1,6 @@
 package im.threads.internal.holders
 
+import android.graphics.Bitmap
 import android.graphics.PorterDuff
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -12,27 +13,29 @@ import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import com.squareup.picasso.Callback
-import com.squareup.picasso.Picasso
 import im.threads.ChatStyle
 import im.threads.R
 import im.threads.internal.Config
+import im.threads.internal.imageLoading.ImageLoader
+import im.threads.internal.imageLoading.ImageModifications
+import im.threads.internal.imageLoading.loadImage
 import im.threads.internal.model.AttachmentStateEnum
 import im.threads.internal.model.ConsultPhrase
-import im.threads.internal.utils.CircleTransformation
 import im.threads.internal.utils.FileUtils
-import im.threads.internal.utils.MaskedTransformation
-import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 class ImageFromConsultViewHolder(
     parent: ViewGroup,
-    private val maskedTransformation: MaskedTransformation
+    private val maskedTransformation: ImageModifications.MaskedModification
 ) :
     BaseHolder(
-        LayoutInflater.from(parent.context).inflate(R.layout.item_image_from_consult, parent, false)
+        LayoutInflater.from(parent.context).inflate(
+            R.layout.item_image_from_consult,
+            parent,
+            false
+        )
     ) {
 
     private val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
@@ -105,22 +108,18 @@ class ImageFromConsultViewHolder(
             val isStateReady = fileDescription.state == AttachmentStateEnum.READY
             if (isStateReady && fileUri != null && !fileDescription.isDownloadError) {
                 startLoaderAnimation()
-                Picasso.get()
-                    .load(fileUri)
-                    .error(style.imagePlaceholder)
-                    .fit()
-                    .centerCrop()
-                    .transform(maskedTransformation)
-                    .into(
-                        mImage,
-                        object : Callback {
-                            override fun onSuccess() {
-                                stopLoaderAnimation()
-                            }
-
-                            override fun onError(e: Exception?) {}
+                mImage.loadImage(
+                    fileUri,
+                    listOf(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP),
+                    style.imagePlaceholder,
+                    autoRotateWithExif = true,
+                    modifications = listOf(maskedTransformation),
+                    callback = object : ImageLoader.ImageLoaderCallback {
+                        override fun onImageLoaded(bitmap: Bitmap) {
+                            stopLoaderAnimation()
                         }
-                    )
+                    }
+                )
             } else if (!isStateReady) {
                 startLoaderAnimation()
             } else if (fileDescription.isDownloadError) {
@@ -135,13 +134,11 @@ class ImageFromConsultViewHolder(
             mConsultAvatar.setOnClickListener(onAvatarClickListener)
             mConsultAvatar.setImageResource(style.defaultOperatorAvatar)
             if (avatarPath != null) {
-                Picasso.get()
-                    .load(FileUtils.convertRelativeUrlToAbsolute(avatarPath))
-                    .fit()
-                    .transform(CircleTransformation())
-                    .centerInside()
-                    .noPlaceholder()
-                    .into(mConsultAvatar)
+                mConsultAvatar.loadImage(
+                    FileUtils.convertRelativeUrlToAbsolute(avatarPath),
+                    listOf(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_INSIDE),
+                    modifications = listOf(ImageModifications.CircleCropModification)
+                )
             }
         } else {
             mConsultAvatar.visibility = View.INVISIBLE

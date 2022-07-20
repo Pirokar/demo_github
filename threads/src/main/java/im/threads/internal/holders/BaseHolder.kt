@@ -1,10 +1,8 @@
 package im.threads.internal.holders
 
-import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.text.method.LinkMovementMethod
 import android.view.View
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
@@ -12,8 +10,6 @@ import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.squareup.picasso.Picasso
-import com.squareup.picasso.Target
 import im.threads.R
 import im.threads.internal.Config
 import im.threads.internal.markdown.LinkifyLinksHighlighter
@@ -56,22 +52,6 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
         button.setStartDownloadDrawable(startDownload)
         button.setInProgress(inProgress)
         button.setCompletedDrawable(completed)
-    }
-
-    fun getPicassoTargetForView(view: ImageView, placeholderResource: Int, onLoaded: () -> Unit): Target {
-        return object : Target {
-            override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
-                view.setImageBitmap(bitmap)
-                view.scaleType = ImageView.ScaleType.CENTER_CROP
-                onLoaded()
-            }
-            override fun onBitmapFailed(e: java.lang.Exception?, errorDrawable: Drawable?) {
-                view.scaleType = ImageView.ScaleType.FIT_CENTER
-                view.setImageResource(placeholderResource)
-                onLoaded()
-            }
-            override fun onPrepareLoad(placeHolderDrawable: Drawable?) {}
-        }
     }
 
     /**

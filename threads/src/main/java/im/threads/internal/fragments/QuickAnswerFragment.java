@@ -23,17 +23,16 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import com.squareup.picasso.Picasso;
-
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.activities.QuickAnswerActivity;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
+import im.threads.internal.imageLoading.ImageLoader;
+import im.threads.internal.imageLoading.ImageModifications;
 import im.threads.internal.model.InputFieldEnableModel;
 import im.threads.internal.useractivity.LastUserActivityTimeCounter;
 import im.threads.internal.useractivity.LastUserActivityTimeCounterSingletonProvider;
-import im.threads.internal.utils.CircleTransformation;
 import im.threads.internal.utils.ColorsHelper;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.ThreadsLogger;
@@ -77,10 +76,11 @@ public final class QuickAnswerFragment extends BaseDialogFragment {
             String consultPhrase = arguments.getString("consultPhrase");
             if (null != avatarPath && !avatarPath.equals("null")) {
                 avatarPath = FileUtils.convertRelativeUrlToAbsolute(avatarPath);
-                Picasso.get()
+                ImageLoader
+                        .get()
                         .load(avatarPath)
-                        .fit()
-                        .transform(new CircleTransformation())
+                        .scales(ImageView.ScaleType.FIT_XY)
+                        .modifications(ImageModifications.CircleCropModification.INSTANCE)
                         .into(imageView);
             }
             if (null != consultName && !consultName.equals("null"))

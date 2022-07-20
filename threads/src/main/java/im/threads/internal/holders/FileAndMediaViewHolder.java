@@ -5,11 +5,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
-
-import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -18,6 +17,7 @@ import java.util.Locale;
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
+import im.threads.internal.imageLoading.ImageLoader;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.utils.ColorsHelper;
 import im.threads.internal.utils.FileUtils;
@@ -70,19 +70,17 @@ public final class FileAndMediaViewHolder extends BaseHolder {
         }
         mDownloadButton.setProgress(fileDescription.getFileUri() != null ? 100 : fileDescription.getDownloadProgress());
         if (FileUtils.isImage(fileDescription)) {
+            String downloadPath = "";
             if (fileDescription.getFileUri() != null) {
-                Picasso.get()
-                        .load(fileDescription.getFileUri())
-                        .fit()
-                        .centerInside()
-                        .into(mImageButton);
+                downloadPath = fileDescription.getFileUri().toString();
             } else if (fileDescription.getDownloadPath() != null) {
-                Picasso.get()
-                        .load(fileDescription.getDownloadPath())
-                        .fit()
-                        .centerInside()
-                        .into(mImageButton);
+                downloadPath = fileDescription.getDownloadPath();
             }
+            ImageLoader
+                    .get()
+                    .load(downloadPath)
+                    .scales(ImageView.ScaleType.FIT_XY)
+                    .into(mImageButton);
         } else {
             mImageButton.setImageDrawable(tintedDrawable);
         }

@@ -2,9 +2,8 @@ package im.threads.internal.utils;
 
 import android.accounts.NetworkErrorException;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.net.Uri;
-
-import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -14,6 +13,7 @@ import java.io.InputStream;
 import java.net.URLEncoder;
 
 import im.threads.internal.Config;
+import im.threads.internal.imageLoading.ImageLoader;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.FileUploadResponse;
 import im.threads.internal.retrofit.DatastoreApiGenerator;
@@ -109,13 +109,9 @@ public final class FilePoster {
 
 
     private static File compressImage(Uri uri) throws IOException {
-        try {
-            Bitmap bitmap = Picasso.get()
-                    .load(uri)
-                    .resize(PHOTO_RESIZE_MAX_SIDE, PHOTO_RESIZE_MAX_SIDE)
-                    .centerInside()
-                    .onlyScaleDown()
-                    .get();
+        Bitmap bitmap = ImageLoader.get().load(uri.toString()).getBitmapSync(Config.instance.context);
+        if (bitmap != null) {
+            bitmap = getResizedBitmap(bitmap, PHOTO_RESIZE_MAX_SIDE, PHOTO_RESIZE_MAX_SIDE);
             File downsizedImageFile = new File(Config.instance.context.getCacheDir(), FileUtils.getFileName(uri));
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
@@ -130,9 +126,20 @@ public final class FilePoster {
                 downsizedImageFile.delete();
                 return null;
             }
-        } catch (IOException e) {
-            ThreadsLogger.e(TAG, "downsizeImage, Incorrect image file", e);
-            return null;
         }
+        return null;
+    }
+
+    private static Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
+        int width = bm.getWidth();
+        int height = bm.getHeight();
+        float scaleWidth = ((float) newWidth) / width;
+        float scaleHeight = ((float) newHeight) / height;
+        Matrix matrix = new Matrix();
+        matrix.postScale(scaleWidth, scaleHeight);
+        Bitmap resizedBitmap = Bitmap.createBitmap(bm, 0, 0, width, height, matrix, false);
+        bm.recycle();
+
+        return resizedBitmap;
     }
 }

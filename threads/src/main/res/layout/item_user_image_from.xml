@@ -35,8 +35,7 @@
         android:layout_marginEnd="@dimen/user_margin_right"
         android:layout_marginBottom="@dimen/margin_quarter"
         android:minWidth="240dp"
-        android:minHeight="240dp"
-        android:scaleType="fitCenter" />
+        android:minHeight="240dp" />
 
     <im.threads.internal.widget.text_view.BubbleTimeTextView
         android:id="@+id/timestamp"

@@ -1,22 +1,20 @@
-package im.threads.internal.utils
+package im.threads.internal.imageLoading
 
-import android.content.Context
-import com.squareup.picasso.OkHttp3Downloader
-import com.squareup.picasso.Picasso
 import im.threads.config.HttpClientSettings
 import im.threads.internal.model.SslSocketFactoryConfig
+import im.threads.internal.utils.PrefUtils
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.util.concurrent.TimeUnit
 import javax.net.ssl.SSLSession
 
-object PicassoUtils {
+object ImageLoaderOkHttpProvider {
+    var okHttpClient: OkHttpClient? = null
 
-    @JvmStatic
-    fun getOkHttpClient(
+    fun createOkHttpClient(
         httpClientSettings: HttpClientSettings,
         sslSocketFactoryConfig: SslSocketFactoryConfig?
-    ): OkHttpClient {
+    ) {
         val httpClientBuilder = OkHttpClient.Builder()
             .addInterceptor { chain ->
                 val builder = chain.request().newBuilder().apply {
@@ -42,20 +40,6 @@ object PicassoUtils {
             )
             httpClientBuilder.hostnameVerifier { hostname: String, session: SSLSession -> true }
         }
-        return httpClientBuilder.build()
-    }
-
-    @JvmStatic
-    fun setPicasso(
-        context: Context,
-        httpClientSettings: HttpClientSettings,
-        sslSocketFactoryConfig: SslSocketFactoryConfig?
-    ) {
-        val httpClient = getOkHttpClient(httpClientSettings, sslSocketFactoryConfig)
-        Picasso.setSingletonInstance(
-            Picasso.Builder(context)
-                .downloader(OkHttp3Downloader(httpClient))
-                .build()
-        )
+        okHttpClient = httpClientBuilder.build()
     }
 }

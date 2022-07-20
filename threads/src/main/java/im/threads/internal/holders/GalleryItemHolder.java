@@ -11,11 +11,10 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.AppCompatCheckBox;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.squareup.picasso.Picasso;
-
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
+import im.threads.internal.imageLoading.ImageLoader;
 import im.threads.internal.utils.ColorsHelper;
 
 public final class GalleryItemHolder extends RecyclerView.ViewHolder {
@@ -33,10 +32,10 @@ public final class GalleryItemHolder extends RecyclerView.ViewHolder {
 
     public void onBind(final Uri imagePath, final View.OnClickListener listener, final boolean isChecked) {
         if (mImageView != null) {
-            Picasso.get()
-                    .load(imagePath)
-                    .fit()
-                    .centerCrop()
+            ImageLoader
+                    .get()
+                    .load(imagePath.toString())
+                    .scales(ImageView.ScaleType.FIT_CENTER, ImageView.ScaleType.CENTER_CROP)
                     .into(mImageView);
             mCheckBox.setChecked(isChecked);
             setButtonDrawable(isChecked);

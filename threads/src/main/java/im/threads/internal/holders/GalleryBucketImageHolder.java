@@ -9,9 +9,8 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.squareup.picasso.Picasso;
-
 import im.threads.R;
+import im.threads.internal.imageLoading.ImageLoader;
 
 public final class GalleryBucketImageHolder extends RecyclerView.ViewHolder {
     private ImageView mImageView;
@@ -31,11 +30,14 @@ public final class GalleryBucketImageHolder extends RecyclerView.ViewHolder {
             if (null != itemClickListener)
                 vg.getChildAt(i).setOnClickListener(itemClickListener);
         }
-        Picasso.get()
-                .load(imagePath)
-                .fit()
-                .centerCrop()
+
+        ImageLoader
+                .get()
+                .load(imagePath.toString())
+                .autoRotateWithExif(true)
+                .scales(ImageView.ScaleType.FIT_CENTER, ImageView.ScaleType.CENTER_CROP)
                 .into(mImageView);
+
         mNameTextView.setText(title);
         mSizeTextView.setText(count);
     }

@@ -19,8 +19,6 @@ import androidx.annotation.DrawableRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 
-import com.squareup.picasso.Picasso;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -28,16 +26,17 @@ import java.util.Locale;
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
+import im.threads.internal.imageLoading.ImageLoader;
+import im.threads.internal.imageLoading.ImageModifications;
 import im.threads.internal.model.AttachmentStateEnum;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.MessageState;
 import im.threads.internal.model.UserPhrase;
-import im.threads.internal.utils.MaskedTransformation;
 
 public final class ImageFromUserViewHolder extends BaseHolder {
     private TextView mTimeStampTextView;
     private ImageView mImage;
-    private MaskedTransformation maskedTransformation;
+    private ImageModifications.MaskedModification maskedTransformation;
     private SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
     private View filter;
     private View filterSecond;
@@ -45,7 +44,7 @@ public final class ImageFromUserViewHolder extends BaseHolder {
     private ImageView loader;
     private RelativeLayout loaderLayout;
 
-    public ImageFromUserViewHolder(ViewGroup parent, MaskedTransformation maskedTransformation) {
+    public ImageFromUserViewHolder(ViewGroup parent, ImageModifications.MaskedModification maskedTransformation) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_user_image_from, parent, false));
         style = Config.instance.getChatStyle();
         mImage = itemView.findViewById(R.id.image);
@@ -102,14 +101,14 @@ public final class ImageFromUserViewHolder extends BaseHolder {
             loader.setAnimation(rotate);
         }
 
-
         if (fileDescription.getFileUri() != null && !isDownloadError) {
-            Picasso.get()
-                    .load(fileDescription.getFileUri())
-                    .error(style.imagePlaceholder)
-                    .fit()
-                    .centerCrop()
-                    .transform(maskedTransformation)
+            ImageLoader
+                    .get()
+                    .autoRotateWithExif(true)
+                    .load(fileDescription.getFileUri().toString())
+                    .scales(ImageView.ScaleType.FIT_END, ImageView.ScaleType.CENTER_CROP)
+                    .modifications(maskedTransformation)
+                    .errorDrawableResourceId(style.imagePlaceholder)
                     .into(mImage);
         } else if (isDownloadError) {
             mImage.setImageResource(style.imagePlaceholder);

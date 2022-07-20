@@ -274,6 +274,7 @@
                     android:id="@+id/og_image"
                     android:layout_width="match_parent"
                     android:layout_height="125dp"
+                    android:scaleType="fitXY"
                     android:minWidth="240dp" />
 
                 <im.threads.internal.widget.text_view.BubbleMessageTextView

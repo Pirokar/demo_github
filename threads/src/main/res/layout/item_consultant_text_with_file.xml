@@ -35,8 +35,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_three_fourth"
                 android:minWidth="240dp"
-                android:minHeight="280dp"
-                android:scaleType="fitCenter" />
+                android:minHeight="280dp" />
 
             <ImageView
                 android:id="@+id/loaderImage"

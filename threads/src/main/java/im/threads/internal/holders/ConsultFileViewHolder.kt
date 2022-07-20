@@ -16,13 +16,13 @@ import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
-import com.squareup.picasso.Picasso
 import im.threads.ChatStyle
 import im.threads.R
 import im.threads.internal.Config
+import im.threads.internal.imageLoading.ImageModifications
+import im.threads.internal.imageLoading.loadImage
 import im.threads.internal.model.AttachmentStateEnum
 import im.threads.internal.model.ConsultPhrase
-import im.threads.internal.utils.CircleTransformation
 import im.threads.internal.utils.FileUtils
 import im.threads.internal.views.CircularProgressButton
 import java.text.SimpleDateFormat
@@ -163,12 +163,12 @@ class ConsultFileViewHolder(parent: ViewGroup) : BaseHolder(
             mConsultAvatar.setOnClickListener(onAvatarClickListener)
             mConsultAvatar.setImageResource(style.defaultOperatorAvatar)
             if (!TextUtils.isEmpty(consultPhrase.avatarPath)) {
-                Picasso.get()
-                    .load(FileUtils.convertRelativeUrlToAbsolute(consultPhrase.avatarPath))
-                    .fit()
-                    .noPlaceholder()
-                    .transform(CircleTransformation())
-                    .into(mConsultAvatar)
+                mConsultAvatar.loadImage(
+                    FileUtils.convertRelativeUrlToAbsolute(consultPhrase.avatarPath),
+                    listOf(ImageView.ScaleType.FIT_XY),
+                    autoRotateWithExif = true,
+                    modifications = listOf(ImageModifications.CircleCropModification)
+                )
             }
         } else {
             mConsultAvatar.visibility = View.INVISIBLE
