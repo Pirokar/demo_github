@@ -1,6 +1,5 @@
 plugins {
     id 'com.android.application'
-    id 'com.huawei.agconnect'
     id 'kotlin-android'
     id 'kotlin-parcelize'
     id 'kotlin-kapt'
@@ -27,19 +26,10 @@ android {
         applicationId "io.edna.threads.demo"
 
         versionCode 89
-        versionName "${version}"
+        versionName "$version"
         project.ext.set("archivesBaseName", "Threads-app " + defaultConfig.versionName)
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled = true
-    }
-
-    signingConfigs {
-        debug {
-            keyAlias 'androiddebugkey'
-            keyPassword 'android'
-            storePassword 'android'
-            storeFile file('debug.keystore')
-        }
     }
 
     buildTypes {
@@ -72,7 +62,7 @@ repositories {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
     debugImplementation "im.threads:threads-debug:$version"
     releaseImplementation "im.threads:threads-release:$version"
 
