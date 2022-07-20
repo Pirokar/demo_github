@@ -82,16 +82,6 @@
             android:value="YOUR_DATASTORE_URL" />
 
         <meta-data
-            android:name="im.threads.clientIdIgnoreEnabled"
-            tools:replace="android:value"
-            android:value="@bool/client_id_ignore_enabled"/>
-
-        <meta-data
-            android:name="im.threads.newChatCenterApi"
-            tools:replace="android:value"
-            android:value="@bool/new_chat_center_api"/>
-
-        <meta-data
             android:name="im.threads.attachmentEnabled"
             tools:replace="android:value"
             android:value="@bool/attachment_enabled"/>
@@ -100,11 +90,6 @@
             android:name="im.threads.filesAndMediaMenuItemEnabled"
             tools:replace="android:value"
             android:value="@bool/files_and_media_menu_item_enabled"/>
-
-        <meta-data
-            android:name="im.threads.android.useSSL"
-            tools:replace="android:value"
-            android:value="@bool/use_ssl"/>
 
         <meta-data
             android:name="com.pushserver.android.logs"
