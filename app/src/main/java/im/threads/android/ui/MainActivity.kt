@@ -28,6 +28,7 @@ import im.threads.android.utils.CardsLinearLayoutManager
 import im.threads.android.utils.CardsSnapHelper
 import im.threads.android.utils.ChatDesign
 import im.threads.android.utils.ChatStyleBuilderHelper
+import im.threads.android.utils.LocationManager
 import im.threads.android.utils.PermissionDescriptionDialogStyleBuilderHelper
 import im.threads.android.utils.PrefUtilsApp
 import im.threads.android.utils.PrefUtilsApp.getCards
@@ -113,6 +114,11 @@ class MainActivity : AppCompatActivity(), EditCardDialogActionsListener, YesNoDi
         serverSelectionUseCase.addUiDependedModulesToDebugMenu(this)
     }
 
+    override fun onResume() {
+        super.onResume()
+        LocationManager.getInstance(this).stopLocationUpdates()
+    }
+
     private fun checkIsServerChanged() {
         if (PrefUtilsApp.getIsServerChanged(applicationContext)) {
             storeCards(applicationContext, listOf())
@@ -139,7 +145,7 @@ class MainActivity : AppCompatActivity(), EditCardDialogActionsListener, YesNoDi
     /** Пример открытия чата в виде Активности */
     fun navigateToChatActivity() {
         subscribeOnSocketResponses()
-
+        LocationManager.getInstance(this).startLocationUpdates()
         val currentCard = currentCard
         if (currentCard == null) {
             displayError(R.string.demo_error_empty_user)

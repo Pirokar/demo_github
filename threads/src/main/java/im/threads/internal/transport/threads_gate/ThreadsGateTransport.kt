@@ -195,7 +195,7 @@ class ThreadsGateTransport(
         sendMessage(content, sendInit = false)
     }
 
-    override fun updateLocation(latitude: Long, longitude: Long) {
+    override fun updateLocation(latitude: Double, longitude: Double) {
         val content = OutgoingMessageCreator.createMessageUpdateLocation(
             latitude,
             longitude,

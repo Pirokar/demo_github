@@ -10,7 +10,7 @@ import im.threads.internal.model.ConsultInfo
 import im.threads.internal.model.FileDescription
 import im.threads.internal.model.Survey
 import im.threads.internal.model.UserPhrase
-import im.threads.internal.retrofit.OldThreadsApi
+import im.threads.internal.retrofit.OldThreadsBackendApi.Companion.API_VERSION
 import im.threads.internal.utils.AppInfoHelper
 import im.threads.internal.utils.DeviceInfoHelper
 import im.threads.internal.utils.FileUtils.getFileName
@@ -55,7 +55,7 @@ object OutgoingMessageCreator {
             addProperty(MessageAttributes.APP_MARKER_KEY, appMarker)
             addProperty("libVersion", AppInfoHelper.getLibVersion())
             addProperty("clientLocale", DeviceInfoHelper.getLocale(ctx))
-            addProperty("chatApiVersion", OldThreadsApi.API_VERSION)
+            addProperty("chatApiVersion", API_VERSION)
             addProperty(MessageAttributes.TYPE, ChatItemType.CLIENT_INFO.name)
         }
         return jsonObject
@@ -121,8 +121,8 @@ object OutgoingMessageCreator {
     }
 
     fun createMessageUpdateLocation(
-        latitude: Long,
-        longitude: Long,
+        latitude: Double,
+        longitude: Double,
         clientName: String?,
         clientId: String?,
         clientIdEncrypted: Boolean,
@@ -146,7 +146,7 @@ object OutgoingMessageCreator {
             addProperty(MessageAttributes.APP_MARKER_KEY, appMarker)
             addProperty("libVersion", AppInfoHelper.getLibVersion())
             addProperty("clientLocale", DeviceInfoHelper.getLocale(ctx))
-            addProperty("chatApiVersion", OldThreadsApi.API_VERSION)
+            addProperty("chatApiVersion", API_VERSION)
             addProperty(MessageAttributes.TYPE, ChatItemType.UPDATE_LOCATION.name)
         }
         return jsonObject

@@ -103,7 +103,7 @@ public abstract class Transport {
 
     public abstract void sendClientOffline(String clientId);
 
-    public abstract void updateLocation(Long latitude, Long longitude);
+    public abstract void updateLocation(Double latitude, Double longitude);
 
     @NonNull
     public abstract String getToken() throws TransportException;
