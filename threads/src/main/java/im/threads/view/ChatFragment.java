@@ -259,6 +259,7 @@ public final class ChatFragment extends BaseFragment implements
         initUserInputState();
         initQuickReplies();
         initMediaPlayer();
+        subscribeToFileDescription();
         chatIsShown = true;
         return binding.getRoot();
     }
@@ -815,9 +816,18 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     private void setFileDescription(@Nullable FileDescription fileDescription) {
-        boolean isEnable = fileDescription != null || !TextUtils.isEmpty(binding.inputEditView.getText());
-        binding.sendMessage.setEnabled(isEnable);
         this.fileDescription.set(Optional.ofNullable(fileDescription));
+    }
+
+    private void subscribeToFileDescription() {
+        subscribe(RxUtils.toObservable(fileDescription)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(files -> {
+                            boolean isEnable = !files.isEmpty() || !TextUtils.isEmpty(binding.inputEditView.getText());
+                            binding.sendMessage.setEnabled(isEnable);
+                        }
+                )
+        );
     }
 
     private void onRefresh() {
