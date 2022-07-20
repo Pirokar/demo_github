@@ -155,6 +155,7 @@ dependencies {
     implementation "io.noties.markwon:core:$markwonVersion"
     implementation "io.noties.markwon:linkify:$markwonVersion"
     implementation "io.noties.markwon:ext-strikethrough:$markwonVersion"
+    implementation "io.noties.markwon:image:$markwonVersion"
 
     testImplementation "org.robolectric:robolectric:$rootProject.robolectricVersion"
     testImplementation "androidx.test.ext:junit:$rootProject.androidXJunitVersion"

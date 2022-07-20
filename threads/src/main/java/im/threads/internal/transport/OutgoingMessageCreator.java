@@ -4,6 +4,9 @@ import android.content.Context;
 import android.net.Uri;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -11,8 +14,6 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import im.threads.internal.formatters.ChatItemType;
 import im.threads.internal.model.CampaignMessage;
 import im.threads.internal.model.CampaignMessageKt;
@@ -21,7 +22,7 @@ import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.Quote;
 import im.threads.internal.model.Survey;
 import im.threads.internal.model.UserPhrase;
-import im.threads.internal.retrofit.OldThreadsApi;
+import im.threads.internal.retrofit.OldThreadsBackendApi;
 import im.threads.internal.utils.AppInfoHelper;
 import im.threads.internal.utils.DeviceInfoHelper;
 import im.threads.internal.utils.FileUtils;
@@ -59,7 +60,7 @@ public final class OutgoingMessageCreator {
         object.addProperty(MessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker());
         object.addProperty("libVersion", AppInfoHelper.getLibVersion());
         object.addProperty("clientLocale", DeviceInfoHelper.getLocale(ctx));
-        object.addProperty("chatApiVersion", OldThreadsApi.API_VERSION);
+        object.addProperty("chatApiVersion", OldThreadsBackendApi.API_VERSION);
         object.addProperty(MessageAttributes.TYPE, ChatItemType.CLIENT_INFO.name());
         return object;
     }

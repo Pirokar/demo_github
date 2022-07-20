@@ -2,6 +2,7 @@ package im.threads.internal.transport.threads_gate;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.transport.MessageParser;
 import im.threads.internal.transport.threads_gate.responses.BaseMessage;
@@ -18,9 +19,5 @@ final class ThreadsGateMessageParser {
     @Nullable
     static ChatItem format(@NonNull final BaseMessage message) {
         return MessageParser.format(message.getMessageId(), message.getSentAt().getTime(), message.getNotification(), message.getContent());
-    }
-
-    static boolean checkId(@NonNull final BaseMessage message, final String currentClientId) {
-        return MessageParser.checkId(message.getContent(), currentClientId);
     }
 }

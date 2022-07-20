@@ -9,6 +9,7 @@ import io.noties.markwon.Markwon
 import io.noties.markwon.MarkwonConfiguration
 import io.noties.markwon.core.MarkwonTheme
 import io.noties.markwon.ext.strikethrough.StrikethroughPlugin
+import io.noties.markwon.image.ImagesPlugin
 import io.noties.markwon.linkify.LinkifyPlugin
 
 // Constructor for test purposes
@@ -45,6 +46,7 @@ class MarkwonMarkdownProcessor(
         return Markwon.builder(context)
             .usePlugin(LinkifyPlugin.create())
             .usePlugin(StrikethroughPlugin.create())
+            .usePlugin(ImagesPlugin.create())
             .usePlugin(object : AbstractMarkwonPlugin() {
                 override fun configureTheme(builder: MarkwonTheme.Builder) {
                     configureMessagesView(builder, markdownConfig)

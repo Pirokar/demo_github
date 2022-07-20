@@ -1,7 +1,5 @@
 package im.threads.internal.transport;
 
-import android.text.TextUtils;
-
 import androidx.annotation.Nullable;
 
 import com.google.gson.JsonObject;
@@ -106,21 +104,6 @@ public final class MessageParser {
 
     public static String getType(final JsonObject fullMessage) {
         return fullMessage.get(MessageAttributes.TYPE).getAsString();
-    }
-
-    /**
-     * @return true если в fullMessage есть поле clientId и оно совпадает с currentClientId
-     */
-    public static boolean checkId(final JsonObject fullMessage, final String currentClientId) {
-        // "ATTACHMENT_UPDATED" excluded cause server has stopped returning this files
-        boolean isFullMessageNonNull = fullMessage != null;
-        return Config.instance.clientIdIgnoreEnabled ||
-                (isFullMessageNonNull && fullMessage.toString().contains("ATTACHMENT_UPDATED")) ||
-                (!TextUtils.isEmpty(currentClientId)
-                        && isFullMessageNonNull
-                        && fullMessage.has(MessageAttributes.CLIENT_ID)
-                        && currentClientId.contains(fullMessage.get(MessageAttributes.CLIENT_ID).getAsString())
-                );
     }
 
     private static MessageRead getMessageRead(final JsonObject fullMessage) {

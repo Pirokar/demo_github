@@ -6,7 +6,6 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.text.TextUtils
-import androidx.core.util.ObjectsCompat
 import im.threads.internal.Config
 import im.threads.internal.chat_updates.ChatUpdateProcessor
 import im.threads.internal.controllers.ChatController
@@ -47,19 +46,8 @@ class ThreadsLib private constructor(context: Context?) {
         get() = ChatUpdateProcessor.getInstance().socketResponseMapProcessor
 
     fun initUser(userInfoBuilder: UserInfoBuilder) {
-        if (!Config.instance.clientIdIgnoreEnabled) {
-            val currentClientId = PrefUtils.clientID
-            if (currentClientId != null && !ObjectsCompat.equals(
-                    currentClientId,
-                    userInfoBuilder.clientId
-                )
-            ) {
-                logoutClient(currentClientId)
-            }
-        } else {
-            // it will only affect GPB, every time they try to init user we will delete user related data
-            ChatController.getInstance().cleanAll()
-        }
+        // it will only affect GPB, every time they try to init user we will delete user related data
+        ChatController.getInstance().cleanAll()
         PrefUtils.appMarker = userInfoBuilder.appMarker
         PrefUtils.setNewClientId(userInfoBuilder.clientId)
         PrefUtils.authToken = userInfoBuilder.authToken

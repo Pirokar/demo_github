@@ -5,16 +5,11 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.text.TextUtils
 import android.util.Log
-import androidx.annotation.WorkerThread
-import androidx.core.util.ObjectsCompat
 import androidx.preference.PreferenceManager
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
-import com.google.android.gms.tasks.Task
-import com.google.firebase.installations.FirebaseInstallations
 import com.google.gson.JsonSyntaxException
 import im.threads.ChatStyle
-import im.threads.ConfigBuilder.TransportType
 import im.threads.internal.Config
 import im.threads.internal.model.CampaignMessage
 import im.threads.internal.model.ClientNotificationDisplayType
@@ -53,9 +48,6 @@ class PrefUtils private constructor() {
         private const val FCM_TOKEN = "FCM_TOKEN"
         private const val HCM_TOKEN = "HCM_TOKEN"
         private const val CLOUD_MESSAGING_TYPE = "CLOUD_MESSAGING_TYPE"
-
-        @Deprecated("")
-        private val TRANSPORT_TYPE = "TRANSPORT_TYPE"
         private const val DEVICE_UID = "DEVICE_UID"
         private const val AUTH_TOKEN = "AUTH_TOKEN"
         private const val AUTH_SCHEMA = "AUTH_SCHEMA"
@@ -85,7 +77,6 @@ class PrefUtils private constructor() {
             FCM_TOKEN,
             HCM_TOKEN,
             CLOUD_MESSAGING_TYPE,
-            TRANSPORT_TYPE,
             DEVICE_UID,
             AUTH_TOKEN,
             AUTH_SCHEMA,
@@ -274,7 +265,7 @@ class PrefUtils private constructor() {
 
         @JvmStatic
         val isClientIdEmpty: Boolean
-            get() = clientID.isEmpty() && !Config.instance.clientIdIgnoreEnabled
+            get() = clientID.isEmpty()
 
         @JvmStatic
         val incomingStyle: ChatStyle?
@@ -458,22 +449,6 @@ class PrefUtils private constructor() {
         }
 
         @JvmStatic
-        @WorkerThread
-        fun migrateTransportIfNeeded() {
-            val transportType = transportType
-            if (!TextUtils.isEmpty(transportType)) {
-                if (!ObjectsCompat.equals(
-                        transportType,
-                        Config.instance.transport.type.toString()
-                    )
-                ) {
-                    resetPushToken()
-                }
-            }
-            setTransportType(TransportType.THREADS_GATE.toString())
-        }
-
-        @JvmStatic
         var unreadPushCount: Int
             get() = defaultSharedPreferences.getInt(UNREAD_PUSH_COUNT, 0)
             set(unreadPushCount) {
@@ -518,11 +493,6 @@ class PrefUtils private constructor() {
                 .edit()
                 .putString(key, Config.instance.gson.toJson(style))
                 .commit()
-        }
-
-        private fun resetPushToken() {
-            FirebaseInstallations.getInstance().delete()
-                .addOnCompleteListener { task: Task<Void?>? -> FirebaseInstallations.getInstance().id }
         }
 
         private fun movePreferences(fromPrefs: SharedPreferences, toPrefs: SharedPreferences) {
@@ -587,19 +557,6 @@ class PrefUtils private constructor() {
             } catch (exception: Exception) {
                 Log.e(TAG, "Error when deleting preference file", exception)
             }
-        }
-
-        private val transportType: String?
-            get() {
-                val transportType = defaultSharedPreferences.getString(TRANSPORT_TYPE, "")
-                return if (!TextUtils.isEmpty(transportType)) transportType else null
-            }
-
-        private fun setTransportType(transportType: String) {
-            defaultSharedPreferences
-                .edit()
-                .putString(TRANSPORT_TYPE, transportType)
-                .commit()
         }
     }
 }

@@ -26,7 +26,6 @@ import com.squareup.picasso.Picasso
 import com.squareup.picasso.Picasso.LoadedFrom
 import com.squareup.picasso.Target
 import im.threads.ChatStyle
-import im.threads.ConfigBuilder
 import im.threads.R
 import im.threads.internal.Config
 import im.threads.internal.activities.QuickAnswerActivity
@@ -178,9 +177,7 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
                 )
                 notificationManager.notify(notificationId, notification)
             }
-            if (Config.instance.transport.type == ConfigBuilder.TransportType.THREADS_GATE) {
-                UnreadMessagesController.INSTANCE.incrementUnreadPush()
-            }
+            UnreadMessagesController.INSTANCE.incrementUnreadPush()
         }
     }
 

@@ -37,20 +37,14 @@ class AudioConverter private constructor(private val context: Context) {
         }
         audioFile?.let { audioFile ->
             if (!audioFile.exists()) {
-                callback?.onFailure(IOException("File not exists"))
+                callback!!.onFailure(IOException("File not exists"))
                 return
             }
             if (!audioFile.canRead()) {
-                callback?.onFailure(IOException("Can't read the file. Missing permission?"))
+                callback!!.onFailure(IOException("Can't read the file. Missing permission?"))
                 return
             }
-            if (audioFile.path.endsWith(".wav")) {
-                callback?.onSuccess(audioFile)
-                return
-            }
-            val convertedFile = getConvertedFile(
-                audioFile, format
-            )
+            val convertedFile = getConvertedFile(audioFile, format)
             val cmd = arrayOf("-y", "-i", audioFile.path, convertedFile.path)
             try {
                 FFmpeg.getInstance(context).execute(
@@ -79,6 +73,7 @@ class AudioConverter private constructor(private val context: Context) {
         var isLoaded = false
             private set
 
+        @JvmStatic
         fun load(context: Context?, callback: ILoadCallback) {
             try {
                 FFmpeg.getInstance(context).loadBinary(object : FFmpegLoadBinaryResponseHandler {
@@ -101,6 +96,7 @@ class AudioConverter private constructor(private val context: Context) {
             }
         }
 
+        @JvmStatic
         fun with(context: Context): AudioConverter {
             return AudioConverter(context)
         }

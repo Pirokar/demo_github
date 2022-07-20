@@ -20,7 +20,6 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import im.threads.ChatStyle;
-import im.threads.ConfigBuilder;
 import im.threads.ThreadsLib;
 import im.threads.config.RequestConfig;
 import im.threads.config.SocketClientSettings;
@@ -32,7 +31,6 @@ import im.threads.internal.transport.Transport;
 import im.threads.internal.transport.threads_gate.ThreadsGateTransport;
 import im.threads.internal.utils.MetaDataUtils;
 import im.threads.internal.utils.PrefUtils;
-import im.threads.internal.utils.ThreadsLogger;
 import im.threads.internal.utils.TlsConfigurationUtils;
 import im.threads.styles.permissions.PermissionDescriptionDialogStyle;
 import im.threads.styles.permissions.PermissionDescriptionType;
@@ -66,6 +64,8 @@ public final class Config {
     public final Transport transport;
     @NonNull
     public final String serverBaseUrl;
+    @NonNull
+    public final String datastoreUrl;
 
     public final boolean isDebugLoggingEnabled;
     /**
@@ -74,7 +74,6 @@ public final class Config {
     public final int historyLoadingCount;
 
     public final int surveyCompletionDelay;
-    public final boolean clientIdIgnoreEnabled;
 
     public final boolean newChatCenterApi;
 
@@ -88,10 +87,11 @@ public final class Config {
 
     public Config(@NonNull Context context,
                   @Nullable String serverBaseUrl,
-                  @Nullable ConfigBuilder.TransportType transportType,
+                  @Nullable String datastoreUrl,
                   @Nullable String threadsGateUrl,
                   @Nullable String threadsGateProviderUid,
                   @Nullable String threadsGateHCMProviderUid,
+                  @Nullable Boolean isNewChatCenterApi,
                   @NonNull ThreadsLib.PendingIntentCreator pendingIntentCreator,
                   @Nullable ThreadsLib.UnreadMessagesCountListener unreadMessagesCountListener,
                   @Nullable Interceptor networkInterceptor,
@@ -105,16 +105,16 @@ public final class Config {
         this.unreadMessagesCountListener = unreadMessagesCountListener;
         this.networkInterceptor = networkInterceptor;
         this.isDebugLoggingEnabled = isDebugLoggingEnabled;
-        this.clientIdIgnoreEnabled = MetaDataUtils.getClientIdIgnoreEnabled(this.context);
-        this.newChatCenterApi = MetaDataUtils.getNewChatCenterApi(this.context);
+        this.newChatCenterApi = getIsNewChatCenterApi(isNewChatCenterApi);
         this.attachmentEnabled = MetaDataUtils.getAttachmentEnabled(this.context);
         this.filesAndMediaMenuItemEnabled = MetaDataUtils.getFilesAndMeniaMenuItemEnabled(this.context);
         this.historyLoadingCount = historyLoadingCount;
         this.surveyCompletionDelay = surveyCompletionDelay;
         this.sslSocketFactoryConfig = getSslSocketFactoryConfig(certificateRawResIds);
-        this.transport = getTransport(transportType, threadsGateUrl, threadsGateProviderUid,
+        this.transport = getTransport(threadsGateUrl, threadsGateProviderUid,
                 threadsGateHCMProviderUid, requestConfig.getSocketClientSettings());
         this.serverBaseUrl = getServerBaseUrl(serverBaseUrl);
+        this.datastoreUrl = getDatastoreUrl(datastoreUrl);
         this.requestConfig = requestConfig;
         setPicasso(this.context, requestConfig.getPicassoHttpClientSettings(), sslSocketFactoryConfig);
     }
@@ -236,54 +236,39 @@ public final class Config {
         return localInstance;
     }
 
-    private Transport getTransport(@Nullable ConfigBuilder.TransportType providedTransportType,
-                                   @Nullable String providedThreadsGateUrl,
+    private Transport getTransport(@Nullable String providedThreadsGateUrl,
                                    @Nullable String providedThreadsGateProviderUid,
                                    @Nullable String providedThreadsGateHCMProviderUid,
                                    SocketClientSettings socketClientSettings) {
-        ConfigBuilder.TransportType transportType;
-        if (providedTransportType != null) {
-            transportType = providedTransportType;
-        } else {
-            transportType = ConfigBuilder.TransportType.THREADS_GATE;
-            String transportTypeValue = MetaDataUtils.getThreadsTransportType(this.context);
-            if (!TextUtils.isEmpty(transportTypeValue)) {
-                try {
-                    transportType = ConfigBuilder.TransportType.fromString(transportTypeValue);
-                } catch (IllegalArgumentException e) {
-                    ThreadsLogger.e(TAG, "Transport type has incorrect value (correct value: THREADS_GATE). Default to THREADS_GATE");
-                }
-            } else {
-                ThreadsLogger.e(TAG, "Transport type value is not set (correct value: THREADS_GATE). Default to THREADS_GATE");
-            }
-        }
-        if (ConfigBuilder.TransportType.MFMS_PUSH == transportType) {
-            throw new MetaConfigurationException("MFMS push transport is not supported anymore");
-        }
-        if (TextUtils.isEmpty(providedThreadsGateUrl)) {
-            throw new MetaConfigurationException("Threads gate url is not set");
-        }
         String threadsGateProviderUid = !TextUtils.isEmpty(providedThreadsGateProviderUid)
                 ? providedThreadsGateProviderUid
                 : MetaDataUtils.getThreadsGateProviderUid(this.context);
         String threadsGateHCMProviderUid = !TextUtils.isEmpty(providedThreadsGateHCMProviderUid)
                 ? providedThreadsGateHCMProviderUid
                 : MetaDataUtils.getThreadsGateHCMProviderUid(this.context);
+        String threadsGateUrl = !TextUtils.isEmpty(providedThreadsGateUrl)
+                ? providedThreadsGateUrl
+                : MetaDataUtils.getThreadsGateUrl(this.context);
+        if (TextUtils.isEmpty(threadsGateUrl)) {
+            throw new MetaConfigurationException("Threads gate url is not set");
+        }
         if (TextUtils.isEmpty(threadsGateProviderUid)) {
             throw new MetaConfigurationException("Threads gate provider uid is not set");
         }
-        return new ThreadsGateTransport(providedThreadsGateUrl,
+        return new ThreadsGateTransport(
+                threadsGateUrl,
                 threadsGateProviderUid,
                 threadsGateHCMProviderUid,
                 isDebugLoggingEnabled,
                 socketClientSettings,
                 sslSocketFactoryConfig,
-                networkInterceptor);
+                networkInterceptor
+        );
     }
 
     @NonNull
     private String getServerBaseUrl(@Nullable String serverBaseUrl) {
-        String baseUrl = TextUtils.isEmpty(serverBaseUrl) ? MetaDataUtils.getDatastoreUrl(this.context) : serverBaseUrl;
+        String baseUrl = TextUtils.isEmpty(serverBaseUrl) ? MetaDataUtils.getServerBaseUrl(this.context) : serverBaseUrl;
         if (baseUrl == null) {
             throw new MetaConfigurationException("Neither im.threads.getServerUrl meta variable, nor serverBaseUrl were provided");
         }
@@ -291,5 +276,21 @@ public final class Config {
             baseUrl = baseUrl + "/";
         }
         return baseUrl;
+    }
+
+    @NonNull
+    private String getDatastoreUrl(@Nullable String dataStoreUrl) {
+        String datastoreUrl = TextUtils.isEmpty(dataStoreUrl) ? MetaDataUtils.getDatastoreUrl(this.context) : dataStoreUrl;
+        if (datastoreUrl == null) {
+            throw new MetaConfigurationException("Neither im.threads.getDatastoreUrl meta variable, nor datastoreUrl were provided");
+        }
+        if (!datastoreUrl.endsWith("/")) {
+            datastoreUrl = datastoreUrl + "/";
+        }
+        return datastoreUrl;
+    }
+
+    private boolean getIsNewChatCenterApi(@Nullable Boolean isNewChatCenterApi) {
+        return isNewChatCenterApi == null ? MetaDataUtils.getNewChatCenterApi(this.context) : isNewChatCenterApi;
     }
 }
