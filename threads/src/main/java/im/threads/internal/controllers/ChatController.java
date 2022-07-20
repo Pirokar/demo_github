@@ -173,15 +173,6 @@ public final class ChatController {
                 })
         );
         subscribeToChatEvents();
-        subscribe(
-                Completable.fromAction(PrefUtils::migrateTransportIfNeeded)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                () -> {
-                                },
-                                e -> ThreadsLogger.e(TAG, e.getMessage()))
-        );
     }
 
     public static ChatController getInstance() {
@@ -193,9 +184,6 @@ public final class ChatController {
     }
 
     private static void initClientId() {
-        if (Config.instance.clientIdIgnoreEnabled) {
-            return;
-        }
         String newClientId = PrefUtils.getNewClientID();
         String oldClientId = PrefUtils.getClientID();
         ThreadsLogger.i(TAG, "getInstance newClientId = " + newClientId + ", oldClientId = " + oldClientId);
@@ -737,9 +725,6 @@ public final class ChatController {
     private void subscribeToTyping() {
         subscribe(
                 Flowable.fromPublisher(chatUpdateProcessor.getTypingProcessor())
-                        .filter(clientId ->
-                            Config.instance.clientIdIgnoreEnabled || PrefUtils.getClientID().contains(clientId)
-                        )
                         .map(clientId ->
                                 new ConsultTyping(
                                         consultWriter.getCurrentConsultId(),
@@ -1186,7 +1171,7 @@ public final class ChatController {
     private void onDeviceAddressChanged() {
         ThreadsLogger.i(TAG, "onDeviceAddressChanged:");
         String clientId = PrefUtils.getClientID();
-        if (fragment != null && (!TextUtils.isEmpty(clientId) || Config.instance.clientIdIgnoreEnabled)) {
+        if (fragment != null && !TextUtils.isEmpty(clientId)) {
             subscribe(
                     Single.fromCallable(() -> {
                         Config.instance.transport.sendInit();

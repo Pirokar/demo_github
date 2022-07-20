@@ -177,7 +177,7 @@ object FileUtils {
     fun convertRelativeUrlToAbsolute(relativeUrl: String?): String? {
         return if (TextUtils.isEmpty(relativeUrl) || relativeUrl!!.startsWith("http")) {
             relativeUrl
-        } else Config.instance.serverBaseUrl + "files/" + relativeUrl
+        } else Config.instance.datastoreUrl + "files/" + relativeUrl
     }
 
     @JvmStatic
@@ -335,6 +335,10 @@ object FileUtils {
 }
 
 fun MediaMetadataRetriever.getDuration(uri: Uri): Long {
-    setDataSource(Config.instance.context, uri)
+    try {
+        setDataSource(Config.instance.context, uri)
+    } catch (exc: Exception) {
+        setDataSource(uri.toString(), mutableMapOf<String, String>())
+    }
     return extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLong() ?: 0
 }

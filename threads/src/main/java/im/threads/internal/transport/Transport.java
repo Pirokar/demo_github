@@ -6,14 +6,13 @@ import androidx.lifecycle.Lifecycle;
 
 import java.util.List;
 
-import im.threads.ConfigBuilder;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.model.ClientNotificationDisplayType;
 import im.threads.internal.model.ConsultInfo;
 import im.threads.internal.model.SettingsResponse;
 import im.threads.internal.model.Survey;
 import im.threads.internal.model.UserPhrase;
-import im.threads.internal.retrofit.ApiGenerator;
+import im.threads.internal.retrofit.BackendApiGenerator;
 import im.threads.internal.utils.PrefUtils;
 import im.threads.internal.utils.ThreadsLogger;
 import io.reactivex.Completable;
@@ -32,7 +31,7 @@ public abstract class Transport {
     public void markMessagesAsRead(List<String> uuidList) {
         ThreadsLogger.i(TAG, "markMessagesAsRead : " + uuidList);
         subscribe(
-                Completable.fromAction(() -> ApiGenerator.getThreadsApi().markMessageAsRead(uuidList).execute())
+                Completable.fromAction(() -> BackendApiGenerator.getApi().markMessageAsRead(uuidList).execute())
                         .subscribeOn(Schedulers.io())
                         .subscribe(
                                 () -> {
@@ -52,7 +51,7 @@ public abstract class Transport {
 
     public void getSettings() {
         subscribe(
-                Single.fromCallable(() -> ApiGenerator.getThreadsApi().settings().execute())
+                Single.fromCallable(() -> BackendApiGenerator.getApi().settings().execute())
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -103,8 +102,6 @@ public abstract class Transport {
     public abstract void sendRatingReceived(Survey survey);
 
     public abstract void sendClientOffline(String clientId);
-
-    public abstract ConfigBuilder.TransportType getType();
 
     @NonNull
     public abstract String getToken() throws TransportException;

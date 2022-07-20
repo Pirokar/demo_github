@@ -9,7 +9,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import com.google.gson.JsonObject
-import im.threads.ConfigBuilder.TransportType
 import im.threads.config.SocketClientSettings
 import im.threads.internal.Config
 import im.threads.internal.chat_updates.ChatUpdateProcessor
@@ -194,10 +193,6 @@ class ThreadsGateTransport(
             clientId
         )
         sendMessage(content, sendInit = false)
-    }
-
-    override fun getType(): TransportType {
-        return TransportType.THREADS_GATE
     }
 
     override fun getToken(): String {
@@ -448,29 +443,20 @@ class ThreadsGateTransport(
                                     message.content,
                                     TypingContent::class.java
                                 )
-                                if (content.clientId != null || Config.instance.clientIdIgnoreEnabled) {
-                                    ChatUpdateProcessor.getInstance().postTyping(content.clientId)
-                                }
+                                ChatUpdateProcessor.getInstance().postTyping(content.clientId)
                             } else if (ChatItemType.ATTACHMENT_SETTINGS == type) {
                                 val attachmentSettings = Config.instance.gson.fromJson(
                                     message.content,
                                     AttachmentSettings::class.java
                                 )
-                                if (attachmentSettings.clientId != null || Config.instance.clientIdIgnoreEnabled) {
-                                    ChatUpdateProcessor.getInstance()
-                                        .postAttachmentSettings(attachmentSettings)
-                                }
+                                ChatUpdateProcessor.getInstance().postAttachmentSettings(attachmentSettings)
                             } else if (ChatItemType.SPEECH_MESSAGE_UPDATED == type) {
                                 val chatItem = ThreadsGateMessageParser.format(message)
                                 if (chatItem is SpeechMessageUpdate) {
                                     ChatUpdateProcessor.getInstance()
                                         .postSpeechMessageUpdate(chatItem)
                                 }
-                            } else if (ThreadsGateMessageParser.checkId(
-                                    message,
-                                    PrefUtils.clientID
-                                )
-                            ) {
+                            } else {
                                 val chatItem = ThreadsGateMessageParser.format(message)
                                 if (chatItem != null) {
                                     ChatUpdateProcessor.getInstance().postNewMessage(chatItem)

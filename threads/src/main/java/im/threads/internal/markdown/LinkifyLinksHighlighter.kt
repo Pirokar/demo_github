@@ -15,7 +15,6 @@ class LinkifyLinksHighlighter : LinksHighlighter {
         if (!isUnderlined) {
             stripUnderlines(textView)
         }
-        textView.text = textView.text.trim()
     }
 
     private fun stripUnderlines(textView: TextView) {

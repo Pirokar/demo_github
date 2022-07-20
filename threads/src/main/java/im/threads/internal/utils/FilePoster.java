@@ -16,7 +16,7 @@ import java.net.URLEncoder;
 import im.threads.internal.Config;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.FileUploadResponse;
-import im.threads.internal.retrofit.ApiGenerator;
+import im.threads.internal.retrofit.DatastoreApiGenerator;
 import im.threads.internal.transport.InputStreamRequestBody;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -38,7 +38,7 @@ public final class FilePoster {
         ThreadsLogger.i(TAG, "post: " + fileDescription);
         String token = PrefUtils.getClientID();
         ThreadsLogger.i(TAG, "token = " + token);
-        if (!token.isEmpty() || Config.instance.clientIdIgnoreEnabled) {
+        if (!token.isEmpty()) {
             if (fileDescription.getFileUri() != null) {
                 return sendFile(fileDescription.getFileUri(), FileUtils.getMimeType(fileDescription.getFileUri()), token);
             }
@@ -54,7 +54,7 @@ public final class FilePoster {
         MultipartBody.Part part = MultipartBody.Part
                 .createFormData("file", URLEncoder.encode(FileUtils.getFileName(uri), "utf-8"), getFileRequestBody(uri, mimeType));
         RequestBody agent = RequestBody.create(token, MediaType.parse("text/plain"));
-        Response<FileUploadResponse> response = ApiGenerator.getThreadsApi().upload(part, agent, token).execute();
+        Response<FileUploadResponse> response = DatastoreApiGenerator.getApi().upload(part, agent, token).execute();
         if (response.isSuccessful()) {
             FileUploadResponse body = response.body();
             if (body != null) {
