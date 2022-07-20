@@ -177,7 +177,7 @@ object FileUtils {
     fun convertRelativeUrlToAbsolute(relativeUrl: String?): String? {
         return if (TextUtils.isEmpty(relativeUrl) || relativeUrl!!.startsWith("http")) {
             relativeUrl
-        } else Config.instance.serverBaseUrl + "files/" + relativeUrl
+        } else Config.instance.datastoreUrl + "files/" + relativeUrl
     }
 
     @JvmStatic
