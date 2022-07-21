@@ -91,6 +91,27 @@ public final class UrlUtils {
 
     @Nullable
     public static String extractLink(@NonNull String text) {
+        return getLink(text);
+    }
+
+    @Nullable
+    public static String extractDeepLink(@NonNull String text) {
+        Matcher deeplinkMatcher = DEEPLINK_URL.matcher(text);
+        if (deeplinkMatcher.find()) {
+            return deeplinkMatcher.group();
+        }
+        return null;
+    }
+
+    public static Boolean isValidUrl(@NonNull String url) {
+        return getLink(url) != null;
+    }
+
+    private static String getLink(@NonNull String text) {
+        if (TextUtils.isEmpty(text)) {
+            return null;
+        }
+
         Matcher matcherWithBrackets = WEB_URL_WITH_BRACKETS.matcher(text);
         while (matcherWithBrackets.find()) {
             String url = matcherWithBrackets.group();
@@ -103,15 +124,6 @@ public final class UrlUtils {
         Matcher m = WEB_URL.matcher(text);
         if (m.find()) {
             return m.group();
-        }
-        return null;
-    }
-
-    @Nullable
-    public static String extractDeepLink(@NonNull String text) {
-        Matcher deeplinkMatcher = DEEPLINK_URL.matcher(text);
-        if (deeplinkMatcher.find()) {
-            return deeplinkMatcher.group();
         }
         return null;
     }

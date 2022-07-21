@@ -1,8 +1,11 @@
 package im.threads.internal.holders
 
+import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.text.method.LinkMovementMethod
 import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
@@ -12,11 +15,15 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import im.threads.R
 import im.threads.internal.Config
+import im.threads.internal.domain.ogParser.OGData
+import im.threads.internal.imageLoading.ImageLoader
+import im.threads.internal.imageLoading.loadImage
 import im.threads.internal.markdown.LinkifyLinksHighlighter
 import im.threads.internal.markdown.LinksHighlighter
 import im.threads.internal.model.ConsultPhrase
 import im.threads.internal.model.ErrorStateEnum
 import im.threads.internal.utils.ColorsHelper
+import im.threads.internal.utils.UrlUtils
 import im.threads.internal.views.CircularProgressButton
 import im.threads.internal.widget.text_view.BubbleMessageTextView
 import io.reactivex.disposables.CompositeDisposable
@@ -26,6 +33,13 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
 
     private var compositeDisposable: CompositeDisposable? = CompositeDisposable()
     private val linksHighlighter: LinksHighlighter = LinkifyLinksHighlighter()
+
+    protected fun subscribe(event: Disposable): Boolean {
+        if (compositeDisposable?.isDisposed != false) {
+            compositeDisposable = CompositeDisposable()
+        }
+        return compositeDisposable?.add(event) ?: false
+    }
 
     @ColorInt
     fun getColorInt(@ColorRes colorRes: Int): Int {
@@ -51,6 +65,13 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
         button.setStartDownloadDrawable(startDownload)
         button.setInProgress(inProgress)
         button.setCompletedDrawable(completed)
+    }
+
+    fun onClear() {
+        compositeDisposable?.apply {
+            dispose()
+        }
+        compositeDisposable = null
     }
 
     /**
@@ -93,6 +114,115 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
         )
     }
 
+    /**
+     * Возвращает нужный ресурс [Drawable] в зависимости от кода ошибки
+     * @param code код ошибки
+     */
+    protected fun getErrorImageResByErrorCode(code: ErrorStateEnum) = when (code) {
+        ErrorStateEnum.DISALLOWED -> R.drawable.im_wrong_file
+        ErrorStateEnum.TIMEOUT -> R.drawable.im_unexpected
+        ErrorStateEnum.Unexpected -> R.drawable.im_unexpected
+        ErrorStateEnum.ANY -> R.drawable.im_unexpected
+    }
+
+    /**
+     * Обрабатывает показ Open Graph.
+     * @param ogData данные Open Graph
+     * @param ogDataLayout layout, в котором размещены вьюхи Open Graph
+     * @param timeStampView текстовая вьюха для отображения времени
+     * @param url ссылка, для которой надо отобразить Open Graph
+     */
+    protected fun bindOGData(
+        ogData: OGData,
+        ogDataLayout: ViewGroup,
+        timeStampView: TextView,
+        url: String
+    ) {
+        val ogImage: ImageView = ogDataLayout.findViewById(R.id.og_image)
+
+        if (ogDataLayout.tag == url) {
+            return
+        }
+
+        if (ogData.areTextsEmpty()) {
+            hideOGView(ogDataLayout, timeStampView)
+            return
+        }
+
+        val ogTitle: TextView = ogDataLayout.findViewById(R.id.og_title)
+        val ogDescription: TextView = ogDataLayout.findViewById(R.id.og_description)
+        val ogUrl: TextView = ogDataLayout.findViewById(R.id.og_url)
+
+        showOGView(ogDataLayout, timeStampView)
+        setOgDataTitle(ogData, ogTitle)
+        setOgDataDescription(ogData, ogDescription)
+        setOgDataUrl(ogUrl, ogData, url)
+        setOgDataImage(ogData, ogImage)
+
+        ogDataLayout.tag = url
+    }
+
+    private fun setOgDataTitle(ogData: OGData, ogTitle: TextView) {
+        if (ogData.title.isNotEmpty()) {
+            ogTitle.visibility = View.VISIBLE
+            ogTitle.text = ogData.title
+            ogTitle.setTypeface(ogTitle.typeface, Typeface.BOLD)
+        } else {
+            ogTitle.visibility = View.GONE
+        }
+    }
+
+    private fun setOgDataDescription(ogData: OGData, ogDescription: TextView) {
+        if (ogData.description.isNotEmpty()) {
+            ogDescription.visibility = View.VISIBLE
+            ogDescription.text = ogData.description
+        } else {
+            ogDescription.visibility = View.GONE
+        }
+    }
+
+    private fun setOgDataUrl(ogUrl: TextView, ogData: OGData, url: String) {
+        ogUrl.text = ogData.url.ifEmpty { url }
+    }
+
+    private fun setOgDataImage(ogData: OGData, ogImage: ImageView) {
+        if (UrlUtils.isValidUrl(ogData.imageUrl)) {
+            ogImage.visibility = View.VISIBLE
+            ogImage.loadImage(
+                ogData.imageUrl,
+                errorDrawableResId = Config.instance.chatStyle.imagePlaceholder,
+                isExternalImage = true,
+                callback = object : ImageLoader.ImageLoaderCallback {
+                    override fun onImageLoadError() {
+                        ogImage.visibility = View.GONE
+                    }
+                }
+            )
+        } else {
+            ogImage.visibility = View.GONE
+        }
+    }
+
+    /**
+     * Включает отображение контейнера Open Graph.
+     * @param ogDataLayout layout, в котором размещены вьюхи Open Graph
+     * @param timeStampView текстовая вьюха для отображения времени
+     */
+    protected fun showOGView(ogDataLayout: ViewGroup, timeStampView: TextView) {
+        ogDataLayout.visibility = View.VISIBLE
+        timeStampView.visibility = View.GONE
+    }
+
+    /**
+     * Прячет контейнер Open Graph (View.Gone)
+     * @param ogDataLayout layout, в котором размещены вьюхи Open Graph
+     * @param timeStampView текстовая вьюха для отображения времени
+     */
+    protected fun hideOGView(ogDataLayout: ViewGroup, timeStampView: TextView) {
+        ogDataLayout.visibility = View.GONE
+        timeStampView.visibility = View.VISIBLE
+    }
+
     private fun setTextWithHighlighting(textView: TextView, isUnderlined: Boolean) {
         setMovementMethod(textView)
         linksHighlighter.highlightAllTypeOfLinks(textView, isUnderlined)
@@ -106,26 +236,5 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
         val drawable = AppCompatResources.getDrawable(itemView.context, iconResId)?.mutate()
         ColorsHelper.setDrawableColor(itemView.context, drawable, colorRes)
         return drawable
-    }
-
-    protected fun getErrorImageResByErrorCode(code: ErrorStateEnum) = when (code) {
-        ErrorStateEnum.DISALLOWED -> R.drawable.im_wrong_file
-        ErrorStateEnum.TIMEOUT -> R.drawable.im_unexpected
-        ErrorStateEnum.Unexpected -> R.drawable.im_unexpected
-        ErrorStateEnum.ANY -> R.drawable.im_unexpected
-    }
-
-    protected fun subscribe(event: Disposable): Boolean {
-        if (compositeDisposable?.isDisposed != false) {
-            compositeDisposable = CompositeDisposable()
-        }
-        return compositeDisposable?.add(event) ?: false
-    }
-
-    fun onClear() {
-        compositeDisposable?.apply {
-            dispose()
-        }
-        compositeDisposable = null
     }
 }

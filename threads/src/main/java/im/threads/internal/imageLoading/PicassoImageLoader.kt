@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.widget.ImageView
 import androidx.exifinterface.media.ExifInterface
+import com.squareup.picasso.Callback
 import com.squareup.picasso.OkHttp3Downloader
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.RequestCreator
@@ -21,7 +22,18 @@ class PicassoImageLoader : ImageLoaderRealisation {
     override fun load(config: ImageLoader.Config) {
         val request = getImageRequestBuilder(config)
         if (config.callback != null) {
-            request?.into(getPicassoTarget(config))
+            request?.into(
+                config.imageView,
+                object : Callback {
+                    override fun onSuccess() {
+                        config.callback?.onImageLoaded()
+                    }
+
+                    override fun onError(e: java.lang.Exception?) {
+                        config.callback?.onImageLoadError()
+                    }
+                }
+            )
         } else {
             request?.into(config.imageView)
         }
@@ -98,7 +110,7 @@ class PicassoImageLoader : ImageLoaderRealisation {
         return object : Target {
             override fun onBitmapLoaded(bitmap: Bitmap, from: Picasso.LoadedFrom) {
                 config.imageView?.setImageBitmap(bitmap)
-                config.callback?.onImageLoaded(bitmap)
+                config.callback?.onBitmapLoaded(bitmap)
             }
 
             override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {

@@ -166,9 +166,14 @@ class ImageLoader private constructor() {
     interface ImageLoaderCallback {
         /**
          * Вызывается по окончанию загрзуки изображений
-         * @param drawable загруженное изображение
+         * @param bitmap загруженное изображение
          */
-        fun onImageLoaded(bitmap: Bitmap) {}
+        fun onBitmapLoaded(bitmap: Bitmap) {}
+
+        /**
+         * Вызывается по окончанию загрзуки изображенийе
+         */
+        fun onImageLoaded() {}
 
         /**
          * Вызывается в случае ошибки при загрзуке изображения

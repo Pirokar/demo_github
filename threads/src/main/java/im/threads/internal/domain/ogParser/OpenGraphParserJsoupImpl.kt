@@ -1,9 +1,6 @@
 package im.threads.internal.domain.ogParser
 
 import im.threads.internal.utils.ThreadsLogger
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 
@@ -22,34 +19,26 @@ class OpenGraphParserJsoupImpl : OpenGraphParser {
     private val tag = OpenGraphParserJsoupImpl::class.java.simpleName
 
     /**
-     * Метод для запроса og data. Возвращает распарсенные данные
+     * Метод для запроса og data. Возвращает распарсенные данные. Работает синхронно,
+     *  необходимо обернуть в фоновый поток
+     * @param urlToParse ссылка на сайт, где необходимо запросить Open Graph
      */
     override fun getContents(urlToParse: String): OGData? {
-        var openGraphContent: OGData?
-        runBlocking {
-            openGraphContent = doInBackground(urlToParse)
-        }
-        return openGraphContent
-    }
-
-    @Suppress("BlockingMethodInNonBlockingContext")
-    private suspend fun doInBackground(urlToParse: String): OGData? =
-        withContext(Dispatchers.IO) {
-            try {
-                val response = Jsoup.connect(urlToParse)
-                    .ignoreContentType(true)
-                    .userAgent("Mozilla")
-                    .referrer("http://www.google.com")
-                    .timeout(12000)
-                    .followRedirects(true)
-                    .execute()
-                val doc = response.parse()
-                return@withContext organizeFetchedData(doc)
-            } catch (e: Exception) {
-                ThreadsLogger.e(tag, "Error when parsing OG data!", e)
-            }
+        return try {
+            val response = Jsoup.connect(urlToParse)
+                .ignoreContentType(true)
+                .userAgent("Mozilla")
+                .referrer("http://www.google.com")
+                .timeout(12000)
+                .followRedirects(true)
+                .execute()
+            val doc = response.parse()
+            return organizeFetchedData(doc)
+        } catch (e: Exception) {
+            ThreadsLogger.e(tag, "Error when parsing OG data!", e)
             null
         }
+    }
 
     private fun organizeFetchedData(doc: Document): OGData {
         val openGraphContent = OGData()

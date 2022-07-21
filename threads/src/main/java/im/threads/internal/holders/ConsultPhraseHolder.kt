@@ -1,8 +1,6 @@
 package im.threads.internal.holders
 
-import android.graphics.Bitmap
 import android.graphics.PorterDuff
-import android.graphics.Typeface
 import android.text.TextUtils
 import android.text.format.Formatter
 import android.util.TypedValue
@@ -20,7 +18,6 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import im.threads.R
 import im.threads.internal.Config
-import im.threads.internal.domain.ogParser.OGData
 import im.threads.internal.domain.ogParser.OpenGraphParser
 import im.threads.internal.domain.ogParser.OpenGraphParserJsoupImpl
 import im.threads.internal.formatters.RussianFormatSymbols
@@ -36,6 +33,10 @@ import im.threads.internal.utils.ViewUtils
 import im.threads.internal.views.CircularProgressButton
 import im.threads.internal.widget.text_view.BubbleMessageTextView
 import im.threads.internal.widget.text_view.BubbleTimeTextView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -107,15 +108,12 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
     }
     private val mPhraseFrame: View = itemView.findViewById(R.id.phrase_frame)
     private val ogDataLayout: ViewGroup = itemView.findViewById(R.id.og_data_layout)
-    private val ogImage: ImageView = itemView.findViewById(R.id.og_image)
-    private val ogTitle: TextView = itemView.findViewById(R.id.og_title)
-    private val ogDescription: TextView = itemView.findViewById(R.id.og_description)
-    private val ogUrl: TextView = itemView.findViewById(R.id.og_url)
     private val ogTimestamp = itemView.findViewById<TextView>(R.id.og_timestamp).apply {
         setTextColor(getColorInt(style.incomingMessageTimeColor))
     }
 
     private val openGraphParser: OpenGraphParser = OpenGraphParserJsoupImpl()
+    private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
     init {
         itemView.findViewById<View>(R.id.bubble).apply {
@@ -183,18 +181,24 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
             val url = UrlUtils.extractLink(phrase)
             highlightOperatorText(mPhraseTextView, consultPhrase)
             if (url != null) {
-                openGraphParser.getContents(url)?.let { ogData -> bindOGData(ogData, url) }
-                ViewUtils.setClickListener(
-                    ogDataLayout,
-                    View.OnClickListener {
-                        UrlUtils.openUrl(
-                            itemView.getContext(),
-                            url
-                        )
+                coroutineScope.launch {
+                    openGraphParser.getContents(url)?.let { ogData ->
+                        withContext(Dispatchers.Main) {
+                            bindOGData(ogData, ogDataLayout, mTimeStampTextView, url)
+                            ViewUtils.setClickListener(
+                                ogDataLayout,
+                                View.OnClickListener {
+                                    UrlUtils.openUrl(
+                                        itemView.getContext(),
+                                        url
+                                    )
+                                }
+                            )
+                        }
                     }
-                )
+                }
             } else {
-                hideOGView()
+                hideOGView(ogDataLayout, mTimeStampTextView)
             }
         }
         mImageLayout.visibility = View.GONE
@@ -254,7 +258,8 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
                     errorDrawableResId = style.imagePlaceholder,
                     autoRotateWithExif = true,
                     callback = object : ImageLoader.ImageLoaderCallback {
-                        override fun onImageLoaded(bitmap: Bitmap) {
+
+                        override fun onImageLoaded() {
                             stopLoaderAnimation()
                         }
 
@@ -317,49 +322,6 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
 
     private fun showDefIcon() {
         mConsultAvatar.setImageResource(style.defaultOperatorAvatar)
-    }
-
-    private fun bindOGData(ogData: OGData, url: String) {
-        if (ogData.areTextsEmpty()) {
-            hideOGView()
-            return
-        }
-        showOGView()
-        if (!TextUtils.isEmpty(ogData.title)) {
-            ogTitle.visibility = View.VISIBLE
-            ogTitle.text = ogData.title
-            ogTitle.setTypeface(ogTitle.typeface, Typeface.BOLD)
-        } else {
-            ogTitle.visibility = View.GONE
-        }
-        if (!TextUtils.isEmpty(ogData.description)) {
-            ogDescription.visibility = View.VISIBLE
-            ogDescription.text = ogData.description
-        } else {
-            ogDescription.visibility = View.GONE
-        }
-        ogUrl.text = if (!TextUtils.isEmpty(ogData.url)) ogData.url else url
-        if (TextUtils.isEmpty(ogData.imageUrl)) {
-            ogImage.visibility = View.GONE
-        } else {
-            ogImage.visibility = View.VISIBLE
-            ogImage.loadImage(
-                ogData.imageUrl,
-                errorDrawableResId = style.imagePlaceholder,
-                scales = listOf(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP),
-                isExternalImage = true
-            )
-        }
-    }
-
-    private fun showOGView() {
-        ogDataLayout.visibility = View.VISIBLE
-        mTimeStampTextView.visibility = View.GONE
-    }
-
-    private fun hideOGView() {
-        ogDataLayout.visibility = View.GONE
-        mTimeStampTextView.visibility = View.VISIBLE
     }
 
     private fun startLoaderAnimation() {
