@@ -136,7 +136,7 @@ dependencies {
     implementation "com.annimon:stream:$rootProject.streamVersion"
 
     implementation "com.google.code.gson:gson:$rootProject.gsonVersion"
-    implementation "com.squareup.picasso:picasso:$rootProject.picassoVersion"
+    implementation "com.squareup.picasso:picasso:$rootProject.picasso_version"
 
     implementation "com.github.3llomi:RecordView:$rootProject.recordViewVersion"
     implementation "com.writingminds:FFmpegAndroid:$ffmpeg"

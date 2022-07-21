@@ -29,7 +29,6 @@ import im.threads.internal.imageLoading.ImageModifications
 import im.threads.internal.imageLoading.loadImage
 import im.threads.internal.model.AttachmentStateEnum
 import im.threads.internal.model.ConsultPhrase
-import im.threads.internal.utils.CircleTransformation
 import im.threads.internal.utils.FileUtils
 import im.threads.internal.utils.FileUtils.isImage
 import im.threads.internal.utils.ThreadsLogger
