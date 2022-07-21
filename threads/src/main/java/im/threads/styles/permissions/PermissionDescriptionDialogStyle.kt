@@ -36,6 +36,10 @@ class PermissionDescriptionDialogStyle : Serializable {
                     titleResId = R.string.threads_permission_description_access_to_camera_title,
                     messageResId = R.string.threads_permission_description_access_to_camera_message,
                 )
+                PermissionDescriptionType.LOCATION -> createTypeSpecificDialogStyle(
+                    titleResId = R.string.threads_permission_description_access_to_location_title,
+                    messageResId = R.string.threads_permission_description_access_to_location_message,
+                )
             }
 
         private fun createTypeSpecificDialogStyle(

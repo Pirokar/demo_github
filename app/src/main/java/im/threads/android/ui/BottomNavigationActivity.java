@@ -288,6 +288,12 @@ public class BottomNavigationActivity extends AppCompatActivity {
                         PermissionDescriptionType.CAMERA
                 )
         );
+        ThreadsLib.getInstance().applyCameraPermissionDescriptionDialogStyle(
+                PermissionDescriptionDialogStyleBuilderHelper.getDialogStyle(
+                        chatDesign,
+                        PermissionDescriptionType.CAMERA
+                )
+        );
     }
 
     /**

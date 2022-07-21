@@ -119,6 +119,8 @@ class PermissionDescriptionAlertDialogFragment : DialogFragment() {
                 Config.instance.recordAudioPermissionDescriptionDialogStyle
             PermissionDescriptionType.CAMERA ->
                 Config.instance.cameraPermissionDescriptionDialogStyle
+            PermissionDescriptionType.LOCATION ->
+                Config.instance.cameraPermissionDescriptionDialogStyle
         }
 
     private fun setIllustration(dialogView: View, imageStyle: PermissionDescriptionImageStyle) {

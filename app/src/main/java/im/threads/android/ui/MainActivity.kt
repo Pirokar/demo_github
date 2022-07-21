@@ -34,9 +34,12 @@ import im.threads.android.utils.PrefUtilsApp
 import im.threads.android.utils.PrefUtilsApp.getCards
 import im.threads.android.utils.PrefUtilsApp.getTheme
 import im.threads.android.utils.PrefUtilsApp.storeCards
+import im.threads.internal.fragments.PermissionDescriptionAlertDialogFragment
+import im.threads.internal.fragments.PermissionDescriptionAlertDialogFragment.Companion.newInstance
 import im.threads.internal.model.CampaignMessage
 import im.threads.internal.utils.PrefUtils
 import im.threads.internal.utils.ThreadsLogger
+import im.threads.internal.utils.ThreadsPermissionChecker
 import im.threads.styles.permissions.PermissionDescriptionType
 import im.threads.view.ChatActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -142,9 +145,20 @@ class MainActivity : AppCompatActivity(), EditCardDialogActionsListener, YesNoDi
         cardsAdapter.cards = if (hasCards) cards else ArrayList()
     }
 
+    private var permissionDescriptionAlertDialogFragment: PermissionDescriptionAlertDialogFragment? = null
+
     /** Пример открытия чата в виде Активности */
     fun navigateToChatActivity() {
         subscribeOnSocketResponses()
+        if (!ThreadsPermissionChecker.isAccessFineLocationPermissionGranted(this) ||
+            !ThreadsPermissionChecker.isAccessCoarseLocationPermissionGranted(this)) {
+            permissionDescriptionAlertDialogFragment = newInstance(PermissionDescriptionType.LOCATION, 1)
+            permissionDescriptionAlertDialogFragment?.show(
+                supportFragmentManager,
+                PermissionDescriptionAlertDialogFragment.TAG
+            )
+        }
+
         LocationManager.getInstance(this).startLocationUpdates()
         val currentCard = currentCard
         if (currentCard == null) {

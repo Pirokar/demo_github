@@ -21,7 +21,7 @@ class LocationBroadcastReceiver : BroadcastReceiver() {
             LocationResult.extractResult(intent)?.let { locationResult ->
                 locationResult.locations.map { location ->
                     Config.instance.transport.updateLocation(location.latitude, location.longitude)
-                    Log.d(TAG, "###   Location received.   location - " + location)
+                    Log.e(TAG, "###   Location received.   location - " + location)
                 }
             }
         }

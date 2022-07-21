@@ -25,4 +25,12 @@ public final class ThreadsPermissionChecker {
     public static boolean isRecordAudioPermissionGranted(Context ctx) {
         return PermissionChecker.checkSelfPermission(ctx, Manifest.permission.RECORD_AUDIO) == PermissionChecker.PERMISSION_GRANTED;
     }
+
+    public static boolean isAccessFineLocationPermissionGranted(Context ctx) {
+        return PermissionChecker.checkSelfPermission(ctx, Manifest.permission.ACCESS_FINE_LOCATION) == PermissionChecker.PERMISSION_GRANTED;
+    }
+
+    public static boolean isAccessCoarseLocationPermissionGranted(Context ctx) {
+        return PermissionChecker.checkSelfPermission(ctx, Manifest.permission.ACCESS_COARSE_LOCATION) == PermissionChecker.PERMISSION_GRANTED;
+    }
 }

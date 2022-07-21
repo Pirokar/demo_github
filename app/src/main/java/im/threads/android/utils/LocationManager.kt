@@ -5,17 +5,14 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import androidx.annotation.MainThread
-import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import java.util.concurrent.TimeUnit
 
-private const val TAG = "JJLocationManager"
+private const val TAG = "LocationManager"
 
 class LocationManager private constructor(private val context: Context) {
-
-    private val _receivingLocationUpdates: MutableLiveData<Boolean> = MutableLiveData<Boolean>(false)
 
     private val fusedLocationClient: FusedLocationProviderClient =
         LocationServices.getFusedLocationProviderClient(context)
@@ -37,11 +34,11 @@ class LocationManager private constructor(private val context: Context) {
     @Throws(SecurityException::class)
     @MainThread
     fun startLocationUpdates() {
+        Log.e(TAG, "startLocationUpdates()")
         try {
-            _receivingLocationUpdates.value = true
             fusedLocationClient.requestLocationUpdates(locationRequest, locationUpdatePendingIntent)
+            Log.e(TAG, "startLocationUpdates()  $fusedLocationClient")
         } catch (permissionRevoked: SecurityException) {
-            _receivingLocationUpdates.value = false
             Log.e(TAG, "Location permission revoked; details: $permissionRevoked")
             throw permissionRevoked
         }
@@ -49,7 +46,7 @@ class LocationManager private constructor(private val context: Context) {
 
     @MainThread
     fun stopLocationUpdates() {
-        _receivingLocationUpdates.value = false
+        Log.e(TAG, "stopLocationUpdates()")
         fusedLocationClient.removeLocationUpdates(locationUpdatePendingIntent)
     }
 

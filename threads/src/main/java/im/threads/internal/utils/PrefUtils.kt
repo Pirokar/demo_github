@@ -288,6 +288,10 @@ class PrefUtils private constructor() {
                     CAMERA_PERMISSION_DESCRIPTION_DIALOG_STYLE,
                     PermissionDescriptionDialogStyle::class.java
                 )
+                PermissionDescriptionType.LOCATION -> getIncomingStyle(
+                    CAMERA_PERMISSION_DESCRIPTION_DIALOG_STYLE,
+                    PermissionDescriptionDialogStyle::class.java
+                )
             }
         }
 

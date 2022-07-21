@@ -84,6 +84,8 @@
     <string name="threads_permission_description_access_to_audio_recording_message">Это необходимо для отправки голосовых сообщений</string>
     <string name="threads_permission_description_access_to_camera_title">Разрешите приложению снимать фото</string>
     <string name="threads_permission_description_access_to_camera_message">Это необходимо для отправки фото</string>
+    <string name="threads_permission_description_access_to_location_title">Разрешите приложению доступ к сервисам местоположения</string>
+    <string name="threads_permission_description_access_to_location_message">Это необходимо для обновления местоположения</string>
 
 
 
