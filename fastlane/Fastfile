@@ -7,6 +7,13 @@ default_platform(:android)
 platform :android do
 
   desc "Запуск модульных тестов для SDK"
+  lane :sdkLint do
+    gradle(
+      task: "threads:lintDebug",
+  )
+  end
+
+  desc "Запуск модульных тестов для SDK"
   lane :sdkUnitTests do
     gradle(
       task: "threads:testDebugUnitTest",
