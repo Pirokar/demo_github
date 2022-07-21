@@ -154,6 +154,7 @@ dependencies {
     implementation "io.noties.markwon:core:$markwonVersion"
     implementation "io.noties.markwon:linkify:$markwonVersion"
     implementation "io.noties.markwon:ext-strikethrough:$markwonVersion"
+    implementation "io.noties.markwon:image:$markwonVersion"
 
     //Coil
     implementation "com.squareup.picasso:picasso:$picasso_version"

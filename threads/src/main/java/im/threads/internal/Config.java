@@ -18,7 +18,6 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import im.threads.ChatStyle;
-import im.threads.ConfigBuilder;
 import im.threads.ThreadsLib;
 import im.threads.config.RequestConfig;
 import im.threads.config.SocketClientSettings;
@@ -31,7 +30,6 @@ import im.threads.internal.transport.Transport;
 import im.threads.internal.transport.threads_gate.ThreadsGateTransport;
 import im.threads.internal.utils.MetaDataUtils;
 import im.threads.internal.utils.PrefUtils;
-import im.threads.internal.utils.ThreadsLogger;
 import im.threads.internal.utils.TlsConfigurationUtils;
 import im.threads.styles.permissions.PermissionDescriptionDialogStyle;
 import im.threads.styles.permissions.PermissionDescriptionType;
@@ -92,6 +90,7 @@ public final class Config {
                   @Nullable String threadsGateUrl,
                   @Nullable String threadsGateProviderUid,
                   @Nullable String threadsGateHCMProviderUid,
+                  @Nullable Boolean isNewChatCenterApi,
                   @NonNull ThreadsLib.PendingIntentCreator pendingIntentCreator,
                   @Nullable ThreadsLib.UnreadMessagesCountListener unreadMessagesCountListener,
                   @Nullable Interceptor networkInterceptor,
@@ -105,7 +104,7 @@ public final class Config {
         this.unreadMessagesCountListener = unreadMessagesCountListener;
         this.networkInterceptor = networkInterceptor;
         this.isDebugLoggingEnabled = isDebugLoggingEnabled;
-        this.newChatCenterApi = MetaDataUtils.getNewChatCenterApi(this.context);
+        this.newChatCenterApi = getIsNewChatCenterApi(isNewChatCenterApi);
         this.attachmentEnabled = MetaDataUtils.getAttachmentEnabled(this.context);
         this.filesAndMediaMenuItemEnabled = MetaDataUtils.getFilesAndMeniaMenuItemEnabled(this.context);
         this.historyLoadingCount = historyLoadingCount;
@@ -291,5 +290,9 @@ public final class Config {
             datastoreUrl = datastoreUrl + "/";
         }
         return datastoreUrl;
+    }
+
+    private boolean getIsNewChatCenterApi(@Nullable Boolean isNewChatCenterApi) {
+        return isNewChatCenterApi == null ? MetaDataUtils.getNewChatCenterApi(this.context) : isNewChatCenterApi;
     }
 }
