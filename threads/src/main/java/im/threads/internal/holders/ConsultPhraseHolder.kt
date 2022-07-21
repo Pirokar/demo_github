@@ -31,7 +31,6 @@ import im.threads.internal.model.AttachmentStateEnum
 import im.threads.internal.model.ConsultPhrase
 import im.threads.internal.utils.FileUtils
 import im.threads.internal.utils.FileUtils.isImage
-import im.threads.internal.utils.ThreadsLogger
 import im.threads.internal.utils.UrlUtils
 import im.threads.internal.utils.ViewUtils
 import im.threads.internal.views.CircularProgressButton
@@ -343,21 +342,12 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
         if (TextUtils.isEmpty(ogData.imageUrl)) {
             ogImage.visibility = View.GONE
         } else {
+            ogImage.visibility = View.VISIBLE
             ogImage.loadImage(
                 ogData.imageUrl,
-                listOf(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_INSIDE),
-                style.imagePlaceholder,
-                autoRotateWithExif = true,
-                callback = object : ImageLoader.ImageLoaderCallback {
-                    override fun onImageLoaded(bitmap: Bitmap) {
-                        ogImage.visibility = View.VISIBLE
-                    }
-
-                    override fun onImageLoadError() {
-                        ogImage.visibility = View.GONE
-                        ThreadsLogger.d(TAG, "Could not load OpenGraph image")
-                    }
-                }
+                errorDrawableResId = style.imagePlaceholder,
+                scales = listOf(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP),
+                isExternalImage = true
             )
         }
     }

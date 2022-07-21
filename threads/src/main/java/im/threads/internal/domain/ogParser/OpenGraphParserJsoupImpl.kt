@@ -59,7 +59,7 @@ class OpenGraphParserJsoupImpl : OpenGraphParser {
                 ogTags.forEachIndexed { index, _ ->
                     val tag = ogTags[index]
                     val property = tag.attr("property")
-                    val content = (tag.attr("content"))
+                    val content = tag.attr("content")
                     when (property) {
                         OG_IMAGE -> {
                             openGraphContent.imageUrl = content
