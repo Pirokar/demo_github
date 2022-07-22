@@ -1,7 +1,11 @@
 package im.threads.android.ui
 
+import android.Manifest.permission.ACCESS_COARSE_LOCATION
+import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.content.Intent
+import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.graphics.Bitmap
+import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -11,6 +15,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.pandulapeter.beagle.Beagle
@@ -34,12 +39,9 @@ import im.threads.android.utils.PrefUtilsApp
 import im.threads.android.utils.PrefUtilsApp.getCards
 import im.threads.android.utils.PrefUtilsApp.getTheme
 import im.threads.android.utils.PrefUtilsApp.storeCards
-import im.threads.internal.fragments.PermissionDescriptionAlertDialogFragment
-import im.threads.internal.fragments.PermissionDescriptionAlertDialogFragment.Companion.newInstance
 import im.threads.internal.model.CampaignMessage
 import im.threads.internal.utils.PrefUtils
 import im.threads.internal.utils.ThreadsLogger
-import im.threads.internal.utils.ThreadsPermissionChecker
 import im.threads.styles.permissions.PermissionDescriptionType
 import im.threads.view.ChatActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -67,6 +69,7 @@ class MainActivity : AppCompatActivity(), EditCardDialogActionsListener, YesNoDi
 
     private val compositeDisposable = CompositeDisposable()
     private lateinit var socketResponseDisposable: Disposable
+    private val locationManager = LocationManager(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -119,7 +122,7 @@ class MainActivity : AppCompatActivity(), EditCardDialogActionsListener, YesNoDi
 
     override fun onResume() {
         super.onResume()
-        LocationManager.getInstance(this).stopLocationUpdates()
+        locationManager.stopLocationUpdates()
     }
 
     private fun checkIsServerChanged() {
@@ -145,21 +148,11 @@ class MainActivity : AppCompatActivity(), EditCardDialogActionsListener, YesNoDi
         cardsAdapter.cards = if (hasCards) cards else ArrayList()
     }
 
-    private var permissionDescriptionAlertDialogFragment: PermissionDescriptionAlertDialogFragment? = null
 
     /** Пример открытия чата в виде Активности */
-    fun navigateToChatActivity() {
+    private fun goToChatActivity() {
         subscribeOnSocketResponses()
-        if (!ThreadsPermissionChecker.isAccessFineLocationPermissionGranted(this) ||
-            !ThreadsPermissionChecker.isAccessCoarseLocationPermissionGranted(this)) {
-            permissionDescriptionAlertDialogFragment = newInstance(PermissionDescriptionType.LOCATION, 1)
-            permissionDescriptionAlertDialogFragment?.show(
-                supportFragmentManager,
-                PermissionDescriptionAlertDialogFragment.TAG
-            )
-        }
-
-        LocationManager.getInstance(this).startLocationUpdates()
+        locationManager.startLocationUpdates()
         val currentCard = currentCard
         if (currentCard == null) {
             displayError(R.string.demo_error_empty_user)
@@ -175,6 +168,40 @@ class MainActivity : AppCompatActivity(), EditCardDialogActionsListener, YesNoDi
         )
         applyChatStyles()
         startActivity(Intent(this, ChatActivity::class.java))
+    }
+
+    fun navigateToChatActivity() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    ACCESS_FINE_LOCATION
+                ) != PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(
+                    this,
+                    ACCESS_COARSE_LOCATION
+                ) != PERMISSION_GRANTED
+            ) {
+                requestPermissions(
+                    arrayOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION),
+                    PERMISSIONS_REQUEST_CODE_LOCATION
+                )
+            } else {
+                goToChatActivity()
+            }
+        } else {
+            goToChatActivity()
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == PERMISSIONS_REQUEST_CODE_LOCATION) {
+            goToChatActivity()
+        }
     }
 
     private fun applyChatStyles() {
@@ -411,5 +438,6 @@ class MainActivity : AppCompatActivity(), EditCardDialogActionsListener, YesNoDi
     companion object {
         private const val TAG_SOCKET_RESPONSE = "SocketResponse"
         private const val YES_NO_DIALOG_REQUEST_CODE = 323
+        private const val PERMISSIONS_REQUEST_CODE_LOCATION = 323
     }
 }

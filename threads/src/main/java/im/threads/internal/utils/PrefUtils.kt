@@ -288,10 +288,6 @@ class PrefUtils private constructor() {
                     CAMERA_PERMISSION_DESCRIPTION_DIALOG_STYLE,
                     PermissionDescriptionDialogStyle::class.java
                 )
-                PermissionDescriptionType.LOCATION -> getIncomingStyle(
-                    CAMERA_PERMISSION_DESCRIPTION_DIALOG_STYLE,
-                    PermissionDescriptionDialogStyle::class.java
-                )
             }
         }
 
@@ -475,14 +471,14 @@ class PrefUtils private constructor() {
                 ThreadsLogger.w(
                     TAG,
                     "getIncomingStyle " + styleClass.canonicalName +
-                        " failed: ",
+                            " failed: ",
                     ex
                 )
             } catch (ex: JsonSyntaxException) {
                 ThreadsLogger.w(
                     TAG,
                     "getIncomingStyle " + styleClass.canonicalName +
-                        " failed: ",
+                            " failed: ",
                     ex
                 )
             }
