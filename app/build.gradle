@@ -93,7 +93,7 @@ dependencies {
 
     //Beagle
     implementation "io.github.pandulapeter.beagle:ui-bottom-sheet:$beagleVersion"
-    implementation 'com.google.android.gms:play-services-location:20.0.0'
+    implementation "com.google.android.gms:play-services-location:$playServicedVersion"
     debugImplementation "io.github.pandulapeter.beagle:log-crash-noop:$beagleVersion"
     releaseImplementation  "io.github.pandulapeter.beagle:log-crash:$beagleVersion"
     api "io.github.pandulapeter.beagle:log-okhttp:$beagleVersion"

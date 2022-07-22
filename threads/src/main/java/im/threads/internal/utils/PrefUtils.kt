@@ -471,14 +471,14 @@ class PrefUtils private constructor() {
                 ThreadsLogger.w(
                     TAG,
                     "getIncomingStyle " + styleClass.canonicalName +
-                            " failed: ",
+                        " failed: ",
                     ex
                 )
             } catch (ex: JsonSyntaxException) {
                 ThreadsLogger.w(
                     TAG,
                     "getIncomingStyle " + styleClass.canonicalName +
-                            " failed: ",
+                        " failed: ",
                     ex
                 )
             }
