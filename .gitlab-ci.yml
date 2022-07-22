@@ -14,13 +14,9 @@ cache:
     - .gradle/caches
 
 # Выполняется до скриптов 
-# - устанавливаем bundler
-# - устанавливаем через него нужные зависимости
 # - делаем градл выполняемым 
 # - задаем путь для GRADLE_USER_HOME
 before_script:
-  - gem install bundler
-  - bundle install
   - chmod +x ./gradlew
   - export GRADLE_USER_HOME=$PWD/.gradle
 
