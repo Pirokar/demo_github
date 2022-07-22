@@ -1,5 +1,8 @@
 package im.threads.internal.domain.ogParser
 
+/**
+ * Содержит набор параметров, возвращаемых после парсинга meta data у html.
+ */
 data class OGData(
     var title: String = "",
     var description: String = "",
@@ -8,8 +11,6 @@ data class OGData(
     var siteName: String = "",
     var type: String = ""
 ) {
-    fun isEmpty() = areTextsEmpty() && imageUrl.isEmpty()
-
     fun areTextsEmpty() = title.isEmpty() && description.isEmpty() && url.isEmpty()
 
     override fun toString(): String {
