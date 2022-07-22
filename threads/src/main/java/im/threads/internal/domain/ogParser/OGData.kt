@@ -11,7 +11,7 @@ data class OGData(
     var siteName: String = "",
     var type: String = ""
 ) {
-    fun areTextsEmpty() = title.isEmpty() && description.isEmpty() && url.isEmpty()
+    fun isEmpty() = title.isEmpty() && description.isEmpty() && url.isEmpty()
 
     override fun toString(): String {
         return "Open Graph Data:[title:$title, desc: $description, imageUrl: imageUrl, url:$url," +

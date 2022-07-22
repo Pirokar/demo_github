@@ -144,7 +144,7 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
             return
         }
 
-        if (ogData.areTextsEmpty()) {
+        if (ogData.isEmpty()) {
             hideOGView(ogDataLayout, timeStampView)
             return
         }
