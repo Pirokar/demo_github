@@ -148,7 +148,6 @@ class MainActivity : AppCompatActivity(), EditCardDialogActionsListener, YesNoDi
         cardsAdapter.cards = if (hasCards) cards else ArrayList()
     }
 
-
     /** Пример открытия чата в виде Активности */
     private fun goToChatActivity() {
         subscribeOnSocketResponses()
@@ -172,15 +171,10 @@ class MainActivity : AppCompatActivity(), EditCardDialogActionsListener, YesNoDi
 
     fun navigateToChatActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(
-                    this,
-                    ACCESS_FINE_LOCATION
-                ) != PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(
-                    this,
-                    ACCESS_COARSE_LOCATION
-                ) != PERMISSION_GRANTED
-            ) {
+            val fineLocationGranted = ContextCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION)
+            val coarseLocationGranted =
+                ContextCompat.checkSelfPermission(this, ACCESS_COARSE_LOCATION)
+            if (fineLocationGranted != PERMISSION_GRANTED || coarseLocationGranted != PERMISSION_GRANTED) {
                 requestPermissions(
                     arrayOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION),
                     PERMISSIONS_REQUEST_CODE_LOCATION
