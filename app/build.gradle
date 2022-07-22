@@ -73,6 +73,8 @@ repositories {
 dependencies {
     implementation project(':threads')
 
+    implementation "com.google.android.gms:play-services-location:$playServiceVersion"
+
     implementation "androidx.preference:preference-ktx:$rootProject.androidXPreferenceVersion"
     implementation "androidx.core:core-ktx:$rootProject.androidXCoreVersion"
 
@@ -93,7 +95,6 @@ dependencies {
 
     //Beagle
     implementation "io.github.pandulapeter.beagle:ui-bottom-sheet:$beagleVersion"
-    implementation "com.google.android.gms:play-services-location:$playServiceVersion"
     debugImplementation "io.github.pandulapeter.beagle:log-crash-noop:$beagleVersion"
     releaseImplementation  "io.github.pandulapeter.beagle:log-crash:$beagleVersion"
     api "io.github.pandulapeter.beagle:log-okhttp:$beagleVersion"
