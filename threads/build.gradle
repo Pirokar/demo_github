@@ -165,6 +165,7 @@ dependencies {
     testImplementation "androidx.test.ext:junit:$rootProject.androidXJunitVersion"
     testImplementation "org.mockito:mockito-core:$rootProject.mockitoVersion"
     testImplementation group: 'org.mockito', name: 'mockito-inline', version: rootProject.mockitoInlineVersion
+    testImplementation "com.github.tomakehurst:wiremock-jre8:$webserver_version"
     androidTestImplementation "androidx.test:runner:$rootProject.androidXTestVersion"
     androidTestImplementation "androidx.test:rules:$rootProject.androidXTestVersion"
     androidTestImplementation "org.mockito:mockito-core:$rootProject.mockitoVersion"
