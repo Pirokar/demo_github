@@ -162,7 +162,9 @@ class MessagesTable(
             chatItem.fileDescription?.let {
                 fileDescriptionTable.putFileDescription(
                     sqlHelper,
-                    it, chatItem.id.orEmpty(), false
+                    it,
+                    chatItem.id.orEmpty(),
+                    false
                 )
             }
             if (chatItem.quote != null) {
@@ -181,7 +183,9 @@ class MessagesTable(
                 chatItem.fileDescription?.let {
                     fileDescriptionTable.putFileDescription(
                         sqlHelper,
-                        it, chatItem.id.orEmpty(), false
+                        it,
+                        chatItem.id.orEmpty(),
+                        false
                     )
                 }
                 chatItem.quote?.let { quote -> quotesTable.putQuote(sqlHelper, id, quote) }
