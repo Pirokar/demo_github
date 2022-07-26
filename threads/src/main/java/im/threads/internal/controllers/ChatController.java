@@ -810,9 +810,6 @@ public final class ChatController {
                                 }
                                 return;
                             }
-                            if (chatItem instanceof Survey) {
-                                processSurvey((Survey) chatItem);
-                            }
                             if (chatItem instanceof ScheduleInfo) {
                                 currentScheduleInfo = (ScheduleInfo) chatItem;
                                 currentScheduleInfo.calculateServerTimeDiff();
@@ -1206,25 +1203,7 @@ public final class ChatController {
         if (!isChatWorking()) {
             return;
         }
-        if (!chatItems.isEmpty()) {
-            final ChatItem lastItem = chatItems.get(chatItems.size() - 1);
-            if (lastItem instanceof Survey) {
-                processSurvey((Survey) lastItem);
-            }
-            /*if (!(lastItem instanceof RequestResolveThread)) {
-                removeResolveRequest();
-            }*/
-        }
         processSystemMessage(chatItems);
-    }
-
-    private void processSurvey(Survey survey) {
-        if (!survey.isCompleted()) {
-            if (activeSurvey == null && !survey.isRead()) {
-                Config.instance.transport.sendRatingReceived(survey);
-            }
-            activeSurvey = survey;
-        }
     }
 
     private void processSystemMessage(List<ChatItem> chatItems) {

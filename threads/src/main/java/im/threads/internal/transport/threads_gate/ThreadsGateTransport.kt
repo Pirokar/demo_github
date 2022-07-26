@@ -174,17 +174,6 @@ class ThreadsGateTransport(
         )
     }
 
-    override fun sendRatingReceived(survey: Survey) {
-        sendMessage(
-            OutgoingMessageCreator.createRatingReceivedMessage(
-                survey.sendingId,
-                PrefUtils.clientID
-            ),
-            false,
-            ChatItemType.SURVEY_PASSED.name + CORRELATION_ID_DIVIDER + survey.uuid
-        )
-    }
-
     override fun sendClientOffline(clientId: String) {
         if (TextUtils.isEmpty(PrefUtils.deviceAddress)) {
             return

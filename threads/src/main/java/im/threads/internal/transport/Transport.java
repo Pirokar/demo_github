@@ -99,8 +99,6 @@ public abstract class Transport {
      */
     public abstract void sendMessage(UserPhrase userPhrase, ConsultInfo consultInfo, final String filePath, final String quoteFilePath);
 
-    public abstract void sendRatingReceived(Survey survey);
-
     public abstract void sendClientOffline(String clientId);
 
     @NonNull
