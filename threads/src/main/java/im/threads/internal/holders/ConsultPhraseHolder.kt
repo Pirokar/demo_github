@@ -18,6 +18,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import im.threads.R
 import im.threads.internal.Config
+import im.threads.internal.domain.logger.LoggerEdna
 import im.threads.internal.formatters.RussianFormatSymbols
 import im.threads.internal.imageLoading.ImageLoader
 import im.threads.internal.imageLoading.ImageModifications
@@ -334,9 +335,5 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
         mImage.visibility = View.VISIBLE
         rotateAnim.cancel()
         rotateAnim.reset()
-    }
-
-    companion object {
-        private val TAG = ConsultPhraseHolder::class.java.simpleName
     }
 }

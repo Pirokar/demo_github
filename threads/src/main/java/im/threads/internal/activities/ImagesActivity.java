@@ -24,6 +24,7 @@ import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.adapters.ImagesAdapter;
+import im.threads.internal.domain.logger.LoggerEdna;
 import im.threads.internal.fragments.PermissionDescriptionAlertDialogFragment;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.permissions.PermissionsActivity;
@@ -31,7 +32,6 @@ import im.threads.internal.secureDatabase.DatabaseHolder;
 import im.threads.internal.utils.ColorsHelper;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.ThreadUtils;
-import im.threads.internal.utils.ThreadsLogger;
 import im.threads.internal.utils.ThreadsPermissionChecker;
 import im.threads.styles.permissions.PermissionDescriptionType;
 import io.reactivex.Completable;
@@ -41,7 +41,6 @@ import io.reactivex.schedulers.Schedulers;
 
 public final class ImagesActivity extends BaseActivity implements ViewPager.OnPageChangeListener,
         PermissionDescriptionAlertDialogFragment.OnAllowPermissionClickListener {
-    private static final String TAG = "ImagesActivity ";
     private static final int CODE_REQUEST_DOWNLOAD = 1;
 
     private ChatStyle style;
@@ -88,7 +87,7 @@ public final class ImagesActivity extends BaseActivity implements ViewPager.OnPa
                             }
                             onPageSelected(0);
                         },
-                        e -> ThreadsLogger.e(TAG, "getAllFileDescriptions error: " + e.getMessage()))
+                        e -> LoggerEdna.e("getAllFileDescriptions error: ", e))
         );
     }
 
@@ -161,7 +160,7 @@ public final class ImagesActivity extends BaseActivity implements ViewPager.OnPa
                 .subscribe(
                         () -> Toast.makeText(ImagesActivity.this, getString(R.string.threads_saved_to_downloads), Toast.LENGTH_SHORT).show(),
                         throwable -> {
-                            ThreadsLogger.e(TAG, "downloadImage", throwable);
+                            LoggerEdna.e("downloadImage", throwable);
                             Toast.makeText(ImagesActivity.this, R.string.threads_unable_to_save, Toast.LENGTH_SHORT).show();
                         }
                 )

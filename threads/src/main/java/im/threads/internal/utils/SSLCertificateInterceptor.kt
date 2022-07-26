@@ -1,14 +1,12 @@
 package im.threads.internal.utils
 
-import android.util.Log
+import im.threads.internal.domain.logger.LoggerEdna
 import okhttp3.Handshake
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
 import okio.IOException
 import java.security.cert.Certificate
-
-const val TAG = "SSL"
 
 class SSLCertificateInterceptor : Interceptor {
 
@@ -19,18 +17,19 @@ class SSLCertificateInterceptor : Interceptor {
             val response: Response = chain.proceed(request)
             val handshake: Handshake? = response.handshake
             if (handshake == null) {
-                Log.i(TAG, "no handshake")
+                LoggerEdna.i("no handshake")
                 return response
             }
-            Log.i(TAG, "handshake success")
+            LoggerEdna.i("handshake success")
             val certificates: List<Certificate> = handshake.peerCertificates
-            if (certificates.isEmpty())
-                Log.i(TAG, "no peer certificates")
-            else
-                certificates.forEach { Log.i(TAG, "Server $it") }
+            if (certificates.isEmpty()) {
+                LoggerEdna.i("no peer certificates")
+            } else {
+                certificates.forEach { LoggerEdna.i("Server $it") }
+            }
             return response
         } catch (e: Exception) {
-            Log.e(TAG, "<-- HTTP FAILED: $e")
+            LoggerEdna.e("<-- HTTP FAILED: $e")
             throw e
         }
     }

@@ -6,9 +6,9 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
-public final class DateHelper {
-    private static final String TAG = DateHelper.class.getSimpleName();
+import im.threads.internal.domain.logger.LoggerEdna;
 
+public final class DateHelper {
     private static String SERVER_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
     private static String SERVER_DATE_TIMEZONE = "UTC";
 
@@ -23,7 +23,7 @@ public final class DateHelper {
         try {
             date = sdf.parse(dateString);
         } catch (ParseException e) {
-            ThreadsLogger.e(TAG, "getMessageTimestampFromDateString", e);
+            LoggerEdna.e("getMessageTimestampFromDateString", e);
         }
         return date.getTime();
     }

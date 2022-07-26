@@ -12,13 +12,13 @@ import im.threads.internal.controllers.ChatController
 import im.threads.internal.controllers.UnreadMessagesController
 import im.threads.internal.domain.audio_converter.AudioConverter
 import im.threads.internal.domain.audio_converter.callback.ILoadCallback
+import im.threads.internal.domain.logger.LoggerEdna
 import im.threads.internal.helpers.FileProviderHelper
 import im.threads.internal.model.FileDescription
 import im.threads.internal.model.UpcomingUserMessage
 import im.threads.internal.useractivity.LastUserActivityTimeCounterSingletonProvider.getLastUserActivityTimeCounter
 import im.threads.internal.utils.FileUtils.getFileSize
 import im.threads.internal.utils.PrefUtils
-import im.threads.internal.utils.ThreadsLogger
 import im.threads.styles.permissions.PermissionDescriptionDialogStyle
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.exceptions.UndeliverableException
@@ -92,7 +92,7 @@ class ThreadsLib private constructor(context: Context?) {
         if (!TextUtils.isEmpty(clientId)) {
             Config.instance.transport.sendClientOffline(clientId)
         } else {
-            ThreadsLogger.i(javaClass.simpleName, "clientId must not be empty")
+            LoggerEdna.i("clientId must not be empty")
         }
     }
 
@@ -127,15 +127,16 @@ class ThreadsLib private constructor(context: Context?) {
                 )
             }
             val msg = UpcomingUserMessage(
-                fileDescription, null, null, message, false
+                fileDescription,
+                null,
+                null,
+                message,
+                false
             )
             chatController.onUserInput(msg)
             true
         } else {
-            ThreadsLogger.i(
-                javaClass.simpleName,
-                "You might need to initialize user first with ThreadsLib.userInfo()"
-            )
+            LoggerEdna.i("You might need to initialize user first with ThreadsLib.userInfo()")
             false
         }
     }
@@ -149,7 +150,6 @@ class ThreadsLib private constructor(context: Context?) {
     }
 
     companion object {
-        private val TAG = ThreadsLib::class.java.simpleName
         private var instance: ThreadsLib? = null
         private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
@@ -163,6 +163,9 @@ class ThreadsLib private constructor(context: Context?) {
             val startInitTime = System.currentTimeMillis()
             Config.instance = configBuilder.build()
             instance = ThreadsLib(configBuilder.context)
+
+            Config.instance.loggerConfig?.let { LoggerEdna.init(it) }
+
             PrefUtils.migrateMainSharedPreferences()
 
             Config.instance.unreadMessagesCountListener?.let { unreadMessagesCountListener ->
@@ -173,7 +176,7 @@ class ThreadsLib private constructor(context: Context?) {
                         { count: Int ->
                             unreadMessagesCountListener.onUnreadMessagesCountChanged(count)
                         }
-                    ) { error: Throwable -> ThreadsLogger.e(TAG, "init " + error.message) }
+                    ) { error: Throwable -> LoggerEdna.e("init ${error.message}") }
 
                 coroutineScope.launch {
                     val task = async(Dispatchers.IO) {
@@ -189,17 +192,16 @@ class ThreadsLib private constructor(context: Context?) {
                         Config.instance.context,
                         object : ILoadCallback {
                             override fun onSuccess() {
-                                ThreadsLogger.i(TAG, "AndroidAudioConverter was successfully loaded")
+                                LoggerEdna.i("AndroidAudioConverter was successfully loaded")
                             }
 
                             override fun onFailure(error: Exception) {
-                                ThreadsLogger.e(TAG, "AndroidAudioConverter failed to load", error)
+                                LoggerEdna.e("AndroidAudioConverter failed to load", error)
                             }
                         }
                     )
                 } catch (e: UnsatisfiedLinkError) {
-                    ThreadsLogger.e(
-                        TAG,
+                    LoggerEdna.e(
                         "AndroidAudioConverter failed to load (UnsatisfiedLinkError)",
                         e
                     )
@@ -213,7 +215,7 @@ class ThreadsLib private constructor(context: Context?) {
                     if (throwable is UndeliverableException) {
                         throwableCause = throwable.cause
                         if (throwableCause != null) {
-                            ThreadsLogger.e(TAG, "global handler: ", throwableCause)
+                            LoggerEdna.e("global handler: ", throwableCause)
                         }
                         return@setErrorHandler
                     }
@@ -225,7 +227,8 @@ class ThreadsLib private constructor(context: Context?) {
                     }
                 }
             }
-            ThreadsLogger.i(TAG, "Lib_init_time: ${System.currentTimeMillis() - startInitTime}ms")
+
+            LoggerEdna.i("Lib_init_time: ${System.currentTimeMillis() - startInitTime}ms")
         }
 
         @JvmStatic

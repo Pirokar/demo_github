@@ -3,8 +3,8 @@
 package im.threads.internal.utils
 
 import android.content.res.Resources
-import android.util.Log
 import androidx.annotation.RawRes
+import im.threads.internal.domain.logger.LoggerEdna
 import java.io.InputStream
 import java.security.KeyStore
 import java.security.SecureRandom
@@ -53,7 +53,7 @@ private fun loadCertificateIntoKeyStore(
     try {
         source = resources.openRawResource(rawResId)
         val certificate = certificateFactory.generateCertificate(source)
-        Log.i("TlsConfigurationUtils", "certificate:  $certificate")
+        LoggerEdna.i("certificate:  $certificate")
         val alias = resources.getResourceName(rawResId)
         keyStore.setCertificateEntry(alias, certificate)
     } finally {

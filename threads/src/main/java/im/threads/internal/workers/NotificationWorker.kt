@@ -29,11 +29,11 @@ import im.threads.R
 import im.threads.internal.Config
 import im.threads.internal.activities.QuickAnswerActivity
 import im.threads.internal.controllers.UnreadMessagesController
+import im.threads.internal.domain.logger.LoggerEdna
 import im.threads.internal.formatters.MessageFormatter
 import im.threads.internal.imageLoading.ImageLoader
 import im.threads.internal.imageLoading.ImageModifications
 import im.threads.internal.utils.FileUtils.convertRelativeUrlToAbsolute
-import im.threads.internal.utils.ThreadsLogger
 import im.threads.internal.utils.WorkerUtils
 import im.threads.internal.utils.WorkerUtils.unmarshall
 import im.threads.view.ChatFragment
@@ -51,7 +51,7 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
     private var style: ChatStyle = Config.instance.chatStyle
 
     override fun doWork(): Result {
-        ThreadsLogger.i(TAG, "doWork")
+        LoggerEdna.i("doWork")
 
         val systemService = context.getSystemService(Context.NOTIFICATION_SERVICE)
         val notificationManager: NotificationManager
@@ -312,7 +312,7 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
                 context.resources.getIdentifier("right_icon", "id", context.packageName)
             notification.contentView.setViewVisibility(smallIconViewId, View.INVISIBLE)
         } catch (e: Exception) {
-            ThreadsLogger.e(TAG, "getPreNStyleNotification", e)
+            LoggerEdna.e("getPreNStyleNotification", e)
         }
         return notification
     }
@@ -449,7 +449,7 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
                 .modifications(ImageModifications.CircleCropModification)
                 .getBitmapSync(context)
         } catch (e: IOException) {
-            ThreadsLogger.e(TAG, "getBitmapFromUrl", e)
+            LoggerEdna.e("getBitmapFromUrl", e)
             null
         }
     }
@@ -488,7 +488,6 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
         const val GROUP_KEY_PUSH =
             "im.threads.internal.workers.NotificationWorker.UNREAD_MESSAGE_GROUP"
 
-        const val TAG = "NotificationWorker"
         private const val WORKER_NAME = "im.threads.internal.workers.NotificationWorker"
         private const val NOTIFICATION_ACTION =
             "im.threads.internal.workers.NotificationWorker.Action"

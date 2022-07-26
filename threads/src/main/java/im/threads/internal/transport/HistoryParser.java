@@ -13,6 +13,7 @@ import java.util.List;
 
 import im.threads.R;
 import im.threads.internal.Config;
+import im.threads.internal.domain.logger.LoggerEdna;
 import im.threads.internal.formatters.ChatItemType;
 import im.threads.internal.formatters.SpeechStatus;
 import im.threads.internal.model.Attachment;
@@ -32,11 +33,8 @@ import im.threads.internal.model.SimpleSystemMessage;
 import im.threads.internal.model.Survey;
 import im.threads.internal.model.UserPhrase;
 import im.threads.internal.utils.DateHelper;
-import im.threads.internal.utils.ThreadsLogger;
 
 public final class HistoryParser {
-    private static final String TAG = "HistoryParser ";
-
     private HistoryParser() {
     }
 
@@ -158,7 +156,7 @@ public final class HistoryParser {
             }
             Collections.sort(out, (ci1, ci2) -> Long.compare(ci1.getTimeStamp(), ci2.getTimeStamp()));
         } catch (final Exception e) {
-            ThreadsLogger.e(TAG, "error while formatting: " + messages, e);
+            LoggerEdna.e("error while formatting: " + messages, e);
         }
         return out;
     }
@@ -175,7 +173,7 @@ public final class HistoryParser {
             }
             return survey;
         } catch (final JsonSyntaxException e) {
-            ThreadsLogger.e(TAG, "getSurveyFromJsonString", e);
+            LoggerEdna.e("getSurveyFromJsonString", e);
             return null;
         }
     }

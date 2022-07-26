@@ -28,6 +28,7 @@ import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.activities.QuickAnswerActivity;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
+import im.threads.internal.domain.logger.LoggerEdna;
 import im.threads.internal.imageLoading.ImageLoader;
 import im.threads.internal.imageLoading.ImageModifications;
 import im.threads.internal.model.InputFieldEnableModel;
@@ -35,11 +36,10 @@ import im.threads.internal.useractivity.LastUserActivityTimeCounter;
 import im.threads.internal.useractivity.LastUserActivityTimeCounterSingletonProvider;
 import im.threads.internal.utils.ColorsHelper;
 import im.threads.internal.utils.FileUtils;
-import im.threads.internal.utils.ThreadsLogger;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
 public final class QuickAnswerFragment extends BaseDialogFragment {
-    public static final String TAG = QuickAnswerFragment.class.getCanonicalName();
+    public static String TAG = QuickAnswerFragment.class.getSimpleName();
     private EditText mEditText;
 
     public static QuickAnswerFragment getInstance(
@@ -188,7 +188,7 @@ public final class QuickAnswerFragment extends BaseDialogFragment {
         subscribe(ChatUpdateProcessor.getInstance().getUserInputEnableProcessor()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::updateInputEnable,
-                        error -> ThreadsLogger.e(TAG, "initUserInputState " + error.getMessage())
+                        error -> LoggerEdna.e("initUserInputState ", error)
                 ));
     }
 

@@ -33,9 +33,9 @@ import im.threads.android.utils.PrefUtilsApp
 import im.threads.android.utils.PrefUtilsApp.getCards
 import im.threads.android.utils.PrefUtilsApp.getTheme
 import im.threads.android.utils.PrefUtilsApp.storeCards
+import im.threads.internal.domain.logger.LoggerEdna
 import im.threads.internal.model.CampaignMessage
 import im.threads.internal.utils.PrefUtils
-import im.threads.internal.utils.ThreadsLogger
 import im.threads.styles.permissions.PermissionDescriptionType
 import im.threads.view.ChatActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -219,9 +219,9 @@ class MainActivity : AppCompatActivity(), EditCardDialogActionsListener, YesNoDi
                 .observeOn(AndroidSchedulers.mainThread())
                 .onBackpressureDrop()
                 .subscribe({ responseMap ->
-                    ThreadsLogger.i(TAG_SOCKET_RESPONSE, responseMap.toString())
+                    LoggerEdna.i(TAG_SOCKET_RESPONSE, responseMap.toString())
                 }, { error ->
-                    ThreadsLogger.e(TAG_SOCKET_RESPONSE, error.message)
+                    LoggerEdna.e(TAG_SOCKET_RESPONSE, error.message, error)
                 })
             compositeDisposable.add(socketResponseDisposable)
         }

@@ -1,7 +1,7 @@
 package im.threads.internal.imageLoading
 
-import android.util.Log
 import android.widget.ImageView
+import im.threads.internal.domain.logger.LoggerEdna
 import java.io.File
 
 internal fun ImageView.loadImage(
@@ -36,5 +36,5 @@ internal fun ImageView.loadImage(
 }
 
 private fun showLog() {
-    Log.e("ImageLoading", "Data is empty, nothing to load")
+    LoggerEdna.e("Data is empty, nothing to load")
 }

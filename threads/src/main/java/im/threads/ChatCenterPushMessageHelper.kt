@@ -3,12 +3,12 @@ package im.threads
 import android.content.Context
 import android.os.Bundle
 import androidx.core.os.bundleOf
+import im.threads.internal.domain.logger.LoggerEdna
 import im.threads.internal.model.CAMPAIGN_DATE_FORMAT_PARSE
 import im.threads.internal.model.CampaignMessage
 import im.threads.internal.transport.MessageAttributes
 import im.threads.internal.transport.PushMessageAttributes
 import im.threads.internal.utils.PrefUtils
-import im.threads.internal.utils.ThreadsLogger
 import im.threads.internal.workers.NotificationWorker
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -63,7 +63,7 @@ object ChatCenterPushMessageHelper {
                     )
                     PrefUtils.campaignMessage = campaignMessage
                     NotificationWorker.addCampaignMessage(context, alertStr)
-                    ThreadsLogger.i(TAG, "campaign message handled: $campaignMessage")
+                    LoggerEdna.i("campaign message handled: $campaignMessage")
                 }
                 bundle.containsKey(PushMessageAttributes.MESSAGE) || bundle.containsKey(PushMessageAttributes.ALERT) -> {
                     val operatorUrl = bundle[PushMessageAttributes.OPERATOR_URL] as String?
@@ -76,15 +76,14 @@ object ChatCenterPushMessageHelper {
                         operatorUrl,
                         appMarker
                     )
-                    ThreadsLogger.i(TAG, "text message handled: $text")
+                    LoggerEdna.i("text message handled: $text")
                 }
                 else -> {
-                    ThreadsLogger.i(TAG, "unparsed message with origin=threads ")
+                    LoggerEdna.i("unparsed message with origin=threads ")
                 }
             }
         } else {
-            ThreadsLogger.i(TAG, "origin=threads not found in bundle")
+            LoggerEdna.i("origin=threads not found in bundle")
         }
     }
-    private const val TAG = "ChatCenterPushMessageHelper"
 }

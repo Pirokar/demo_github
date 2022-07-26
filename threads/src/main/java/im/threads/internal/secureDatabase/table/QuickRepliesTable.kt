@@ -1,12 +1,11 @@
 package im.threads.internal.secureDatabase.table
 
 import android.content.ContentValues
+import im.threads.internal.domain.logger.LoggerEdna
 import im.threads.internal.model.QuickReply
 import im.threads.internal.secureDatabase.ThreadsDbHelper.Companion.DB_PASSWORD
-import im.threads.internal.utils.ThreadsLogger
 import net.sqlcipher.database.SQLiteDatabase
 import net.sqlcipher.database.SQLiteOpenHelper
-import java.util.ArrayList
 
 class QuickRepliesTable : Table() {
     override fun createTable(db: SQLiteDatabase) {
@@ -36,7 +35,8 @@ class QuickRepliesTable : Table() {
         val query =
             "select * from $TABLE_QUICK_REPLIES where $COLUMN_QUICK_REPLIES_MESSAGE_UUID = ?"
         sqlHelper.getWritableDatabase(DB_PASSWORD).rawQuery(
-            query, arrayOf(messageUUID)
+            query,
+            arrayOf(messageUUID)
         ).use { c ->
             if (c.count == 0) {
                 return items
@@ -68,14 +68,15 @@ class QuickRepliesTable : Table() {
                     " where " + COLUMN_QUICK_REPLIES_MESSAGE_UUID + " = ? "
                 )
             sqlHelper.getWritableDatabase(DB_PASSWORD).execSQL(
-                deleteQuickRepliesSql, arrayOf(messageUUID)
+                deleteQuickRepliesSql,
+                arrayOf(messageUUID)
             )
             for (item: QuickReply in quickReplies) {
                 putQuickReply(sqlHelper, messageUUID, item)
             }
             sqlHelper.getWritableDatabase(DB_PASSWORD).setTransactionSuccessful()
         } catch (e: Exception) {
-            ThreadsLogger.e(TAG, "putQuickReplies", e)
+            LoggerEdna.e("putQuickReplies", e)
         } finally {
             sqlHelper.getWritableDatabase(DB_PASSWORD).endTransaction()
         }
@@ -94,10 +95,6 @@ class QuickRepliesTable : Table() {
         quickReplyCv.put(COLUMN_QUICK_REPLIES_IMAGE_URL, quickReply.imageUrl)
         quickReplyCv.put(COLUMN_QUICK_REPLIES_URL, quickReply.url)
         sqlHelper.getWritableDatabase(DB_PASSWORD).insert(TABLE_QUICK_REPLIES, null, quickReplyCv)
-    }
-
-    companion object {
-        private val TAG = QuickRepliesTable::class.java.canonicalName
     }
 }
 

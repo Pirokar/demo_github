@@ -12,11 +12,11 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import im.threads.annotation.OpenForTesting
 import im.threads.internal.activities.ImagesActivity
 import im.threads.internal.broadcastReceivers.ProgressReceiver
+import im.threads.internal.domain.logger.LoggerEdna
 import im.threads.internal.model.FileDescription
 import im.threads.internal.secureDatabase.DatabaseHolder
 import im.threads.internal.utils.FileUtils.getMimeType
 import im.threads.internal.utils.FileUtils.isImage
-import im.threads.internal.utils.ThreadsLogger
 import im.threads.internal.workers.FileDownloadWorker.Companion.startDownloadFD
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -43,7 +43,6 @@ internal class FilesViewModel(
         }
     }
 
-    private val tag = FilesViewModel::class.java.canonicalName
     private val compositeDisposable = CompositeDisposable()
 
     /**
@@ -136,7 +135,7 @@ internal class FilesViewModel(
     }
 
     private fun onFilesReceivedError(error: Throwable) {
-        ThreadsLogger.e(tag, "getAllFileDescriptions error: ${error.message}")
+        LoggerEdna.e("getAllFileDescriptions error: ${error.message}")
     }
 
     private fun connectReceiver() {

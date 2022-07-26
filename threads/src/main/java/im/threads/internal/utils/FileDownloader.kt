@@ -4,12 +4,11 @@ import android.content.Context
 import android.net.Uri
 import android.text.TextUtils
 import im.threads.internal.Config
+import im.threads.internal.domain.logger.LoggerEdna
 import java.io.BufferedInputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
-import java.lang.Exception
-import java.lang.StringBuilder
 import java.net.HttpURLConnection
 import java.net.URL
 import javax.net.ssl.HttpsURLConnection
@@ -80,13 +79,13 @@ class FileDownloader(private val path: String, fileName: String, ctx: Context, p
                     downloadLister.onComplete(outputFile)
                 }
             } catch (e: Exception) {
-                ThreadsLogger.e(TAG, "1 ", e)
+                LoggerEdna.e("1 ", e)
                 downloadLister.onFileDownloadError(e)
             } finally {
                 urlConnection.disconnect()
             }
         } catch (e: Exception) {
-            ThreadsLogger.e(TAG, "2 ", e)
+            LoggerEdna.e("2 ", e)
             downloadLister.onFileDownloadError(e)
         }
     }
@@ -102,7 +101,7 @@ class FileDownloader(private val path: String, fileName: String, ctx: Context, p
                 return values[0]?.toLong()
             }
         } catch (e: Exception) {
-            ThreadsLogger.e(TAG, "download", e)
+            LoggerEdna.e("download", e)
         }
         return null
     }
@@ -114,7 +113,6 @@ class FileDownloader(private val path: String, fileName: String, ctx: Context, p
     }
 
     companion object {
-        private const val TAG = "FileDownloader "
         @JvmStatic
         fun getDownloadDir(ctx: Context): File {
             return ctx.filesDir

@@ -6,17 +6,15 @@ import android.content.pm.PackageManager;
 
 import im.threads.BuildConfig;
 import im.threads.internal.Config;
+import im.threads.internal.domain.logger.LoggerEdna;
 
 public final class AppInfoHelper {
-
-    private static final String TAG = AppInfoHelper.class.getSimpleName();
-
     public static String getAppVersion() {
         PackageInfo pInfo = null;
         try {
             pInfo = Config.instance.context.getPackageManager().getPackageInfo(Config.instance.context.getPackageName(), 0);
         } catch (PackageManager.NameNotFoundException e) {
-            ThreadsLogger.e(TAG, "getAppVersion", e);
+            LoggerEdna.e("getAppVersion", e);
         }
         return pInfo != null ? pInfo.versionName : "";
     }
@@ -31,7 +29,7 @@ public final class AppInfoHelper {
             try {
                 return applicationInfo.loadLabel(Config.instance.context.getPackageManager()).toString();
             } catch (Exception e) {
-                ThreadsLogger.e(TAG, "getAppName", e);
+                LoggerEdna.e("getAppName", e);
             }
         }
         return "Unknown";
@@ -43,7 +41,7 @@ public final class AppInfoHelper {
             try {
                 return applicationInfo.packageName;
             } catch (Exception e) {
-                ThreadsLogger.e(TAG, "getAppId", e);
+                LoggerEdna.e("getAppId", e);
             }
         }
         return "";

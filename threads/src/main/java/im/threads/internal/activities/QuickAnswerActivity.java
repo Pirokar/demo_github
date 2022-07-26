@@ -19,14 +19,13 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import im.threads.ChatStyle;
 import im.threads.internal.Config;
 import im.threads.internal.controllers.QuickAnswerController;
+import im.threads.internal.domain.logger.LoggerEdna;
 import im.threads.internal.fragments.QuickAnswerFragment;
 import im.threads.internal.model.ConsultPhrase;
 import im.threads.internal.model.UpcomingUserMessage;
-import im.threads.internal.utils.ThreadsLogger;
 
 public final class QuickAnswerActivity
         extends AppCompatActivity {
-    private static final String TAG = "QuickAnswerActivity ";
     public static final String ACTION_ANSWER = "im.threads.ACTION_ANSWER";
     public static final String ACTION_CANCEL = "im.threads.ACTION_CANCEL";
     private QuickAnswerReceiver mQuickAnswerReceiver;
@@ -92,11 +91,11 @@ public final class QuickAnswerActivity
     private class QuickAnswerReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            ThreadsLogger.d(TAG, "onReceive: " + intent);
+            LoggerEdna.d("onReceive: " + intent);
             if (intent.getAction().equalsIgnoreCase(ACTION_CANCEL)) {
                 finish();
             } else if (intent.getAction().equalsIgnoreCase(ACTION_ANSWER)) {
-                ThreadsLogger.i(TAG, "onReceive: ACTION_ANSWER");
+                LoggerEdna.i("onReceive: ACTION_ANSWER");
                 controller.onUserAnswer(new UpcomingUserMessage(null, null, null, intent.getStringExtra(ACTION_ANSWER), false));
                 finish();
             }

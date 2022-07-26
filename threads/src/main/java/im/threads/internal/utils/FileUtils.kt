@@ -15,6 +15,7 @@ import android.text.TextUtils
 import android.webkit.MimeTypeMap
 import im.threads.R
 import im.threads.internal.Config
+import im.threads.internal.domain.logger.LoggerEdna
 import im.threads.internal.imageLoading.ImageLoader
 import im.threads.internal.model.FileDescription
 import java.io.ByteArrayOutputStream
@@ -25,7 +26,6 @@ import java.io.IOException
 import java.util.UUID
 
 object FileUtils {
-    private val TAG = FileUtils::class.java.simpleName
     private const val JPEG = 0
     private const val PNG = 1
     private const val PDF = 2
@@ -186,7 +186,7 @@ object FileUtils {
             context.contentResolver.openInputStream(uri)
                 .use { inputStream -> return inputStream != null && inputStream.read() != -1 }
         } catch (e: IOException) {
-            ThreadsLogger.e(TAG, "file can't be sent", e)
+            LoggerEdna.e("file can't be sent", e)
             return false
         }
     }
@@ -271,7 +271,7 @@ object FileUtils {
                         bitmap.recycle()
                     }
                 } catch (e: IOException) {
-                    ThreadsLogger.e(TAG, "saveToFile", e)
+                    LoggerEdna.e("saveToFile", e)
                     bitmap.recycle()
                 }
             }
@@ -295,7 +295,7 @@ object FileUtils {
                         }
                     }
                 } catch (e: IOException) {
-                    ThreadsLogger.e(TAG, "cannot get bitmap in saveToUri", e)
+                    LoggerEdna.e("cannot get bitmap in saveToUri", e)
                     bitmap.recycle()
                 }
             }

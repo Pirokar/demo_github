@@ -8,10 +8,9 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import im.threads.internal.domain.logger.LoggerEdna;
+
 public class MetaDataUtils {
-
-    private static final String TAG = MetaDataUtils.class.getSimpleName();
-
     private static final String DATASTORE_URL = "im.threads.getDatastoreUrl";
     private static final String SERVER_BASE_URL = "im.threads.getServerUrl";
     private static final String THREADS_GATE_URL = "im.threads.threadsGateUrl";
@@ -106,7 +105,7 @@ public class MetaDataUtils {
             ApplicationInfo ai = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
             return ai.metaData;
         } catch (PackageManager.NameNotFoundException e) {
-            ThreadsLogger.e(TAG, "Failed to load self applicationInfo - that's really weird. ", e);
+            LoggerEdna.e("Failed to load self applicationInfo - that's really weird. ", e);
             return null;
         }
     }

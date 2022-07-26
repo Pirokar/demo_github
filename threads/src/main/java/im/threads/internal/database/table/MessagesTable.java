@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import im.threads.internal.domain.logger.LoggerEdna;
 import im.threads.internal.formatters.SpeechStatus;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ConsultConnectionMessage;
@@ -29,12 +30,8 @@ import im.threads.internal.model.SimpleSystemMessage;
 import im.threads.internal.model.SpeechMessageUpdate;
 import im.threads.internal.model.Survey;
 import im.threads.internal.model.UserPhrase;
-import im.threads.internal.utils.ThreadsLogger;
 
 public class MessagesTable extends Table {
-
-    private static final String TAG = MessagesTable.class.getCanonicalName();
-
     private static final String TABLE_MESSAGES = "TABLE_MESSAGES";
     private static final String COLUMN_TABLE_ID = "TABLE_ID";
     private static final String COLUMN_MESSAGE_UUID = "COLUMN_MESSAGE_UUID";
@@ -168,7 +165,7 @@ public class MessagesTable extends Table {
             }
             sqlHelper.getWritableDatabase().setTransactionSuccessful();
         } catch (Exception e) {
-            ThreadsLogger.e(TAG, "putMessagesSync", e);
+            LoggerEdna.e("putMessagesSync", e);
         } finally {
             sqlHelper.getWritableDatabase().endTransaction();
         }

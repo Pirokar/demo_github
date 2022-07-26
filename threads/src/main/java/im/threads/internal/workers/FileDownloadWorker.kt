@@ -11,13 +11,13 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import im.threads.internal.Config
 import im.threads.internal.broadcastReceivers.ProgressReceiver
+import im.threads.internal.domain.logger.LoggerEdna
 import im.threads.internal.helpers.FileProviderHelper
 import im.threads.internal.model.AttachmentStateEnum
 import im.threads.internal.model.FileDescription
 import im.threads.internal.secureDatabase.DatabaseHolder
 import im.threads.internal.utils.FileDownloader
 import im.threads.internal.utils.FileDownloader.DownloadLister
-import im.threads.internal.utils.ThreadsLogger
 import im.threads.internal.utils.WorkerUtils.marshall
 import im.threads.internal.utils.WorkerUtils.unmarshall
 import java.io.File
@@ -34,12 +34,12 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
             ?: return Result.failure()
 
         if (fileDescription.downloadPath == null || fileDescription.fileUri != null) {
-            ThreadsLogger.e(TAG, "cant download with fileDescription = $fileDescription")
+            LoggerEdna.e("cant download with fileDescription = $fileDescription")
             return Result.failure()
         }
 
         if (fileDescription.state != AttachmentStateEnum.READY) {
-            ThreadsLogger.e(TAG, "cant download with fileDescription = $fileDescription. File state not READY")
+            LoggerEdna.e("cant download with fileDescription = $fileDescription. File state not READY")
             return Result.failure()
         }
 
@@ -72,7 +72,7 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
                 }
 
                 override fun onFileDownloadError(e: Exception?) {
-                    ThreadsLogger.e(TAG, "error while downloading file ", e)
+                    LoggerEdna.e("error while downloading file ", e)
                     fileDescription.downloadProgress = 0
                     DatabaseHolder.getInstance().updateFileDescription(fileDescription)
                     e?.let { sendDownloadErrorBroadcast(fileDescription, e) }
@@ -132,7 +132,6 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
 
     // TODO: remove static after ChatController
     companion object {
-        const val TAG = "FileDownloadWorker"
         private const val WORKER_NAME = "im.threads.internal.workers.FileDownloadWorker"
 
         const val FD_TAG = "im.threads.internal.workers.FileDownloadWorker.FD_TAG"
@@ -144,7 +143,7 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
 
         @JvmStatic
         fun startDownloadFD(context: Context, fileDescription: FileDescription) {
-            ThreadsLogger.d(TAG, "Start download")
+            LoggerEdna.d("Start download")
             val inputData = Data.Builder()
                 .putString(START_DOWNLOAD_ACTION, START_DOWNLOAD_FD_TAG)
                 .putByteArray(FD_TAG, marshall(fileDescription))
@@ -157,7 +156,7 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
 
         @JvmStatic
         fun startDownloadWithNoStop(context: Context, fileDescription: FileDescription) {
-            ThreadsLogger.d(TAG, "Start download")
+            LoggerEdna.d("Start download")
             val inputData = Data.Builder()
                 .putString(START_DOWNLOAD_ACTION, START_DOWNLOAD_WITH_NO_STOP)
                 .putByteArray(FD_TAG, marshall(fileDescription))

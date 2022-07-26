@@ -3,8 +3,8 @@ package im.threads.internal.broadcastReceivers
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import im.threads.internal.domain.logger.LoggerEdna
 import im.threads.internal.model.FileDescription
-import im.threads.internal.utils.ThreadsLogger
 import im.threads.internal.workers.FileDownloadWorker
 import java.lang.ref.SoftReference
 
@@ -17,24 +17,24 @@ class ProgressReceiver(callback: Callback) : BroadcastReceiver() {
     private val callback = SoftReference(callback)
 
     override fun onReceive(context: Context, intent: Intent) {
-        ThreadsLogger.i(TAG, "onReceive:")
+        LoggerEdna.i("onReceive:")
         val action = intent.action ?: return
         when (action) {
             PROGRESS_BROADCAST -> {
-                ThreadsLogger.i(TAG, "onReceive: PROGRESS_BROADCAST ")
+                LoggerEdna.i("onReceive: PROGRESS_BROADCAST ")
                 intent.getParcelableExtra<FileDescription>(FileDownloadWorker.FD_TAG)?.let {
                     callback.get()?.updateProgress(it)
                 }
             }
             DOWNLOADED_SUCCESSFULLY_BROADCAST -> {
-                ThreadsLogger.i(TAG, "onReceive: DOWNLOADED_SUCCESSFULLY_BROADCAST ")
+                LoggerEdna.i("onReceive: DOWNLOADED_SUCCESSFULLY_BROADCAST ")
                 intent.getParcelableExtra<FileDescription>(FileDownloadWorker.FD_TAG)?.let {
                     it.downloadProgress = 100
                     callback.get()?.updateProgress(it)
                 }
             }
             DOWNLOAD_ERROR_BROADCAST -> {
-                ThreadsLogger.e(TAG, "onReceive: DOWNLOAD_ERROR_BROADCAST ")
+                LoggerEdna.e("onReceive: DOWNLOAD_ERROR_BROADCAST ")
                 intent.getParcelableExtra<FileDescription>(FileDownloadWorker.FD_TAG)?.let {
                     callback.get()?.onDownloadError(
                         it,
@@ -59,8 +59,6 @@ class ProgressReceiver(callback: Callback) : BroadcastReceiver() {
     }
 
     companion object {
-        private const val TAG = "ProgressReceiver "
-
         // Сообщения для Broadcast Receivers
         const val PROGRESS_BROADCAST = "im.threads.internal.controllers.PROGRESS_BROADCAST"
         const val DOWNLOADED_SUCCESSFULLY_BROADCAST =
