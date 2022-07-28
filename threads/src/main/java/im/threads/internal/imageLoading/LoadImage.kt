@@ -10,20 +10,31 @@ internal fun ImageView.loadImage(
     errorDrawableResId: Int? = null,
     modifications: List<ImageModifications>? = null,
     callback: ImageLoader.ImageLoaderCallback? = null,
-    autoRotateWithExif: Boolean = false
+    autoRotateWithExif: Boolean = false,
+    isExternalImage: Boolean = false
 ) {
     data?.let {
-        when (data) {
+        val builder = when (data) {
             is String -> ImageLoader.get().load(data)
             is File -> ImageLoader.get().load(data)
             is Int -> ImageLoader.get().load(data)
             else -> null
-        }?.scales(scales)
-            ?.errorDrawableResourceId(errorDrawableResId)
-            ?.modifications(modifications)
-            ?.callback(callback)
-            ?.autoRotateWithExif(autoRotateWithExif)
-            ?.into(this)
-            ?: Log.e("ImageLoading", "Data is empty, nothing to load")
-    }
+        }
+        builder?.let { builder ->
+            if (isExternalImage) {
+                builder.setImageAsExternal()
+            }
+
+            builder.scales(scales)
+                .errorDrawableResourceId(errorDrawableResId)
+                .modifications(modifications)
+                .callback(callback)
+                .autoRotateWithExif(autoRotateWithExif)
+                .into(this)
+        } ?: showLog()
+    } ?: showLog()
+}
+
+private fun showLog() {
+    Log.e("ImageLoading", "Data is empty, nothing to load")
 }

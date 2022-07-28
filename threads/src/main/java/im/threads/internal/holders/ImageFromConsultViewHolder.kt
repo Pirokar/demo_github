@@ -1,6 +1,5 @@
 package im.threads.internal.holders
 
-import android.graphics.Bitmap
 import android.graphics.PorterDuff
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -115,7 +114,7 @@ class ImageFromConsultViewHolder(
                     autoRotateWithExif = true,
                     modifications = listOf(maskedTransformation),
                     callback = object : ImageLoader.ImageLoaderCallback {
-                        override fun onImageLoaded(bitmap: Bitmap) {
+                        override fun onImageLoaded() {
                             stopLoaderAnimation()
                         }
                     }

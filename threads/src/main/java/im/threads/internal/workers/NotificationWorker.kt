@@ -327,7 +327,7 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
             .load(operatorAvatarUrl)
             .modifications(ImageModifications.CircleCropModification)
             .callback(object : ImageLoader.ImageLoaderCallback {
-                override fun onImageLoaded(bitmap: Bitmap) {
+                override fun onBitmapLoaded(bitmap: Bitmap) {
                     onImageLoaded(
                         bitmap.toDrawable(context.resources),
                         pushSmall,

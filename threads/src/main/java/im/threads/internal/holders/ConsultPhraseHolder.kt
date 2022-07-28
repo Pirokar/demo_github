@@ -1,8 +1,6 @@
 package im.threads.internal.holders
 
-import android.graphics.Bitmap
 import android.graphics.PorterDuff
-import android.graphics.Typeface
 import android.text.TextUtils
 import android.text.format.Formatter
 import android.util.TypedValue
@@ -26,18 +24,13 @@ import im.threads.internal.imageLoading.ImageModifications
 import im.threads.internal.imageLoading.loadImage
 import im.threads.internal.model.AttachmentStateEnum
 import im.threads.internal.model.ConsultPhrase
-import im.threads.internal.opengraph.OGData
-import im.threads.internal.opengraph.OGDataProvider
 import im.threads.internal.utils.FileUtils
 import im.threads.internal.utils.FileUtils.isImage
-import im.threads.internal.utils.ThreadsLogger
 import im.threads.internal.utils.UrlUtils
 import im.threads.internal.utils.ViewUtils
 import im.threads.internal.views.CircularProgressButton
 import im.threads.internal.widget.text_view.BubbleMessageTextView
 import im.threads.internal.widget.text_view.BubbleTimeTextView
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -109,15 +102,9 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
     }
     private val mPhraseFrame: View = itemView.findViewById(R.id.phrase_frame)
     private val ogDataLayout: ViewGroup = itemView.findViewById(R.id.og_data_layout)
-    private val ogImage: ImageView = itemView.findViewById(R.id.og_image)
-    private val ogTitle: TextView = itemView.findViewById(R.id.og_title)
-    private val ogDescription: TextView = itemView.findViewById(R.id.og_description)
-    private val ogUrl: TextView = itemView.findViewById(R.id.og_url)
     private val ogTimestamp = itemView.findViewById<TextView>(R.id.og_timestamp).apply {
         setTextColor(getColorInt(style.incomingMessageTimeColor))
     }
-
-    private val context = parent.context
 
     init {
         itemView.findViewById<View>(R.id.bubble).apply {
@@ -182,27 +169,12 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
         } else {
             mPhraseTextView.bindTimestampView(mTimeStampTextView)
             mPhraseTextView.visibility = View.VISIBLE
-            val deepLink = UrlUtils.extractDeepLink(phrase)
             val url = UrlUtils.extractLink(phrase)
             highlightOperatorText(mPhraseTextView, consultPhrase)
             if (url != null) {
-                val ogData = consultPhrase.ogData
-                if (ogData == null) {
-                    loadOGData(consultPhrase, url)
-                } else {
-                    bindOGData(ogData, url)
-                }
-                ViewUtils.setClickListener(
-                    ogDataLayout,
-                    View.OnClickListener {
-                        UrlUtils.openUrl(
-                            itemView.getContext(),
-                            url
-                        )
-                    }
-                )
+                bindOGData(ogDataLayout, mTimeStampTextView, url)
             } else {
-                hideOGView()
+                hideOGView(ogDataLayout, mTimeStampTextView)
             }
         }
         mImageLayout.visibility = View.GONE
@@ -262,7 +234,8 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
                     errorDrawableResId = style.imagePlaceholder,
                     autoRotateWithExif = true,
                     callback = object : ImageLoader.ImageLoaderCallback {
-                        override fun onImageLoaded(bitmap: Bitmap) {
+
+                        override fun onImageLoaded() {
                             stopLoaderAnimation()
                         }
 
@@ -325,80 +298,6 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
 
     private fun showDefIcon() {
         mConsultAvatar.setImageResource(style.defaultOperatorAvatar)
-    }
-
-    private fun loadOGData(chatItem: ConsultPhrase, url: String) {
-        hideOGView()
-        subscribe(
-            OGDataProvider.getInstance().getOGData(url)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { ogData: OGData ->
-                        ThreadsLogger.d(TAG, "OGData for url: $url\n received: $ogData")
-                        if (!ogData.isEmpty) {
-                            chatItem.ogData = ogData
-                            chatItem.ogUrl = url
-                        }
-                        bindOGData(ogData, url)
-                    },
-                    { e: Throwable ->
-                        ThreadsLogger.e(TAG, "OpenGraph data load failed: ", e)
-                    }
-                )
-        )
-    }
-
-    private fun bindOGData(ogData: OGData, url: String) {
-        if (ogData.areTextsEmpty()) {
-            hideOGView()
-            return
-        }
-        showOGView()
-        if (!TextUtils.isEmpty(ogData.title)) {
-            ogTitle.visibility = View.VISIBLE
-            ogTitle.text = ogData.title
-            ogTitle.setTypeface(ogTitle.typeface, Typeface.BOLD)
-        } else {
-            ogTitle.visibility = View.GONE
-        }
-        if (!TextUtils.isEmpty(ogData.description)) {
-            ogDescription.visibility = View.VISIBLE
-            ogDescription.text = ogData.description
-        } else {
-            ogDescription.visibility = View.GONE
-        }
-        ogUrl.text = if (!TextUtils.isEmpty(ogData.url)) ogData.url else url
-        if (TextUtils.isEmpty(ogData.imageUrl)) {
-            ogImage.visibility = View.GONE
-        } else {
-            ogImage.loadImage(
-                ogData.imageUrl,
-                listOf(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_INSIDE),
-                style.imagePlaceholder,
-                autoRotateWithExif = true,
-                callback = object : ImageLoader.ImageLoaderCallback {
-                    override fun onImageLoaded(bitmap: Bitmap) {
-                        ogImage.visibility = View.VISIBLE
-                    }
-
-                    override fun onImageLoadError() {
-                        ogImage.visibility = View.GONE
-                        ThreadsLogger.d(TAG, "Could not load OpenGraph image")
-                    }
-                }
-            )
-        }
-    }
-
-    private fun showOGView() {
-        ogDataLayout.visibility = View.VISIBLE
-        mTimeStampTextView.visibility = View.GONE
-    }
-
-    private fun hideOGView() {
-        ogDataLayout.visibility = View.GONE
-        mTimeStampTextView.visibility = View.VISIBLE
     }
 
     private fun startLoaderAnimation() {

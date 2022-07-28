@@ -109,6 +109,15 @@ class ImageLoader private constructor() {
     }
 
     /**
+     * Использует загрузчик изображений без внутренних хедеров и ssl. Необходимо включать данный
+     *  параметр, если вы загружаете изображение из сторонних источников
+     */
+    fun setImageAsExternal(): ImageLoader {
+        config.isExternalImage = true
+        return this
+    }
+
+    /**
      * Указывает контейнер, в который необходимо загрузить изображение
      * @param imageView целевой контейнер
      */
@@ -151,14 +160,20 @@ class ImageLoader private constructor() {
         var imageView: ImageView? = null
         var callback: ImageLoaderCallback? = null
         var autoRotateWithExif = false
+        var isExternalImage = false
     }
 
     interface ImageLoaderCallback {
         /**
          * Вызывается по окончанию загрзуки изображений
-         * @param drawable загруженное изображение
+         * @param bitmap загруженное изображение
          */
-        fun onImageLoaded(bitmap: Bitmap) {}
+        fun onBitmapLoaded(bitmap: Bitmap) {}
+
+        /**
+         * Вызывается по окончанию загрзуки изображенийе
+         */
+        fun onImageLoaded() {}
 
         /**
          * Вызывается в случае ошибки при загрзуке изображения

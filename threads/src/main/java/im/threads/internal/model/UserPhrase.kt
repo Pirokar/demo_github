@@ -2,7 +2,6 @@ package im.threads.internal.model
 
 import android.text.TextUtils
 import androidx.core.util.ObjectsCompat
-import im.threads.internal.opengraph.OGData
 import im.threads.internal.utils.FileUtils.isImage
 import im.threads.internal.utils.FileUtils.isVoiceMessage
 import java.util.UUID
@@ -19,8 +18,6 @@ class UserPhrase constructor(
     var sentState: MessageState,
     override val threadId: Long?
 ) : ChatPhrase {
-    @JvmField
-    var ogData: OGData? = null
     @JvmField
     var ogUrl: String? = null
     var isCopy = false
@@ -81,10 +78,7 @@ class UserPhrase constructor(
     fun hasFile() = fileDescription != null || (quote?.fileDescription != null)
 
     override fun toString(): String {
-        return """
-            UserPhrase{phrase='$phraseText'}
-            
-        """.trimIndent()
+        return "UserPhrase{phrase='$phraseText'}".trimIndent()
     }
 
     fun hasSameContent(userPhrase: UserPhrase?): Boolean {
@@ -125,7 +119,6 @@ class UserPhrase constructor(
             ObjectsCompat.equals(phraseText, that.phraseText) && sentState == that.sentState &&
             ObjectsCompat.equals(quote, that.quote) &&
             ObjectsCompat.equals(fileDescription, that.fileDescription) &&
-            ObjectsCompat.equals(ogData, that.ogData) &&
             ObjectsCompat.equals(ogUrl, that.ogUrl) &&
             ObjectsCompat.equals(threadId, that.threadId)
     }
@@ -142,7 +135,6 @@ class UserPhrase constructor(
             fileDescription,
             isCopy,
             found,
-            ogData,
             ogUrl,
             threadId
         )

@@ -142,6 +142,7 @@ dependencies {
     implementation "com.annimon:stream:$rootProject.streamVersion"
 
     implementation "com.google.code.gson:gson:$rootProject.gsonVersion"
+    implementation "com.squareup.picasso:picasso:$rootProject.picasso_version"
 
     implementation "com.github.3llomi:RecordView:$rootProject.recordViewVersion"
     implementation "com.writingminds:FFmpegAndroid:$ffmpeg"
@@ -162,13 +163,15 @@ dependencies {
     implementation "io.noties.markwon:ext-strikethrough:$markwonVersion"
     implementation "io.noties.markwon:image:$markwonVersion"
 
-    //Coil
-    implementation "com.squareup.picasso:picasso:$picasso_version"
+    //Html parsing
+    implementation 'org.jsoup:jsoup:1.13.1'
 
+    //Tests
     testImplementation "org.robolectric:robolectric:$rootProject.robolectricVersion"
     testImplementation "androidx.test.ext:junit:$rootProject.androidXJunitVersion"
     testImplementation "org.mockito:mockito-core:$rootProject.mockitoVersion"
     testImplementation group: 'org.mockito', name: 'mockito-inline', version: rootProject.mockitoInlineVersion
+    testImplementation "com.github.tomakehurst:wiremock-jre8:$webserver_version"
     androidTestImplementation "androidx.test:runner:$rootProject.androidXTestVersion"
     androidTestImplementation "androidx.test:rules:$rootProject.androidXTestVersion"
     androidTestImplementation "org.mockito:mockito-core:$rootProject.mockitoVersion"

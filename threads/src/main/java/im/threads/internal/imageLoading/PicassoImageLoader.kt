@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.widget.ImageView
 import androidx.exifinterface.media.ExifInterface
+import com.squareup.picasso.Callback
 import com.squareup.picasso.OkHttp3Downloader
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.RequestCreator
@@ -15,13 +16,24 @@ import im.threads.internal.Config
 import java.util.concurrent.Executors
 
 class PicassoImageLoader : ImageLoaderRealisation {
-    private val tag = PicassoImageLoader::class.java.simpleName
-    private var loader: Picasso? = null
+    private var internalImagesLoader: Picasso? = null
+    private var externalImagesLoader: Picasso? = null
 
     override fun load(config: ImageLoader.Config) {
         val request = getImageRequestBuilder(config)
         if (config.callback != null) {
-            request?.into(getPicassoTarget(config))
+            request?.into(
+                config.imageView,
+                object : Callback {
+                    override fun onSuccess() {
+                        config.callback?.onImageLoaded()
+                    }
+
+                    override fun onError(e: java.lang.Exception?) {
+                        config.callback?.onImageLoadError()
+                    }
+                }
+            )
         } else {
             request?.into(config.imageView)
         }
@@ -37,19 +49,22 @@ class PicassoImageLoader : ImageLoaderRealisation {
         return getImageRequestBuilder(config)?.get()
     }
 
-    private fun getImageRequestBuilder(config: ImageLoader.Config): RequestCreator? {
+    private fun getImageRequestBuilder(
+        config: ImageLoader.Config
+    ): RequestCreator? {
         var builder: RequestCreator? = null
         config.url?.let {
-            builder = getLoader(config.context).load(it)
+            builder = getLoader(config.isExternalImage, config.context).load(it)
+
             if (config.autoRotateWithExif) {
                 builder!!.rotate(getRightAngleImage(it))
             }
         }
         config.resourceId?.let {
-            builder = getLoader(config.context).load(it)
+            builder = getLoader(config.isExternalImage, config.context).load(it)
         }
         config.file?.let {
-            builder = getLoader(config.context).load(it)
+            builder = getLoader(config.isExternalImage, config.context).load(it)
             if (config.autoRotateWithExif) {
                 builder!!.rotate(getRightAngleImage(it.absolutePath))
             }
@@ -95,7 +110,7 @@ class PicassoImageLoader : ImageLoaderRealisation {
         return object : Target {
             override fun onBitmapLoaded(bitmap: Bitmap, from: Picasso.LoadedFrom) {
                 config.imageView?.setImageBitmap(bitmap)
-                config.callback?.onImageLoaded(bitmap)
+                config.callback?.onBitmapLoaded(bitmap)
             }
 
             override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
@@ -103,22 +118,40 @@ class PicassoImageLoader : ImageLoaderRealisation {
                 config.callback?.onImageLoadError()
             }
 
-            override fun onPrepareLoad(placeHolderDrawable: Drawable) {}
+            override fun onPrepareLoad(placeHolderDrawable: Drawable?) {}
         }
     }
 
-    private fun getLoader(context: Context): Picasso {
-        if (loader == null) {
-            val builder = Picasso.Builder(Config.instance.context)
+    private fun getInternalImagesLoader(context: Context): Picasso {
+        if (internalImagesLoader == null) {
+            val builder = Picasso.Builder(context)
                 .executor(Executors.newCachedThreadPool())
 
             ImageLoaderOkHttpProvider.okHttpClient?.let {
                 builder.downloader(OkHttp3Downloader(it))
             }
 
-            loader = builder.build()
+            internalImagesLoader = builder.build()
         }
-        return loader!!
+        return internalImagesLoader!!
+    }
+
+    private fun getExternalImagesLoader(context: Context): Picasso {
+        if (externalImagesLoader == null) {
+            val builder = Picasso.Builder(context)
+                .executor(Executors.newCachedThreadPool())
+
+            externalImagesLoader = builder.build()
+        }
+        return externalImagesLoader!!
+    }
+
+    private fun getLoader(isExternalImage: Boolean, context: Context): Picasso {
+        return if (isExternalImage) {
+            getExternalImagesLoader(context)
+        } else {
+            getInternalImagesLoader(context)
+        }
     }
 
     private fun getRightAngleImage(photoPath: String): Float {
