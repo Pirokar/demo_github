@@ -10,6 +10,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -90,6 +91,8 @@ public final class UrlUtils {
             + ")");
     private static final Pattern WEB_URL_PATTERN = Patterns.WEB_URL;
 
+    private static final String[] imageExtensions = new String[] { ".jpg", ".png", ".gif", ".tiff", ".raw" };
+
     @Nullable
     public static String extractLink(@NonNull String text) {
         return getLink(text);
@@ -120,6 +123,21 @@ public final class UrlUtils {
         Matcher m = WEB_URL.matcher(text);
         if (m.find()) {
             return m.group();
+        }
+        return null;
+    }
+
+    @Nullable
+    public static String extractImageMarkdownLink(@NonNull String text) {
+        if (!text.contains("](http")) return null;
+        String link = extractLink(text);
+        if (link == null) return null;
+
+        link = link.toLowerCase(Locale.getDefault());
+        for (String extension : imageExtensions) {
+            if (link.contains(extension)) {
+                return link;
+            }
         }
         return null;
     }
