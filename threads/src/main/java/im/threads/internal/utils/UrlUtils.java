@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Patterns;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -87,7 +88,7 @@ public final class UrlUtils {
             + "(" + PATH_AND_QUERY + ")?"
             + WORD_BOUNDARY
             + ")");
-    private static final Pattern WEB_URL_WITH_BRACKETS = Pattern.compile("\\[.*\\]\\(" + WEB_URL.toString() + "\\)");
+    private static final Pattern WEB_URL_PATTERN = Patterns.WEB_URL;
 
     @Nullable
     public static String extractLink(@NonNull String text) {
@@ -112,14 +113,9 @@ public final class UrlUtils {
             return null;
         }
 
-        Matcher matcherWithBrackets = WEB_URL_WITH_BRACKETS.matcher(text);
-        while (matcherWithBrackets.find()) {
-            String url = matcherWithBrackets.group();
-            try {
-                return url.substring(url.indexOf("(") + 1, url.lastIndexOf(")"));
-            } catch (StringIndexOutOfBoundsException e) {
-                ThreadsLogger.w(TAG, "Can`t parse : " + url);
-            }
+        Matcher matcherWithBrackets = WEB_URL_PATTERN.matcher(text);
+        if (matcherWithBrackets.find()) {
+            return matcherWithBrackets.group();
         }
         Matcher m = WEB_URL.matcher(text);
         if (m.find()) {

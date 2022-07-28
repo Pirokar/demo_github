@@ -25,6 +25,7 @@ import im.threads.internal.markdown.LinksHighlighter
 import im.threads.internal.model.ConsultPhrase
 import im.threads.internal.model.ErrorStateEnum
 import im.threads.internal.utils.ColorsHelper
+import im.threads.internal.utils.ThreadsLogger
 import im.threads.internal.utils.UrlUtils
 import im.threads.internal.utils.ViewUtils
 import im.threads.internal.views.CircularProgressButton
@@ -145,15 +146,23 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
         timeStampView: TextView,
         url: String
     ) {
-        if (ogDataLayout.tag == url) {
+        val normalizedUrl = if (!url.startsWith("http")) {
+            "http://$url"
+        } else {
+            url
+        }
+        if (ogDataLayout.tag == normalizedUrl) {
             return
         }
 
         val ogImage: ImageView = ogDataLayout.findViewById(R.id.og_image)
         ogImage.setImageDrawable(null)
 
+        val ogDataTag = "OgData_Fetching"
+        ThreadsLogger.i(ogDataTag, "Fetching OgData for url \"$normalizedUrl\"")
         coroutineScope.launch {
-            openGraphParser.getContents(url)?.let { ogData ->
+            openGraphParser.getContents(normalizedUrl)?.let { ogData ->
+                ThreadsLogger.i(ogDataTag, "OgData for url \"$normalizedUrl\": $ogData")
                 withContext(Dispatchers.Main) {
                     if (ogData.isEmpty()) {
                         hideOGView(ogDataLayout, timeStampView)
@@ -167,7 +176,7 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
                     showOGView(ogDataLayout, timeStampView)
                     setOgDataTitle(ogData, ogTitle)
                     setOgDataDescription(ogData, ogDescription)
-                    setOgDataUrl(ogUrl, ogData, url)
+                    setOgDataUrl(ogUrl, ogData, normalizedUrl)
                     setOgDataImage(ogData, ogImage)
 
                     ViewUtils.setClickListener(
@@ -175,12 +184,16 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
                         View.OnClickListener {
                             UrlUtils.openUrl(
                                 ogDataLayout.getContext(),
-                                url
+                                normalizedUrl
                             )
                         }
                     )
 
-                    ogDataLayout.tag = url
+                    ogDataLayout.tag = normalizedUrl
+                }
+            } ?: run {
+                withContext(Dispatchers.Main) {
+                    hideOGView(ogDataLayout, timeStampView)
                 }
             }
         }
