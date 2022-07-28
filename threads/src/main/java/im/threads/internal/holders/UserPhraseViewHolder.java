@@ -27,7 +27,6 @@ import java.util.Locale;
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
-import im.threads.internal.domain.ogParser.OGData;
 import im.threads.internal.domain.ogParser.OpenGraphParser;
 import im.threads.internal.domain.ogParser.OpenGraphParserJsoupImpl;
 import im.threads.internal.formatters.RussianFormatSymbols;
@@ -178,12 +177,7 @@ public final class UserPhraseViewHolder extends VoiceMessageBaseHolder {
             String url = UrlUtils.extractLink(phrase);
             highlightClientText(mPhraseTextView, phrase);
             if (url != null) {
-                new Thread(() -> {
-                    OGData ogData = openGraphParser.getContents(url);
-                    if (ogData != null) {
-                        ogDataLayout.post(() -> bindOGData(ogData, ogDataLayout, mTimeStampTextView, url));
-                    }
-                }).start();
+                bindOGData(ogDataLayout, mTimeStampTextView, url);
             } else {
                 hideOGView(ogDataLayout, mTimeStampTextView);
             }

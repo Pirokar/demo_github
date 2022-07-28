@@ -16,6 +16,8 @@ import androidx.recyclerview.widget.RecyclerView
 import im.threads.R
 import im.threads.internal.Config
 import im.threads.internal.domain.ogParser.OGData
+import im.threads.internal.domain.ogParser.OpenGraphParser
+import im.threads.internal.domain.ogParser.OpenGraphParserJsoupImpl
 import im.threads.internal.imageLoading.ImageLoader
 import im.threads.internal.imageLoading.loadImage
 import im.threads.internal.markdown.LinkifyLinksHighlighter
@@ -24,15 +26,22 @@ import im.threads.internal.model.ConsultPhrase
 import im.threads.internal.model.ErrorStateEnum
 import im.threads.internal.utils.ColorsHelper
 import im.threads.internal.utils.UrlUtils
+import im.threads.internal.utils.ViewUtils
 import im.threads.internal.views.CircularProgressButton
 import im.threads.internal.widget.text_view.BubbleMessageTextView
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     private var compositeDisposable: CompositeDisposable? = CompositeDisposable()
     private val linksHighlighter: LinksHighlighter = LinkifyLinksHighlighter()
+    private val openGraphParser: OpenGraphParser = OpenGraphParserJsoupImpl()
+    private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
     protected fun subscribe(event: Disposable): Boolean {
         if (compositeDisposable?.isDisposed != false) {
@@ -127,39 +136,54 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
 
     /**
      * Обрабатывает показ Open Graph.
-     * @param ogData данные Open Graph
      * @param ogDataLayout layout, в котором размещены вьюхи Open Graph
      * @param timeStampView текстовая вьюха для отображения времени
      * @param url ссылка, для которой надо отобразить Open Graph
      */
     protected fun bindOGData(
-        ogData: OGData,
         ogDataLayout: ViewGroup,
         timeStampView: TextView,
         url: String
     ) {
-        val ogImage: ImageView = ogDataLayout.findViewById(R.id.og_image)
-
         if (ogDataLayout.tag == url) {
             return
         }
 
-        if (ogData.isEmpty()) {
-            hideOGView(ogDataLayout, timeStampView)
-            return
+        val ogImage: ImageView = ogDataLayout.findViewById(R.id.og_image)
+        ogImage.setImageDrawable(null)
+
+        coroutineScope.launch {
+            openGraphParser.getContents(url)?.let { ogData ->
+                withContext(Dispatchers.Main) {
+                    if (ogData.isEmpty()) {
+                        hideOGView(ogDataLayout, timeStampView)
+                        return@withContext
+                    }
+
+                    val ogTitle: TextView = ogDataLayout.findViewById(R.id.og_title)
+                    val ogDescription: TextView = ogDataLayout.findViewById(R.id.og_description)
+                    val ogUrl: TextView = ogDataLayout.findViewById(R.id.og_url)
+
+                    showOGView(ogDataLayout, timeStampView)
+                    setOgDataTitle(ogData, ogTitle)
+                    setOgDataDescription(ogData, ogDescription)
+                    setOgDataUrl(ogUrl, ogData, url)
+                    setOgDataImage(ogData, ogImage)
+
+                    ViewUtils.setClickListener(
+                        ogDataLayout,
+                        View.OnClickListener {
+                            UrlUtils.openUrl(
+                                ogDataLayout.getContext(),
+                                url
+                            )
+                        }
+                    )
+
+                    ogDataLayout.tag = url
+                }
+            }
         }
-
-        val ogTitle: TextView = ogDataLayout.findViewById(R.id.og_title)
-        val ogDescription: TextView = ogDataLayout.findViewById(R.id.og_description)
-        val ogUrl: TextView = ogDataLayout.findViewById(R.id.og_url)
-
-        showOGView(ogDataLayout, timeStampView)
-        setOgDataTitle(ogData, ogTitle)
-        setOgDataDescription(ogData, ogDescription)
-        setOgDataUrl(ogUrl, ogData, url)
-        setOgDataImage(ogData, ogImage)
-
-        ogDataLayout.tag = url
     }
 
     private fun setOgDataTitle(ogData: OGData, ogTitle: TextView) {

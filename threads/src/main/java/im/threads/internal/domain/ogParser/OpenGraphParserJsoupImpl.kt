@@ -24,6 +24,10 @@ class OpenGraphParserJsoupImpl : OpenGraphParser {
      * @param urlToParse ссылка на сайт, где необходимо запросить Open Graph
      */
     override fun getContents(urlToParse: String): OGData? {
+        existedOpenGraphs[urlToParse]?.let {
+            return it
+        }
+
         return try {
             val response = Jsoup.connect(urlToParse)
                 .ignoreContentType(true)
@@ -33,7 +37,10 @@ class OpenGraphParserJsoupImpl : OpenGraphParser {
                 .followRedirects(true)
                 .execute()
             val doc = response.parse()
-            return organizeFetchedData(doc)
+            val result = organizeFetchedData(doc)
+
+            existedOpenGraphs[urlToParse] = result
+            result
         } catch (e: Exception) {
             ThreadsLogger.e(tag, "Error when parsing OG data!", e)
             null
@@ -72,5 +79,9 @@ class OpenGraphParserJsoupImpl : OpenGraphParser {
                 }
         }
         return openGraphContent
+    }
+
+    companion object {
+        private val existedOpenGraphs = HashMap<String, OGData>()
     }
 }

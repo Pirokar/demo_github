@@ -18,8 +18,6 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import im.threads.R
 import im.threads.internal.Config
-import im.threads.internal.domain.ogParser.OpenGraphParser
-import im.threads.internal.domain.ogParser.OpenGraphParserJsoupImpl
 import im.threads.internal.formatters.RussianFormatSymbols
 import im.threads.internal.imageLoading.ImageLoader
 import im.threads.internal.imageLoading.ImageModifications
@@ -33,10 +31,6 @@ import im.threads.internal.utils.ViewUtils
 import im.threads.internal.views.CircularProgressButton
 import im.threads.internal.widget.text_view.BubbleMessageTextView
 import im.threads.internal.widget.text_view.BubbleTimeTextView
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -112,9 +106,6 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
         setTextColor(getColorInt(style.incomingMessageTimeColor))
     }
 
-    private val openGraphParser: OpenGraphParser = OpenGraphParserJsoupImpl()
-    private val coroutineScope = CoroutineScope(Dispatchers.IO)
-
     init {
         itemView.findViewById<View>(R.id.bubble).apply {
             background =
@@ -181,22 +172,7 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
             val url = UrlUtils.extractLink(phrase)
             highlightOperatorText(mPhraseTextView, consultPhrase)
             if (url != null) {
-                coroutineScope.launch {
-                    openGraphParser.getContents(url)?.let { ogData ->
-                        withContext(Dispatchers.Main) {
-                            bindOGData(ogData, ogDataLayout, mTimeStampTextView, url)
-                            ViewUtils.setClickListener(
-                                ogDataLayout,
-                                View.OnClickListener {
-                                    UrlUtils.openUrl(
-                                        itemView.getContext(),
-                                        url
-                                    )
-                                }
-                            )
-                        }
-                    }
-                }
+                bindOGData(ogDataLayout, mTimeStampTextView, url)
             } else {
                 hideOGView(ogDataLayout, mTimeStampTextView)
             }
