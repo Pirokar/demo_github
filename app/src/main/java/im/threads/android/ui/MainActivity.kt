@@ -69,10 +69,11 @@ class MainActivity : AppCompatActivity(), EditCardDialogActionsListener, YesNoDi
 
     private val compositeDisposable = CompositeDisposable()
     private lateinit var socketResponseDisposable: Disposable
-    private val locationManager = LocationManager(this)
+    private var locationManager: LocationManager? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        locationManager = LocationManager(application)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.viewModel = this
         binding.designSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -122,7 +123,7 @@ class MainActivity : AppCompatActivity(), EditCardDialogActionsListener, YesNoDi
 
     override fun onResume() {
         super.onResume()
-        locationManager.stopLocationUpdates()
+        locationManager?.stopLocationUpdates()
     }
 
     private fun checkIsServerChanged() {
@@ -151,7 +152,7 @@ class MainActivity : AppCompatActivity(), EditCardDialogActionsListener, YesNoDi
     /** Пример открытия чата в виде Активности */
     private fun goToChatActivity() {
         subscribeOnSocketResponses()
-        locationManager.startLocationUpdates()
+        locationManager?.startLocationUpdates()
         val currentCard = currentCard
         if (currentCard == null) {
             displayError(R.string.demo_error_empty_user)
