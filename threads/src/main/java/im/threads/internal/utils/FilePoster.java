@@ -2,8 +2,8 @@ package im.threads.internal.utils;
 
 import android.accounts.NetworkErrorException;
 import android.graphics.Bitmap;
-import android.graphics.Matrix;
 import android.net.Uri;
+import android.widget.ImageView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -109,37 +109,25 @@ public final class FilePoster {
 
 
     private static File compressImage(Uri uri) throws IOException {
-        Bitmap bitmap = ImageLoader.get().load(uri.toString()).getBitmapSync(Config.instance.context);
-        if (bitmap != null) {
-            bitmap = getResizedBitmap(bitmap, PHOTO_RESIZE_MAX_SIDE, PHOTO_RESIZE_MAX_SIDE);
-            File downsizedImageFile = new File(Config.instance.context.getCacheDir(), FileUtils.getFileName(uri));
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
-            try (FileOutputStream fileOutputStream = new FileOutputStream(downsizedImageFile)) {
-                fileOutputStream.write(byteArrayOutputStream.toByteArray());
-                fileOutputStream.flush();
-                bitmap.recycle();
-                return downsizedImageFile;
-            } catch (IOException e) {
-                ThreadsLogger.e(TAG, "downsizeImage", e);
-                bitmap.recycle();
-                downsizedImageFile.delete();
-                return null;
-            }
+        Bitmap bitmap = ImageLoader.get()
+                .load(uri.toString())
+                .resize(PHOTO_RESIZE_MAX_SIDE, PHOTO_RESIZE_MAX_SIDE)
+                .onlyScaleDown()
+                .scales(ImageView.ScaleType.CENTER_INSIDE)
+                .getBitmapSync(Config.instance.context);
+        File downsizedImageFile = new File(Config.instance.context.getCacheDir(), FileUtils.getFileName(uri));
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+        try (FileOutputStream fileOutputStream = new FileOutputStream(downsizedImageFile)) {
+            fileOutputStream.write(byteArrayOutputStream.toByteArray());
+            fileOutputStream.flush();
+            bitmap.recycle();
+            return downsizedImageFile;
+        } catch (IOException e) {
+            ThreadsLogger.e(TAG, "downsizeImage", e);
+            bitmap.recycle();
+            downsizedImageFile.delete();
+            return null;
         }
-        return null;
-    }
-
-    private static Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
-        int width = bm.getWidth();
-        int height = bm.getHeight();
-        float scaleWidth = ((float) newWidth) / width;
-        float scaleHeight = ((float) newHeight) / height;
-        Matrix matrix = new Matrix();
-        matrix.postScale(scaleWidth, scaleHeight);
-        Bitmap resizedBitmap = Bitmap.createBitmap(bm, 0, 0, width, height, matrix, false);
-        bm.recycle();
-
-        return resizedBitmap;
     }
 }
