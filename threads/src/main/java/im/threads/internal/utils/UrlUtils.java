@@ -118,11 +118,13 @@ public final class UrlUtils {
 
         Matcher matcherWithBrackets = WEB_URL_PATTERN.matcher(text);
         if (matcherWithBrackets.find()) {
-            return matcherWithBrackets.group();
+            String url = matcherWithBrackets.group();
+            return trimInvalidUrlCharacters(url);
         }
         Matcher m = WEB_URL.matcher(text);
         if (m.find()) {
-            return m.group();
+            String url = m.group();
+            return trimInvalidUrlCharacters(url);
         }
         return null;
     }
@@ -153,5 +155,17 @@ public final class UrlUtils {
         } else {
             Toast.makeText(context, "No application support this type of link", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private static String trimInvalidUrlCharacters(String url) {
+        if (TextUtils.isEmpty(url)) {
+            return url;
+        }
+
+        while (url.length() > 0 && !url.substring(url.length() - 1).matches("\\w+")) {
+            url = url.substring(0, url.length() - 1);
+        }
+
+        return url;
     }
 }

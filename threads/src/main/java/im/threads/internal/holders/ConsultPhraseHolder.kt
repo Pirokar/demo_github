@@ -255,7 +255,7 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
         } else {
             consultPhrase.formattedPhrase?.let {
                 UrlUtils.extractImageMarkdownLink(it)?.let { imageUrl ->
-                    loadImage(imageUrl, imageClickListener)
+                    loadImage(imageUrl, imageClickListener, true)
                 }
             }
         }
@@ -285,7 +285,11 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
         secondFilterView.visibility = if (highlighted) View.VISIBLE else View.INVISIBLE
     }
 
-    private fun loadImage(imagePath: String?, imageClickListener: View.OnClickListener) {
+    private fun loadImage(
+        imagePath: String?,
+        imageClickListener: View.OnClickListener,
+        isExternalImage: Boolean = false
+    ) {
         fileRow.visibility = View.GONE
         mCircularProgressButton.visibility = View.GONE
         mImageLayout.visibility = View.VISIBLE
@@ -298,8 +302,9 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
             scales = listOf(ImageView.ScaleType.FIT_CENTER, ImageView.ScaleType.CENTER_CROP),
             errorDrawableResId = style.imagePlaceholder,
             autoRotateWithExif = true,
+            isExternalImage = isExternalImage,
             callback = object : ImageLoader.ImageLoaderCallback {
-                override fun onImageLoaded(bitmap: Bitmap) {
+                override fun onImageLoaded() {
                     stopLoaderAnimation()
                 }
 
