@@ -44,8 +44,11 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
 ) {
     private val style = Config.instance.chatStyle
     private val rotateAnim = RotateAnimation(
-        0f, 360f,
-        Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF,
+        0f,
+        360f,
+        Animation.RELATIVE_TO_SELF,
+        0.5f,
+        Animation.RELATIVE_TO_SELF,
         0.5f
     )
     private val timeStampSdf = SimpleDateFormat("HH:mm", Locale.getDefault())
@@ -70,8 +73,9 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
     private val mTimeStampTextView =
         itemView.findViewById<BubbleTimeTextView>(R.id.timestamp).apply {
             setTextColor(getColorInt(style.incomingMessageTimeColor))
-            if (style.incomingMessageTimeTextSize > 0)
+            if (style.incomingMessageTimeTextSize > 0) {
                 setTextSize(TypedValue.COMPLEX_UNIT_PX, itemView.context.resources.getDimension(style.incomingMessageTimeTextSize))
+            }
         }
     private val mPhraseTextView = itemView.findViewById<BubbleMessageTextView>(R.id.text).apply {
         setLinkTextColor(getColorInt(style.incomingMessageLinkColor))
@@ -220,30 +224,9 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
         }
         if (fileDescription != null) {
             val isStateReady = fileDescription.state == AttachmentStateEnum.READY
+
             if (isStateReady && isImage(fileDescription)) {
-                fileRow.visibility = View.GONE
-                mCircularProgressButton.visibility = View.GONE
-                mImageLayout.visibility = View.VISIBLE
-                mImage.visibility = View.VISIBLE
-                mImage.setOnClickListener(imageClickListener)
-
-                startLoaderAnimation()
-                mImage.loadImage(
-                    fileDescription.downloadPath,
-                    scales = listOf(ImageView.ScaleType.FIT_CENTER, ImageView.ScaleType.CENTER_CROP),
-                    errorDrawableResId = style.imagePlaceholder,
-                    autoRotateWithExif = true,
-                    callback = object : ImageLoader.ImageLoaderCallback {
-
-                        override fun onImageLoaded() {
-                            stopLoaderAnimation()
-                        }
-
-                        override fun onImageLoadError() {
-                            stopLoaderAnimation()
-                        }
-                    }
-                )
+                loadImage(fileDescription.downloadPath, imageClickListener)
             } else if (!isStateReady && isImage(fileDescription)) {
                 startLoaderAnimation()
             } else {
@@ -268,6 +251,12 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
                     quoteSdf.format(Date(fileDescription.timeStamp))
                 )
                 mCircularProgressButton.setProgress(if (fileDescription.fileUri != null) 100 else fileDescription.downloadProgress)
+            }
+        } else {
+            consultPhrase.formattedPhrase?.let {
+                UrlUtils.extractImageMarkdownLink(it)?.let { imageUrl ->
+                    loadImage(imageUrl, imageClickListener, true)
+                }
             }
         }
         if (fileDescription == null && quote == null) {
@@ -294,6 +283,36 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
         }
         filterView.visibility = if (highlighted) View.VISIBLE else View.INVISIBLE
         secondFilterView.visibility = if (highlighted) View.VISIBLE else View.INVISIBLE
+    }
+
+    private fun loadImage(
+        imagePath: String?,
+        imageClickListener: View.OnClickListener,
+        isExternalImage: Boolean = false
+    ) {
+        fileRow.visibility = View.GONE
+        mCircularProgressButton.visibility = View.GONE
+        mImageLayout.visibility = View.VISIBLE
+        mImage.visibility = View.VISIBLE
+        mImage.setOnClickListener(imageClickListener)
+
+        startLoaderAnimation()
+        mImage.loadImage(
+            imagePath,
+            scales = listOf(ImageView.ScaleType.FIT_CENTER, ImageView.ScaleType.CENTER_CROP),
+            errorDrawableResId = style.imagePlaceholder,
+            autoRotateWithExif = true,
+            isExternalImage = isExternalImage,
+            callback = object : ImageLoader.ImageLoaderCallback {
+                override fun onImageLoaded() {
+                    stopLoaderAnimation()
+                }
+
+                override fun onImageLoadError() {
+                    stopLoaderAnimation()
+                }
+            }
+        )
     }
 
     private fun showDefIcon() {
