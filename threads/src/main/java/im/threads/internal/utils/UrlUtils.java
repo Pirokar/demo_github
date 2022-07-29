@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Patterns;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -150,11 +149,7 @@ public final class UrlUtils {
             uri = Uri.parse("https://" + url);
         }
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, uri);
-        if (browserIntent.resolveActivity(context.getPackageManager()) != null) {
-            context.startActivity(browserIntent);
-        } else {
-            Toast.makeText(context, "No application support this type of link", Toast.LENGTH_SHORT).show();
-        }
+        context.startActivity(browserIntent);
     }
 
     private static String trimInvalidUrlCharacters(String url) {
