@@ -56,7 +56,7 @@ class PicassoImageLoader : ImageLoaderRealisation {
         config.url?.let {
             builder = getLoader(config.isExternalImage, config.context).load(it)
 
-            if (config.autoRotateWithExif) {
+            if (config.isAutoRotateWithExif) {
                 builder!!.rotate(getRightAngleImage(it))
             }
         }
@@ -65,11 +65,17 @@ class PicassoImageLoader : ImageLoaderRealisation {
         }
         config.file?.let {
             builder = getLoader(config.isExternalImage, config.context).load(it)
-            if (config.autoRotateWithExif) {
+            if (config.isAutoRotateWithExif) {
                 builder!!.rotate(getRightAngleImage(it.absolutePath))
             }
         }
         config.errorDrawableResourceId?.let { builder?.error(it) }
+        config.resizePair?.let {
+            builder?.resize(it.first, it.second)
+        }
+        if (config.isOnlyScaleDown) {
+            builder?.onlyScaleDown()
+        }
         config.modifications?.let {
             builder?.transform(getTransformations(it.toList()))
         }
