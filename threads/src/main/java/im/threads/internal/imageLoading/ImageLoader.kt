@@ -104,7 +104,7 @@ class ImageLoader private constructor() {
      * @param rotate включение или отключение автоповорота
      */
     fun autoRotateWithExif(rotate: Boolean): ImageLoader {
-        config.autoRotateWithExif = rotate
+        config.isAutoRotateWithExif = rotate
         return this
     }
 
@@ -114,6 +114,24 @@ class ImageLoader private constructor() {
      */
     fun setImageAsExternal(): ImageLoader {
         config.isExternalImage = true
+        return this
+    }
+
+    /**
+     * Меняет размеры изображения в соответствии с переданными параметрами
+     * @param targetWidth ширина в пикселях
+     * @param targetHeight высота в пикселях
+     */
+    fun resize(targetWidth: Int, targetHeight: Int): ImageLoader {
+        config.resizePair = Pair(targetWidth, targetHeight)
+        return this
+    }
+
+    /**
+     * Разрешает скейл изображения только вниз
+     */
+    fun onlyScaleDown(): ImageLoader {
+        config.isOnlyScaleDown = true
         return this
     }
 
@@ -159,7 +177,9 @@ class ImageLoader private constructor() {
         var modifications: Array<out ImageModifications>? = null
         var imageView: ImageView? = null
         var callback: ImageLoaderCallback? = null
-        var autoRotateWithExif = false
+        var resizePair: Pair<Int, Int>? = null
+        var isOnlyScaleDown = false
+        var isAutoRotateWithExif = false
         var isExternalImage = false
     }
 
