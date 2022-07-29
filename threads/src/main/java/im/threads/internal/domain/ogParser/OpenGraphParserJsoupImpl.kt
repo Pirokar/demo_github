@@ -1,5 +1,6 @@
 package im.threads.internal.domain.ogParser
 
+import android.net.Uri
 import im.threads.internal.utils.ThreadsLogger
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -24,7 +25,15 @@ class OpenGraphParserJsoupImpl : OpenGraphParser {
      * @param urlToParse ссылка на сайт, где необходимо запросить Open Graph
      */
     override fun getContents(urlToParse: String): OGData? {
-        existedOpenGraphs[urlToParse]?.let {
+        val hostAndPath = Uri.parse(urlToParse)?.let {
+            var host = it.host ?: ""
+            if (host.contains("www.")) {
+                host = host.replace("www.", "")
+            }
+            "$host${it.path ?: ""}${it.query?.let { query -> "?$query" } ?: ""}"
+        } ?: urlToParse
+
+        existedOpenGraphs[hostAndPath]?.let {
             return it
         }
 
@@ -39,7 +48,7 @@ class OpenGraphParserJsoupImpl : OpenGraphParser {
             val doc = response.parse()
             val result = organizeFetchedData(doc)
 
-            existedOpenGraphs[urlToParse] = result
+            existedOpenGraphs[hostAndPath] = result
             result
         } catch (e: Exception) {
             ThreadsLogger.e(tag, "Error when parsing OG data!", e)
@@ -83,5 +92,6 @@ class OpenGraphParserJsoupImpl : OpenGraphParser {
 
     companion object {
         private val existedOpenGraphs = HashMap<String, OGData>()
+            @Synchronized get
     }
 }
