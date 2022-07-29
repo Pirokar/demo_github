@@ -114,6 +114,7 @@ public final class FilePoster {
                 .resize(PHOTO_RESIZE_MAX_SIDE, PHOTO_RESIZE_MAX_SIDE)
                 .onlyScaleDown()
                 .scales(ImageView.ScaleType.CENTER_INSIDE)
+                .autoRotateWithExif(true)
                 .getBitmapSync(Config.instance.context);
         File downsizedImageFile = new File(Config.instance.context.getCacheDir(), FileUtils.getFileName(uri));
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
