@@ -147,7 +147,7 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
         url: String
     ) {
         val normalizedUrl = if (!url.startsWith("http")) {
-            "http://$url"
+            "https://$url"
         } else {
             url
         }
@@ -159,8 +159,8 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
         ogImage.setImageDrawable(null)
 
         val ogDataTag = "OgData_Fetching"
-        ThreadsLogger.i(ogDataTag, "Fetching OgData for url \"$normalizedUrl\"")
         coroutineScope.launch {
+            ThreadsLogger.i(ogDataTag, "Fetching OgData for url \"$normalizedUrl\"")
             openGraphParser.getContents(normalizedUrl)?.let { ogData ->
                 ThreadsLogger.i(ogDataTag, "OgData for url \"$normalizedUrl\": $ogData")
                 withContext(Dispatchers.Main) {
