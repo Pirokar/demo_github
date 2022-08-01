@@ -7,6 +7,7 @@ import java.util.Map;
 import im.threads.internal.formatters.ChatItemType;
 import im.threads.internal.model.CampaignMessage;
 import im.threads.internal.model.ChatItem;
+import im.threads.internal.model.ChatItemSendErrorModel;
 import im.threads.internal.model.ClientNotificationDisplayType;
 import im.threads.internal.model.InputFieldEnableModel;
 import im.threads.internal.model.QuickReplyItem;
@@ -29,7 +30,7 @@ public class ChatUpdateProcessor {
     private final FlowableProcessor<ChatItem> newMessageProcessor = PublishProcessor.create();
     private final FlowableProcessor<ChatItemProviderData> messageSendSuccessProcessor = PublishProcessor.create();
     private final FlowableProcessor<CampaignMessage> campaignMessageReplySuccessProcessor = PublishProcessor.create();
-    private final FlowableProcessor<String> messageSendErrorProcessor = PublishProcessor.create();
+    private final FlowableProcessor<ChatItemSendErrorModel> messageSendErrorProcessor = PublishProcessor.create();
     private final FlowableProcessor<ChatItemType> removeChatItemProcessor = PublishProcessor.create();
     private final FlowableProcessor<Survey> surveySendSuccessProcessor = PublishProcessor.create();
     private final FlowableProcessor<String> deviceAddressChangedProcessor = PublishProcessor.create();
@@ -82,8 +83,8 @@ public class ChatUpdateProcessor {
         messageSendSuccessProcessor.onNext(chatItemProviderData);
     }
 
-    public void postChatItemSendError(@NonNull String uuid) {
-        messageSendErrorProcessor.onNext(uuid);
+    public void postChatItemSendError(@NonNull ChatItemSendErrorModel sendErrorModel) {
+        messageSendErrorProcessor.onNext(sendErrorModel);
     }
 
     public void postRemoveChatItem(@NonNull ChatItemType chatItemType) {
@@ -154,7 +155,7 @@ public class ChatUpdateProcessor {
         return messageSendSuccessProcessor;
     }
 
-    public FlowableProcessor<String> getMessageSendErrorProcessor() {
+    public FlowableProcessor<ChatItemSendErrorModel> getMessageSendErrorProcessor() {
         return messageSendErrorProcessor;
     }
 

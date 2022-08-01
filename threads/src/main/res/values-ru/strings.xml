@@ -146,7 +146,15 @@
     <string name="threads_voice_message_error">Ошибка обработки голосового сообщения</string>
     <string name="threads_empty_state_hint">Инициализация клиента</string>
     <string name="threads_achieve_images_count_limit_message">Вы достигли лимита изображений для отправки</string>
-    <string name="threads_some_error_during_load_file">Произошла ошибка при загрузке\nили проверке файла.</string>
+
+    <string name="threads_disallowed_error_during_load_file">Загрузка файла не выполнена.\nНе удалось проверить файл</string>
+    <string name="threads_timeout_error_during_load_file">Не удалось завершить загрузку файла, истек таймаут.\nПопробуйте загрузить файл позже</string>
+    <string name="threads_unexpected_error_during_load_file">Не удалось завершить загрузку файла.\nПопробуйте отправить файл позже</string>
+    <string name="threads_some_error_during_load_file">Произошла ошибка при загрузке\nили проверке файла</string>
+    <string name="threads_file_restricted_type_error_during_load_file">Файл с таким расширением запрещен к загрузке</string>
+    <string name="threads_file_restricted_size_error_during_load_file">Размер файла превышает допустимое значение</string>
+    <string name="threads_file_not_found_error_during_load_file">Файл для загрузки не найден</string>
+
     <string name="loading"></string>
 
     <string name="threads_history_loading_message">Выполняется загрузка сообщений из истории, подождите завершения</string>

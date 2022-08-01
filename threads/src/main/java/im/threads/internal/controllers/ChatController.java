@@ -1,5 +1,8 @@
 package im.threads.internal.controllers;
 
+import static im.threads.internal.utils.FilePosterKt.postFile;
+import static im.threads.internal.utils.NetworkErrorUtilsKt.getErrorStringResByCode;
+
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -35,6 +38,7 @@ import im.threads.internal.broadcastReceivers.ProgressReceiver;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.formatters.ChatItemType;
 import im.threads.internal.model.ChatItem;
+import im.threads.internal.model.ChatItemSendErrorModel;
 import im.threads.internal.model.ConsultChatPhrase;
 import im.threads.internal.model.ConsultConnectionMessage;
 import im.threads.internal.model.ConsultInfo;
@@ -60,7 +64,6 @@ import im.threads.internal.transport.HistoryLoader;
 import im.threads.internal.transport.HistoryParser;
 import im.threads.internal.utils.ConsultWriter;
 import im.threads.internal.utils.DeviceInfoHelper;
-import im.threads.internal.utils.FilePoster;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.PrefUtils;
 import im.threads.internal.utils.Seeker;
@@ -675,10 +678,10 @@ public final class ChatController {
                     String filePath = null;
                     String quoteFilePath = null;
                     if (fileDescription != null) {
-                        filePath = FilePoster.post(fileDescription);
+                        filePath = postFile(fileDescription);
                     }
                     if (quoteFileDescription != null) {
-                        quoteFilePath = FilePoster.post(quoteFileDescription);
+                        quoteFilePath = postFile(quoteFileDescription);
                     }
                     Config.instance.transport.sendMessage(userPhrase, consultInfo, filePath, quoteFilePath);
                 })
@@ -688,7 +691,8 @@ public final class ChatController {
                                 () -> {
                                 },
                                 e -> {
-                                    chatUpdateProcessor.postChatItemSendError(userPhrase.getId());
+                                    String message = appContext.getString(getErrorStringResByCode(e.getMessage()));
+                                    chatUpdateProcessor.postChatItemSendError(new ChatItemSendErrorModel(null, userPhrase.getId(), message));
                                     ThreadsLogger.e(TAG, e.getMessage());
                                 }
                         )
@@ -892,10 +896,10 @@ public final class ChatController {
         subscribe(
                 Flowable.fromPublisher(chatUpdateProcessor.getMessageSendErrorProcessor())
                         .observeOn(Schedulers.io())
-                        .flatMapMaybe(uuid -> {
-                            ChatItem chatItem = databaseHolder.getChatItem(uuid);
+                        .flatMapMaybe(chatItemSendErrorModel -> {
+                            ChatItem chatItem = databaseHolder.getChatItem(chatItemSendErrorModel.getUserPhraseUuid());
                             if (chatItem instanceof UserPhrase) {
-                                ThreadsLogger.d(TAG, "server answer on phrase sent with id " + uuid);
+                                ThreadsLogger.d(TAG, "server answer on phrase sent with id " + chatItemSendErrorModel.getUserPhraseUuid());
                                 UserPhrase userPhrase = (UserPhrase) chatItem;
                                 userPhrase.setSentState(MessageState.STATE_NOT_SENT);
                                 databaseHolder.putChatItem(userPhrase);

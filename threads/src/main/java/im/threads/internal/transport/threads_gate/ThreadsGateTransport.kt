@@ -14,6 +14,7 @@ import im.threads.internal.Config
 import im.threads.internal.chat_updates.ChatUpdateProcessor
 import im.threads.internal.formatters.ChatItemType
 import im.threads.internal.model.CampaignMessage
+import im.threads.internal.model.ChatItemSendErrorModel
 import im.threads.internal.model.ConsultInfo
 import im.threads.internal.model.SpeechMessageUpdate
 import im.threads.internal.model.SslSocketFactoryConfig
@@ -325,7 +326,8 @@ class ThreadsGateTransport(
         if (tokens.size > 1) {
             val type = ChatItemType.fromString(tokens[0])
             if (type == ChatItemType.MESSAGE) {
-                ChatUpdateProcessor.getInstance().postChatItemSendError(tokens[1])
+                ChatUpdateProcessor.getInstance()
+                    .postChatItemSendError(ChatItemSendErrorModel(userPhraseUuid = tokens[1]))
             }
         }
     }
@@ -381,7 +383,9 @@ class ThreadsGateTransport(
                                 ChatUpdateProcessor.getInstance()
                                     .postChatItemSendSuccess(
                                         ChatItemProviderData(
-                                            tokens[1], data.messageId, data.sentAt.time
+                                            tokens[1],
+                                            data.messageId,
+                                            data.sentAt.time
                                         )
                                     )
                             }

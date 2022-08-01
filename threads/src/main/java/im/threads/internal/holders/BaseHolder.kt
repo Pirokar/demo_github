@@ -131,7 +131,7 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
     protected fun getErrorImageResByErrorCode(code: ErrorStateEnum) = when (code) {
         ErrorStateEnum.DISALLOWED -> R.drawable.im_wrong_file
         ErrorStateEnum.TIMEOUT -> R.drawable.im_unexpected
-        ErrorStateEnum.Unexpected -> R.drawable.im_unexpected
+        ErrorStateEnum.UNEXPECTED -> R.drawable.im_unexpected
         ErrorStateEnum.ANY -> R.drawable.im_unexpected
     }
 
