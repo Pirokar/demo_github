@@ -9,20 +9,16 @@ import java.io.File
  */
 class LoggerConfig(val builder: Builder) {
     class Builder(context: Context) {
-        @JvmField
         internal val context: Context = context.applicationContext
         internal val logger = LogcatLogger()
         internal val formatter = LoggerFileFormatter()
 
-        @JvmField
         internal var dirPath: String? = null
-        internal var defaultTag: String? = null
+        internal var fileName: String? = null
         internal var minLevel = LoggerLevel.V
         internal var logToFile = false
         internal var retentionPolicy = LoggerRetentionPolicy.FILE_COUNT
         internal var maxFileCount = LoggerConst.DEFAULT_MAX_FILE_COUNT
-
-        @JvmField
         internal var maxSize = LoggerConst.DEFAULT_MAX_TOTAL_SIZE
 
         /**
@@ -33,6 +29,19 @@ class LoggerConfig(val builder: Builder) {
         fun dir(dir: File?): Builder {
             if (dir != null) {
                 dirPath = dir.absolutePath
+            }
+            return this
+        }
+
+        /**
+         * Вместо автоматически генерируемого имени файла можно установить фиксированное имя.
+         *  Используется только вместе с [LoggerRetentionPolicy.TOTAL_SIZE]
+         *  @param fileName имя файла
+         *  @return [Builder]
+         */
+        fun fileName(fileName: String): Builder {
+            if (fileName.isNotEmpty()) {
+                this.fileName = fileName
             }
             return this
         }

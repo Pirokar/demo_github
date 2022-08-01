@@ -176,7 +176,8 @@ object LoggerEdna {
             }
             if (config.builder.logToFile && !config.builder.dirPath.isNullOrBlank()) {
                 val timeMs = System.currentTimeMillis()
-                val fileName = config.builder.formatter.formatFileName(timeMs)
+                val fileName = config.builder.fileName
+                    ?: config.builder.formatter.formatFileName(timeMs)
                 val line = config.builder.formatter.formatLine(
                     timeMs,
                     LoggerLevel.getLevelName(level),
