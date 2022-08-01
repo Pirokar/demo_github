@@ -92,7 +92,11 @@ class PicassoImageLoader : ImageLoaderRealisation {
             }
         }
 
-        return builder
+        return if (config.url == null && config.file == null && config.resourceId == null) {
+            null
+        } else {
+            builder
+        }
     }
 
     private fun getTransformations(
