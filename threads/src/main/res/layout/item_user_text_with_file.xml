@@ -208,6 +208,7 @@
                 android:id="@+id/voice_message"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
+                android:background="@drawable/thread_outgoing_bubble"
                 android:paddingEnd="17dp"
                 android:paddingStart="0dp">
 

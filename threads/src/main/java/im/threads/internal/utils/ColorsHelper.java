@@ -19,8 +19,6 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.ImageViewCompat;
 
-import im.threads.R;
-
 public final class ColorsHelper {
 
     public static void setStatusBarColor(Activity activity,
@@ -100,21 +98,6 @@ public final class ColorsHelper {
                         ContextCompat.getColor(context, pressedColorResId),
                         ContextCompat.getColor(context, enabledColorResId),
                         ContextCompat.getColor(context, disabledColorResId)
-                }
-        );
-    }
-
-    public static ColorStateList getSimpleColorStateList(Context context, @ColorRes int colorResId) {
-        return new ColorStateList(
-                new int[][]{
-                        new int[]{android.R.attr.state_pressed},
-                        new int[]{android.R.attr.state_enabled},
-                        new int[]{-android.R.attr.state_enabled}
-                },
-                new int[]{
-                        ContextCompat.getColor(context, colorResId),
-                        ContextCompat.getColor(context, colorResId),
-                        ContextCompat.getColor(context, R.color.threads_grey_aaa)
                 }
         );
     }
