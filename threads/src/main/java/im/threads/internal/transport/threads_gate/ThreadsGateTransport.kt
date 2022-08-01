@@ -40,6 +40,7 @@ import im.threads.internal.utils.DeviceInfoHelper
 import im.threads.internal.utils.PrefUtils
 import im.threads.internal.utils.SSLCertificateInterceptor
 import im.threads.internal.utils.ThreadsLogger
+import im.threads.internal.utils.capitalize
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -249,9 +250,8 @@ class ThreadsGateTransport(
 
     private fun sendRegisterDevice() {
         val ws = webSocket ?: return
-        val deviceModel = Build.MANUFACTURER + ' ' + Build.MODEL
-        val deviceName =
-            Settings.Secure.getString(Config.instance.context.contentResolver, "bluetooth_name")
+        val deviceModel = getSimpleDeviceName()
+        val deviceName = getDeviceName()
         val cloudPair = applicationConfig.getCloudPair()
         val data = RegisterDeviceRequest.Data(
             AppInfoHelper.getAppId(),
@@ -330,6 +330,34 @@ class ThreadsGateTransport(
         }
     }
 
+    private fun getDeviceName(): String {
+        val deviceName = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+            Settings.Secure.getString(Config.instance.context.contentResolver, Settings.Global.DEVICE_NAME)
+        } else null
+
+        return if (deviceName.isNullOrBlank() && Build.VERSION.SDK_INT <= Build.VERSION_CODES.S) {
+            try {
+                Settings.Secure.getString(Config.instance.context.contentResolver, "bluetooth_name")
+            } catch (ignored: Exception) {
+                getSimpleDeviceName()
+            }
+        } else if (deviceName.isNullOrBlank()) {
+            getSimpleDeviceName()
+        } else {
+            deviceName
+        }
+    }
+
+    private fun getSimpleDeviceName(): String {
+        val manufacturer = Build.MANUFACTURER
+        val model = Build.MODEL
+        return if (model.startsWith(manufacturer)) {
+            model
+        } else {
+            "${manufacturer.capitalize()} $model"
+        }
+    }
+
     private inner class WebSocketListener : okhttp3.WebSocketListener() {
         override fun onOpen(webSocket: WebSocket, response: Response) {
             val socketResponseMap = mutableMapOf<String, Any>().apply {
@@ -381,7 +409,9 @@ class ThreadsGateTransport(
                                 ChatUpdateProcessor.getInstance()
                                     .postChatItemSendSuccess(
                                         ChatItemProviderData(
-                                            tokens[1], data.messageId, data.sentAt.time
+                                            tokens[1],
+                                            data.messageId,
+                                            data.sentAt.time
                                         )
                                     )
                             }
@@ -412,12 +442,7 @@ class ThreadsGateTransport(
                         }
                     }
                 }
-                /*if (action.equals(Action.UPDATE_STATUSES)) {
-                    UpdateStatusesData data = Config.instance.gson.fromJson(response.getData().toString(), UpdateStatusesData.class);
-                    for (final String messageId : data.getMessageIds()) {
-                        ChatUpdateProcessor.getInstance().postMessageWasRead(messageId);
-                    }
-                }*/if (action == Action.GET_MESSAGES) {
+                if (action == Action.GET_MESSAGES) {
                     val data = Config.instance.gson.fromJson(
                         response.data.toString(),
                         GetMessagesData::class.java
@@ -511,7 +536,6 @@ class ThreadsGateTransport(
             closeWebSocket()
         }
 
-        @Throws(JSONException::class)
         private fun JSONObject.toMap(): Map<String, Any> {
             val map = mutableMapOf<String, Any>()
             for (key in this.keys()) {
@@ -525,7 +549,6 @@ class ThreadsGateTransport(
             return map
         }
 
-        @Throws(JSONException::class)
         private fun JSONArray.toList(): List<Any> {
             val list = mutableListOf<Any>()
             for (i in 0 until this.length()) {
