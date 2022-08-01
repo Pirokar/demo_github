@@ -136,6 +136,17 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
     }
 
     /**
+     * Возвращает нужный текстовый ресурс [StringRes] в зависимости от кода ошибки
+     * @param code код ошибки
+     */
+    protected fun getErrorStringResByErrorCode(code: ErrorStateEnum) = when (code) {
+        ErrorStateEnum.DISALLOWED -> R.string.threads_disallowed_error_during_load_file
+        ErrorStateEnum.TIMEOUT -> R.string.threads_timeout_error_during_load_file
+        ErrorStateEnum.UNEXPECTED -> R.string.threads_some_error_during_load_file
+        ErrorStateEnum.ANY -> R.string.threads_some_error_during_load_file
+    }
+
+    /**
      * Обрабатывает показ Open Graph.
      * @param ogDataLayout layout, в котором размещены вьюхи Open Graph
      * @param timeStampView текстовая вьюха для отображения времени

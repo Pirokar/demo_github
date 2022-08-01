@@ -1,6 +1,5 @@
 package im.threads.internal.holders;
 
-import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.text.format.Formatter;
@@ -8,6 +7,8 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TableRow;
@@ -27,12 +28,9 @@ import java.util.Locale;
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
-import im.threads.internal.domain.ogParser.OpenGraphParser;
-import im.threads.internal.domain.ogParser.OpenGraphParserJsoupImpl;
 import im.threads.internal.formatters.RussianFormatSymbols;
 import im.threads.internal.imageLoading.ImageLoader;
-import im.threads.internal.markdown.MarkdownProcessor;
-import im.threads.internal.markdown.MarkwonMarkdownProcessor;
+import im.threads.internal.model.AttachmentStateEnum;
 import im.threads.internal.model.CampaignMessage;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.MessageState;
@@ -77,17 +75,17 @@ public final class UserPhraseViewHolder extends VoiceMessageBaseHolder {
     private final Slider slider;
     private final ImageView buttonPlayPause;
     private final TextView fileSizeTextView;
-
-    private final Context context;
+    private final TextView errorText;
+    private final ImageView loader;
+    private final RotateAnimation rotateAnim = new RotateAnimation(0, 360,
+            Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF,
+            0.5f);
     private FileDescription fileDescription = null;
     @NonNull
     private String formattedDuration = "";
-    private final MarkdownProcessor markdownProcessor = new MarkwonMarkdownProcessor();
-    private final OpenGraphParser openGraphParser = new OpenGraphParserJsoupImpl();
 
     public UserPhraseViewHolder(final ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_user_text_with_file, parent, false));
-        context = parent.getContext();
         mPhraseTextView = itemView.findViewById(R.id.text);
         mImage = itemView.findViewById(R.id.image);
         quoteTextRow = itemView.findViewById(R.id.quote_text_row);
@@ -111,6 +109,8 @@ public final class UserPhraseViewHolder extends VoiceMessageBaseHolder {
         buttonPlayPause = itemView.findViewById(R.id.voice_message_user_button_play_pause);
         slider = itemView.findViewById(R.id.voice_message_user_slider);
         fileSizeTextView = itemView.findViewById(R.id.file_size);
+        errorText = itemView.findViewById(R.id.errorText);
+        loader = itemView.findViewById(R.id.loader);
 
         sdf = new SimpleDateFormat("HH:mm", Locale.US);
         if (Locale.getDefault().getLanguage().equalsIgnoreCase("ru")) {
@@ -173,7 +173,6 @@ public final class UserPhraseViewHolder extends VoiceMessageBaseHolder {
         } else {
             mPhraseTextView.setVisibility(View.VISIBLE);
             mPhraseTextView.bindTimestampView(mTimeStampTextView);
-            String deepLink = UrlUtils.extractDeepLink(phrase);
             String url = UrlUtils.extractLink(phrase);
             highlightClientText(mPhraseTextView, phrase);
             if (url != null) {
@@ -189,47 +188,59 @@ public final class UserPhraseViewHolder extends VoiceMessageBaseHolder {
         quoteTextRow.setVisibility(View.GONE);
         mRightTextRow.setVisibility(View.GONE);
         if (fileDescription != null) {
-            if (FileUtils.isVoiceMessage(fileDescription)) {
-                mPhraseTextView.setVisibility(View.GONE);
-                voiceMessage.setVisibility(View.VISIBLE);
+            long fileSize = fileDescription.getSize();
+            mRightTextDescr.setText(FileUtils.getFileName(fileDescription) + "\n" + (fileSize > 0 ? "\n" + Formatter.formatFileSize(itemView.getContext(), fileSize) : ""));
+            if (fileDescription.getState() == AttachmentStateEnum.PENDING || userPhrase.getSentState() == MessageState.STATE_SENDING) {
+                mRightTextRow.setVisibility(View.VISIBLE);
+                showLoaderLayout();
+            } else if (fileDescription.getState() == AttachmentStateEnum.ERROR) {
+                mRightTextRow.setVisibility(View.VISIBLE);
+                showErrorLayout(fileDescription);
             } else {
-                if (FileUtils.isImage(fileDescription)) {
-                    mImage.setVisibility(View.VISIBLE);
-                    mImage.setOnClickListener(imageClickListener);
-                    // User image can be already available locally
-                    String downloadPath;
-                    if (fileDescription.getFileUri() == null) {
-                        downloadPath = fileDescription.getDownloadPath();
-                    } else {
-                        downloadPath = fileDescription.getFileUri().toString();
-                    }
-
-                    ImageLoader
-                            .get()
-                            .load(downloadPath)
-                            .autoRotateWithExif(true)
-                            .scales(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP)
-                            .errorDrawableResourceId(style.imagePlaceholder)
-                            .into(mImage);
+                showCommonLayout();
+                if (FileUtils.isVoiceMessage(fileDescription)) {
+                    mPhraseTextView.setVisibility(View.GONE);
+                    voiceMessage.setVisibility(View.VISIBLE);
                 } else {
-                    if (fileDescription.getFileUri() != null) {
-                        fileDescription.setDownloadProgress(100);
+                    if (FileUtils.isImage(fileDescription)) {
+                        mImage.setVisibility(View.VISIBLE);
+                        mImage.setOnClickListener(imageClickListener);
+                        // User image can be already available locally
+                        String downloadPath;
+                        if (fileDescription.getFileUri() == null) {
+                            downloadPath = fileDescription.getDownloadPath();
+                        } else {
+                            downloadPath = fileDescription.getFileUri().toString();
+                        }
+
+                        ImageLoader
+                                .get()
+                                .load(downloadPath)
+                                .autoRotateWithExif(true)
+                                .scales(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP)
+                                .errorDrawableResourceId(style.imagePlaceholder)
+                                .into(mImage);
+                    } else {
+                        if (fileDescription.getFileUri() != null) {
+                            fileDescription.setDownloadProgress(100);
+                        }
+                        mRightTextRow.setVisibility(View.VISIBLE);
+                        ViewUtils.setClickListener(mRightTextRow, (View.OnClickListener) null);
+                        mFileImageButton.setVisibility(View.VISIBLE);
+                        mRightTextHeader.setText(fileDescription.getFrom());
+                        mRightTextTimeStamp
+                                .setText(itemView.getContext().getString(R.string.threads_sent_at, fileSdf.format(new Date(fileDescription.getTimeStamp()))));
+                        if (fileClickListener != null) {
+                            mFileImageButton.setOnClickListener(fileClickListener);
+                        }
+                        mFileImageButton.setProgress(fileDescription.getFileUri() != null ? 100 : fileDescription.getDownloadProgress());
                     }
-                    mRightTextRow.setVisibility(View.VISIBLE);
-                    ViewUtils.setClickListener(mRightTextRow, (View.OnClickListener) null);
-                    mFileImageButton.setVisibility(View.VISIBLE);
-                    long fileSize = fileDescription.getSize();
-                    mRightTextDescr.setText(FileUtils.getFileName(fileDescription) + "\n" + (fileSize > 0 ? "\n" + Formatter.formatFileSize(itemView.getContext(), fileSize) : ""));
-                    mRightTextHeader.setText(fileDescription.getFrom());
-                    mRightTextTimeStamp
-                            .setText(itemView.getContext().getString(R.string.threads_sent_at, fileSdf.format(new Date(fileDescription.getTimeStamp()))));
-                    if (fileClickListener != null) {
-                        mFileImageButton.setOnClickListener(fileClickListener);
-                    }
-                    mFileImageButton.setProgress(fileDescription.getFileUri() != null ? 100 : fileDescription.getDownloadProgress());
                 }
             }
+        } else {
+            showCommonLayout();
         }
+
         if (quote != null) {
             showQuote(quote, onQuoteClickListener);
         } else if (campaignMessage != null) {
@@ -338,32 +349,67 @@ public final class UserPhraseViewHolder extends VoiceMessageBaseHolder {
     }
 
     private void setSendState(MessageState sendState) {
-        final Drawable d;
+        final Drawable drawable;
         switch (sendState) {
             case STATE_WAS_READ:
-                d = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.threads_message_received);
-                d.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_outgoing_message_received_icon), PorterDuff.Mode.SRC_ATOP);
-                mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
-                ogTimestamp.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
+                drawable = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.threads_message_received);
+                if (drawable != null) {
+                    drawable.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_outgoing_message_received_icon), PorterDuff.Mode.SRC_ATOP);
+                    mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null);
+                    ogTimestamp.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null);
+                }
                 break;
             case STATE_SENT:
-                d = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.threads_message_sent);
-                d.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_outgoing_message_sent_icon), PorterDuff.Mode.SRC_ATOP);
-                mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
-                ogTimestamp.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
+                drawable = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.threads_message_sent);
+                if (drawable != null) {
+                    drawable.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_outgoing_message_sent_icon), PorterDuff.Mode.SRC_ATOP);
+                    mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null);
+                    ogTimestamp.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null);
+                }
                 break;
             case STATE_NOT_SENT:
-                d = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.threads_message_waiting);
-                d.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_outgoing_message_not_send_icon), PorterDuff.Mode.SRC_ATOP);
-                mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
-                ogTimestamp.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
+                drawable = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.threads_message_waiting);
+                if (drawable != null) {
+                    drawable.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_outgoing_message_not_send_icon), PorterDuff.Mode.SRC_ATOP);
+                    mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null);
+                    ogTimestamp.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null);
+                }
                 break;
             case STATE_SENDING:
-                d = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.empty_space_24dp);
-                mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
-                ogTimestamp.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
+                drawable = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.empty_space_24dp);
+                if (drawable != null) {
+                    mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null);
+                    ogTimestamp.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null);
+                }
                 break;
         }
+    }
+
+    private void showLoaderLayout() {
+        errorText.setVisibility(View.GONE);
+        loader.setVisibility(View.VISIBLE);
+        mFileImageButton.setVisibility(View.GONE);
+        loader.setImageResource(R.drawable.im_loading);
+        rotateAnim.setDuration(3000);
+        rotateAnim.setRepeatCount(Animation.INFINITE);
+        loader.setAnimation(rotateAnim);
+    }
+
+    private void showErrorLayout(FileDescription fileDescription) {
+        errorText.setVisibility(View.VISIBLE);
+        loader.setVisibility(View.VISIBLE);
+        loader.setImageResource(getErrorImageResByErrorCode(fileDescription.getErrorCode()));
+        mFileImageButton.setVisibility(View.GONE);
+        errorText.setText(Config.instance.context.getString(getErrorStringResByErrorCode(fileDescription.getErrorCode())));
+        rotateAnim.cancel();
+        rotateAnim.reset();
+    }
+
+    private void showCommonLayout() {
+        errorText.setVisibility(View.GONE);
+        loader.setVisibility(View.GONE);
+        rotateAnim.cancel();
+        rotateAnim.reset();
     }
 }
 
