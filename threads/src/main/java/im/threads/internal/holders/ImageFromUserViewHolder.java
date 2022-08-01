@@ -2,6 +2,8 @@ package im.threads.internal.holders;
 
 import static im.threads.internal.model.MessageState.STATE_SENDING;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
@@ -58,7 +60,6 @@ public final class ImageFromUserViewHolder extends BaseHolder {
             0.5f
     );
 
-
     public ImageFromUserViewHolder(ViewGroup parent, ImageModifications.MaskedModification maskedTransformation) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_user_image_from, parent, false));
         style = Config.instance.getChatStyle();
@@ -74,25 +75,40 @@ public final class ImageFromUserViewHolder extends BaseHolder {
         fileName = itemView.findViewById(R.id.fileName);
         mTimeStampTextView = itemView.findViewById(R.id.timestamp);
         mTimeStampDuplicateTextView = itemView.findViewById(R.id.timestampDuplicate);
+        applyTimeStampStyle(parent.getContext());
+        applyBubbleLayoutStyle();
+    }
+
+    private void applyTimeStampStyle(Context context) {
         mTimeStampTextView.setTextColor(getColorInt(style.outgoingImageTimeColor));
         mTimeStampDuplicateTextView.setTextColor(getColorInt(style.outgoingImageTimeColor));
-        mTimeStampDuplicateTextView.getBackground().setColorFilter(getColorInt(style.outgoingImageTimeBackgroundColor), PorterDuff.Mode.SRC_ATOP);
-        mTimeStampTextView.getBackground().setColorFilter(getColorInt(style.outgoingImageTimeBackgroundColor), PorterDuff.Mode.SRC_ATOP);
+        int timeColorBg = getColorInt(style.outgoingImageTimeBackgroundColor);
+        mTimeStampDuplicateTextView.getBackground().setColorFilter(timeColorBg, PorterDuff.Mode.SRC_ATOP);
+        mTimeStampTextView.getBackground().setColorFilter(timeColorBg, PorterDuff.Mode.SRC_ATOP);
         if (style.outgoingMessageTimeTextSize > 0) {
-            mTimeStampTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, parent.getContext().getResources().getDimension(style.outgoingMessageTimeTextSize));
-            mTimeStampDuplicateTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, parent.getContext().getResources().getDimension(style.outgoingMessageTimeTextSize));
+            float textSize = context.getResources().getDimension(style.outgoingMessageTimeTextSize);
+            mTimeStampTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
+            mTimeStampDuplicateTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
         }
+    }
+
+    private void applyBubbleLayoutStyle() {
+        Resources res = itemView.getContext().getResources();
         ChatStyle style = Config.instance.getChatStyle();
-        bubbleLayout.setBackground(AppCompatResources.getDrawable(itemView.getContext(), style.outgoingMessageBubbleBackground));
+        bubbleLayout.setBackground(AppCompatResources.getDrawable(itemView.getContext(),
+                style.outgoingMessageBubbleBackground));
         bubbleLayout.setPadding(
-                itemView.getContext().getResources().getDimensionPixelSize(style.bubbleOutgoingPaddingLeft),
-                itemView.getContext().getResources().getDimensionPixelSize(style.bubbleOutgoingPaddingTop),
-                itemView.getContext().getResources().getDimensionPixelSize(style.bubbleOutgoingPaddingRight),
-                itemView.getContext().getResources().getDimensionPixelSize(style.bubbleOutgoingPaddingBottom)
+                res.getDimensionPixelSize(style.bubbleOutgoingPaddingLeft),
+                res.getDimensionPixelSize(style.bubbleOutgoingPaddingTop),
+                res.getDimensionPixelSize(style.bubbleOutgoingPaddingRight),
+                res.getDimensionPixelSize(style.bubbleOutgoingPaddingBottom)
         );
     }
 
-    public void onBind(final UserPhrase userPhrase, boolean highlighted, final Runnable clickRunnable, final Runnable longClickRunnable) {
+    public void onBind(final UserPhrase userPhrase,
+                       boolean highlighted,
+                       final Runnable clickRunnable,
+                       final Runnable longClickRunnable) {
         ViewGroup vg = (ViewGroup) itemView;
         for (int i = 0; i < vg.getChildCount(); i++) {
             vg.getChildAt(i).setOnClickListener(v -> clickRunnable.run());
@@ -110,7 +126,9 @@ public final class ImageFromUserViewHolder extends BaseHolder {
         filter.setVisibility(isChosen ? View.VISIBLE : View.INVISIBLE);
     }
 
-    private void bindImage(FileDescription fileDescription, MessageState messageState, Runnable longClickRunnable) {
+    private void bindImage(FileDescription fileDescription,
+                           MessageState messageState,
+                           Runnable longClickRunnable) {
         boolean isDownloadError = fileDescription.isDownloadError();
         mImage.setOnLongClickListener(view -> {
             longClickRunnable.run();
@@ -151,13 +169,16 @@ public final class ImageFromUserViewHolder extends BaseHolder {
         Drawable rightDrawable = null;
         switch (messageState) {
             case STATE_WAS_READ:
-                rightDrawable = getColoredDrawable(R.drawable.threads_image_message_received, R.color.threads_outgoing_message_image_received_icon);
+                rightDrawable = getColoredDrawable(R.drawable.threads_image_message_received,
+                        R.color.threads_outgoing_message_image_received_icon);
                 break;
             case STATE_SENT:
-                rightDrawable = getColoredDrawable(R.drawable.threads_message_image_sent, R.color.threads_outgoing_message_image_sent_icon);
+                rightDrawable = getColoredDrawable(R.drawable.threads_message_image_sent,
+                        R.color.threads_outgoing_message_image_sent_icon);
                 break;
             case STATE_NOT_SENT:
-                rightDrawable = getColoredDrawable(R.drawable.threads_message_image_waiting, R.color.threads_outgoing_message_image_not_send_icon);
+                rightDrawable = getColoredDrawable(R.drawable.threads_message_image_waiting,
+                        R.color.threads_outgoing_message_image_not_send_icon);
                 break;
             case STATE_SENDING:
                 rightDrawable = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.empty_space_24dp);
@@ -191,7 +212,8 @@ public final class ImageFromUserViewHolder extends BaseHolder {
         commonLayout.setVisibility(View.GONE);
         loader.setImageResource(getErrorImageResByErrorCode(fileDescription.getErrorCode()));
         fileName.setText(fileDescription.getIncomingName());
-        errorText.setText(Config.instance.context.getString(getErrorStringResByErrorCode(fileDescription.getErrorCode())));
+        String errorString = getString(getErrorStringResByErrorCode(fileDescription.getErrorCode()));
+        errorText.setText(errorString);
         rotateAnimation.cancel();
         rotateAnimation.reset();
     }

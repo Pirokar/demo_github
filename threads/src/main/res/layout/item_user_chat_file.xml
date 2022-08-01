@@ -79,7 +79,7 @@
             android:layout_marginTop="@dimen/margin_half"
             android:layout_toEndOf="@+id/delimiter"
             android:paddingBottom="@dimen/margin_half"
-            android:textSize="11sp"
+            android:textSize="@dimen/error_text_size"
             android:text="1,2 mb"
             android:textColor="@color/threads_outgoing_message_text" />
 
@@ -90,7 +90,7 @@
             android:layout_alignEnd="@+id/header"
             android:layout_alignParentEnd="true"
             android:layout_marginTop="@dimen/margin_half"
-            android:textSize="11sp"
+            android:textSize="@dimen/error_text_size"
             android:text="10:19"
             android:textColor="@color/threads_user_message_timestamp" />
 
@@ -106,7 +106,7 @@
         android:paddingStart="0dp"
         android:paddingEnd="@dimen/consultant_margin_right"
         android:textColor="@color/threads_error_red_df0000"
-        android:textSize="@dimen/text_11sp"
+        android:textSize="@dimen/error_text_size"
         android:visibility="gone"
         tools:text="Some error text"
         tools:visibility="visible" />

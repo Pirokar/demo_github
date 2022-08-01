@@ -691,8 +691,12 @@ public final class ChatController {
                                 () -> {
                                 },
                                 e -> {
-                                    String message = appContext.getString(getErrorStringResByCode(e.getMessage()));
-                                    chatUpdateProcessor.postChatItemSendError(new ChatItemSendErrorModel(null, userPhrase.getId(), message));
+                                    int errorCode = getErrorStringResByCode(e.getMessage());
+                                    String message = appContext.getString(errorCode);
+                                    ChatItemSendErrorModel model = new ChatItemSendErrorModel(null,
+                                            userPhrase.getId(),
+                                            message);
+                                    chatUpdateProcessor.postChatItemSendError(model);
                                     ThreadsLogger.e(TAG, e.getMessage());
                                 }
                         )
@@ -897,9 +901,10 @@ public final class ChatController {
                 Flowable.fromPublisher(chatUpdateProcessor.getMessageSendErrorProcessor())
                         .observeOn(Schedulers.io())
                         .flatMapMaybe(chatItemSendErrorModel -> {
-                            ChatItem chatItem = databaseHolder.getChatItem(chatItemSendErrorModel.getUserPhraseUuid());
+                            String phraseUuid = chatItemSendErrorModel.getUserPhraseUuid();
+                            ChatItem chatItem = databaseHolder.getChatItem(phraseUuid);
                             if (chatItem instanceof UserPhrase) {
-                                ThreadsLogger.d(TAG, "server answer on phrase sent with id " + chatItemSendErrorModel.getUserPhraseUuid());
+                                ThreadsLogger.d(TAG, "server answer on phrase sent with id " + phraseUuid);
                                 UserPhrase userPhrase = (UserPhrase) chatItem;
                                 userPhrase.setSentState(MessageState.STATE_NOT_SENT);
                                 databaseHolder.putChatItem(userPhrase);

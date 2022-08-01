@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -284,5 +285,12 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
         val drawable = AppCompatResources.getDrawable(itemView.context, iconResId)?.mutate()
         ColorsHelper.setDrawableColor(itemView.context, drawable, colorRes)
         return drawable
+    }
+
+    protected fun getString(@StringRes stringId: Int): String? {
+        itemView.context?.let {
+            return it.getString(stringId)
+        }
+        return null
     }
 }

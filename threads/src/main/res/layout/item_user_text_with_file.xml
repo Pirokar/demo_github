@@ -353,7 +353,7 @@
         android:paddingStart="0dp"
         android:paddingEnd="@dimen/consultant_margin_right"
         android:textColor="@color/threads_error_red_df0000"
-        android:textSize="@dimen/text_11sp"
+        android:textSize="@dimen/error_text_size"
         android:visibility="gone"
         tools:text="Some error text"
         tools:visibility="visible" />

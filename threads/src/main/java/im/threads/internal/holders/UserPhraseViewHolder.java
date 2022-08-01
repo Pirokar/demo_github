@@ -1,5 +1,6 @@
 package im.threads.internal.holders;
 
+import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.text.format.Formatter;
@@ -127,10 +128,20 @@ public final class UserPhraseViewHolder extends VoiceMessageBaseHolder {
                 itemView.getContext().getResources().getDimensionPixelSize(style.bubbleOutgoingPaddingBottom)
         );
         mBubble.getBackground().setColorFilter(getColorInt(style.outgoingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
-        setTextColorToViews(new TextView[]{mRightTextDescr, mPhraseTextView, mRightTextHeader, mRightTextTimeStamp, fileSizeTextView, quoteTextDescr, quoteTextHeader, quoteTextTimeStamp}, style.outgoingMessageTextColor);
+        setTextColorToViews(new TextView[]{ mRightTextDescr,
+                    mPhraseTextView,
+                    mRightTextHeader,
+                    mRightTextTimeStamp,
+                    fileSizeTextView,
+                    quoteTextDescr,
+                    quoteTextHeader,
+                    quoteTextTimeStamp },
+                style.outgoingMessageTextColor);
         mTimeStampTextView.setTextColor(getColorInt(style.outgoingMessageTimeColor));
-        if (style.outgoingMessageTimeTextSize > 0)
-            mTimeStampTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, parent.getContext().getResources().getDimension(style.outgoingMessageTimeTextSize));
+        if (style.outgoingMessageTimeTextSize > 0) {
+            float textSize = parent.getContext().getResources().getDimension(style.outgoingMessageTimeTextSize);
+            mTimeStampTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
+        }
         ogTimestamp.setTextColor(getColorInt(style.outgoingMessageTimeColor));
         itemView.findViewById(R.id.delimeter).setBackgroundColor(getColorInt(style.outgoingMessageTextColor));
         mFileImageButton.setBackgroundColorResId(style.outgoingMessageTextColor);
@@ -157,7 +168,6 @@ public final class UserPhraseViewHolder extends VoiceMessageBaseHolder {
         final MessageState sendState = userPhrase.getSentState();
         final Quote quote = userPhrase.getQuote();
         final CampaignMessage campaignMessage = userPhrase.getCampaignMessage();
-        this.fileDescription = userPhrase.getFileDescription();
         this.formattedDuration = formattedDuration;
         ViewUtils.setClickListener((ViewGroup) itemView, onLongClickListener);
         ViewUtils.setClickListener((ViewGroup) itemView, onRowClickListener);
@@ -187,6 +197,38 @@ public final class UserPhraseViewHolder extends VoiceMessageBaseHolder {
         voiceMessage.setVisibility(View.GONE);
         quoteTextRow.setVisibility(View.GONE);
         mRightTextRow.setVisibility(View.GONE);
+
+        showFiles(userPhrase, imageClickListener, fileClickListener);
+
+        if (quote != null) {
+            showQuote(quote, onQuoteClickListener);
+        } else if (campaignMessage != null) {
+            showCampaign(campaignMessage);
+        }
+        if (quote != null || fileDescription != null) {
+            mPhraseFrame.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
+        } else {
+            mPhraseFrame.getLayoutParams().width = ViewGroup.LayoutParams.WRAP_CONTENT;
+        }
+        if (mRightTextHeader.getText() == null ||
+                mRightTextHeader.getText().toString().equals("null")) {
+            mRightTextHeader.setVisibility(View.GONE);
+        } else {
+            mRightTextHeader.setVisibility(View.VISIBLE);
+        }
+        if (isChosen) {
+            mFilterView.setVisibility(View.VISIBLE);
+            mFilterViewSecond.setVisibility(View.VISIBLE);
+        } else {
+            mFilterView.setVisibility(View.INVISIBLE);
+            mFilterViewSecond.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    private void showFiles(final UserPhrase userPhrase,
+                           final View.OnClickListener imageClickListener,
+                           @Nullable final View.OnClickListener fileClickListener) {
+        this.fileDescription = userPhrase.getFileDescription();
         if (fileDescription != null) {
             long fileSize = fileDescription.getSize();
             mRightTextDescr.setText(FileUtils.getFileName(fileDescription) + "\n" + (fileSize > 0 ? "\n" + Formatter.formatFileSize(itemView.getContext(), fileSize) : ""));
@@ -228,41 +270,19 @@ public final class UserPhraseViewHolder extends VoiceMessageBaseHolder {
                         ViewUtils.setClickListener(mRightTextRow, (View.OnClickListener) null);
                         mFileImageButton.setVisibility(View.VISIBLE);
                         mRightTextHeader.setText(fileDescription.getFrom());
-                        mRightTextTimeStamp
-                                .setText(itemView.getContext().getString(R.string.threads_sent_at, fileSdf.format(new Date(fileDescription.getTimeStamp()))));
+                        String timeStampText = itemView.getContext().getString(R.string.threads_sent_at,
+                                fileSdf.format(new Date(fileDescription.getTimeStamp())));
+                        mRightTextTimeStamp.setText(timeStampText);
                         if (fileClickListener != null) {
                             mFileImageButton.setOnClickListener(fileClickListener);
                         }
-                        mFileImageButton.setProgress(fileDescription.getFileUri() != null ? 100 : fileDescription.getDownloadProgress());
+                        mFileImageButton.setProgress(fileDescription.getFileUri() != null ?
+                                100 : fileDescription.getDownloadProgress());
                     }
                 }
             }
         } else {
             showCommonLayout();
-        }
-
-        if (quote != null) {
-            showQuote(quote, onQuoteClickListener);
-        } else if (campaignMessage != null) {
-            showCampaign(campaignMessage);
-        }
-        if (quote != null || fileDescription != null) {
-            mPhraseFrame.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
-        } else {
-            mPhraseFrame.getLayoutParams().width = ViewGroup.LayoutParams.WRAP_CONTENT;
-        }
-        if (mRightTextHeader.getText() == null ||
-                mRightTextHeader.getText().toString().equals("null")) {
-            mRightTextHeader.setVisibility(View.GONE);
-        } else {
-            mRightTextHeader.setVisibility(View.VISIBLE);
-        }
-        if (isChosen) {
-            mFilterView.setVisibility(View.VISIBLE);
-            mFilterViewSecond.setVisibility(View.VISIBLE);
-        } else {
-            mFilterView.setVisibility(View.INVISIBLE);
-            mFilterViewSecond.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -271,7 +291,9 @@ public final class UserPhraseViewHolder extends VoiceMessageBaseHolder {
         ViewUtils.setClickListener(quoteTextRow, onQuoteClickListener);
         quoteTextDescr.setText(quote.getText());
         quoteTextHeader.setText(quote.getPhraseOwnerTitle());
-        quoteTextTimeStamp.setText(itemView.getContext().getResources().getString(R.string.threads_sent_at, fileSdf.format(new Date(quote.getTimeStamp()))));
+        String timeStampText = itemView.getContext().getResources().getString(R.string.threads_sent_at,
+                fileSdf.format(new Date(quote.getTimeStamp())));
+        quoteTextTimeStamp.setText(timeStampText);
         if (quote.getFileDescription() != null) {
             if (FileUtils.isImage(quote.getFileDescription())) {
                 quoteImage.setVisibility(View.VISIBLE);
@@ -304,7 +326,9 @@ public final class UserPhraseViewHolder extends VoiceMessageBaseHolder {
         quoteTextRow.setVisibility(View.VISIBLE);
         quoteTextDescr.setText(campaignMessage.getText());
         quoteTextHeader.setText(campaignMessage.getSenderName());
-        quoteTextTimeStamp.setText(itemView.getContext().getResources().getString(R.string.threads_sent_at, fileSdf.format(campaignMessage.getReceivedDate())));
+        String text = itemView.getContext().getResources().getString(R.string.threads_sent_at,
+                fileSdf.format(campaignMessage.getReceivedDate()));
+        quoteTextTimeStamp.setText(text);
     }
 
     @Nullable
@@ -349,39 +373,33 @@ public final class UserPhraseViewHolder extends VoiceMessageBaseHolder {
     }
 
     private void setSendState(MessageState sendState) {
-        final Drawable drawable;
         switch (sendState) {
             case STATE_WAS_READ:
-                drawable = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.threads_message_received);
-                if (drawable != null) {
-                    drawable.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_outgoing_message_received_icon), PorterDuff.Mode.SRC_ATOP);
-                    mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null);
-                    ogTimestamp.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null);
-                }
+                updateDrawable(itemView.getContext(), R.drawable.threads_message_received,
+                        R.color.threads_outgoing_message_received_icon);
                 break;
             case STATE_SENT:
-                drawable = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.threads_message_sent);
-                if (drawable != null) {
-                    drawable.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_outgoing_message_sent_icon), PorterDuff.Mode.SRC_ATOP);
-                    mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null);
-                    ogTimestamp.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null);
-                }
+                updateDrawable(itemView.getContext(), R.drawable.threads_message_sent,
+                        R.color.threads_outgoing_message_sent_icon);
                 break;
             case STATE_NOT_SENT:
-                drawable = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.threads_message_waiting);
-                if (drawable != null) {
-                    drawable.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_outgoing_message_not_send_icon), PorterDuff.Mode.SRC_ATOP);
-                    mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null);
-                    ogTimestamp.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null);
-                }
+                updateDrawable(itemView.getContext(), R.drawable.threads_message_waiting,
+                        R.color.threads_outgoing_message_not_send_icon);
                 break;
             case STATE_SENDING:
-                drawable = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.empty_space_24dp);
-                if (drawable != null) {
-                    mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null);
-                    ogTimestamp.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null);
-                }
+                updateDrawable(itemView.getContext(), R.drawable.empty_space_24dp, -1);
                 break;
+        }
+    }
+
+    private void updateDrawable(Context context, int srcDrawableResId, int colorResId) {
+        Drawable drawable = AppCompatResources.getDrawable(context, srcDrawableResId);
+        if (drawable != null) {
+            if (colorResId >= 0) {
+                drawable.setColorFilter(ContextCompat.getColor(context, colorResId), PorterDuff.Mode.SRC_ATOP);
+            }
+            mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null);
+            ogTimestamp.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null);
         }
     }
 
@@ -400,7 +418,8 @@ public final class UserPhraseViewHolder extends VoiceMessageBaseHolder {
         loader.setVisibility(View.VISIBLE);
         loader.setImageResource(getErrorImageResByErrorCode(fileDescription.getErrorCode()));
         mFileImageButton.setVisibility(View.GONE);
-        errorText.setText(Config.instance.context.getString(getErrorStringResByErrorCode(fileDescription.getErrorCode())));
+        String errorString = getString(getErrorStringResByErrorCode(fileDescription.getErrorCode()));
+        errorText.setText(errorString);
         rotateAnim.cancel();
         rotateAnim.reset();
     }

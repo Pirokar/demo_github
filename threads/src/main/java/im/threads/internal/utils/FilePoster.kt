@@ -41,7 +41,7 @@ fun postFile(fileDescription: FileDescription): String? {
                 )
             }
         }
-        if (!fileDescription.downloadPath.isNullOrEmpty()) {
+        if (!fileDescription.downloadPath.isNullOrBlank()) {
             return fileDescription.downloadPath
         }
     }
@@ -92,7 +92,7 @@ private fun getFileRequestBody(uri: Uri, mimeType: String): RequestBody {
 private fun isJpeg(uri: Uri): Boolean {
     try {
         Config.instance.context.contentResolver.openInputStream(uri)?.use { iStream ->
-            val inputData = getBytes(iStream) // JPEG(JFIF) header: FF D8 FF
+            val inputData = getBytes(iStream)
             return inputData[0] == (-1).toByte() && inputData[1] == (-40).toByte() && inputData[2] == (-1).toByte()
         }
     } catch (e: IOException) {
@@ -118,7 +118,6 @@ private fun getBytes(inputStream: InputStream): ByteArray {
     }
 }
 
-@Throws(IOException::class)
 private fun compressImage(uri: Uri?): File? {
     val bitmap = ImageLoader.get()
         .load(uri.toString())
