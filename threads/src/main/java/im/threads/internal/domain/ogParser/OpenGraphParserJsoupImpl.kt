@@ -1,7 +1,7 @@
 package im.threads.internal.domain.ogParser
 
 import android.net.Uri
-import im.threads.internal.utils.ThreadsLogger
+import im.threads.internal.domain.logger.LoggerEdna
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import java.security.KeyManagementException
@@ -23,8 +23,6 @@ private const val OG_SITE_NAME: String = "og:site_name"
  * Этот класс использует библиотеку jsoup, которая загружает url и возвращает парсинг всех данных.
  */
 class OpenGraphParserJsoupImpl : OpenGraphParser {
-    private val tag = OpenGraphParserJsoupImpl::class.java.simpleName
-
     private fun socketFactory(): SSLSocketFactory {
         val trustAllCerts = arrayOf<TrustManager>(object : X509TrustManager {
             override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {}
@@ -83,7 +81,7 @@ class OpenGraphParserJsoupImpl : OpenGraphParser {
             existedOpenGraphs[hostAndPath] = result
             result
         } catch (e: Exception) {
-            ThreadsLogger.e(tag, "Error when parsing OG data!", e)
+            LoggerEdna.e("Error when parsing OG data!", e)
             null
         }
     }
