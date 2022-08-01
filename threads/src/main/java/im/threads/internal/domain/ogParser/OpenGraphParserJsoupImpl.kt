@@ -4,6 +4,12 @@ import android.net.Uri
 import im.threads.internal.utils.ThreadsLogger
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import java.security.KeyManagementException
+import java.security.cert.X509Certificate
+import javax.net.ssl.SSLContext
+import javax.net.ssl.SSLSocketFactory
+import javax.net.ssl.TrustManager
+import javax.net.ssl.X509TrustManager
 
 private const val OG_TITLE: String = "og:title"
 private const val OG_DESCRIPTION: String = "og:description"
@@ -18,6 +24,31 @@ private const val OG_SITE_NAME: String = "og:site_name"
  */
 class OpenGraphParserJsoupImpl : OpenGraphParser {
     private val tag = OpenGraphParserJsoupImpl::class.java.simpleName
+
+    private fun socketFactory(): SSLSocketFactory {
+        val trustAllCerts = arrayOf<TrustManager>(object : X509TrustManager {
+            override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {}
+
+            override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {}
+
+            override fun getAcceptedIssuers(): Array<X509Certificate> {
+                return arrayOf()
+            }
+        })
+
+        try {
+            val sslContext = SSLContext.getInstance("TLS")
+            sslContext.init(null, trustAllCerts, java.security.SecureRandom())
+            return sslContext.socketFactory
+        } catch (e: Exception) {
+            when (e) {
+                is RuntimeException, is KeyManagementException -> {
+                    throw RuntimeException("Failed to create a SSL socket factory", e)
+                }
+                else -> throw e
+            }
+        }
+    }
 
     /**
      * Метод для запроса og data. Возвращает распарсенные данные. Работает синхронно,
@@ -39,6 +70,7 @@ class OpenGraphParserJsoupImpl : OpenGraphParser {
 
         return try {
             val response = Jsoup.connect(urlToParse)
+                .sslSocketFactory(socketFactory())
                 .ignoreContentType(true)
                 .userAgent("Mozilla")
                 .referrer("http://www.google.com")
