@@ -693,9 +693,11 @@ public final class ChatController {
                                 e -> {
                                     int errorCode = getErrorStringResByCode(e.getMessage());
                                     String message = appContext.getString(errorCode);
-                                    ChatItemSendErrorModel model = new ChatItemSendErrorModel(null,
+                                    ChatItemSendErrorModel model = new ChatItemSendErrorModel(
+                                            null,
                                             userPhrase.getId(),
-                                            message);
+                                            message
+                                    );
                                     chatUpdateProcessor.postChatItemSendError(model);
                                     ThreadsLogger.e(TAG, e.getMessage());
                                 }

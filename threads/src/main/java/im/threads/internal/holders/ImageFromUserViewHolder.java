@@ -95,8 +95,10 @@ public final class ImageFromUserViewHolder extends BaseHolder {
     private void applyBubbleLayoutStyle() {
         Resources res = itemView.getContext().getResources();
         ChatStyle style = Config.instance.getChatStyle();
-        bubbleLayout.setBackground(AppCompatResources.getDrawable(itemView.getContext(),
-                style.outgoingMessageBubbleBackground));
+        bubbleLayout.setBackground(
+                AppCompatResources.getDrawable(itemView.getContext(),
+                style.outgoingMessageBubbleBackground)
+        );
         bubbleLayout.setPadding(
                 res.getDimensionPixelSize(style.bubbleOutgoingPaddingLeft),
                 res.getDimensionPixelSize(style.bubbleOutgoingPaddingTop),
