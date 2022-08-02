@@ -76,7 +76,7 @@ public class QuickRepliesTable extends Table {
             }
             sqlHelper.getWritableDatabase().setTransactionSuccessful();
         } catch (Exception e) {
-            LoggerEdna.e("putQuickReplies", e);
+            LoggerEdna.error("putQuickReplies", e);
         } finally {
             sqlHelper.getWritableDatabase().endTransaction();
         }

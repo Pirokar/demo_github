@@ -36,5 +36,5 @@ internal fun ImageView.loadImage(
 }
 
 private fun showLog() {
-    LoggerEdna.e("Data is empty, nothing to load")
+    LoggerEdna.error("Data is empty, nothing to load")
 }

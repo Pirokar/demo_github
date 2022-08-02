@@ -160,9 +160,9 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
 
         val ogDataTag = "OgData_Fetching"
         coroutineScope.launch {
-            LoggerEdna.i(ogDataTag, "Fetching OgData for url \"$normalizedUrl\"")
+            LoggerEdna.info(ogDataTag, "Fetching OgData for url \"$normalizedUrl\"")
             openGraphParser.getContents(normalizedUrl)?.let { ogData ->
-                LoggerEdna.i(ogDataTag, "OgData for url \"$normalizedUrl\": $ogData")
+                LoggerEdna.info(ogDataTag, "OgData for url \"$normalizedUrl\": $ogData")
                 withContext(Dispatchers.Main) {
                     if (ogData.isEmpty()) {
                         hideOGView(ogDataLayout, timeStampView)

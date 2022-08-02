@@ -130,7 +130,7 @@ class DebugMenuInteractor(private val context: Context) : DebugMenuUseCase {
                 )
             )
             PrefUtilsApp.setCurrentServer(context, serverName)
-        } ?: LoggerEdna.e("Cannot set server!")
+        } ?: LoggerEdna.error("Cannot set server!")
     }
 
     override fun getServers(): List<ServerConfig> {

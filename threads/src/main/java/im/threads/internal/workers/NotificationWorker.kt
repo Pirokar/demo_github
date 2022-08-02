@@ -51,7 +51,7 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
     private var style: ChatStyle = Config.instance.chatStyle
 
     override fun doWork(): Result {
-        LoggerEdna.i("doWork")
+        LoggerEdna.info("doWork")
 
         val systemService = context.getSystemService(Context.NOTIFICATION_SERVICE)
         val notificationManager: NotificationManager
@@ -312,7 +312,7 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
                 context.resources.getIdentifier("right_icon", "id", context.packageName)
             notification.contentView.setViewVisibility(smallIconViewId, View.INVISIBLE)
         } catch (e: Exception) {
-            LoggerEdna.e("getPreNStyleNotification", e)
+            LoggerEdna.error("getPreNStyleNotification", e)
         }
         return notification
     }
@@ -449,7 +449,7 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
                 .modifications(ImageModifications.CircleCropModification)
                 .getBitmapSync(context)
         } catch (e: IOException) {
-            LoggerEdna.e("getBitmapFromUrl", e)
+            LoggerEdna.error("getBitmapFromUrl", e)
             null
         }
     }

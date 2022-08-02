@@ -56,7 +56,7 @@ public class FileDescriptionMediaPlayer {
                 .timeInterval()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(it -> mediaPlayerUpdateProcessor.onNext(true),
-                        error -> LoggerEdna.e("FileDescriptionMediaPlayer ", error)
+                        error -> LoggerEdna.error("FileDescriptionMediaPlayer ", error)
                 );
     }
 
@@ -68,7 +68,7 @@ public class FileDescriptionMediaPlayer {
         fileDescription.setFileUri(fileUri);
 
         if (fileDescription.getFileUri() == null) {
-            LoggerEdna.i("file uri is null");
+            LoggerEdna.info("file uri is null");
             return;
         }
         if (ObjectsCompat.equals(this.fileDescription, fileDescription) && mediaPlayer != null) {

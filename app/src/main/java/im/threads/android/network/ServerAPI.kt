@@ -28,7 +28,7 @@ internal object ServerAPI {
         get() {
             val serverBaseUrl = developerOptions.getCurrentServer().serverBaseUrl
             return if (TextUtils.isEmpty(serverBaseUrl)) {
-                LoggerEdna.w("Server base url is empty")
+                LoggerEdna.warning("Server base url is empty")
                 null
             } else {
                 if (serverAPI == null) {

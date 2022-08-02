@@ -156,7 +156,7 @@ public final class HistoryParser {
             }
             Collections.sort(out, (ci1, ci2) -> Long.compare(ci1.getTimeStamp(), ci2.getTimeStamp()));
         } catch (final Exception e) {
-            LoggerEdna.e("error while formatting: " + messages, e);
+            LoggerEdna.error("error while formatting: " + messages, e);
         }
         return out;
     }
@@ -173,7 +173,7 @@ public final class HistoryParser {
             }
             return survey;
         } catch (final JsonSyntaxException e) {
-            LoggerEdna.e("getSurveyFromJsonString", e);
+            LoggerEdna.error("getSurveyFromJsonString", e);
             return null;
         }
     }

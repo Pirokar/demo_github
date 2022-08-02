@@ -19,14 +19,14 @@ public enum FileHelper {
     FileHelper() {
         ChatUpdateProcessor.getInstance().getAttachmentSettingsProcessor()
                 .subscribe(attachmentSettings -> saveAttachmentSettings(attachmentSettings.getContent()),
-                        LoggerEdna::e
+                        LoggerEdna::error
                 );
     }
 
     public static File createImageFile(Context context) {
         String filename = "thr" + System.currentTimeMillis() + ".jpg";
         File output = new File(context.getFilesDir(), filename);
-        LoggerEdna.d("File genereated into filesDir : " + output.getAbsolutePath());
+        LoggerEdna.debug("File genereated into filesDir : " + output.getAbsolutePath());
         return output;
     }
 

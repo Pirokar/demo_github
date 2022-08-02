@@ -153,7 +153,7 @@ class ThreadsGateTransport(
         filePath: String?,
         quoteFilePath: String?
     ) {
-        LoggerEdna.i(
+        LoggerEdna.info(
             "sendMessage: userPhrase = $userPhrase, consultInfo = $consultInfo, filePath = $filePath, quoteFilePath = $quoteFilePath"
         )
         userPhrase.campaignMessage?.let {
@@ -209,7 +209,7 @@ class ThreadsGateTransport(
         tryOpeningWebSocket: Boolean = true,
         sendInit: Boolean = true
     ) {
-        LoggerEdna.i(
+        LoggerEdna.info(
             "sendMessage: content = $content, important = $important, correlationId = $correlationId"
         )
         synchronized(messageInProcessIds) {
@@ -232,7 +232,7 @@ class ThreadsGateTransport(
                 SendMessageRequest.Data(PrefUtils.deviceAddress, content, important)
             )
         )
-        LoggerEdna.i("Sending : $text")
+        LoggerEdna.info("Sending : $text")
         ws.send(text)
     }
 
@@ -267,7 +267,7 @@ class ThreadsGateTransport(
         val text = Config.instance.gson.toJson(
             RegisterDeviceRequest(UUID.randomUUID().toString(), data)
         )
-        LoggerEdna.i("Sending : $text")
+        LoggerEdna.info("Sending : $text")
         ws.send(text)
     }
 
@@ -364,11 +364,11 @@ class ThreadsGateTransport(
                 put(KEY_URL, response.request.url)
             }
             ChatUpdateProcessor.getInstance().postSocketResponseMap(socketResponseMap)
-            LoggerEdna.i("OnOpen : $response")
+            LoggerEdna.info("OnOpen : $response")
         }
 
         override fun onMessage(webSocket: WebSocket, text: String) {
-            LoggerEdna.i("Receiving : $text")
+            LoggerEdna.info("Receiving : $text")
             postSocketResponseMap(text)
             val response = Config.instance.gson.fromJson(text, BaseResponse::class.java)
             val action = response.action
@@ -445,7 +445,7 @@ class ThreadsGateTransport(
                         GetMessagesData::class.java
                     )
                     for (message in data.messages) {
-                        LoggerEdna.i("Message handling: ${message.content}")
+                        LoggerEdna.info("Message handling: ${message.content}")
                         if (message.content.has(MessageAttributes.TYPE)) {
                             val type =
                                 ChatItemType.fromString(ThreadsGateMessageParser.getType(message))
@@ -495,18 +495,18 @@ class ThreadsGateTransport(
         }
 
         override fun onMessage(webSocket: WebSocket, bytes: ByteString) {
-            LoggerEdna.i("Receiving bytes : " + bytes.hex())
+            LoggerEdna.info("Receiving bytes : " + bytes.hex())
         }
 
         override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
             postSocketResponseMap(code, reason)
-            LoggerEdna.i("Closing : $code / $reason")
+            LoggerEdna.info("Closing : $code / $reason")
             webSocket.close(Companion.NORMAL_CLOSURE_STATUS, null)
         }
 
         override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
             postSocketResponseMap(code, reason)
-            LoggerEdna.i("OnClosed : $code / $reason")
+            LoggerEdna.info("OnClosed : $code / $reason")
         }
 
         private fun postSocketResponseMap(code: Int, reason: String) {
@@ -522,7 +522,7 @@ class ThreadsGateTransport(
         }
 
         override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
-            LoggerEdna.i("Error : " + t.message)
+            LoggerEdna.info("Error : " + t.message)
             ChatUpdateProcessor.getInstance().postError(TransportException(t.message))
             synchronized(messageInProcessIds) {
                 for (messageId in messageInProcessIds) {

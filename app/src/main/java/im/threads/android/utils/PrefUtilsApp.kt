@@ -29,7 +29,7 @@ object PrefUtilsApp {
     @JvmStatic
     fun storeCards(ctx: Context?, cards: List<Card?>?) {
         if (ctx == null || cards == null) {
-            LoggerEdna.i("storeCards: ctx or bundle is null")
+            LoggerEdna.info("storeCards: ctx or bundle is null")
             return
         }
         val editor = PreferenceManager.getDefaultSharedPreferences(ctx).edit()
@@ -177,7 +177,7 @@ object PrefUtilsApp {
                 }
             }
         } catch (exception: Exception) {
-            LoggerEdna.e("Error when deleting preference file", exception)
+            LoggerEdna.error("Error when deleting preference file", exception)
         }
     }
 }

@@ -23,7 +23,7 @@ public final class DateHelper {
         try {
             date = sdf.parse(dateString);
         } catch (ParseException e) {
-            LoggerEdna.e("getMessageTimestampFromDateString", e);
+            LoggerEdna.error("getMessageTimestampFromDateString", e);
         }
         return date.getTime();
     }

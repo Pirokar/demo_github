@@ -52,9 +52,9 @@ internal class LoggerFileThread(private val queue: BlockingQueue<LogData>) : Thr
                 startFilesStoring()
             }
         } catch (e: InterruptedException) {
-            LoggerEdna.e("file logger service thread is interrupted", e)
+            LoggerEdna.error("file logger service thread is interrupted", e)
         }
-        LoggerEdna.d("file logger service thread stopped")
+        LoggerEdna.debug("file logger service thread stopped")
         isRunning = false
     }
 
@@ -86,7 +86,7 @@ internal class LoggerFileThread(private val queue: BlockingQueue<LogData>) : Thr
                 bufferedWriter.flush()
             }
         } catch (e: IOException) {
-            LoggerEdna.e(LoggerConst.TAG, e)
+            LoggerEdna.error(LoggerConst.TAG, e)
         }
     }
 
@@ -138,7 +138,7 @@ internal class LoggerFileThread(private val queue: BlockingQueue<LogData>) : Thr
             }
         }
 
-        LoggerEdna.d(
+        LoggerEdna.debug(
             LoggerConst.TAG,
             "house keeping complete: file count [${files.size} -> ${files.size - successCount}]"
         )
@@ -174,7 +174,7 @@ internal class LoggerFileThread(private val queue: BlockingQueue<LogData>) : Thr
             }
         }
 
-        LoggerEdna.d("house keeping complete: total size [$totalSize -> $newSize]")
+        LoggerEdna.debug("house keeping complete: total size [$totalSize -> $newSize]")
     }
 
     private fun ensureDirIsCorrect(dir: File): Boolean {
@@ -183,12 +183,12 @@ internal class LoggerFileThread(private val queue: BlockingQueue<LogData>) : Thr
                 return true
             }
             if (!dir.delete()) {
-                LoggerEdna.w("failed to delete dir on log path: [${dir.absolutePath}]")
+                LoggerEdna.warning("failed to delete dir on log path: [${dir.absolutePath}]")
                 return false
             }
         }
         if (!dir.mkdir()) {
-            LoggerEdna.w("failed to create log dir: [${dir.absolutePath}]")
+            LoggerEdna.warning("failed to create log dir: [${dir.absolutePath}]")
             return false
         }
         return true
@@ -204,7 +204,7 @@ internal class LoggerFileThread(private val queue: BlockingQueue<LogData>) : Thr
         try {
             writer?.close()
         } catch (e: IOException) {
-            LoggerEdna.e(LoggerConst.TAG, e)
+            LoggerEdna.error(LoggerConst.TAG, e)
         } finally {
             writer = null
         }

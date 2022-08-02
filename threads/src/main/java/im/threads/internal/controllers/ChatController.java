@@ -185,7 +185,7 @@ public final class ChatController {
     private static void initClientId() {
         String newClientId = PrefUtils.getNewClientID();
         String oldClientId = PrefUtils.getClientID();
-        LoggerEdna.i("getInstance newClientId = " + newClientId + ", oldClientId = " + oldClientId);
+        LoggerEdna.info("getInstance newClientId = " + newClientId + ", oldClientId = " + oldClientId);
         if (Objects.equals(newClientId, oldClientId)) {
             // clientId has not changed
             PrefUtils.setNewClientId("");
@@ -202,7 +202,7 @@ public final class ChatController {
                                             instance.handleQuickReplies(chatItems);
                                         }
                                     },
-                                    LoggerEdna::e
+                                    LoggerEdna::error
                             )
             );
         }
@@ -225,7 +225,7 @@ public final class ChatController {
     }
 
     public void onUserInput(@NonNull final UpcomingUserMessage upcomingUserMessage) {
-        LoggerEdna.i("onUserInput: " + upcomingUserMessage);
+        LoggerEdna.info("onUserInput: " + upcomingUserMessage);
         // If user has written a message while the request to resolve the thread is visible
         // we should make invisible the resolve request
         removeResolveRequest();
@@ -273,7 +273,7 @@ public final class ChatController {
                         .subscribe(
                                 () -> consumer.accept(seeker.seek(lastItems, !forward, query)),
                                 e ->  {
-                                    LoggerEdna.e(e);
+                                    LoggerEdna.error(e);
                                     ThreadUtils.runOnUiThread(() -> {
                                         fragment.hideProgressBar();
                                     });
@@ -288,7 +288,7 @@ public final class ChatController {
                     synchronized (this) {
                         if (!isDownloadingMessages) {
                             isDownloadingMessages = true;
-                            LoggerEdna.d("downloadMessagesTillEnd");
+                            LoggerEdna.debug("downloadMessagesTillEnd");
                             while (!isAllMessagesDownloaded) {
                                 final HistoryResponse response = HistoryLoader.getHistorySync(lastMessageTimestamp, PER_PAGE_COUNT);
                                 final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
@@ -310,7 +310,7 @@ public final class ChatController {
     }
 
     public void onFileClick(final FileDescription fileDescription) {
-        LoggerEdna.i("onFileClick " + fileDescription);
+        LoggerEdna.info("onFileClick " + fileDescription);
         if (fragment != null && fragment.isAdded()) {
             final Activity activity = fragment.getActivity();
             if (activity != null) {
@@ -384,7 +384,7 @@ public final class ChatController {
                         .subscribe(aLong -> {
                             removePushNotification();
                             UnreadMessagesController.INSTANCE.refreshUnreadMessagesCount();
-                        }, LoggerEdna::e)
+                        }, LoggerEdna::error)
         );
     }
 
@@ -400,7 +400,7 @@ public final class ChatController {
                             saveMessages(serverItems);
                             return setLastAvatars(databaseHolder.getChatItems(currentOffset, count));
                         } catch (final Exception e) {
-                            LoggerEdna.e("requestItems", e);
+                            LoggerEdna.error("requestItems", e);
                             return setLastAvatars(databaseHolder.getChatItems(currentOffset, count));
                         }
                     }
@@ -420,7 +420,7 @@ public final class ChatController {
 
     public void onConsultChoose(final Activity activity, final String consultId) {
         if (consultId == null) {
-            LoggerEdna.w("Can't show consult info: consultId == null");
+            LoggerEdna.warning("Can't show consult info: consultId == null");
         } else {
             ConsultInfo info = databaseHolder.getConsultInfo(consultId);
             if (info != null) {
@@ -458,7 +458,7 @@ public final class ChatController {
     }
 
     public void bindFragment(@NonNull final ChatFragment f) {
-        LoggerEdna.i("bindFragment: " + f.toString());
+        LoggerEdna.info("bindFragment: " + f.toString());
         final Activity activity = f.getActivity();
         if (activity == null) {
             return;
@@ -492,7 +492,7 @@ public final class ChatController {
                                         loadHistory();
                                     }
                                 },
-                                LoggerEdna::e
+                                LoggerEdna::error
                         )
         );
         if (consultWriter.isConsultConnected()) {
@@ -523,7 +523,7 @@ public final class ChatController {
     public void setMessagesInCurrentThreadAsReadInDB() {
         subscribe(DatabaseHolder.getInstance().setAllConsultMessagesWereReadInThread(PrefUtils.getThreadId())
                 .subscribe(UnreadMessagesController.INSTANCE::refreshUnreadMessagesCount,
-                        error -> LoggerEdna.e("setAllMessagesWereRead() ", error))
+                        error -> LoggerEdna.error("setAllMessagesWereRead() ", error))
         );
     }
 
@@ -541,7 +541,7 @@ public final class ChatController {
                         .firstElement()
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(survey -> Config.instance.transport.sendRatingDone(survey),
-                                error -> LoggerEdna.e("subscribeToSurveyCompletion: ", error)
+                                error -> LoggerEdna.error("subscribeToSurveyCompletion: ", error)
                         )
         );
     }
@@ -550,7 +550,7 @@ public final class ChatController {
         removePushNotification();
         subscribe(DatabaseHolder.getInstance().setAllConsultMessagesWereRead()
                 .subscribe(UnreadMessagesController.INSTANCE::refreshUnreadMessagesCount,
-                        error -> LoggerEdna.e("setAllMessagesWereRead() ", error))
+                        error -> LoggerEdna.error("setAllMessagesWereRead() ", error))
         );
         if (fragment != null) {
             fragment.setAllMessagesWereRead();
@@ -626,7 +626,7 @@ public final class ChatController {
                                         if (fragment != null) {
                                             fragment.hideProgressBar();
                                         }
-                                        LoggerEdna.e(e);
+                                        LoggerEdna.error(e);
                                     }
                             )
             );
@@ -647,7 +647,7 @@ public final class ChatController {
     }
 
     private void sendMessage(final UserPhrase userPhrase) {
-        LoggerEdna.i("sendMessage: " + userPhrase);
+        LoggerEdna.info("sendMessage: " + userPhrase);
         ConsultInfo consultInfo = null;
         if (null != userPhrase.getQuote() && userPhrase.getQuote().isFromConsult()) {
             final String id = userPhrase.getQuote().getQuotedPhraseConsultId();
@@ -661,12 +661,12 @@ public final class ChatController {
     }
 
     private void sendTextMessage(final UserPhrase userPhrase, final ConsultInfo consultInfo) {
-        LoggerEdna.i("sendTextMessage: " + userPhrase + ", " + consultInfo);
+        LoggerEdna.info("sendTextMessage: " + userPhrase + ", " + consultInfo);
         Config.instance.transport.sendMessage(userPhrase, consultInfo, null, null);
     }
 
     private void sendFileMessage(final UserPhrase userPhrase, final ConsultInfo consultInfo) {
-        LoggerEdna.i("sendFileMessage: " + userPhrase + ", " + consultInfo);
+        LoggerEdna.info("sendFileMessage: " + userPhrase + ", " + consultInfo);
         final FileDescription fileDescription = userPhrase.getFileDescription();
         final FileDescription quoteFileDescription = userPhrase.getQuote() != null ? userPhrase.getQuote().getFileDescription() : null;
         subscribe(
@@ -688,7 +688,7 @@ public final class ChatController {
                                 },
                                 e -> {
                                     chatUpdateProcessor.postChatItemSendError(userPhrase.getId());
-                                    LoggerEdna.e(e);
+                                    LoggerEdna.error(e);
                                 }
                         )
         );
@@ -717,7 +717,7 @@ public final class ChatController {
                         .observeOn(Schedulers.io())
                         .delay(1000, TimeUnit.MILLISECONDS)
                         .subscribe(chatItem -> loadHistory(),
-                                onError -> LoggerEdna.e("subscribeToCampaignMessageReplySuccess ", onError))
+                                onError -> LoggerEdna.error("subscribeToCampaignMessageReplySuccess ", onError))
         );
     }
 
@@ -734,7 +734,7 @@ public final class ChatController {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 this::addMessage,
-                                error -> LoggerEdna.e("subscribeToTyping ", error)
+                                error -> LoggerEdna.error("subscribeToTyping ", error)
                         )
         );
     }
@@ -751,7 +751,7 @@ public final class ChatController {
                                         fragment.setMessageState(providerId, MessageState.STATE_WAS_READ);
                                     }
                                 },
-                                error -> LoggerEdna.e("subscribeToOutgoingMessageRead ", error)
+                                error -> LoggerEdna.error("subscribeToOutgoingMessageRead ", error)
                         )
         );
     }
@@ -764,7 +764,7 @@ public final class ChatController {
                                     databaseHolder.setMessageWasRead(id);
                                     UnreadMessagesController.INSTANCE.refreshUnreadMessagesCount();
                                 },
-                                error -> LoggerEdna.e("subscribeToIncomingMessageRead ", error)
+                                error -> LoggerEdna.error("subscribeToIncomingMessageRead ", error)
                         )
         );
     }
@@ -789,7 +789,7 @@ public final class ChatController {
                                         fragment.addChatItem(chatItem);
                                     }
                                 },
-                                error -> LoggerEdna.e("subscribeSpeechMessageUpdated ", error)
+                                error -> LoggerEdna.error("subscribeSpeechMessageUpdated ", error)
                         )
         );
     }
@@ -846,7 +846,7 @@ public final class ChatController {
                                         removeActiveSurvey();
                                     }
                                 },
-                                LoggerEdna::e
+                                LoggerEdna::error
                         )
         );
     }
@@ -858,7 +858,7 @@ public final class ChatController {
                         .flatMapMaybe(chatItemSent -> {
                             ChatItem chatItem = databaseHolder.getChatItem(chatItemSent.uuid);
                             if (chatItem instanceof UserPhrase) {
-                                LoggerEdna.d("server answer on phrase sent with id " + chatItemSent.messageId);
+                                LoggerEdna.debug("server answer on phrase sent with id " + chatItemSent.messageId);
                                 UserPhrase userPhrase = (UserPhrase) chatItem;
                                 userPhrase.setProviderId(chatItemSent.messageId);
                                 if (chatItemSent.sentAt > 0) {
@@ -868,7 +868,7 @@ public final class ChatController {
                                 databaseHolder.putChatItem(userPhrase);
                             }
                             if (chatItem == null) {
-                                LoggerEdna.e("chatItem not found");
+                                LoggerEdna.error("chatItem not found");
                             }
                             return Maybe.fromCallable(() -> chatItem);
                         })
@@ -882,7 +882,7 @@ public final class ChatController {
                                         proceedSendingQueue(userPhrase);
                                     }
                                 },
-                                error -> LoggerEdna.e("subscribeToMessageSendSuccess ", error)
+                                error -> LoggerEdna.error("subscribeToMessageSendSuccess ", error)
                         )
         );
     }
@@ -894,13 +894,13 @@ public final class ChatController {
                         .flatMapMaybe(uuid -> {
                             ChatItem chatItem = databaseHolder.getChatItem(uuid);
                             if (chatItem instanceof UserPhrase) {
-                                LoggerEdna.d("server answer on phrase sent with id " + uuid);
+                                LoggerEdna.debug("server answer on phrase sent with id " + uuid);
                                 UserPhrase userPhrase = (UserPhrase) chatItem;
                                 userPhrase.setSentState(MessageState.STATE_NOT_SENT);
                                 databaseHolder.putChatItem(userPhrase);
                             }
                             if (chatItem == null) {
-                                LoggerEdna.e("chatItem not found");
+                                LoggerEdna.error("chatItem not found");
                             }
                             return Maybe.fromCallable(() -> chatItem);
                         })
@@ -921,7 +921,7 @@ public final class ChatController {
                                         proceedSendingQueue(userPhrase);
                                     }
                                 },
-                                error -> LoggerEdna.e("subscribeToMessageSendError ", error)
+                                error -> LoggerEdna.error("subscribeToMessageSendError ", error)
                         )
         );
     }
@@ -936,7 +936,7 @@ public final class ChatController {
                                     setSurveyStateSent(survey);
                                     resetActiveSurvey();
                                 },
-                                error -> LoggerEdna.e("subscribeToSurveySendSuccess ", error)
+                                error -> LoggerEdna.error("subscribeToSurveySendSuccess ", error)
                         )
         );
     }
@@ -947,7 +947,7 @@ public final class ChatController {
                         .observeOn(AndroidSchedulers.mainThread())
                         .filter(chatItemType -> chatItemType.equals(ChatItemType.REQUEST_CLOSE_THREAD))
                         .subscribe(chatItemType -> removeResolveRequest(),
-                                error -> LoggerEdna.e("subscribeToRemoveChatItem ", error)
+                                error -> LoggerEdna.error("subscribeToRemoveChatItem ", error)
                         )
         );
     }
@@ -957,7 +957,7 @@ public final class ChatController {
                 Flowable.fromPublisher(chatUpdateProcessor.getDeviceAddressChangedProcessor())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(chatItemType -> onDeviceAddressChanged(),
-                                error -> LoggerEdna.e("subscribeToDeviceAddressChanged ", error)
+                                error -> LoggerEdna.error("subscribeToDeviceAddressChanged ", error)
                         )
         );
     }
@@ -968,7 +968,7 @@ public final class ChatController {
                             hasQuickReplies = !quickReplies.getItems().isEmpty();
                             refreshUserInputState();
                         },
-                        error -> LoggerEdna.e("subscribeToQuickReplies ", error)
+                        error -> LoggerEdna.error("subscribeToQuickReplies ", error)
                 )
         );
     }
@@ -978,7 +978,7 @@ public final class ChatController {
                 .subscribe(hasFile -> {
                             refreshUserInputState();
                         },
-                        error -> LoggerEdna.e("subscribeToAttachAudioFiles ", error)
+                        error -> LoggerEdna.error("subscribeToAttachAudioFiles ", error)
                 )
         );
     }
@@ -988,18 +988,18 @@ public final class ChatController {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         type -> fragment.setClientNotificationDisplayType(type),
-                        LoggerEdna::e
+                        LoggerEdna::error
                 )
         );
     }
 
     private void removeResolveRequest() {
-        LoggerEdna.i("removeResolveRequest");
+        LoggerEdna.info("removeResolveRequest");
         subscribe(
                 databaseHolder.setOldRequestResolveThreadDisplayMessageToFalse()
                         .subscribe(
-                                () -> LoggerEdna.i("removeResolveRequest"),
-                                LoggerEdna::e
+                                () -> LoggerEdna.info("removeResolveRequest"),
+                                LoggerEdna::error
                         )
         );
         if (fragment != null) {
@@ -1008,12 +1008,12 @@ public final class ChatController {
     }
 
     private void removeActiveSurvey() {
-        LoggerEdna.i("removeActiveSurvey");
+        LoggerEdna.info("removeActiveSurvey");
         subscribe(
                 databaseHolder.setNotSentSurveyDisplayMessageToFalse()
                         .subscribe(
-                                () -> LoggerEdna.i("setOldSurveyDisplayMessageToFalse"),
-                                LoggerEdna::e
+                                () -> LoggerEdna.info("setOldSurveyDisplayMessageToFalse"),
+                                LoggerEdna::error
                         )
         );
         if (activeSurvey != null && fragment != null) {
@@ -1023,7 +1023,7 @@ public final class ChatController {
     }
 
     private void resetActiveSurvey() {
-        LoggerEdna.i("resetActiveSurvey");
+        LoggerEdna.info("resetActiveSurvey");
         activeSurvey = null;
     }
 
@@ -1046,7 +1046,7 @@ public final class ChatController {
     Вызывается когда получено новое сообщение из канала (TG/PUSH)
      */
     private void addMessage(final ChatItem chatItem) {
-        LoggerEdna.i("addMessage: " + chatItem);
+        LoggerEdna.info("addMessage: " + chatItem);
         databaseHolder.putChatItem(chatItem);
         UnreadMessagesController.INSTANCE.refreshUnreadMessagesCount();
         if (fragment != null) {
@@ -1080,7 +1080,7 @@ public final class ChatController {
                                     removePushNotification();
                                     UnreadMessagesController.INSTANCE.refreshUnreadMessagesCount();
                                 },
-                                error -> LoggerEdna.e("addMessage ", error)
+                                error -> LoggerEdna.error("addMessage ", error)
                         )
         );
         // Если пришло сообщение от оператора,
@@ -1098,7 +1098,7 @@ public final class ChatController {
     }
 
     private void queueMessageSending(UserPhrase userPhrase) {
-        LoggerEdna.i("queueMessageSending: " + userPhrase);
+        LoggerEdna.info("queueMessageSending: " + userPhrase);
         synchronized (sendQueue) {
             sendQueue.add(userPhrase);
         }
@@ -1124,7 +1124,7 @@ public final class ChatController {
     }
 
     public void cleanAll() {
-        LoggerEdna.i("cleanAll: ");
+        LoggerEdna.info("cleanAll: ");
         isAllMessagesDownloaded = false;
         sendQueue.clear();
         databaseHolder.cleanDatabase();
@@ -1165,7 +1165,7 @@ public final class ChatController {
     }
 
     private void onDeviceAddressChanged() {
-        LoggerEdna.i("onDeviceAddressChanged:");
+        LoggerEdna.info("onDeviceAddressChanged:");
         String clientId = PrefUtils.getClientID();
         if (fragment != null && !TextUtils.isEmpty(clientId)) {
             subscribe(
@@ -1190,7 +1190,7 @@ public final class ChatController {
                                             }
                                         }
                                     },
-                                    LoggerEdna::e
+                                    LoggerEdna::error
                             )
             );
         }

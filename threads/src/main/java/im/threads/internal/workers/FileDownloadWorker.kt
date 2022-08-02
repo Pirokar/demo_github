@@ -34,12 +34,12 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
             ?: return Result.failure()
 
         if (fileDescription.downloadPath == null || fileDescription.fileUri != null) {
-            LoggerEdna.e("cant download with fileDescription = $fileDescription")
+            LoggerEdna.error("cant download with fileDescription = $fileDescription")
             return Result.failure()
         }
 
         if (fileDescription.state != AttachmentStateEnum.READY) {
-            LoggerEdna.e("cant download with fileDescription = $fileDescription. File state not READY")
+            LoggerEdna.error("cant download with fileDescription = $fileDescription. File state not READY")
             return Result.failure()
         }
 
@@ -72,7 +72,7 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
                 }
 
                 override fun onFileDownloadError(e: Exception?) {
-                    LoggerEdna.e("error while downloading file ", e)
+                    LoggerEdna.error("error while downloading file ", e)
                     fileDescription.downloadProgress = 0
                     DatabaseHolder.getInstance().updateFileDescription(fileDescription)
                     e?.let { sendDownloadErrorBroadcast(fileDescription, e) }
@@ -143,7 +143,7 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
 
         @JvmStatic
         fun startDownloadFD(context: Context, fileDescription: FileDescription) {
-            LoggerEdna.d("Start download")
+            LoggerEdna.debug("Start download")
             val inputData = Data.Builder()
                 .putString(START_DOWNLOAD_ACTION, START_DOWNLOAD_FD_TAG)
                 .putByteArray(FD_TAG, marshall(fileDescription))
@@ -156,7 +156,7 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
 
         @JvmStatic
         fun startDownloadWithNoStop(context: Context, fileDescription: FileDescription) {
-            LoggerEdna.d("Start download")
+            LoggerEdna.debug("Start download")
             val inputData = Data.Builder()
                 .putString(START_DOWNLOAD_ACTION, START_DOWNLOAD_WITH_NO_STOP)
                 .putByteArray(FD_TAG, marshall(fileDescription))

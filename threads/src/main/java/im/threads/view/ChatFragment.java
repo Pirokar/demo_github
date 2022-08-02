@@ -432,16 +432,16 @@ public final class ChatFragment extends BaseFragment implements
             @Override
             public void onCancel() {
                 Date start = new Date();
-                LoggerEdna.d("RecordView: onCancel");
+                LoggerEdna.debug("RecordView: onCancel");
                 subscribe(
                         releaseRecorder()
                                 .subscribeOn(Schedulers.io())
                                 .subscribe(() -> {
                                         },
-                                        error -> LoggerEdna.e("initRecording -> onCancel " + error))
+                                        error -> LoggerEdna.error("initRecording -> onCancel " + error))
                 );
                 recordButton.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-                LoggerEdna.i("onStart performance: " + (new Date().getTime() - start.getTime()));
+                LoggerEdna.info("onStart performance: " + (new Date().getTime() - start.getTime()));
             }
 
             @Override
@@ -460,17 +460,17 @@ public final class ChatFragment extends BaseFragment implements
                                                     audioConverter.convertToWav(file, ChatFragment.this);
                                                 }
                                             } else {
-                                                LoggerEdna.e("error finishing voice message recording");
+                                                LoggerEdna.error("error finishing voice message recording");
                                             }
                                         },
-                                        error -> LoggerEdna.e("ChatFragment onFinish ", error)
+                                        error -> LoggerEdna.error("ChatFragment onFinish ", error)
                                 )
                 );
                 recordView.setVisibility(View.INVISIBLE);
-                LoggerEdna.d("RecordView: onFinish");
-                LoggerEdna.d("RecordTime: " + recordTime);
+                LoggerEdna.debug("RecordView: onFinish");
+                LoggerEdna.debug("RecordTime: " + recordTime);
                 recordButton.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-                LoggerEdna.i("onFinish performance: " + (new Date().getTime() - start.getTime()));
+                LoggerEdna.info("onFinish performance: " + (new Date().getTime() - start.getTime()));
             }
 
             @Override
@@ -480,10 +480,10 @@ public final class ChatFragment extends BaseFragment implements
                         releaseRecorder()
                                 .subscribeOn(Schedulers.io())
                                 .subscribe(() -> {},
-                                        error -> LoggerEdna.e("initRecording -> onLessThanSecond ", error))
+                                        error -> LoggerEdna.error("initRecording -> onLessThanSecond ", error))
                 );
                 showToast(getString(R.string.threads_hold_button_to_record_audio));
-                LoggerEdna.d("RecordView: onLessThanSecond");
+                LoggerEdna.debug("RecordView: onLessThanSecond");
                 recordButton.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
             }
 
@@ -512,14 +512,14 @@ public final class ChatFragment extends BaseFragment implements
                                         try {
                                             recorder.prepare();
                                         } catch (IOException e) {
-                                            LoggerEdna.e("prepare() failed");
+                                            LoggerEdna.error("prepare() failed");
                                         }
                                         recorder.start();
                                     }
                                 })
                                 .subscribeOn(Schedulers.io())
                                 .subscribe(() -> {},
-                                        error -> LoggerEdna.e("initRecording -> startRecorder ", error))
+                                        error -> LoggerEdna.error("initRecording -> startRecorder ", error))
                 );
             }
 
@@ -534,7 +534,7 @@ public final class ChatFragment extends BaseFragment implements
                                 recorder.stop();
                                 recorder.release();
                             } catch (RuntimeException runtimeException) {
-                                LoggerEdna.e("Exception occurred in releaseRecorder but it's fine", runtimeException);
+                                LoggerEdna.error("Exception occurred in releaseRecorder but it's fine", runtimeException);
                             }
                             recorder = null;
                         }
@@ -544,7 +544,7 @@ public final class ChatFragment extends BaseFragment implements
         });
         recordView.setOnBasketAnimationEndListener(() -> {
             recordView.setVisibility(View.INVISIBLE);
-            LoggerEdna.d("RecordView: Basket Animation Finished");
+            LoggerEdna.debug("RecordView: Basket Animation Finished");
         });
     }
 
@@ -575,7 +575,7 @@ public final class ChatFragment extends BaseFragment implements
         subscribe(ChatUpdateProcessor.getInstance().getUserInputEnableProcessor()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::updateInputEnable,
-                        error -> LoggerEdna.e("initUserInputState ", error)
+                        error -> LoggerEdna.error("initUserInputState ", error)
                 ));
     }
 
@@ -589,7 +589,7 @@ public final class ChatFragment extends BaseFragment implements
                                 showQuickReplies(quickReplies);
                             }
                         },
-                        error -> LoggerEdna.e("initQuickReplies ", error)
+                        error -> LoggerEdna.error("initQuickReplies ", error)
                 ));
     }
 
@@ -619,7 +619,7 @@ public final class ChatFragment extends BaseFragment implements
                                 mQuoteLayoutHolder.resetProgress();
                             }
                         },
-                        error -> LoggerEdna.e("initMediaPlayer ", error)
+                        error -> LoggerEdna.error("initMediaPlayer ", error)
                 )
         );
     }
@@ -739,7 +739,7 @@ public final class ChatFragment extends BaseFragment implements
                 .filter(charSequence -> charSequence.length() > 0)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::onInputChanged,
-                        error -> LoggerEdna.e("configureInputChangesSubscription ", error)
+                        error -> LoggerEdna.error("configureInputChangesSubscription ", error)
                 );
         subscribe(userTypingDisposable);
     }
@@ -764,7 +764,7 @@ public final class ChatFragment extends BaseFragment implements
                 )
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::setRecordButtonVisibility,
-                        error -> LoggerEdna.e("configureInputChangesSubscription ", error)
+                        error -> LoggerEdna.error("configureInputChangesSubscription ", error)
                 );
         subscribe(recordButtonVisibilityDisposable);
     }
@@ -832,7 +832,7 @@ public final class ChatFragment extends BaseFragment implements
                 .delay(500, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::afterRefresh,
-                        onError -> LoggerEdna.e("onRefresh ", onError))
+                        onError -> LoggerEdna.error("onRefresh ", onError))
         );
     }
 
@@ -942,7 +942,7 @@ public final class ChatFragment extends BaseFragment implements
                 Typeface custom_font = Typeface.createFromAsset(getActivity().getAssets(), style.inputTextFont);
                 this.binding.inputEditView.setTypeface(custom_font);
             } catch (Exception e) {
-                LoggerEdna.e("setFragmentStyle", e);
+                LoggerEdna.error("setFragmentStyle", e);
             }
         }
 
@@ -1032,20 +1032,20 @@ public final class ChatFragment extends BaseFragment implements
         }
         boolean isCameraGranted = ThreadsPermissionChecker.isCameraPermissionGranted(activity);
         boolean isWriteGranted = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q || ThreadsPermissionChecker.isWriteExternalPermissionGranted(activity);
-        LoggerEdna.i("isCameraGranted = " + isCameraGranted + " isWriteGranted " + isWriteGranted);
+        LoggerEdna.info("isCameraGranted = " + isCameraGranted + " isWriteGranted " + isWriteGranted);
         if (isCameraGranted && isWriteGranted) {
             if (Config.instance.getChatStyle().useExternalCameraApp) {
                 try {
                     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                     externalCameraPhotoFile = FileHelper.INSTANCE.createImageFile(activity);
                     Uri photoUri = FileProviderHelper.getUriForFile(activity, externalCameraPhotoFile);
-                    LoggerEdna.d("Image File uri resolved: " + photoUri.toString());
+                    LoggerEdna.debug("Image File uri resolved: " + photoUri.toString());
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
                     // https://stackoverflow.com/a/48391446/1321401
                     MediaHelper.grantPermissions(activity, intent, photoUri);
                     startActivityForResult(intent, REQUEST_EXTERNAL_CAMERA_PHOTO);
                 } catch (IllegalArgumentException e) {
-                    LoggerEdna.e("Could not start external camera", e);
+                    LoggerEdna.error("Could not start external camera", e);
                     showToast(requireContext().getString(R.string.threads_camera_could_not_start_error));
                 }
 
@@ -1175,7 +1175,7 @@ public final class ChatFragment extends BaseFragment implements
                         ? cp.getFileDescription().getIncomingName()
                         : (fileUri != null ? FileUtils.getFileName(fileUri) : "");
             } catch (Exception e) {
-                LoggerEdna.e("onReplyClick", e);
+                LoggerEdna.error("onReplyClick", e);
             }
             mQuoteLayoutHolder.setContent(TextUtils.isEmpty(mQuote.getPhraseOwnerTitle()) ? "" : mQuote.getPhraseOwnerTitle(),
                     fileName,
@@ -1219,7 +1219,7 @@ public final class ChatFragment extends BaseFragment implements
         Activity activity = getActivity();
         boolean isCameraGranted = ThreadsPermissionChecker.isCameraPermissionGranted(activity);
         boolean isWriteGranted = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q || ThreadsPermissionChecker.isWriteExternalPermissionGranted(activity);
-        LoggerEdna.i("isCameraGranted = " + isCameraGranted + " isWriteGranted " + isWriteGranted);
+        LoggerEdna.info("isCameraGranted = " + isCameraGranted + " isWriteGranted " + isWriteGranted);
         if (isCameraGranted && isWriteGranted) {
             setBottomStateDefault();
             startActivityForResult(CameraActivity.getStartIntent(activity, true), REQUEST_CODE_SELFIE);
@@ -1296,7 +1296,7 @@ public final class ChatFragment extends BaseFragment implements
                                         sendMessage(messages);
                                     }
                                 }, onError -> {
-                                    LoggerEdna.e("onSendClick ", onError);
+                                    LoggerEdna.error("onSendClick ", onError);
                                 }
                         ));
     }
@@ -1438,7 +1438,7 @@ public final class ChatFragment extends BaseFragment implements
                                 mChatController.onUserInput(uum);
                             }
                         }, onError -> {
-                            LoggerEdna.e("onPhotosResult ", onError);
+                            LoggerEdna.error("onPhotosResult ", onError);
                         })
         );
 
@@ -1482,7 +1482,7 @@ public final class ChatFragment extends BaseFragment implements
                             showToast(getString(R.string.threads_failed_to_open_file));
                         }
                     } catch (SecurityException e) {
-                        LoggerEdna.e("file can't be sent", e);
+                        LoggerEdna.error("file can't be sent", e);
                         showToast(getString(R.string.threads_failed_to_open_file));
                     }
                 } else {
@@ -1498,7 +1498,7 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     private void onFileResult(@NonNull Uri uri) {
-        LoggerEdna.i("onFileSelected: " + uri);
+        LoggerEdna.info("onFileSelected: " + uri);
         setFileDescription(new FileDescription(requireContext().getString(R.string.threads_I), uri, FileUtils.getFileSize(uri), System.currentTimeMillis()));
         mQuoteLayoutHolder.setContent(requireContext().getString(R.string.threads_I), FileUtils.getFileName(uri), null);
     }
@@ -1555,7 +1555,7 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     private void sendMessage(List<UpcomingUserMessage> messages, boolean clearInput) {
-        LoggerEdna.i("isInMessageSearchMode =" + isInMessageSearchMode);
+        LoggerEdna.info("isInMessageSearchMode =" + isInMessageSearchMode);
         if (mChatController == null) {
             return;
         }
@@ -1583,7 +1583,7 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     public void addChatItem(final ChatItem item) {
-        LoggerEdna.i("addChatItem: " + item);
+        LoggerEdna.info("addChatItem: " + item);
         LinearLayoutManager layoutManager = (LinearLayoutManager) binding.recycler.getLayoutManager();
         if (layoutManager == null) {
             return;
@@ -1641,7 +1641,7 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     private void scrollToPosition(int itemCount, boolean smooth) {
-        LoggerEdna.i("scrollToPosition: " + itemCount);
+        LoggerEdna.info("scrollToPosition: " + itemCount);
         if (itemCount >= 0) {
             if (smooth) {
                 binding.recycler.smoothScrollToPosition(itemCount);
@@ -2291,7 +2291,7 @@ public final class ChatFragment extends BaseFragment implements
         if (activity == null) {
             return;
         }
-        LoggerEdna.i("searchInFiles: " + searchInFiles);
+        LoggerEdna.info("searchInFiles: " + searchInFiles);
         isInMessageSearchMode = true;
         setBottomStateDefault();
         setTitleStateSearchingMessage();
@@ -2559,7 +2559,7 @@ public final class ChatFragment extends BaseFragment implements
         }
 
         private void updateProgress(int progress) {
-            LoggerEdna.i("updateProgress: " + progress);
+            LoggerEdna.info("updateProgress: " + progress);
             binding.quoteDuration.setText(VoiceTimeLabelFormatterKt.formatAsDuration(progress));
             binding.quoteSlider.setValue(Math.min(progress, binding.quoteSlider.getValueTo()));
         }
@@ -2624,7 +2624,7 @@ public final class ChatFragment extends BaseFragment implements
                                         chatAdapter.removeHighlight();
                                         chatAdapter.addItems(list);
                                     },
-                                    LoggerEdna::e
+                                    LoggerEdna::error
                             )
             );
         }

@@ -17,19 +17,19 @@ class SSLCertificateInterceptor : Interceptor {
             val response: Response = chain.proceed(request)
             val handshake: Handshake? = response.handshake
             if (handshake == null) {
-                LoggerEdna.i("no handshake")
+                LoggerEdna.info("no handshake")
                 return response
             }
-            LoggerEdna.i("handshake success")
+            LoggerEdna.info("handshake success")
             val certificates: List<Certificate> = handshake.peerCertificates
             if (certificates.isEmpty()) {
-                LoggerEdna.i("no peer certificates")
+                LoggerEdna.info("no peer certificates")
             } else {
-                certificates.forEach { LoggerEdna.i("Server $it") }
+                certificates.forEach { LoggerEdna.info("Server $it") }
             }
             return response
         } catch (e: Exception) {
-            LoggerEdna.e("<-- HTTP FAILED: $e")
+            LoggerEdna.error("<-- HTTP FAILED: $e")
             throw e
         }
     }

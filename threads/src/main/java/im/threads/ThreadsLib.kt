@@ -92,7 +92,7 @@ class ThreadsLib private constructor(context: Context?) {
         if (!TextUtils.isEmpty(clientId)) {
             Config.instance.transport.sendClientOffline(clientId)
         } else {
-            LoggerEdna.i("clientId must not be empty")
+            LoggerEdna.info("clientId must not be empty")
         }
     }
 
@@ -136,7 +136,7 @@ class ThreadsLib private constructor(context: Context?) {
             chatController.onUserInput(msg)
             true
         } else {
-            LoggerEdna.i("You might need to initialize user first with ThreadsLib.userInfo()")
+            LoggerEdna.info("You might need to initialize user first with ThreadsLib.userInfo()")
             false
         }
     }
@@ -176,7 +176,7 @@ class ThreadsLib private constructor(context: Context?) {
                         { count: Int ->
                             unreadMessagesCountListener.onUnreadMessagesCountChanged(count)
                         }
-                    ) { error: Throwable -> LoggerEdna.e("init ${error.message}") }
+                    ) { error: Throwable -> LoggerEdna.error("init ${error.message}") }
 
                 coroutineScope.launch {
                     val task = async(Dispatchers.IO) {
@@ -192,16 +192,16 @@ class ThreadsLib private constructor(context: Context?) {
                         Config.instance.context,
                         object : ILoadCallback {
                             override fun onSuccess() {
-                                LoggerEdna.i("AndroidAudioConverter was successfully loaded")
+                                LoggerEdna.info("AndroidAudioConverter was successfully loaded")
                             }
 
                             override fun onFailure(error: Exception) {
-                                LoggerEdna.e("AndroidAudioConverter failed to load", error)
+                                LoggerEdna.error("AndroidAudioConverter failed to load", error)
                             }
                         }
                     )
                 } catch (e: UnsatisfiedLinkError) {
-                    LoggerEdna.e(
+                    LoggerEdna.error(
                         "AndroidAudioConverter failed to load (UnsatisfiedLinkError)",
                         e
                     )
@@ -215,7 +215,7 @@ class ThreadsLib private constructor(context: Context?) {
                     if (throwable is UndeliverableException) {
                         throwableCause = throwable.cause
                         if (throwableCause != null) {
-                            LoggerEdna.e("global handler: ", throwableCause)
+                            LoggerEdna.error("global handler: ", throwableCause)
                         }
                         return@setErrorHandler
                     }
@@ -228,7 +228,7 @@ class ThreadsLib private constructor(context: Context?) {
                 }
             }
 
-            LoggerEdna.i("Lib_init_time: ${System.currentTimeMillis() - startInitTime}ms")
+            LoggerEdna.info("Lib_init_time: ${System.currentTimeMillis() - startInitTime}ms")
         }
 
         @JvmStatic

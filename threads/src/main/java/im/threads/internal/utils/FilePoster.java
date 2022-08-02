@@ -34,9 +34,9 @@ public final class FilePoster {
     }
 
     public static String post(FileDescription fileDescription) throws IOException, NetworkErrorException {
-        LoggerEdna.i("post: " + fileDescription);
+        LoggerEdna.info("post: " + fileDescription);
         String token = PrefUtils.getClientID();
-        LoggerEdna.i("token = " + token);
+        LoggerEdna.info("token = " + token);
         if (!token.isEmpty()) {
             if (fileDescription.getFileUri() != null) {
                 return sendFile(fileDescription.getFileUri(), FileUtils.getMimeType(fileDescription.getFileUri()), token);
@@ -49,7 +49,7 @@ public final class FilePoster {
     }
 
     private static String sendFile(Uri uri, String mimeType, String token) throws IOException {
-        LoggerEdna.i("sendFile: " + uri);
+        LoggerEdna.info("sendFile: " + uri);
         MultipartBody.Part part = MultipartBody.Part
                 .createFormData("file", URLEncoder.encode(FileUtils.getFileName(uri), "utf-8"), getFileRequestBody(uri, mimeType));
         RequestBody agent = RequestBody.create(token, MediaType.parse("text/plain"));
@@ -60,7 +60,7 @@ public final class FilePoster {
                 return body.getResult();
             }
         }
-        LoggerEdna.e("response = " + response.toString());
+        LoggerEdna.error("response = " + response.toString());
         throw new IOException(response.toString());
     }
 
@@ -98,7 +98,7 @@ public final class FilePoster {
     }
 
     private static RequestBody getJpegRequestBody(Uri uri) throws IOException {
-        LoggerEdna.i("sendFile: " + uri);
+        LoggerEdna.info("sendFile: " + uri);
         File file = compressImage(uri);
         if (file == null) {
             return null;
@@ -124,7 +124,7 @@ public final class FilePoster {
             bitmap.recycle();
             return downsizedImageFile;
         } catch (IOException e) {
-            LoggerEdna.e("downsizeImage", e);
+            LoggerEdna.error("downsizeImage", e);
                 bitmap.recycle();
                 downsizedImageFile.delete();
                 return null;

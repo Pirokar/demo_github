@@ -103,10 +103,10 @@ class PrefUtils private constructor() {
                     EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
                 )
             } catch (exception: GeneralSecurityException) {
-                LoggerEdna.e(exception)
+                LoggerEdna.error(exception)
                 Config.instance.context.getSharedPreferences(STORE_NAME, Context.MODE_PRIVATE)
             } catch (exception: IOException) {
-                LoggerEdna.e(exception)
+                LoggerEdna.error(exception)
                 Config.instance.context.getSharedPreferences(STORE_NAME, Context.MODE_PRIVATE)
             }
         }
@@ -470,9 +470,9 @@ class PrefUtils private constructor() {
                     style = Config.instance.gson.fromJson(sharedPreferencesString, styleClass)
                 }
             } catch (ex: IllegalStateException) {
-                LoggerEdna.e("getIncomingStyle ${styleClass.canonicalName} failed: ", ex)
+                LoggerEdna.error("getIncomingStyle ${styleClass.canonicalName} failed: ", ex)
             } catch (ex: JsonSyntaxException) {
-                LoggerEdna.e("getIncomingStyle ${styleClass.canonicalName} failed: ", ex)
+                LoggerEdna.error("getIncomingStyle ${styleClass.canonicalName} failed: ", ex)
             }
             return style
         }
@@ -547,7 +547,7 @@ class PrefUtils private constructor() {
                     }
                 }
             } catch (exception: Exception) {
-                LoggerEdna.e("Error when deleting preference file", exception)
+                LoggerEdna.error("Error when deleting preference file", exception)
             }
         }
     }

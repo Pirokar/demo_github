@@ -76,7 +76,7 @@ class QuickRepliesTable : Table() {
             }
             sqlHelper.getWritableDatabase(DB_PASSWORD).setTransactionSuccessful()
         } catch (e: Exception) {
-            LoggerEdna.e("putQuickReplies", e)
+            LoggerEdna.error("putQuickReplies", e)
         } finally {
             sqlHelper.getWritableDatabase(DB_PASSWORD).endTransaction()
         }

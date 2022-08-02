@@ -17,24 +17,24 @@ class ProgressReceiver(callback: Callback) : BroadcastReceiver() {
     private val callback = SoftReference(callback)
 
     override fun onReceive(context: Context, intent: Intent) {
-        LoggerEdna.i("onReceive:")
+        LoggerEdna.info("onReceive:")
         val action = intent.action ?: return
         when (action) {
             PROGRESS_BROADCAST -> {
-                LoggerEdna.i("onReceive: PROGRESS_BROADCAST ")
+                LoggerEdna.info("onReceive: PROGRESS_BROADCAST ")
                 intent.getParcelableExtra<FileDescription>(FileDownloadWorker.FD_TAG)?.let {
                     callback.get()?.updateProgress(it)
                 }
             }
             DOWNLOADED_SUCCESSFULLY_BROADCAST -> {
-                LoggerEdna.i("onReceive: DOWNLOADED_SUCCESSFULLY_BROADCAST ")
+                LoggerEdna.info("onReceive: DOWNLOADED_SUCCESSFULLY_BROADCAST ")
                 intent.getParcelableExtra<FileDescription>(FileDownloadWorker.FD_TAG)?.let {
                     it.downloadProgress = 100
                     callback.get()?.updateProgress(it)
                 }
             }
             DOWNLOAD_ERROR_BROADCAST -> {
-                LoggerEdna.e("onReceive: DOWNLOAD_ERROR_BROADCAST ")
+                LoggerEdna.error("onReceive: DOWNLOAD_ERROR_BROADCAST ")
                 intent.getParcelableExtra<FileDescription>(FileDownloadWorker.FD_TAG)?.let {
                     callback.get()?.onDownloadError(
                         it,

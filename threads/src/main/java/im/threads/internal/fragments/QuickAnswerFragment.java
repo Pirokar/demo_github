@@ -188,7 +188,7 @@ public final class QuickAnswerFragment extends BaseDialogFragment {
         subscribe(ChatUpdateProcessor.getInstance().getUserInputEnableProcessor()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::updateInputEnable,
-                        error -> LoggerEdna.e("initUserInputState ", error)
+                        error -> LoggerEdna.error("initUserInputState ", error)
                 ));
     }
 

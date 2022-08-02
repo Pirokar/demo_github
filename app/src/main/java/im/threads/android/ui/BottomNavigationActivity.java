@@ -363,7 +363,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
                                                 .setClientData(clientData)
                                                 .setAppMarker(appMarker)
                                 ),
-                                throwable -> LoggerEdna.e("login: ", throwable)
+                                throwable -> LoggerEdna.error("login: ", throwable)
                         )
         );
     }

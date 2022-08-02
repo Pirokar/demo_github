@@ -21,7 +21,7 @@ class ChatCenterAudioConverter {
                 }
 
                 override fun onFailure(error: Exception) {
-                    LoggerEdna.e("error finishing voice message recording", error)
+                    LoggerEdna.error("error finishing voice message recording", error)
                 }
             })
             .convert()

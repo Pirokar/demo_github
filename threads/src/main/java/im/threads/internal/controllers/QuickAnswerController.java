@@ -44,7 +44,7 @@ public final class QuickAnswerController extends Fragment {
                                         activity.setLastUnreadMessage(consultPhrase);
                                     }
                                 },
-                                e -> LoggerEdna.e("onBind", e)
+                                e -> LoggerEdna.error("onBind", e)
                         )
         );
     }
@@ -59,7 +59,7 @@ public final class QuickAnswerController extends Fragment {
     }
 
     public void onUserAnswer(@NonNull UpcomingUserMessage upcomingUserMessage) {
-        LoggerEdna.i("onUserAnswer");
+        LoggerEdna.info("onUserAnswer");
         ChatController cc = ChatController.getInstance();
         cc.onUserInput(upcomingUserMessage);
         cc.setAllMessagesWereRead();

@@ -63,7 +63,7 @@ object ChatCenterPushMessageHelper {
                     )
                     PrefUtils.campaignMessage = campaignMessage
                     NotificationWorker.addCampaignMessage(context, alertStr)
-                    LoggerEdna.i("campaign message handled: $campaignMessage")
+                    LoggerEdna.info("campaign message handled: $campaignMessage")
                 }
                 bundle.containsKey(PushMessageAttributes.MESSAGE) || bundle.containsKey(PushMessageAttributes.ALERT) -> {
                     val operatorUrl = bundle[PushMessageAttributes.OPERATOR_URL] as String?
@@ -76,14 +76,14 @@ object ChatCenterPushMessageHelper {
                         operatorUrl,
                         appMarker
                     )
-                    LoggerEdna.i("text message handled: $text")
+                    LoggerEdna.info("text message handled: $text")
                 }
                 else -> {
-                    LoggerEdna.i("unparsed message with origin=threads ")
+                    LoggerEdna.info("unparsed message with origin=threads ")
                 }
             }
         } else {
-            LoggerEdna.i("origin=threads not found in bundle")
+            LoggerEdna.info("origin=threads not found in bundle")
         }
     }
 }

@@ -107,7 +107,7 @@ public final class CameraActivity extends BaseActivity {
                         mCamera.startPreview();
                     }
                 } catch (IOException e) {
-                    LoggerEdna.e("error while setting preview display of camera", e);
+                    LoggerEdna.error("error while setting preview display of camera", e);
                     finish();
                 }
             }
@@ -163,7 +163,7 @@ public final class CameraActivity extends BaseActivity {
                     mCamera.setPreviewDisplay(mSurfaceView.getHolder());
                     mCamera.startPreview();
                 } catch (IOException e) {
-                    LoggerEdna.e("error while switching cameras", e);
+                    LoggerEdna.error("error while switching cameras", e);
                     finish();
                 }
             }
@@ -200,11 +200,11 @@ public final class CameraActivity extends BaseActivity {
                             try {
                                 fio.flush();
                             } catch (IOException e) {
-                                LoggerEdna.e("onPictureTaken", e);
+                                LoggerEdna.error("onPictureTaken", e);
                             }
                             mCurrentPhoto = output.getAbsolutePath();
                         } catch (FileNotFoundException e) {
-                            LoggerEdna.e("error while saving image to disk", e);
+                            LoggerEdna.error("error while saving image to disk", e);
                         }
                         final File finalOutput = output;
                         new Handler(Looper.getMainLooper()).post(() -> setStateImagePreview(finalOutput.getAbsolutePath()));
@@ -290,13 +290,13 @@ public final class CameraActivity extends BaseActivity {
             isCameraReleased = false;
             mCamera.setParameters(setFlashState(mFlashMode, mCamera.getParameters()));
         } catch (IOException e) {
-            LoggerEdna.e("restoreCamera", e);
+            LoggerEdna.error("restoreCamera", e);
         } catch (RuntimeException ex) {
             String error = getResources().getString(isFrontCamera ?
                     R.string.threads_front_camera_could_not_start_error
                     : R.string.threads_back_camera_could_not_start_error);
             Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
-            LoggerEdna.e("restoreCamera", ex);
+            LoggerEdna.error("restoreCamera", ex);
         }
     }
 

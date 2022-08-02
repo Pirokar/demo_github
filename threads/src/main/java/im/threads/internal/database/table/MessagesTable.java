@@ -165,7 +165,7 @@ public class MessagesTable extends Table {
             }
             sqlHelper.getWritableDatabase().setTransactionSuccessful();
         } catch (Exception e) {
-            LoggerEdna.e("putMessagesSync", e);
+            LoggerEdna.error("putMessagesSync", e);
         } finally {
             sqlHelper.getWritableDatabase().endTransaction();
         }

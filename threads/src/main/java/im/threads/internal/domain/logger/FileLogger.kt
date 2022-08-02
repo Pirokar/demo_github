@@ -1,8 +1,8 @@
 package im.threads.internal.domain.logger
 
 import android.content.Context
-import im.threads.internal.domain.logger.LoggerEdna.d
-import im.threads.internal.domain.logger.LoggerEdna.w
+import im.threads.internal.domain.logger.LoggerEdna.debug
+import im.threads.internal.domain.logger.LoggerEdna.warning
 import java.util.concurrent.BlockingQueue
 import java.util.concurrent.LinkedBlockingDeque
 
@@ -36,7 +36,7 @@ internal class FileLogger {
                 .build()
         )
         if (!addResult) {
-            w("failed to add to file logger service queue")
+            warning("failed to add to file logger service queue")
         }
     }
 
@@ -45,7 +45,7 @@ internal class FileLogger {
             synchronized(this) {
                 if (!LoggerFileThread.isRunning) {
                     LoggerFileThread.isRunning = true
-                    d("start file logger thread")
+                    debug("start file logger thread")
                     LoggerFileThread(logQueue).start()
                 }
             }

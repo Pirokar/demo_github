@@ -89,7 +89,7 @@ public final class MessageParser {
                             getFileDescription(content.getAttachments(), null, sentAt)
                     );
                 } else {
-                    LoggerEdna.e("SPEECH_MESSAGE_UPDATED with invalid params");
+                    LoggerEdna.error("SPEECH_MESSAGE_UPDATED with invalid params");
                 }
                 return null;
             case MESSAGE:

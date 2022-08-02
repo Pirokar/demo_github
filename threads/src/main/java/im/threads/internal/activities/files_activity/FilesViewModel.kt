@@ -135,7 +135,7 @@ internal class FilesViewModel(
     }
 
     private fun onFilesReceivedError(error: Throwable) {
-        LoggerEdna.e("getAllFileDescriptions error: ${error.message}")
+        LoggerEdna.error("getAllFileDescriptions error: ${error.message}")
     }
 
     private fun connectReceiver() {

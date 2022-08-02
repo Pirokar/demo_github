@@ -15,7 +15,7 @@ class LoggerConfig(val builder: Builder) {
 
         internal var dirPath: String? = null
         internal var fileName: String? = null
-        internal var minLevel = LoggerLevel.V
+        internal var minLevel = LoggerLevel.VERBOSE
         internal var logToFile = false
         internal var retentionPolicy = LoggerRetentionPolicy.FILE_COUNT
         internal var maxFileCount = LoggerConst.DEFAULT_MAX_FILE_COUNT
@@ -47,7 +47,7 @@ class LoggerConfig(val builder: Builder) {
         }
 
         /**
-         * Определеяет минимальный уровень для логов. По умолчанию [LoggerLevel.V].
+         * Определеяет минимальный уровень для логов. По умолчанию [LoggerLevel.VERBOSE].
          * @param level минимальный уровень для логов
          * @return [Builder]
          */

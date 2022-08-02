@@ -80,7 +80,7 @@ public final class PermissionsActivity extends AppCompatActivity {
     }
 
     private static void showPermissionsIsNullLog() {
-        LoggerEdna.e("Permissions array is null");
+        LoggerEdna.error("Permissions array is null");
     }
 
     @Override

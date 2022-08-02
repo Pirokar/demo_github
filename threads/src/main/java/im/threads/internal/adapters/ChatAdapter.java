@@ -309,7 +309,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         try {
             o = list.get(position);
         } catch (final IndexOutOfBoundsException e) {
-            LoggerEdna.e("getItemViewType", e);
+            LoggerEdna.error("getItemViewType", e);
             return 0;
         }
         if (o instanceof SystemMessage) {
@@ -407,7 +407,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 try {
                     notifyItemRemoved(ChatItemListHelper.lastIndexOf(list, item));
                 } catch (final Exception e) {
-                    LoggerEdna.e("setAllMessagesRead", e);
+                    LoggerEdna.error("setAllMessagesRead", e);
                 }
                 iter.remove();
             }
@@ -469,7 +469,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 try {
                     notifyItemRemoved(ChatItemListHelper.lastIndexOf(list, cm));
                 } catch (final Exception e) {
-                    LoggerEdna.e("removeConsultIsTyping", e);
+                    LoggerEdna.error("removeConsultIsTyping", e);
                 }
                 iter.remove();
             }
@@ -489,7 +489,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 try {
                     notifyItemRemoved(ChatItemListHelper.lastIndexOf(list, cm));
                 } catch (final Exception e) {
-                    LoggerEdna.e("removeResolveRequest", e);
+                    LoggerEdna.error("removeResolveRequest", e);
                 }
                 iter.remove();
                 removed = true;
@@ -513,7 +513,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     try {
                         notifyItemRemoved(ChatItemListHelper.lastIndexOf(list, cm));
                     } catch (final Exception e) {
-                        LoggerEdna.e("removeSurvey", e);
+                        LoggerEdna.error("removeSurvey", e);
                     }
                     iter.remove();
                     removed = true;
@@ -542,7 +542,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 try {
                     notifyItemRemoved(ChatItemListHelper.lastIndexOf(list, ch));
                 } catch (final Exception e) {
-                    LoggerEdna.e("removeConsultSearching", e);
+                    LoggerEdna.error("removeConsultSearching", e);
                 }
                 iter.remove();
             }
@@ -642,7 +642,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     try {
                         notifyItemRemoved(ChatItemListHelper.lastIndexOf(list, scheduleInfo));
                     } catch (final Exception e) {
-                        LoggerEdna.e("removeSchedule", e);
+                        LoggerEdna.error("removeSchedule", e);
                     }
                     iter.remove();
                 }
@@ -655,7 +655,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             if (cm instanceof Survey) {
                 final Survey survey = (Survey) cm;
                 if (sendingId == survey.getSendingId()) {
-                    LoggerEdna.i("changeStateOfMessageByProviderId: changing read state");
+                    LoggerEdna.info("changeStateOfMessageByProviderId: changing read state");
                     ((Survey) cm).setSentState(sentState);
                     notifyItemChangedOnUi(survey);
                 }
@@ -668,7 +668,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             if (cm instanceof UserPhrase) {
                 final UserPhrase up = (UserPhrase) cm;
                 if (ObjectsCompat.equals(providerId, up.getProviderId())) {
-                    LoggerEdna.i("changeStateOfMessageByProviderId: changing read state");
+                    LoggerEdna.info("changeStateOfMessageByProviderId: changing read state");
                     ((UserPhrase) cm).setSentState(state);
                     notifyItemChangedOnUi(cm);
                 }

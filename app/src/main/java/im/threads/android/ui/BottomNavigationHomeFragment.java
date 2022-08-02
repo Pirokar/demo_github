@@ -33,7 +33,7 @@ public class BottomNavigationHomeFragment extends BaseFragment {
                 ThreadsDemoApplication.getUnreadMessagesSubject()
                         .subscribeOn(AndroidSchedulers.mainThread())
                         .subscribe(count -> unreadMessagesCount.setText(String.valueOf(count)),
-                                error -> LoggerEdna.e("onCreateView: ", error)
+                                error -> LoggerEdna.error("onCreateView: ", error)
                         )
         );
         return view;

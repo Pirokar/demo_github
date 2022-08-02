@@ -27,19 +27,19 @@ public abstract class Transport {
     private CompositeDisposable compositeDisposable;
 
     public void markMessagesAsRead(List<String> uuidList) {
-        LoggerEdna.i("markMessagesAsRead : " + uuidList);
+        LoggerEdna.info("markMessagesAsRead : " + uuidList);
         subscribe(
                 Completable.fromAction(() -> BackendApiGenerator.getApi().markMessageAsRead(uuidList).execute())
                         .subscribeOn(Schedulers.io())
                         .subscribe(
                                 () -> {
-                                    LoggerEdna.i("messagesAreRead : " + uuidList);
+                                    LoggerEdna.info("messagesAreRead : " + uuidList);
                                     for (String messageId : uuidList) {
                                         chatUpdateProcessor.postIncomingMessageWasRead(messageId);
                                     }
                                 },
                                 e -> {
-                                    LoggerEdna.i("error on messages read : " + uuidList);
+                                    LoggerEdna.info("error on messages read : " + uuidList);
                                     chatUpdateProcessor.postError(new TransportException(e.getMessage()));
                                 }
                         )
@@ -56,7 +56,7 @@ public abstract class Transport {
                                 response -> {
                                     final SettingsResponse responseBody = response.body();
                                     if (responseBody != null) {
-                                        LoggerEdna.i("getting settings : " + responseBody);
+                                        LoggerEdna.info("getting settings : " + responseBody);
                                         String clientNotificationType = responseBody.getClientNotificationDisplayType();
                                         if (clientNotificationType != null && !clientNotificationType.isEmpty()) {
                                             final ClientNotificationDisplayType type = ClientNotificationDisplayType.fromString(clientNotificationType);
@@ -66,7 +66,7 @@ public abstract class Transport {
                                     }
                                 },
                                 e -> {
-                                    LoggerEdna.i("error on getting settings : " + e.getMessage());
+                                    LoggerEdna.info("error on getting settings : " + e.getMessage());
                                     chatUpdateProcessor.postError(new TransportException(e.getMessage()));
                                 }
                         )

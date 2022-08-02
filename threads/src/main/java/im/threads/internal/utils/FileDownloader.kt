@@ -79,13 +79,13 @@ class FileDownloader(private val path: String, fileName: String, ctx: Context, p
                     downloadLister.onComplete(outputFile)
                 }
             } catch (e: Exception) {
-                LoggerEdna.e("1 ", e)
+                LoggerEdna.error("1 ", e)
                 downloadLister.onFileDownloadError(e)
             } finally {
                 urlConnection.disconnect()
             }
         } catch (e: Exception) {
-            LoggerEdna.e("2 ", e)
+            LoggerEdna.error("2 ", e)
             downloadLister.onFileDownloadError(e)
         }
     }
@@ -101,7 +101,7 @@ class FileDownloader(private val path: String, fileName: String, ctx: Context, p
                 return values[0]?.toLong()
             }
         } catch (e: Exception) {
-            LoggerEdna.e("download", e)
+            LoggerEdna.error("download", e)
         }
         return null
     }

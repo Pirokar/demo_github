@@ -219,9 +219,9 @@ class MainActivity : AppCompatActivity(), EditCardDialogActionsListener, YesNoDi
                 .observeOn(AndroidSchedulers.mainThread())
                 .onBackpressureDrop()
                 .subscribe({ responseMap ->
-                    LoggerEdna.i(TAG_SOCKET_RESPONSE, responseMap.toString())
+                    LoggerEdna.info(TAG_SOCKET_RESPONSE, responseMap.toString())
                 }, { error ->
-                    LoggerEdna.e(TAG_SOCKET_RESPONSE, error.message, error)
+                    LoggerEdna.error(TAG_SOCKET_RESPONSE, error.message, error)
                 })
             compositeDisposable.add(socketResponseDisposable)
         }

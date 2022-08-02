@@ -23,7 +23,7 @@ class LoggerTest {
     @Test
     fun testLogInfo() {
         val logText = "Test log info"
-        LoggerEdna.i(logText)
+        LoggerEdna.info(logText)
 
         assertLog().hasInfoMessage(logText)
     }
@@ -31,7 +31,7 @@ class LoggerTest {
     @Test
     fun testLogVerbose() {
         val logText = "Test log verbose"
-        LoggerEdna.v(logText)
+        LoggerEdna.verbose(logText)
 
         assertLog().hasVerboseMessage(logText)
     }
@@ -39,7 +39,7 @@ class LoggerTest {
     @Test
     fun testLogDebug() {
         val logText = "Test log debug"
-        LoggerEdna.d(logText)
+        LoggerEdna.debug(logText)
 
         assertLog().hasDebugMessage(logText)
     }
@@ -47,7 +47,7 @@ class LoggerTest {
     @Test
     fun testLogWarning() {
         val logText = "Test log warning"
-        LoggerEdna.w(logText)
+        LoggerEdna.warning(logText)
 
         assertLog().hasWarnMessage(logText)
     }
@@ -55,7 +55,7 @@ class LoggerTest {
     @Test
     fun testLogError() {
         val logText = "Test log error"
-        LoggerEdna.e(logText)
+        LoggerEdna.error(logText)
 
         assertLog().hasErrorMessage(logText)
     }

@@ -53,7 +53,7 @@ private fun loadCertificateIntoKeyStore(
     try {
         source = resources.openRawResource(rawResId)
         val certificate = certificateFactory.generateCertificate(source)
-        LoggerEdna.i("certificate:  $certificate")
+        LoggerEdna.info("certificate:  $certificate")
         val alias = resources.getResourceName(rawResId)
         keyStore.setCertificateEntry(alias, certificate)
     } finally {

@@ -81,7 +81,7 @@ class OpenGraphParserJsoupImpl : OpenGraphParser {
             existedOpenGraphs[hostAndPath] = result
             result
         } catch (e: Exception) {
-            LoggerEdna.e("Error when parsing OG data!", e)
+            LoggerEdna.error("Error when parsing OG data!", e)
             null
         }
     }

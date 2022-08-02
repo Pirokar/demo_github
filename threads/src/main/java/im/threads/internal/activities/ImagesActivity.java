@@ -87,7 +87,7 @@ public final class ImagesActivity extends BaseActivity implements ViewPager.OnPa
                             }
                             onPageSelected(0);
                         },
-                        e -> LoggerEdna.e("getAllFileDescriptions error: ", e))
+                        e -> LoggerEdna.error("getAllFileDescriptions error: ", e))
         );
     }
 
@@ -160,7 +160,7 @@ public final class ImagesActivity extends BaseActivity implements ViewPager.OnPa
                 .subscribe(
                         () -> Toast.makeText(ImagesActivity.this, getString(R.string.threads_saved_to_downloads), Toast.LENGTH_SHORT).show(),
                         throwable -> {
-                            LoggerEdna.e("downloadImage", throwable);
+                            LoggerEdna.error("downloadImage", throwable);
                             Toast.makeText(ImagesActivity.this, R.string.threads_unable_to_save, Toast.LENGTH_SHORT).show();
                         }
                 )

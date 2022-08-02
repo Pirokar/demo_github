@@ -14,7 +14,7 @@ public final class AppInfoHelper {
         try {
             pInfo = Config.instance.context.getPackageManager().getPackageInfo(Config.instance.context.getPackageName(), 0);
         } catch (PackageManager.NameNotFoundException e) {
-            LoggerEdna.e("getAppVersion", e);
+            LoggerEdna.error("getAppVersion", e);
         }
         return pInfo != null ? pInfo.versionName : "";
     }
@@ -29,7 +29,7 @@ public final class AppInfoHelper {
             try {
                 return applicationInfo.loadLabel(Config.instance.context.getPackageManager()).toString();
             } catch (Exception e) {
-                LoggerEdna.e("getAppName", e);
+                LoggerEdna.error("getAppName", e);
             }
         }
         return "Unknown";
@@ -41,7 +41,7 @@ public final class AppInfoHelper {
             try {
                 return applicationInfo.packageName;
             } catch (Exception e) {
-                LoggerEdna.e("getAppId", e);
+                LoggerEdna.error("getAppId", e);
             }
         }
         return "";

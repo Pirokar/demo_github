@@ -142,7 +142,7 @@ class MessagesTable(
             }
             sqlHelper.getWritableDatabase(DB_PASSWORD).setTransactionSuccessful()
         } catch (e: Exception) {
-            LoggerEdna.e("putMessagesSync", e)
+            LoggerEdna.error("putMessagesSync", e)
         } finally {
             sqlHelper.getWritableDatabase(DB_PASSWORD).endTransaction()
         }

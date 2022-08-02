@@ -91,11 +91,11 @@ public final class QuickAnswerActivity
     private class QuickAnswerReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            LoggerEdna.d("onReceive: " + intent);
+            LoggerEdna.debug("onReceive: " + intent);
             if (intent.getAction().equalsIgnoreCase(ACTION_CANCEL)) {
                 finish();
             } else if (intent.getAction().equalsIgnoreCase(ACTION_ANSWER)) {
-                LoggerEdna.i("onReceive: ACTION_ANSWER");
+                LoggerEdna.info("onReceive: ACTION_ANSWER");
                 controller.onUserAnswer(new UpcomingUserMessage(null, null, null, intent.getStringExtra(ACTION_ANSWER), false));
                 finish();
             }

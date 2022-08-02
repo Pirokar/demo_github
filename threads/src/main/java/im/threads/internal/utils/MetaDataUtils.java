@@ -105,7 +105,7 @@ public class MetaDataUtils {
             ApplicationInfo ai = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
             return ai.metaData;
         } catch (PackageManager.NameNotFoundException e) {
-            LoggerEdna.e("Failed to load self applicationInfo - that's really weird. ", e);
+            LoggerEdna.error("Failed to load self applicationInfo - that's really weird. ", e);
             return null;
         }
     }

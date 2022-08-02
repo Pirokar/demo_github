@@ -57,7 +57,7 @@ public class ImagesAdapter extends PagerAdapter {
             mCurTransaction = mFragmentManager.beginTransaction();
         }
         Fragment fragment = getItem(position);
-        LoggerEdna.v("Adding item #" + position + ": f=" + fragment);
+        LoggerEdna.verbose("Adding item #" + position + ": f=" + fragment);
         if (mSavedState.size() > position) {
             Fragment.SavedState fss = mSavedState.get(position);
             if (fss != null) {
@@ -80,7 +80,7 @@ public class ImagesAdapter extends PagerAdapter {
         if (mCurTransaction == null) {
             mCurTransaction = mFragmentManager.beginTransaction();
         }
-        LoggerEdna.v("Removing item #" + position + ": f=" + object + " v=" + fragment.getView());
+        LoggerEdna.verbose("Removing item #" + position + ": f=" + object + " v=" + fragment.getView());
         while (mSavedState.size() <= position) {
             mSavedState.add(null);
         }
@@ -166,7 +166,7 @@ public class ImagesAdapter extends PagerAdapter {
                         f.setMenuVisibility(false);
                         mFragments.set(index, f);
                     } else {
-                        LoggerEdna.w("Bad fragment at key " + key);
+                        LoggerEdna.warning("Bad fragment at key " + key);
                     }
                 }
             }
