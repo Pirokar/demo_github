@@ -10,6 +10,7 @@ internal class LogData(builder: Builder) {
     val fileName: String?
     val dirPath: String?
     val line: String?
+    val time: Long
     val retentionPolicy: LoggerRetentionPolicy
     val maxFileCount: Int
     var maxTotalSize: Long
@@ -20,6 +21,7 @@ internal class LogData(builder: Builder) {
         var fileName: String? = null
         var dirPath: String? = null
         var line: String? = null
+        var time: Long = 0
         var retentionPolicy: LoggerRetentionPolicy = LoggerRetentionPolicy.NONE
         var maxFileCount = 0
         var maxTotalSize: Long = 0
@@ -58,6 +60,15 @@ internal class LogData(builder: Builder) {
          */
         fun line(line: String?): Builder {
             this.line = line
+            return this
+        }
+
+        /**
+         * Устанавливает время лога
+         * @param time время лога
+         */
+        fun time(time: Long): Builder {
+            this.time = time
             return this
         }
 
@@ -113,6 +124,7 @@ internal class LogData(builder: Builder) {
         fileName = builder.fileName
         dirPath = builder.dirPath
         line = builder.line
+        time = builder.time
         retentionPolicy = builder.retentionPolicy
         maxFileCount = builder.maxFileCount
         maxTotalSize = builder.maxTotalSize

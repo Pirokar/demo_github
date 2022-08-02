@@ -18,6 +18,7 @@ internal class FileLogger {
         fileName: String?,
         dirPath: String?,
         line: String?,
+        time: Long,
         retentionPolicy: LoggerRetentionPolicy,
         maxFileCount: Int,
         maxTotalSize: Long,

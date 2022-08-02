@@ -141,6 +141,6 @@ object LoggerEdna {
      */
     @JvmStatic
     fun error(tag: String?, log: String?, throwable: Throwable?) {
-        logSender?.send(LoggerLevel.ERROR, tag, log)
+        logSender?.send(LoggerLevel.ERROR, tag, log, throwable)
     }
 }

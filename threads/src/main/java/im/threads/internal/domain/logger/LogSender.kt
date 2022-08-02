@@ -2,7 +2,7 @@ package im.threads.internal.domain.logger
 
 import android.util.Log
 
-class LogSender(private val loggerConfig: LoggerConfig?) {
+internal class LogSender(private val loggerConfig: LoggerConfig?) {
     private val currentPackageName = this.javaClass.`package`?.name
         ?: "im.threads.internal.domain.logger"
 
@@ -67,6 +67,7 @@ class LogSender(private val loggerConfig: LoggerConfig?) {
                 fileName,
                 config.builder.dirPath,
                 line,
+                timeMs,
                 config.builder.retentionPolicy,
                 config.builder.maxFileCount,
                 config.builder.maxSize,
@@ -80,7 +81,6 @@ class LogSender(private val loggerConfig: LoggerConfig?) {
 
         if (!log.isNullOrBlank()) {
             stringBuilder.append(log)
-            stringBuilder.append("\n")
         }
 
         if (throwable != null) {

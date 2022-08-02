@@ -19,6 +19,9 @@ internal class LoggerFileThread(private val queue: BlockingQueue<LogData>) : Thr
     private var retentionPolicy = LoggerRetentionPolicy.NONE
     private var fileMaxCount = 0
     private var fileMaxSize: Long = 0
+    private val queueList = ArrayList<LogData>()
+    private val delayBetweenCheckMs = 3000L
+    private val maxQueueListSize = 50
 
     private val fileComparator = java.util.Comparator<File> { object1, object2 ->
         val lm1 = object1.lastModified()
@@ -27,6 +30,16 @@ internal class LoggerFileThread(private val queue: BlockingQueue<LogData>) : Thr
         if (lm1 < lm2) {
             -1
         } else if (lm1 == lm2) {
+            0
+        } else {
+            1
+        }
+    }
+
+    private val logComparator = java.util.Comparator<LogData> { data1, data2 ->
+        if (data1.time < data2.time) {
+            -1
+        } else if (data1.time == data2.time) {
             0
         } else {
             1
@@ -42,20 +55,34 @@ internal class LoggerFileThread(private val queue: BlockingQueue<LogData>) : Thr
         try {
             while (true) {
                 var log = queue.take()
-                logLine(log)
+                queueList.add(log)
                 collectParams(log)
                 while (queue.poll(2, TimeUnit.SECONDS).also { log = it } != null) {
-                    logLine(log)
+                    queueList.add(log)
+                    checkQueueList()
                     collectParams(log)
                 }
                 closeWriter()
                 startFilesStoring()
+                sleep(delayBetweenCheckMs)
             }
         } catch (e: InterruptedException) {
             LoggerEdna.error("file logger service thread is interrupted", e)
         }
         LoggerEdna.debug("file logger service thread stopped")
         isRunning = false
+    }
+
+    private fun checkQueueList() {
+        val currentTime = System.currentTimeMillis()
+        val maxSizeReached = queueList.size > maxQueueListSize
+        val maxTimeReached = currentTime - queueList[queueList.lastIndex].time > delayBetweenCheckMs
+
+        if (maxSizeReached || maxTimeReached) {
+            queueList.sortWith(logComparator)
+            queueList.forEach { logLine(it) }
+            queueList.clear()
+        }
     }
 
     private fun collectParams(log: LogData) {
