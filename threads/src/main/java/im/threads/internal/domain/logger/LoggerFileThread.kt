@@ -19,7 +19,7 @@ internal class LoggerFileThread(private val queue: BlockingQueue<LogData>) : Thr
     private var retentionPolicy = LoggerRetentionPolicy.NONE
     private var fileMaxCount = 0
     private var fileMaxSize: Long = 0
-    private val queueList = ArrayList<LogData>()
+    private val queueBuffer = ArrayList<LogData>()
     private val delayBetweenCheckMs = 3000L
     private val maxQueueListSize = 50
 
@@ -55,10 +55,10 @@ internal class LoggerFileThread(private val queue: BlockingQueue<LogData>) : Thr
         try {
             while (true) {
                 var log = queue.take()
-                queueList.add(log)
+                queueBuffer.add(log)
                 collectParams(log)
                 while (queue.poll(2, TimeUnit.SECONDS).also { log = it } != null) {
-                    queueList.add(log)
+                    queueBuffer.add(log)
                     checkQueueList()
                     collectParams(log)
                 }
@@ -75,13 +75,13 @@ internal class LoggerFileThread(private val queue: BlockingQueue<LogData>) : Thr
 
     private fun checkQueueList() {
         val currentTime = System.currentTimeMillis()
-        val maxSizeReached = queueList.size > maxQueueListSize
-        val maxTimeReached = currentTime - queueList[queueList.lastIndex].time > delayBetweenCheckMs
+        val maxSizeReached = queueBuffer.size > maxQueueListSize
+        val maxTimeReached = currentTime - queueBuffer[queueBuffer.lastIndex].time > delayBetweenCheckMs
 
         if (maxSizeReached || maxTimeReached) {
-            queueList.sortWith(logComparator)
-            queueList.forEach { logLine(it) }
-            queueList.clear()
+            queueBuffer.sortWith(logComparator)
+            queueBuffer.forEach { logLine(it) }
+            queueBuffer.clear()
         }
     }
 
