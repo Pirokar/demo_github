@@ -125,10 +125,9 @@ public final class FilePoster {
             return downsizedImageFile;
         } catch (IOException e) {
             LoggerEdna.error("downsizeImage", e);
-                bitmap.recycle();
-                downsizedImageFile.delete();
-                return null;
-
+            bitmap.recycle();
+            downsizedImageFile.delete();
+            return null;
         }
     }
 }
