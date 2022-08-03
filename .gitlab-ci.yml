@@ -1,5 +1,5 @@
 # Образ для запуска
-image: images.mfms.ru/gitlab/builder/android:31_01r
+image: images.mfms.ru/gitlab/builder/android:31_02r
 
 # Задаем переменные окружения
 variables:
