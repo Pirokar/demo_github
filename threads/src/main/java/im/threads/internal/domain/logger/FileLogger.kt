@@ -30,6 +30,7 @@ internal class FileLogger {
                 .fileName(fileName)
                 .dirPath(dirPath)
                 .line(line)
+                .time(time)
                 .retentionPolicy(retentionPolicy)
                 .maxFileCount(maxFileCount)
                 .maxSize(maxTotalSize)

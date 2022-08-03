@@ -64,7 +64,6 @@ internal class LoggerFileThread(private val queue: BlockingQueue<LogData>) : Thr
                 }
                 closeWriter()
                 startFilesStoring()
-                sleep(delayBetweenCheckMs)
             }
         } catch (e: InterruptedException) {
             LoggerEdna.error("file logger service thread is interrupted", e)
@@ -77,8 +76,9 @@ internal class LoggerFileThread(private val queue: BlockingQueue<LogData>) : Thr
         val currentTime = System.currentTimeMillis()
         val maxSizeReached = queueBuffer.size > maxQueueListSize
         val maxTimeReached = currentTime - queueBuffer[queueBuffer.lastIndex].time > delayBetweenCheckMs
+        val isFlush = queueBuffer[queueBuffer.lastIndex].flush
 
-        if (maxSizeReached || maxTimeReached) {
+        if (maxSizeReached || maxTimeReached || isFlush) {
             queueBuffer.sortWith(logComparator)
             queueBuffer.forEach { logLine(it) }
             queueBuffer.clear()
