@@ -368,11 +368,6 @@ class ThreadsGateTransport(
         }
 
         override fun onMessage(webSocket: WebSocket, text: String) {
-            try {
-                throw IllegalStateException("alarm!!!")
-            } catch (exc: IllegalStateException) {
-                LoggerEdna.error("OMG!!! ERROR!!!", exc)
-            }
             LoggerEdna.info("Receiving : $text")
             postSocketResponseMap(text)
             val response = Config.instance.gson.fromJson(text, BaseResponse::class.java)
