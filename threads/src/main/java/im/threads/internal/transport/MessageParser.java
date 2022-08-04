@@ -234,7 +234,7 @@ public final class MessageParser {
             fileDescription.setMimeType(attachment.getType());
             fileDescription.setState(attachment.getState());
             if (attachment.getErrorCode() != null) {
-                fileDescription.setErrorCode(attachment.getErrorCode());
+                fileDescription.setErrorCode(attachment.getErrorCodeState());
                 fileDescription.setErrorMessage(attachment.getErrorMessage());
             }
         }

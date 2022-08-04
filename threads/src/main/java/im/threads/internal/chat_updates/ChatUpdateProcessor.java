@@ -2,6 +2,7 @@ package im.threads.internal.chat_updates;
 
 import androidx.annotation.NonNull;
 
+import java.util.List;
 import java.util.Map;
 
 import im.threads.internal.formatters.ChatItemType;
@@ -15,6 +16,7 @@ import im.threads.internal.model.SpeechMessageUpdate;
 import im.threads.internal.model.Survey;
 import im.threads.internal.transport.ChatItemProviderData;
 import im.threads.internal.transport.TransportException;
+import im.threads.internal.transport.models.Attachment;
 import im.threads.internal.transport.models.AttachmentSettings;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
@@ -28,6 +30,7 @@ public class ChatUpdateProcessor {
     private final FlowableProcessor<String> outgoingMessageReadProcessor = PublishProcessor.create();
     private final FlowableProcessor<String> incomingMessageReadProcessor = PublishProcessor.create();
     private final FlowableProcessor<ChatItem> newMessageProcessor = PublishProcessor.create();
+    private final FlowableProcessor<List<Attachment>> updateAttachmentsProcessor = PublishProcessor.create();
     private final FlowableProcessor<ChatItemProviderData> messageSendSuccessProcessor = PublishProcessor.create();
     private final FlowableProcessor<CampaignMessage> campaignMessageReplySuccessProcessor = PublishProcessor.create();
     private final FlowableProcessor<ChatItemSendErrorModel> messageSendErrorProcessor = PublishProcessor.create();
@@ -77,6 +80,10 @@ public class ChatUpdateProcessor {
 
     public void postNewMessage(@NonNull ChatItem chatItem) {
         newMessageProcessor.onNext(chatItem);
+    }
+
+    public void updateAttachments(@NonNull List<Attachment> attachments) {
+        updateAttachmentsProcessor.onNext(attachments);
     }
 
     public void postChatItemSendSuccess(@NonNull ChatItemProviderData chatItemProviderData) {
@@ -149,6 +156,10 @@ public class ChatUpdateProcessor {
 
     public FlowableProcessor<ChatItem> getNewMessageProcessor() {
         return newMessageProcessor;
+    }
+
+    public FlowableProcessor<List<Attachment>> getUpdateAttachmentsProcessor() {
+        return updateAttachmentsProcessor;
     }
 
     public FlowableProcessor<ChatItemProviderData> getMessageSendSuccessProcessor() {

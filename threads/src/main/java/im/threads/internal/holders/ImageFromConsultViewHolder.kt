@@ -20,6 +20,7 @@ import im.threads.internal.imageLoading.ImageModifications
 import im.threads.internal.imageLoading.loadImage
 import im.threads.internal.model.AttachmentStateEnum
 import im.threads.internal.model.ConsultPhrase
+import im.threads.internal.model.FileDescription
 import im.threads.internal.utils.FileUtils
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -40,22 +41,32 @@ class ImageFromConsultViewHolder(
     private val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
     private val style: ChatStyle = Config.instance.chatStyle
     private val rotateAnim = RotateAnimation(
-        0f, 360f,
-        Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF,
+        0f,
+        360f,
+        Animation.RELATIVE_TO_SELF,
+        0.5f,
+        Animation.RELATIVE_TO_SELF,
         0.5f
     )
 
     private val mTimeStampTextView = (itemView.findViewById(R.id.timestamp) as TextView).apply {
         setTextColor(getColorInt(style.incomingImageTimeColor))
-        if (style.incomingMessageTimeTextSize > 0)
-            setTextSize(TypedValue.COMPLEX_UNIT_PX, itemView.context.resources.getDimension(style.incomingMessageTimeTextSize))
+        if (style.incomingMessageTimeTextSize > 0) {
+            setTextSize(
+                TypedValue.COMPLEX_UNIT_PX,
+                itemView.context.resources.getDimension(style.incomingMessageTimeTextSize)
+            )
+        }
         background.setColorFilter(
             getColorInt(style.incomingImageTimeBackgroundColor),
             PorterDuff.Mode.SRC_ATOP
         )
     }
-    private val mImage: ImageView = itemView.findViewById<ImageView>(R.id.image).also { applyParams(it) }
-    private val mLoaderImage: ImageView = itemView.findViewById<ImageView>(R.id.loaderImage).also { applyParams(it) }
+    private val mImage: ImageView =
+        itemView.findViewById<ImageView>(R.id.image).also { applyParams(it) }
+    private val mLoaderImage: ImageView =
+        itemView.findViewById<ImageView>(R.id.loaderImage).also { applyParams(it) }
+    private val errorText: TextView = itemView.findViewById<TextView>(R.id.errorText)
     private val mConsultAvatar = (itemView.findViewById(R.id.consult_avatar) as ImageView).apply {
         layoutParams.height =
             itemView.context.resources.getDimension(style.operatorAvatarSize)
@@ -99,30 +110,37 @@ class ImageFromConsultViewHolder(
         mImage.setImageResource(0)
 
         if (fileDescription != null) {
-            val fileUri = if (fileDescription.fileUri?.toString()?.isNotBlank() == true) {
-                fileDescription.fileUri.toString()
+            if (fileDescription.state === AttachmentStateEnum.PENDING) {
+                showLoaderLayout(fileDescription)
+            } else if (fileDescription.state === AttachmentStateEnum.ERROR) {
+                showErrorLayout(fileDescription)
             } else {
-                fileDescription.downloadPath
-            }
-            val isStateReady = fileDescription.state == AttachmentStateEnum.READY
-            if (isStateReady && fileUri != null && !fileDescription.isDownloadError) {
-                startLoaderAnimation()
-                mImage.loadImage(
-                    fileUri,
-                    listOf(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP),
-                    style.imagePlaceholder,
-                    autoRotateWithExif = true,
-                    modifications = listOf(maskedTransformation),
-                    callback = object : ImageLoader.ImageLoaderCallback {
-                        override fun onImageLoaded() {
-                            stopLoaderAnimation()
+                showCommonLayout()
+                val fileUri = if (fileDescription.fileUri?.toString()?.isNotBlank() == true) {
+                    fileDescription.fileUri.toString()
+                } else {
+                    fileDescription.downloadPath
+                }
+                val isStateReady = fileDescription.state == AttachmentStateEnum.READY
+                if (isStateReady && fileUri != null && !fileDescription.isDownloadError) {
+                    startLoaderAnimation()
+                    mImage.loadImage(
+                        fileUri,
+                        listOf(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP),
+                        style.imagePlaceholder,
+                        autoRotateWithExif = true,
+                        modifications = listOf(maskedTransformation),
+                        callback = object : ImageLoader.ImageLoaderCallback {
+                            override fun onImageLoaded() {
+                                stopLoaderAnimation()
+                            }
                         }
-                    }
-                )
-            } else if (!isStateReady) {
-                startLoaderAnimation()
-            } else if (fileDescription.isDownloadError) {
-                mImage.setImageResource(style.imagePlaceholder)
+                    )
+                } else if (!isStateReady) {
+                    startLoaderAnimation()
+                } else if (fileDescription.isDownloadError) {
+                    mImage.setImageResource(style.imagePlaceholder)
+                }
             }
         }
         filterView.visibility = if (highlighted) View.VISIBLE else View.INVISIBLE
@@ -170,5 +188,22 @@ class ImageFromConsultViewHolder(
         mImage.visibility = View.VISIBLE
         rotateAnim.cancel()
         rotateAnim.reset()
+    }
+
+    private fun showLoaderLayout(fileDescription: FileDescription) {
+        startLoaderAnimation()
+        errorText.setVisibility(View.GONE)
+    }
+
+    private fun showErrorLayout(fileDescription: FileDescription) {
+        stopLoaderAnimation()
+        errorText.setVisibility(View.VISIBLE)
+        val errorString = getString(getErrorStringResByErrorCode(fileDescription.errorCode))
+        errorText.setText(errorString)
+    }
+
+    private fun showCommonLayout() {
+        stopLoaderAnimation()
+        errorText.setVisibility(View.GONE)
     }
 }

@@ -26,6 +26,7 @@ public enum ChatItemType {
     THREAD_CLOSED,
     THREAD_WILL_BE_REASSIGNED,
     THREAD_IN_PROGRESS,
+    ATTACHMENT_UPDATED,
     @Deprecated
     OPERATOR_LEFT,
     @Deprecated

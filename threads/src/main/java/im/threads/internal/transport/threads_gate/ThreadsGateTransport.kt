@@ -3,11 +3,11 @@ package im.threads.internal.transport.threads_gate
 import android.os.Build
 import android.provider.Settings
 import android.text.TextUtils
-import android.util.Log
 import androidx.core.util.ObjectsCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
+import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import im.threads.config.SocketClientSettings
 import im.threads.internal.Config
@@ -24,9 +24,11 @@ import im.threads.internal.transport.ApplicationConfig
 import im.threads.internal.transport.AuthInterceptor
 import im.threads.internal.transport.ChatItemProviderData
 import im.threads.internal.transport.MessageAttributes
+import im.threads.internal.transport.MessageAttributes.ATTACHMENTS
 import im.threads.internal.transport.OutgoingMessageCreator
 import im.threads.internal.transport.Transport
 import im.threads.internal.transport.TransportException
+import im.threads.internal.transport.models.Attachment
 import im.threads.internal.transport.models.AttachmentSettings
 import im.threads.internal.transport.models.TypingContent
 import im.threads.internal.transport.threads_gate.requests.RegisterDeviceRequest
@@ -346,9 +348,12 @@ class ThreadsGateTransport(
 
         override fun onMessage(webSocket: WebSocket, text: String) {
             ThreadsLogger.i(TAG, "Receiving : $text")
+            ThreadsLogger.e(TAG, "Receiving : $text")
             postSocketResponseMap(text)
             val response = Config.instance.gson.fromJson(text, BaseResponse::class.java)
+            ThreadsLogger.e(TAG, "Receiving : daseResponse ${response.data}")
             val action = response.action
+
             if (response.data.has(KEY_ERROR)) {
                 ChatUpdateProcessor.getInstance()
                     .postError(TransportException(response.data[KEY_ERROR].asString))
@@ -416,18 +421,12 @@ class ThreadsGateTransport(
                         }
                     }
                 }
-                /*if (action.equals(Action.UPDATE_STATUSES)) {
-                    UpdateStatusesData data = Config.instance.gson.fromJson(response.getData().toString(), UpdateStatusesData.class);
-                    for (final String messageId : data.getMessageIds()) {
-                        ChatUpdateProcessor.getInstance().postMessageWasRead(messageId);
-                    }
-                }*/if (action == Action.GET_MESSAGES) {
+                if (action == Action.GET_MESSAGES) {
                     val data = Config.instance.gson.fromJson(
                         response.data.toString(),
                         GetMessagesData::class.java
                     )
                     for (message in data.messages) {
-                        Log.i(TAG, "Message handling: ${message.content}")
                         if (message.content.has(MessageAttributes.TYPE)) {
                             val type =
                                 ChatItemType.fromString(ThreadsGateMessageParser.getType(message))
@@ -442,7 +441,23 @@ class ThreadsGateTransport(
                                     message.content,
                                     AttachmentSettings::class.java
                                 )
-                                ChatUpdateProcessor.getInstance().postAttachmentSettings(attachmentSettings)
+                                ChatUpdateProcessor.getInstance()
+                                    .postAttachmentSettings(attachmentSettings)
+                            } else if (ChatItemType.ATTACHMENT_UPDATED == type) {
+                                val attachments: ArrayList<Attachment> = ArrayList()
+                                (message.content.get(ATTACHMENTS) as JsonArray)?.let {
+                                    for (i in 0 until it.size()) {
+                                        attachments.add(
+                                            Config.instance.gson.fromJson(
+                                                it[i],
+                                                Attachment::class.java
+                                            )
+                                        )
+                                    }
+                                }
+                                if (attachments.isNotEmpty()) {
+                                    ChatUpdateProcessor.getInstance().updateAttachments(attachments)
+                                }
                             } else if (ChatItemType.SPEECH_MESSAGE_UPDATED == type) {
                                 val chatItem = ThreadsGateMessageParser.format(message)
                                 if (chatItem is SpeechMessageUpdate) {
