@@ -9,7 +9,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:7.0.4'
-        classpath 'com.google.gms:google-services:4.3.10'
+        classpath 'com.google.gms:google-services:4.3.13'
         classpath 'net.researchgate:gradle-release:2.8.1'
         classpath 'com.huawei.agconnect:agcp:1.6.4.300'
         classpath "org.jlleitschuh.gradle:ktlint-gradle:10.3.0"
@@ -51,7 +51,7 @@ ext {
     androidXPreferenceVersion = '1.1.1'
     androidXSwiperefreshlayout = '1.1.0'
     materialComponentsVersion = '1.4.0'
-    fcmVersion = '23.0.0'
+    fcmVersion = '23.0.6'
 
     okhttpVersion = '4.9.3'
     retrofitVersion = '2.9.0'
