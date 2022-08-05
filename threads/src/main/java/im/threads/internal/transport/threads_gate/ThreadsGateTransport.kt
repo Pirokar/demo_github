@@ -336,11 +336,12 @@ class ThreadsGateTransport(
         } else null
 
         return if (deviceName.isNullOrBlank() && Build.VERSION.SDK_INT <= Build.VERSION_CODES.S) {
-            try {
+            val blName = try {
                 Settings.Secure.getString(Config.instance.context.contentResolver, "bluetooth_name")
             } catch (ignored: Exception) {
                 getSimpleDeviceName()
             }
+            blName ?: getSimpleDeviceName()
         } else if (deviceName.isNullOrBlank()) {
             getSimpleDeviceName()
         } else {
