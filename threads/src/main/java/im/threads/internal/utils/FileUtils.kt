@@ -13,9 +13,9 @@ import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.text.TextUtils
 import android.webkit.MimeTypeMap
-import com.squareup.picasso.Picasso
 import im.threads.R
 import im.threads.internal.Config
+import im.threads.internal.imageLoading.ImageLoader
 import im.threads.internal.model.FileDescription
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -258,43 +258,47 @@ object FileUtils {
 
     @Throws(IOException::class)
     private fun saveToFile(uri: Uri?, outputFile: File) {
-        val bitmap = Picasso.get()
-            .load(uri)
+        ImageLoader
             .get()
-        val byteArrayOutputStream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
-        try {
-            FileOutputStream(outputFile).use { fileOutputStream ->
-                fileOutputStream.write(byteArrayOutputStream.toByteArray())
-                fileOutputStream.flush()
-                bitmap.recycle()
+            .load(uri.toString())
+            .getBitmapSync(Config.instance.context)?.let { bitmap ->
+                val byteArrayOutputStream = ByteArrayOutputStream()
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
+                try {
+                    FileOutputStream(outputFile).use { fileOutputStream ->
+                        fileOutputStream.write(byteArrayOutputStream.toByteArray())
+                        fileOutputStream.flush()
+                        bitmap.recycle()
+                    }
+                } catch (e: IOException) {
+                    ThreadsLogger.e(TAG, "saveToFile", e)
+                    bitmap.recycle()
+                }
             }
-        } catch (e: IOException) {
-            ThreadsLogger.e(TAG, "saveToFile", e)
-            bitmap.recycle()
-        }
     }
 
     @Throws(IOException::class)
     private fun saveToUri(uri: Uri?, outputUri: Uri?) {
         val resolver = Config.instance.context.contentResolver
-        val bitmap = Picasso.get()
-            .load(uri)
+        ImageLoader
             .get()
-        val byteArrayOutputStream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
-        try {
-            resolver.openOutputStream(outputUri!!).use { fileOutputStream ->
-                if (fileOutputStream != null) {
-                    fileOutputStream.write(byteArrayOutputStream.toByteArray())
-                    fileOutputStream.flush()
+            .load(uri.toString())
+            .getBitmapSync(Config.instance.context)?.let { bitmap ->
+                val byteArrayOutputStream = ByteArrayOutputStream()
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
+                try {
+                    resolver.openOutputStream(outputUri!!).use { fileOutputStream ->
+                        if (fileOutputStream != null) {
+                            fileOutputStream.write(byteArrayOutputStream.toByteArray())
+                            fileOutputStream.flush()
+                            bitmap.recycle()
+                        }
+                    }
+                } catch (e: IOException) {
+                    ThreadsLogger.e(TAG, "cannot get bitmap in saveToUri", e)
                     bitmap.recycle()
                 }
             }
-        } catch (e: IOException) {
-            ThreadsLogger.e(TAG, "saveToUri", e)
-            bitmap.recycle()
-        }
     }
 
     @JvmStatic

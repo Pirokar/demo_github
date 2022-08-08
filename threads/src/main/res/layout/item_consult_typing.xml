@@ -9,7 +9,6 @@
         android:layout_width="@dimen/threads_system_operator_photo_size"
         android:layout_height="@dimen/threads_system_operator_photo_size"
         android:padding="@dimen/margin_half"
-        android:scaleType="centerCrop"
         android:visibility="gone" />
 
     <im.threads.internal.widget.text_view.TypingTextView

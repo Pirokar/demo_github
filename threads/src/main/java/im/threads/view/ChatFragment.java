@@ -37,6 +37,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -58,7 +59,6 @@ import com.devlomi.record_view.OnRecordListener;
 import com.devlomi.record_view.RecordButton;
 import com.devlomi.record_view.RecordView;
 import com.google.android.material.slider.Slider;
-import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -92,6 +92,7 @@ import im.threads.internal.fragments.PermissionDescriptionAlertDialogFragment;
 import im.threads.internal.helpers.FileHelper;
 import im.threads.internal.helpers.FileProviderHelper;
 import im.threads.internal.helpers.MediaHelper;
+import im.threads.internal.imageLoading.ImageLoader;
 import im.threads.internal.media.ChatCenterAudioConverter;
 import im.threads.internal.media.ChatCenterAudioConverterCallback;
 import im.threads.internal.media.FileDescriptionMediaPlayer;
@@ -2530,10 +2531,10 @@ public final class ChatFragment extends BaseFragment implements
             binding.quoteText.setText(text);
             if (imagePath != null) {
                 binding.quoteImage.setVisibility(View.VISIBLE);
-                Picasso.get()
-                        .load(imagePath)
-                        .fit()
-                        .centerCrop()
+                ImageLoader
+                        .get()
+                        .load(imagePath.toString())
+                        .scales(ImageView.ScaleType.FIT_CENTER, ImageView.ScaleType.CENTER_CROP)
                         .into(binding.quoteImage);
             } else {
                 binding.quoteImage.setVisibility(View.GONE);

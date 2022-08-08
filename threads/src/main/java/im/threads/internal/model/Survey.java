@@ -1,8 +1,12 @@
 package im.threads.internal.model;
 
+import android.annotation.SuppressLint;
+
 import androidx.core.util.ObjectsCompat;
 
 import java.util.List;
+
+import io.reactivex.Observable;
 
 public final class Survey implements ChatItem, Hidable {
     private String uuid;
@@ -14,7 +18,8 @@ public final class Survey implements ChatItem, Hidable {
     private MessageState sentState;
     private boolean read;
 
-    public Survey(String uuid, long surveySendingId, Long hideAfter, long phraseTimeStamp, MessageState messageState, boolean read, boolean displayMessage) {
+    public Survey(String uuid, long surveySendingId, Long hideAfter, long phraseTimeStamp,
+                  MessageState messageState, boolean read, boolean displayMessage) {
         this.uuid = uuid;
         this.sendingId = surveySendingId;
         this.hideAfter = hideAfter;
@@ -44,9 +49,14 @@ public final class Survey implements ChatItem, Hidable {
         return questions;
     }
 
+    @SuppressLint("CheckResult")
     public void setQuestions(List<QuestionDTO> questions) {
-        this.questions = questions;
+        Observable.fromIterable(questions)
+                .filter(question -> question != null)
+                .toList()
+                .subscribe(list -> this.questions = list);
     }
+
 
     public Long getHideAfter() {
         return hideAfter;

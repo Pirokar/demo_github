@@ -3,8 +3,7 @@ package im.threads.internal.utils;
 import android.accounts.NetworkErrorException;
 import android.graphics.Bitmap;
 import android.net.Uri;
-
-import com.squareup.picasso.Picasso;
+import android.widget.ImageView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -14,6 +13,7 @@ import java.io.InputStream;
 import java.net.URLEncoder;
 
 import im.threads.internal.Config;
+import im.threads.internal.imageLoading.ImageLoader;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.FileUploadResponse;
 import im.threads.internal.retrofit.DatastoreApiGenerator;
@@ -109,29 +109,25 @@ public final class FilePoster {
 
 
     private static File compressImage(Uri uri) throws IOException {
-        try {
-            Bitmap bitmap = Picasso.get()
-                    .load(uri)
-                    .resize(PHOTO_RESIZE_MAX_SIDE, PHOTO_RESIZE_MAX_SIDE)
-                    .centerInside()
-                    .onlyScaleDown()
-                    .get();
-            File downsizedImageFile = new File(Config.instance.context.getCacheDir(), FileUtils.getFileName(uri));
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
-            try (FileOutputStream fileOutputStream = new FileOutputStream(downsizedImageFile)) {
-                fileOutputStream.write(byteArrayOutputStream.toByteArray());
-                fileOutputStream.flush();
-                bitmap.recycle();
-                return downsizedImageFile;
-            } catch (IOException e) {
-                ThreadsLogger.e(TAG, "downsizeImage", e);
-                bitmap.recycle();
-                downsizedImageFile.delete();
-                return null;
-            }
+        Bitmap bitmap = ImageLoader.get()
+                .load(uri.toString())
+                .resize(PHOTO_RESIZE_MAX_SIDE, PHOTO_RESIZE_MAX_SIDE)
+                .onlyScaleDown()
+                .scales(ImageView.ScaleType.CENTER_INSIDE)
+                .autoRotateWithExif(true)
+                .getBitmapSync(Config.instance.context);
+        File downsizedImageFile = new File(Config.instance.context.getCacheDir(), FileUtils.getFileName(uri));
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+        try (FileOutputStream fileOutputStream = new FileOutputStream(downsizedImageFile)) {
+            fileOutputStream.write(byteArrayOutputStream.toByteArray());
+            fileOutputStream.flush();
+            bitmap.recycle();
+            return downsizedImageFile;
         } catch (IOException e) {
-            ThreadsLogger.e(TAG, "downsizeImage, Incorrect image file", e);
+            ThreadsLogger.e(TAG, "downsizeImage", e);
+            bitmap.recycle();
+            downsizedImageFile.delete();
             return null;
         }
     }

@@ -1,42 +1,42 @@
 {
   "project_info": {
-    "project_number": "158671513869",
-    "firebase_url": "https://thr-threads.firebaseio.com",
-    "project_id": "thr-threads",
-    "storage_bucket": "thr-threads.appspot.com"
+    "project_number": "418894166673",
+    "project_id": "ednachatcenterandroid",
+    "storage_bucket": "ednachatcenterandroid.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:158671513869:android:8e761a7deba980f5b02844",
+        "mobilesdk_app_id": "1:418894166673:android:d783cdff1ade17d27a9d30",
         "android_client_info": {
           "package_name": "io.edna.threads.demo"
         }
       },
       "oauth_client": [
         {
-          "client_id": "158671513869-nkvrgokcvj16g3jhstpvsnb489jaij40.apps.googleusercontent.com",
+          "client_id": "418894166673-fi80ati08ck9dck13h4enenpifnbtovs.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "io.edna.threads.demo",
+            "certificate_hash": "368d0a18a1635867e8497b6d5286fc44aaed32e7"
+          }
+        },
+        {
+          "client_id": "418894166673-7csjd4j6sp0u1h3a4bcap25t7fnokkee.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDKcAbz8ZVaaWRYnmL_9v8B2VwSPFFebCY"
+          "current_key": "AIzaSyDlDWZ8VGgghh68s3VdxOtAjTSIV1WkM8E"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "158671513869-nkvrgokcvj16g3jhstpvsnb489jaij40.apps.googleusercontent.com",
+              "client_id": "418894166673-7csjd4j6sp0u1h3a4bcap25t7fnokkee.apps.googleusercontent.com",
               "client_type": 3
-            },
-            {
-              "client_id": "158671513869-1p8gincfalrn9lm58agq8qh0bnhnl188.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.brooma.threads.polarbear-push"
-              }
             }
           ]
         }

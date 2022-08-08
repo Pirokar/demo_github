@@ -35,8 +35,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_three_fourth"
                 android:minWidth="240dp"
-                android:minHeight="280dp"
-                android:scaleType="fitCenter" />
+                android:minHeight="280dp" />
 
             <ImageView
                 android:id="@+id/loaderImage"
@@ -98,6 +97,7 @@
                     android:layout_marginStart="@dimen/margin_half"
                     android:layout_marginTop="2dp"
                     android:paddingEnd="80dp"
+                    android:paddingStart="0dp"
                     android:textColor="@color/threads_incoming_message_text"
                     android:textStyle="bold"
                     tools:text="Иван Петров" />
@@ -162,7 +162,8 @@
             android:id="@+id/og_data_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone">
+            android:visibility="gone"
+            tools:visibility="visible">
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -173,13 +174,15 @@
                     android:id="@+id/og_image"
                     android:layout_width="match_parent"
                     android:layout_height="125dp"
+                    android:scaleType="fitCenter"
+                    android:layout_marginStart="@dimen/margin_material"
                     android:minWidth="240dp" />
 
                 <im.threads.internal.widget.text_view.BubbleMessageTextView
                     android:id="@+id/og_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/margin_big"
+                    android:layout_marginStart="@dimen/margin_material"
                     android:ellipsize="end"
                     android:maxLines="2"
                     android:paddingTop="@dimen/margin_half"
@@ -192,7 +195,7 @@
                     android:id="@+id/og_description"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/margin_big"
+                    android:layout_marginStart="@dimen/margin_material"
                     android:ellipsize="end"
                     android:maxLines="2"
                     android:textColor="@color/threads_incoming_message_text"
@@ -203,11 +206,12 @@
                     android:id="@+id/og_url"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/margin_big"
+                    android:layout_marginStart="@dimen/margin_material"
                     android:ellipsize="end"
                     android:maxLines="1"
                     android:paddingTop="@dimen/margin_half"
                     android:paddingEnd="60dp"
+                    android:paddingStart="0dp"
                     android:textColor="@color/threads_incoming_message_text"
                     android:textSize="16sp"
                     android:textStyle="bold"
@@ -218,8 +222,9 @@
                 android:id="@+id/og_timestamp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom|right"
+                android:layout_gravity="bottom|end"
                 android:paddingEnd="4dp"
+                android:paddingStart="0dp"
                 android:textColor="@color/threads_operator_message_timestamp"
                 tools:text="10:19" />
         </FrameLayout>

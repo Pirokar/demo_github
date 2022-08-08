@@ -24,6 +24,10 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.exceptions.UndeliverableException
 import io.reactivex.plugins.RxJavaPlugins
 import io.reactivex.processors.FlowableProcessor
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import java.io.File
 
 @Suppress("unused")
@@ -56,7 +60,6 @@ class ThreadsLib private constructor(context: Context?) {
         PrefUtils.userName = userInfoBuilder.userName
         PrefUtils.data = userInfoBuilder.clientData
         PrefUtils.setClientIdEncrypted(userInfoBuilder.clientIdEncrypted)
-        ChatController.getInstance().sendInit()
         ChatController.getInstance().loadHistory()
     }
 
@@ -148,6 +151,7 @@ class ThreadsLib private constructor(context: Context?) {
     companion object {
         private val TAG = ThreadsLib::class.java.simpleName
         private var instance: ThreadsLib? = null
+        private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
         @JvmStatic
         fun getLibVersion() = BuildConfig.VERSION_NAME
@@ -156,14 +160,12 @@ class ThreadsLib private constructor(context: Context?) {
         @JvmStatic
         fun init(configBuilder: ConfigBuilder) {
             check(instance == null) { "ThreadsLib has already been initialized" }
+            val startInitTime = System.currentTimeMillis()
             Config.instance = configBuilder.build()
             instance = ThreadsLib(configBuilder.context)
             PrefUtils.migrateMainSharedPreferences()
 
             Config.instance.unreadMessagesCountListener?.let { unreadMessagesCountListener ->
-                unreadMessagesCountListener.onUnreadMessagesCountChanged(
-                    UnreadMessagesController.INSTANCE.unreadMessages
-                )
                 UnreadMessagesController.INSTANCE.unreadMessagesPublishProcessor
                     .distinctUntilChanged()
                     .observeOn(AndroidSchedulers.mainThread())
@@ -172,6 +174,13 @@ class ThreadsLib private constructor(context: Context?) {
                             unreadMessagesCountListener.onUnreadMessagesCountChanged(count)
                         }
                     ) { error: Throwable -> ThreadsLogger.e(TAG, "init " + error.message) }
+
+                coroutineScope.launch {
+                    val task = async(Dispatchers.IO) {
+                        UnreadMessagesController.INSTANCE.unreadMessages
+                    }
+                    unreadMessagesCountListener.onUnreadMessagesCountChanged(task.await())
+                }
             }
 
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
@@ -216,6 +225,7 @@ class ThreadsLib private constructor(context: Context?) {
                     }
                 }
             }
+            ThreadsLogger.i(TAG, "Lib_init_time: ${System.currentTimeMillis() - startInitTime}ms")
         }
 
         @JvmStatic

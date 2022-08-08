@@ -102,15 +102,6 @@ public final class OutgoingMessageCreator {
         return object;
     }
 
-    public static JsonObject createRatingReceivedMessage(long sendingId, String clientId) {
-        JsonObject object = new JsonObject();
-        object.addProperty(MessageAttributes.CLIENT_ID, clientId);
-        object.addProperty(MessageAttributes.TYPE, ChatItemType.SURVEY_PASSED.name());
-        object.addProperty(MessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker());
-        object.addProperty("sendingId", sendingId);
-        return object;
-    }
-
     public static JsonObject createMessageClientOffline(String clientId) {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty(MessageAttributes.CLIENT_ID, clientId);

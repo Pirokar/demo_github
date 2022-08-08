@@ -1,9 +1,10 @@
 package im.threads.internal.holders
 
-import android.graphics.Bitmap
+import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.text.method.LinkMovementMethod
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.ColorInt
@@ -12,24 +13,43 @@ import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.squareup.picasso.Picasso
-import com.squareup.picasso.Target
 import im.threads.R
 import im.threads.internal.Config
+import im.threads.internal.domain.ogParser.OGData
+import im.threads.internal.domain.ogParser.OpenGraphParser
+import im.threads.internal.domain.ogParser.OpenGraphParserJsoupImpl
+import im.threads.internal.imageLoading.ImageLoader
+import im.threads.internal.imageLoading.loadImage
 import im.threads.internal.markdown.LinkifyLinksHighlighter
 import im.threads.internal.markdown.LinksHighlighter
 import im.threads.internal.model.ConsultPhrase
 import im.threads.internal.model.ErrorStateEnum
 import im.threads.internal.utils.ColorsHelper
+import im.threads.internal.utils.ThreadsLogger
+import im.threads.internal.utils.UrlUtils
+import im.threads.internal.utils.ViewUtils
 import im.threads.internal.views.CircularProgressButton
 import im.threads.internal.widget.text_view.BubbleMessageTextView
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     private var compositeDisposable: CompositeDisposable? = CompositeDisposable()
     private val linksHighlighter: LinksHighlighter = LinkifyLinksHighlighter()
+    private val openGraphParser: OpenGraphParser = OpenGraphParserJsoupImpl()
+    private val coroutineScope = CoroutineScope(Dispatchers.IO)
+
+    protected fun subscribe(event: Disposable): Boolean {
+        if (compositeDisposable?.isDisposed != false) {
+            compositeDisposable = CompositeDisposable()
+        }
+        return compositeDisposable?.add(event) ?: false
+    }
 
     @ColorInt
     fun getColorInt(@ColorRes colorRes: Int): Int {
@@ -57,20 +77,11 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
         button.setCompletedDrawable(completed)
     }
 
-    fun getPicassoTargetForView(view: ImageView, placeholderResource: Int, onLoaded: () -> Unit): Target {
-        return object : Target {
-            override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
-                view.setImageBitmap(bitmap)
-                view.scaleType = ImageView.ScaleType.CENTER_CROP
-                onLoaded()
-            }
-            override fun onBitmapFailed(e: java.lang.Exception?, errorDrawable: Drawable?) {
-                view.scaleType = ImageView.ScaleType.FIT_CENTER
-                view.setImageResource(placeholderResource)
-                onLoaded()
-            }
-            override fun onPrepareLoad(placeHolderDrawable: Drawable?) {}
+    fun onClear() {
+        compositeDisposable?.apply {
+            dispose()
         }
+        compositeDisposable = null
     }
 
     /**
@@ -113,6 +124,142 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
         )
     }
 
+    /**
+     * Возвращает нужный ресурс [Drawable] в зависимости от кода ошибки
+     * @param code код ошибки
+     */
+    protected fun getErrorImageResByErrorCode(code: ErrorStateEnum) = when (code) {
+        ErrorStateEnum.DISALLOWED -> R.drawable.im_wrong_file
+        ErrorStateEnum.TIMEOUT -> R.drawable.im_unexpected
+        ErrorStateEnum.Unexpected -> R.drawable.im_unexpected
+        ErrorStateEnum.ANY -> R.drawable.im_unexpected
+    }
+
+    /**
+     * Обрабатывает показ Open Graph.
+     * @param ogDataLayout layout, в котором размещены вьюхи Open Graph
+     * @param timeStampView текстовая вьюха для отображения времени
+     * @param url ссылка, для которой надо отобразить Open Graph
+     */
+    protected fun bindOGData(
+        ogDataLayout: ViewGroup,
+        timeStampView: TextView,
+        url: String
+    ) {
+        val normalizedUrl = if (!url.startsWith("http")) {
+            "https://$url"
+        } else {
+            url
+        }
+        if (ogDataLayout.tag == normalizedUrl) {
+            return
+        }
+
+        val ogImage: ImageView = ogDataLayout.findViewById(R.id.og_image)
+        ogImage.setImageDrawable(null)
+
+        val ogDataTag = "OgData_Fetching"
+        coroutineScope.launch {
+            ThreadsLogger.i(ogDataTag, "Fetching OgData for url \"$normalizedUrl\"")
+            openGraphParser.getContents(normalizedUrl)?.let { ogData ->
+                ThreadsLogger.i(ogDataTag, "OgData for url \"$normalizedUrl\": $ogData")
+                withContext(Dispatchers.Main) {
+                    if (ogData.isEmpty()) {
+                        hideOGView(ogDataLayout, timeStampView)
+                        return@withContext
+                    }
+
+                    val ogTitle: TextView = ogDataLayout.findViewById(R.id.og_title)
+                    val ogDescription: TextView = ogDataLayout.findViewById(R.id.og_description)
+                    val ogUrl: TextView = ogDataLayout.findViewById(R.id.og_url)
+
+                    showOGView(ogDataLayout, timeStampView)
+                    setOgDataTitle(ogData, ogTitle)
+                    setOgDataDescription(ogData, ogDescription)
+                    setOgDataUrl(ogUrl, ogData, normalizedUrl)
+                    setOgDataImage(ogData, ogImage)
+
+                    ViewUtils.setClickListener(
+                        ogDataLayout,
+                        View.OnClickListener {
+                            UrlUtils.openUrl(
+                                ogDataLayout.getContext(),
+                                normalizedUrl
+                            )
+                        }
+                    )
+
+                    ogDataLayout.tag = normalizedUrl
+                }
+            } ?: run {
+                withContext(Dispatchers.Main) {
+                    hideOGView(ogDataLayout, timeStampView)
+                }
+            }
+        }
+    }
+
+    private fun setOgDataTitle(ogData: OGData, ogTitle: TextView) {
+        if (ogData.title.isNotEmpty()) {
+            ogTitle.visibility = View.VISIBLE
+            ogTitle.text = ogData.title
+            ogTitle.setTypeface(ogTitle.typeface, Typeface.BOLD)
+        } else {
+            ogTitle.visibility = View.GONE
+        }
+    }
+
+    private fun setOgDataDescription(ogData: OGData, ogDescription: TextView) {
+        if (ogData.description.isNotEmpty()) {
+            ogDescription.visibility = View.VISIBLE
+            ogDescription.text = ogData.description
+        } else {
+            ogDescription.visibility = View.GONE
+        }
+    }
+
+    private fun setOgDataUrl(ogUrl: TextView, ogData: OGData, url: String) {
+        ogUrl.text = ogData.url.ifEmpty { url }
+    }
+
+    private fun setOgDataImage(ogData: OGData, ogImage: ImageView) {
+        if (UrlUtils.isValidUrl(ogData.imageUrl)) {
+            ogImage.visibility = View.VISIBLE
+            ogImage.loadImage(
+                ogData.imageUrl,
+                errorDrawableResId = Config.instance.chatStyle.imagePlaceholder,
+                isExternalImage = true,
+                callback = object : ImageLoader.ImageLoaderCallback {
+                    override fun onImageLoadError() {
+                        ogImage.visibility = View.GONE
+                    }
+                }
+            )
+        } else {
+            ogImage.visibility = View.GONE
+        }
+    }
+
+    /**
+     * Включает отображение контейнера Open Graph.
+     * @param ogDataLayout layout, в котором размещены вьюхи Open Graph
+     * @param timeStampView текстовая вьюха для отображения времени
+     */
+    protected fun showOGView(ogDataLayout: ViewGroup, timeStampView: TextView) {
+        ogDataLayout.visibility = View.VISIBLE
+        timeStampView.visibility = View.GONE
+    }
+
+    /**
+     * Прячет контейнер Open Graph (View.Gone)
+     * @param ogDataLayout layout, в котором размещены вьюхи Open Graph
+     * @param timeStampView текстовая вьюха для отображения времени
+     */
+    protected fun hideOGView(ogDataLayout: ViewGroup, timeStampView: TextView) {
+        ogDataLayout.visibility = View.GONE
+        timeStampView.visibility = View.VISIBLE
+    }
+
     private fun setTextWithHighlighting(textView: TextView, isUnderlined: Boolean) {
         setMovementMethod(textView)
         linksHighlighter.highlightAllTypeOfLinks(textView, isUnderlined)
@@ -126,26 +273,5 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
         val drawable = AppCompatResources.getDrawable(itemView.context, iconResId)?.mutate()
         ColorsHelper.setDrawableColor(itemView.context, drawable, colorRes)
         return drawable
-    }
-
-    protected fun getErrorImageResByErrorCode(code: ErrorStateEnum) = when (code) {
-        ErrorStateEnum.DISALLOWED -> R.drawable.im_wrong_file
-        ErrorStateEnum.TIMEOUT -> R.drawable.im_unexpected
-        ErrorStateEnum.Unexpected -> R.drawable.im_unexpected
-        ErrorStateEnum.ANY -> R.drawable.im_unexpected
-    }
-
-    protected fun subscribe(event: Disposable): Boolean {
-        if (compositeDisposable?.isDisposed != false) {
-            compositeDisposable = CompositeDisposable()
-        }
-        return compositeDisposable?.add(event) ?: false
-    }
-
-    fun onClear() {
-        compositeDisposable?.apply {
-            dispose()
-        }
-        compositeDisposable = null
     }
 }

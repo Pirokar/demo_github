@@ -1,9 +1,8 @@
 package im.threads.internal.model
 
-import android.text.TextUtils
 import androidx.core.util.ObjectsCompat
+import im.threads.internal.domain.ogParser.OGData
 import im.threads.internal.formatters.SpeechStatus
-import im.threads.internal.opengraph.OGData
 import im.threads.internal.utils.FileUtils.isImage
 import im.threads.internal.utils.FileUtils.isVoiceMessage
 
@@ -35,21 +34,17 @@ class ConsultPhrase constructor(
     override var found = false
 
     val isOnlyImage: Boolean
-        get() = (
-            TextUtils.isEmpty(phraseText) &&
-                quote == null && isImage(fileDescription)
-            )
+        get() = (phraseText.isNullOrEmpty() && quote == null && isImage(fileDescription))
+
     val isOnlyDoc: Boolean
         get() = (
-            TextUtils.isEmpty(phraseText) &&
+            phraseText.isNullOrEmpty() &&
                 !isImage(fileDescription) &&
                 !isVoiceMessage(fileDescription)
             )
+
     val isVoiceMessage: Boolean
-        get() = (
-            speechStatus !== SpeechStatus.UNKNOWN ||
-                isVoiceMessage(fileDescription)
-            )
+        get() = (speechStatus !== SpeechStatus.UNKNOWN || isVoiceMessage(fileDescription))
 
     override val timeStamp
         get() = date

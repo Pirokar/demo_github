@@ -4,11 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
-import android.widget.Toast;
+import android.util.Patterns;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -87,24 +88,13 @@ public final class UrlUtils {
             + "(" + PATH_AND_QUERY + ")?"
             + WORD_BOUNDARY
             + ")");
-    private static final Pattern WEB_URL_WITH_BRACKETS = Pattern.compile("\\[.*\\]\\(" + WEB_URL.toString() + "\\)");
+    private static final Pattern WEB_URL_PATTERN = Patterns.WEB_URL;
+
+    private static final String[] imageExtensions = new String[] { ".jpg", ".png", ".gif", ".tiff", ".raw" };
 
     @Nullable
     public static String extractLink(@NonNull String text) {
-        Matcher matcherWithBrackets = WEB_URL_WITH_BRACKETS.matcher(text);
-        while (matcherWithBrackets.find()) {
-            String url = matcherWithBrackets.group();
-            try {
-                return url.substring(url.indexOf("(") + 1, url.lastIndexOf(")"));
-            } catch (StringIndexOutOfBoundsException e) {
-                ThreadsLogger.w(TAG, "Can`t parse : " + url);
-            }
-        }
-        Matcher m = WEB_URL.matcher(text);
-        if (m.find()) {
-            return m.group();
-        }
-        return null;
+        return getLink(text);
     }
 
     @Nullable
@@ -116,16 +106,61 @@ public final class UrlUtils {
         return null;
     }
 
+    public static Boolean isValidUrl(@NonNull String url) {
+        return getLink(url) != null;
+    }
+
+    private static String getLink(@NonNull String text) {
+        if (TextUtils.isEmpty(text)) {
+            return null;
+        }
+
+        Matcher matcherWithBrackets = WEB_URL_PATTERN.matcher(text);
+        if (matcherWithBrackets.find()) {
+            String url = matcherWithBrackets.group();
+            return trimInvalidUrlCharacters(url);
+        }
+        Matcher m = WEB_URL.matcher(text);
+        if (m.find()) {
+            String url = m.group();
+            return trimInvalidUrlCharacters(url);
+        }
+        return null;
+    }
+
+    @Nullable
+    public static String extractImageMarkdownLink(@NonNull String text) {
+        if (!text.contains("](http")) return null;
+        String link = extractLink(text);
+        if (link == null) return null;
+
+        link = link.toLowerCase(Locale.getDefault());
+        for (String extension : imageExtensions) {
+            if (link.contains(extension)) {
+                return link;
+            }
+        }
+        return null;
+    }
+
     public static void openUrl(@NonNull Context context, @NonNull String url) {
         Uri uri = Uri.parse(url);
         if (TextUtils.isEmpty(uri.getScheme())) {
             uri = Uri.parse("https://" + url);
         }
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, uri);
-        if (browserIntent.resolveActivity(context.getPackageManager()) != null) {
-            context.startActivity(browserIntent);
-        } else {
-            Toast.makeText(context, "No application support this type of link", Toast.LENGTH_SHORT).show();
+        context.startActivity(browserIntent);
+    }
+
+    private static String trimInvalidUrlCharacters(String url) {
+        if (TextUtils.isEmpty(url)) {
+            return url;
         }
+
+        while (url.length() > 0 && !url.substring(url.length() - 1).matches("\\w+")) {
+            url = url.substring(0, url.length() - 1);
+        }
+
+        return url;
     }
 }

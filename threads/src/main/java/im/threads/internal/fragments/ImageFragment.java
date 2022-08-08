@@ -11,8 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
-import com.squareup.picasso.Picasso;
-
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
@@ -20,6 +18,7 @@ import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.formatters.RussianFormatSymbols;
+import im.threads.internal.imageLoading.ImageLoader;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.utils.FileUtils;
 
@@ -64,11 +63,12 @@ public final class ImageFragment extends Fragment {
             date.setText("");
         }
         if (FileUtils.isImage(fd)) {
-            Picasso.get()
-                    .load(fd.getFileUri())
-                    .fit()
-                    .centerInside()
-                    .error(style.imagePlaceholder)
+            ImageLoader
+                    .get()
+                    .load(fd.getFileUri().toString())
+                    .autoRotateWithExif(true)
+                    .scales(ImageView.ScaleType.FIT_CENTER, ImageView.ScaleType.CENTER_INSIDE)
+                    .errorDrawableResourceId(style.imagePlaceholder)
                     .into(imageView);
         }
         v.setBackgroundColor(ContextCompat.getColor(getActivity(), style.imagesScreenBackgroundColor));

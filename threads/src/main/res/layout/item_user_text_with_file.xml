@@ -263,7 +263,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingBottom="5dp"
-            android:visibility="gone">
+            android:visibility="gone"
+            tools:visibility="visible">
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -274,6 +275,8 @@
                     android:id="@+id/og_image"
                     android:layout_width="match_parent"
                     android:layout_height="125dp"
+                    android:scaleType="fitCenter"
+                    android:layout_marginStart="@dimen/margin_quarter"
                     android:minWidth="240dp" />
 
                 <im.threads.internal.widget.text_view.BubbleMessageTextView

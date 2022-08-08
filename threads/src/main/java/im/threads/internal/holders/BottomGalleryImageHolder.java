@@ -9,11 +9,10 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
 
-import com.squareup.picasso.Picasso;
-
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
+import im.threads.internal.imageLoading.ImageLoader;
 import im.threads.internal.model.BottomGalleryItem;
 import im.threads.internal.utils.ColorsHelper;
 
@@ -36,10 +35,10 @@ public final class BottomGalleryImageHolder extends BaseHolder {
             vg.getChildAt(i).setOnClickListener(listener);
         }
         setChosenMarkBackgroundDrawable(item);
-        Picasso.get()
-                .load(item.getImagePath())
-                .fit()
-                .centerCrop()
+        ImageLoader
+                .get()
+                .load(item.getImagePath().toString())
+                .scales(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP)
                 .into(image);
     }
 

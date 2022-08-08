@@ -111,9 +111,9 @@ public final class BubbleMessageTextView extends CustomFontTextView {
 
     private CharSequence addPadding(CharSequence text) {
         if (!TextUtils.isEmpty(text) && !TextUtils.isEmpty(lastLinePadding)) {
-            text = text.toString().replaceAll(SPACE.toString(), " ");
-            text = text.toString().trim();
-            text = new SpannableStringBuilder(text).append(lastLinePadding);
+            SpannableStringBuilder builder = new SpannableStringBuilder(text);
+            builder = trimEndSpannable(builder);
+            text = builder.append(lastLinePadding);
         }
         return text;
     }
@@ -128,4 +128,26 @@ public final class BubbleMessageTextView extends CustomFontTextView {
         return spannedText;
     }
 
+    private SpannableStringBuilder trimEndSpannable(SpannableStringBuilder spannable) {
+        if (spannable == null) {
+            return null;
+        }
+        boolean shouldTrim = false;
+
+        int trimStart = spannable.length() - 1;
+        int trimEnd = spannable.length() - 1;
+
+        while (spannable.charAt(trimStart) == ' ') {
+            shouldTrim = true;
+            trimStart--;
+        }
+
+        SpannableStringBuilder result;
+        if (shouldTrim) {
+            result = spannable.delete(trimStart, trimEnd);
+        } else {
+            result = spannable;
+        }
+        return result;
+    }
 }

@@ -1,7 +1,6 @@
 package im.threads.internal.holders
 
 import android.graphics.PorterDuff
-import android.graphics.Typeface
 import android.text.TextUtils
 import android.text.format.Formatter
 import android.util.TypedValue
@@ -17,26 +16,21 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
-import com.squareup.picasso.Callback
-import com.squareup.picasso.Picasso
 import im.threads.R
 import im.threads.internal.Config
 import im.threads.internal.formatters.RussianFormatSymbols
+import im.threads.internal.imageLoading.ImageLoader
+import im.threads.internal.imageLoading.ImageModifications
+import im.threads.internal.imageLoading.loadImage
 import im.threads.internal.model.AttachmentStateEnum
 import im.threads.internal.model.ConsultPhrase
-import im.threads.internal.opengraph.OGData
-import im.threads.internal.opengraph.OGDataProvider
-import im.threads.internal.utils.CircleTransformation
 import im.threads.internal.utils.FileUtils
 import im.threads.internal.utils.FileUtils.isImage
-import im.threads.internal.utils.ThreadsLogger
 import im.threads.internal.utils.UrlUtils
 import im.threads.internal.utils.ViewUtils
 import im.threads.internal.views.CircularProgressButton
 import im.threads.internal.widget.text_view.BubbleMessageTextView
 import im.threads.internal.widget.text_view.BubbleTimeTextView
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -50,8 +44,11 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
 ) {
     private val style = Config.instance.chatStyle
     private val rotateAnim = RotateAnimation(
-        0f, 360f,
-        Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF,
+        0f,
+        360f,
+        Animation.RELATIVE_TO_SELF,
+        0.5f,
+        Animation.RELATIVE_TO_SELF,
         0.5f
     )
     private val timeStampSdf = SimpleDateFormat("HH:mm", Locale.getDefault())
@@ -76,8 +73,9 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
     private val mTimeStampTextView =
         itemView.findViewById<BubbleTimeTextView>(R.id.timestamp).apply {
             setTextColor(getColorInt(style.incomingMessageTimeColor))
-            if (style.incomingMessageTimeTextSize > 0)
+            if (style.incomingMessageTimeTextSize > 0) {
                 setTextSize(TypedValue.COMPLEX_UNIT_PX, itemView.context.resources.getDimension(style.incomingMessageTimeTextSize))
+            }
         }
     private val mPhraseTextView = itemView.findViewById<BubbleMessageTextView>(R.id.text).apply {
         setLinkTextColor(getColorInt(style.incomingMessageLinkColor))
@@ -108,15 +106,9 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
     }
     private val mPhraseFrame: View = itemView.findViewById(R.id.phrase_frame)
     private val ogDataLayout: ViewGroup = itemView.findViewById(R.id.og_data_layout)
-    private val ogImage: ImageView = itemView.findViewById(R.id.og_image)
-    private val ogTitle: TextView = itemView.findViewById(R.id.og_title)
-    private val ogDescription: TextView = itemView.findViewById(R.id.og_description)
-    private val ogUrl: TextView = itemView.findViewById(R.id.og_url)
     private val ogTimestamp = itemView.findViewById<TextView>(R.id.og_timestamp).apply {
         setTextColor(getColorInt(style.incomingMessageTimeColor))
     }
-
-    private val context = parent.context
 
     init {
         itemView.findViewById<View>(R.id.bubble).apply {
@@ -181,27 +173,12 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
         } else {
             mPhraseTextView.bindTimestampView(mTimeStampTextView)
             mPhraseTextView.visibility = View.VISIBLE
-            val deepLink = UrlUtils.extractDeepLink(phrase)
             val url = UrlUtils.extractLink(phrase)
             highlightOperatorText(mPhraseTextView, consultPhrase)
             if (url != null) {
-                val ogData = consultPhrase.ogData
-                if (ogData == null) {
-                    loadOGData(consultPhrase, url)
-                } else {
-                    bindOGData(ogData, url)
-                }
-                ViewUtils.setClickListener(
-                    ogDataLayout,
-                    View.OnClickListener {
-                        UrlUtils.openUrl(
-                            itemView.getContext(),
-                            url
-                        )
-                    }
-                )
+                bindOGData(ogDataLayout, mTimeStampTextView, url)
             } else {
-                hideOGView()
+                hideOGView(ogDataLayout, mTimeStampTextView)
             }
         }
         mImageLayout.visibility = View.GONE
@@ -224,12 +201,12 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
                 } else {
                     if (isImage(quote.fileDescription)) {
                         mFileImage.visibility = View.VISIBLE
-                        Picasso.get()
-                            .load(quoteFileDescription.downloadPath)
-                            .error(style.imagePlaceholder)
-                            .fit()
-                            .centerCrop()
-                            .into(mFileImage)
+                        mFileImage.loadImage(
+                            quoteFileDescription.downloadPath,
+                            listOf(ImageView.ScaleType.FIT_CENTER, ImageView.ScaleType.CENTER_CROP),
+                            style.imagePlaceholder,
+                            autoRotateWithExif = true
+                        )
                         mFileImage.setOnClickListener(onQuoteClickListener)
                     } else {
                         mCircularProgressButton.visibility = View.VISIBLE
@@ -247,17 +224,9 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
         }
         if (fileDescription != null) {
             val isStateReady = fileDescription.state == AttachmentStateEnum.READY
-            if (isStateReady && isImage(fileDescription)) {
-                fileRow.visibility = View.GONE
-                mCircularProgressButton.visibility = View.GONE
-                mImageLayout.visibility = View.VISIBLE
-                mImage.visibility = View.VISIBLE
-                mImage.setOnClickListener(imageClickListener)
 
-                startLoaderAnimation()
-                Picasso.get()
-                    .load(fileDescription.downloadPath)
-                    .into(getPicassoTargetForView(mImage, style.imagePlaceholder, ::stopLoaderAnimation))
+            if (isStateReady && isImage(fileDescription)) {
+                loadImage(fileDescription.downloadPath, imageClickListener)
             } else if (!isStateReady && isImage(fileDescription)) {
                 startLoaderAnimation()
             } else {
@@ -283,6 +252,12 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
                 )
                 mCircularProgressButton.setProgress(if (fileDescription.fileUri != null) 100 else fileDescription.downloadProgress)
             }
+        } else {
+            consultPhrase.formattedPhrase?.let {
+                UrlUtils.extractImageMarkdownLink(it)?.let { imageUrl ->
+                    loadImage(imageUrl, imageClickListener, true)
+                }
+            }
         }
         if (fileDescription == null && quote == null) {
             fileRow.visibility = View.GONE
@@ -297,13 +272,11 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
             mConsultAvatar.setOnClickListener(onAvatarClickListener)
             showDefIcon()
             if (!TextUtils.isEmpty(consultPhrase.avatarPath)) {
-                Picasso.get()
-                    .load(FileUtils.convertRelativeUrlToAbsolute(consultPhrase.avatarPath))
-                    .fit()
-                    .noPlaceholder()
-                    .centerCrop()
-                    .transform(CircleTransformation())
-                    .into(mConsultAvatar)
+                mConsultAvatar.loadImage(
+                    FileUtils.convertRelativeUrlToAbsolute(consultPhrase.avatarPath),
+                    listOf(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP),
+                    modifications = listOf(ImageModifications.CircleCropModification)
+                )
             }
         } else {
             mConsultAvatar.visibility = View.INVISIBLE
@@ -312,84 +285,38 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
         secondFilterView.visibility = if (highlighted) View.VISIBLE else View.INVISIBLE
     }
 
-    private fun showDefIcon() {
-        mConsultAvatar.setImageResource(style.defaultOperatorAvatar)
-    }
+    private fun loadImage(
+        imagePath: String?,
+        imageClickListener: View.OnClickListener,
+        isExternalImage: Boolean = false
+    ) {
+        fileRow.visibility = View.GONE
+        mCircularProgressButton.visibility = View.GONE
+        mImageLayout.visibility = View.VISIBLE
+        mImage.visibility = View.VISIBLE
+        mImage.setOnClickListener(imageClickListener)
 
-    private fun loadOGData(chatItem: ConsultPhrase, url: String) {
-        hideOGView()
-        subscribe(
-            OGDataProvider.getInstance().getOGData(url)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { ogData: OGData ->
-                        ThreadsLogger.d(TAG, "OGData for url: $url\n received: $ogData")
-                        if (!ogData.isEmpty) {
-                            chatItem.ogData = ogData
-                            chatItem.ogUrl = url
-                        }
-                        bindOGData(ogData, url)
-                    },
-                    { e: Throwable ->
-                        ThreadsLogger.e(TAG, "OpenGraph data load failed: ", e)
-                    }
-                )
+        startLoaderAnimation()
+        mImage.loadImage(
+            imagePath,
+            scales = listOf(ImageView.ScaleType.FIT_CENTER, ImageView.ScaleType.CENTER_CROP),
+            errorDrawableResId = style.imagePlaceholder,
+            autoRotateWithExif = true,
+            isExternalImage = isExternalImage,
+            callback = object : ImageLoader.ImageLoaderCallback {
+                override fun onImageLoaded() {
+                    stopLoaderAnimation()
+                }
+
+                override fun onImageLoadError() {
+                    stopLoaderAnimation()
+                }
+            }
         )
     }
 
-    private fun bindOGData(ogData: OGData, url: String) {
-        if (ogData.areTextsEmpty()) {
-            hideOGView()
-            return
-        }
-        showOGView()
-        if (!TextUtils.isEmpty(ogData.title)) {
-            ogTitle.visibility = View.VISIBLE
-            ogTitle.text = ogData.title
-            ogTitle.setTypeface(ogTitle.typeface, Typeface.BOLD)
-        } else {
-            ogTitle.visibility = View.GONE
-        }
-        if (!TextUtils.isEmpty(ogData.description)) {
-            ogDescription.visibility = View.VISIBLE
-            ogDescription.text = ogData.description
-        } else {
-            ogDescription.visibility = View.GONE
-        }
-        ogUrl.text = if (!TextUtils.isEmpty(ogData.url)) ogData.url else url
-        if (TextUtils.isEmpty(ogData.imageUrl)) {
-            ogImage.visibility = View.GONE
-        } else {
-            Picasso.get()
-                .load(ogData.imageUrl)
-                .fetch(object : Callback {
-                    override fun onSuccess() {
-                        ogImage.visibility = View.VISIBLE
-                        Picasso.get()
-                            .load(ogData.imageUrl)
-                            .error(style.imagePlaceholder)
-                            .fit()
-                            .centerInside()
-                            .into(ogImage)
-                    }
-
-                    override fun onError(e: Exception) {
-                        ogImage.visibility = View.GONE
-                        ThreadsLogger.d(TAG, "Could not load OpenGraph image: " + e.message)
-                    }
-                })
-        }
-    }
-
-    private fun showOGView() {
-        ogDataLayout.visibility = View.VISIBLE
-        mTimeStampTextView.visibility = View.GONE
-    }
-
-    private fun hideOGView() {
-        ogDataLayout.visibility = View.GONE
-        mTimeStampTextView.visibility = View.VISIBLE
+    private fun showDefIcon() {
+        mConsultAvatar.setImageResource(style.defaultOperatorAvatar)
     }
 
     private fun startLoaderAnimation() {
