@@ -62,7 +62,7 @@ repositories {
 }
 
 dependencies {
-
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
     debugImplementation "im.threads:threads-debug:$version"
     releaseImplementation "im.threads:threads-release:$version"
 
