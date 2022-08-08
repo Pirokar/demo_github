@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="datastore_url" translatable="false">http://datastore.mobile2.chc.dte/</string>
-    <string name="serverBaseUrl" translatable="false">http://arm.mobile2.chc.dte</string>
-    <string name="threadsGateUrl" translatable="false">http://tg.mobile2.chc.dte/socket</string>
-    <string name="threadsGateProviderUid" translatable="false">MOBILE2_oYrHwZ9QhTihb2d8U3I17dBHy1NB9vA9XVkM</string>
-    <bool name="files_and_media_menu_item_enabled">false</bool>
-</resources>
