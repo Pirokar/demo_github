@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/threads_attachments_background">
+
+    <ImageView
+        android:id="@+id/image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="vertical">
+
+        <im.threads.internal.widget.CustomFontTextView
+            android:id="@+id/from"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical|left"
+            android:paddingLeft="@dimen/margin_material"
+            android:paddingTop="@dimen/margin_quarter"
+            android:textColor="@color/threads_attachments_author_text_color"
+            android:textSize="@dimen/threads_attachments_author_text_size"
+            tools:text="from"/>
+
+        <im.threads.internal.widget.CustomFontTextView
+            android:id="@+id/date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical|left"
+            android:paddingLeft="@dimen/margin_material"
+            android:paddingBottom="@dimen/margin_quarter"
+            android:textColor="@color/threads_attachments_date_text_color"
+            android:textSize="@dimen/threads_attachments_date_text_size"
+            tools:text="date"/>
+
+    </LinearLayout>
+
+</FrameLayout>
