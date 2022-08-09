@@ -1508,7 +1508,7 @@ public final class ChatFragment extends BaseFragment implements
         mQuoteLayoutHolder.setContent(requireContext().getString(R.string.threads_I), FileUtils.getFileName(uri), null);
     }
 
-    private void onPhotoResult(@NonNull Intent data, boolean selfie) {
+    private void onPhotoResult(@NonNull Intent data) {
         String imageExtra = data.getStringExtra(CameraActivity.IMAGE_EXTRA);
         if (imageExtra != null) {
             File file = new File(imageExtra);
@@ -1518,7 +1518,6 @@ public final class ChatFragment extends BaseFragment implements
                     file.length(),
                     System.currentTimeMillis()
             );
-            fileDescription.setSelfie(selfie);
             setFileDescription(
                     fileDescription
             );
@@ -2035,13 +2034,9 @@ public final class ChatFragment extends BaseFragment implements
                 }
                 break;
             case REQUEST_CODE_PHOTO:
-                if (resultCode == Activity.RESULT_OK && data != null) {
-                    onPhotoResult(data, false);
-                }
-                break;
             case REQUEST_CODE_SELFIE:
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    onPhotoResult(data, true);
+                    onPhotoResult(data);
                 }
                 break;
             case REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY:

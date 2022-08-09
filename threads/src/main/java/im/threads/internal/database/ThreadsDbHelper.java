@@ -27,7 +27,7 @@ import im.threads.internal.model.UserPhrase;
  */
 public final class ThreadsDbHelper extends SQLiteOpenHelper implements DBHelper {
 
-    private static final int VERSION = 15;
+    private static final int VERSION = 16;
 
     private QuotesTable quotesTable;
     private QuickRepliesTable quickRepliesTable;

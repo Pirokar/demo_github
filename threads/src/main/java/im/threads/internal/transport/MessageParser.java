@@ -230,7 +230,6 @@ public final class MessageParser {
             fileDescription.setDownloadPath(attachment.getResult());
             fileDescription.setOriginalPath(attachment.getOriginalUrl());
             fileDescription.setIncomingName(attachment.getName());
-            fileDescription.setSelfie(attachment.isSelfie());
             fileDescription.setMimeType(attachment.getType());
             fileDescription.setState(attachment.getState());
             if (attachment.getErrorCode() != null) {

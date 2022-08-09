@@ -33,7 +33,6 @@ public final class FileDescription implements Parcelable {
             fd.setDownloadPath(downloadPath);
             fd.setOriginalPath(originalPath);
             fd.setDownloadProgress(progress);
-            fd.setSelfie(selfie);
             return fd;
         }
 
@@ -52,7 +51,6 @@ public final class FileDescription implements Parcelable {
     private String mimeType = null;
     private int downloadProgress;
     private boolean downloadError = false;
-    private boolean selfie = false;
     private AttachmentStateEnum state = AttachmentStateEnum.ANY;
     private ErrorStateEnum errorCode = ErrorStateEnum.ANY;
     private String errorMessage = "";
@@ -147,14 +145,6 @@ public final class FileDescription implements Parcelable {
         this.downloadError = downloadError;
     }
 
-    public boolean isSelfie() {
-        return selfie;
-    }
-
-    public void setSelfie(boolean selfie) {
-        this.selfie = selfie;
-    }
-
     public AttachmentStateEnum getState() {
         return state;
     }
@@ -217,7 +207,6 @@ public final class FileDescription implements Parcelable {
         dest.writeLong(size);
         dest.writeLong(timeStamp);
         dest.writeInt(downloadProgress);
-        dest.writeInt(selfie ? 1 : 0);
     }
 
     @Override
@@ -247,7 +236,6 @@ public final class FileDescription implements Parcelable {
                 && ObjectsCompat.equals(this.size, fileDescription.size)
                 && ObjectsCompat.equals(this.incomingName, fileDescription.incomingName)
                 && ObjectsCompat.equals(this.mimeType, fileDescription.mimeType)
-                && ObjectsCompat.equals(this.downloadProgress, fileDescription.downloadProgress)
-                && ObjectsCompat.equals(this.selfie, fileDescription.selfie);
+                && ObjectsCompat.equals(this.downloadProgress, fileDescription.downloadProgress);
     }
 }

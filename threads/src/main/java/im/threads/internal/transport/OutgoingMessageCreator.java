@@ -168,12 +168,11 @@ public final class OutgoingMessageCreator {
         return formattedMessage;
     }
 
-    private static JsonArray attachmentsFromFileDescription(FileDescription fd, boolean isSelfie) {
+    private static JsonArray attachmentsFromFileDescription(FileDescription fd) {
         JsonArray attachments = new JsonArray();
         JsonObject attachment = new JsonObject();
         attachments.add(attachment);
         JsonObject optional = new JsonObject();
-        attachment.addProperty("isSelfie", isSelfie);
         attachment.add("optional", optional);
         optional.addProperty(MessageAttributes.TYPE, FileUtils.getMimeType(fd));
         Uri fileUri = fd.getFileUri();
@@ -190,7 +189,6 @@ public final class OutgoingMessageCreator {
         JsonObject attachment = new JsonObject();
         attachments.add(attachment);
         JsonObject optional = new JsonObject();
-        attachment.addProperty("isSelfie", fileDescription.isSelfie());
         attachment.add("optional", optional);
         if (fileDescription.getIncomingName() != null) {
             optional.addProperty(MessageAttributes.TYPE, FileUtils.getMimeType(Uri.parse(fileDescription.getIncomingName())));
@@ -204,7 +202,7 @@ public final class OutgoingMessageCreator {
     private static JsonArray attachmentsFromFileDescription(FileDescription fileDescription, String mfmsFilepath) {
         JsonArray attachments = null;
         if (fileDescription.getFileUri() != null) {
-            attachments = attachmentsFromFileDescription(fileDescription, fileDescription.isSelfie());
+            attachments = attachmentsFromFileDescription(fileDescription);
         } else if (fileDescription.getDownloadPath() != null) {
             attachments = attachmentsFromMfmsPath(fileDescription);
         }
