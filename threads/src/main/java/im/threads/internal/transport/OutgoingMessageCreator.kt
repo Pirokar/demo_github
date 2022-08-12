@@ -102,16 +102,6 @@ object OutgoingMessageCreator {
         return jsonObject
     }
 
-    fun createRatingReceivedMessage(sendingId: Long, clientId: String?): JsonObject {
-        val jsonObject = JsonObject().apply {
-            addProperty(MessageAttributes.CLIENT_ID, clientId)
-            addProperty(MessageAttributes.TYPE, ChatItemType.SURVEY_PASSED.name)
-            addProperty(MessageAttributes.APP_MARKER_KEY, appMarker)
-            addProperty("sendingId", sendingId)
-        }
-        return jsonObject
-    }
-
     fun createMessageClientOffline(clientId: String?): JsonObject {
         val jsonObject = JsonObject()
         jsonObject.addProperty(MessageAttributes.CLIENT_ID, clientId)
