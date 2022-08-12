@@ -130,10 +130,8 @@ object OutgoingMessageCreator {
     ): JsonObject {
         val jsonObject = JsonObject().apply {
             val location = JsonObject().apply {
-//                addProperty(MessageAttributes.COORDINATES, "$latitude, $longitude")
                 addProperty(MessageAttributes.COORDINATES, "$latitude, $longitude")
             }
-//            add(MessageAttributes.DATA, location)
             addProperty(MessageAttributes.DATA, location.toString())
             addProperty("name", clientName)
             addProperty(MessageAttributes.CLIENT_ID, clientId)
