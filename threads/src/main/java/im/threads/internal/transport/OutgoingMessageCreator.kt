@@ -230,8 +230,7 @@ object OutgoingMessageCreator {
     }
 
     private fun attachmentsFromFileDescription(
-        fileDescription: FileDescription?,
-        isSelfie: Boolean
+        fileDescription: FileDescription?
     ): JsonArray {
         val attachments = JsonArray()
         fileDescription?.let {
@@ -245,7 +244,6 @@ object OutgoingMessageCreator {
                 addProperty("lastModified", 0)
             }
             val attachment = JsonObject().apply {
-                addProperty("isSelfie", isSelfie)
                 add("optional", optional)
             }
             attachments.add(attachment)
@@ -282,8 +280,7 @@ object OutgoingMessageCreator {
         fileDescription?.let {
             val file = it
             it.fileUri?.let {
-                attachments =
-                    attachmentsFromFileDescription(file, file.isSelfie)
+                attachments = attachmentsFromFileDescription(file)
             }
             it.downloadPath?.let {
                 attachments = attachmentsFromMfmsPath(file)
