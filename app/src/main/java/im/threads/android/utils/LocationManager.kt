@@ -23,7 +23,7 @@ class LocationManager(private val context: Context) {
     private val locationUpdatePendingIntent: PendingIntent by lazy {
         val intent = Intent(context, LocationBroadcastReceiver::class.java)
         intent.action = LocationBroadcastReceiver.ACTION_PROCESS_UPDATES
-        PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE)
     }
 
     fun startLocationUpdates() {
