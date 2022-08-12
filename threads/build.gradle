@@ -152,7 +152,7 @@ dependencies {
 
     implementation "com.google.android.flexbox:flexbox:$flexboxVersion"
 
-    implementation("androidx.work:work-runtime-ktx:$work_version")
+    implementation "androidx.work:work-runtime-ktx:$work_version"
 
     implementation "net.zetetic:android-database-sqlcipher:$sqlcipher_version"
     implementation "androidx.sqlite:sqlite:$sqlite_version"

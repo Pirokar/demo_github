@@ -85,8 +85,6 @@
     <string name="threads_permission_description_access_to_camera_title">Разрешите приложению снимать фото</string>
     <string name="threads_permission_description_access_to_camera_message">Это необходимо для отправки фото</string>
 
-
-
     <plurals name="threads_unread_messages">
         <item quantity="one">%d непрочитанное сообщение</item>
         <item quantity="few">%d непрочитанных сообщения</item>

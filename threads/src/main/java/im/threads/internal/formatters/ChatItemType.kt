@@ -1,10 +1,9 @@
-package im.threads.internal.formatters;
+package im.threads.internal.formatters
 
-import androidx.annotation.NonNull;
-
-public enum ChatItemType {
+enum class ChatItemType {
     TYPING,
     ATTACHMENT_SETTINGS,
+
     // incoming
     SCHEDULE,
     SURVEY,
@@ -18,7 +17,8 @@ public enum ChatItemType {
     CLIENT_BLOCKED,
     SCENARIO,
     CHAT_PUSH,
-    //system
+
+    // system
     THREAD_ENQUEUED,
     AVERAGE_WAIT_TIME,
     PARTING_AFTER_SURVEY,
@@ -26,9 +26,7 @@ public enum ChatItemType {
     THREAD_CLOSED,
     THREAD_WILL_BE_REASSIGNED,
     THREAD_IN_PROGRESS,
-    @Deprecated
     OPERATOR_LEFT,
-    @Deprecated
     OPERATOR_LOOKUP_STARTED,
 
     // outgoing
@@ -39,15 +37,17 @@ public enum ChatItemType {
     REOPEN_THREAD,
     CLIENT_OFFLINE,
     SPEECH_MESSAGE_UPDATED,
-
+    UPDATE_LOCATION,
     UNKNOWN;
 
-    @NonNull
-    public static ChatItemType fromString(String name) {
-        try {
-            return valueOf(name);
-        } catch (IllegalArgumentException ex) {
-            return ChatItemType.UNKNOWN;
+    companion object {
+        @JvmStatic
+        fun fromString(name: String): ChatItemType {
+            return try {
+                valueOf(name)
+            } catch (ex: IllegalArgumentException) {
+                UNKNOWN
+            }
         }
     }
 }

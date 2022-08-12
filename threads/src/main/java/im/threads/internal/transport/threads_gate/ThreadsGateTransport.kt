@@ -183,6 +183,18 @@ class ThreadsGateTransport(
         sendMessage(content, sendInit = false)
     }
 
+    override fun updateLocation(latitude: Double, longitude: Double) {
+        val content = OutgoingMessageCreator.createMessageUpdateLocation(
+            latitude,
+            longitude,
+            PrefUtils.userName,
+            PrefUtils.clientID,
+            PrefUtils.clientIDEncrypted,
+            Config.instance.context
+        )
+        sendMessage(content, sendInit = false)
+    }
+
     override fun getToken(): String {
         val clientIdSignature = PrefUtils.clientIdSignature
         return (

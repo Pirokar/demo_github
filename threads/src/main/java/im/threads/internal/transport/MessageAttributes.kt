@@ -21,4 +21,5 @@ object MessageAttributes {
     const val PRIORITY = "priority"
     const val SKILL_ID = "skillId"
     const val EXPIRED_AT = "expiredAt"
+    const val COORDINATES = "coordinates"
 }
