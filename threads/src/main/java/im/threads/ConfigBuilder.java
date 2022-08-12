@@ -13,6 +13,7 @@ import java.util.List;
 
 import im.threads.config.RequestConfig;
 import im.threads.internal.Config;
+import im.threads.internal.domain.logger.LoggerConfig;
 import im.threads.view.ChatActivity;
 import okhttp3.Interceptor;
 
@@ -52,6 +53,8 @@ public final class ConfigBuilder {
     private Interceptor networkInterceptor = null;
     @Nullable
     private Boolean isNewChatCenterApi = false;
+    @Nullable
+    private LoggerConfig loggerConfig = null;
 
     private RequestConfig requestConfig = new RequestConfig();
     private List<Integer> certificateRawResIds = Collections.emptyList();
@@ -130,6 +133,11 @@ public final class ConfigBuilder {
         return this;
     }
 
+    public ConfigBuilder enableLogging(LoggerConfig config) {
+        this.loggerConfig = config;
+        return this;
+    }
+
     Config build() {
         return new Config(
                 context,
@@ -139,6 +147,7 @@ public final class ConfigBuilder {
                 threadsGateProviderUid,
                 threadsGateHCMProviderUid,
                 isNewChatCenterApi,
+                loggerConfig,
                 pendingIntentCreator,
                 unreadMessagesCountListener,
                 networkInterceptor,

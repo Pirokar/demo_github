@@ -28,6 +28,7 @@ import java.util.Set;
 
 import im.threads.ChatStyle;
 import im.threads.internal.Config;
+import im.threads.internal.domain.logger.LoggerEdna;
 import im.threads.internal.formatters.ChatItemType;
 import im.threads.internal.helpers.ChatItemListHelper;
 import im.threads.internal.holders.BaseHolder;
@@ -82,12 +83,9 @@ import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.FileUtilsKt;
 import im.threads.internal.utils.PrefUtils;
 import im.threads.internal.utils.ThreadUtils;
-import im.threads.internal.utils.ThreadsLogger;
 import im.threads.internal.views.VoiceTimeLabelFormatterKt;
 
 public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private static final String TAG = "ChatAdapter ";
-
     private static final int TYPE_CONSULT_TYPING = 1;
     private static final int TYPE_DATE = 2;
     private static final int TYPE_SEARCHING_CONSULT = 3;
@@ -311,7 +309,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         try {
             o = list.get(position);
         } catch (final IndexOutOfBoundsException e) {
-            ThreadsLogger.e(TAG, "getItemViewType", e);
+            LoggerEdna.error("getItemViewType", e);
             return 0;
         }
         if (o instanceof SystemMessage) {
@@ -409,7 +407,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 try {
                     notifyItemRemoved(ChatItemListHelper.lastIndexOf(list, item));
                 } catch (final Exception e) {
-                    ThreadsLogger.e(TAG, "setAllMessagesRead", e);
+                    LoggerEdna.error("setAllMessagesRead", e);
                 }
                 iter.remove();
             }
@@ -471,7 +469,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 try {
                     notifyItemRemoved(ChatItemListHelper.lastIndexOf(list, cm));
                 } catch (final Exception e) {
-                    ThreadsLogger.e(TAG, "removeConsultIsTyping", e);
+                    LoggerEdna.error("removeConsultIsTyping", e);
                 }
                 iter.remove();
             }
@@ -491,7 +489,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 try {
                     notifyItemRemoved(ChatItemListHelper.lastIndexOf(list, cm));
                 } catch (final Exception e) {
-                    ThreadsLogger.e(TAG, "removeResolveRequest", e);
+                    LoggerEdna.error("removeResolveRequest", e);
                 }
                 iter.remove();
                 removed = true;
@@ -515,7 +513,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     try {
                         notifyItemRemoved(ChatItemListHelper.lastIndexOf(list, cm));
                     } catch (final Exception e) {
-                        ThreadsLogger.e(TAG, "removeSurvey", e);
+                        LoggerEdna.error("removeSurvey", e);
                     }
                     iter.remove();
                     removed = true;
@@ -544,7 +542,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 try {
                     notifyItemRemoved(ChatItemListHelper.lastIndexOf(list, ch));
                 } catch (final Exception e) {
-                    ThreadsLogger.e(TAG, "removeConsultSearching", e);
+                    LoggerEdna.error("removeConsultSearching", e);
                 }
                 iter.remove();
             }
@@ -644,7 +642,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     try {
                         notifyItemRemoved(ChatItemListHelper.lastIndexOf(list, scheduleInfo));
                     } catch (final Exception e) {
-                        ThreadsLogger.e(TAG, "removeSchedule", e);
+                        LoggerEdna.error("removeSchedule", e);
                     }
                     iter.remove();
                 }
@@ -657,7 +655,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             if (cm instanceof Survey) {
                 final Survey survey = (Survey) cm;
                 if (sendingId == survey.getSendingId()) {
-                    ThreadsLogger.i(TAG, "changeStateOfMessageByProviderId: changing read state");
+                    LoggerEdna.info("changeStateOfMessageByProviderId: changing read state");
                     ((Survey) cm).setSentState(sentState);
                     notifyItemChangedOnUi(survey);
                 }
@@ -670,7 +668,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             if (cm instanceof UserPhrase) {
                 final UserPhrase up = (UserPhrase) cm;
                 if (ObjectsCompat.equals(providerId, up.getProviderId())) {
-                    ThreadsLogger.i(TAG, "changeStateOfMessageByProviderId: changing read state");
+                    LoggerEdna.info("changeStateOfMessageByProviderId: changing read state");
                     ((UserPhrase) cm).setSentState(state);
                     notifyItemChangedOnUi(cm);
                 }

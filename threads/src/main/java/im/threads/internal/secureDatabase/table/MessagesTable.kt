@@ -2,6 +2,7 @@ package im.threads.internal.secureDatabase.table
 
 import android.content.ContentValues
 import android.database.Cursor
+import im.threads.internal.domain.logger.LoggerEdna
 import im.threads.internal.formatters.SpeechStatus.Companion.fromString
 import im.threads.internal.model.ChatItem
 import im.threads.internal.model.ConsultConnectionMessage
@@ -15,7 +16,6 @@ import im.threads.internal.model.SpeechMessageUpdate
 import im.threads.internal.model.Survey
 import im.threads.internal.model.UserPhrase
 import im.threads.internal.secureDatabase.ThreadsDbHelper.Companion.DB_PASSWORD
-import im.threads.internal.utils.ThreadsLogger
 import net.sqlcipher.database.SQLiteDatabase
 import net.sqlcipher.database.SQLiteOpenHelper
 import java.util.Locale
@@ -142,7 +142,7 @@ class MessagesTable(
             }
             sqlHelper.getWritableDatabase(DB_PASSWORD).setTransactionSuccessful()
         } catch (e: Exception) {
-            ThreadsLogger.e(TAG, "putMessagesSync", e)
+            LoggerEdna.error("putMessagesSync", e)
         } finally {
             sqlHelper.getWritableDatabase(DB_PASSWORD).endTransaction()
         }
@@ -727,10 +727,6 @@ class MessagesTable(
 
     private enum class MessageType {
         UNKNOWN, CONSULT_CONNECTED, SYSTEM_MESSAGE, CONSULT_PHRASE, USER_PHRASE, SURVEY, REQUEST_RESOLVE_THREAD
-    }
-
-    companion object {
-        private val TAG = MessagesTable::class.java.canonicalName
     }
 }
 

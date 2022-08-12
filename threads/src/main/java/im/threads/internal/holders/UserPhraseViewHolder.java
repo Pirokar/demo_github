@@ -27,6 +27,7 @@ import java.util.Locale;
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
+import im.threads.internal.domain.logger.LoggerEdna;
 import im.threads.internal.domain.ogParser.OpenGraphParser;
 import im.threads.internal.domain.ogParser.OpenGraphParserJsoupImpl;
 import im.threads.internal.formatters.RussianFormatSymbols;
@@ -51,7 +52,6 @@ import im.threads.internal.widget.text_view.BubbleTimeTextView;
  * layout/item_user_text_with_file.xml
  */
 public final class UserPhraseViewHolder extends VoiceMessageBaseHolder {
-    private static final String TAG = "UserPhraseViewHolder ";
     private final BubbleMessageTextView mPhraseTextView;
     private final TableRow mRightTextRow;
     private final ImageView mImage;

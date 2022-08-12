@@ -4,7 +4,7 @@ import im.threads.internal.Config
 import im.threads.internal.domain.audio_converter.AudioConverter
 import im.threads.internal.domain.audio_converter.callback.IConvertCallback
 import im.threads.internal.domain.audio_converter.model.AudioFormat
-import im.threads.internal.utils.ThreadsLogger
+import im.threads.internal.domain.logger.LoggerEdna
 import java.io.File
 import java.lang.ref.WeakReference
 
@@ -21,14 +21,10 @@ class ChatCenterAudioConverter {
                 }
 
                 override fun onFailure(error: Exception) {
-                    ThreadsLogger.e(TAG, "error finishing voice message recording", error)
+                    LoggerEdna.error("error finishing voice message recording", error)
                 }
             })
             .convert()
-    }
-
-    companion object {
-        const val TAG = "ChatCenterAudioConverter"
     }
 }
 

@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.net.URLEncoder;
 
 import im.threads.internal.Config;
+import im.threads.internal.domain.logger.LoggerEdna;
 import im.threads.internal.imageLoading.ImageLoader;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.FileUploadResponse;
@@ -27,17 +28,15 @@ import retrofit2.Response;
  * TODO THREADS-6288: this class needs refactoring, it contains one static method that does a lot of things making it untestable
  */
 public final class FilePoster {
-
-    private static final String TAG = "FilePoster ";
     private static int PHOTO_RESIZE_MAX_SIDE = 1600;
 
     private FilePoster() {
     }
 
     public static String post(FileDescription fileDescription) throws IOException, NetworkErrorException {
-        ThreadsLogger.i(TAG, "post: " + fileDescription);
+        LoggerEdna.info("post: " + fileDescription);
         String token = PrefUtils.getClientID();
-        ThreadsLogger.i(TAG, "token = " + token);
+        LoggerEdna.info("token = " + token);
         if (!token.isEmpty()) {
             if (fileDescription.getFileUri() != null) {
                 return sendFile(fileDescription.getFileUri(), FileUtils.getMimeType(fileDescription.getFileUri()), token);
@@ -50,7 +49,7 @@ public final class FilePoster {
     }
 
     private static String sendFile(Uri uri, String mimeType, String token) throws IOException {
-        ThreadsLogger.i(TAG, "sendFile: " + uri);
+        LoggerEdna.info("sendFile: " + uri);
         MultipartBody.Part part = MultipartBody.Part
                 .createFormData("file", URLEncoder.encode(FileUtils.getFileName(uri), "utf-8"), getFileRequestBody(uri, mimeType));
         RequestBody agent = RequestBody.create(token, MediaType.parse("text/plain"));
@@ -61,7 +60,7 @@ public final class FilePoster {
                 return body.getResult();
             }
         }
-        ThreadsLogger.e(TAG, "response = " + response.toString());
+        LoggerEdna.error("response = " + response.toString());
         throw new IOException(response.toString());
     }
 
@@ -99,7 +98,7 @@ public final class FilePoster {
     }
 
     private static RequestBody getJpegRequestBody(Uri uri) throws IOException {
-        ThreadsLogger.i(TAG, "sendFile: " + uri);
+        LoggerEdna.info("sendFile: " + uri);
         File file = compressImage(uri);
         if (file == null) {
             return null;
@@ -125,7 +124,7 @@ public final class FilePoster {
             bitmap.recycle();
             return downsizedImageFile;
         } catch (IOException e) {
-            ThreadsLogger.e(TAG, "downsizeImage", e);
+            LoggerEdna.error("downsizeImage", e);
             bitmap.recycle();
             downsizedImageFile.delete();
             return null;

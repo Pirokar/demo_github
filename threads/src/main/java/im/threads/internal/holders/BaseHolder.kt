@@ -15,6 +15,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import im.threads.R
 import im.threads.internal.Config
+import im.threads.internal.domain.logger.LoggerEdna
 import im.threads.internal.domain.ogParser.OGData
 import im.threads.internal.domain.ogParser.OpenGraphParser
 import im.threads.internal.domain.ogParser.OpenGraphParserJsoupImpl
@@ -25,7 +26,6 @@ import im.threads.internal.markdown.LinksHighlighter
 import im.threads.internal.model.ConsultPhrase
 import im.threads.internal.model.ErrorStateEnum
 import im.threads.internal.utils.ColorsHelper
-import im.threads.internal.utils.ThreadsLogger
 import im.threads.internal.utils.UrlUtils
 import im.threads.internal.utils.ViewUtils
 import im.threads.internal.views.CircularProgressButton
@@ -160,9 +160,9 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
 
         val ogDataTag = "OgData_Fetching"
         coroutineScope.launch {
-            ThreadsLogger.i(ogDataTag, "Fetching OgData for url \"$normalizedUrl\"")
+            LoggerEdna.info(ogDataTag, "Fetching OgData for url \"$normalizedUrl\"")
             openGraphParser.getContents(normalizedUrl)?.let { ogData ->
-                ThreadsLogger.i(ogDataTag, "OgData for url \"$normalizedUrl\": $ogData")
+                LoggerEdna.info(ogDataTag, "OgData for url \"$normalizedUrl\": $ogData")
                 withContext(Dispatchers.Main) {
                     if (ogData.isEmpty()) {
                         hideOGView(ogDataLayout, timeStampView)

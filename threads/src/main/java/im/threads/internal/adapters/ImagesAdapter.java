@@ -14,16 +14,15 @@ import androidx.viewpager.widget.PagerAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
+import im.threads.internal.domain.logger.LoggerEdna;
 import im.threads.internal.fragments.ImageFragment;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.utils.ThreadUtils;
-import im.threads.internal.utils.ThreadsLogger;
 
 /**
  * Created by yuri on 05.08.2016.
  */
 public class ImagesAdapter extends PagerAdapter {
-    private static final String TAG = "ImagesAdapter";
     private final FragmentManager mFragmentManager;
     private List<FileDescription> fileDescriptions;
     private FragmentTransaction mCurTransaction = null;
@@ -58,7 +57,7 @@ public class ImagesAdapter extends PagerAdapter {
             mCurTransaction = mFragmentManager.beginTransaction();
         }
         Fragment fragment = getItem(position);
-        ThreadsLogger.v(TAG, "Adding item #" + position + ": f=" + fragment);
+        LoggerEdna.verbose("Adding item #" + position + ": f=" + fragment);
         if (mSavedState.size() > position) {
             Fragment.SavedState fss = mSavedState.get(position);
             if (fss != null) {
@@ -81,7 +80,7 @@ public class ImagesAdapter extends PagerAdapter {
         if (mCurTransaction == null) {
             mCurTransaction = mFragmentManager.beginTransaction();
         }
-        ThreadsLogger.v(TAG, "Removing item #" + position + ": f=" + object + " v=" + fragment.getView());
+        LoggerEdna.verbose("Removing item #" + position + ": f=" + object + " v=" + fragment.getView());
         while (mSavedState.size() <= position) {
             mSavedState.add(null);
         }
@@ -167,7 +166,7 @@ public class ImagesAdapter extends PagerAdapter {
                         f.setMenuVisibility(false);
                         mFragments.set(index, f);
                     } else {
-                        ThreadsLogger.w(TAG, "Bad fragment at key " + key);
+                        LoggerEdna.warning("Bad fragment at key " + key);
                     }
                 }
             }
