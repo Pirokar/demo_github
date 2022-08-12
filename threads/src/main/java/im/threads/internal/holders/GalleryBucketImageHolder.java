@@ -34,6 +34,7 @@ public final class GalleryBucketImageHolder extends RecyclerView.ViewHolder {
         ImageLoader
                 .get()
                 .load(imagePath.toString())
+                .disableEdnaSsl()
                 .autoRotateWithExif(true)
                 .scales(ImageView.ScaleType.FIT_CENTER, ImageView.ScaleType.CENTER_CROP)
                 .into(mImageView);
