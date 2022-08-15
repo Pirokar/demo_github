@@ -1,5 +1,8 @@
 package im.threads.internal.controllers;
 
+import static im.threads.internal.utils.FilePosterKt.postFile;
+import static im.threads.internal.utils.NetworkErrorUtilsKt.getErrorStringResByCode;
+
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -36,6 +39,8 @@ import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.domain.logger.LoggerEdna;
 import im.threads.internal.formatters.ChatItemType;
 import im.threads.internal.model.ChatItem;
+import im.threads.internal.model.ChatItemSendErrorModel;
+import im.threads.internal.model.ChatPhrase;
 import im.threads.internal.model.ConsultChatPhrase;
 import im.threads.internal.model.ConsultConnectionMessage;
 import im.threads.internal.model.ConsultInfo;
@@ -59,9 +64,9 @@ import im.threads.internal.model.UserPhrase;
 import im.threads.internal.secureDatabase.DatabaseHolder;
 import im.threads.internal.transport.HistoryLoader;
 import im.threads.internal.transport.HistoryParser;
+import im.threads.internal.transport.models.Attachment;
 import im.threads.internal.utils.ConsultWriter;
 import im.threads.internal.utils.DeviceInfoHelper;
-import im.threads.internal.utils.FilePoster;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.PrefUtils;
 import im.threads.internal.utils.Seeker;
@@ -242,7 +247,7 @@ public final class ChatController {
                 Single.just(isAllMessagesDownloaded)
                         .flatMap(isAllMessagesDownloaded -> {
                             if (!isAllMessagesDownloaded) {
-                                if(query.length() == 1) {
+                                if (query.length() == 1) {
                                     ThreadUtils.runOnUiThread(() -> {
                                         fragment.showProgressBar();
                                         Toast.makeText(appContext, appContext.getString(R.string.threads_history_loading_message), Toast.LENGTH_LONG).show();
@@ -272,7 +277,7 @@ public final class ChatController {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 () -> consumer.accept(seeker.seek(lastItems, !forward, query)),
-                                e ->  {
+                                e -> {
                                     LoggerEdna.error(e);
                                     ThreadUtils.runOnUiThread(() -> {
                                         fragment.hideProgressBar();
@@ -284,28 +289,28 @@ public final class ChatController {
 
     public Single<List<ChatItem>> downloadMessagesTillEnd() {
         return Single.fromCallable(
-                () -> {
-                    synchronized (this) {
-                        if (!isDownloadingMessages) {
-                            isDownloadingMessages = true;
-                            LoggerEdna.debug("downloadMessagesTillEnd");
-                            while (!isAllMessagesDownloaded) {
-                                final HistoryResponse response = HistoryLoader.getHistorySync(lastMessageTimestamp, PER_PAGE_COUNT);
-                                final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
-                                if (serverItems.isEmpty()) {
-                                    isAllMessagesDownloaded = true;
-                                } else {
-                                    lastMessageTimestamp = serverItems.get(0).getTimeStamp();
-                                    isAllMessagesDownloaded = serverItems.size() < PER_PAGE_COUNT; // Backend can give us more than chunk anytime, it will give less only on history end
-                                    saveMessages(serverItems);
+                        () -> {
+                            synchronized (this) {
+                                if (!isDownloadingMessages) {
+                                    isDownloadingMessages = true;
+                                    LoggerEdna.debug("downloadMessagesTillEnd");
+                                    while (!isAllMessagesDownloaded) {
+                                        final HistoryResponse response = HistoryLoader.getHistorySync(lastMessageTimestamp, PER_PAGE_COUNT);
+                                        final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
+                                        if (serverItems.isEmpty()) {
+                                            isAllMessagesDownloaded = true;
+                                        } else {
+                                            lastMessageTimestamp = serverItems.get(0).getTimeStamp();
+                                            isAllMessagesDownloaded = serverItems.size() < PER_PAGE_COUNT; // Backend can give us more than chunk anytime, it will give less only on history end
+                                            saveMessages(serverItems);
+                                        }
+                                    }
                                 }
+                                isDownloadingMessages = false;
+                                return databaseHolder.getChatItems(0, -1);
                             }
                         }
-                        isDownloadingMessages = false;
-                        return databaseHolder.getChatItems(0, -1);
-                    }
-                }
-        )
+                )
                 .doOnError(throwable -> isDownloadingMessages = false);
     }
 
@@ -473,15 +478,15 @@ public final class ChatController {
         }
         subscribe(
                 Single.fromCallable(() -> {
-                    final int historyLoadingCount = Config.instance.historyLoadingCount;
-                    final List<UserPhrase> unsendUserPhrase = databaseHolder.getUnsendUserPhrase(historyLoadingCount);
-                    if (!unsendUserPhrase.isEmpty()) {
-                        unsendMessages.clear();
-                        unsendMessages.addAll(unsendUserPhrase);
-                        scheduleResend();
-                    }
-                    return setLastAvatars(databaseHolder.getChatItems(0, historyLoadingCount));
-                })
+                            final int historyLoadingCount = Config.instance.historyLoadingCount;
+                            final List<UserPhrase> unsendUserPhrase = databaseHolder.getUnsendUserPhrase(historyLoadingCount);
+                            if (!unsendUserPhrase.isEmpty()) {
+                                unsendMessages.clear();
+                                unsendMessages.addAll(unsendUserPhrase);
+                                scheduleResend();
+                            }
+                            return setLastAvatars(databaseHolder.getChatItems(0, historyLoadingCount));
+                        })
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -592,18 +597,18 @@ public final class ChatController {
             isDownloadingMessages = true;
             subscribe(
                     Single.fromCallable(() -> {
-                        final int count = Config.instance.historyLoadingCount;
-                        final HistoryResponse response = HistoryLoader.getHistorySync(count, true);
-                        final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
-                        saveMessages(serverItems);
-                        if (fragment != null && isActive) {
-                            final List<String> uuidList = databaseHolder.getUnreadMessagesUuid();
-                            if (!uuidList.isEmpty()) {
-                                Config.instance.transport.markMessagesAsRead(uuidList);
-                            }
-                        }
-                        return new Pair<>(response == null ? null : response.getConsultInfo(), serverItems.size());
-                    })
+                                final int count = Config.instance.historyLoadingCount;
+                                final HistoryResponse response = HistoryLoader.getHistorySync(count, true);
+                                final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
+                                saveMessages(serverItems);
+                                if (fragment != null && isActive) {
+                                    final List<String> uuidList = databaseHolder.getUnreadMessagesUuid();
+                                    if (!uuidList.isEmpty()) {
+                                        Config.instance.transport.markMessagesAsRead(uuidList);
+                                    }
+                                }
+                                return new Pair<>(response == null ? null : response.getConsultInfo(), serverItems.size());
+                            })
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
@@ -671,23 +676,30 @@ public final class ChatController {
         final FileDescription quoteFileDescription = userPhrase.getQuote() != null ? userPhrase.getQuote().getFileDescription() : null;
         subscribe(
                 Completable.fromAction(() -> {
-                    String filePath = null;
-                    String quoteFilePath = null;
-                    if (fileDescription != null) {
-                        filePath = FilePoster.post(fileDescription);
-                    }
-                    if (quoteFileDescription != null) {
-                        quoteFilePath = FilePoster.post(quoteFileDescription);
-                    }
-                    Config.instance.transport.sendMessage(userPhrase, consultInfo, filePath, quoteFilePath);
-                })
+                            String filePath = null;
+                            String quoteFilePath = null;
+                            if (fileDescription != null) {
+                                filePath = postFile(fileDescription);
+                            }
+                            if (quoteFileDescription != null) {
+                                quoteFilePath = postFile(quoteFileDescription);
+                            }
+                            Config.instance.transport.sendMessage(userPhrase, consultInfo, filePath, quoteFilePath);
+                        })
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 () -> {
                                 },
                                 e -> {
-                                    chatUpdateProcessor.postChatItemSendError(userPhrase.getId());
+                                    int errorCode = getErrorStringResByCode(e.getMessage());
+                                    String message = appContext.getString(errorCode);
+                                    ChatItemSendErrorModel model = new ChatItemSendErrorModel(
+                                            null,
+                                            userPhrase.getId(),
+                                            message
+                                    );
+                                    chatUpdateProcessor.postChatItemSendError(model);
                                     LoggerEdna.error(e);
                                 }
                         )
@@ -699,6 +711,7 @@ public final class ChatController {
         subscribeToOutgoingMessageRead();
         subscribeToIncomingMessageRead();
         subscribeToNewMessage();
+        subscribeToUpdateAttachments();
         subscribeToMessageSendSuccess();
         subscribeToCampaignMessageReplySuccess();
         subscribeToMessageSendError();
@@ -789,7 +802,39 @@ public final class ChatController {
                                         fragment.addChatItem(chatItem);
                                     }
                                 },
-                                error -> LoggerEdna.error("subscribeSpeechMessageUpdated ", error)
+                                error -> LoggerEdna.error("subscribeSpeechMessageUpdated " + error)
+                        )
+        );
+    }
+
+    private void subscribeToUpdateAttachments() {
+        subscribe(
+                Flowable.fromPublisher(chatUpdateProcessor.getUpdateAttachmentsProcessor())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(attachments -> {
+                                    for (Attachment attachment : attachments) {
+                                        for (ChatItem item : databaseHolder.getChatItems(0, PER_PAGE_COUNT)) {
+                                            if (item instanceof ChatPhrase) {
+                                                ChatPhrase phrase = (ChatPhrase) item;
+                                                if (phrase.getFileDescription() != null) {
+                                                    if (phrase.getFileDescription().getSize() == attachment.getSize()) {
+                                                        boolean incomingNameEquals = phrase.getFileDescription().getIncomingName() != null
+                                                                && phrase.getFileDescription().getIncomingName().equals(attachment.getName());
+                                                        boolean isUrlHashFileName = phrase.getFileDescription().getFileUri() != null
+                                                                && phrase.getFileDescription().getFileUri().toString().contains(attachment.getName());
+                                                        if (incomingNameEquals || isUrlHashFileName) {
+                                                            phrase.getFileDescription().setState(attachment.getState());
+                                                            phrase.getFileDescription().setErrorCode(attachment.getErrorCodeState());
+                                                            phrase.getFileDescription().setDownloadPath(attachment.getResult());
+                                                            addMessage(item);
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                e -> LoggerEdna.error(e)
                         )
         );
     }
@@ -891,10 +936,11 @@ public final class ChatController {
         subscribe(
                 Flowable.fromPublisher(chatUpdateProcessor.getMessageSendErrorProcessor())
                         .observeOn(Schedulers.io())
-                        .flatMapMaybe(uuid -> {
-                            ChatItem chatItem = databaseHolder.getChatItem(uuid);
+                        .flatMapMaybe(chatItemSendErrorModel -> {
+                            String phraseUuid = chatItemSendErrorModel.getUserPhraseUuid();
+                            ChatItem chatItem = databaseHolder.getChatItem(phraseUuid);
                             if (chatItem instanceof UserPhrase) {
-                                LoggerEdna.debug("server answer on phrase sent with id " + uuid);
+                                LoggerEdna.debug("server answer on phrase sent with id " + phraseUuid);
                                 UserPhrase userPhrase = (UserPhrase) chatItem;
                                 userPhrase.setSentState(MessageState.STATE_NOT_SENT);
                                 databaseHolder.putChatItem(userPhrase);
@@ -1170,12 +1216,12 @@ public final class ChatController {
         if (fragment != null && !TextUtils.isEmpty(clientId)) {
             subscribe(
                     Single.fromCallable(() -> {
-                        Config.instance.transport.sendInit();
-                        final HistoryResponse response = HistoryLoader.getHistorySync(null, true);
-                        List<ChatItem> chatItems = HistoryParser.getChatItems(response);
-                        saveMessages(chatItems);
-                        return new Pair<>(response != null ? response.getConsultInfo() : null, setLastAvatars(chatItems));
-                    })
+                                Config.instance.transport.sendInit();
+                                final HistoryResponse response = HistoryLoader.getHistorySync(null, true);
+                                List<ChatItem> chatItems = HistoryParser.getChatItems(response);
+                                saveMessages(chatItems);
+                                return new Pair<>(response != null ? response.getConsultInfo() : null, setLastAvatars(chatItems));
+                            })
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(

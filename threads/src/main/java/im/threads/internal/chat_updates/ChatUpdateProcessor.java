@@ -2,11 +2,13 @@ package im.threads.internal.chat_updates;
 
 import androidx.annotation.NonNull;
 
+import java.util.List;
 import java.util.Map;
 
 import im.threads.internal.formatters.ChatItemType;
 import im.threads.internal.model.CampaignMessage;
 import im.threads.internal.model.ChatItem;
+import im.threads.internal.model.ChatItemSendErrorModel;
 import im.threads.internal.model.ClientNotificationDisplayType;
 import im.threads.internal.model.InputFieldEnableModel;
 import im.threads.internal.model.QuickReplyItem;
@@ -14,6 +16,7 @@ import im.threads.internal.model.SpeechMessageUpdate;
 import im.threads.internal.model.Survey;
 import im.threads.internal.transport.ChatItemProviderData;
 import im.threads.internal.transport.TransportException;
+import im.threads.internal.transport.models.Attachment;
 import im.threads.internal.transport.models.AttachmentSettings;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
@@ -27,9 +30,10 @@ public class ChatUpdateProcessor {
     private final FlowableProcessor<String> outgoingMessageReadProcessor = PublishProcessor.create();
     private final FlowableProcessor<String> incomingMessageReadProcessor = PublishProcessor.create();
     private final FlowableProcessor<ChatItem> newMessageProcessor = PublishProcessor.create();
+    private final FlowableProcessor<List<Attachment>> updateAttachmentsProcessor = PublishProcessor.create();
     private final FlowableProcessor<ChatItemProviderData> messageSendSuccessProcessor = PublishProcessor.create();
     private final FlowableProcessor<CampaignMessage> campaignMessageReplySuccessProcessor = PublishProcessor.create();
-    private final FlowableProcessor<String> messageSendErrorProcessor = PublishProcessor.create();
+    private final FlowableProcessor<ChatItemSendErrorModel> messageSendErrorProcessor = PublishProcessor.create();
     private final FlowableProcessor<ChatItemType> removeChatItemProcessor = PublishProcessor.create();
     private final FlowableProcessor<Survey> surveySendSuccessProcessor = PublishProcessor.create();
     private final FlowableProcessor<String> deviceAddressChangedProcessor = PublishProcessor.create();
@@ -78,12 +82,16 @@ public class ChatUpdateProcessor {
         newMessageProcessor.onNext(chatItem);
     }
 
+    public void updateAttachments(@NonNull List<Attachment> attachments) {
+        updateAttachmentsProcessor.onNext(attachments);
+    }
+
     public void postChatItemSendSuccess(@NonNull ChatItemProviderData chatItemProviderData) {
         messageSendSuccessProcessor.onNext(chatItemProviderData);
     }
 
-    public void postChatItemSendError(@NonNull String uuid) {
-        messageSendErrorProcessor.onNext(uuid);
+    public void postChatItemSendError(@NonNull ChatItemSendErrorModel sendErrorModel) {
+        messageSendErrorProcessor.onNext(sendErrorModel);
     }
 
     public void postRemoveChatItem(@NonNull ChatItemType chatItemType) {
@@ -150,11 +158,15 @@ public class ChatUpdateProcessor {
         return newMessageProcessor;
     }
 
+    public FlowableProcessor<List<Attachment>> getUpdateAttachmentsProcessor() {
+        return updateAttachmentsProcessor;
+    }
+
     public FlowableProcessor<ChatItemProviderData> getMessageSendSuccessProcessor() {
         return messageSendSuccessProcessor;
     }
 
-    public FlowableProcessor<String> getMessageSendErrorProcessor() {
+    public FlowableProcessor<ChatItemSendErrorModel> getMessageSendErrorProcessor() {
         return messageSendErrorProcessor;
     }
 

@@ -61,8 +61,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingEnd="2dp"
-                android:paddingStart="0dp">
+                android:paddingStart="0dp"
+                android:paddingEnd="2dp">
 
                 <im.threads.internal.widget.text_view.QuoteAuthorTextView
                     android:id="@+id/quote_to"
@@ -70,8 +70,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/margin_half"
                     android:layout_marginTop="2dp"
-                    android:paddingEnd="80dp"
                     android:paddingStart="0dp"
+                    android:paddingEnd="80dp"
                     android:textColor="@color/threads_outgoing_message_text"
                     android:textStyle="bold"
                     tools:text="Иван Петров" />
@@ -134,6 +134,18 @@
                 app:in_progress_label="@drawable/threads_ic_clear_36dp"
                 app:start_download_label="@drawable/threads_ic_vertical_align_bottom_18dp" />
 
+            <ImageView
+                android:id="@+id/loader"
+                android:layout_width="@dimen/threads_operator_photo_size"
+                android:layout_height="@dimen/threads_operator_photo_size"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="@dimen/margin_material"
+                android:layout_marginTop="@dimen/margin_material"
+                android:layout_marginEnd="@dimen/margin_three_fourth"
+                android:layout_marginBottom="@dimen/margin_material"
+                android:visibility="gone"
+                app:srcCompat="@drawable/im_loading" />
+
             <View
                 android:id="@+id/delimeter"
                 android:layout_width="1dp"
@@ -146,8 +158,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingEnd="2dp"
-                android:paddingStart="0dp">
+                android:paddingStart="0dp"
+                android:paddingEnd="2dp">
 
                 <im.threads.internal.widget.text_view.QuoteAuthorTextView
                     android:id="@+id/to"
@@ -155,8 +167,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/margin_half"
                     android:layout_marginTop="2dp"
-                    android:paddingEnd="80dp"
                     android:paddingStart="0dp"
+                    android:paddingEnd="80dp"
                     android:textColor="@color/threads_outgoing_message_text"
                     android:textStyle="bold"
                     tools:text="Иван Петров" />
@@ -196,21 +208,20 @@
                 android:layout_gravity="center_vertical"
                 android:lineSpacingMultiplier="1.25"
                 android:paddingStart="4dp"
-                android:paddingEnd="0dp"
                 android:paddingTop="5dp"
+                android:paddingEnd="0dp"
                 android:paddingBottom="@dimen/margin_half"
                 android:textColor="@color/threads_outgoing_message_text"
                 android:textSize="16sp"
                 app:last_line_extra_padding_symbols="@dimen/last_line_extra_padding_symbols"
-                tools:text="user text google.com"/>
+                tools:text="user text google.com" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/voice_message"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
-                android:background="@drawable/thread_outgoing_bubble"
-                android:paddingEnd="17dp"
-                android:paddingStart="0dp">
+                android:paddingStart="0dp"
+                android:paddingEnd="17dp">
 
                 <ImageView
                     android:id="@+id/voice_message_user_button_play_pause"
@@ -275,9 +286,9 @@
                     android:id="@+id/og_image"
                     android:layout_width="match_parent"
                     android:layout_height="125dp"
-                    android:scaleType="fitCenter"
                     android:layout_marginStart="@dimen/margin_quarter"
-                    android:minWidth="240dp" />
+                    android:minWidth="240dp"
+                    android:scaleType="fitCenter" />
 
                 <im.threads.internal.widget.text_view.BubbleMessageTextView
                     android:id="@+id/og_title"
@@ -310,9 +321,9 @@
                     android:layout_marginStart="@dimen/margin_quarter"
                     android:ellipsize="end"
                     android:maxLines="1"
+                    android:paddingStart="0dp"
                     android:paddingTop="@dimen/margin_half"
                     android:paddingEnd="74dp"
-                    android:paddingStart="0dp"
                     android:textColor="@color/threads_outgoing_message_text"
                     android:textSize="16sp"
                     android:textStyle="bold"
@@ -325,10 +336,25 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|end"
                 android:drawablePadding="@dimen/margin_quarter"
-                android:paddingEnd="@dimen/margin_half"
                 android:paddingStart="0dp"
+                android:paddingEnd="@dimen/margin_half"
                 android:textColor="@color/threads_user_message_timestamp"
                 tools:text="10:19" />
         </FrameLayout>
     </LinearLayout>
+
+    <im.threads.internal.widget.text_view.BubbleTimeTextView
+        android:id="@+id/errorText"
+        style="@style/timestamp"
+        android:layout_below="@+id/bubble"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="@dimen/margin_half"
+        android:gravity="end"
+        android:paddingStart="0dp"
+        android:paddingEnd="@dimen/consultant_margin_right"
+        android:textColor="@color/threads_error_red_df0000"
+        android:textSize="@dimen/error_text_size"
+        android:visibility="gone"
+        tools:text="Some error text"
+        tools:visibility="visible" />
 </RelativeLayout>

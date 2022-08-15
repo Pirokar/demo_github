@@ -252,7 +252,7 @@ public final class HistoryParser {
                 fileDescription.setSelfie(attachment.isSelfie());
                 fileDescription.setState(attachment.getState());
                 if (attachment.getErrorCode() != null) {
-                    fileDescription.setErrorCode(attachment.getErrorCode());
+                    fileDescription.setErrorCode(attachment.getErrorCodeState());
                     fileDescription.setErrorMessage(attachment.getErrorMessage());
                 }
             }

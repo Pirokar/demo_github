@@ -109,7 +109,7 @@
         android:paddingStart="60dp"
         android:paddingEnd="0dp"
         android:textColor="#DF0000"
-        android:textSize="11sp"
+        android:textSize="@dimen/error_text_size"
         android:visibility="visible"
         tools:text="10:19" />
 

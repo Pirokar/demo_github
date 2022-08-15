@@ -72,7 +72,7 @@ class FileDescriptionsTable : Table() {
             }
             fd.errorCode = ErrorStateEnum.ANY
             cursorGetString(c, COLUMN_FD_ERROR_CODE)?.let {
-                fd.errorCode = ErrorStateEnum.errorStateStateEnumFromString(it)
+                fd.errorCode = ErrorStateEnum.errorStateEnumFromString(it)
             }
             fd.errorMessage = cursorGetString(c, COLUMN_FD_ERROR_MESSAGE)
             fd.mimeType = cursorGetString(c, COLUMN_FD_MIME_TYPE)
@@ -162,7 +162,7 @@ class FileDescriptionsTable : Table() {
                 }
                 fd.errorCode = ErrorStateEnum.ANY
                 cursorGetString(c, COLUMN_FD_ERROR_CODE)?.let {
-                    fd.errorCode = ErrorStateEnum.errorStateStateEnumFromString(it)
+                    fd.errorCode = ErrorStateEnum.errorStateEnumFromString(it)
                 }
                 fd.errorMessage = cursorGetString(c, COLUMN_FD_ERROR_MESSAGE)
                 list.add(fd)
