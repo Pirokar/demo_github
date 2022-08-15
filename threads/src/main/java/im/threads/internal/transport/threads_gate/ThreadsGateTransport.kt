@@ -12,6 +12,7 @@ import com.google.gson.JsonObject
 import im.threads.config.SocketClientSettings
 import im.threads.internal.Config
 import im.threads.internal.chat_updates.ChatUpdateProcessor
+import im.threads.internal.domain.logger.LoggerEdna
 import im.threads.internal.formatters.ChatItemType
 import im.threads.internal.model.CampaignMessage
 import im.threads.internal.model.ChatItemSendErrorModel
@@ -42,7 +43,6 @@ import im.threads.internal.utils.AppInfoHelper
 import im.threads.internal.utils.DeviceInfoHelper
 import im.threads.internal.utils.PrefUtils
 import im.threads.internal.utils.SSLCertificateInterceptor
-import im.threads.internal.utils.ThreadsLogger
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -156,10 +156,7 @@ class ThreadsGateTransport(
         filePath: String?,
         quoteFilePath: String?
     ) {
-        ThreadsLogger.i(
-            TAG,
-            "sendMessage: userPhrase = $userPhrase, consultInfo = $consultInfo, filePath = $filePath, quoteFilePath = $quoteFilePath"
-        )
+        LoggerEdna.info("sendMessage: userPhrase = $userPhrase, consultInfo = $consultInfo, filePath = $filePath, quoteFilePath = $quoteFilePath")
         userPhrase.campaignMessage?.let {
             campaignsInProcess[userPhrase.id] = it
         }
@@ -213,10 +210,7 @@ class ThreadsGateTransport(
         tryOpeningWebSocket: Boolean = true,
         sendInit: Boolean = true
     ) {
-        ThreadsLogger.i(
-            TAG,
-            "sendMessage: content = $content, important = $important, correlationId = $correlationId"
-        )
+        LoggerEdna.info("sendMessage: content = $content, important = $important, correlationId = $correlationId")
         synchronized(messageInProcessIds) {
             messageInProcessIds.add(correlationId)
         }
@@ -237,7 +231,7 @@ class ThreadsGateTransport(
                 SendMessageRequest.Data(PrefUtils.deviceAddress, content, important)
             )
         )
-        ThreadsLogger.i(TAG, "Sending : $text")
+        LoggerEdna.info("Sending : $text")
         ws.send(text)
     }
 
@@ -273,7 +267,7 @@ class ThreadsGateTransport(
         val text = Config.instance.gson.toJson(
             RegisterDeviceRequest(UUID.randomUUID().toString(), data)
         )
-        ThreadsLogger.i(TAG, "Sending : $text")
+        LoggerEdna.info("Sending : $text")
         ws.send(text)
     }
 
@@ -343,15 +337,14 @@ class ThreadsGateTransport(
                 put(KEY_URL, response.request.url)
             }
             ChatUpdateProcessor.getInstance().postSocketResponseMap(socketResponseMap)
-            ThreadsLogger.i(TAG, "OnOpen : $response")
+            LoggerEdna.info("OnOpen : $response")
         }
 
         override fun onMessage(webSocket: WebSocket, text: String) {
-            ThreadsLogger.i(TAG, "Receiving : $text")
-            ThreadsLogger.e(TAG, "Receiving : $text")
+            LoggerEdna.info("Receiving : $text")
             postSocketResponseMap(text)
             val response = Config.instance.gson.fromJson(text, BaseResponse::class.java)
-            ThreadsLogger.e(TAG, "Receiving : daseResponse ${response.data}")
+            LoggerEdna.error("Receiving : daseResponse ${response.data}")
             val action = response.action
 
             if (response.data.has(KEY_ERROR)) {
@@ -492,18 +485,18 @@ class ThreadsGateTransport(
         }
 
         override fun onMessage(webSocket: WebSocket, bytes: ByteString) {
-            ThreadsLogger.i(TAG, "Receiving bytes : " + bytes.hex())
+            LoggerEdna.info("Receiving bytes : " + bytes.hex())
         }
 
         override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
             postSocketResponseMap(code, reason)
-            ThreadsLogger.i(TAG, "Closing : $code / $reason")
+            LoggerEdna.info("Closing : $code / $reason")
             webSocket.close(Companion.NORMAL_CLOSURE_STATUS, null)
         }
 
         override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
             postSocketResponseMap(code, reason)
-            ThreadsLogger.i(TAG, "OnClosed : $code / $reason")
+            LoggerEdna.info("OnClosed : $code / $reason")
         }
 
         private fun postSocketResponseMap(code: Int, reason: String) {
@@ -519,7 +512,7 @@ class ThreadsGateTransport(
         }
 
         override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
-            ThreadsLogger.i(TAG, "Error : " + t.message)
+            LoggerEdna.info("Error : " + t.message)
             ChatUpdateProcessor.getInstance().postError(TransportException(t.message))
             synchronized(messageInProcessIds) {
                 for (messageId in messageInProcessIds) {
@@ -561,7 +554,6 @@ class ThreadsGateTransport(
 
     companion object {
         const val NORMAL_CLOSURE_STATUS = 1000
-        private const val TAG = "ThreadsGateTransport"
         private const val CORRELATION_ID_DIVIDER = ":"
 
         private const val KEY_TEXT = "text"
