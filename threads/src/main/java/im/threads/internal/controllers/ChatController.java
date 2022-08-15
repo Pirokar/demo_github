@@ -815,8 +815,8 @@ public final class ChatController {
                         .subscribe(attachments -> {
                                     for (Attachment attachment : attachments) {
                                         for (ChatItem item : databaseHolder.getChatItems(0, PER_PAGE_COUNT)) {
-                                            if (item instanceof UserPhrase) {
-                                                ChatPhrase phrase = (UserPhrase) item;
+                                            if (item instanceof ChatPhrase) {
+                                                ChatPhrase phrase = (ChatPhrase) item;
                                                 if (phrase.getFileDescription() != null) {
                                                     if (phrase.getFileDescription().getSize() == attachment.getSize()) {
                                                         boolean incomingNameEquals = phrase.getFileDescription().getIncomingName() != null
@@ -826,9 +826,9 @@ public final class ChatController {
                                                         if (incomingNameEquals || isUrlHashFileName) {
                                                             phrase.getFileDescription().setState(attachment.getState());
                                                             phrase.getFileDescription().setErrorCode(attachment.getErrorCodeState());
+                                                            phrase.getFileDescription().setDownloadPath(attachment.getResult());
                                                             addMessage(item);
                                                         }
-
                                                     }
                                                 }
                                             }

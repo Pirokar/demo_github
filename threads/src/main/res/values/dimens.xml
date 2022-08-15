@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="margin_large">24dp</dimen>
     <dimen name="margin_big">20dp</dimen>
     <dimen name="margin_material">16dp</dimen>
     <dimen name="margin_three_fourth">12dp</dimen>
@@ -20,6 +21,9 @@
     <dimen name="threads_radius_big">16dp</dimen>
 
     <dimen name="threads_stroke_width_small">1dp</dimen>
+
+    <dimen name="consultant_height_error_item_layout">100dp</dimen>
+    <dimen name="consultant_height_error_bubble_item_layout">80dp</dimen>
 
     <dimen name="consultant_margin_left">16dp</dimen>
     <dimen name="consultant_margin_right">52dp</dimen>
