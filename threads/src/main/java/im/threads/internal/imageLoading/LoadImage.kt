@@ -22,7 +22,7 @@ internal fun ImageView.loadImage(
         }
         builder?.let { builder ->
             if (isExternalImage) {
-                builder.setImageAsExternal()
+                builder.disableEdnaSsl()
             }
 
             builder.scales(scales)

@@ -38,6 +38,7 @@ public final class BottomGalleryImageHolder extends BaseHolder {
         ImageLoader
                 .get()
                 .load(item.getImagePath().toString())
+                .disableEdnaSsl()
                 .scales(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP)
                 .into(image);
     }

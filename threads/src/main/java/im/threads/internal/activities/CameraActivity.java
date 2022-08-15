@@ -263,6 +263,7 @@ public final class CameraActivity extends BaseActivity {
         ImageLoader.get()
                 .load(new File(imagePath))
                 .scales(ImageView.ScaleType.FIT_XY)
+                .disableEdnaSsl()
                 .into(image);
         findViewById(R.id.bottom_buttons_image).setVisibility(View.VISIBLE);
         Button retakeButton = findViewById(R.id.retake);
