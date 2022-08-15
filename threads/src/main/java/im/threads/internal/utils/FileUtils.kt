@@ -45,16 +45,19 @@ object FileUtils {
     }
 
     @JvmStatic
-    fun getFileName(uri: Uri): String {
-        Config.instance.context.contentResolver.query(uri, null, null, null, null).use { cursor ->
-            if (cursor != null && cursor.moveToFirst()) {
-                val index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-                return if (index >= 0) {
-                    cursor.getString(index)
-                } else {
-                    ""
+    fun getFileName(uri: Uri?): String {
+        uri?.let {
+            Config.instance.context.contentResolver.query(uri, null, null, null, null)
+                .use { cursor ->
+                    if (cursor != null && cursor.moveToFirst()) {
+                        val index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                        return if (index >= 0) {
+                            cursor.getString(index)
+                        } else {
+                            ""
+                        }
+                    }
                 }
-            }
         }
         return "threads" + UUID.randomUUID()
     }

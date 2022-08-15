@@ -136,7 +136,15 @@
     <string name="threads_voice_message_error">Voice message processing error</string>
     <string name="threads_empty_state_hint">Client initialization</string>
     <string name="threads_achieve_images_count_limit_message">You\'ve reached the limit of images to send</string>
-    <string name="threads_some_error_during_load_file">An error occurred while loading\nor validating the file</string>
+
+    <string name="threads_disallowed_error_during_load_file">File upload failed:\nFile verification failed </string>
+    <string name="threads_timeout_error_during_load_file">The file upload cannot be completed due to a timeout.\nPlease try uploading the file later</string>
+    <string name="threads_unexpected_error_during_load_file"> The file upload cannot be completed.\nPlease try uploading the file later</string>
+    <string name="threads_some_error_during_load_file">An error occurred while loading\nor validating the file.</string>
+    <string name="threads_file_restricted_type_error_during_load_file">This file type is not permitted for upload</string>
+    <string name="threads_file_restricted_size_error_during_load_file">The file is bigger than the maximum attachment size</string>
+    <string name="threads_file_not_found_error_during_load_file">File not found</string>
+
     <string name="loading"></string>
 
     <string name="threads_history_loading_message">The chat history is being loaded, please wait</string>

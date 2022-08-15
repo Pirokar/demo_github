@@ -1,8 +1,8 @@
 package im.threads.internal.holders;
 
+import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,16 +29,20 @@ import im.threads.internal.utils.FileUtils;
 import im.threads.internal.views.CircularProgressButton;
 
 public final class UserFileViewHolder extends BaseHolder {
-    private CircularProgressButton mCircularProgressButton;
-    private TextView mFileHeader;
-    private TextView fileSizeTextView;
-    private TextView mTimeStampTextView;
-    private TextView errortext;
-    private View mFilterView;
-    private View mFilterSecond;
-    private SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
-    private View mBubble;
-    private ImageView loader;
+    private final CircularProgressButton mCircularProgressButton;
+    private final TextView mFileHeader;
+    private final TextView fileSizeTextView;
+    private final TextView mTimeStampTextView;
+    private final TextView errorText;
+    private final View mFilterView;
+    private final View mFilterSecond;
+    private final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
+    private final ImageView loader;
+
+    private final RotateAnimation rotateAnimation = new RotateAnimation(0, 360,
+            Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF,
+            0.5f);
+
 
     public UserFileViewHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_user_chat_file, parent, false));
@@ -48,14 +52,16 @@ public final class UserFileViewHolder extends BaseHolder {
         mTimeStampTextView = itemView.findViewById(R.id.timestamp);
         mFilterView = itemView.findViewById(R.id.filter);
         mFilterSecond = itemView.findViewById(R.id.filter_second);
-        mBubble = itemView.findViewById(R.id.bubble);
+        View mBubble = itemView.findViewById(R.id.bubble);
         loader = itemView.findViewById(R.id.loader);
-        errortext = itemView.findViewById(R.id.errortext);
+        errorText = itemView.findViewById(R.id.errorText);
         ChatStyle style = Config.instance.getChatStyle();
         setTextColorToViews(new TextView[]{mFileHeader, fileSizeTextView}, style.outgoingMessageTextColor);
         mTimeStampTextView.setTextColor(getColorInt(style.outgoingMessageTimeColor));
-        if (style.outgoingMessageTimeTextSize > 0)
-            mTimeStampTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, parent.getContext().getResources().getDimension(style.outgoingMessageTimeTextSize));
+        if (style.outgoingMessageTimeTextSize > 0) {
+            float textSize = parent.getContext().getResources().getDimension(style.outgoingMessageTimeTextSize);
+            mTimeStampTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
+        }
         mCircularProgressButton.setBackgroundColorResId(style.outgoingMessageTextColor);
         mBubble.setBackground(AppCompatResources.getDrawable(itemView.getContext(), style.outgoingMessageBubbleBackground));
         mBubble.setPadding(
@@ -90,34 +96,8 @@ public final class UserFileViewHolder extends BaseHolder {
             vg.getChildAt(i).setOnClickListener(rowClickListener);
         }
 
-        if (fileDescription.getState() == AttachmentStateEnum.ERROR) {
-            mCircularProgressButton.setVisibility(View.INVISIBLE);
-            loader.setImageResource(getErrorImageResByErrorCode(fileDescription.getErrorCode()));
-            loader.setVisibility(View.VISIBLE);
-            errortext.setVisibility(View.VISIBLE);
-            if (TextUtils.isEmpty(fileDescription.getErrorMessage())) {
-                errortext.setText(Config.instance.context.getString(R.string.threads_some_error_during_load_file));
-            } else {
-                errortext.setText(fileDescription.getErrorMessage());
-            }
-        } else if (fileDescription.getState() == AttachmentStateEnum.PENDING) {
-            mCircularProgressButton.setVisibility(View.INVISIBLE);
-            loader.setImageResource(R.drawable.im_loading);
-            loader.setVisibility(View.VISIBLE);
-            errortext.setVisibility(View.GONE);
-            RotateAnimation rotate = new RotateAnimation(0, 360,
-                    Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF,
-                    0.5f);
-            rotate.setDuration(3000);
-            rotate.setRepeatCount(Animation.INFINITE);
-            loader.setAnimation(rotate);
-        } else {
-            loader.setVisibility(View.INVISIBLE);
-            errortext.setVisibility(View.GONE);
-            mCircularProgressButton.setVisibility(View.VISIBLE);
-            mCircularProgressButton.setProgress(fileDescription.getFileUri() != null ? 100 : fileDescription.getDownloadProgress());
-            mCircularProgressButton.setOnClickListener(buttonClickListener);
-        }
+        updateFileView(fileDescription, buttonClickListener);
+
         if (isFilterVisible) {
             mFilterView.setVisibility(View.VISIBLE);
             mFilterSecond.setVisibility(View.VISIBLE);
@@ -125,27 +105,58 @@ public final class UserFileViewHolder extends BaseHolder {
             mFilterView.setVisibility(View.INVISIBLE);
             mFilterSecond.setVisibility(View.INVISIBLE);
         }
-        Drawable d;
         switch (sentState) {
             case STATE_WAS_READ:
-                d = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.threads_message_received);
-                d.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_outgoing_message_received_icon), PorterDuff.Mode.SRC_ATOP);
-                mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
+                updateDrawable(itemView.getContext(), R.drawable.threads_message_received,
+                        R.color.threads_outgoing_message_received_icon);
                 break;
             case STATE_SENT:
-                d = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.threads_message_sent);
-                d.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_outgoing_message_sent_icon), PorterDuff.Mode.SRC_ATOP);
-                mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
+                updateDrawable(itemView.getContext(), R.drawable.threads_message_sent,
+                        R.color.threads_outgoing_message_sent_icon);
                 break;
             case STATE_NOT_SENT:
-                d = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.threads_message_waiting);
-                d.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_outgoing_message_not_send_icon), PorterDuff.Mode.SRC_ATOP);
-                mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
+                updateDrawable(itemView.getContext(), R.drawable.threads_message_waiting,
+                        R.color.threads_outgoing_message_not_send_icon);
                 break;
             case STATE_SENDING:
-                d = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.empty_space_24dp);
-                mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
+                updateDrawable(itemView.getContext(), R.drawable.empty_space_24dp, -1);
                 break;
+        }
+    }
+
+    private void updateDrawable(Context context, int srcDrawableResId, int colorResId) {
+        Drawable drawable = AppCompatResources.getDrawable(context, srcDrawableResId);
+        if (drawable != null) {
+            if (colorResId >= 0) {
+                drawable.setColorFilter(ContextCompat.getColor(context, colorResId), PorterDuff.Mode.SRC_ATOP);
+            }
+            mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null);
+        }
+    }
+
+    private void updateFileView(FileDescription fileDescription, View.OnClickListener buttonClickListener) {
+        if (fileDescription.getState() == AttachmentStateEnum.ERROR) {
+            mCircularProgressButton.setVisibility(View.INVISIBLE);
+            loader.setImageResource(getErrorImageResByErrorCode(fileDescription.getErrorCode()));
+            loader.setVisibility(View.VISIBLE);
+            errorText.setVisibility(View.VISIBLE);
+            String errorString = getString(getErrorStringResByErrorCode(fileDescription.getErrorCode()));
+            errorText.setText(errorString);
+        } else if (fileDescription.getState() == AttachmentStateEnum.PENDING) {
+            mCircularProgressButton.setVisibility(View.INVISIBLE);
+            loader.setImageResource(R.drawable.im_loading);
+            loader.setVisibility(View.VISIBLE);
+            errorText.setVisibility(View.GONE);
+            rotateAnimation.setDuration(3000);
+            rotateAnimation.setRepeatCount(Animation.INFINITE);
+            loader.setAnimation(rotateAnimation);
+        } else {
+            loader.setVisibility(View.INVISIBLE);
+            errorText.setVisibility(View.GONE);
+            mCircularProgressButton.setVisibility(View.VISIBLE);
+            mCircularProgressButton.setProgress(fileDescription.getFileUri() != null ?
+                    100 : fileDescription.getDownloadProgress());
+            mCircularProgressButton.setOnClickListener(buttonClickListener);
         }
     }
 }

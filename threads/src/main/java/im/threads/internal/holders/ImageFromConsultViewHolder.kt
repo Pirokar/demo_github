@@ -8,9 +8,12 @@ import android.view.View.OnLongClickListener
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.RotateAnimation
+import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import im.threads.ChatStyle
 import im.threads.R
@@ -20,13 +23,15 @@ import im.threads.internal.imageLoading.ImageModifications
 import im.threads.internal.imageLoading.loadImage
 import im.threads.internal.model.AttachmentStateEnum
 import im.threads.internal.model.ConsultPhrase
+import im.threads.internal.model.FileDescription
+import im.threads.internal.utils.ColorsHelper
 import im.threads.internal.utils.FileUtils
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 class ImageFromConsultViewHolder(
-    parent: ViewGroup,
+    private val parent: ViewGroup,
     private val maskedTransformation: ImageModifications.MaskedModification
 ) :
     BaseHolder(
@@ -40,22 +45,51 @@ class ImageFromConsultViewHolder(
     private val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
     private val style: ChatStyle = Config.instance.chatStyle
     private val rotateAnim = RotateAnimation(
-        0f, 360f,
-        Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF,
+        0f,
+        360f,
+        Animation.RELATIVE_TO_SELF,
+        0.5f,
+        Animation.RELATIVE_TO_SELF,
         0.5f
     )
 
     private val mTimeStampTextView = (itemView.findViewById(R.id.timestamp) as TextView).apply {
         setTextColor(getColorInt(style.incomingImageTimeColor))
-        if (style.incomingMessageTimeTextSize > 0)
-            setTextSize(TypedValue.COMPLEX_UNIT_PX, itemView.context.resources.getDimension(style.incomingMessageTimeTextSize))
+        if (style.incomingMessageTimeTextSize > 0) {
+            setTextSize(
+                TypedValue.COMPLEX_UNIT_PX,
+                itemView.context.resources.getDimension(style.incomingMessageTimeTextSize)
+            )
+        }
         background.setColorFilter(
             getColorInt(style.incomingImageTimeBackgroundColor),
             PorterDuff.Mode.SRC_ATOP
         )
     }
-    private val mImage: ImageView = itemView.findViewById<ImageView>(R.id.image).also { applyParams(it) }
-    private val mLoaderImage: ImageView = itemView.findViewById<ImageView>(R.id.loaderImage).also { applyParams(it) }
+    private val mTimeStampDuplicateTextView =
+        (itemView.findViewById(R.id.timestampDuplicate) as TextView).apply {
+            setTextColor(getColorInt(style.incomingImageTimeColor))
+            if (style.incomingMessageTimeTextSize > 0) {
+                setTextSize(
+                    TypedValue.COMPLEX_UNIT_PX,
+                    itemView.context.resources.getDimension(style.incomingMessageTimeTextSize)
+                )
+            }
+            background.setColorFilter(
+                getColorInt(style.incomingImageTimeBackgroundColor),
+                PorterDuff.Mode.SRC_ATOP
+            )
+        }
+
+    private val mImage: ImageView =
+        itemView.findViewById<ImageView>(R.id.image).also { applyParams(it) }
+    private val errorText: TextView = itemView.findViewById(R.id.errorText)
+    private val loaderLayout: FrameLayout = itemView.findViewById(R.id.loaderLayout)
+    private val commonLayout: RelativeLayout = itemView.findViewById(R.id.commonLayout)
+    private val bubbleLayout: LinearLayout = itemView.findViewById(R.id.bubble)
+    private val fileName: TextView = itemView.findViewById(R.id.fileName)
+    private val loader: ImageView = itemView.findViewById(R.id.loader)
+
     private val mConsultAvatar = (itemView.findViewById(R.id.consult_avatar) as ImageView).apply {
         layoutParams.height =
             itemView.context.resources.getDimension(style.operatorAvatarSize)
@@ -64,6 +98,15 @@ class ImageFromConsultViewHolder(
             itemView.context.resources.getDimension(style.operatorAvatarSize)
                 .toInt()
     }
+    private val mConsultAvatarDuplicate =
+        (itemView.findViewById(R.id.consultAvatarDuplicate) as ImageView).apply {
+            layoutParams.height =
+                itemView.context.resources.getDimension(style.operatorAvatarSize)
+                    .toInt()
+            layoutParams.width =
+                itemView.context.resources.getDimension(style.operatorAvatarSize)
+                    .toInt()
+        }
     private val filterView = (itemView.findViewById(R.id.filter) as View).apply {
         setBackgroundColor(
             ContextCompat.getColor(
@@ -92,37 +135,44 @@ class ImageFromConsultViewHolder(
         mTimeStampTextView.setOnClickListener(buttonClickListener)
         mTimeStampTextView.setOnLongClickListener(onLongClickListener)
         mTimeStampTextView.text = sdf.format(Date(consultPhrase.timeStamp))
+        mTimeStampDuplicateTextView.setOnClickListener(buttonClickListener)
+        mTimeStampDuplicateTextView.setOnLongClickListener(onLongClickListener)
+        mTimeStampDuplicateTextView.text = sdf.format(Date(consultPhrase.timeStamp))
         filterView.setOnClickListener(buttonClickListener)
         filterView.setOnLongClickListener(onLongClickListener)
         mImage.setOnClickListener(buttonClickListener)
         mImage.setOnLongClickListener(onLongClickListener)
         mImage.setImageResource(0)
+        applyBubbleLayoutStyle()
 
         if (fileDescription != null) {
-            val fileUri = if (fileDescription.fileUri?.toString()?.isNotBlank() == true) {
-                fileDescription.fileUri.toString()
+            if (fileDescription.state == AttachmentStateEnum.PENDING) {
+                showLoaderLayout(fileDescription)
+            } else if (fileDescription.state == AttachmentStateEnum.ERROR) {
+                showErrorLayout(fileDescription)
             } else {
-                fileDescription.downloadPath
-            }
-            val isStateReady = fileDescription.state == AttachmentStateEnum.READY
-            if (isStateReady && fileUri != null && !fileDescription.isDownloadError) {
-                startLoaderAnimation()
-                mImage.loadImage(
-                    fileUri,
-                    listOf(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP),
-                    style.imagePlaceholder,
-                    autoRotateWithExif = true,
-                    modifications = listOf(maskedTransformation),
-                    callback = object : ImageLoader.ImageLoaderCallback {
-                        override fun onImageLoaded() {
-                            stopLoaderAnimation()
+                showCommonLayout()
+                val fileUri = if (fileDescription.fileUri?.toString()?.isNotBlank() == true) {
+                    fileDescription.fileUri.toString()
+                } else {
+                    fileDescription.downloadPath
+                }
+                val isStateReady = fileDescription.state == AttachmentStateEnum.READY
+                if (isStateReady && fileUri != null && !fileDescription.isDownloadError) {
+                    mImage.loadImage(
+                        fileUri,
+                        listOf(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP),
+                        style.imagePlaceholder,
+                        autoRotateWithExif = true,
+                        modifications = listOf(maskedTransformation),
+                        callback = object : ImageLoader.ImageLoaderCallback {
+                            override fun onImageLoaded() {
+                            }
                         }
-                    }
-                )
-            } else if (!isStateReady) {
-                startLoaderAnimation()
-            } else if (fileDescription.isDownloadError) {
-                mImage.setImageResource(style.imagePlaceholder)
+                    )
+                } else if (fileDescription.isDownloadError) {
+                    mImage.setImageResource(style.imagePlaceholder)
+                }
             }
         }
         filterView.visibility = if (highlighted) View.VISIBLE else View.INVISIBLE
@@ -130,10 +180,18 @@ class ImageFromConsultViewHolder(
         val avatarPath = consultPhrase.avatarPath
         if (consultPhrase.isAvatarVisible) {
             mConsultAvatar.visibility = View.VISIBLE
+            mConsultAvatarDuplicate.visibility = View.VISIBLE
             mConsultAvatar.setOnClickListener(onAvatarClickListener)
+            mConsultAvatarDuplicate.setOnClickListener(onAvatarClickListener)
             mConsultAvatar.setImageResource(style.defaultOperatorAvatar)
+            mConsultAvatarDuplicate.setImageResource(style.defaultOperatorAvatar)
             if (avatarPath != null) {
                 mConsultAvatar.loadImage(
+                    FileUtils.convertRelativeUrlToAbsolute(avatarPath),
+                    listOf(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_INSIDE),
+                    modifications = listOf(ImageModifications.CircleCropModification)
+                )
+                mConsultAvatarDuplicate.loadImage(
                     FileUtils.convertRelativeUrlToAbsolute(avatarPath),
                     listOf(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_INSIDE),
                     modifications = listOf(ImageModifications.CircleCropModification)
@@ -141,7 +199,27 @@ class ImageFromConsultViewHolder(
             }
         } else {
             mConsultAvatar.visibility = View.INVISIBLE
+            mConsultAvatarDuplicate.visibility = View.INVISIBLE
         }
+    }
+
+    private fun applyBubbleLayoutStyle() {
+        val res = itemView.context.resources
+        val style = Config.instance.chatStyle
+        bubbleLayout.background = AppCompatResources.getDrawable(
+            itemView.context,
+            style.incomingMessageBubbleBackground
+        )
+        bubbleLayout.setPadding(
+            res.getDimensionPixelSize(style.bubbleIncomingPaddingBottom),
+            res.getDimensionPixelSize(style.bubbleIncomingPaddingTop),
+            res.getDimensionPixelSize(style.bubbleIncomingPaddingRight),
+            res.getDimensionPixelSize(style.bubbleIncomingPaddingBottom)
+        )
+        bubbleLayout.background.setColorFilter(
+            getColorInt(style.incomingMessageBubbleColor),
+            PorterDuff.Mode.SRC_ATOP
+        )
     }
 
     private fun applyParams(imageView: ImageView) {
@@ -156,18 +234,38 @@ class ImageFromConsultViewHolder(
         imageView.layoutParams = lp
     }
 
-    private fun startLoaderAnimation() {
-        mLoaderImage.visibility = View.VISIBLE
-        mImage.visibility = View.INVISIBLE
+    private fun showLoaderLayout(fileDescription: FileDescription) {
+        loaderLayout.visibility = View.VISIBLE
+        commonLayout.visibility = View.GONE
+        errorText.visibility = View.GONE
+        fileName.text = fileDescription.incomingName
+        loader.setImageResource(R.drawable.im_loading_themed)
+        ColorsHelper.setTint(
+            parent.context,
+            loader,
+            Config.instance.chatStyle.chatToolbarColorResId
+        )
         rotateAnim.duration = 3000
         rotateAnim.repeatCount = Animation.INFINITE
-        mLoaderImage.animation = rotateAnim
-        rotateAnim.start()
+        loader.animation = rotateAnim
     }
 
-    private fun stopLoaderAnimation() {
-        mLoaderImage.visibility = View.INVISIBLE
-        mImage.visibility = View.VISIBLE
+    private fun showErrorLayout(fileDescription: FileDescription) {
+        errorText.visibility = View.VISIBLE
+        loaderLayout.visibility = View.VISIBLE
+        commonLayout.visibility = View.GONE
+        loader.setImageResource(getErrorImageResByErrorCode(fileDescription.errorCode))
+        fileName.text = fileDescription.incomingName
+        val errorString = getString(getErrorStringResByErrorCode(fileDescription.errorCode))
+        errorText.text = errorString
+        rotateAnim.cancel()
+        rotateAnim.reset()
+    }
+
+    private fun showCommonLayout() {
+        commonLayout.visibility = View.VISIBLE
+        errorText.visibility = View.GONE
+        loaderLayout.visibility = View.GONE
         rotateAnim.cancel()
         rotateAnim.reset()
     }

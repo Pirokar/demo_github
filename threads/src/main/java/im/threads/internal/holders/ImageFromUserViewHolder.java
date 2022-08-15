@@ -2,6 +2,8 @@ package im.threads.internal.holders;
 
 import static im.threads.internal.model.MessageState.STATE_SENDING;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
@@ -10,8 +12,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.ColorRes;
@@ -34,15 +37,28 @@ import im.threads.internal.model.MessageState;
 import im.threads.internal.model.UserPhrase;
 
 public final class ImageFromUserViewHolder extends BaseHolder {
-    private TextView mTimeStampTextView;
-    private ImageView mImage;
-    private ImageModifications.MaskedModification maskedTransformation;
-    private SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
-    private View filter;
-    private View filterSecond;
-    private ChatStyle style;
-    private ImageView loader;
-    private RelativeLayout loaderLayout;
+    private final TextView mTimeStampTextView;
+    private final TextView mTimeStampDuplicateTextView;
+    private final ImageView mImage;
+    private final ImageModifications.MaskedModification maskedTransformation;
+    private final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
+    private final View filter;
+    private final ChatStyle style;
+    private final ImageView loader;
+    private final FrameLayout loaderLayout;
+    private final FrameLayout commonLayout;
+    private final LinearLayout bubbleLayout;
+    private final TextView errorText;
+    private final TextView fileName;
+
+    private final RotateAnimation rotateAnimation = new RotateAnimation(
+            0f,
+            360f,
+            Animation.RELATIVE_TO_SELF,
+            0.5f,
+            Animation.RELATIVE_TO_SELF,
+            0.5f
+    );
 
     public ImageFromUserViewHolder(ViewGroup parent, ImageModifications.MaskedModification maskedTransformation) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_user_image_from, parent, false));
@@ -53,14 +69,48 @@ public final class ImageFromUserViewHolder extends BaseHolder {
         filter.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
         loader = itemView.findViewById(R.id.loader);
         loaderLayout = itemView.findViewById(R.id.loaderLayout);
+        bubbleLayout = itemView.findViewById(R.id.bubble);
+        commonLayout = itemView.findViewById(R.id.commonLayout);
+        errorText = itemView.findViewById(R.id.errorText);
+        fileName = itemView.findViewById(R.id.fileName);
         mTimeStampTextView = itemView.findViewById(R.id.timestamp);
-        mTimeStampTextView.setTextColor(getColorInt(style.outgoingImageTimeColor));
-        mTimeStampTextView.getBackground().setColorFilter(getColorInt(style.outgoingImageTimeBackgroundColor), PorterDuff.Mode.SRC_ATOP);
-        if (style.outgoingMessageTimeTextSize > 0)
-            mTimeStampTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, parent.getContext().getResources().getDimension(style.outgoingMessageTimeTextSize));
+        mTimeStampDuplicateTextView = itemView.findViewById(R.id.timestampDuplicate);
+        applyTimeStampStyle(parent.getContext());
+        applyBubbleLayoutStyle();
     }
 
-    public void onBind(final UserPhrase userPhrase, boolean highlighted, final Runnable clickRunnable, final Runnable longClickRunnable) {
+    private void applyTimeStampStyle(Context context) {
+        mTimeStampTextView.setTextColor(getColorInt(style.outgoingImageTimeColor));
+        mTimeStampDuplicateTextView.setTextColor(getColorInt(style.outgoingImageTimeColor));
+        int timeColorBg = getColorInt(style.outgoingImageTimeBackgroundColor);
+        mTimeStampDuplicateTextView.getBackground().setColorFilter(timeColorBg, PorterDuff.Mode.SRC_ATOP);
+        mTimeStampTextView.getBackground().setColorFilter(timeColorBg, PorterDuff.Mode.SRC_ATOP);
+        if (style.outgoingMessageTimeTextSize > 0) {
+            float textSize = context.getResources().getDimension(style.outgoingMessageTimeTextSize);
+            mTimeStampTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
+            mTimeStampDuplicateTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
+        }
+    }
+
+    private void applyBubbleLayoutStyle() {
+        Resources res = itemView.getContext().getResources();
+        ChatStyle style = Config.instance.getChatStyle();
+        bubbleLayout.setBackground(
+                AppCompatResources.getDrawable(itemView.getContext(),
+                style.outgoingMessageBubbleBackground)
+        );
+        bubbleLayout.setPadding(
+                res.getDimensionPixelSize(style.bubbleOutgoingPaddingLeft),
+                res.getDimensionPixelSize(style.bubbleOutgoingPaddingTop),
+                res.getDimensionPixelSize(style.bubbleOutgoingPaddingRight),
+                res.getDimensionPixelSize(style.bubbleOutgoingPaddingBottom)
+        );
+    }
+
+    public void onBind(final UserPhrase userPhrase,
+                       boolean highlighted,
+                       final Runnable clickRunnable,
+                       final Runnable longClickRunnable) {
         ViewGroup vg = (ViewGroup) itemView;
         for (int i = 0; i < vg.getChildCount(); i++) {
             vg.getChildAt(i).setOnClickListener(v -> clickRunnable.run());
@@ -78,7 +128,9 @@ public final class ImageFromUserViewHolder extends BaseHolder {
         filter.setVisibility(isChosen ? View.VISIBLE : View.INVISIBLE);
     }
 
-    private void bindImage(FileDescription fileDescription, MessageState messageState, Runnable longClickRunnable) {
+    private void bindImage(FileDescription fileDescription,
+                           MessageState messageState,
+                           Runnable longClickRunnable) {
         boolean isDownloadError = fileDescription.isDownloadError();
         mImage.setOnLongClickListener(view -> {
             longClickRunnable.run();
@@ -88,30 +140,24 @@ public final class ImageFromUserViewHolder extends BaseHolder {
 
         mImage.setVisibility(View.VISIBLE);
         loaderLayout.setVisibility(View.GONE);
-
         if (fileDescription.getState() == AttachmentStateEnum.PENDING || messageState == STATE_SENDING) {
-            mImage.setVisibility(View.GONE);
-            loaderLayout.setVisibility(View.VISIBLE);
-            loader.setImageResource(R.drawable.im_loading);
-            RotateAnimation rotate = new RotateAnimation(0, 360,
-                    Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF,
-                    0.5f);
-            rotate.setDuration(3000);
-            rotate.setRepeatCount(Animation.INFINITE);
-            loader.setAnimation(rotate);
-        }
-
-        if (fileDescription.getFileUri() != null && !isDownloadError) {
-            ImageLoader
-                    .get()
-                    .autoRotateWithExif(true)
-                    .load(fileDescription.getFileUri().toString())
-                    .scales(ImageView.ScaleType.FIT_END, ImageView.ScaleType.CENTER_CROP)
-                    .modifications(maskedTransformation)
-                    .errorDrawableResourceId(style.imagePlaceholder)
-                    .into(mImage);
-        } else if (isDownloadError) {
-            mImage.setImageResource(style.imagePlaceholder);
+            showLoaderLayout(fileDescription);
+        } else if (fileDescription.getState() == AttachmentStateEnum.ERROR) {
+            showErrorLayout(fileDescription);
+        } else {
+            showCommonLayout();
+            if (fileDescription.getFileUri() != null && !isDownloadError) {
+                ImageLoader
+                        .get()
+                        .autoRotateWithExif(true)
+                        .load(fileDescription.getFileUri().toString())
+                        .scales(ImageView.ScaleType.FIT_END, ImageView.ScaleType.CENTER_CROP)
+                        .modifications(maskedTransformation)
+                        .errorDrawableResourceId(style.imagePlaceholder)
+                        .into(mImage);
+            } else if (isDownloadError) {
+                mImage.setImageResource(style.imagePlaceholder);
+            }
         }
     }
 
@@ -121,21 +167,26 @@ public final class ImageFromUserViewHolder extends BaseHolder {
             return true;
         });
         mTimeStampTextView.setText(sdf.format(new Date(timestamp)));
+        mTimeStampDuplicateTextView.setText(sdf.format(new Date(timestamp)));
         Drawable rightDrawable = null;
         switch (messageState) {
             case STATE_WAS_READ:
-                rightDrawable = getColoredDrawable(R.drawable.threads_image_message_received, R.color.threads_outgoing_message_image_received_icon);
+                rightDrawable = getColoredDrawable(R.drawable.threads_image_message_received,
+                        R.color.threads_outgoing_message_image_received_icon);
                 break;
             case STATE_SENT:
-                rightDrawable = getColoredDrawable(R.drawable.threads_message_image_sent, R.color.threads_outgoing_message_image_sent_icon);
+                rightDrawable = getColoredDrawable(R.drawable.threads_message_image_sent,
+                        R.color.threads_outgoing_message_image_sent_icon);
                 break;
             case STATE_NOT_SENT:
-                rightDrawable = getColoredDrawable(R.drawable.threads_message_image_waiting, R.color.threads_outgoing_message_image_not_send_icon);
+                rightDrawable = getColoredDrawable(R.drawable.threads_message_image_waiting,
+                        R.color.threads_outgoing_message_image_not_send_icon);
                 break;
             case STATE_SENDING:
                 rightDrawable = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.empty_space_24dp);
         }
         mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, rightDrawable, null);
+        mTimeStampDuplicateTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, rightDrawable, null);
     }
 
     private Drawable getColoredDrawable(@DrawableRes int res, @ColorRes int color) {
@@ -144,5 +195,36 @@ public final class ImageFromUserViewHolder extends BaseHolder {
             drawable.setColorFilter(ContextCompat.getColor(itemView.getContext(), color), PorterDuff.Mode.SRC_ATOP);
         }
         return drawable;
+    }
+
+    private void showLoaderLayout(FileDescription fileDescription) {
+        loaderLayout.setVisibility(View.VISIBLE);
+        commonLayout.setVisibility(View.GONE);
+        errorText.setVisibility(View.GONE);
+        fileName.setText(fileDescription.getIncomingName());
+        loader.setImageResource(R.drawable.im_loading);
+        rotateAnimation.setDuration(3000);
+        rotateAnimation.setRepeatCount(Animation.INFINITE);
+        loader.setAnimation(rotateAnimation);
+    }
+
+    private void showErrorLayout(FileDescription fileDescription) {
+        errorText.setVisibility(View.VISIBLE);
+        loaderLayout.setVisibility(View.VISIBLE);
+        commonLayout.setVisibility(View.GONE);
+        loader.setImageResource(getErrorImageResByErrorCode(fileDescription.getErrorCode()));
+        fileName.setText(fileDescription.getIncomingName());
+        String errorString = getString(getErrorStringResByErrorCode(fileDescription.getErrorCode()));
+        errorText.setText(errorString);
+        rotateAnimation.cancel();
+        rotateAnimation.reset();
+    }
+
+    private void showCommonLayout() {
+        commonLayout.setVisibility(View.VISIBLE);
+        errorText.setVisibility(View.GONE);
+        loaderLayout.setVisibility(View.GONE);
+        rotateAnimation.cancel();
+        rotateAnimation.reset();
     }
 }

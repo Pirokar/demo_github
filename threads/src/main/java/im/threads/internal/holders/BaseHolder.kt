@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -131,8 +132,19 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
     protected fun getErrorImageResByErrorCode(code: ErrorStateEnum) = when (code) {
         ErrorStateEnum.DISALLOWED -> R.drawable.im_wrong_file
         ErrorStateEnum.TIMEOUT -> R.drawable.im_unexpected
-        ErrorStateEnum.Unexpected -> R.drawable.im_unexpected
+        ErrorStateEnum.UNEXPECTED -> R.drawable.im_unexpected
         ErrorStateEnum.ANY -> R.drawable.im_unexpected
+    }
+
+    /**
+     * Возвращает нужный текстовый ресурс [StringRes] в зависимости от кода ошибки
+     * @param code код ошибки
+     */
+    protected fun getErrorStringResByErrorCode(code: ErrorStateEnum) = when (code) {
+        ErrorStateEnum.DISALLOWED -> R.string.threads_disallowed_error_during_load_file
+        ErrorStateEnum.TIMEOUT -> R.string.threads_timeout_error_during_load_file
+        ErrorStateEnum.UNEXPECTED -> R.string.threads_some_error_during_load_file
+        ErrorStateEnum.ANY -> R.string.threads_some_error_during_load_file
     }
 
     /**
@@ -273,5 +285,12 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
         val drawable = AppCompatResources.getDrawable(itemView.context, iconResId)?.mutate()
         ColorsHelper.setDrawableColor(itemView.context, drawable, colorRes)
         return drawable
+    }
+
+    protected fun getString(@StringRes stringId: Int): String? {
+        itemView.context?.let {
+            return it.getString(stringId)
+        }
+        return null
     }
 }
