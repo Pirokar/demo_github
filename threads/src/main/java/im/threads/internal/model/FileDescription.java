@@ -23,7 +23,6 @@ public final class FileDescription implements Parcelable {
             long size = source.readLong();
             long timeStamp = source.readLong();
             int progress = source.readInt();
-            boolean selfie = source.readInt() == 1;
             FileDescription fd = new FileDescription(from, filePath, size, timeStamp);
             fd.setState(AttachmentStateEnum.valueOf(state));
             fd.setErrorCode(ErrorStateEnum.valueOf(errorCode));

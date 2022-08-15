@@ -152,9 +152,8 @@ public final class ChatFragment extends BaseFragment implements
 
     public static final int REQUEST_CODE_PHOTOS = 100;
     public static final int REQUEST_CODE_PHOTO = 101;
-    public static final int REQUEST_CODE_SELFIE = 102;
-    public static final int REQUEST_EXTERNAL_CAMERA_PHOTO = 103;
-    public static final int REQUEST_CODE_FILE = 104;
+    public static final int REQUEST_EXTERNAL_CAMERA_PHOTO = 102;
+    public static final int REQUEST_CODE_FILE = 103;
     public static final int REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY = 200;
     public static final int REQUEST_PERMISSION_CAMERA = 201;
     public static final int REQUEST_PERMISSION_READ_EXTERNAL = 202;
@@ -1227,7 +1226,7 @@ public final class ChatFragment extends BaseFragment implements
         ThreadsLogger.i(TAG, "isCameraGranted = " + isCameraGranted + " isWriteGranted " + isWriteGranted);
         if (isCameraGranted && isWriteGranted) {
             setBottomStateDefault();
-            startActivityForResult(CameraActivity.getStartIntent(activity, true), REQUEST_CODE_SELFIE);
+            startActivityForResult(CameraActivity.getStartIntent(activity, true), REQUEST_CODE_PHOTO);
         } else {
             ArrayList<String> permissions = new ArrayList<>();
             if (!isCameraGranted) {
@@ -2034,7 +2033,6 @@ public final class ChatFragment extends BaseFragment implements
                 }
                 break;
             case REQUEST_CODE_PHOTO:
-            case REQUEST_CODE_SELFIE:
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     onPhotoResult(data);
                 }
