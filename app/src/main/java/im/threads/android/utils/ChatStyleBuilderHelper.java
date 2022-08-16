@@ -18,7 +18,6 @@ public class ChatStyleBuilderHelper {
                 .setDefaultFontRegular(LATO_REGULAR_FONT_PATH)
                 .showChatBackButton(true)// показывать кнопку назад
                 .setUseExternalCameraApp(true)
-                .setUseExternalCameraApp(false)
                 .setScrollChatToEndIfUserTyping(false);
         switch (design) {
             case GREEN: {
