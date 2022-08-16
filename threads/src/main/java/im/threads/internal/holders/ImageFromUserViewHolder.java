@@ -111,10 +111,7 @@ public final class ImageFromUserViewHolder extends BaseHolder {
                        boolean highlighted,
                        final Runnable clickRunnable,
                        final Runnable longClickRunnable) {
-        ViewGroup vg = (ViewGroup) itemView;
-        for (int i = 0; i < vg.getChildCount(); i++) {
-            vg.getChildAt(i).setOnClickListener(v -> clickRunnable.run());
-        }
+        mImage.setOnClickListener(v -> clickRunnable.run());
         bindImage(userPhrase.getFileDescription(), userPhrase.getSentState(), longClickRunnable);
         bindIsChosen(highlighted, longClickRunnable);
         bindTimeStamp(userPhrase.getSentState(), userPhrase.getTimeStamp(), longClickRunnable);
