@@ -299,8 +299,6 @@ public final class ChatStyle implements Serializable {
     @DrawableRes
     public int attachmentFileIconResId = R.drawable.threads_ic_file_fill_42dp;
     @DrawableRes
-    public int attachmentSelfieCameraIconResId = R.drawable.threads_ic_camera_front_42dp;
-    @DrawableRes
     public int attachmentSendIconResId = R.drawable.threads_ic_send_42dp;
 
     // Media and files screen
@@ -447,8 +445,6 @@ public final class ChatStyle implements Serializable {
 
     public boolean useExternalCameraApp = true;
 
-    public boolean selfieEnabled = false;
-
     public boolean voiceMessageEnabled = false;
 
     // specify fonts
@@ -583,11 +579,6 @@ public final class ChatStyle implements Serializable {
 
     public ChatStyle setUseExternalCameraApp(final boolean useExternal) {
         this.useExternalCameraApp = useExternal;
-        return this;
-    }
-
-    public ChatStyle setSelfieEnabled(final boolean selfieEnabled) {
-        this.selfieEnabled = selfieEnabled;
         return this;
     }
 
@@ -750,11 +741,6 @@ public final class ChatStyle implements Serializable {
         return this;
     }
 
-    public ChatStyle setAttachmentSelfieCameraIconResId(@DrawableRes final int attachmentSelfieCameraIconResId) {
-        this.attachmentSelfieCameraIconResId = attachmentSelfieCameraIconResId;
-        return this;
-    }
-
     public ChatStyle setAttachmentSendIconResId(@DrawableRes final int attachmentSendIconResId) {
         this.attachmentSendIconResId = attachmentSendIconResId;
         return this;
@@ -864,7 +850,7 @@ public final class ChatStyle implements Serializable {
     public ChatStyle setChatBodyIconsColorStateTint(@ColorRes final int iconStateDisabledTint,
                                                     @ColorRes final int iconStateEnabledTint,
                                                     @ColorRes final int iconStatePressedTint) {
-        this.chatBodyIconsColorState = new int[] {
+        this.chatBodyIconsColorState = new int[]{
                 iconStateDisabledTint,
                 iconStateEnabledTint,
                 iconStatePressedTint
@@ -1301,11 +1287,6 @@ public final class ChatStyle implements Serializable {
         return this;
     }
 
-    public ChatStyle setIncomingMarkdownConfiguration(MarkdownConfig incoming) {
-        this.incomingMarkdownConfiguration = incoming;
-        return this;
-    }
-
     public MarkdownConfig getIncomingMarkdownConfiguration() {
         if (incomingMarkdownConfiguration == null) {
             incomingMarkdownConfiguration = new MarkdownConfig();
@@ -1313,8 +1294,8 @@ public final class ChatStyle implements Serializable {
         return incomingMarkdownConfiguration;
     }
 
-    public ChatStyle setOutgoingMarkdownConfiguration(MarkdownConfig outgoing) {
-        this.outgoingMarkdownConfiguration = outgoing;
+    public ChatStyle setIncomingMarkdownConfiguration(MarkdownConfig incoming) {
+        this.incomingMarkdownConfiguration = incoming;
         return this;
     }
 
@@ -1323,6 +1304,11 @@ public final class ChatStyle implements Serializable {
             outgoingMarkdownConfiguration = new MarkdownConfig();
         }
         return outgoingMarkdownConfiguration;
+    }
+
+    public ChatStyle setOutgoingMarkdownConfiguration(MarkdownConfig outgoing) {
+        this.outgoingMarkdownConfiguration = outgoing;
+        return this;
     }
 
     /**
