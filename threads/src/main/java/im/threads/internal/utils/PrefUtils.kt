@@ -4,13 +4,13 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.text.TextUtils
-import android.util.Log
 import androidx.preference.PreferenceManager
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.google.gson.JsonSyntaxException
 import im.threads.ChatStyle
 import im.threads.internal.Config
+import im.threads.internal.domain.logger.LoggerEdna
 import im.threads.internal.model.CampaignMessage
 import im.threads.internal.model.ClientNotificationDisplayType
 import im.threads.internal.model.FileDescription
@@ -26,8 +26,6 @@ import java.util.UUID
 @SuppressLint("ApplySharedPref")
 class PrefUtils private constructor() {
     companion object {
-        private const val TAG = "PrefUtils "
-
         // styles
         private const val APP_STYLE = "APP_STYLE"
         private const val STORAGE_PERMISSION_DESCRIPTION_DIALOG_STYLE =
@@ -105,10 +103,10 @@ class PrefUtils private constructor() {
                     EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
                 )
             } catch (exception: GeneralSecurityException) {
-                Log.e(TAG, exception.toString())
+                LoggerEdna.error(exception)
                 Config.instance.context.getSharedPreferences(STORE_NAME, Context.MODE_PRIVATE)
             } catch (exception: IOException) {
-                Log.e(TAG, exception.toString())
+                LoggerEdna.error(exception)
                 Config.instance.context.getSharedPreferences(STORE_NAME, Context.MODE_PRIVATE)
             }
         }
@@ -303,13 +301,16 @@ class PrefUtils private constructor() {
         ) {
             when (type) {
                 PermissionDescriptionType.STORAGE -> setIncomingStyle(
-                    STORAGE_PERMISSION_DESCRIPTION_DIALOG_STYLE, style
+                    STORAGE_PERMISSION_DESCRIPTION_DIALOG_STYLE,
+                    style
                 )
                 PermissionDescriptionType.RECORD_AUDIO -> setIncomingStyle(
-                    RECORD_AUDIO_PERMISSION_DESCRIPTION_DIALOG_STYLE, style
+                    RECORD_AUDIO_PERMISSION_DESCRIPTION_DIALOG_STYLE,
+                    style
                 )
                 PermissionDescriptionType.CAMERA -> setIncomingStyle(
-                    CAMERA_PERMISSION_DESCRIPTION_DIALOG_STYLE, style
+                    CAMERA_PERMISSION_DESCRIPTION_DIALOG_STYLE,
+                    style
                 )
             }
         }
@@ -428,7 +429,8 @@ class PrefUtils private constructor() {
             val context = Config.instance.context
             val oldSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
             val notEncryptedPreferences = context.getSharedPreferences(
-                STORE_NAME, Context.MODE_PRIVATE
+                STORE_NAME,
+                Context.MODE_PRIVATE
             )
             if (oldSharedPreferences.all.isNotEmpty()) {
                 moveCurrentOnlyPrefs(oldSharedPreferences, defaultSharedPreferences)
@@ -468,19 +470,9 @@ class PrefUtils private constructor() {
                     style = Config.instance.gson.fromJson(sharedPreferencesString, styleClass)
                 }
             } catch (ex: IllegalStateException) {
-                ThreadsLogger.w(
-                    TAG,
-                    "getIncomingStyle " + styleClass.canonicalName +
-                        " failed: ",
-                    ex
-                )
+                LoggerEdna.error("getIncomingStyle ${styleClass.canonicalName} failed: ", ex)
             } catch (ex: JsonSyntaxException) {
-                ThreadsLogger.w(
-                    TAG,
-                    "getIncomingStyle " + styleClass.canonicalName +
-                        " failed: ",
-                    ex
-                )
+                LoggerEdna.error("getIncomingStyle ${styleClass.canonicalName} failed: ", ex)
             }
             return style
         }
@@ -555,7 +547,7 @@ class PrefUtils private constructor() {
                     }
                 }
             } catch (exception: Exception) {
-                Log.e(TAG, "Error when deleting preference file", exception)
+                LoggerEdna.error("Error when deleting preference file", exception)
             }
         }
     }

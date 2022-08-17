@@ -35,6 +35,7 @@ public final class GalleryItemHolder extends RecyclerView.ViewHolder {
             ImageLoader
                     .get()
                     .load(imagePath.toString())
+                    .disableEdnaSsl()
                     .scales(ImageView.ScaleType.FIT_CENTER, ImageView.ScaleType.CENTER_CROP)
                     .into(mImageView);
             mCheckBox.setChecked(isChecked);

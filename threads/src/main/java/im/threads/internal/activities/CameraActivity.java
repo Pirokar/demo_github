@@ -31,16 +31,15 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import im.threads.R;
+import im.threads.internal.domain.logger.LoggerEdna;
 import im.threads.internal.helpers.FileHelper;
 import im.threads.internal.imageLoading.ImageLoader;
-import im.threads.internal.utils.ThreadsLogger;
 
 public final class CameraActivity extends BaseActivity {
     public static final String IMAGE_EXTRA = "IMAGE_EXTRA";
     public static final int FLASH_ON = 1;
     public static final int FLASH_OFF = 2;
     public static final int FLASH_AUTO = 3;
-    private static final String TAG = "CameraActivity ";
     private static final String SELFIE_MODE_EXTRA = "SELFIE_MODE_EXTRA";
     private Camera mCamera;
     private SurfaceView mSurfaceView;
@@ -108,7 +107,7 @@ public final class CameraActivity extends BaseActivity {
                         mCamera.startPreview();
                     }
                 } catch (IOException e) {
-                    ThreadsLogger.e(TAG, "error while setting preview display of camera", e);
+                    LoggerEdna.error("error while setting preview display of camera", e);
                     finish();
                 }
             }
@@ -164,7 +163,7 @@ public final class CameraActivity extends BaseActivity {
                     mCamera.setPreviewDisplay(mSurfaceView.getHolder());
                     mCamera.startPreview();
                 } catch (IOException e) {
-                    ThreadsLogger.e(TAG, "error while switching cameras", e);
+                    LoggerEdna.error("error while switching cameras", e);
                     finish();
                 }
             }
@@ -201,11 +200,11 @@ public final class CameraActivity extends BaseActivity {
                             try {
                                 fio.flush();
                             } catch (IOException e) {
-                                ThreadsLogger.e(TAG, "onPictureTaken", e);
+                                LoggerEdna.error("onPictureTaken", e);
                             }
                             mCurrentPhoto = output.getAbsolutePath();
                         } catch (FileNotFoundException e) {
-                            ThreadsLogger.e(TAG, "error while saving image to disk", e);
+                            LoggerEdna.error("error while saving image to disk", e);
                         }
                         final File finalOutput = output;
                         new Handler(Looper.getMainLooper()).post(() -> setStateImagePreview(finalOutput.getAbsolutePath()));
@@ -264,6 +263,7 @@ public final class CameraActivity extends BaseActivity {
         ImageLoader.get()
                 .load(new File(imagePath))
                 .scales(ImageView.ScaleType.FIT_XY)
+                .disableEdnaSsl()
                 .into(image);
         findViewById(R.id.bottom_buttons_image).setVisibility(View.VISIBLE);
         Button retakeButton = findViewById(R.id.retake);
@@ -291,13 +291,13 @@ public final class CameraActivity extends BaseActivity {
             isCameraReleased = false;
             mCamera.setParameters(setFlashState(mFlashMode, mCamera.getParameters()));
         } catch (IOException e) {
-            ThreadsLogger.e(TAG, "restoreCamera", e);
+            LoggerEdna.error("restoreCamera", e);
         } catch (RuntimeException ex) {
             String error = getResources().getString(isFrontCamera ?
                     R.string.threads_front_camera_could_not_start_error
                     : R.string.threads_back_camera_could_not_start_error);
             Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
-            ThreadsLogger.e(TAG, "restoreCamera", ex);
+            LoggerEdna.error("restoreCamera", ex);
         }
     }
 

@@ -21,6 +21,7 @@ import im.threads.ChatStyle;
 import im.threads.ThreadsLib;
 import im.threads.config.RequestConfig;
 import im.threads.config.SocketClientSettings;
+import im.threads.internal.domain.logger.LoggerConfig;
 import im.threads.internal.exceptions.MetaConfigurationException;
 import im.threads.internal.imageLoading.ImageLoaderOkHttpProvider;
 import im.threads.internal.model.SslSocketFactoryConfig;
@@ -76,6 +77,9 @@ public final class Config {
 
     public final boolean newChatCenterApi;
 
+    @Nullable
+    public final LoggerConfig loggerConfig;
+
     public final boolean attachmentEnabled;
     public final boolean filesAndMediaMenuItemEnabled;
 
@@ -91,6 +95,7 @@ public final class Config {
                   @Nullable String threadsGateProviderUid,
                   @Nullable String threadsGateHCMProviderUid,
                   @Nullable Boolean isNewChatCenterApi,
+                  @Nullable LoggerConfig loggerConfig,
                   @NonNull ThreadsLib.PendingIntentCreator pendingIntentCreator,
                   @Nullable ThreadsLib.UnreadMessagesCountListener unreadMessagesCountListener,
                   @Nullable Interceptor networkInterceptor,
@@ -105,6 +110,7 @@ public final class Config {
         this.networkInterceptor = networkInterceptor;
         this.isDebugLoggingEnabled = isDebugLoggingEnabled;
         this.newChatCenterApi = getIsNewChatCenterApi(isNewChatCenterApi);
+        this.loggerConfig = loggerConfig;
         this.attachmentEnabled = MetaDataUtils.getAttachmentEnabled(this.context);
         this.filesAndMediaMenuItemEnabled = MetaDataUtils.getFilesAndMeniaMenuItemEnabled(this.context);
         this.historyLoadingCount = historyLoadingCount;

@@ -1,26 +1,16 @@
 package im.threads.internal.imageLoading
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
-import android.net.Uri
-import android.widget.ImageView
-import androidx.exifinterface.media.ExifInterface
 import com.squareup.picasso.Callback
-import com.squareup.picasso.OkHttp3Downloader
 import com.squareup.picasso.Picasso
-import com.squareup.picasso.RequestCreator
 import com.squareup.picasso.Target
-import com.squareup.picasso.Transformation
-import im.threads.internal.Config
-import java.util.concurrent.Executors
 
 class PicassoImageLoader : ImageLoaderRealisation {
-    private var internalImagesLoader: Picasso? = null
-    private var externalImagesLoader: Picasso? = null
+    private val requestBuilder = ImageRequestBuilder()
 
     override fun load(config: ImageLoader.Config) {
-        val request = getImageRequestBuilder(config)
+        val request = requestBuilder.getImageRequestBuilder(config)
         if (config.callback != null) {
             request?.into(
                 config.imageView,
@@ -41,79 +31,12 @@ class PicassoImageLoader : ImageLoaderRealisation {
 
     override fun getBitmap(config: ImageLoader.Config) {
         if (config.callback != null) {
-            getImageRequestBuilder(config)?.into(getPicassoTarget(config))
+            requestBuilder.getImageRequestBuilder(config)?.into(getPicassoTarget(config))
         }
     }
 
     override fun getBitmapSync(config: ImageLoader.Config): Bitmap? {
-        return getImageRequestBuilder(config)?.get()
-    }
-
-    private fun getImageRequestBuilder(
-        config: ImageLoader.Config
-    ): RequestCreator? {
-        var builder: RequestCreator? = null
-        config.url?.let {
-            builder = getLoader(config.isExternalImage, config.context).load(it)
-
-            if (config.isAutoRotateWithExif) {
-                builder!!.rotate(getRightAngleImage(it))
-            }
-        }
-        config.resourceId?.let {
-            builder = getLoader(config.isExternalImage, config.context).load(it)
-        }
-        config.file?.let {
-            builder = getLoader(config.isExternalImage, config.context).load(it)
-            if (config.isAutoRotateWithExif) {
-                builder!!.rotate(getRightAngleImage(it.absolutePath))
-            }
-        }
-        config.errorDrawableResourceId?.let { builder?.error(it) }
-        config.resizePair?.let {
-            builder?.resize(it.first, it.second)
-        }
-        if (config.isOnlyScaleDown) {
-            builder?.onlyScaleDown()
-        }
-        config.modifications?.let {
-            builder?.transform(getTransformations(it.toList()))
-        }
-        config.scales?.forEach {
-            when (it) {
-                ImageView.ScaleType.FIT_XY,
-                ImageView.ScaleType.FIT_START,
-                ImageView.ScaleType.FIT_CENTER,
-                ImageView.ScaleType.FIT_END -> builder?.fit()
-                ImageView.ScaleType.CENTER,
-                ImageView.ScaleType.CENTER_INSIDE -> builder?.centerInside()
-                ImageView.ScaleType.CENTER_CROP -> builder?.centerCrop()
-                else -> {}
-            }
-        }
-
-        return if (config.url == null && config.file == null && config.resourceId == null) {
-            null
-        } else {
-            builder
-        }
-    }
-
-    private fun getTransformations(
-        transformations: List<ImageModifications>
-    ): List<Transformation> {
-        val result = ArrayList<Transformation>(transformations.size)
-        transformations.forEach {
-            when (it) {
-                is ImageModifications.CircleCropModification -> {
-                    result.add(CircleTransformation())
-                }
-                is ImageModifications.MaskedModification -> {
-                    result.add(MaskedTransformation(it.maskDrawable))
-                }
-            }
-        }
-        return result
+        return requestBuilder.getImageRequestBuilder(config)?.get()
     }
 
     private fun getPicassoTarget(config: ImageLoader.Config): Target {
@@ -129,55 +52,6 @@ class PicassoImageLoader : ImageLoaderRealisation {
             }
 
             override fun onPrepareLoad(placeHolderDrawable: Drawable?) {}
-        }
-    }
-
-    private fun getInternalImagesLoader(context: Context): Picasso {
-        if (internalImagesLoader == null) {
-            val builder = Picasso.Builder(context)
-                .executor(Executors.newCachedThreadPool())
-
-            ImageLoaderOkHttpProvider.okHttpClient?.let {
-                builder.downloader(OkHttp3Downloader(it))
-            }
-
-            internalImagesLoader = builder.build()
-        }
-        return internalImagesLoader!!
-    }
-
-    private fun getExternalImagesLoader(context: Context): Picasso {
-        if (externalImagesLoader == null) {
-            val builder = Picasso.Builder(context)
-                .executor(Executors.newCachedThreadPool())
-
-            externalImagesLoader = builder.build()
-        }
-        return externalImagesLoader!!
-    }
-
-    private fun getLoader(isExternalImage: Boolean, context: Context): Picasso {
-        return if (isExternalImage) {
-            getExternalImagesLoader(context)
-        } else {
-            getInternalImagesLoader(context)
-        }
-    }
-
-    private fun getRightAngleImage(photoPath: String): Float {
-        return try {
-            val ei = ExifInterface(Config.instance.context.contentResolver.openInputStream(Uri.parse(photoPath))!!)
-            when (ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)) {
-                ExifInterface.ORIENTATION_NORMAL -> 0f
-                ExifInterface.ORIENTATION_ROTATE_90 -> 90f
-                ExifInterface.ORIENTATION_ROTATE_180 -> 180f
-                ExifInterface.ORIENTATION_ROTATE_270 -> 270f
-                ExifInterface.ORIENTATION_UNDEFINED -> 0f
-                else -> 90f
-            }
-        } catch (e: java.lang.Exception) {
-            e.printStackTrace()
-            0f
         }
     }
 }

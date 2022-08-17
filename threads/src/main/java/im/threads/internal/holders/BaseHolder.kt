@@ -10,11 +10,13 @@ import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import im.threads.R
 import im.threads.internal.Config
+import im.threads.internal.domain.logger.LoggerEdna
 import im.threads.internal.domain.ogParser.OGData
 import im.threads.internal.domain.ogParser.OpenGraphParser
 import im.threads.internal.domain.ogParser.OpenGraphParserJsoupImpl
@@ -25,7 +27,6 @@ import im.threads.internal.markdown.LinksHighlighter
 import im.threads.internal.model.ConsultPhrase
 import im.threads.internal.model.ErrorStateEnum
 import im.threads.internal.utils.ColorsHelper
-import im.threads.internal.utils.ThreadsLogger
 import im.threads.internal.utils.UrlUtils
 import im.threads.internal.utils.ViewUtils
 import im.threads.internal.views.CircularProgressButton
@@ -131,8 +132,19 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
     protected fun getErrorImageResByErrorCode(code: ErrorStateEnum) = when (code) {
         ErrorStateEnum.DISALLOWED -> R.drawable.im_wrong_file
         ErrorStateEnum.TIMEOUT -> R.drawable.im_unexpected
-        ErrorStateEnum.Unexpected -> R.drawable.im_unexpected
+        ErrorStateEnum.UNEXPECTED -> R.drawable.im_unexpected
         ErrorStateEnum.ANY -> R.drawable.im_unexpected
+    }
+
+    /**
+     * Возвращает нужный текстовый ресурс [StringRes] в зависимости от кода ошибки
+     * @param code код ошибки
+     */
+    protected fun getErrorStringResByErrorCode(code: ErrorStateEnum) = when (code) {
+        ErrorStateEnum.DISALLOWED -> R.string.threads_disallowed_error_during_load_file
+        ErrorStateEnum.TIMEOUT -> R.string.threads_timeout_error_during_load_file
+        ErrorStateEnum.UNEXPECTED -> R.string.threads_some_error_during_load_file
+        ErrorStateEnum.ANY -> R.string.threads_some_error_during_load_file
     }
 
     /**
@@ -160,9 +172,9 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
 
         val ogDataTag = "OgData_Fetching"
         coroutineScope.launch {
-            ThreadsLogger.i(ogDataTag, "Fetching OgData for url \"$normalizedUrl\"")
+            LoggerEdna.info(ogDataTag, "Fetching OgData for url \"$normalizedUrl\"")
             openGraphParser.getContents(normalizedUrl)?.let { ogData ->
-                ThreadsLogger.i(ogDataTag, "OgData for url \"$normalizedUrl\": $ogData")
+                LoggerEdna.info(ogDataTag, "OgData for url \"$normalizedUrl\": $ogData")
                 withContext(Dispatchers.Main) {
                     if (ogData.isEmpty()) {
                         hideOGView(ogDataLayout, timeStampView)
@@ -273,5 +285,12 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
         val drawable = AppCompatResources.getDrawable(itemView.context, iconResId)?.mutate()
         ColorsHelper.setDrawableColor(itemView.context, drawable, colorRes)
         return drawable
+    }
+
+    protected fun getString(@StringRes stringId: Int): String? {
+        itemView.context?.let {
+            return it.getString(stringId)
+        }
+        return null
     }
 }

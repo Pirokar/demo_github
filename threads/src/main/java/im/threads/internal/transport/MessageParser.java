@@ -10,6 +10,7 @@ import java.util.List;
 
 import im.threads.internal.Config;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
+import im.threads.internal.domain.logger.LoggerEdna;
 import im.threads.internal.formatters.ChatItemType;
 import im.threads.internal.formatters.SpeechStatus;
 import im.threads.internal.model.ChatItem;
@@ -37,12 +38,8 @@ import im.threads.internal.transport.models.SpeechMessageUpdatedContent;
 import im.threads.internal.transport.models.SurveyContent;
 import im.threads.internal.transport.models.SystemMessageContent;
 import im.threads.internal.transport.models.TextContent;
-import im.threads.internal.utils.ThreadsLogger;
 
 public final class MessageParser {
-
-    private static final String TAG = MessageParser.class.getSimpleName();
-
     private MessageParser() {
     }
 
@@ -92,7 +89,7 @@ public final class MessageParser {
                             getFileDescription(content.getAttachments(), null, sentAt)
                     );
                 } else {
-                    ThreadsLogger.e(TAG, "SPEECH_MESSAGE_UPDATED with invalid params");
+                    LoggerEdna.error("SPEECH_MESSAGE_UPDATED with invalid params");
                 }
                 return null;
             case MESSAGE:
@@ -234,7 +231,7 @@ public final class MessageParser {
             fileDescription.setMimeType(attachment.getType());
             fileDescription.setState(attachment.getState());
             if (attachment.getErrorCode() != null) {
-                fileDescription.setErrorCode(attachment.getErrorCode());
+                fileDescription.setErrorCode(attachment.getErrorCodeState());
                 fileDescription.setErrorMessage(attachment.getErrorMessage());
             }
         }

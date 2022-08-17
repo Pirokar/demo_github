@@ -7,19 +7,17 @@ import java.util.List;
 
 import im.threads.internal.Config;
 import im.threads.internal.activities.QuickAnswerActivity;
-import im.threads.internal.secureDatabase.DatabaseHolder;
+import im.threads.internal.domain.logger.LoggerEdna;
 import im.threads.internal.model.UpcomingUserMessage;
+import im.threads.internal.secureDatabase.DatabaseHolder;
 import im.threads.internal.transport.HistoryLoader;
 import im.threads.internal.transport.HistoryParser;
-import im.threads.internal.utils.ThreadsLogger;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 
 public final class QuickAnswerController extends Fragment {
-
-    private static final String TAG = "QuickAnswerController ";
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     public static QuickAnswerController getInstance() {
@@ -46,7 +44,7 @@ public final class QuickAnswerController extends Fragment {
                                         activity.setLastUnreadMessage(consultPhrase);
                                     }
                                 },
-                                e -> ThreadsLogger.e(TAG, "onBind", e)
+                                e -> LoggerEdna.error("onBind", e)
                         )
         );
     }
@@ -61,7 +59,7 @@ public final class QuickAnswerController extends Fragment {
     }
 
     public void onUserAnswer(@NonNull UpcomingUserMessage upcomingUserMessage) {
-        ThreadsLogger.i(TAG, "onUserAnswer");
+        LoggerEdna.info("onUserAnswer");
         ChatController cc = ChatController.getInstance();
         cc.onUserInput(upcomingUserMessage);
         cc.setAllMessagesWereRead();

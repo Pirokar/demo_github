@@ -11,8 +11,8 @@ import androidx.core.util.ObjectsCompat;
 import java.util.concurrent.TimeUnit;
 
 import im.threads.internal.Config;
+import im.threads.internal.domain.logger.LoggerEdna;
 import im.threads.internal.model.FileDescription;
-import im.threads.internal.utils.ThreadsLogger;
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -20,8 +20,6 @@ import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 
 public class FileDescriptionMediaPlayer {
-
-    private static final String TAG = FileDescriptionMediaPlayer.class.getSimpleName();
     private static final long UPDATE_PERIOD = 200L;
 
     private final FlowableProcessor<Boolean> mediaPlayerUpdateProcessor = PublishProcessor.create();
@@ -58,7 +56,7 @@ public class FileDescriptionMediaPlayer {
                 .timeInterval()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(it -> mediaPlayerUpdateProcessor.onNext(true),
-                        error -> ThreadsLogger.e(TAG, "FileDescriptionMediaPlayer " + error.getMessage())
+                        error -> LoggerEdna.error("FileDescriptionMediaPlayer ", error)
                 );
     }
 
@@ -70,7 +68,7 @@ public class FileDescriptionMediaPlayer {
         fileDescription.setFileUri(fileUri);
 
         if (fileDescription.getFileUri() == null) {
-            ThreadsLogger.i(TAG, "file uri is null");
+            LoggerEdna.info("file uri is null");
             return;
         }
         if (ObjectsCompat.equals(this.fileDescription, fileDescription) && mediaPlayer != null) {

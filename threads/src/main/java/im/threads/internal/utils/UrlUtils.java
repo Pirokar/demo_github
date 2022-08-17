@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Patterns;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,10 +14,11 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import im.threads.internal.domain.logger.LoggerEdna;
+
 public final class UrlUtils {
 
     public static final Pattern DEEPLINK_URL = Pattern.compile("[a-z0-9+.-]+://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|*]*");
-    private static final String TAG = "UrlUtils";
     /**
      * Valid UCS characters defined in RFC 3987. Excludes space characters.
      */
@@ -149,7 +151,11 @@ public final class UrlUtils {
             uri = Uri.parse("https://" + url);
         }
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, uri);
-        context.startActivity(browserIntent);
+        if (browserIntent.resolveActivity(context.getPackageManager()) != null) {
+            context.startActivity(browserIntent);
+        } else {
+            Toast.makeText(context, "No application support this type of link", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private static String trimInvalidUrlCharacters(String url) {

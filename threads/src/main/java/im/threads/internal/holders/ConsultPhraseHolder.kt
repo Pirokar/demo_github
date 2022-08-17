@@ -335,8 +335,4 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
         rotateAnim.cancel()
         rotateAnim.reset()
     }
-
-    companion object {
-        private val TAG = ConsultPhraseHolder::class.java.simpleName
-    }
 }

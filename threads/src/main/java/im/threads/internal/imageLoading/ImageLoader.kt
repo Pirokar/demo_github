@@ -10,7 +10,7 @@ import java.io.File
  *  и config, который определяет параметры загрузки.
  */
 class ImageLoader private constructor() {
-    private val config = ImageLoader.Config()
+    private val config = Config()
     private val currentImageLoader: ImageLoaderRealisation = PicassoImageLoader()
 
     /**
@@ -110,10 +110,10 @@ class ImageLoader private constructor() {
 
     /**
      * Использует загрузчик изображений без внутренних хедеров и ssl. Необходимо включать данный
-     *  параметр, если вы загружаете изображение из сторонних источников
+     *  параметр, если вы загружаете изображение из сторонних источников, или из файловой системы
      */
-    fun setImageAsExternal(): ImageLoader {
-        config.isExternalImage = true
+    fun disableEdnaSsl(): ImageLoader {
+        config.isImageUnderSsl = false
         return this
     }
 
@@ -180,7 +180,7 @@ class ImageLoader private constructor() {
         var resizePair: Pair<Int, Int>? = null
         var isOnlyScaleDown = false
         var isAutoRotateWithExif = false
-        var isExternalImage = false
+        var isImageUnderSsl = true
     }
 
     interface ImageLoaderCallback {

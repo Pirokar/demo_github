@@ -12,6 +12,13 @@ class Attachment(
     val isSelfie: Boolean = false,
     val type: String? = null,
     var state: AttachmentStateEnum = AttachmentStateEnum.ERROR,
-    val errorCode: ErrorStateEnum = ErrorStateEnum.ANY,
+    var errorCode: String? = null,
     val errorMessage: String = ""
-)
+) {
+    fun getErrorCodeState(): ErrorStateEnum {
+        errorCode?.let {
+            return ErrorStateEnum.errorStateEnumFromString(it)
+        }
+        return ErrorStateEnum.ANY
+    }
+}

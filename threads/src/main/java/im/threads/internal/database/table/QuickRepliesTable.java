@@ -8,12 +8,10 @@ import android.database.sqlite.SQLiteOpenHelper;
 import java.util.ArrayList;
 import java.util.List;
 
+import im.threads.internal.domain.logger.LoggerEdna;
 import im.threads.internal.model.QuickReply;
-import im.threads.internal.utils.ThreadsLogger;
 
 public class QuickRepliesTable extends Table {
-
-    private static final String TAG = QuickRepliesTable.class.getCanonicalName();
 
     private static final String TABLE_QUICK_REPLIES = "TABLE_QUICK_REPLIES";
     private static final String COLUMN_QUICK_REPLIES_ID = "COLUMN_ID";
@@ -78,7 +76,7 @@ public class QuickRepliesTable extends Table {
             }
             sqlHelper.getWritableDatabase().setTransactionSuccessful();
         } catch (Exception e) {
-            ThreadsLogger.e(TAG, "putQuickReplies", e);
+            LoggerEdna.error("putQuickReplies", e);
         } finally {
             sqlHelper.getWritableDatabase().endTransaction();
         }

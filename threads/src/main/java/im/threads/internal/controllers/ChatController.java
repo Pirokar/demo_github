@@ -1,5 +1,8 @@
 package im.threads.internal.controllers;
 
+import static im.threads.internal.utils.FilePosterKt.postFile;
+import static im.threads.internal.utils.NetworkErrorUtilsKt.getErrorStringResByCode;
+
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -33,8 +36,11 @@ import im.threads.internal.activities.ConsultActivity;
 import im.threads.internal.activities.ImagesActivity;
 import im.threads.internal.broadcastReceivers.ProgressReceiver;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
+import im.threads.internal.domain.logger.LoggerEdna;
 import im.threads.internal.formatters.ChatItemType;
 import im.threads.internal.model.ChatItem;
+import im.threads.internal.model.ChatItemSendErrorModel;
+import im.threads.internal.model.ChatPhrase;
 import im.threads.internal.model.ConsultChatPhrase;
 import im.threads.internal.model.ConsultConnectionMessage;
 import im.threads.internal.model.ConsultInfo;
@@ -58,14 +64,13 @@ import im.threads.internal.model.UserPhrase;
 import im.threads.internal.secureDatabase.DatabaseHolder;
 import im.threads.internal.transport.HistoryLoader;
 import im.threads.internal.transport.HistoryParser;
+import im.threads.internal.transport.models.Attachment;
 import im.threads.internal.utils.ConsultWriter;
 import im.threads.internal.utils.DeviceInfoHelper;
-import im.threads.internal.utils.FilePoster;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.PrefUtils;
 import im.threads.internal.utils.Seeker;
 import im.threads.internal.utils.ThreadUtils;
-import im.threads.internal.utils.ThreadsLogger;
 import im.threads.internal.workers.FileDownloadWorker;
 import im.threads.internal.workers.NotificationWorker;
 import im.threads.view.ChatFragment;
@@ -90,7 +95,6 @@ public final class ChatController {
     public static final int CONSULT_STATE_FOUND = 1;
     public static final int CONSULT_STATE_SEARCHING = 2;
     public static final int CONSULT_STATE_DEFAULT = 3;
-    private static final String TAG = "ChatController ";
     private static final int PER_PAGE_COUNT = 100;
     private static final long UPDATE_SPEECH_STATUS_DEBOUNCE = 400L;
 
@@ -142,7 +146,7 @@ public final class ChatController {
     private CompositeDisposable compositeDisposable;
 
     private ChatController() {
-        PrefUtils.migrateNamedPreferences(TAG);
+        PrefUtils.migrateNamedPreferences(ChatController.class.getSimpleName());
         ChatStyle chatStyle = Config.instance.getChatStyle();
         inputEnabledDuringQuickReplies = chatStyle.inputEnabledDuringQuickReplies;
         appContext = Config.instance.context;
@@ -186,7 +190,7 @@ public final class ChatController {
     private static void initClientId() {
         String newClientId = PrefUtils.getNewClientID();
         String oldClientId = PrefUtils.getClientID();
-        ThreadsLogger.i(TAG, "getInstance newClientId = " + newClientId + ", oldClientId = " + oldClientId);
+        LoggerEdna.info("getInstance newClientId = " + newClientId + ", oldClientId = " + oldClientId);
         if (Objects.equals(newClientId, oldClientId)) {
             // clientId has not changed
             PrefUtils.setNewClientId("");
@@ -203,7 +207,7 @@ public final class ChatController {
                                             instance.handleQuickReplies(chatItems);
                                         }
                                     },
-                                    e -> ThreadsLogger.e(TAG, e.getMessage())
+                                    LoggerEdna::error
                             )
             );
         }
@@ -226,7 +230,7 @@ public final class ChatController {
     }
 
     public void onUserInput(@NonNull final UpcomingUserMessage upcomingUserMessage) {
-        ThreadsLogger.i(TAG, "onUserInput: " + upcomingUserMessage);
+        LoggerEdna.info("onUserInput: " + upcomingUserMessage);
         // If user has written a message while the request to resolve the thread is visible
         // we should make invisible the resolve request
         removeResolveRequest();
@@ -243,7 +247,7 @@ public final class ChatController {
                 Single.just(isAllMessagesDownloaded)
                         .flatMap(isAllMessagesDownloaded -> {
                             if (!isAllMessagesDownloaded) {
-                                if(query.length() == 1) {
+                                if (query.length() == 1) {
                                     ThreadUtils.runOnUiThread(() -> {
                                         fragment.showProgressBar();
                                         Toast.makeText(appContext, appContext.getString(R.string.threads_history_loading_message), Toast.LENGTH_LONG).show();
@@ -273,8 +277,8 @@ public final class ChatController {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 () -> consumer.accept(seeker.seek(lastItems, !forward, query)),
-                                e ->  {
-                                    ThreadsLogger.e(TAG, e.getMessage());
+                                e -> {
+                                    LoggerEdna.error(e);
                                     ThreadUtils.runOnUiThread(() -> {
                                         fragment.hideProgressBar();
                                     });
@@ -285,33 +289,33 @@ public final class ChatController {
 
     public Single<List<ChatItem>> downloadMessagesTillEnd() {
         return Single.fromCallable(
-                () -> {
-                    synchronized (this) {
-                        if (!isDownloadingMessages) {
-                            isDownloadingMessages = true;
-                            ThreadsLogger.d(TAG, "downloadMessagesTillEnd");
-                            while (!isAllMessagesDownloaded) {
-                                final HistoryResponse response = HistoryLoader.getHistorySync(lastMessageTimestamp, PER_PAGE_COUNT);
-                                final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
-                                if (serverItems.isEmpty()) {
-                                    isAllMessagesDownloaded = true;
-                                } else {
-                                    lastMessageTimestamp = serverItems.get(0).getTimeStamp();
-                                    isAllMessagesDownloaded = serverItems.size() < PER_PAGE_COUNT; // Backend can give us more than chunk anytime, it will give less only on history end
-                                    saveMessages(serverItems);
+                        () -> {
+                            synchronized (this) {
+                                if (!isDownloadingMessages) {
+                                    isDownloadingMessages = true;
+                                    LoggerEdna.debug("downloadMessagesTillEnd");
+                                    while (!isAllMessagesDownloaded) {
+                                        final HistoryResponse response = HistoryLoader.getHistorySync(lastMessageTimestamp, PER_PAGE_COUNT);
+                                        final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
+                                        if (serverItems.isEmpty()) {
+                                            isAllMessagesDownloaded = true;
+                                        } else {
+                                            lastMessageTimestamp = serverItems.get(0).getTimeStamp();
+                                            isAllMessagesDownloaded = serverItems.size() < PER_PAGE_COUNT; // Backend can give us more than chunk anytime, it will give less only on history end
+                                            saveMessages(serverItems);
+                                        }
+                                    }
                                 }
+                                isDownloadingMessages = false;
+                                return databaseHolder.getChatItems(0, -1);
                             }
                         }
-                        isDownloadingMessages = false;
-                        return databaseHolder.getChatItems(0, -1);
-                    }
-                }
-        )
+                )
                 .doOnError(throwable -> isDownloadingMessages = false);
     }
 
     public void onFileClick(final FileDescription fileDescription) {
-        ThreadsLogger.i(TAG, "onFileClick " + fileDescription);
+        LoggerEdna.info("onFileClick " + fileDescription);
         if (fragment != null && fragment.isAdded()) {
             final Activity activity = fragment.getActivity();
             if (activity != null) {
@@ -385,7 +389,7 @@ public final class ChatController {
                         .subscribe(aLong -> {
                             removePushNotification();
                             UnreadMessagesController.INSTANCE.refreshUnreadMessagesCount();
-                        }, e -> ThreadsLogger.e(TAG, e.getMessage()))
+                        }, LoggerEdna::error)
         );
     }
 
@@ -401,7 +405,7 @@ public final class ChatController {
                             saveMessages(serverItems);
                             return setLastAvatars(databaseHolder.getChatItems(currentOffset, count));
                         } catch (final Exception e) {
-                            ThreadsLogger.e(TAG, "requestItems", e);
+                            LoggerEdna.error("requestItems", e);
                             return setLastAvatars(databaseHolder.getChatItems(currentOffset, count));
                         }
                     }
@@ -421,7 +425,7 @@ public final class ChatController {
 
     public void onConsultChoose(final Activity activity, final String consultId) {
         if (consultId == null) {
-            ThreadsLogger.w(TAG, "Can't show consult info: consultId == null");
+            LoggerEdna.warning("Can't show consult info: consultId == null");
         } else {
             ConsultInfo info = databaseHolder.getConsultInfo(consultId);
             if (info != null) {
@@ -459,7 +463,7 @@ public final class ChatController {
     }
 
     public void bindFragment(@NonNull final ChatFragment f) {
-        ThreadsLogger.i(TAG, "bindFragment: " + f.toString());
+        LoggerEdna.info("bindFragment: " + f.toString());
         final Activity activity = f.getActivity();
         if (activity == null) {
             return;
@@ -474,15 +478,15 @@ public final class ChatController {
         }
         subscribe(
                 Single.fromCallable(() -> {
-                    final int historyLoadingCount = Config.instance.historyLoadingCount;
-                    final List<UserPhrase> unsendUserPhrase = databaseHolder.getUnsendUserPhrase(historyLoadingCount);
-                    if (!unsendUserPhrase.isEmpty()) {
-                        unsendMessages.clear();
-                        unsendMessages.addAll(unsendUserPhrase);
-                        scheduleResend();
-                    }
-                    return setLastAvatars(databaseHolder.getChatItems(0, historyLoadingCount));
-                })
+                            final int historyLoadingCount = Config.instance.historyLoadingCount;
+                            final List<UserPhrase> unsendUserPhrase = databaseHolder.getUnsendUserPhrase(historyLoadingCount);
+                            if (!unsendUserPhrase.isEmpty()) {
+                                unsendMessages.clear();
+                                unsendMessages.addAll(unsendUserPhrase);
+                                scheduleResend();
+                            }
+                            return setLastAvatars(databaseHolder.getChatItems(0, historyLoadingCount));
+                        })
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -493,7 +497,7 @@ public final class ChatController {
                                         loadHistory();
                                     }
                                 },
-                                e -> ThreadsLogger.e(TAG, e.getMessage())
+                                LoggerEdna::error
                         )
         );
         if (consultWriter.isConsultConnected()) {
@@ -524,7 +528,7 @@ public final class ChatController {
     public void setMessagesInCurrentThreadAsReadInDB() {
         subscribe(DatabaseHolder.getInstance().setAllConsultMessagesWereReadInThread(PrefUtils.getThreadId())
                 .subscribe(UnreadMessagesController.INSTANCE::refreshUnreadMessagesCount,
-                        error -> ThreadsLogger.e(TAG, "setAllMessagesWereRead() " + error.getMessage()))
+                        error -> LoggerEdna.error("setAllMessagesWereRead() ", error))
         );
     }
 
@@ -542,7 +546,7 @@ public final class ChatController {
                         .firstElement()
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(survey -> Config.instance.transport.sendRatingDone(survey),
-                                error -> ThreadsLogger.e(TAG, "subscribeToSurveyCompletion: " + error.getMessage())
+                                error -> LoggerEdna.error("subscribeToSurveyCompletion: ", error)
                         )
         );
     }
@@ -551,7 +555,7 @@ public final class ChatController {
         removePushNotification();
         subscribe(DatabaseHolder.getInstance().setAllConsultMessagesWereRead()
                 .subscribe(UnreadMessagesController.INSTANCE::refreshUnreadMessagesCount,
-                        error -> ThreadsLogger.e(TAG, "setAllMessagesWereRead() " + error.getMessage()))
+                        error -> LoggerEdna.error("setAllMessagesWereRead() ", error))
         );
         if (fragment != null) {
             fragment.setAllMessagesWereRead();
@@ -593,18 +597,18 @@ public final class ChatController {
             isDownloadingMessages = true;
             subscribe(
                     Single.fromCallable(() -> {
-                        final int count = Config.instance.historyLoadingCount;
-                        final HistoryResponse response = HistoryLoader.getHistorySync(count, true);
-                        final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
-                        saveMessages(serverItems);
-                        if (fragment != null && isActive) {
-                            final List<String> uuidList = databaseHolder.getUnreadMessagesUuid();
-                            if (!uuidList.isEmpty()) {
-                                Config.instance.transport.markMessagesAsRead(uuidList);
-                            }
-                        }
-                        return new Pair<>(response == null ? null : response.getConsultInfo(), serverItems.size());
-                    })
+                                final int count = Config.instance.historyLoadingCount;
+                                final HistoryResponse response = HistoryLoader.getHistorySync(count, true);
+                                final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
+                                saveMessages(serverItems);
+                                if (fragment != null && isActive) {
+                                    final List<String> uuidList = databaseHolder.getUnreadMessagesUuid();
+                                    if (!uuidList.isEmpty()) {
+                                        Config.instance.transport.markMessagesAsRead(uuidList);
+                                    }
+                                }
+                                return new Pair<>(response == null ? null : response.getConsultInfo(), serverItems.size());
+                            })
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
@@ -627,7 +631,7 @@ public final class ChatController {
                                         if (fragment != null) {
                                             fragment.hideProgressBar();
                                         }
-                                        ThreadsLogger.e(TAG, e.getMessage());
+                                        LoggerEdna.error(e);
                                     }
                             )
             );
@@ -648,7 +652,7 @@ public final class ChatController {
     }
 
     private void sendMessage(final UserPhrase userPhrase) {
-        ThreadsLogger.i(TAG, "sendMessage: " + userPhrase);
+        LoggerEdna.info("sendMessage: " + userPhrase);
         ConsultInfo consultInfo = null;
         if (null != userPhrase.getQuote() && userPhrase.getQuote().isFromConsult()) {
             final String id = userPhrase.getQuote().getQuotedPhraseConsultId();
@@ -662,34 +666,41 @@ public final class ChatController {
     }
 
     private void sendTextMessage(final UserPhrase userPhrase, final ConsultInfo consultInfo) {
-        ThreadsLogger.i(TAG, "sendTextMessage: " + userPhrase + ", " + consultInfo);
+        LoggerEdna.info("sendTextMessage: " + userPhrase + ", " + consultInfo);
         Config.instance.transport.sendMessage(userPhrase, consultInfo, null, null);
     }
 
     private void sendFileMessage(final UserPhrase userPhrase, final ConsultInfo consultInfo) {
-        ThreadsLogger.i(TAG, "sendFileMessage: " + userPhrase + ", " + consultInfo);
+        LoggerEdna.info("sendFileMessage: " + userPhrase + ", " + consultInfo);
         final FileDescription fileDescription = userPhrase.getFileDescription();
         final FileDescription quoteFileDescription = userPhrase.getQuote() != null ? userPhrase.getQuote().getFileDescription() : null;
         subscribe(
                 Completable.fromAction(() -> {
-                    String filePath = null;
-                    String quoteFilePath = null;
-                    if (fileDescription != null) {
-                        filePath = FilePoster.post(fileDescription);
-                    }
-                    if (quoteFileDescription != null) {
-                        quoteFilePath = FilePoster.post(quoteFileDescription);
-                    }
-                    Config.instance.transport.sendMessage(userPhrase, consultInfo, filePath, quoteFilePath);
-                })
+                            String filePath = null;
+                            String quoteFilePath = null;
+                            if (fileDescription != null) {
+                                filePath = postFile(fileDescription);
+                            }
+                            if (quoteFileDescription != null) {
+                                quoteFilePath = postFile(quoteFileDescription);
+                            }
+                            Config.instance.transport.sendMessage(userPhrase, consultInfo, filePath, quoteFilePath);
+                        })
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 () -> {
                                 },
                                 e -> {
-                                    chatUpdateProcessor.postChatItemSendError(userPhrase.getId());
-                                    ThreadsLogger.e(TAG, e.getMessage());
+                                    int errorCode = getErrorStringResByCode(e.getMessage());
+                                    String message = appContext.getString(errorCode);
+                                    ChatItemSendErrorModel model = new ChatItemSendErrorModel(
+                                            null,
+                                            userPhrase.getId(),
+                                            message
+                                    );
+                                    chatUpdateProcessor.postChatItemSendError(model);
+                                    LoggerEdna.error(e);
                                 }
                         )
         );
@@ -700,6 +711,7 @@ public final class ChatController {
         subscribeToOutgoingMessageRead();
         subscribeToIncomingMessageRead();
         subscribeToNewMessage();
+        subscribeToUpdateAttachments();
         subscribeToMessageSendSuccess();
         subscribeToCampaignMessageReplySuccess();
         subscribeToMessageSendError();
@@ -718,7 +730,7 @@ public final class ChatController {
                         .observeOn(Schedulers.io())
                         .delay(1000, TimeUnit.MILLISECONDS)
                         .subscribe(chatItem -> loadHistory(),
-                                onError -> ThreadsLogger.e(TAG, "subscribeToCampaignMessageReplySuccess " + onError.getMessage()))
+                                onError -> LoggerEdna.error("subscribeToCampaignMessageReplySuccess ", onError))
         );
     }
 
@@ -735,7 +747,7 @@ public final class ChatController {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 this::addMessage,
-                                error -> ThreadsLogger.e(TAG, "subscribeToTyping " + error.getMessage())
+                                error -> LoggerEdna.error("subscribeToTyping ", error)
                         )
         );
     }
@@ -752,7 +764,7 @@ public final class ChatController {
                                         fragment.setMessageState(providerId, MessageState.STATE_WAS_READ);
                                     }
                                 },
-                                error -> ThreadsLogger.e(TAG, "subscribeToOutgoingMessageRead " + error.getMessage())
+                                error -> LoggerEdna.error("subscribeToOutgoingMessageRead ", error)
                         )
         );
     }
@@ -765,7 +777,7 @@ public final class ChatController {
                                     databaseHolder.setMessageWasRead(id);
                                     UnreadMessagesController.INSTANCE.refreshUnreadMessagesCount();
                                 },
-                                error -> ThreadsLogger.e(TAG, "subscribeToIncomingMessageRead " + error.getMessage())
+                                error -> LoggerEdna.error("subscribeToIncomingMessageRead ", error)
                         )
         );
     }
@@ -790,7 +802,39 @@ public final class ChatController {
                                         fragment.addChatItem(chatItem);
                                     }
                                 },
-                                error -> ThreadsLogger.e(TAG, "subscribeSpeechMessageUpdated " + error.getMessage())
+                                error -> LoggerEdna.error("subscribeSpeechMessageUpdated " + error)
+                        )
+        );
+    }
+
+    private void subscribeToUpdateAttachments() {
+        subscribe(
+                Flowable.fromPublisher(chatUpdateProcessor.getUpdateAttachmentsProcessor())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(attachments -> {
+                                    for (Attachment attachment : attachments) {
+                                        for (ChatItem item : databaseHolder.getChatItems(0, PER_PAGE_COUNT)) {
+                                            if (item instanceof ChatPhrase) {
+                                                ChatPhrase phrase = (ChatPhrase) item;
+                                                if (phrase.getFileDescription() != null) {
+                                                    if (phrase.getFileDescription().getSize() == attachment.getSize()) {
+                                                        boolean incomingNameEquals = phrase.getFileDescription().getIncomingName() != null
+                                                                && phrase.getFileDescription().getIncomingName().equals(attachment.getName());
+                                                        boolean isUrlHashFileName = phrase.getFileDescription().getFileUri() != null
+                                                                && phrase.getFileDescription().getFileUri().toString().contains(attachment.getName());
+                                                        if (incomingNameEquals || isUrlHashFileName) {
+                                                            phrase.getFileDescription().setState(attachment.getState());
+                                                            phrase.getFileDescription().setErrorCode(attachment.getErrorCodeState());
+                                                            phrase.getFileDescription().setDownloadPath(attachment.getResult());
+                                                            addMessage(item);
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                e -> LoggerEdna.error(e)
                         )
         );
     }
@@ -847,7 +891,7 @@ public final class ChatController {
                                         removeActiveSurvey();
                                     }
                                 },
-                                e -> ThreadsLogger.e(TAG, e.getMessage())
+                                LoggerEdna::error
                         )
         );
     }
@@ -859,7 +903,7 @@ public final class ChatController {
                         .flatMapMaybe(chatItemSent -> {
                             ChatItem chatItem = databaseHolder.getChatItem(chatItemSent.uuid);
                             if (chatItem instanceof UserPhrase) {
-                                ThreadsLogger.d(TAG, "server answer on phrase sent with id " + chatItemSent.messageId);
+                                LoggerEdna.debug("server answer on phrase sent with id " + chatItemSent.messageId);
                                 UserPhrase userPhrase = (UserPhrase) chatItem;
                                 userPhrase.setProviderId(chatItemSent.messageId);
                                 if (chatItemSent.sentAt > 0) {
@@ -869,7 +913,7 @@ public final class ChatController {
                                 databaseHolder.putChatItem(userPhrase);
                             }
                             if (chatItem == null) {
-                                ThreadsLogger.e(TAG, "chatItem not found");
+                                LoggerEdna.error("chatItem not found");
                             }
                             return Maybe.fromCallable(() -> chatItem);
                         })
@@ -883,7 +927,7 @@ public final class ChatController {
                                         proceedSendingQueue(userPhrase);
                                     }
                                 },
-                                error -> ThreadsLogger.e(TAG, "subscribeToMessageSendSuccess " + error.getMessage())
+                                error -> LoggerEdna.error("subscribeToMessageSendSuccess ", error)
                         )
         );
     }
@@ -892,16 +936,17 @@ public final class ChatController {
         subscribe(
                 Flowable.fromPublisher(chatUpdateProcessor.getMessageSendErrorProcessor())
                         .observeOn(Schedulers.io())
-                        .flatMapMaybe(uuid -> {
-                            ChatItem chatItem = databaseHolder.getChatItem(uuid);
+                        .flatMapMaybe(chatItemSendErrorModel -> {
+                            String phraseUuid = chatItemSendErrorModel.getUserPhraseUuid();
+                            ChatItem chatItem = databaseHolder.getChatItem(phraseUuid);
                             if (chatItem instanceof UserPhrase) {
-                                ThreadsLogger.d(TAG, "server answer on phrase sent with id " + uuid);
+                                LoggerEdna.debug("server answer on phrase sent with id " + phraseUuid);
                                 UserPhrase userPhrase = (UserPhrase) chatItem;
                                 userPhrase.setSentState(MessageState.STATE_NOT_SENT);
                                 databaseHolder.putChatItem(userPhrase);
                             }
                             if (chatItem == null) {
-                                ThreadsLogger.e(TAG, "chatItem not found");
+                                LoggerEdna.error("chatItem not found");
                             }
                             return Maybe.fromCallable(() -> chatItem);
                         })
@@ -922,7 +967,7 @@ public final class ChatController {
                                         proceedSendingQueue(userPhrase);
                                     }
                                 },
-                                error -> ThreadsLogger.e(TAG, "subscribeToMessageSendError " + error.getMessage())
+                                error -> LoggerEdna.error("subscribeToMessageSendError ", error)
                         )
         );
     }
@@ -937,7 +982,7 @@ public final class ChatController {
                                     setSurveyStateSent(survey);
                                     resetActiveSurvey();
                                 },
-                                error -> ThreadsLogger.e(TAG, "subscribeToSurveySendSuccess " + error.getMessage())
+                                error -> LoggerEdna.error("subscribeToSurveySendSuccess ", error)
                         )
         );
     }
@@ -948,7 +993,7 @@ public final class ChatController {
                         .observeOn(AndroidSchedulers.mainThread())
                         .filter(chatItemType -> chatItemType.equals(ChatItemType.REQUEST_CLOSE_THREAD))
                         .subscribe(chatItemType -> removeResolveRequest(),
-                                error -> ThreadsLogger.e(TAG, "subscribeToRemoveChatItem " + error.getMessage())
+                                error -> LoggerEdna.error("subscribeToRemoveChatItem ", error)
                         )
         );
     }
@@ -958,7 +1003,7 @@ public final class ChatController {
                 Flowable.fromPublisher(chatUpdateProcessor.getDeviceAddressChangedProcessor())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(chatItemType -> onDeviceAddressChanged(),
-                                error -> ThreadsLogger.e(TAG, "subscribeToDeviceAddressChanged " + error.getMessage())
+                                error -> LoggerEdna.error("subscribeToDeviceAddressChanged ", error)
                         )
         );
     }
@@ -969,7 +1014,7 @@ public final class ChatController {
                             hasQuickReplies = !quickReplies.getItems().isEmpty();
                             refreshUserInputState();
                         },
-                        error -> ThreadsLogger.e(TAG, "subscribeToQuickReplies " + error.getMessage())
+                        error -> LoggerEdna.error("subscribeToQuickReplies ", error)
                 )
         );
     }
@@ -979,7 +1024,7 @@ public final class ChatController {
                 .subscribe(hasFile -> {
                             refreshUserInputState();
                         },
-                        error -> ThreadsLogger.e(TAG, "subscribeToAttachAudioFiles " + error.getMessage())
+                        error -> LoggerEdna.error("subscribeToAttachAudioFiles ", error)
                 )
         );
     }
@@ -989,18 +1034,18 @@ public final class ChatController {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         type -> fragment.setClientNotificationDisplayType(type),
-                        e -> ThreadsLogger.e(TAG, e.getMessage())
+                        LoggerEdna::error
                 )
         );
     }
 
     private void removeResolveRequest() {
-        ThreadsLogger.i(TAG, "removeResolveRequest");
+        LoggerEdna.info("removeResolveRequest");
         subscribe(
                 databaseHolder.setOldRequestResolveThreadDisplayMessageToFalse()
                         .subscribe(
-                                () -> ThreadsLogger.i(TAG, "removeResolveRequest"),
-                                e -> ThreadsLogger.e(TAG, e.getMessage())
+                                () -> LoggerEdna.info("removeResolveRequest"),
+                                LoggerEdna::error
                         )
         );
         if (fragment != null) {
@@ -1009,12 +1054,12 @@ public final class ChatController {
     }
 
     private void removeActiveSurvey() {
-        ThreadsLogger.i(TAG, "removeActiveSurvey");
+        LoggerEdna.info("removeActiveSurvey");
         subscribe(
                 databaseHolder.setNotSentSurveyDisplayMessageToFalse()
                         .subscribe(
-                                () -> ThreadsLogger.i(TAG, "setOldSurveyDisplayMessageToFalse"),
-                                e -> ThreadsLogger.e(TAG, e.getMessage())
+                                () -> LoggerEdna.info("setOldSurveyDisplayMessageToFalse"),
+                                LoggerEdna::error
                         )
         );
         if (activeSurvey != null && fragment != null) {
@@ -1024,7 +1069,7 @@ public final class ChatController {
     }
 
     private void resetActiveSurvey() {
-        ThreadsLogger.i(TAG, "resetActiveSurvey");
+        LoggerEdna.info("resetActiveSurvey");
         activeSurvey = null;
     }
 
@@ -1047,7 +1092,7 @@ public final class ChatController {
     Вызывается когда получено новое сообщение из канала (TG/PUSH)
      */
     private void addMessage(final ChatItem chatItem) {
-        ThreadsLogger.i(TAG, "addMessage: " + chatItem);
+        LoggerEdna.info("addMessage: " + chatItem);
         databaseHolder.putChatItem(chatItem);
         UnreadMessagesController.INSTANCE.refreshUnreadMessagesCount();
         if (fragment != null) {
@@ -1081,7 +1126,7 @@ public final class ChatController {
                                     removePushNotification();
                                     UnreadMessagesController.INSTANCE.refreshUnreadMessagesCount();
                                 },
-                                error -> ThreadsLogger.e(TAG, "addMessage " + error.getMessage())
+                                error -> LoggerEdna.error("addMessage ", error)
                         )
         );
         // Если пришло сообщение от оператора,
@@ -1099,7 +1144,7 @@ public final class ChatController {
     }
 
     private void queueMessageSending(UserPhrase userPhrase) {
-        ThreadsLogger.i(TAG, "queueMessageSending: " + userPhrase);
+        LoggerEdna.info("queueMessageSending: " + userPhrase);
         synchronized (sendQueue) {
             sendQueue.add(userPhrase);
         }
@@ -1125,7 +1170,7 @@ public final class ChatController {
     }
 
     public void cleanAll() {
-        ThreadsLogger.i(TAG, "cleanAll: ");
+        LoggerEdna.info("cleanAll: ");
         isAllMessagesDownloaded = false;
         sendQueue.clear();
         databaseHolder.cleanDatabase();
@@ -1166,17 +1211,17 @@ public final class ChatController {
     }
 
     private void onDeviceAddressChanged() {
-        ThreadsLogger.i(TAG, "onDeviceAddressChanged:");
+        LoggerEdna.info("onDeviceAddressChanged:");
         String clientId = PrefUtils.getClientID();
         if (fragment != null && !TextUtils.isEmpty(clientId)) {
             subscribe(
                     Single.fromCallable(() -> {
-                        Config.instance.transport.sendInit();
-                        final HistoryResponse response = HistoryLoader.getHistorySync(null, true);
-                        List<ChatItem> chatItems = HistoryParser.getChatItems(response);
-                        saveMessages(chatItems);
-                        return new Pair<>(response != null ? response.getConsultInfo() : null, setLastAvatars(chatItems));
-                    })
+                                Config.instance.transport.sendInit();
+                                final HistoryResponse response = HistoryLoader.getHistorySync(null, true);
+                                List<ChatItem> chatItems = HistoryParser.getChatItems(response);
+                                saveMessages(chatItems);
+                                return new Pair<>(response != null ? response.getConsultInfo() : null, setLastAvatars(chatItems));
+                            })
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
@@ -1191,7 +1236,7 @@ public final class ChatController {
                                             }
                                         }
                                     },
-                                    e -> ThreadsLogger.e(TAG, e.getMessage())
+                                    LoggerEdna::error
                             )
             );
         }
