@@ -147,13 +147,6 @@ public class AttachmentBottomSheetDialogFragment extends BottomSheetDialogFragme
     }
 
     @Override
-    public void onSelfieClick() {
-        if (callback != null) {
-            callback.onSelfieClick();
-        }
-    }
-
-    @Override
     public void onSendClick() {
         if (callback != null) {
             callback.onSendClick();

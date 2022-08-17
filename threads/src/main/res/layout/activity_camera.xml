@@ -49,58 +49,19 @@
                 android:textColor="@android:color/white" />
 
         </RelativeLayout>
-
-        <TextView
-            android:id="@+id/label_top_selfie"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginLeft="@dimen/margin_material"
-            android:layout_marginRight="@dimen/margin_material"
-            android:gravity="center"
-            android:padding="@dimen/margin_half"
-            android:text="@string/threads_selfie_hint"
-            android:textColor="@android:color/white" />
-
     </FrameLayout>
 
     <FrameLayout
         android:id="@+id/fl_camera"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_weight="3"
         android:orientation="vertical">
 
         <SurfaceView
             android:id="@+id/camera_preview"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
-
-        <LinearLayout
-            android:id="@+id/ll_selfie_mask"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:alpha="0.8"
-            android:orientation="vertical">
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:background="@color/threads_black" />
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                app:srcCompat="@drawable/ic_selfie_mask" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:background="@color/threads_black" />
-
-        </LinearLayout>
 
         <ImageView
             android:id="@+id/photo_preview"
@@ -143,13 +104,10 @@
                 android:scaleType="centerCrop"
                 app:srcCompat="@drawable/ic_c_in_c_48dp" />
 
-            <ImageButton
-                android:id="@+id/switch_cams"
+            <View
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@null"
-                app:srcCompat="@drawable/ic_party_mode_white_30dp" />
+                android:layout_weight="1"/>
 
         </LinearLayout>
 

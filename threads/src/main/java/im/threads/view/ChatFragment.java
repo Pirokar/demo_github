@@ -152,13 +152,11 @@ public final class ChatFragment extends BaseFragment implements
 
     public static final int REQUEST_CODE_PHOTOS = 100;
     public static final int REQUEST_CODE_PHOTO = 101;
-    public static final int REQUEST_CODE_SELFIE = 102;
-    public static final int REQUEST_EXTERNAL_CAMERA_PHOTO = 103;
-    public static final int REQUEST_CODE_FILE = 104;
+    public static final int REQUEST_EXTERNAL_CAMERA_PHOTO = 102;
+    public static final int REQUEST_CODE_FILE = 103;
     public static final int REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY = 200;
     public static final int REQUEST_PERMISSION_CAMERA = 201;
     public static final int REQUEST_PERMISSION_READ_EXTERNAL = 202;
-    public static final int REQUEST_PERMISSION_SELFIE_CAMERA = 203;
     public static final String ACTION_SEARCH_CHAT_FILES = "ACTION_SEARCH_CHAT_FILES";
     public static final String ACTION_SEARCH = "ACTION_SEARCH";
     public static final String ACTION_SEND_QUICK_MESSAGE = "ACTION_SEND_QUICK_MESSAGE";
@@ -186,8 +184,6 @@ public final class ChatFragment extends BaseFragment implements
     private final ChatCenterAudioConverter audioConverter = new ChatCenterAudioConverter();
     @Nullable
     private FileDescriptionMediaPlayer fdMediaPlayer;
-    @Nullable
-    private AudioManager audioManager;
     private ChatController mChatController;
     private ChatAdapter chatAdapter;
     private ChatAdapter.Callback chatAdapterCallback;
@@ -246,7 +242,7 @@ public final class ChatFragment extends BaseFragment implements
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_chat, container, false);
         binding.setInputTextObservable(inputTextObservable);
         chatAdapterCallback = new ChatFragment.AdapterCallback();
-        audioManager = (AudioManager) requireContext().getSystemService(Context.AUDIO_SERVICE);
+        AudioManager audioManager = (AudioManager) requireContext().getSystemService(Context.AUDIO_SERVICE);
         fdMediaPlayer = new FileDescriptionMediaPlayer(audioManager);
         initViews();
         initRecording();
@@ -1010,11 +1006,6 @@ public final class ChatFragment extends BaseFragment implements
                     REQUEST_PERMISSION_CAMERA,
                     R.string.threads_permissions_camera_and_write_external_storage_help_text,
                     cameraPermissions.toArray(new String[]{}));
-        } else if (requestCode == REQUEST_PERMISSION_SELFIE_CAMERA) {
-            PermissionsActivity.startActivityForResult(this,
-                    REQUEST_PERMISSION_SELFIE_CAMERA,
-                    R.string.threads_permissions_camera_and_write_external_storage_help_text,
-                    cameraPermissions.toArray(new String[]{}));
         }
     }
 
@@ -1051,7 +1042,7 @@ public final class ChatFragment extends BaseFragment implements
 
             } else {
                 setBottomStateDefault();
-                startActivityForResult(CameraActivity.getStartIntent(activity, false), REQUEST_CODE_PHOTO);
+                startActivityForResult(CameraActivity.getStartIntent(activity), REQUEST_CODE_PHOTO);
             }
         } else {
             ArrayList<String> permissions = new ArrayList<>();
@@ -1062,7 +1053,7 @@ public final class ChatFragment extends BaseFragment implements
                 permissions.add(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
             }
             if (style.arePermissionDescriptionDialogsEnabled) {
-                showSafelyCameraPermissionDescriptionDialog(REQUEST_PERMISSION_CAMERA, permissions);
+                showSafelyCameraPermissionDescriptionDialog(permissions);
             } else {
                 this.cameraPermissions = permissions;
                 startCameraPermissionActivity(REQUEST_PERMISSION_CAMERA);
@@ -1215,33 +1206,6 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     @Override
-    public void onSelfieClick() {
-        Activity activity = getActivity();
-        boolean isCameraGranted = ThreadsPermissionChecker.isCameraPermissionGranted(activity);
-        boolean isWriteGranted = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q || ThreadsPermissionChecker.isWriteExternalPermissionGranted(activity);
-        LoggerEdna.info("isCameraGranted = " + isCameraGranted + " isWriteGranted " + isWriteGranted);
-        if (isCameraGranted && isWriteGranted) {
-            setBottomStateDefault();
-            startActivityForResult(CameraActivity.getStartIntent(activity, true), REQUEST_CODE_SELFIE);
-        } else {
-            ArrayList<String> permissions = new ArrayList<>();
-            if (!isCameraGranted) {
-                permissions.add(android.Manifest.permission.CAMERA);
-            }
-            if (!isWriteGranted) {
-                permissions.add(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
-            }
-            if (style.arePermissionDescriptionDialogsEnabled) {
-                showSafelyCameraPermissionDescriptionDialog(REQUEST_PERMISSION_SELFIE_CAMERA,
-                        permissions);
-            } else {
-                this.cameraPermissions = permissions;
-                startCameraPermissionActivity(REQUEST_PERMISSION_SELFIE_CAMERA);
-            }
-        }
-    }
-
-    @Override
     public void onSendClick() {
         if (mAttachedImages == null || mAttachedImages.isEmpty()) {
             showToast(getString(R.string.threads_failed_to_open_file));
@@ -1355,7 +1319,7 @@ public final class ChatFragment extends BaseFragment implements
         }
         for (int i = 0; i < data.size(); i++) {
             if (data.get(i) instanceof ChatPhrase) {
-                if (((ChatPhrase) data.get(i)).equals(highlightedItem)) {
+                if ((data.get(i)).equals(highlightedItem)) {
                     //для поиска - если можно перемещаться, подсвечиваем
                     if (first != -1 && i > first) {
                         binding.searchUpIb.setAlpha(ENABLED_ALPHA);
@@ -1503,7 +1467,7 @@ public final class ChatFragment extends BaseFragment implements
         mQuoteLayoutHolder.setContent(requireContext().getString(R.string.threads_I), FileUtils.getFileName(uri), null);
     }
 
-    private void onPhotoResult(@NonNull Intent data, boolean selfie) {
+    private void onPhotoResult(@NonNull Intent data) {
         String imageExtra = data.getStringExtra(CameraActivity.IMAGE_EXTRA);
         if (imageExtra != null) {
             File file = new File(imageExtra);
@@ -1513,7 +1477,6 @@ public final class ChatFragment extends BaseFragment implements
                     file.length(),
                     System.currentTimeMillis()
             );
-            fileDescription.setSelfie(selfie);
             setFileDescription(
                     fileDescription
             );
@@ -2032,12 +1995,7 @@ public final class ChatFragment extends BaseFragment implements
                 break;
             case REQUEST_CODE_PHOTO:
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    onPhotoResult(data, false);
-                }
-                break;
-            case REQUEST_CODE_SELFIE:
-                if (resultCode == Activity.RESULT_OK && data != null) {
-                    onPhotoResult(data, true);
+                    onPhotoResult(data);
                 }
                 break;
             case REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY:
@@ -2048,11 +2006,6 @@ public final class ChatFragment extends BaseFragment implements
             case REQUEST_PERMISSION_CAMERA:
                 if (resultCode == PermissionsActivity.RESPONSE_GRANTED) {
                     onCameraClick();
-                }
-                break;
-            case REQUEST_PERMISSION_SELFIE_CAMERA:
-                if (resultCode == PermissionsActivity.RESPONSE_GRANTED) {
-                    onSelfieClick();
                 }
                 break;
             case REQUEST_PERMISSION_READ_EXTERNAL:
@@ -2408,11 +2361,10 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     private void showSafelyCameraPermissionDescriptionDialog(
-            int requestCode,
             @NonNull List<String> cameraPermissions) {
         if (permissionDescriptionAlertDialogFragment == null) {
             this.cameraPermissions = cameraPermissions;
-            showPermissionDescriptionDialog(PermissionDescriptionType.CAMERA, requestCode);
+            showPermissionDescriptionDialog(PermissionDescriptionType.CAMERA, REQUEST_PERMISSION_CAMERA);
         }
     }
 

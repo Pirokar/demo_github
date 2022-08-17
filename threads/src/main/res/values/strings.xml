@@ -30,7 +30,6 @@
     <string name="threads_press">Press</string>
     <string name="threads_to_photo">to take photo</string>
     <string name="threads_no_cameras_detected">Your device doesn\'t have a camera</string>
-    <string name="threads_front_camera_could_not_start_error">Failed to start the front camera.</string>
     <string name="threads_back_camera_could_not_start_error">Failed to start the rear camera.</string>
     <string name="threads_retake">Retake</string>
     <string name="threads_consult">Consultant</string>
@@ -102,8 +101,6 @@
     <string name="threads_welcome_screen_title_text">Welcome!</string>
     <string name="threads_welcome_screen_subtitle_text">Send your question</string>
     <string name="threads_camera_could_not_start_error">Could not start camera app</string>
-    <string name="threads_selfie">Selfie</string>
-    <string name="threads_selfie_hint">Make sure that your face is aligned with the mask</string>
 
     <plurals name="threads_unread_messages">
 
