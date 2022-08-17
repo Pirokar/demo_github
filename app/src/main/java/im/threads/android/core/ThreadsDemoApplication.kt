@@ -72,7 +72,7 @@ class ThreadsDemoApplication : MultiDexApplication() {
             .surveyCompletionDelay(2000)
             .historyLoadingCount(50)
             .isDebugLoggingEnabled(true)
-//            .certificateRawResIds(listOf(R.raw.edna))
+            .certificateRawResIds(listOf(R.raw.edna))
             .networkInterceptor((BeagleOkHttpLogger.logger as? Interceptor?))
             .enableLogging(loggerConfig)
 

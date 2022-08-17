@@ -253,7 +253,6 @@ object OutgoingMessageCreator {
                 addProperty("lastModified", System.currentTimeMillis())
             }
             val attachment = JsonObject().apply {
-                addProperty("isSelfie", it.isSelfie)
                 add("optional", optional)
             }
             attachments.add(attachment)
