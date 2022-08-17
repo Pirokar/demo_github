@@ -26,7 +26,6 @@ class FileDescriptionsTable : Table() {
                 COLUMN_FD_FILENAME + " text," +
                 COLUMN_FD_MIME_TYPE + " text," +
                 COLUMN_FD_DOWNLOAD_PROGRESS + " integer, " +
-                COLUMN_FD_SELFIE + " integer, " +
                 COLUMN_FD_ATTACHMENT_STATE + " text, " +
                 COLUMN_FD_ERROR_CODE + " text, " +
                 COLUMN_FD_ERROR_MESSAGE + " text )"
@@ -63,7 +62,6 @@ class FileDescriptionsTable : Table() {
             )
             fd.downloadProgress = cursorGetInt(c, COLUMN_FD_DOWNLOAD_PROGRESS)
             fd.downloadPath = cursorGetString(c, COLUMN_FD_URL)
-            fd.isSelfie = cursorGetBool(c, COLUMN_FD_SELFIE)
             fd.incomingName = cursorGetString(c, COLUMN_FD_FILENAME)
             fd.mimeType = cursorGetString(c, COLUMN_FD_MIME_TYPE)
             fd.state = AttachmentStateEnum.READY
@@ -98,7 +96,6 @@ class FileDescriptionsTable : Table() {
         cv.put(COLUMN_FD_IS_FROM_QUOTE, isFromQuote)
         cv.put(COLUMN_FD_FILENAME, fileDescription.incomingName)
         cv.put(COLUMN_FD_MIME_TYPE, fileDescription.mimeType)
-        cv.put(COLUMN_FD_SELFIE, fileDescription.isSelfie)
         cv.put(COLUMN_FD_ATTACHMENT_STATE, fileDescription.state.state)
         cv.put(COLUMN_FD_ERROR_CODE, fileDescription.errorCode.state)
         cv.put(COLUMN_FD_ERROR_MESSAGE, fileDescription.errorMessage)
@@ -155,7 +152,6 @@ class FileDescriptionsTable : Table() {
                 fd.incomingName = cursorGetString(c, COLUMN_FD_FILENAME)
                 fd.mimeType = cursorGetString(c, COLUMN_FD_MIME_TYPE)
                 fd.downloadPath = cursorGetString(c, COLUMN_FD_URL)
-                fd.isSelfie = cursorGetBool(c, COLUMN_FD_SELFIE)
                 fd.state = AttachmentStateEnum.READY
                 cursorGetString(c, COLUMN_FD_ATTACHMENT_STATE)?.let {
                     fd.state = AttachmentStateEnum.attachmentStateEnumFromString(it)
@@ -187,8 +183,7 @@ class FileDescriptionsTable : Table() {
                 cv.put(COLUMN_FD_DOWNLOAD_PROGRESS, it.downloadProgress)
                 cv.put(COLUMN_FD_FILENAME, it.incomingName)
                 cv.put(COLUMN_FD_MIME_TYPE, it.mimeType)
-                cv.put(COLUMN_FD_SELFIE, it.isSelfie)
-                cv.put(COLUMN_FD_ATTACHMENT_STATE, it.isSelfie)
+                cv.put(COLUMN_FD_ATTACHMENT_STATE, it.state.state)
                 cv.put(COLUMN_FD_ERROR_CODE, it.errorCode.state)
                 cv.put(COLUMN_FD_ERROR_MESSAGE, it.errorMessage)
                 sqlHelper.getWritableDatabase(DB_PASSWORD).update(
@@ -237,8 +232,7 @@ class FileDescriptionsTable : Table() {
             put(COLUMN_FD_DOWNLOAD_PROGRESS, fileDescription.downloadProgress)
             put(COLUMN_FD_FILENAME, fileDescription.incomingName)
             put(COLUMN_FD_MIME_TYPE, fileDescription.mimeType)
-            put(COLUMN_FD_SELFIE, fileDescription.isSelfie)
-            put(COLUMN_FD_ATTACHMENT_STATE, fileDescription.isSelfie)
+            put(COLUMN_FD_ATTACHMENT_STATE, fileDescription.state.state)
             put(COLUMN_FD_ERROR_CODE, fileDescription.errorCode.state)
             put(COLUMN_FD_ERROR_MESSAGE, fileDescription.errorMessage)
         }
@@ -256,7 +250,6 @@ private const val COLUMN_FD_IS_FROM_QUOTE = "COLUMN_FD_IS_FROM_QUOTE"
 private const val COLUMN_FD_FILENAME = "COLUMN_FD_FILENAME"
 private const val COLUMN_FD_MIME_TYPE = "COLUMN_FD_MIME_TYPE"
 private const val COLUMN_FD_MESSAGE_UUID_EXT = "COLUMN_FD_MESSAGE_UUID_EXT"
-private const val COLUMN_FD_SELFIE = "COLUMN_FD_SELFIE"
 private const val COLUMN_FD_ATTACHMENT_STATE = "ATTACHMENT_STATE"
 private const val COLUMN_FD_ERROR_CODE = "ERROR_CODE"
 private const val COLUMN_FD_ERROR_MESSAGE = "ERROR_MESSAGE"

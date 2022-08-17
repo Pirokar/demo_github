@@ -249,7 +249,6 @@ public final class HistoryParser {
                 fileDescription.setDownloadPath(attachment.getResult());
                 fileDescription.setIncomingName(incomingName);
                 fileDescription.setMimeType(mimeType);
-                fileDescription.setSelfie(attachment.isSelfie());
                 fileDescription.setState(attachment.getState());
                 if (attachment.getErrorCode() != null) {
                     fileDescription.setErrorCode(attachment.getErrorCodeState());

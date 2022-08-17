@@ -4,7 +4,6 @@ import im.threads.internal.model.ErrorStateEnum.Companion.errorStateEnumFromStri
 
 class Attachment {
     var result: String? = null
-    var isSelfie = false
     var optional: Optional? = null
     var state = AttachmentStateEnum.ANY
     var errorCode: String? = null
