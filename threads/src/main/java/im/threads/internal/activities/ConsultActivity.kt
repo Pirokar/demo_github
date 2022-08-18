@@ -30,8 +30,20 @@ internal open class ConsultActivity : BaseActivity() {
         ActivityConsultPageBinding.inflate(layoutInflater)
     }
     private val style: ChatStyle by lazy {
-        Config.instance.chatStyle
+        try {
+            Config.instance.chatStyle
+        } catch (exc: NullPointerException) {
+            ChatStyle()
+        }
     }
+    private val isFilesAndMediaEnabled: Boolean
+        get() {
+            return try {
+                Config.instance.filesAndMediaMenuItemEnabled
+            } catch (exc: NullPointerException) {
+                false
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,7 +75,9 @@ internal open class ConsultActivity : BaseActivity() {
                     style.menuItemTextColorResId
                 )
             ),
-            0, filesAndMediaSpannable.length, 0
+            0,
+            filesAndMediaSpannable.length,
+            0
         )
         filesAndMedia.title = filesAndMediaSpannable
         return super.onPrepareOptionsMenu(menu)
@@ -71,8 +85,7 @@ internal open class ConsultActivity : BaseActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.threads_menu_main, menu)
-        menu.findItem(R.id.files_and_media).isVisible =
-            Config.instance.filesAndMediaMenuItemEnabled
+        menu.findItem(R.id.files_and_media).isVisible = isFilesAndMediaEnabled
 
         return true
     }
@@ -121,6 +134,7 @@ internal open class ConsultActivity : BaseActivity() {
         if (!imagePath.isNullOrEmpty()) {
             imagePath = convertRelativeUrlToAbsolute(imagePath)
             consultImage.loadImage(imagePath)
+            consultImage.tag = imagePath
         }
     }
 
