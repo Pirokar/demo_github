@@ -87,6 +87,7 @@ ext {
     okhttp_webserver_version = '4.10.0'
     kaspresso_version = '1.4.1'
     singlelivedata_version = '1.3.0'
+    test_ext = '1.1.3'
     mockitoVersion = '3.12.4'
     mockitoInlineVersion = '2.21.0'
     playServiceVersion = '20.0.0'
