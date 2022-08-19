@@ -59,7 +59,7 @@ object ChatCenterPushMessageHelper {
                             ?: Date(),
                         bundle.getString(MessageAttributes.SKILL_ID)?.toInt() ?: 0,
                         campaign,
-                        bundle.getString(MessageAttributes.PRIORITY)?.toInt() ?: 0,
+                        bundle.getString(MessageAttributes.PRIORITY)?.toInt() ?: 0
                     )
                     PrefUtils.campaignMessage = campaignMessage
                     NotificationWorker.addCampaignMessage(context, alertStr)

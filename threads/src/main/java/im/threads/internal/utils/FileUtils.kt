@@ -161,7 +161,7 @@ object FileUtils {
                 saveToFile(uri, outputFile)
                 val dm =
                     Config.instance.context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-                dm?.addCompletedDownload(
+                dm.addCompletedDownload(
                     getFileName(uri),
                     Config.instance.context.getString(R.string.threads_media_description),
                     true,

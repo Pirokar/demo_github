@@ -1,9 +1,9 @@
 package im.threads.internal.media
 
 import im.threads.internal.Config
-import im.threads.internal.domain.audio_converter.AudioConverter
-import im.threads.internal.domain.audio_converter.callback.IConvertCallback
-import im.threads.internal.domain.audio_converter.model.AudioFormat
+import im.threads.internal.domain.audioConverter.AudioConverter
+import im.threads.internal.domain.audioConverter.callback.IConvertCallback
+import im.threads.internal.domain.audioConverter.model.AudioFormat
 import im.threads.internal.domain.logger.LoggerEdna
 import java.io.File
 import java.lang.ref.WeakReference

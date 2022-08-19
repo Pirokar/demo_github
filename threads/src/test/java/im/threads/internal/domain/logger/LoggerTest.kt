@@ -71,7 +71,7 @@ class LoggerTest {
 
     private fun getLogs() = ShadowLog.getLogs().filter { it.tag.contains(ENDA_LOGGER_TAG) }
 
-    private class LogAssert internal constructor(private val items: List<ShadowLog.LogItem>) {
+    private class LogAssert(private val items: List<ShadowLog.LogItem>) {
         fun hasVerboseMessage(message: String): LogAssert {
             return hasMessage(Log.VERBOSE, message)
         }
@@ -90,10 +90,6 @@ class LoggerTest {
 
         fun hasErrorMessage(message: String): LogAssert {
             return hasMessage(Log.ERROR, message)
-        }
-
-        fun hasAssertMessage(message: String): LogAssert {
-            return hasMessage(Log.ASSERT, message)
         }
 
         private fun hasMessage(priority: Int, message: String): LogAssert {

@@ -18,7 +18,8 @@ class FileDownloader(private val path: String, fileName: String, ctx: Context, p
     private val outputFile: File = File(
         getDownloadDir(ctx),
         generateFileName(
-            path, fileName
+            path,
+            fileName
         )
     )
 

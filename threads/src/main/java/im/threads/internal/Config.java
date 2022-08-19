@@ -28,7 +28,7 @@ import im.threads.internal.model.SslSocketFactoryConfig;
 import im.threads.internal.model.gson.UriDeserializer;
 import im.threads.internal.model.gson.UriSerializer;
 import im.threads.internal.transport.Transport;
-import im.threads.internal.transport.threads_gate.ThreadsGateTransport;
+import im.threads.internal.transport.threadsGate.ThreadsGateTransport;
 import im.threads.internal.utils.MetaDataUtils;
 import im.threads.internal.utils.PrefUtils;
 import im.threads.internal.utils.TlsConfigurationUtils;

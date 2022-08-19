@@ -12,7 +12,7 @@
         android:layout_margin="@dimen/activity_horizontal_margin"
         android:background="@color/threads_icon_and_separators_color" />
 
-    <im.threads.internal.widget.text_view.BubbleMessageTextView
+    <im.threads.internal.widget.textView.BubbleMessageTextView
         android:id="@+id/request_to_resolve_thread"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -29,7 +29,7 @@
         android:layout_marginTop="@dimen/margin_material"
         android:orientation="horizontal">
 
-        <im.threads.internal.widget.text_view.BubbleMessageTextView
+        <im.threads.internal.widget.textView.BubbleMessageTextView
             android:id="@+id/deny_request"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -41,7 +41,7 @@
             android:gravity="center"
             android:lines="1"/>
 
-        <im.threads.internal.widget.text_view.BubbleMessageTextView
+        <im.threads.internal.widget.textView.BubbleMessageTextView
             android:id="@+id/approve_request"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

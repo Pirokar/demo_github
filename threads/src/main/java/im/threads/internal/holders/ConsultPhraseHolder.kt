@@ -24,13 +24,14 @@ import im.threads.internal.imageLoading.ImageModifications
 import im.threads.internal.imageLoading.loadImage
 import im.threads.internal.model.AttachmentStateEnum
 import im.threads.internal.model.ConsultPhrase
+import im.threads.internal.model.FileDescription
 import im.threads.internal.utils.FileUtils
 import im.threads.internal.utils.FileUtils.isImage
 import im.threads.internal.utils.UrlUtils
 import im.threads.internal.utils.ViewUtils
 import im.threads.internal.views.CircularProgressButton
-import im.threads.internal.widget.text_view.BubbleMessageTextView
-import im.threads.internal.widget.text_view.BubbleTimeTextView
+import im.threads.internal.widget.textView.BubbleMessageTextView
+import im.threads.internal.widget.textView.BubbleTimeTextView
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -210,12 +211,7 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
                         mFileImage.setOnClickListener(onQuoteClickListener)
                     } else {
                         mCircularProgressButton.visibility = View.VISIBLE
-                        val fileSize = quoteFileDescription.size
-                        mRightTextDescr.text =
-                            FileUtils.getFileName(quoteFileDescription) + if (fileSize > 0) """
-     
-     ${Formatter.formatFileSize(itemView.getContext(), fileSize)}
-                        """.trimIndent() else ""
+                        mRightTextDescr.text = getFileDescriptionText(quoteFileDescription)
                         mCircularProgressButton.setOnClickListener(onQuoteClickListener)
                         mCircularProgressButton.setProgress(if (quoteFileDescription.fileUri != null) 100 else quoteFileDescription.downloadProgress)
                     }
@@ -241,11 +237,7 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
                 } else {
                     rightTextHeader.visibility = View.GONE
                 }
-                val fileSize = fileDescription.size
-                mRightTextDescr.text =
-                    FileUtils.getFileName(fileDescription) + if (fileSize > 0) """  
-     ${Formatter.formatFileSize(itemView.getContext(), fileSize)}
-                """.trimIndent() else ""
+                mRightTextDescr.text = getFileDescriptionText(fileDescription)
                 rightTextFileStamp.text = itemView.getContext().getString(
                     R.string.threads_sent_at,
                     quoteSdf.format(Date(fileDescription.timeStamp))
@@ -283,6 +275,15 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
         }
         filterView.visibility = if (highlighted) View.VISIBLE else View.INVISIBLE
         secondFilterView.visibility = if (highlighted) View.VISIBLE else View.INVISIBLE
+    }
+
+    private fun getFileDescriptionText(fileDescription: FileDescription): String {
+        return "${FileUtils.getFileName(fileDescription)} " +
+            if (fileDescription.size > 0) {
+                Formatter.formatFileSize(itemView.getContext(), fileDescription.size).trimIndent()
+            } else {
+                ""
+            }
     }
 
     private fun loadImage(

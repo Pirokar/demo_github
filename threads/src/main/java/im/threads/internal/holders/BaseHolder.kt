@@ -30,7 +30,7 @@ import im.threads.internal.utils.ColorsHelper
 import im.threads.internal.utils.UrlUtils
 import im.threads.internal.utils.ViewUtils
 import im.threads.internal.views.CircularProgressButton
-import im.threads.internal.widget.text_view.BubbleMessageTextView
+import im.threads.internal.widget.textView.BubbleMessageTextView
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import kotlinx.coroutines.CoroutineScope
