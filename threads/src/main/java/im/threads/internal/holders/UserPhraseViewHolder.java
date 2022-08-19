@@ -38,6 +38,7 @@ import im.threads.business.models.enums.AttachmentStateEnum;
 import im.threads.business.utils.FileUtils;
 import im.threads.internal.Config;
 import im.threads.internal.formatters.RussianFormatSymbols;
+import im.threads.internal.model.ExtractedLink;
 import im.threads.internal.utils.UrlUtils;
 import im.threads.internal.utils.ViewUtils;
 import im.threads.internal.views.CircularProgressButton;
@@ -182,10 +183,10 @@ public final class UserPhraseViewHolder extends VoiceMessageBaseHolder {
         } else {
             mPhraseTextView.setVisibility(View.VISIBLE);
             mPhraseTextView.bindTimestampView(mTimeStampTextView);
-            String url = UrlUtils.extractLink(phrase);
+            ExtractedLink extractedLink = UrlUtils.extractLink(phrase);
             highlightClientText(mPhraseTextView, phrase);
-            if (url != null) {
-                bindOGData(ogDataLayout, mTimeStampTextView, url);
+            if (extractedLink != null && extractedLink.getLink() != null && !extractedLink.isEmail()) {
+                bindOGData(ogDataLayout, mTimeStampTextView, extractedLink.getLink());
             } else {
                 hideOGView(ogDataLayout, mTimeStampTextView);
             }

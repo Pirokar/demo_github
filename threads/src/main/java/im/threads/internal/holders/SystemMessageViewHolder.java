@@ -42,7 +42,7 @@ public class SystemMessageViewHolder extends RecyclerView.ViewHolder {
         tvSystemMessage.setLinkTextColor(ContextCompat.getColor(itemView.getContext(), style.systemMessageLinkColor));
         tvSystemMessage.setOnClickListener(view -> {
             String deepLink = UrlUtils.extractDeepLink(systemMessage.getText());
-            String url = UrlUtils.extractLink(systemMessage.getText());
+            String url = UrlUtils.extractLink(systemMessage.getText()).getLink();
             if (deepLink != null) {
                 UrlUtils.openUrl(context, deepLink);
             } else if (url != null) {
