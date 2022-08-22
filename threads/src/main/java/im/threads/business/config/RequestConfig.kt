@@ -1,4 +1,4 @@
-package im.threads.config
+package im.threads.business.config
 
 /**
  * Настройки Socket и Http клиентов.

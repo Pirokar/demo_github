@@ -1,6 +1,6 @@
 package im.threads.internal.imageLoading
 
-import im.threads.config.HttpClientSettings
+import im.threads.business.config.HttpClientSettings
 import im.threads.internal.model.SslSocketFactoryConfig
 import im.threads.internal.utils.PrefUtils
 import okhttp3.OkHttpClient
