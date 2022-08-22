@@ -26,15 +26,15 @@ class PermissionDescriptionDialogStyle : Serializable {
             when (type) {
                 PermissionDescriptionType.STORAGE -> createTypeSpecificDialogStyle(
                     titleResId = R.string.threads_permission_description_access_to_files_title,
-                    messageResId = R.string.threads_permission_description_access_to_files_message,
+                    messageResId = R.string.threads_permission_description_access_to_files_message
                 )
                 PermissionDescriptionType.RECORD_AUDIO -> createTypeSpecificDialogStyle(
                     titleResId = R.string.threads_permission_description_access_to_audio_recording_title,
-                    messageResId = R.string.threads_permission_description_access_to_audio_recording_message,
+                    messageResId = R.string.threads_permission_description_access_to_audio_recording_message
                 )
                 PermissionDescriptionType.CAMERA -> createTypeSpecificDialogStyle(
                     titleResId = R.string.threads_permission_description_access_to_camera_title,
-                    messageResId = R.string.threads_permission_description_access_to_camera_message,
+                    messageResId = R.string.threads_permission_description_access_to_camera_message
                 )
             }
 

@@ -332,7 +332,7 @@ class PrefUtils private constructor() {
         var fcmToken: String?
             get() {
                 val fcmToken = defaultSharedPreferences.getString(FCM_TOKEN, "") ?: ""
-                return if (fcmToken.isNotEmpty()) fcmToken else null
+                return fcmToken.ifEmpty { null }
             }
             set(fcmToken) {
                 val cloudMessagingType = cloudMessagingType
@@ -349,7 +349,7 @@ class PrefUtils private constructor() {
         var hcmToken: String?
             get() {
                 val hcmToken = defaultSharedPreferences.getString(HCM_TOKEN, "") ?: ""
-                return if (hcmToken.isNotEmpty()) hcmToken else null
+                return hcmToken.ifEmpty { null }
             }
             set(hcmToken) {
                 val cloudMessagingType = cloudMessagingType
@@ -380,7 +380,7 @@ class PrefUtils private constructor() {
         var deviceAddress: String?
             get() {
                 val deviceAddress = defaultSharedPreferences.getString(DEVICE_ADDRESS, "") ?: ""
-                return if (deviceAddress.isNotEmpty()) deviceAddress else null
+                return deviceAddress.ifEmpty { null }
             }
             set(deviceAddress) {
                 defaultSharedPreferences

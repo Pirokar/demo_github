@@ -28,7 +28,6 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
     private var runningDownloads = HashMap<FileDescription, FileDownloader>()
 
     override fun doWork(): Result {
-
         val data = inputData.getByteArray(FD_TAG)?.let { unmarshall(it) }
         val fileDescription: FileDescription = FileDescription.CREATOR.createFromParcel(data)
             ?: return Result.failure()

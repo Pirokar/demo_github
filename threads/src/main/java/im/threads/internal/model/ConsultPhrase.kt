@@ -49,33 +49,6 @@ class ConsultPhrase constructor(
     override val timeStamp
         get() = date
 
-    fun hasSameContent(consultPhrase: ConsultPhrase?): Boolean {
-        if (consultPhrase == null) {
-            return false
-        }
-        var hasSameContent = (
-            ObjectsCompat.equals(id, consultPhrase.id) &&
-                ObjectsCompat.equals(phraseText, consultPhrase.phraseText) &&
-                ObjectsCompat.equals(formattedPhrase, consultPhrase.formattedPhrase) &&
-                ObjectsCompat.equals(providerId, consultPhrase.providerId) &&
-                ObjectsCompat.equals(date, consultPhrase.date) &&
-                ObjectsCompat.equals(isRead, consultPhrase.isRead) &&
-                ObjectsCompat.equals(avatarPath, consultPhrase.avatarPath) &&
-                ObjectsCompat.equals(consultId, consultPhrase.consultId) &&
-                ObjectsCompat.equals(consultName, consultPhrase.consultName) &&
-                ObjectsCompat.equals(sex, consultPhrase.sex) &&
-                ObjectsCompat.equals(status, consultPhrase.status) &&
-                ObjectsCompat.equals(threadId, consultPhrase.threadId) &&
-                ObjectsCompat.equals(isBlockInput, consultPhrase.isBlockInput)
-            )
-        hasSameContent =
-            hasSameContent && fileDescription?.hasSameContent(consultPhrase.fileDescription) ?: consultPhrase.fileDescription == null
-        if (quote != null) {
-            hasSameContent = hasSameContent && quote.hasSameContent(consultPhrase.quote)
-        }
-        return hasSameContent
-    }
-
     override fun isTheSameItem(otherItem: ChatItem?): Boolean {
         return if (otherItem is ConsultPhrase) {
             ObjectsCompat.equals(id, otherItem.id)

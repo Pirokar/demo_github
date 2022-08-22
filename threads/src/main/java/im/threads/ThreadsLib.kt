@@ -10,8 +10,8 @@ import im.threads.internal.Config
 import im.threads.internal.chat_updates.ChatUpdateProcessor
 import im.threads.internal.controllers.ChatController
 import im.threads.internal.controllers.UnreadMessagesController
-import im.threads.internal.domain.audio_converter.AudioConverter
-import im.threads.internal.domain.audio_converter.callback.ILoadCallback
+import im.threads.internal.domain.audioConverter.AudioConverter
+import im.threads.internal.domain.audioConverter.callback.ILoadCallback
 import im.threads.internal.domain.logger.LoggerEdna
 import im.threads.internal.helpers.FileProviderHelper
 import im.threads.internal.model.FileDescription
@@ -31,7 +31,7 @@ import kotlinx.coroutines.launch
 import java.io.File
 
 @Suppress("unused")
-class ThreadsLib private constructor(context: Context?) {
+class ThreadsLib private constructor() {
     /**
      * @return time in seconds since the last user activity
      */
@@ -162,7 +162,7 @@ class ThreadsLib private constructor(context: Context?) {
             check(instance == null) { "ThreadsLib has already been initialized" }
             val startInitTime = System.currentTimeMillis()
             Config.instance = configBuilder.build()
-            instance = ThreadsLib(configBuilder.context)
+            instance = ThreadsLib()
 
             Config.instance.loggerConfig?.let { LoggerEdna.init(it) }
 
@@ -234,7 +234,7 @@ class ThreadsLib private constructor(context: Context?) {
         @JvmStatic
         fun getInstance(): ThreadsLib {
             checkNotNull(instance) { "ThreadsLib should be initialized first with ThreadsLib.init()" }
-            return instance ?: ThreadsLib(null)
+            return instance ?: ThreadsLib()
         }
     }
 }

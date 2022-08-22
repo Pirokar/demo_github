@@ -63,7 +63,9 @@ internal open class ConsultActivity : BaseActivity() {
                     style.menuItemTextColorResId
                 )
             ),
-            0, filesAndMediaSpannable.length, 0
+            0,
+            filesAndMediaSpannable.length,
+            0
         )
         filesAndMedia.title = filesAndMediaSpannable
         return super.onPrepareOptionsMenu(menu)

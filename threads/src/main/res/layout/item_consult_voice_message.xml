@@ -62,7 +62,7 @@
                 android:layout_height="wrap_content"
                 tools:visibility="gone"/>
 
-            <im.threads.internal.widget.text_view.BubbleMessageTextView
+            <im.threads.internal.widget.textView.BubbleMessageTextView
                 android:id="@+id/voice_message_consult_audio_status"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -75,7 +75,7 @@
 
         </FrameLayout>
 
-        <im.threads.internal.widget.text_view.BubbleMessageTextView
+        <im.threads.internal.widget.textView.BubbleMessageTextView
             android:id="@+id/file_size"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -86,7 +86,7 @@
             tools:text="1:20"
             android:textColor="@color/threads_incoming_message_text" />
 
-        <im.threads.internal.widget.text_view.BubbleTimeTextView
+        <im.threads.internal.widget.textView.BubbleTimeTextView
             android:id="@+id/timestamp"
             style="@style/timestamp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -106,7 +106,7 @@
             app:layout_constraintBottom_toBottomOf="@+id/voice_message_consult_text"
             android:background="@color/threads_chat_icons_tint" />
 
-        <im.threads.internal.widget.text_view.QuoteMessageTextView
+        <im.threads.internal.widget.textView.QuoteMessageTextView
             android:id="@+id/voice_message_consult_text"
             android:ellipsize="end"
             android:layout_width="0dp"

@@ -64,7 +64,7 @@
                 android:paddingStart="0dp"
                 android:paddingEnd="2dp">
 
-                <im.threads.internal.widget.text_view.QuoteAuthorTextView
+                <im.threads.internal.widget.textView.QuoteAuthorTextView
                     android:id="@+id/quote_to"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -76,7 +76,7 @@
                     android:textStyle="bold"
                     tools:text="Иван Петров" />
 
-                <im.threads.internal.widget.text_view.QuoteMessageTextView
+                <im.threads.internal.widget.textView.QuoteMessageTextView
                     android:id="@+id/quote_file_specs"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -87,7 +87,7 @@
                     android:textColor="@color/threads_outgoing_message_text"
                     tools:text="счет на оплату 1,2mb 436666666666364" />
 
-                <im.threads.internal.widget.text_view.QuoteTimeTextView
+                <im.threads.internal.widget.textView.QuoteTimeTextView
                     android:id="@+id/quote_send_at"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -161,7 +161,7 @@
                 android:paddingStart="0dp"
                 android:paddingEnd="2dp">
 
-                <im.threads.internal.widget.text_view.QuoteAuthorTextView
+                <im.threads.internal.widget.textView.QuoteAuthorTextView
                     android:id="@+id/to"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -173,7 +173,7 @@
                     android:textStyle="bold"
                     tools:text="Иван Петров" />
 
-                <im.threads.internal.widget.text_view.QuoteMessageTextView
+                <im.threads.internal.widget.textView.QuoteMessageTextView
                     android:id="@+id/file_specs"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -184,7 +184,7 @@
                     android:textColor="@color/threads_outgoing_message_text"
                     tools:text="счет на оплату 1,2mb 436666666666364" />
 
-                <im.threads.internal.widget.text_view.QuoteTimeTextView
+                <im.threads.internal.widget.textView.QuoteTimeTextView
                     android:id="@+id/send_at"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -201,7 +201,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
-            <im.threads.internal.widget.text_view.BubbleMessageTextView
+            <im.threads.internal.widget.textView.BubbleMessageTextView
                 android:id="@+id/text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -243,7 +243,7 @@
                     app:layout_constraintStart_toEndOf="@+id/voice_message_user_button_play_pause"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <im.threads.internal.widget.text_view.BubbleMessageTextView
+                <im.threads.internal.widget.textView.BubbleMessageTextView
                     android:id="@+id/file_size"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -257,7 +257,7 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <im.threads.internal.widget.text_view.BubbleTimeTextView
+            <im.threads.internal.widget.textView.BubbleTimeTextView
                 android:id="@+id/timestamp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -290,7 +290,7 @@
                     android:minWidth="240dp"
                     android:scaleType="fitCenter" />
 
-                <im.threads.internal.widget.text_view.BubbleMessageTextView
+                <im.threads.internal.widget.textView.BubbleMessageTextView
                     android:id="@+id/og_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -303,7 +303,7 @@
                     android:textStyle="bold"
                     tools:text="My Awesome Site Title" />
 
-                <im.threads.internal.widget.text_view.BubbleMessageTextView
+                <im.threads.internal.widget.textView.BubbleMessageTextView
                     android:id="@+id/og_description"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -314,7 +314,7 @@
                     android:textSize="16sp"
                     tools:text="My Awesome Site Descripton. Here I would write all awesome info" />
 
-                <im.threads.internal.widget.text_view.BubbleMessageTextView
+                <im.threads.internal.widget.textView.BubbleMessageTextView
                     android:id="@+id/og_url"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -330,7 +330,7 @@
                     tools:text="http://my.awesome.site.com" />
             </LinearLayout>
 
-            <im.threads.internal.widget.text_view.BubbleTimeTextView
+            <im.threads.internal.widget.textView.BubbleTimeTextView
                 android:id="@+id/og_timestamp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -343,7 +343,7 @@
         </FrameLayout>
     </LinearLayout>
 
-    <im.threads.internal.widget.text_view.BubbleTimeTextView
+    <im.threads.internal.widget.textView.BubbleTimeTextView
         android:id="@+id/errorText"
         style="@style/timestamp"
         android:layout_below="@+id/bubble"

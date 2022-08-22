@@ -43,8 +43,8 @@ import im.threads.internal.utils.ViewUtils;
 import im.threads.internal.views.CircularProgressButton;
 import im.threads.internal.views.VoiceTimeLabelFormatter;
 import im.threads.internal.views.VoiceTimeLabelFormatterKt;
-import im.threads.internal.widget.text_view.BubbleMessageTextView;
-import im.threads.internal.widget.text_view.BubbleTimeTextView;
+import im.threads.internal.widget.textView.BubbleMessageTextView;
+import im.threads.internal.widget.textView.BubbleTimeTextView;
 
 /**
  * layout/item_user_text_with_file.xml

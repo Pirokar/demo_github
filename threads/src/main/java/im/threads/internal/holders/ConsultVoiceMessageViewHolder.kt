@@ -25,7 +25,7 @@ import im.threads.internal.utils.FileUtils.convertRelativeUrlToAbsolute
 import im.threads.internal.utils.UrlUtils
 import im.threads.internal.views.VoiceTimeLabelFormatter
 import im.threads.internal.views.formatAsDuration
-import im.threads.internal.widget.text_view.QuoteMessageTextView
+import im.threads.internal.widget.textView.QuoteMessageTextView
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -57,8 +57,9 @@ class ConsultVoiceMessageViewHolder(parent: ViewGroup) : VoiceMessageBaseHolder(
     private val mTimeStampTextView =
         itemView.findViewById<TextView>(R.id.timestamp).apply {
             setTextColor(getColorInt(style.incomingMessageTimeColor))
-            if (style.incomingMessageTimeTextSize > 0)
+            if (style.incomingMessageTimeTextSize > 0) {
                 setTextSize(TypedValue.COMPLEX_UNIT_PX, itemView.context.resources.getDimension(style.incomingMessageTimeTextSize))
+            }
         }
     private val filterView = itemView.findViewById<View>(R.id.filter).apply {
         setBackgroundColor(

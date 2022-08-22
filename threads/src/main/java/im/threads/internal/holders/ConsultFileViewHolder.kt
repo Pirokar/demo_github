@@ -45,8 +45,9 @@ class ConsultFileViewHolder(parent: ViewGroup) : BaseHolder(
     private val mSizeTextView: TextView = itemView.findViewById(R.id.file_size)
     private val mTimeStampTextView = itemView.findViewById<TextView>(R.id.timestamp).apply {
         setTextColor(getColorInt(style.incomingMessageTimeColor))
-        if (style.incomingMessageTimeTextSize > 0)
+        if (style.incomingMessageTimeTextSize > 0) {
             setTextSize(TypedValue.COMPLEX_UNIT_PX, itemView.context.resources.getDimension(style.incomingMessageTimeTextSize))
+        }
     }
     private val mConsultAvatar = itemView.findViewById<ImageView>(R.id.consult_avatar).apply {
         layoutParams.height =
@@ -131,8 +132,11 @@ class ConsultFileViewHolder(parent: ViewGroup) : BaseHolder(
                 loader.isVisible = true
                 errortext.isVisible = false
                 val rotate = RotateAnimation(
-                    0f, 360f,
-                    Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF,
+                    0f,
+                    360f,
+                    Animation.RELATIVE_TO_SELF,
+                    0.5f,
+                    Animation.RELATIVE_TO_SELF,
                     0.5f
                 )
                 rotate.duration = 3000

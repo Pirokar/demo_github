@@ -14,7 +14,7 @@ import im.threads.android.data.Card
 import im.threads.android.di.appModule
 import im.threads.android.push.HCMTokenRefresher.requestToken
 import im.threads.android.ui.BottomNavigationActivity
-import im.threads.android.use_cases.developer_options.DebugMenuUseCase
+import im.threads.android.useCases.developerOptions.DebugMenuUseCase
 import im.threads.android.utils.PrefUtilsApp.getCards
 import im.threads.android.utils.PrefUtilsApp.getTheme
 import im.threads.android.utils.PrefUtilsApp.getTransportConfig
