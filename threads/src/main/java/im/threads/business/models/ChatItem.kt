@@ -1,4 +1,4 @@
-package im.threads.internal.model
+package im.threads.business.models
 
 interface ChatItem {
     val timeStamp: Long

@@ -17,9 +17,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import im.threads.business.models.ChatItem;
 import im.threads.internal.domain.logger.LoggerEdna;
 import im.threads.internal.formatters.SpeechStatus;
-import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ConsultConnectionMessage;
 import im.threads.internal.model.ConsultInfo;
 import im.threads.internal.model.ConsultPhrase;

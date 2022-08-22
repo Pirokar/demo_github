@@ -4,13 +4,13 @@ import android.content.Context
 import android.net.Uri
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import im.threads.business.rest.queries.OldThreadsBackendApi.Companion.API_VERSION
 import im.threads.internal.formatters.ChatItemType
 import im.threads.internal.model.CAMPAIGN_DATE_FORMAT
 import im.threads.internal.model.ConsultInfo
 import im.threads.internal.model.FileDescription
 import im.threads.internal.model.Survey
 import im.threads.internal.model.UserPhrase
-import im.threads.internal.retrofit.OldThreadsBackendApi.Companion.API_VERSION
 import im.threads.internal.utils.AppInfoHelper
 import im.threads.internal.utils.DeviceInfoHelper
 import im.threads.internal.utils.FileUtils.getFileName

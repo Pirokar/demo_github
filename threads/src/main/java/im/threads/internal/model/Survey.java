@@ -6,6 +6,7 @@ import androidx.core.util.ObjectsCompat;
 
 import java.util.List;
 
+import im.threads.business.models.ChatItem;
 import io.reactivex.Observable;
 
 public final class Survey implements ChatItem, Hidable {

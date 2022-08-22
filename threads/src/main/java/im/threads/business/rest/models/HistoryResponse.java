@@ -1,8 +1,12 @@
-package im.threads.internal.model;
+package im.threads.business.rest.models;
 
 import androidx.annotation.Nullable;
 
 import java.util.List;
+
+import im.threads.business.models.MessageFromHistory;
+import im.threads.internal.model.ConsultInfo;
+import im.threads.internal.transport.models.Operator;
 
 /**
  * ответ на запрос истории v2
@@ -20,7 +24,7 @@ public final class HistoryResponse {
     @Nullable
     public ConsultInfo getConsultInfo() {
         if (agentInfo != null && agentInfo.getAgent() != null) {
-            im.threads.internal.transport.models.Operator operator = agentInfo.getAgent();
+            Operator operator = agentInfo.getAgent();
             if (operator != null) {
                 return new ConsultInfo(
                         operator.getAliasOrName(),
@@ -40,9 +44,9 @@ public final class HistoryResponse {
     }
 
     private class AgentInfo {
-        im.threads.internal.transport.models.Operator agent;
+        Operator agent;
 
-        public im.threads.internal.transport.models.Operator getAgent() {
+        public Operator getAgent() {
             return agent;
         }
     }

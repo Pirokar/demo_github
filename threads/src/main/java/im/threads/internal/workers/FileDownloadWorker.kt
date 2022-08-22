@@ -9,11 +9,11 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
+import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.internal.Config
 import im.threads.internal.broadcastReceivers.ProgressReceiver
 import im.threads.internal.domain.logger.LoggerEdna
 import im.threads.internal.helpers.FileProviderHelper
-import im.threads.internal.model.AttachmentStateEnum
 import im.threads.internal.model.FileDescription
 import im.threads.internal.secureDatabase.DatabaseHolder
 import im.threads.internal.utils.FileDownloader

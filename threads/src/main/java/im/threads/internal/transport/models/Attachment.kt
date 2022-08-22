@@ -1,6 +1,6 @@
 package im.threads.internal.transport.models
 
-import im.threads.internal.model.AttachmentStateEnum
+import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.internal.model.ErrorStateEnum
 
 class Attachment(

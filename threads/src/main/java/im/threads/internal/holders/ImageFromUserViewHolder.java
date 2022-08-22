@@ -28,10 +28,10 @@ import java.util.Locale;
 
 import im.threads.ChatStyle;
 import im.threads.R;
+import im.threads.business.models.enums.AttachmentStateEnum;
 import im.threads.internal.Config;
 import im.threads.internal.imageLoading.ImageLoader;
 import im.threads.internal.imageLoading.ImageModifications;
-import im.threads.internal.model.AttachmentStateEnum;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.MessageState;
 import im.threads.internal.model.UserPhrase;

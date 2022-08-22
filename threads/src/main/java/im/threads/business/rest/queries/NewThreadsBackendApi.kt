@@ -1,7 +1,7 @@
-package im.threads.internal.retrofit
+package im.threads.business.rest.queries
 
-import im.threads.internal.model.HistoryResponse
-import im.threads.internal.model.SettingsResponse
+import im.threads.business.rest.models.HistoryResponse
+import im.threads.business.rest.models.SettingsResponse
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET

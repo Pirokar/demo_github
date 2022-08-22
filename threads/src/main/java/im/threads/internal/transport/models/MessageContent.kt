@@ -1,7 +1,7 @@
 package im.threads.internal.transport.models
 
-import im.threads.internal.model.QuickReply
-import im.threads.internal.model.Settings
+import im.threads.business.models.QuickReply
+import im.threads.business.models.Settings
 import java.util.Date
 
 data class MessageContent(

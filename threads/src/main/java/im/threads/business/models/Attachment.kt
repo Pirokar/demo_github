@@ -1,6 +1,9 @@
-package im.threads.internal.model
+package im.threads.business.models
 
+import im.threads.business.models.enums.AttachmentStateEnum
+import im.threads.internal.model.ErrorStateEnum
 import im.threads.internal.model.ErrorStateEnum.Companion.errorStateEnumFromString
+import im.threads.internal.model.Optional
 
 class Attachment {
     var result: String? = null

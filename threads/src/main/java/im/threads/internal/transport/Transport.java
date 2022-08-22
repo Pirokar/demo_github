@@ -6,14 +6,14 @@ import androidx.lifecycle.Lifecycle;
 
 import java.util.List;
 
+import im.threads.business.rest.models.SettingsResponse;
+import im.threads.business.rest.queries.BackendApi;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.domain.logger.LoggerEdna;
 import im.threads.internal.model.ClientNotificationDisplayType;
 import im.threads.internal.model.ConsultInfo;
-import im.threads.internal.model.SettingsResponse;
 import im.threads.internal.model.Survey;
 import im.threads.internal.model.UserPhrase;
-import im.threads.internal.retrofit.BackendApiGenerator;
 import im.threads.internal.utils.PrefUtils;
 import io.reactivex.Completable;
 import io.reactivex.Single;
@@ -29,7 +29,7 @@ public abstract class Transport {
     public void markMessagesAsRead(List<String> uuidList) {
         LoggerEdna.info("markMessagesAsRead : " + uuidList);
         subscribe(
-                Completable.fromAction(() -> BackendApiGenerator.getApi().markMessageAsRead(uuidList).execute())
+                Completable.fromAction(() -> BackendApi.get().markMessageAsRead(uuidList).execute())
                         .subscribeOn(Schedulers.io())
                         .subscribe(
                                 () -> {
@@ -49,7 +49,7 @@ public abstract class Transport {
 
     public void getSettings() {
         subscribe(
-                Single.fromCallable(() -> BackendApiGenerator.getApi().settings().execute())
+                Single.fromCallable(() -> BackendApi.get().settings().execute())
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(

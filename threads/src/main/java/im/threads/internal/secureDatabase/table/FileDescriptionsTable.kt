@@ -1,14 +1,13 @@
 package im.threads.internal.secureDatabase.table
 
 import android.content.ContentValues
-import im.threads.internal.model.AttachmentStateEnum
+import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.internal.model.ErrorStateEnum
 import im.threads.internal.model.FileDescription
 import im.threads.internal.secureDatabase.ThreadsDbHelper.Companion.DB_PASSWORD
 import im.threads.internal.utils.FileUtils.safeParse
 import net.sqlcipher.database.SQLiteDatabase
 import net.sqlcipher.database.SQLiteOpenHelper
-import java.util.ArrayList
 import java.util.Locale
 
 class FileDescriptionsTable : Table() {

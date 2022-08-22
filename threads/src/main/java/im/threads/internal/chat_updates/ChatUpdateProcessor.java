@@ -5,9 +5,9 @@ import androidx.annotation.NonNull;
 import java.util.List;
 import java.util.Map;
 
+import im.threads.business.models.ChatItem;
 import im.threads.internal.formatters.ChatItemType;
 import im.threads.internal.model.CampaignMessage;
-import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ChatItemSendErrorModel;
 import im.threads.internal.model.ClientNotificationDisplayType;
 import im.threads.internal.model.InputFieldEnableModel;

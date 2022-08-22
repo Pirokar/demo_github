@@ -6,6 +6,8 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
+import im.threads.business.models.ChatItem;
+
 public final class ConsultConnectionMessage extends ConsultChatPhrase implements ChatItem, SystemMessage {
 
     private final String type;

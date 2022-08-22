@@ -8,12 +8,12 @@ import androidx.annotation.NonNull;
 
 import java.util.List;
 
+import im.threads.business.models.ChatItem;
 import im.threads.internal.database.table.FileDescriptionsTable;
 import im.threads.internal.database.table.MessagesTable;
 import im.threads.internal.database.table.QuestionsTable;
 import im.threads.internal.database.table.QuickRepliesTable;
 import im.threads.internal.database.table.QuotesTable;
-import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ConsultInfo;
 import im.threads.internal.model.ConsultPhrase;
 import im.threads.internal.model.FileDescription;

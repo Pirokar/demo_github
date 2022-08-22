@@ -7,6 +7,8 @@ import android.os.Parcelable;
 import androidx.annotation.Nullable;
 import androidx.core.util.ObjectsCompat;
 
+import im.threads.business.models.enums.AttachmentStateEnum;
+
 public final class FileDescription implements Parcelable {
     public static final Parcelable.Creator<FileDescription> CREATOR = new Creator<>() {
         @Override

@@ -8,12 +8,12 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import im.threads.business.models.ChatItem;
 import im.threads.internal.Config;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.domain.logger.LoggerEdna;
 import im.threads.internal.formatters.ChatItemType;
 import im.threads.internal.formatters.SpeechStatus;
-import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ConsultConnectionMessage;
 import im.threads.internal.model.ConsultPhrase;
 import im.threads.internal.model.FileDescription;

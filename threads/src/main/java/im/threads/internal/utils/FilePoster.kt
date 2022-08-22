@@ -4,12 +4,12 @@ import android.accounts.NetworkErrorException
 import android.graphics.Bitmap
 import android.net.Uri
 import android.widget.ImageView
+import im.threads.business.rest.queries.DatastoreApi
 import im.threads.internal.Config
 import im.threads.internal.domain.logger.LoggerEdna
 import im.threads.internal.imageLoading.ImageLoader
 import im.threads.internal.model.ErrorResponse
 import im.threads.internal.model.FileDescription
-import im.threads.internal.retrofit.DatastoreApiGenerator
 import im.threads.internal.transport.InputStreamRequestBody
 import im.threads.internal.utils.FileUtils.getFileName
 import im.threads.internal.utils.FileUtils.getMimeType
@@ -56,7 +56,7 @@ private fun sendFile(uri: Uri, mimeType: String, token: String): String {
         getFileRequestBody(uri, mimeType)
     )
     val agent: RequestBody = token.toRequestBody("text/plain".toMediaTypeOrNull())
-    val response = DatastoreApiGenerator.getApi().upload(part, agent, token)?.execute()
+    val response = DatastoreApi.get().upload(part, agent, token)?.execute()
     response?.let {
         if (it.isSuccessful) {
             response.body()?.let { fileUploadResponse ->

@@ -1,4 +1,4 @@
-package im.threads.internal.model;
+package im.threads.business.models;
 
 public final class Client {
     private Long id;
