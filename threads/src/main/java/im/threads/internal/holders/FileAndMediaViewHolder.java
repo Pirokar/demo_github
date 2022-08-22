@@ -1,5 +1,6 @@
 package im.threads.internal.holders;
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,9 +32,12 @@ public final class FileAndMediaViewHolder extends BaseHolder {
     private TextView timeStampTextView;
     private SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
     private Drawable tintedDrawable;
+    private Context context;
 
     public FileAndMediaViewHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_file_and_media, parent, false));
+        context = parent.getContext();
+
         mImageButton = itemView.findViewById(R.id.file_button);
         mDownloadButton = itemView.findViewById(R.id.button_download_file);
         fileHeaderTextView = itemView.findViewById(R.id.file_title);
@@ -60,6 +64,7 @@ public final class FileAndMediaViewHolder extends BaseHolder {
                        View.OnClickListener fileClickListener,
                        View.OnClickListener fileDownloadListener
     ) {
+        setUpDownloadButton(mDownloadButton);
         if (fileDescription.getFileUri() == null) {
             mDownloadButton.setVisibility(View.VISIBLE);
             mImageButton.setVisibility(View.GONE);
@@ -94,5 +99,25 @@ public final class FileAndMediaViewHolder extends BaseHolder {
         for (int i = 0; i < vg.getChildCount(); i++) {
             vg.getChildAt(i).setOnClickListener(fileClickListener);
         }
+    }
+
+    private void setUpDownloadButton(CircularProgressButton button) {
+        ChatStyle chatStyle = Config.instance.getChatStyle();
+        int downloadButtonTintResId = chatStyle.chatBodyIconsTint == 0 ?
+            chatStyle.downloadButtonTintResId : chatStyle.chatBodyIconsTint;
+
+        Drawable startDownload = setUpDrawable(chatStyle.startDownloadIconResId, downloadButtonTintResId);
+        Drawable inProgress = setUpDrawable(chatStyle.inProgressIconResId, downloadButtonTintResId);
+        Drawable completed = setUpDrawable(chatStyle.completedIconResId, downloadButtonTintResId);
+        button.setStartDownloadDrawable(startDownload);
+        button.setInProgress(inProgress);
+        button.setCompletedDrawable(completed);
+    }
+
+    private Drawable setUpDrawable(int iconResId, int colorRes) {
+        Drawable drawable = AppCompatResources.getDrawable(context, iconResId);
+        if (drawable != null) drawable = drawable.mutate();
+        ColorsHelper.setDrawableColor(context, drawable, colorRes);
+        return drawable;
     }
 }
