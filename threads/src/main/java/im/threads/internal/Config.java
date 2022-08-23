@@ -19,8 +19,8 @@ import javax.net.ssl.X509TrustManager;
 
 import im.threads.ChatStyle;
 import im.threads.ThreadsLib;
-import im.threads.config.RequestConfig;
-import im.threads.config.SocketClientSettings;
+import im.threads.business.config.RequestConfig;
+import im.threads.business.config.SocketClientSettings;
 import im.threads.internal.domain.logger.LoggerConfig;
 import im.threads.internal.exceptions.MetaConfigurationException;
 import im.threads.internal.imageLoading.ImageLoaderOkHttpProvider;

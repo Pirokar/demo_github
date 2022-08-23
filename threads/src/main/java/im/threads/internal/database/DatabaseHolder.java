@@ -5,8 +5,8 @@ import androidx.annotation.Nullable;
 
 import java.util.List;
 
+import im.threads.business.models.ChatItem;
 import im.threads.internal.Config;
-import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ConsultInfo;
 import im.threads.internal.model.ConsultPhrase;
 import im.threads.internal.model.FileDescription;

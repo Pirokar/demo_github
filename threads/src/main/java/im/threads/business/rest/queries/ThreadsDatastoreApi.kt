@@ -1,4 +1,4 @@
-package im.threads.internal.retrofit
+package im.threads.business.rest.queries
 
 import im.threads.internal.model.FileUploadResponse
 import okhttp3.MultipartBody

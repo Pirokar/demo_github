@@ -17,12 +17,12 @@ import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import im.threads.R
+import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.internal.Config
 import im.threads.internal.formatters.RussianFormatSymbols
 import im.threads.internal.imageLoading.ImageLoader
 import im.threads.internal.imageLoading.ImageModifications
 import im.threads.internal.imageLoading.loadImage
-import im.threads.internal.model.AttachmentStateEnum
 import im.threads.internal.model.ConsultPhrase
 import im.threads.internal.model.FileDescription
 import im.threads.internal.utils.FileUtils

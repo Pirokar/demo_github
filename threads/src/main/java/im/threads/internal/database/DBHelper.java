@@ -1,9 +1,10 @@
 package im.threads.internal.database;
 
+import androidx.annotation.NonNull;
+
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import im.threads.internal.model.ChatItem;
+import im.threads.business.models.ChatItem;
 import im.threads.internal.model.ConsultInfo;
 import im.threads.internal.model.ConsultPhrase;
 import im.threads.internal.model.FileDescription;

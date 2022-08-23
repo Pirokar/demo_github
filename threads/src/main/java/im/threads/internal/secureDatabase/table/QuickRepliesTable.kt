@@ -1,8 +1,8 @@
 package im.threads.internal.secureDatabase.table
 
 import android.content.ContentValues
+import im.threads.business.models.QuickReply
 import im.threads.internal.domain.logger.LoggerEdna
-import im.threads.internal.model.QuickReply
 import im.threads.internal.secureDatabase.ThreadsDbHelper.Companion.DB_PASSWORD
 import net.sqlcipher.database.SQLiteDatabase
 import net.sqlcipher.database.SQLiteOpenHelper

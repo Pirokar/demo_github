@@ -1,5 +1,6 @@
 package im.threads.internal.model
 
+import im.threads.business.models.ChatItem
 import im.threads.internal.formatters.SpeechStatus
 
 data class SpeechMessageUpdate constructor(

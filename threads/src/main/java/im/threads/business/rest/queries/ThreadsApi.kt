@@ -1,9 +1,9 @@
-package im.threads.internal.retrofit
+package im.threads.business.rest.queries
 
+import im.threads.business.rest.models.HistoryResponse
+import im.threads.business.rest.models.SettingsResponse
 import im.threads.internal.Config
 import im.threads.internal.model.FileUploadResponse
-import im.threads.internal.model.HistoryResponse
-import im.threads.internal.model.SettingsResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Call

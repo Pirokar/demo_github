@@ -6,6 +6,8 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.text.TextUtils
+import im.threads.business.rest.queries.BackendApi
+import im.threads.business.rest.queries.DatastoreApi
 import im.threads.internal.Config
 import im.threads.internal.chat_updates.ChatUpdateProcessor
 import im.threads.internal.controllers.ChatController
@@ -163,6 +165,9 @@ class ThreadsLib private constructor() {
             val startInitTime = System.currentTimeMillis()
             Config.instance = configBuilder.build()
             instance = ThreadsLib()
+
+            BackendApi.init(Config.instance)
+            DatastoreApi.init(Config.instance)
 
             Config.instance.loggerConfig?.let { LoggerEdna.init(it) }
 

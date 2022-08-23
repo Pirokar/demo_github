@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 
-import im.threads.config.RequestConfig;
+import im.threads.business.config.RequestConfig;
 import im.threads.internal.Config;
 import im.threads.internal.domain.logger.LoggerConfig;
 import im.threads.view.ChatActivity;

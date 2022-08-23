@@ -1,6 +1,8 @@
 package im.threads.internal.model
 
 import androidx.core.util.ObjectsCompat
+import im.threads.business.models.ChatItem
+import im.threads.business.models.QuickReply
 import im.threads.internal.domain.ogParser.OGData
 import im.threads.internal.formatters.SpeechStatus
 import im.threads.internal.utils.FileUtils.isImage

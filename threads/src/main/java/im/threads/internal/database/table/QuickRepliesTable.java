@@ -8,8 +8,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import java.util.ArrayList;
 import java.util.List;
 
+import im.threads.business.models.QuickReply;
 import im.threads.internal.domain.logger.LoggerEdna;
-import im.threads.internal.model.QuickReply;
 
 public class QuickRepliesTable extends Table {
 

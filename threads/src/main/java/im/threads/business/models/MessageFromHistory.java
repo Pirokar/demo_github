@@ -1,4 +1,4 @@
-package im.threads.internal.model;
+package im.threads.business.models;
 
 import androidx.annotation.Nullable;
 import androidx.core.util.ObjectsCompat;

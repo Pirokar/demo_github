@@ -3,7 +3,7 @@ package im.threads.internal.transport.threadsGate;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import im.threads.internal.model.ChatItem;
+import im.threads.business.models.ChatItem;
 import im.threads.internal.transport.MessageParser;
 import im.threads.internal.transport.threadsGate.responses.BaseMessage;
 

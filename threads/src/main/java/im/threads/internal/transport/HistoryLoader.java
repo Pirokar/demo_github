@@ -5,11 +5,11 @@ import androidx.annotation.WorkerThread;
 import java.io.IOException;
 import java.util.List;
 
+import im.threads.business.models.MessageFromHistory;
+import im.threads.business.rest.models.HistoryResponse;
+import im.threads.business.rest.queries.BackendApi;
+import im.threads.business.rest.queries.ThreadsApi;
 import im.threads.internal.Config;
-import im.threads.internal.model.HistoryResponse;
-import im.threads.internal.model.MessageFromHistory;
-import im.threads.internal.retrofit.BackendApiGenerator;
-import im.threads.internal.retrofit.ThreadsApi;
 import im.threads.internal.utils.AppInfoHelper;
 import im.threads.internal.utils.DateHelper;
 import retrofit2.Call;
@@ -33,7 +33,7 @@ public final class HistoryLoader {
             count = Config.instance.historyLoadingCount;
         }
         if (!token.isEmpty()) {
-            ThreadsApi threadsApi = BackendApiGenerator.getApi();
+            ThreadsApi threadsApi = BackendApi.get();
             String beforeDate = beforeTimestamp == null ? null : DateHelper.getMessageDateStringFromTimestamp(beforeTimestamp);
             Call<HistoryResponse> call = threadsApi.history(token, beforeDate, count, AppInfoHelper.getLibVersion());
             Response<HistoryResponse> response = call.execute();

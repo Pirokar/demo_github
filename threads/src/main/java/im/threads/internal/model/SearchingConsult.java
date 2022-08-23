@@ -4,6 +4,8 @@ import androidx.core.util.ObjectsCompat;
 
 import java.util.Calendar;
 
+import im.threads.business.models.ChatItem;
+
 public final class SearchingConsult implements ChatItem {
     private long date;
 

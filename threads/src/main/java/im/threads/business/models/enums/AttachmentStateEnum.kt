@@ -1,4 +1,4 @@
-package im.threads.internal.model
+package im.threads.business.models.enums
 
 enum class AttachmentStateEnum(val state: String) {
     ANY("ANY"),

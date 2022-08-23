@@ -18,10 +18,10 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import im.threads.ChatStyle
 import im.threads.R
+import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.internal.Config
 import im.threads.internal.imageLoading.ImageModifications
 import im.threads.internal.imageLoading.loadImage
-import im.threads.internal.model.AttachmentStateEnum
 import im.threads.internal.model.ConsultPhrase
 import im.threads.internal.utils.FileUtils
 import im.threads.internal.views.CircularProgressButton

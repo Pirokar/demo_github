@@ -1,4 +1,4 @@
-package im.threads.internal.retrofit
+package im.threads.business.rest.queries
 
 import im.threads.R
 import im.threads.internal.Config
@@ -14,13 +14,15 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.net.ssl.SSLSession
 
-abstract class ApiGenerator protected constructor(private val baseUrl: String) {
+abstract class ApiGenerator protected constructor(
+    private val config: Config
+) {
     protected lateinit var threadsApi: ThreadsApi
     protected lateinit var apiBuild: Retrofit
 
     private val userAgent: String
         get() = String.format(
-            Config.instance.context.resources.getString(R.string.threads_user_agent),
+            config.context.resources.getString(R.string.threads_user_agent),
             DeviceInfoHelper.getOsVersion(),
             DeviceInfoHelper.getDeviceName(),
             DeviceInfoHelper.getIpAddress(),
@@ -34,7 +36,6 @@ abstract class ApiGenerator protected constructor(private val baseUrl: String) {
     abstract fun createThreadsApi()
 
     private fun createOkHttpClient(): OkHttpClient {
-        val config = Config.instance
         val (connectTimeoutMillis, readTimeoutMillis, writeTimeoutMillis) =
             config.requestConfig.threadsApiHttpClientSettings
         val httpClientBuilder: OkHttpClient.Builder = OkHttpClient.Builder()
@@ -49,11 +50,11 @@ abstract class ApiGenerator protected constructor(private val baseUrl: String) {
                 }
             )
             .addInterceptor(AuthInterceptor())
-            .apply { Config.instance.networkInterceptor?.let { addInterceptor(it) } }
+            .apply { config.networkInterceptor?.let { addInterceptor(it) } }
             .connectTimeout(connectTimeoutMillis.toLong(), TimeUnit.MILLISECONDS)
             .readTimeout(readTimeoutMillis.toLong(), TimeUnit.MILLISECONDS)
             .writeTimeout(writeTimeoutMillis.toLong(), TimeUnit.MILLISECONDS)
-        if (Config.instance.isDebugLoggingEnabled) {
+        if (config.isDebugLoggingEnabled) {
             httpClientBuilder.addInterceptor(
                 HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
             )
@@ -72,7 +73,7 @@ abstract class ApiGenerator protected constructor(private val baseUrl: String) {
 
     private fun init() {
         apiBuild = Retrofit.Builder()
-            .baseUrl(baseUrl)
+            .baseUrl(config.serverBaseUrl)
             .addConverterFactory(GsonConverterFactory.create())
             .client(createOkHttpClient())
             .build()

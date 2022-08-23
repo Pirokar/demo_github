@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import im.threads.internal.model.AttachmentStateEnum;
+import im.threads.business.models.enums.AttachmentStateEnum;
 import im.threads.internal.model.ErrorStateEnum;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.utils.FileUtils;

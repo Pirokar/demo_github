@@ -1,4 +1,4 @@
-package im.threads.internal.model;
+package im.threads.business.rest.models;
 
 public class SettingsResponse {
     private String clientNotificationDisplayType;

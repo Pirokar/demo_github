@@ -2,6 +2,7 @@ package im.threads.internal.model
 
 import android.text.TextUtils
 import androidx.core.util.ObjectsCompat
+import im.threads.business.models.ChatItem
 import im.threads.internal.utils.FileUtils.isImage
 import im.threads.internal.utils.FileUtils.isVoiceMessage
 import java.util.UUID

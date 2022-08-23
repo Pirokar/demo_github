@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import im.threads.R;
-import im.threads.internal.model.ChatItem;
+import im.threads.business.models.ChatItem;
 import im.threads.internal.model.ConsultConnectionMessage;
 import im.threads.internal.model.ConsultPhrase;
 import im.threads.internal.model.FileDescription;

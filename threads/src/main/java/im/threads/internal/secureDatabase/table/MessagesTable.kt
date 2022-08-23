@@ -2,9 +2,9 @@ package im.threads.internal.secureDatabase.table
 
 import android.content.ContentValues
 import android.database.Cursor
+import im.threads.business.models.ChatItem
 import im.threads.internal.domain.logger.LoggerEdna
 import im.threads.internal.formatters.SpeechStatus.Companion.fromString
-import im.threads.internal.model.ChatItem
 import im.threads.internal.model.ConsultConnectionMessage
 import im.threads.internal.model.ConsultInfo
 import im.threads.internal.model.ConsultPhrase

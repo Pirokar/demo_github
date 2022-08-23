@@ -2,6 +2,8 @@ package im.threads.internal.model;
 
 import androidx.core.util.ObjectsCompat;
 
+import im.threads.business.models.ChatItem;
+
 public class SimpleSystemMessage implements ChatItem, SystemMessage {
 
     private final String uuid;

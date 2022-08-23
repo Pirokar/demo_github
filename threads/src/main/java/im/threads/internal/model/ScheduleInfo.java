@@ -4,8 +4,9 @@ import androidx.core.util.ObjectsCompat;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Objects;
 import java.util.TimeZone;
+
+import im.threads.business.models.ChatItem;
 
 /**
  * Информация о расписании

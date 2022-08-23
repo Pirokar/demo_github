@@ -1,7 +1,7 @@
 package im.threads.internal.utils
 
+import im.threads.business.models.ChatItem
 import im.threads.internal.helpers.ChatItemListHelper.lastIndexOf
-import im.threads.internal.model.ChatItem
 import im.threads.internal.model.ChatPhrase
 import java.util.Locale
 
