@@ -3,19 +3,19 @@ package im.threads.viewModels
 import android.content.Context
 import android.net.Uri
 import androidx.test.core.app.ApplicationProvider
-import im.threads.internal.activities.files_activity.FilesViewModel
-import im.threads.internal.model.FileDescription
-import im.threads.internal.secureDatabase.DatabaseHolder
+import im.threads.business.models.FileDescription
+import im.threads.business.secureDatabase.DatabaseHolder
+import im.threads.internal.activities.filesActivity.FilesViewModel
 import io.reactivex.Single
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
-import org.mockito.Mockito.`when`
 import org.mockito.Mockito.never
 import org.mockito.Mockito.spy
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
 import org.robolectric.RobolectricTestRunner
 
@@ -25,12 +25,13 @@ class FilesViewModelTest {
     private lateinit var viewModelSpy: FilesViewModel
     private val context = ApplicationProvider.getApplicationContext<Context>()
 
-    private val fileDescriptionWithData = FileDescription(
-        "Serious operator",
-        Uri.parse("https://www.testurl.ru/somefile.no"),
-        1000L,
-        1223345L
-    )
+    private val fileDescriptionWithData =
+        FileDescription(
+            "Serious operator",
+            Uri.parse("https://www.testurl.ru/somefile.no"),
+            1000L,
+            1223345L
+        )
 
     @Mock
     private lateinit var database: DatabaseHolder

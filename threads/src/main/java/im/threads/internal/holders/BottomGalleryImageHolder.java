@@ -11,8 +11,8 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import im.threads.ChatStyle;
 import im.threads.R;
+import im.threads.business.imageLoading.ImageLoader;
 import im.threads.internal.Config;
-import im.threads.internal.imageLoading.ImageLoader;
 import im.threads.internal.model.BottomGalleryItem;
 import im.threads.internal.utils.ColorsHelper;
 

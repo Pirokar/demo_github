@@ -5,8 +5,8 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
 import im.threads.BuildConfig;
+import im.threads.business.logger.LoggerEdna;
 import im.threads.internal.Config;
-import im.threads.internal.domain.logger.LoggerEdna;
 
 public final class AppInfoHelper {
     public static String getAppVersion() {

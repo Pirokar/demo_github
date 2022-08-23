@@ -3,8 +3,8 @@ package im.threads.internal.utils
 import android.content.Context
 import android.net.Uri
 import android.text.TextUtils
+import im.threads.business.logger.LoggerEdna
 import im.threads.internal.Config
-import im.threads.internal.domain.logger.LoggerEdna
 import java.io.BufferedInputStream
 import java.io.File
 import java.io.FileOutputStream

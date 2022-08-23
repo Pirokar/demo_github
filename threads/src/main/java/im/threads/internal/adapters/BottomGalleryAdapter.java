@@ -12,11 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import im.threads.R;
+import im.threads.business.utils.FileUtils;
 import im.threads.internal.Config;
 import im.threads.internal.helpers.FileHelper;
 import im.threads.internal.holders.BottomGalleryImageHolder;
 import im.threads.internal.model.BottomGalleryItem;
-import im.threads.internal.utils.FileUtils;
 
 public final class BottomGalleryAdapter extends RecyclerView.Adapter<BottomGalleryImageHolder> {
     private List<BottomGalleryItem> list;

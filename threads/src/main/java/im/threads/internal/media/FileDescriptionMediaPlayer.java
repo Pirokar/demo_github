@@ -10,9 +10,9 @@ import androidx.core.util.ObjectsCompat;
 
 import java.util.concurrent.TimeUnit;
 
+import im.threads.business.logger.LoggerEdna;
+import im.threads.business.models.FileDescription;
 import im.threads.internal.Config;
-import im.threads.internal.domain.logger.LoggerEdna;
-import im.threads.internal.model.FileDescription;
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;

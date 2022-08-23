@@ -7,11 +7,11 @@ import java.util.List;
 
 import im.threads.internal.Config;
 import im.threads.internal.activities.QuickAnswerActivity;
-import im.threads.internal.domain.logger.LoggerEdna;
+import im.threads.business.logger.LoggerEdna;
 import im.threads.internal.model.UpcomingUserMessage;
-import im.threads.internal.secureDatabase.DatabaseHolder;
-import im.threads.internal.transport.HistoryLoader;
-import im.threads.internal.transport.HistoryParser;
+import im.threads.business.secureDatabase.DatabaseHolder;
+import im.threads.business.transport.HistoryLoader;
+import im.threads.business.transport.HistoryParser;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;

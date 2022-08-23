@@ -2,8 +2,8 @@ package im.threads.internal.utils;
 
 import android.content.SharedPreferences;
 
-import im.threads.internal.model.ConsultConnectionMessage;
-import im.threads.internal.model.ConsultInfo;
+import im.threads.business.models.ConsultConnectionMessage;
+import im.threads.business.models.ConsultInfo;
 
 public final class ConsultWriter {
     private static final String OPERATOR_STATUS = "OPERATOR_STATUS";

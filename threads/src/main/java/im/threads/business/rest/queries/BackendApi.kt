@@ -2,7 +2,7 @@ package im.threads.business.rest.queries
 
 import im.threads.internal.Config
 
-class BackendApi private constructor(config: Config) : ApiGenerator(config) {
+class BackendApi private constructor(config: Config) : ApiGenerator(config, false) {
     override fun createThreadsApi() {
         threadsApi = ThreadsApi(
             apiBuild.create(OldThreadsBackendApi::class.java),

@@ -3,6 +3,8 @@ package im.threads.internal.domain.logger
 import android.content.Context
 import android.util.Log
 import androidx.test.core.app.ApplicationProvider
+import im.threads.business.logger.LoggerConfig
+import im.threads.business.logger.LoggerEdna
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith

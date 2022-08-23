@@ -18,8 +18,8 @@ import im.threads.android.useCases.developerOptions.DebugMenuUseCase
 import im.threads.android.utils.PrefUtilsApp.getCards
 import im.threads.android.utils.PrefUtilsApp.getTheme
 import im.threads.android.utils.PrefUtilsApp.getTransportConfig
-import im.threads.internal.domain.logger.LoggerConfig
-import im.threads.internal.domain.logger.LoggerRetentionPolicy
+import im.threads.business.logger.LoggerConfig
+import im.threads.business.logger.LoggerRetentionPolicy
 import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable

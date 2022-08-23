@@ -19,9 +19,9 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import im.threads.ChatStyle;
 import im.threads.internal.Config;
 import im.threads.internal.controllers.QuickAnswerController;
-import im.threads.internal.domain.logger.LoggerEdna;
+import im.threads.business.logger.LoggerEdna;
 import im.threads.internal.fragments.QuickAnswerFragment;
-import im.threads.internal.model.ConsultPhrase;
+import im.threads.business.models.ConsultPhrase;
 import im.threads.internal.model.UpcomingUserMessage;
 
 public final class QuickAnswerActivity

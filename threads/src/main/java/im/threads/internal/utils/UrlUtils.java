@@ -14,8 +14,6 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import im.threads.internal.domain.logger.LoggerEdna;
-
 public final class UrlUtils {
 
     public static final Pattern DEEPLINK_URL = Pattern.compile("[a-z0-9+.-]+://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|*]*");

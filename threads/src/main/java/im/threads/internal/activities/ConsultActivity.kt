@@ -17,11 +17,11 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.isVisible
 import im.threads.ChatStyle
 import im.threads.R
+import im.threads.business.imageLoading.loadImage
+import im.threads.business.utils.FileUtils.convertRelativeUrlToAbsolute
 import im.threads.databinding.ActivityConsultPageBinding
 import im.threads.internal.Config
-import im.threads.internal.activities.files_activity.FilesActivity
-import im.threads.internal.imageLoading.loadImage
-import im.threads.internal.utils.FileUtils.convertRelativeUrlToAbsolute
+import im.threads.internal.activities.filesActivity.FilesActivity
 import im.threads.internal.utils.setColorFilter
 import im.threads.view.ChatFragment
 

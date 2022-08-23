@@ -9,11 +9,11 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import im.threads.ChatStyle
 import im.threads.R
+import im.threads.business.imageLoading.ImageModifications
+import im.threads.business.imageLoading.loadImage
+import im.threads.business.utils.FileUtils
 import im.threads.internal.Config
-import im.threads.internal.imageLoading.ImageModifications
-import im.threads.internal.imageLoading.loadImage
 import im.threads.internal.model.ConsultTyping
-import im.threads.internal.utils.FileUtils
 
 /**
  * layout/item_consult_typing.xml

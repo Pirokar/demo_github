@@ -43,8 +43,8 @@ import im.threads.android.ui.addServerDialog.AddServerDialogActions
 import im.threads.android.utils.PrefUtilsApp
 import im.threads.android.utils.fromJson
 import im.threads.android.utils.toJson
-import im.threads.internal.domain.logger.LoggerEdna
-import im.threads.internal.secureDatabase.DatabaseHolder
+import im.threads.business.logger.LoggerEdna
+import im.threads.business.secureDatabase.DatabaseHolder
 import java.io.FileOutputStream
 import java.io.InputStream
 

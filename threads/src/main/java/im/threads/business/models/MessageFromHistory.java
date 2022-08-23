@@ -5,7 +5,7 @@ import androidx.core.util.ObjectsCompat;
 
 import java.util.List;
 
-import im.threads.internal.utils.DateHelper;
+import im.threads.business.utils.DateHelper;
 
 public final class MessageFromHistory implements ChatItem {
     private String uuid;

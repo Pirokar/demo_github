@@ -1,6 +1,6 @@
 package im.threads.internal.controllers;
 
-import im.threads.internal.secureDatabase.DatabaseHolder;
+import im.threads.business.secureDatabase.DatabaseHolder;
 import im.threads.internal.utils.PrefUtils;
 import io.reactivex.processors.BehaviorProcessor;
 

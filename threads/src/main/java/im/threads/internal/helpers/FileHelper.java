@@ -4,10 +4,10 @@ import android.content.Context;
 
 import java.io.File;
 
+import im.threads.business.logger.LoggerEdna;
+import im.threads.business.transport.models.AttachmentSettings;
 import im.threads.internal.Config;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
-import im.threads.internal.domain.logger.LoggerEdna;
-import im.threads.internal.transport.models.AttachmentSettings;
 import im.threads.internal.utils.PrefUtils;
 
 public enum FileHelper {

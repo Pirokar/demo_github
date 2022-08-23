@@ -4,9 +4,9 @@ import androidx.annotation.Nullable;
 
 import java.util.List;
 
+import im.threads.business.models.ConsultInfo;
 import im.threads.business.models.MessageFromHistory;
-import im.threads.internal.model.ConsultInfo;
-import im.threads.internal.transport.models.Operator;
+import im.threads.business.transport.models.Operator;
 
 /**
  * ответ на запрос истории v2

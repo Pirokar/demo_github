@@ -2,6 +2,9 @@ package im.threads.internal.model;
 
 import androidx.annotation.Nullable;
 
+import im.threads.business.models.FileDescription;
+import im.threads.business.models.Quote;
+
 public final class OutgoingUserMessage {
     @Nullable
     public final String text;

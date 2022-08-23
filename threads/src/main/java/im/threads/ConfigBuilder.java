@@ -12,8 +12,8 @@ import java.util.Collections;
 import java.util.List;
 
 import im.threads.business.config.RequestConfig;
+import im.threads.business.logger.LoggerConfig;
 import im.threads.internal.Config;
-import im.threads.internal.domain.logger.LoggerConfig;
 import im.threads.view.ChatActivity;
 import okhttp3.Interceptor;
 
