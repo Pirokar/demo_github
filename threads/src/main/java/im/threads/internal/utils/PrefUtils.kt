@@ -9,12 +9,12 @@ import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.google.gson.JsonSyntaxException
 import im.threads.ChatStyle
+import im.threads.business.logger.LoggerEdna
+import im.threads.business.models.CampaignMessage
+import im.threads.business.models.FileDescription
+import im.threads.business.transport.CloudMessagingType
 import im.threads.internal.Config
-import im.threads.internal.domain.logger.LoggerEdna
-import im.threads.internal.model.CampaignMessage
 import im.threads.internal.model.ClientNotificationDisplayType
-import im.threads.internal.model.FileDescription
-import im.threads.internal.transport.CloudMessagingType
 import im.threads.styles.permissions.PermissionDescriptionDialogStyle
 import im.threads.styles.permissions.PermissionDescriptionType
 import java.io.File

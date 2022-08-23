@@ -4,14 +4,14 @@ import android.view.ViewGroup
 import androidx.core.util.ObjectsCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import im.threads.business.models.FileDescription
+import im.threads.business.utils.FileUtils.getFileName
 import im.threads.internal.holders.EmptyViewHolder
 import im.threads.internal.holders.FileAndMediaViewHolder
 import im.threads.internal.holders.FilesDateStampHolder
 import im.threads.internal.model.DateRow
 import im.threads.internal.model.FileAndMediaItem
-import im.threads.internal.model.FileDescription
 import im.threads.internal.model.MediaAndFileItem
-import im.threads.internal.utils.FileUtils.getFileName
 import java.util.Calendar
 import java.util.Locale
 

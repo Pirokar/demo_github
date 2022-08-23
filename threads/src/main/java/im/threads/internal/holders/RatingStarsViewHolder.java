@@ -6,10 +6,11 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
+
 import im.threads.ChatStyle;
 import im.threads.R;
+import im.threads.business.models.Survey;
 import im.threads.internal.Config;
-import im.threads.internal.model.Survey;
 import im.threads.internal.widget.Rating;
 
 /**

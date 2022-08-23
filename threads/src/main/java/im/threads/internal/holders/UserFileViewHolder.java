@@ -21,11 +21,11 @@ import java.util.Locale;
 
 import im.threads.ChatStyle;
 import im.threads.R;
+import im.threads.business.models.FileDescription;
+import im.threads.business.models.MessageState;
 import im.threads.business.models.enums.AttachmentStateEnum;
+import im.threads.business.utils.FileUtils;
 import im.threads.internal.Config;
-import im.threads.internal.model.FileDescription;
-import im.threads.internal.model.MessageState;
-import im.threads.internal.utils.FileUtils;
 import im.threads.internal.views.CircularProgressButton;
 
 public final class UserFileViewHolder extends BaseHolder {

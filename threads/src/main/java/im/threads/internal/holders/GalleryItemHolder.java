@@ -13,8 +13,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import im.threads.ChatStyle;
 import im.threads.R;
+import im.threads.business.imageLoading.ImageLoader;
 import im.threads.internal.Config;
-import im.threads.internal.imageLoading.ImageLoader;
 import im.threads.internal.utils.ColorsHelper;
 
 public final class GalleryItemHolder extends RecyclerView.ViewHolder {

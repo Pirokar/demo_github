@@ -5,8 +5,8 @@ import com.pandulapeter.beagle.logOkHttp.BeagleOkHttpLogger
 import im.threads.android.core.ThreadsDemoApplication.Companion.appContext
 import im.threads.android.useCases.developerOptions.DebugMenuInteractor
 import im.threads.android.useCases.developerOptions.DebugMenuUseCase
+import im.threads.business.logger.LoggerEdna
 import im.threads.internal.Config
-import im.threads.internal.domain.logger.LoggerEdna
 import im.threads.internal.utils.SSLCertificateInterceptor
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient.Builder

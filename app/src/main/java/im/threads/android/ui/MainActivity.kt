@@ -39,8 +39,8 @@ import im.threads.android.utils.PrefUtilsApp
 import im.threads.android.utils.PrefUtilsApp.getCards
 import im.threads.android.utils.PrefUtilsApp.getTheme
 import im.threads.android.utils.PrefUtilsApp.storeCards
-import im.threads.internal.domain.logger.LoggerEdna
-import im.threads.internal.model.CampaignMessage
+import im.threads.business.logger.LoggerEdna
+import im.threads.business.models.CampaignMessage
 import im.threads.internal.utils.PrefUtils
 import im.threads.styles.permissions.PermissionDescriptionType
 import im.threads.view.ChatActivity

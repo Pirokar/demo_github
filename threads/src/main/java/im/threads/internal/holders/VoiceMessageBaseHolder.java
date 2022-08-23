@@ -4,7 +4,7 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
-import im.threads.internal.model.FileDescription;
+import im.threads.business.models.FileDescription;
 
 public abstract class VoiceMessageBaseHolder extends BaseHolder {
 

@@ -1,6 +1,6 @@
 package im.threads.internal.holders;
 
-import static im.threads.internal.model.MessageState.STATE_SENDING;
+import static im.threads.business.models.MessageState.STATE_SENDING;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -28,13 +28,13 @@ import java.util.Locale;
 
 import im.threads.ChatStyle;
 import im.threads.R;
+import im.threads.business.imageLoading.ImageLoader;
+import im.threads.business.imageLoading.ImageModifications;
+import im.threads.business.models.FileDescription;
+import im.threads.business.models.MessageState;
+import im.threads.business.models.UserPhrase;
 import im.threads.business.models.enums.AttachmentStateEnum;
 import im.threads.internal.Config;
-import im.threads.internal.imageLoading.ImageLoader;
-import im.threads.internal.imageLoading.ImageModifications;
-import im.threads.internal.model.FileDescription;
-import im.threads.internal.model.MessageState;
-import im.threads.internal.model.UserPhrase;
 
 public final class ImageFromUserViewHolder extends BaseHolder {
     private final TextView mTimeStampTextView;

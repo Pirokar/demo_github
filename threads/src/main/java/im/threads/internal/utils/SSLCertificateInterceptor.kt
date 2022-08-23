@@ -1,6 +1,6 @@
 package im.threads.internal.utils
 
-import im.threads.internal.domain.logger.LoggerEdna
+import im.threads.business.logger.LoggerEdna
 import okhttp3.Handshake
 import okhttp3.Interceptor
 import okhttp3.Request
