@@ -202,20 +202,20 @@ class MainActivity : AppCompatActivity(), EditCardDialogActionsListener, YesNoDi
 
     private fun applyChatStyles() {
         val chatDesign = getTheme(this)
-        ThreadsLib.getInstance().applyChatStyle(ChatStyleBuilderHelper.getChatStyle(chatDesign))
-        ThreadsLib.getInstance().applyStoragePermissionDescriptionDialogStyle(
+        ThreadsLib.getInstance().uiConfig?.setChatStyle(ChatStyleBuilderHelper.getChatStyle(chatDesign))
+        ThreadsLib.getInstance().uiConfig?.setStoragePermissionDescriptionDialogStyle(
             PermissionDescriptionDialogStyleBuilderHelper.getDialogStyle(
                 chatDesign,
                 PermissionDescriptionType.STORAGE
             )
         )
-        ThreadsLib.getInstance().applyRecordAudioPermissionDescriptionDialogStyle(
+        ThreadsLib.getInstance().uiConfig?.setRecordAudioPermissionDescriptionDialogStyle(
             PermissionDescriptionDialogStyleBuilderHelper.getDialogStyle(
                 chatDesign,
                 PermissionDescriptionType.RECORD_AUDIO
             )
         )
-        ThreadsLib.getInstance().applyCameraPermissionDescriptionDialogStyle(
+        ThreadsLib.getInstance().uiConfig?.setCameraPermissionDescriptionDialogStyle(
             PermissionDescriptionDialogStyleBuilderHelper.getDialogStyle(
                 chatDesign,
                 PermissionDescriptionType.CAMERA

@@ -29,7 +29,6 @@ import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.ogParser.OGDataContent
 import im.threads.business.utils.FileUtils
 import im.threads.business.utils.FileUtils.isImage
-import im.threads.internal.Config
 import im.threads.internal.formatters.RussianFormatSymbols
 import im.threads.internal.utils.UrlUtils
 import im.threads.internal.utils.ViewUtils
@@ -47,6 +46,14 @@ class ConsultPhraseHolder(parent: ViewGroup, highlightingStream: PublishSubject<
         .inflate(R.layout.item_consultant_text_with_file, parent, false),
     highlightingStream
 ) {
+    private val rotateAnim = RotateAnimation(
+        0f,
+        360f,
+        Animation.RELATIVE_TO_SELF,
+        0.5f,
+        Animation.RELATIVE_TO_SELF,
+        0.5f
+    )
     private val style = Config.instance.chatStyle
     private val timeStampSdf = SimpleDateFormat("HH:mm", Locale.getDefault())
 

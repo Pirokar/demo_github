@@ -27,12 +27,13 @@ import im.threads.R
 import im.threads.business.models.FileDescription
 import im.threads.business.secureDatabase.DatabaseHolder
 import im.threads.databinding.ActivityFilesAndMediaBinding
-import im.threads.internal.Config
 import im.threads.internal.activities.BaseActivity
 import im.threads.internal.adapters.filesAndMedia.FilesAndMediaAdapter
 import im.threads.internal.adapters.filesAndMedia.FilesAndMediaAdapter.OnFileClick
+import im.threads.internal.config.BaseConfig
 import im.threads.internal.utils.Keyboard
 import im.threads.internal.utils.setColorFilter
+import im.threads.ui.Config
 
 /**
  * Показывает список файлов, которые присутствовали в диалоге с оператором с обоих сторон
@@ -42,9 +43,11 @@ internal class FilesActivity : BaseActivity(), OnFileClick {
         ActivityFilesAndMediaBinding.inflate(layoutInflater)
     }
     private val filesViewModel: FilesViewModel by viewModels {
-        FilesViewModel.Factory(Config.instance.context, DatabaseHolder.getInstance())
+        FilesViewModel.Factory(BaseConfig.instance.context, DatabaseHolder.getInstance())
     }
-    private val style = Config.instance.chatStyle
+    private val config: Config by lazy {
+        BaseConfig.instance as Config
+    }
     private var filesAndMediaAdapter: FilesAndMediaAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,7 +59,7 @@ internal class FilesActivity : BaseActivity(), OnFileClick {
         initToolbar()
         setOnSearchClickAction()
         setOnSearchTextChanged()
-        setActivityStyle(Config.instance.chatStyle)
+        setActivityStyle(config.getChatStyle())
         subscribeForNewIntents()
         subscribeForDownloadProgress()
         requestFiles()
@@ -106,8 +109,8 @@ internal class FilesActivity : BaseActivity(), OnFileClick {
     }
 
     private fun setStatusBarColor() {
-        val statusBarColor = ContextCompat.getColor(baseContext, style.mediaAndFilesStatusBarColorResId)
-        val isStatusBarLight = resources.getBoolean(style.mediaAndFilesWindowLightStatusBarResId)
+        val statusBarColor = ContextCompat.getColor(baseContext, config.getChatStyle().mediaAndFilesStatusBarColorResId)
+        val isStatusBarLight = resources.getBoolean(config.getChatStyle().mediaAndFilesWindowLightStatusBarResId)
 
         super.setStatusBarColor(isStatusBarLight, statusBarColor)
     }
@@ -115,7 +118,7 @@ internal class FilesActivity : BaseActivity(), OnFileClick {
     private fun initToolbar() = with(binding) {
         setSupportActionBar(toolbar)
         toolbar.setNavigationOnClickListener { onBackPressed() }
-        val isShadowVisible = resources.getBoolean(style.isChatTitleShadowVisible)
+        val isShadowVisible = resources.getBoolean(config.getChatStyle().isChatTitleShadowVisible)
         toolbarShadow.visibility = if (isShadowVisible) View.VISIBLE else View.INVISIBLE
         if (!isShadowVisible) {
             val noElevation = 0f

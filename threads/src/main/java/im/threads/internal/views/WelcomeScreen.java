@@ -10,10 +10,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import im.threads.R;
-import im.threads.internal.Config;
+
 import im.threads.ChatStyle;
+import im.threads.R;
+import im.threads.internal.config.BaseConfig;
 import im.threads.internal.utils.ColorsHelper;
+import im.threads.ui.Config;
 
 public final class WelcomeScreen extends LinearLayout {
 
@@ -33,7 +35,7 @@ public final class WelcomeScreen extends LinearLayout {
             return;
         }
         inflater.inflate(R.layout.view_welcome, this, true);
-        final ChatStyle style = Config.instance.getChatStyle();
+        final ChatStyle style = ((Config)BaseConfig.instance).getChatStyle();
         initLogo(style);
         initTitle(style);
         initSubtitle(style);

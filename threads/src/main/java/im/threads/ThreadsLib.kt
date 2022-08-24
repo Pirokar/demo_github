@@ -13,15 +13,15 @@ import im.threads.business.models.FileDescription
 import im.threads.business.rest.queries.BackendApi
 import im.threads.business.rest.queries.DatastoreApi
 import im.threads.business.utils.FileUtils.getFileSize
-import im.threads.internal.Config
 import im.threads.internal.chat_updates.ChatUpdateProcessor
+import im.threads.internal.config.BaseConfig
+import im.threads.internal.config.UIConfig
 import im.threads.internal.controllers.ChatController
 import im.threads.internal.controllers.UnreadMessagesController
 import im.threads.internal.helpers.FileProviderHelper
 import im.threads.internal.model.UpcomingUserMessage
 import im.threads.internal.useractivity.LastUserActivityTimeCounterSingletonProvider.getLastUserActivityTimeCounter
 import im.threads.internal.utils.PrefUtils
-import im.threads.styles.permissions.PermissionDescriptionDialogStyle
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.exceptions.UndeliverableException
 import io.reactivex.plugins.RxJavaPlugins
@@ -34,6 +34,11 @@ import java.io.File
 
 @Suppress("unused")
 class ThreadsLib private constructor() {
+    /**
+     * Ссылка на ui config, если подключен ui слой
+     */
+    var uiConfig: UIConfig? = null
+
     /**
      * @return time in seconds since the last user activity
      */
@@ -65,34 +70,12 @@ class ThreadsLib private constructor() {
         ChatController.getInstance().loadHistory()
     }
 
-    fun applyChatStyle(chatStyle: ChatStyle?) {
-        Config.instance.applyChatStyle(chatStyle)
-    }
-
-    fun applyStoragePermissionDescriptionDialogStyle(
-        dialogStyle: PermissionDescriptionDialogStyle
-    ) {
-        Config.instance.applyStoragePermissionDescriptionDialogStyle(dialogStyle)
-    }
-
-    fun applyRecordAudioPermissionDescriptionDialogStyle(
-        dialogStyle: PermissionDescriptionDialogStyle
-    ) {
-        Config.instance.applyRecordAudioPermissionDescriptionDialogStyle(dialogStyle)
-    }
-
-    fun applyCameraPermissionDescriptionDialogStyle(
-        dialogStyle: PermissionDescriptionDialogStyle
-    ) {
-        Config.instance.applyCameraPermissionDescriptionDialogStyle(dialogStyle)
-    }
-
     /**
      * Used to stop receiving messages for user with provided clientId
      */
     fun logoutClient(clientId: String) {
         if (!TextUtils.isEmpty(clientId)) {
-            Config.instance.transport.sendClientOffline(clientId)
+            BaseConfig.instance.transport.sendClientOffline(clientId)
         } else {
             LoggerEdna.info("clientId must not be empty")
         }
@@ -105,7 +88,7 @@ class ThreadsLib private constructor() {
      */
     fun sendMessage(message: String?, file: File?): Boolean {
         val fileUri = if (file != null) FileProviderHelper.getUriForFile(
-            Config.instance.context,
+            BaseConfig.instance.context,
             file
         ) else null
         return sendMessage(message, fileUri)
@@ -122,7 +105,7 @@ class ThreadsLib private constructor() {
             var fileDescription: FileDescription? = null
             if (fileUri != null) {
                 fileDescription = FileDescription(
-                    Config.instance.context.getString(R.string.threads_I),
+                    BaseConfig.instance.context.getString(R.string.threads_I),
                     fileUri,
                     getFileSize(fileUri),
                     System.currentTimeMillis()
@@ -160,20 +143,25 @@ class ThreadsLib private constructor() {
 
         @SuppressLint("CheckResult")
         @JvmStatic
-        fun init(configBuilder: ConfigBuilder) {
+        fun init(configBuilder: ConfigBuilder, withUI: Boolean = true) {
             check(instance == null) { "ThreadsLib has already been initialized" }
             val startInitTime = System.currentTimeMillis()
-            Config.instance = configBuilder.build()
             instance = ThreadsLib()
 
-            BackendApi.init(Config.instance)
-            DatastoreApi.init(Config.instance)
+            BaseConfig.instance = if (withUI) {
+                configBuilder.buildWithUI()
+            } else {
+                configBuilder.build()
+            }
 
-            Config.instance.loggerConfig?.let { LoggerEdna.init(it) }
+            BackendApi.init(BaseConfig.instance)
+            DatastoreApi.init(BaseConfig.instance)
+
+            BaseConfig.instance.loggerConfig?.let { LoggerEdna.init(it) }
 
             PrefUtils.migrateMainSharedPreferences()
 
-            Config.instance.unreadMessagesCountListener?.let { unreadMessagesCountListener ->
+            BaseConfig.instance.unreadMessagesCountListener?.let { unreadMessagesCountListener ->
                 UnreadMessagesController.INSTANCE.unreadMessagesPublishProcessor
                     .distinctUntilChanged()
                     .observeOn(AndroidSchedulers.mainThread())
@@ -194,7 +182,7 @@ class ThreadsLib private constructor() {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
                 try {
                     AudioConverter.load(
-                        Config.instance.context,
+                        BaseConfig.instance.context,
                         object : ILoadCallback {
                             override fun onSuccess() {
                                 LoggerEdna.info("AndroidAudioConverter was successfully loaded")

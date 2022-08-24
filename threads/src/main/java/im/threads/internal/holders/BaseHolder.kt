@@ -25,7 +25,6 @@ import im.threads.business.ogParser.OGData
 import im.threads.business.ogParser.OGDataContent
 import im.threads.business.ogParser.OpenGraphParser
 import im.threads.business.ogParser.OpenGraphParserJsoupImpl
-import im.threads.internal.Config
 import im.threads.internal.markdown.LinkifyLinksHighlighter
 import im.threads.internal.markdown.LinksHighlighter
 import im.threads.internal.utils.ColorsHelper
@@ -36,6 +35,7 @@ import im.threads.internal.utils.visible
 import im.threads.internal.views.CircularProgressButton
 import im.threads.internal.widget.textView.BubbleMessageTextView
 import im.threads.ui.utils.NoLongClickMovementMethod
+import im.threads.ui.Config
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
@@ -104,6 +104,9 @@ abstract class BaseHolder internal constructor(
             )
         }
     }
+
+    val config: Config by lazy { BaseConfig.instance as Config }
+    val style = config.getChatStyle()
 
     protected fun subscribe(event: Disposable): Boolean {
         if (compositeDisposable.isDisposed) {

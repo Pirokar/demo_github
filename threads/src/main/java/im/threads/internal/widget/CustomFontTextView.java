@@ -6,7 +6,8 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 
 import im.threads.ChatStyle;
-import im.threads.internal.Config;
+import im.threads.internal.config.BaseConfig;
+import im.threads.ui.Config;
 
 public class CustomFontTextView extends androidx.appcompat.widget.AppCompatTextView {
 
@@ -36,7 +37,7 @@ public class CustomFontTextView extends androidx.appcompat.widget.AppCompatTextV
 
     private ChatStyle getChatStyle() {
         try {
-            return Config.instance.getChatStyle();
+            return ((Config)BaseConfig.instance).getChatStyle();
         } catch (NullPointerException exc) {
             return new ChatStyle();
         }

@@ -7,10 +7,8 @@ import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
 
-import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.business.models.Survey;
-import im.threads.internal.Config;
 import im.threads.internal.widget.Rating;
 
 /**
@@ -24,8 +22,6 @@ public final class RatingStarsViewHolder extends BaseHolder {
     private Rating rating;
     private TextView thanksForRate;
 
-    private ChatStyle style;
-
     public RatingStarsViewHolder(ViewGroup parent) {
         super(
                 LayoutInflater.from(parent.getContext()).inflate(R.layout.item_rate_stars, parent, false),
@@ -36,11 +32,10 @@ public final class RatingStarsViewHolder extends BaseHolder {
         rating = itemView.findViewById(R.id.mark);
         askForRate = itemView.findViewById(R.id.ask_for_rate);
         thanksForRate = itemView.findViewById(R.id.thanks_for_rate);
-        style = Config.instance.getChatStyle();
-        topSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.iconsAndSeparatorsColor));
-        bottomSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.iconsAndSeparatorsColor));
-        askForRate.setTextColor(ContextCompat.getColor(itemView.getContext(), style.surveyTextColorResId));
-        thanksForRate.setTextColor(ContextCompat.getColor(itemView.getContext(), style.surveyTextColorResId));
+        topSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), getStyle().iconsAndSeparatorsColor));
+        bottomSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), getStyle().iconsAndSeparatorsColor));
+        askForRate.setTextColor(ContextCompat.getColor(itemView.getContext(), getStyle().surveyTextColorResId));
+        thanksForRate.setTextColor(ContextCompat.getColor(itemView.getContext(), getStyle().surveyTextColorResId));
     }
 
     public void bind(Survey survey, Rating.CallBackListener callBackListener) {

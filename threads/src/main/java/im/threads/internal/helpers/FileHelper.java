@@ -6,7 +6,7 @@ import java.io.File;
 
 import im.threads.business.logger.LoggerEdna;
 import im.threads.business.transport.models.AttachmentSettings;
-import im.threads.internal.Config;
+import im.threads.internal.config.BaseConfig;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.utils.PrefUtils;
 
@@ -49,7 +49,7 @@ public enum FileHelper {
     }
 
     private void saveAttachmentSettings(AttachmentSettings.Content attachmentSettingsContent) {
-        PrefUtils.setAttachmentSettings(Config.instance.gson.toJson(attachmentSettingsContent));
+        PrefUtils.setAttachmentSettings(BaseConfig.instance.gson.toJson(attachmentSettingsContent));
     }
 
     private AttachmentSettings.Content getAttachmentSettings() {
@@ -58,7 +58,7 @@ public enum FileHelper {
             return getDefaultAttachmentSettings();
         } else {
             AttachmentSettings.Content attachmentSettingsContent
-                    = Config.instance.gson.fromJson(settingsStr, AttachmentSettings.Content.class);
+                    = BaseConfig.instance.gson.fromJson(settingsStr, AttachmentSettings.Content.class);
             if (attachmentSettingsContent == null) {
                 return getDefaultAttachmentSettings();
             } else {

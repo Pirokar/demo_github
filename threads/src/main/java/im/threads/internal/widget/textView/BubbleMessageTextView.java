@@ -15,10 +15,11 @@ import android.widget.TextView;
 
 import im.threads.ChatStyle;
 import im.threads.R;
-import im.threads.internal.Config;
+import im.threads.internal.config.BaseConfig;
 import im.threads.internal.markdown.MarkdownProcessor;
 import im.threads.internal.markdown.MarkwonMarkdownProcessor;
 import im.threads.internal.widget.CustomFontTextView;
+import im.threads.ui.Config;
 
 public final class BubbleMessageTextView extends CustomFontTextView {
 
@@ -40,7 +41,7 @@ public final class BubbleMessageTextView extends CustomFontTextView {
     }
 
     public void setTypefaceView(Context context) {
-        ChatStyle style = Config.instance.getChatStyle();
+        ChatStyle style = ((Config)BaseConfig.instance).getChatStyle();
         if (!TextUtils.isEmpty(style.bubbleMessageFont)) {
             setTypeface(Typeface.createFromAsset(context.getAssets(), style.bubbleMessageFont));
         } else {

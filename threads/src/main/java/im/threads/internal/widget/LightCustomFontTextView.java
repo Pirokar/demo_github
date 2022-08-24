@@ -5,8 +5,9 @@ import android.graphics.Typeface;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 
-import im.threads.internal.Config;
 import im.threads.ChatStyle;
+import im.threads.internal.config.BaseConfig;
+import im.threads.ui.Config;
 
 public class LightCustomFontTextView extends androidx.appcompat.widget.AppCompatTextView {
 
@@ -27,7 +28,7 @@ public class LightCustomFontTextView extends androidx.appcompat.widget.AppCompat
     }
 
     public void setTypefaceView(Context context) {
-        ChatStyle style = Config.instance.getChatStyle();
+        ChatStyle style = ((Config)BaseConfig.instance).getChatStyle();
         if (!TextUtils.isEmpty(style.defaultFontLight)) {
             setTypeface(Typeface.createFromAsset(context.getAssets(), style.defaultFontLight));
         }

@@ -25,7 +25,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.widget.TextViewCompat
 import androidx.fragment.app.DialogFragment
 import im.threads.R
-import im.threads.internal.Config
+import im.threads.internal.config.BaseConfig
 import im.threads.internal.utils.ColorsHelper
 import im.threads.styles.permissions.ContentGravity
 import im.threads.styles.permissions.PermissionDescriptionButtonStyle
@@ -33,6 +33,7 @@ import im.threads.styles.permissions.PermissionDescriptionDialogBackgroundStyle
 import im.threads.styles.permissions.PermissionDescriptionImageStyle
 import im.threads.styles.permissions.PermissionDescriptionTextStyle
 import im.threads.styles.permissions.PermissionDescriptionType
+import im.threads.ui.Config
 
 /**
  * Диалоговое окно с описанием причины запроса разрешения.
@@ -40,6 +41,9 @@ import im.threads.styles.permissions.PermissionDescriptionType
 class PermissionDescriptionAlertDialogFragment : DialogFragment() {
 
     private var onAllowPermissionClickListener: OnAllowPermissionClickListener? = null
+    private val config: Config by lazy {
+        BaseConfig.instance as Config
+    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -114,11 +118,11 @@ class PermissionDescriptionAlertDialogFragment : DialogFragment() {
     private fun getPermissionDescriptionDialogStyle(type: PermissionDescriptionType) =
         when (type) {
             PermissionDescriptionType.STORAGE ->
-                Config.instance.storagePermissionDescriptionDialogStyle
+                config.getStoragePermissionDescriptionDialogStyle()
             PermissionDescriptionType.RECORD_AUDIO ->
-                Config.instance.recordAudioPermissionDescriptionDialogStyle
+                config.getRecordAudioPermissionDescriptionDialogStyle()
             PermissionDescriptionType.CAMERA ->
-                Config.instance.cameraPermissionDescriptionDialogStyle
+                config.getCameraPermissionDescriptionDialogStyle()
         }
 
     private fun setIllustration(dialogView: View, imageStyle: PermissionDescriptionImageStyle) {

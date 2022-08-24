@@ -4,7 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.text.TextUtils
 import im.threads.business.logger.LoggerEdna
-import im.threads.internal.Config
+import im.threads.internal.config.BaseConfig
 import java.io.BufferedInputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -37,7 +37,7 @@ class FileDownloader(
     fun download() {
         try {
             val url = URL(path)
-            Config.instance.sslSocketFactoryConfig?.let {
+            BaseConfig.instance.sslSocketFactoryConfig?.let {
                 HttpsURLConnection.setDefaultSSLSocketFactory(it.sslSocketFactory)
             }
             val urlConnection = if (url.protocol.equals("https", ignoreCase = true)) {

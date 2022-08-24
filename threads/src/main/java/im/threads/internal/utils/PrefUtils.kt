@@ -13,7 +13,7 @@ import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.CampaignMessage
 import im.threads.business.models.FileDescription
 import im.threads.business.transport.CloudMessagingType
-import im.threads.internal.Config
+import im.threads.internal.config.BaseConfig
 import im.threads.internal.model.ClientNotificationDisplayType
 import im.threads.styles.permissions.PermissionDescriptionDialogStyle
 import im.threads.styles.permissions.PermissionDescriptionType
@@ -92,11 +92,11 @@ class PrefUtils private constructor() {
         val defaultSharedPreferences: SharedPreferences by lazy {
             try {
                 val masterKey =
-                    MasterKey.Builder(Config.instance.context, MasterKey.DEFAULT_MASTER_KEY_ALIAS)
+                    MasterKey.Builder(BaseConfig.instance.context, MasterKey.DEFAULT_MASTER_KEY_ALIAS)
                         .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
                         .build()
                 EncryptedSharedPreferences.create(
-                    Config.instance.context,
+                    BaseConfig.instance.context,
                     ENCRYPTED_STORE_NAME,
                     masterKey,
                     EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
@@ -104,10 +104,10 @@ class PrefUtils private constructor() {
                 )
             } catch (exception: GeneralSecurityException) {
                 LoggerEdna.error(exception)
-                Config.instance.context.getSharedPreferences(STORE_NAME, Context.MODE_PRIVATE)
+                BaseConfig.instance.context.getSharedPreferences(STORE_NAME, Context.MODE_PRIVATE)
             } catch (exception: IOException) {
                 LoggerEdna.error(exception)
-                Config.instance.context.getSharedPreferences(STORE_NAME, Context.MODE_PRIVATE)
+                BaseConfig.instance.context.getSharedPreferences(STORE_NAME, Context.MODE_PRIVATE)
             }
         }
 
@@ -225,13 +225,13 @@ class PrefUtils private constructor() {
                 val value = defaultSharedPreferences.getString(FILE_DESCRIPTION_DRAFT, "")
                 return if (TextUtils.isEmpty(value)) {
                     null
-                } else Config.instance.gson.fromJson(
+                } else BaseConfig.instance.gson.fromJson(
                     value,
                     FileDescription::class.java
                 )
             }
             set(fileDescriptionDraft) {
-                val value = if (fileDescriptionDraft != null) Config.instance.gson.toJson(
+                val value = if (fileDescriptionDraft != null) BaseConfig.instance.gson.toJson(
                     fileDescriptionDraft
                 ) else ""
                 defaultSharedPreferences
@@ -246,7 +246,7 @@ class PrefUtils private constructor() {
                 val value = defaultSharedPreferences.getString(CAMPAIGN_MESSAGE, "")
                 return if (TextUtils.isEmpty(value)) {
                     null
-                } else Config.instance.gson.fromJson(
+                } else BaseConfig.instance.gson.fromJson(
                     value,
                     CampaignMessage::class.java
                 )
@@ -256,7 +256,7 @@ class PrefUtils private constructor() {
                     .edit()
                     .putString(
                         CAMPAIGN_MESSAGE,
-                        if (campaignMessage != null) Config.instance.gson.toJson(campaignMessage) else null
+                        if (campaignMessage != null) BaseConfig.instance.gson.toJson(campaignMessage) else null
                     )
                     .commit()
             }
@@ -426,7 +426,7 @@ class PrefUtils private constructor() {
 
         @JvmStatic
         fun migrateMainSharedPreferences() {
-            val context = Config.instance.context
+            val context = BaseConfig.instance.context
             val oldSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
             val notEncryptedPreferences = context.getSharedPreferences(
                 STORE_NAME,
@@ -444,7 +444,7 @@ class PrefUtils private constructor() {
         @JvmStatic
         fun migrateNamedPreferences(preferenceName: String) {
             movePreferences(
-                Config.instance.context.getSharedPreferences(preferenceName, Context.MODE_PRIVATE),
+                BaseConfig.instance.context.getSharedPreferences(preferenceName, Context.MODE_PRIVATE),
                 defaultSharedPreferences
             )
             deletePreferenceWithNameContains(preferenceName)
@@ -467,7 +467,7 @@ class PrefUtils private constructor() {
                 val sharedPreferences = defaultSharedPreferences
                 if (sharedPreferences.getString(key, null) != null) {
                     val sharedPreferencesString = sharedPreferences.getString(key, null)
-                    style = Config.instance.gson.fromJson(sharedPreferencesString, styleClass)
+                    style = BaseConfig.instance.gson.fromJson(sharedPreferencesString, styleClass)
                 }
             } catch (ex: IllegalStateException) {
                 LoggerEdna.error("getIncomingStyle ${styleClass.canonicalName} failed: ", ex)
@@ -483,7 +483,7 @@ class PrefUtils private constructor() {
         ) {
             defaultSharedPreferences
                 .edit()
-                .putString(key, Config.instance.gson.toJson(style))
+                .putString(key, BaseConfig.instance.gson.toJson(style))
                 .commit()
         }
 
@@ -532,7 +532,7 @@ class PrefUtils private constructor() {
         }
 
         private fun deletePreferenceWithNameContains(nameContains: String) {
-            val context = Config.instance.context
+            val context = BaseConfig.instance.context
             try {
                 context.filesDir.parent?.let { parentPath ->
                     val dir = File("$parentPath/shared_prefs/")
