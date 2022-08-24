@@ -46,7 +46,7 @@ import im.threads.business.models.SystemMessage;
 import im.threads.business.models.UserPhrase;
 import im.threads.business.utils.FileUtils;
 import im.threads.business.utils.FileUtilsKt;
-import im.threads.internal.Config;
+import im.threads.internal.config.BaseConfig;
 import im.threads.internal.formatters.ChatItemType;
 import im.threads.internal.helpers.ChatItemListHelper;
 import im.threads.internal.holders.BaseHolder;
@@ -84,6 +84,7 @@ import im.threads.internal.model.UnreadMessages;
 import im.threads.internal.utils.PrefUtils;
 import im.threads.internal.utils.ThreadUtils;
 import im.threads.internal.views.VoiceTimeLabelFormatterKt;
+import im.threads.ui.Config;
 
 public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_CONSULT_TYPING = 1;
@@ -139,7 +140,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         this.mCallback = callback;
         this.fdMediaPlayer = fdMediaPlayer;
         this.mediaMetadataRetriever = mediaMetadataRetriever;
-        ChatStyle style = Config.instance.getChatStyle();
+        ChatStyle style = ((Config)BaseConfig.instance).getChatStyle();
         this.outgoingImageMaskTransformation = new ImageModifications.MaskedModification(
                 ctx.getResources().getDrawable(style.outgoingImageBubbleMask)
         );

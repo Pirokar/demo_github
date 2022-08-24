@@ -13,7 +13,7 @@ import im.threads.business.models.MessageState;
 import im.threads.business.models.SpeechMessageUpdate;
 import im.threads.business.models.Survey;
 import im.threads.business.models.UserPhrase;
-import im.threads.internal.Config;
+import im.threads.internal.config.BaseConfig;
 import io.reactivex.Completable;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
@@ -24,7 +24,7 @@ public final class DatabaseHolder {
     private final ThreadsDbHelper mMyOpenHelper;
 
     private DatabaseHolder() {
-        mMyOpenHelper = new ThreadsDbHelper(Config.instance.context);
+        mMyOpenHelper = new ThreadsDbHelper(BaseConfig.instance.context);
     }
 
     @NonNull

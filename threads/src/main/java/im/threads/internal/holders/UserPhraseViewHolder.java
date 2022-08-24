@@ -36,7 +36,7 @@ import im.threads.business.models.Quote;
 import im.threads.business.models.UserPhrase;
 import im.threads.business.models.enums.AttachmentStateEnum;
 import im.threads.business.utils.FileUtils;
-import im.threads.internal.Config;
+import im.threads.internal.config.BaseConfig;
 import im.threads.internal.formatters.RussianFormatSymbols;
 import im.threads.internal.utils.UrlUtils;
 import im.threads.internal.utils.ViewUtils;
@@ -45,6 +45,7 @@ import im.threads.internal.views.VoiceTimeLabelFormatter;
 import im.threads.internal.views.VoiceTimeLabelFormatterKt;
 import im.threads.internal.widget.textView.BubbleMessageTextView;
 import im.threads.internal.widget.textView.BubbleTimeTextView;
+import im.threads.ui.Config;
 
 /**
  * layout/item_user_text_with_file.xml
@@ -118,7 +119,7 @@ public final class UserPhraseViewHolder extends VoiceMessageBaseHolder {
         } else {
             fileSdf = new SimpleDateFormat("dd MMMM yyyy", Locale.getDefault());
         }
-        style = Config.instance.getChatStyle();
+        style = ((Config)BaseConfig.instance).getChatStyle();
         mBubble.setBackground(AppCompatResources.getDrawable(itemView.getContext(), style.outgoingMessageBubbleBackground));
         mBubble.setPadding(
                 itemView.getContext().getResources().getDimensionPixelSize(style.bubbleOutgoingPaddingLeft),

@@ -5,17 +5,19 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.RecyclerView;
-import im.threads.R;
-import im.threads.internal.Config;
-import im.threads.internal.formatters.RussianFormatSymbols;
 import im.threads.ChatStyle;
+import im.threads.R;
+import im.threads.internal.config.BaseConfig;
+import im.threads.internal.formatters.RussianFormatSymbols;
+import im.threads.ui.Config;
 
 public final class FilesDateStampHolder extends RecyclerView.ViewHolder {
     private TextView mDateTextView;
@@ -31,7 +33,7 @@ public final class FilesDateStampHolder extends RecyclerView.ViewHolder {
         } else {
             sdf = new SimpleDateFormat("dd MMMM yyyy", Locale.getDefault());
         }
-        if (style == null) style = Config.instance.getChatStyle();
+        if (style == null) style = ((Config)BaseConfig.instance).getChatStyle();
         mDateTextView.setTextColor(ContextCompat.getColor(itemView.getContext(), style.chatSystemMessageTextColor));
         linearLayout.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatBackgroundColor));
     }

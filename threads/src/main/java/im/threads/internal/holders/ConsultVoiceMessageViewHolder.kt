@@ -13,7 +13,6 @@ import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import com.google.android.material.slider.Slider
-import im.threads.ChatStyle
 import im.threads.R
 import im.threads.business.formatters.SpeechStatus
 import im.threads.business.imageLoading.ImageModifications
@@ -21,7 +20,6 @@ import im.threads.business.imageLoading.loadImage
 import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.FileDescription
 import im.threads.business.utils.FileUtils.convertRelativeUrlToAbsolute
-import im.threads.internal.Config
 import im.threads.internal.utils.UrlUtils
 import im.threads.internal.views.VoiceTimeLabelFormatter
 import im.threads.internal.views.formatAsDuration
@@ -33,7 +31,6 @@ import java.util.Locale
 class ConsultVoiceMessageViewHolder(parent: ViewGroup) : VoiceMessageBaseHolder(
     LayoutInflater.from(parent.context).inflate(R.layout.item_consult_voice_message, parent, false)
 ) {
-    private val style: ChatStyle = Config.instance.chatStyle
     private val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
 
     private var fileDescription: FileDescription? = null

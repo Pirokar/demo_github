@@ -2,7 +2,7 @@ package im.threads.business.rest.queries
 
 import im.threads.R
 import im.threads.business.transport.AuthInterceptor
-import im.threads.internal.Config
+import im.threads.internal.config.BaseConfig
 import im.threads.internal.utils.AppInfoHelper
 import im.threads.internal.utils.DeviceInfoHelper
 import im.threads.internal.utils.SSLCertificateInterceptor
@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit
 import javax.net.ssl.SSLSession
 
 abstract class ApiGenerator protected constructor(
-    private val config: Config,
+    private val config: BaseConfig,
     private val isDatastoreApi: Boolean
 ) {
     protected lateinit var threadsApi: ThreadsApi

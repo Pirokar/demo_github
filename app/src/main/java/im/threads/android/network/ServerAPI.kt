@@ -6,7 +6,7 @@ import im.threads.android.core.ThreadsDemoApplication.Companion.appContext
 import im.threads.android.useCases.developerOptions.DebugMenuInteractor
 import im.threads.android.useCases.developerOptions.DebugMenuUseCase
 import im.threads.business.logger.LoggerEdna
-import im.threads.internal.Config
+import im.threads.internal.config.BaseConfig
 import im.threads.internal.utils.SSLCertificateInterceptor
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient.Builder
@@ -38,7 +38,7 @@ internal object ServerAPI {
         }
 
     private fun createServerAPI(serverBaseUrl: String): IServerAPI {
-        val config = Config.instance
+        val config = BaseConfig.instance
         val (connectTimeoutMillis, readTimeoutMillis, writeTimeoutMillis) =
             config.requestConfig.authHttpClientSettings
         val builder = Retrofit.Builder()
@@ -51,7 +51,7 @@ internal object ServerAPI {
             .connectTimeout(connectTimeoutMillis.toLong(), TimeUnit.MILLISECONDS)
             .readTimeout(readTimeoutMillis.toLong(), TimeUnit.MILLISECONDS)
             .writeTimeout(writeTimeoutMillis.toLong(), TimeUnit.MILLISECONDS)
-        if (Config.instance.isDebugLoggingEnabled) {
+        if (BaseConfig.instance.isDebugLoggingEnabled) {
             httpClientBuilder.addInterceptor(SSLCertificateInterceptor())
         }
         val sslSocketFactoryConfig = config.sslSocketFactoryConfig

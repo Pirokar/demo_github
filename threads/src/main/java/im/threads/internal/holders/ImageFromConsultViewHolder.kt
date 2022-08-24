@@ -15,7 +15,6 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
-import im.threads.ChatStyle
 import im.threads.R
 import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.imageLoading.ImageModifications
@@ -24,7 +23,6 @@ import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.FileDescription
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.utils.FileUtils
-import im.threads.internal.Config
 import im.threads.internal.utils.ColorsHelper
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -43,7 +41,6 @@ class ImageFromConsultViewHolder(
     ) {
 
     private val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
-    private val style: ChatStyle = Config.instance.chatStyle
     private val rotateAnim = RotateAnimation(
         0f,
         360f,
@@ -205,7 +202,6 @@ class ImageFromConsultViewHolder(
 
     private fun applyBubbleLayoutStyle() {
         val res = itemView.context.resources
-        val style = Config.instance.chatStyle
         bubbleLayout.background = AppCompatResources.getDrawable(
             itemView.context,
             style.incomingMessageBubbleBackground
@@ -243,7 +239,7 @@ class ImageFromConsultViewHolder(
         ColorsHelper.setTint(
             parent.context,
             loader,
-            Config.instance.chatStyle.chatToolbarColorResId
+            style.chatToolbarColorResId
         )
         rotateAnim.duration = 3000
         rotateAnim.repeatCount = Animation.INFINITE

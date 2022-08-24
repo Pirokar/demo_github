@@ -52,7 +52,7 @@ import im.threads.business.transport.HistoryLoader;
 import im.threads.business.transport.HistoryParser;
 import im.threads.business.transport.models.Attachment;
 import im.threads.business.utils.FileUtils;
-import im.threads.internal.Config;
+import im.threads.internal.config.BaseConfig;
 import im.threads.internal.activities.ConsultActivity;
 import im.threads.internal.activities.ImagesActivity;
 import im.threads.internal.broadcastReceivers.ProgressReceiver;
@@ -73,6 +73,7 @@ import im.threads.internal.utils.Seeker;
 import im.threads.internal.utils.ThreadUtils;
 import im.threads.internal.workers.FileDownloadWorker;
 import im.threads.internal.workers.NotificationWorker;
+import im.threads.ui.Config;
 import im.threads.view.ChatFragment;
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
@@ -143,13 +144,14 @@ public final class ChatController {
     // Если пользователь не ответил на вопрос (quickReply), то блокируем поле ввода
     private boolean inputEnabledDuringQuickReplies;
 
+    private final ChatStyle chatStyle = ((Config)BaseConfig.instance).getChatStyle();
+
     private CompositeDisposable compositeDisposable;
 
     private ChatController() {
         PrefUtils.migrateNamedPreferences(ChatController.class.getSimpleName());
-        ChatStyle chatStyle = Config.instance.getChatStyle();
         inputEnabledDuringQuickReplies = chatStyle.inputEnabledDuringQuickReplies;
-        appContext = Config.instance.context;
+        appContext = BaseConfig.instance.context;
         chatUpdateProcessor = ChatUpdateProcessor.getInstance();
         databaseHolder = DatabaseHolder.getInstance();
 
@@ -222,11 +224,11 @@ public final class ChatController {
     }
 
     public void onResolveThreadClick(final boolean approveResolve) {
-        Config.instance.transport.sendResolveThread(approveResolve);
+        BaseConfig.instance.transport.sendResolveThread(approveResolve);
     }
 
     public void onUserTyping(String input) {
-        Config.instance.transport.sendUserTying(input);
+        BaseConfig.instance.transport.sendUserTying(input);
     }
 
     public void onUserInput(@NonNull final UpcomingUserMessage upcomingUserMessage) {
@@ -374,7 +376,7 @@ public final class ChatController {
                         && cm.getActiveNetworkInfo().isConnectedOrConnecting()) {
                     final List<String> uuidList = databaseHolder.getUnreadMessagesUuid();
                     if (!uuidList.isEmpty()) {
-                        Config.instance.transport.markMessagesAsRead(uuidList);
+                        BaseConfig.instance.transport.markMessagesAsRead(uuidList);
                         firstUnreadUuidId = uuidList.get(0); // для скролла к первому непрочитанному сообщению
                     } else {
                         firstUnreadUuidId = null;
@@ -398,7 +400,7 @@ public final class ChatController {
                 .fromCallable(() -> {
                     if (instance.fragment != null && !PrefUtils.isClientIdEmpty()) {
                         int currentOffset = instance.fragment.getCurrentItemsCount();
-                        int count = Config.instance.historyLoadingCount;
+                        int count = BaseConfig.instance.historyLoadingCount;
                         try {
                             final HistoryResponse response = HistoryLoader.getHistorySync(null, false);
                             final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
@@ -478,7 +480,7 @@ public final class ChatController {
         }
         subscribe(
                 Single.fromCallable(() -> {
-                            final int historyLoadingCount = Config.instance.historyLoadingCount;
+                            final int historyLoadingCount = BaseConfig.instance.historyLoadingCount;
                             final List<UserPhrase> unsendUserPhrase = databaseHolder.getUnsendUserPhrase(historyLoadingCount);
                             if (!unsendUserPhrase.isEmpty()) {
                                 unsendMessages.clear();
@@ -542,10 +544,10 @@ public final class ChatController {
     private void subscribeToSurveyCompletion() {
         subscribe(
                 Flowable.fromPublisher(surveyCompletionProcessor)
-                        .throttleLast(Config.instance.surveyCompletionDelay, TimeUnit.MILLISECONDS)
+                        .throttleLast(BaseConfig.instance.surveyCompletionDelay, TimeUnit.MILLISECONDS)
                         .firstElement()
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(survey -> Config.instance.transport.sendRatingDone(survey),
+                        .subscribe(survey -> BaseConfig.instance.transport.sendRatingDone(survey),
                                 error -> LoggerEdna.error("subscribeToSurveyCompletion: ", error)
                         )
         );
@@ -584,7 +586,7 @@ public final class ChatController {
     }
 
     public void sendInit() {
-        Config.instance.transport.sendInit();
+        BaseConfig.instance.transport.sendInit();
         if (!PrefUtils.isClientIdEmpty()) {
             if (fragment != null) {
                 fragment.hideEmptyState();
@@ -597,14 +599,14 @@ public final class ChatController {
             isDownloadingMessages = true;
             subscribe(
                     Single.fromCallable(() -> {
-                                final int count = Config.instance.historyLoadingCount;
+                                final int count = BaseConfig.instance.historyLoadingCount;
                                 final HistoryResponse response = HistoryLoader.getHistorySync(count, true);
                                 final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
                                 saveMessages(serverItems);
                                 if (fragment != null && isActive) {
                                     final List<String> uuidList = databaseHolder.getUnreadMessagesUuid();
                                     if (!uuidList.isEmpty()) {
-                                        Config.instance.transport.markMessagesAsRead(uuidList);
+                                        BaseConfig.instance.transport.markMessagesAsRead(uuidList);
                                     }
                                 }
                                 return new Pair<>(response == null ? null : response.getConsultInfo(), serverItems.size());
@@ -667,7 +669,7 @@ public final class ChatController {
 
     private void sendTextMessage(final UserPhrase userPhrase, final ConsultInfo consultInfo) {
         LoggerEdna.info("sendTextMessage: " + userPhrase + ", " + consultInfo);
-        Config.instance.transport.sendMessage(userPhrase, consultInfo, null, null);
+        BaseConfig.instance.transport.sendMessage(userPhrase, consultInfo, null, null);
     }
 
     private void sendFileMessage(final UserPhrase userPhrase, final ConsultInfo consultInfo) {
@@ -684,7 +686,7 @@ public final class ChatController {
                             if (quoteFileDescription != null) {
                                 quoteFilePath = postFile(quoteFileDescription);
                             }
-                            Config.instance.transport.sendMessage(userPhrase, consultInfo, filePath, quoteFilePath);
+                            BaseConfig.instance.transport.sendMessage(userPhrase, consultInfo, filePath, quoteFilePath);
                         })
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -1082,7 +1084,7 @@ public final class ChatController {
 
     private void scheduleResend() {
         if (!unsendMessageHandler.hasMessages(RESEND_MSG)) {
-            int resendInterval = Config.instance.requestConfig.getSocketClientSettings()
+            int resendInterval = BaseConfig.instance.requestConfig.getSocketClientSettings()
                     .getResendIntervalMillis();
             unsendMessageHandler.sendEmptyMessageDelayed(RESEND_MSG, resendInterval);
         }
@@ -1107,16 +1109,16 @@ public final class ChatController {
         if (chatItem instanceof ConsultPhrase && isActive) {
             ConsultPhrase consultPhrase = (ConsultPhrase) chatItem;
             handleQuickReplies(Collections.singletonList(consultPhrase));
-            Config.instance.transport.markMessagesAsRead(Collections.singletonList(consultPhrase.getId()));
+            BaseConfig.instance.transport.markMessagesAsRead(Collections.singletonList(consultPhrase.getId()));
         }
         if (chatItem instanceof SimpleSystemMessage && isActive) {
             hideQuickReplies();
         }
         if (chatItem instanceof Survey && isActive) {
-            Config.instance.transport.markMessagesAsRead(Collections.singletonList(((Survey) chatItem).getUuid()));
+            BaseConfig.instance.transport.markMessagesAsRead(Collections.singletonList(((Survey) chatItem).getUuid()));
         }
         if (chatItem instanceof RequestResolveThread && isActive) {
-            Config.instance.transport.markMessagesAsRead(Collections.singletonList(((RequestResolveThread) chatItem).getUuid()));
+            BaseConfig.instance.transport.markMessagesAsRead(Collections.singletonList(((RequestResolveThread) chatItem).getUuid()));
         }
         subscribe(
                 Observable.timer(1500, TimeUnit.MILLISECONDS)
@@ -1216,7 +1218,7 @@ public final class ChatController {
         if (fragment != null && !TextUtils.isEmpty(clientId)) {
             subscribe(
                     Single.fromCallable(() -> {
-                                Config.instance.transport.sendInit();
+                                BaseConfig.instance.transport.sendInit();
                                 final HistoryResponse response = HistoryLoader.getHistorySync(null, true);
                                 List<ChatItem> chatItems = HistoryParser.getChatItems(response);
                                 saveMessages(chatItems);
@@ -1367,7 +1369,11 @@ public final class ChatController {
     private void handleQuickReplies(List<ChatItem> chatItems) {
         ConsultPhrase quickReplyMessageCandidate = getQuickReplyMessageCandidate(chatItems);
         if (quickReplyMessageCandidate != null) {
-            inputEnabledDuringQuickReplies = !quickReplyMessageCandidate.isBlockInput();
+            if (quickReplyMessageCandidate.isBlockInput() != null) {
+                inputEnabledDuringQuickReplies = Boolean.TRUE.equals(quickReplyMessageCandidate.isBlockInput());
+            } else {
+                inputEnabledDuringQuickReplies = chatStyle.inputEnabledDuringQuickReplies;
+            }
             chatUpdateProcessor.postQuickRepliesChanged(
                     new QuickReplyItem(quickReplyMessageCandidate.getQuickReplies(), quickReplyMessageCandidate.getTimeStamp() + 1));
         } else {

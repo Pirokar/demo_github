@@ -26,7 +26,7 @@ import im.threads.business.logger.LoggerEdna;
 import im.threads.business.models.FileDescription;
 import im.threads.business.secureDatabase.DatabaseHolder;
 import im.threads.business.utils.FileUtils;
-import im.threads.internal.Config;
+import im.threads.internal.config.BaseConfig;
 import im.threads.internal.adapters.ImagesAdapter;
 import im.threads.internal.fragments.PermissionDescriptionAlertDialogFragment;
 import im.threads.internal.permissions.PermissionsActivity;
@@ -34,6 +34,7 @@ import im.threads.internal.utils.ColorsHelper;
 import im.threads.internal.utils.ThreadUtils;
 import im.threads.internal.utils.ThreadsPermissionChecker;
 import im.threads.styles.permissions.PermissionDescriptionType;
+import im.threads.ui.Config;
 import io.reactivex.Completable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -61,7 +62,7 @@ public final class ImagesActivity extends BaseActivity implements ViewPager.OnPa
         setContentView(R.layout.activity_images);
         mViewPager = findViewById(R.id.pager);
         mViewPager.addOnPageChangeListener(this);
-        style = Config.instance.getChatStyle();
+        style = ((Config)BaseConfig.instance).getChatStyle();
         initToolbar(findViewById(R.id.toolbar), findViewById(R.id.toolbar_shadow));
         compositeDisposable.add(DatabaseHolder.getInstance().getAllFileDescriptions()
                 .doOnSuccess(data -> {

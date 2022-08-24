@@ -10,7 +10,8 @@ import android.view.View;
 import androidx.core.content.ContextCompat;
 
 import im.threads.ChatStyle;
-import im.threads.internal.Config;
+import im.threads.internal.config.BaseConfig;
+import im.threads.ui.Config;
 
 public final class MyCircleProgress extends View {
     private Paint finishedPaint;
@@ -84,7 +85,7 @@ public final class MyCircleProgress extends View {
     }
 
     private void initPaint() {
-        ChatStyle style = Config.instance.getChatStyle();
+        ChatStyle style = ((Config)BaseConfig.instance).getChatStyle();
         int tintResId;
         if (style.chatBodyIconsTint != 0) {
             tintResId = style.chatBodyIconsTint;

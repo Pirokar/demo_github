@@ -33,6 +33,7 @@ import im.threads.android.utils.ChatDesign;
 import im.threads.android.utils.ChatStyleBuilderHelper;
 import im.threads.android.utils.PermissionDescriptionDialogStyleBuilderHelper;
 import im.threads.business.logger.LoggerEdna;
+import im.threads.internal.config.UIConfig;
 import im.threads.internal.utils.ColorsHelper;
 import im.threads.styles.permissions.PermissionDescriptionType;
 import im.threads.view.ChatFragment;
@@ -268,25 +269,28 @@ public class BottomNavigationActivity extends AppCompatActivity {
     }
 
     private void applyChatStyles(@NonNull ChatDesign chatDesign) {
-        ThreadsLib.getInstance().applyChatStyle(ChatStyleBuilderHelper.getChatStyle(chatDesign));
-        ThreadsLib.getInstance().applyStoragePermissionDescriptionDialogStyle(
-                PermissionDescriptionDialogStyleBuilderHelper.getDialogStyle(
-                        chatDesign,
-                        PermissionDescriptionType.STORAGE
-                )
-        );
-        ThreadsLib.getInstance().applyRecordAudioPermissionDescriptionDialogStyle(
-                PermissionDescriptionDialogStyleBuilderHelper.getDialogStyle(
-                        chatDesign,
-                        PermissionDescriptionType.RECORD_AUDIO
-                )
-        );
-        ThreadsLib.getInstance().applyCameraPermissionDescriptionDialogStyle(
-                PermissionDescriptionDialogStyleBuilderHelper.getDialogStyle(
-                        chatDesign,
-                        PermissionDescriptionType.CAMERA
-                )
-        );
+        UIConfig uiConfig = ThreadsLib.getInstance().getUiConfig();
+        if (uiConfig != null) {
+            uiConfig.setChatStyle(ChatStyleBuilderHelper.getChatStyle(chatDesign));
+            uiConfig.setStoragePermissionDescriptionDialogStyle(
+                    PermissionDescriptionDialogStyleBuilderHelper.getDialogStyle(
+                            chatDesign,
+                            PermissionDescriptionType.STORAGE
+                    )
+            );
+            uiConfig.setRecordAudioPermissionDescriptionDialogStyle(
+                    PermissionDescriptionDialogStyleBuilderHelper.getDialogStyle(
+                            chatDesign,
+                            PermissionDescriptionType.RECORD_AUDIO
+                    )
+            );
+            uiConfig.setCameraPermissionDescriptionDialogStyle(
+                    PermissionDescriptionDialogStyleBuilderHelper.getDialogStyle(
+                            chatDesign,
+                            PermissionDescriptionType.CAMERA
+                    )
+            );
+        }
     }
 
     /**

@@ -19,13 +19,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.business.models.FileDescription;
 import im.threads.business.models.MessageState;
 import im.threads.business.models.enums.AttachmentStateEnum;
 import im.threads.business.utils.FileUtils;
-import im.threads.internal.Config;
 import im.threads.internal.views.CircularProgressButton;
 
 public final class UserFileViewHolder extends BaseHolder {
@@ -55,25 +53,24 @@ public final class UserFileViewHolder extends BaseHolder {
         View mBubble = itemView.findViewById(R.id.bubble);
         loader = itemView.findViewById(R.id.loader);
         errorText = itemView.findViewById(R.id.errorText);
-        ChatStyle style = Config.instance.getChatStyle();
-        setTextColorToViews(new TextView[]{mFileHeader, fileSizeTextView}, style.outgoingMessageTextColor);
-        mTimeStampTextView.setTextColor(getColorInt(style.outgoingMessageTimeColor));
-        if (style.outgoingMessageTimeTextSize > 0) {
-            float textSize = parent.getContext().getResources().getDimension(style.outgoingMessageTimeTextSize);
+        setTextColorToViews(new TextView[]{mFileHeader, fileSizeTextView}, getStyle().outgoingMessageTextColor);
+        mTimeStampTextView.setTextColor(getColorInt(getStyle().outgoingMessageTimeColor));
+        if (getStyle().outgoingMessageTimeTextSize > 0) {
+            float textSize = parent.getContext().getResources().getDimension(getStyle().outgoingMessageTimeTextSize);
             mTimeStampTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
         }
-        mCircularProgressButton.setBackgroundColorResId(style.outgoingMessageTextColor);
-        mBubble.setBackground(AppCompatResources.getDrawable(itemView.getContext(), style.outgoingMessageBubbleBackground));
+        mCircularProgressButton.setBackgroundColorResId(getStyle().outgoingMessageTextColor);
+        mBubble.setBackground(AppCompatResources.getDrawable(itemView.getContext(), getStyle().outgoingMessageBubbleBackground));
         mBubble.setPadding(
-                itemView.getContext().getResources().getDimensionPixelSize(style.bubbleOutgoingPaddingLeft),
-                itemView.getContext().getResources().getDimensionPixelSize(style.bubbleOutgoingPaddingTop),
-                itemView.getContext().getResources().getDimensionPixelSize(style.bubbleOutgoingPaddingRight),
-                itemView.getContext().getResources().getDimensionPixelSize(style.bubbleOutgoingPaddingBottom)
+                itemView.getContext().getResources().getDimensionPixelSize(getStyle().bubbleOutgoingPaddingLeft),
+                itemView.getContext().getResources().getDimensionPixelSize(getStyle().bubbleOutgoingPaddingTop),
+                itemView.getContext().getResources().getDimensionPixelSize(getStyle().bubbleOutgoingPaddingRight),
+                itemView.getContext().getResources().getDimensionPixelSize(getStyle().bubbleOutgoingPaddingBottom)
         );
-        mBubble.getBackground().setColorFilter(getColorInt(style.outgoingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
+        mBubble.getBackground().setColorFilter(getColorInt(getStyle().outgoingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
         setUpProgressButton(mCircularProgressButton);
-        mFilterView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
-        mFilterSecond.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
+        mFilterView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), getStyle().chatHighlightingColor));
+        mFilterSecond.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), getStyle().chatHighlightingColor));
     }
 
     public void onBind(

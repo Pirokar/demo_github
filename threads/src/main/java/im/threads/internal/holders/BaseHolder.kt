@@ -23,7 +23,7 @@ import im.threads.business.models.enums.ErrorStateEnum
 import im.threads.business.ogParser.OGData
 import im.threads.business.ogParser.OpenGraphParser
 import im.threads.business.ogParser.OpenGraphParserJsoupImpl
-import im.threads.internal.Config
+import im.threads.internal.config.BaseConfig
 import im.threads.internal.markdown.LinkifyLinksHighlighter
 import im.threads.internal.markdown.LinksHighlighter
 import im.threads.internal.utils.ColorsHelper
@@ -31,6 +31,7 @@ import im.threads.internal.utils.UrlUtils
 import im.threads.internal.utils.ViewUtils
 import im.threads.internal.views.CircularProgressButton
 import im.threads.internal.widget.textView.BubbleMessageTextView
+import im.threads.ui.Config
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import kotlinx.coroutines.CoroutineScope
@@ -44,6 +45,9 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
     private val linksHighlighter: LinksHighlighter = LinkifyLinksHighlighter()
     private val openGraphParser: OpenGraphParser = OpenGraphParserJsoupImpl()
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
+
+    val config: Config by lazy { BaseConfig.instance as Config }
+    val style = config.getChatStyle()
 
     protected fun subscribe(event: Disposable): Boolean {
         if (compositeDisposable?.isDisposed != false) {
@@ -64,7 +68,7 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
     }
 
     fun setUpProgressButton(button: CircularProgressButton) {
-        val chatStyle = Config.instance.chatStyle
+        val chatStyle = style
         val downloadButtonTintResId = if (chatStyle.chatBodyIconsTint == 0) {
             chatStyle.downloadButtonTintResId
         } else {
@@ -99,7 +103,7 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
             textView.setText(phrase.phraseText, TextView.BufferType.NORMAL)
             setTextWithHighlighting(
                 textView,
-                Config.instance.chatStyle.incomingMarkdownConfiguration.isLinkUnderlined
+                style.incomingMarkdownConfiguration.isLinkUnderlined
             )
         } else {
             (textView as? BubbleMessageTextView)?.let {
@@ -121,7 +125,7 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
         textView.setText(phrase, TextView.BufferType.NORMAL)
         setTextWithHighlighting(
             textView,
-            Config.instance.chatStyle.outgoingMarkdownConfiguration.isLinkUnderlined
+            style.outgoingMarkdownConfiguration.isLinkUnderlined
         )
     }
 
@@ -239,7 +243,7 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
             ogImage.visibility = View.VISIBLE
             ogImage.loadImage(
                 ogData.imageUrl,
-                errorDrawableResId = Config.instance.chatStyle.imagePlaceholder,
+                errorDrawableResId = style.imagePlaceholder,
                 isExternalImage = true,
                 callback = object : ImageLoader.ImageLoaderCallback {
                     override fun onImageLoadError() {

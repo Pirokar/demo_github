@@ -15,22 +15,22 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.isVisible
-import im.threads.ChatStyle
 import im.threads.R
 import im.threads.business.imageLoading.loadImage
 import im.threads.business.utils.FileUtils.convertRelativeUrlToAbsolute
 import im.threads.databinding.ActivityConsultPageBinding
-import im.threads.internal.Config
 import im.threads.internal.activities.filesActivity.FilesActivity
+import im.threads.internal.config.BaseConfig
 import im.threads.internal.utils.setColorFilter
+import im.threads.ui.Config
 import im.threads.view.ChatFragment
 
 internal open class ConsultActivity : BaseActivity() {
     private val binding: ActivityConsultPageBinding by lazy {
         ActivityConsultPageBinding.inflate(layoutInflater)
     }
-    private val style: ChatStyle by lazy {
-        Config.instance.chatStyle
+    private val config: Config by lazy {
+        BaseConfig.instance as Config
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,7 +48,7 @@ internal open class ConsultActivity : BaseActivity() {
         val searchMenuItem = menu.getItem(0)
         val searchMenuSpannable = SpannableString(searchMenuItem.title)
         searchMenuSpannable.setSpan(
-            ForegroundColorSpan(ContextCompat.getColor(this, style.menuItemTextColorResId)),
+            ForegroundColorSpan(ContextCompat.getColor(this, config.getChatStyle().menuItemTextColorResId)),
             0,
             searchMenuSpannable.length,
             0
@@ -60,7 +60,7 @@ internal open class ConsultActivity : BaseActivity() {
             ForegroundColorSpan(
                 ContextCompat.getColor(
                     this,
-                    style.menuItemTextColorResId
+                    config.getChatStyle().menuItemTextColorResId
                 )
             ),
             0,
@@ -74,7 +74,7 @@ internal open class ConsultActivity : BaseActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.threads_menu_main, menu)
         menu.findItem(R.id.files_and_media).isVisible =
-            Config.instance.filesAndMediaMenuItemEnabled
+            config.filesAndMediaMenuItemEnabled
 
         return true
     }
@@ -109,14 +109,14 @@ internal open class ConsultActivity : BaseActivity() {
 
     private fun setStatusBarColor() {
         val statusBarColor = ContextCompat.getColor(baseContext, R.color.threads_black_transparent)
-        val isStatusBarLight = resources.getBoolean(style.windowLightStatusBarResId)
+        val isStatusBarLight = resources.getBoolean(config.getChatStyle().windowLightStatusBarResId)
         super.setStatusBarColor(isStatusBarLight, statusBarColor)
     }
 
     private fun setConsultAvatar() = with(binding) {
         consultImage.background = AppCompatResources.getDrawable(
             this@ConsultActivity,
-            style.defaultOperatorAvatar
+            config.getChatStyle().defaultOperatorAvatar
         )
 
         var imagePath = intent.getStringExtra(imageUrlKey)

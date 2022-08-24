@@ -7,9 +7,7 @@ import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
 
-import im.threads.ChatStyle;
 import im.threads.R;
-import im.threads.internal.Config;
 import im.threads.internal.adapters.ChatAdapter;
 
 /**
@@ -27,15 +25,14 @@ public final class RequestResolveThreadViewHolder extends BaseHolder {
         TextView requestToResolveThread = itemView.findViewById(R.id.request_to_resolve_thread);
         approveRequest = itemView.findViewById(R.id.approve_request);
         denyRequest = itemView.findViewById(R.id.deny_request);
-        ChatStyle style = Config.instance.getChatStyle();
-        topSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.iconsAndSeparatorsColor));
-        bottomSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.iconsAndSeparatorsColor));
-        requestToResolveThread.setTextColor(ContextCompat.getColor(itemView.getContext(), style.chatSystemMessageTextColor));
-        approveRequest.setTextColor(ContextCompat.getColor(itemView.getContext(), style.surveyChoicesTextColorResId));
-        denyRequest.setTextColor(ContextCompat.getColor(itemView.getContext(), style.surveyChoicesTextColorResId));
-        requestToResolveThread.setText(style.requestToResolveThreadTextResId);
-        approveRequest.setText(style.approveRequestToResolveThreadTextResId);
-        denyRequest.setText(style.denyRequestToResolveThreadTextResId);
+        topSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), getStyle().iconsAndSeparatorsColor));
+        bottomSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), getStyle().iconsAndSeparatorsColor));
+        requestToResolveThread.setTextColor(ContextCompat.getColor(itemView.getContext(), getStyle().chatSystemMessageTextColor));
+        approveRequest.setTextColor(ContextCompat.getColor(itemView.getContext(), getStyle().surveyChoicesTextColorResId));
+        denyRequest.setTextColor(ContextCompat.getColor(itemView.getContext(), getStyle().surveyChoicesTextColorResId));
+        requestToResolveThread.setText(getStyle().requestToResolveThreadTextResId);
+        approveRequest.setText(getStyle().approveRequestToResolveThreadTextResId);
+        denyRequest.setText(getStyle().denyRequestToResolveThreadTextResId);
     }
 
     public void bind(final ChatAdapter.Callback callback) {

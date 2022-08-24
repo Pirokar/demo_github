@@ -26,7 +26,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.business.imageLoading.ImageLoader;
 import im.threads.business.imageLoading.ImageModifications;
@@ -34,7 +33,6 @@ import im.threads.business.models.FileDescription;
 import im.threads.business.models.MessageState;
 import im.threads.business.models.UserPhrase;
 import im.threads.business.models.enums.AttachmentStateEnum;
-import im.threads.internal.Config;
 
 public final class ImageFromUserViewHolder extends BaseHolder {
     private final TextView mTimeStampTextView;
@@ -43,7 +41,6 @@ public final class ImageFromUserViewHolder extends BaseHolder {
     private final ImageModifications.MaskedModification maskedTransformation;
     private final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
     private final View filter;
-    private final ChatStyle style;
     private final ImageView loader;
     private final FrameLayout loaderLayout;
     private final FrameLayout commonLayout;
@@ -62,11 +59,10 @@ public final class ImageFromUserViewHolder extends BaseHolder {
 
     public ImageFromUserViewHolder(ViewGroup parent, ImageModifications.MaskedModification maskedTransformation) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_user_image_from, parent, false));
-        style = Config.instance.getChatStyle();
         mImage = itemView.findViewById(R.id.image);
         this.maskedTransformation = maskedTransformation;
         filter = itemView.findViewById(R.id.filter);
-        filter.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
+        filter.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), getStyle().chatHighlightingColor));
         loader = itemView.findViewById(R.id.loader);
         loaderLayout = itemView.findViewById(R.id.loaderLayout);
         bubbleLayout = itemView.findViewById(R.id.bubble);
@@ -80,13 +76,13 @@ public final class ImageFromUserViewHolder extends BaseHolder {
     }
 
     private void applyTimeStampStyle(Context context) {
-        mTimeStampTextView.setTextColor(getColorInt(style.outgoingImageTimeColor));
-        mTimeStampDuplicateTextView.setTextColor(getColorInt(style.outgoingImageTimeColor));
-        int timeColorBg = getColorInt(style.outgoingImageTimeBackgroundColor);
+        mTimeStampTextView.setTextColor(getColorInt(getStyle().outgoingImageTimeColor));
+        mTimeStampDuplicateTextView.setTextColor(getColorInt(getStyle().outgoingImageTimeColor));
+        int timeColorBg = getColorInt(getStyle().outgoingImageTimeBackgroundColor);
         mTimeStampDuplicateTextView.getBackground().setColorFilter(timeColorBg, PorterDuff.Mode.SRC_ATOP);
         mTimeStampTextView.getBackground().setColorFilter(timeColorBg, PorterDuff.Mode.SRC_ATOP);
-        if (style.outgoingMessageTimeTextSize > 0) {
-            float textSize = context.getResources().getDimension(style.outgoingMessageTimeTextSize);
+        if (getStyle().outgoingMessageTimeTextSize > 0) {
+            float textSize = context.getResources().getDimension(getStyle().outgoingMessageTimeTextSize);
             mTimeStampTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
             mTimeStampDuplicateTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
         }
@@ -94,16 +90,15 @@ public final class ImageFromUserViewHolder extends BaseHolder {
 
     private void applyBubbleLayoutStyle() {
         Resources res = itemView.getContext().getResources();
-        ChatStyle style = Config.instance.getChatStyle();
         bubbleLayout.setBackground(
                 AppCompatResources.getDrawable(itemView.getContext(),
-                style.outgoingMessageBubbleBackground)
+                        getStyle().outgoingMessageBubbleBackground)
         );
         bubbleLayout.setPadding(
-                res.getDimensionPixelSize(style.bubbleOutgoingPaddingLeft),
-                res.getDimensionPixelSize(style.bubbleOutgoingPaddingTop),
-                res.getDimensionPixelSize(style.bubbleOutgoingPaddingRight),
-                res.getDimensionPixelSize(style.bubbleOutgoingPaddingBottom)
+                res.getDimensionPixelSize(getStyle().bubbleOutgoingPaddingLeft),
+                res.getDimensionPixelSize(getStyle().bubbleOutgoingPaddingTop),
+                res.getDimensionPixelSize(getStyle().bubbleOutgoingPaddingRight),
+                res.getDimensionPixelSize(getStyle().bubbleOutgoingPaddingBottom)
         );
     }
 
@@ -150,10 +145,10 @@ public final class ImageFromUserViewHolder extends BaseHolder {
                         .load(fileDescription.getFileUri().toString())
                         .scales(ImageView.ScaleType.FIT_END, ImageView.ScaleType.CENTER_CROP)
                         .modifications(maskedTransformation)
-                        .errorDrawableResourceId(style.imagePlaceholder)
+                        .errorDrawableResourceId(getStyle().imagePlaceholder)
                         .into(mImage);
             } else if (isDownloadError) {
-                mImage.setImageResource(style.imagePlaceholder);
+                mImage.setImageResource(getStyle().imagePlaceholder);
             }
         }
     }

@@ -16,14 +16,12 @@ import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
-import im.threads.ChatStyle
 import im.threads.R
 import im.threads.business.imageLoading.ImageModifications
 import im.threads.business.imageLoading.loadImage
 import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.utils.FileUtils
-import im.threads.internal.Config
 import im.threads.internal.views.CircularProgressButton
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -32,7 +30,6 @@ import java.util.Locale
 class ConsultFileViewHolder(parent: ViewGroup) : BaseHolder(
     LayoutInflater.from(parent.context).inflate(R.layout.item_consult_chat_file, parent, false)
 ) {
-    private val style: ChatStyle = Config.instance.chatStyle
     private val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
 
     private val mCircularProgressButton =
@@ -122,7 +119,7 @@ class ConsultFileViewHolder(parent: ViewGroup) : BaseHolder(
                 loader.setImageResource(getErrorImageResByErrorCode(fileDescription.errorCode))
                 if (fileDescription.errorMessage.isNullOrEmpty()) {
                     errortext.text =
-                        Config.instance.context.getString(R.string.threads_some_error_during_load_file)
+                        config.context.getString(R.string.threads_some_error_during_load_file)
                 } else {
                     errortext.text = fileDescription.errorMessage
                 }

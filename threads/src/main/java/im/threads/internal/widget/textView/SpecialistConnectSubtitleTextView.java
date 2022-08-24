@@ -6,8 +6,9 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 
 import im.threads.ChatStyle;
-import im.threads.internal.Config;
+import im.threads.internal.config.BaseConfig;
 import im.threads.internal.widget.CustomFontTextView;
+import im.threads.ui.Config;
 
 public final class SpecialistConnectSubtitleTextView extends CustomFontTextView {
 
@@ -21,7 +22,7 @@ public final class SpecialistConnectSubtitleTextView extends CustomFontTextView 
 
     @Override
     public void setTypefaceView(Context context) {
-        ChatStyle style = Config.instance.getChatStyle();
+        ChatStyle style = ((Config)BaseConfig.instance).getChatStyle();
         if (!TextUtils.isEmpty(style.specialistConnectSubtitleFont)) {
             setTypeface(Typeface.createFromAsset(context.getAssets(), style.specialistConnectSubtitleFont));
         } else {

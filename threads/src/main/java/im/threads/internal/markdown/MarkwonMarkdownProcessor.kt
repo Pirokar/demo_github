@@ -2,8 +2,9 @@ package im.threads.internal.markdown
 
 import android.content.Context
 import android.text.Spanned
-import im.threads.internal.Config
+import im.threads.internal.config.BaseConfig
 import im.threads.internal.utils.UrlUtils
+import im.threads.ui.Config
 import io.noties.markwon.AbstractMarkwonPlugin
 import io.noties.markwon.Markwon
 import io.noties.markwon.MarkwonConfiguration
@@ -18,12 +19,13 @@ class MarkwonMarkdownProcessor(
     incomingMarkdownConfig: MarkdownConfig? = null,
     outgoingMarkdownConfig: MarkdownConfig? = null
 ) : MarkdownProcessor {
-    private val context: Context by lazy { nullableContext ?: Config.instance.context }
+    private val config by lazy { BaseConfig.instance as Config }
+    private val context: Context by lazy { nullableContext ?: config.context }
     private val incomingMarkdownConfiguration: MarkdownConfig by lazy {
-        incomingMarkdownConfig ?: Config.instance.chatStyle.incomingMarkdownConfiguration
+        incomingMarkdownConfig ?: config.getChatStyle().incomingMarkdownConfiguration
     }
     private val outgoingMarkdownConfiguration: MarkdownConfig by lazy {
-        outgoingMarkdownConfig ?: Config.instance.chatStyle.outgoingMarkdownConfiguration
+        outgoingMarkdownConfig ?: config.getChatStyle().outgoingMarkdownConfiguration
     }
 
     private val incomingProcessor: Markwon by lazy {
