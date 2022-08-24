@@ -24,8 +24,9 @@ import java.util.Arrays;
 
 import im.threads.ChatStyle;
 import im.threads.R;
-import im.threads.internal.Config;
+import im.threads.internal.config.BaseConfig;
 import im.threads.internal.helpers.FileHelper;
+import im.threads.ui.Config;
 
 /**
  * Dialog fragment for picking folder
@@ -42,7 +43,7 @@ public final class FilePickerFragment extends DialogFragment
     private SelectedListener mSelectedListener;
     private FileFilter mFileFilter;
     private boolean isFilterEnabled;
-
+    private ChatStyle chatStyle = ((Config)BaseConfig.instance).getChatStyle();
 
     public static FilePickerFragment newInstance() {
         FilePickerFragment fragment = new FilePickerFragment();
@@ -66,9 +67,8 @@ public final class FilePickerFragment extends DialogFragment
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         View v;
         AlertDialog dialog;
-        ChatStyle style = Config.instance.getChatStyle();
         AlertDialog.Builder builder;
-        builder = new AlertDialog.Builder(getActivity(), style.fileBrowserDialogStyleResId);
+        builder = new AlertDialog.Builder(getActivity(), chatStyle.fileBrowserDialogStyleResId);
         builder.setTitle(getString(R.string.threads_choose_file));
         builder.setNeutralButton(getString(R.string.threads_folder_up), this);
         builder.setNegativeButton(getString(R.string.threads_cancel), this);
@@ -231,9 +231,8 @@ public final class FilePickerFragment extends DialogFragment
     @Override
     public void onStart() {
         super.onStart();
-        ChatStyle style = Config.instance.getChatStyle();
-        ((AlertDialog) getDialog()).getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(getActivity(), style.chatToolbarColorResId));
-        ((AlertDialog) getDialog()).getButton(AlertDialog.BUTTON_NEUTRAL).setTextColor(ContextCompat.getColor(getActivity(), style.chatToolbarColorResId));
+        ((AlertDialog) getDialog()).getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(getActivity(), chatStyle.chatToolbarColorResId));
+        ((AlertDialog) getDialog()).getButton(AlertDialog.BUTTON_NEUTRAL).setTextColor(ContextCompat.getColor(getActivity(), chatStyle.chatToolbarColorResId));
     }
 
     public interface SelectedListener {

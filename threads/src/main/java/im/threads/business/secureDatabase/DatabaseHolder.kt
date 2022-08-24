@@ -9,7 +9,7 @@ import im.threads.business.models.MessageState
 import im.threads.business.models.SpeechMessageUpdate
 import im.threads.business.models.Survey
 import im.threads.business.models.UserPhrase
-import im.threads.internal.Config
+import im.threads.internal.config.BaseConfig
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
@@ -21,7 +21,7 @@ class DatabaseHolder {
      *
      * @return MyOpenHelper instance
      */
-    val myOpenHelper = ThreadsDbHelper(Config.instance.context)
+    val myOpenHelper = ThreadsDbHelper(BaseConfig.instance.context)
 
     fun cleanDatabase() {
         myOpenHelper.cleanDatabase()
@@ -101,7 +101,7 @@ class DatabaseHolder {
 
     fun checkAndUpdate() {
         val oldHelper =
-            im.threads.business.database.ThreadsDbHelper(Config.instance.context)
+            im.threads.business.database.ThreadsDbHelper(BaseConfig.instance.context)
         if (needMigrateToNewDB(oldHelper)) {
             putChatItems(oldHelper.getChatItems(0, -1))
             myOpenHelper.putFileDescriptions(oldHelper.getAllFileDescriptions())

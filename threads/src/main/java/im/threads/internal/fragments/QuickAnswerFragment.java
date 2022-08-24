@@ -29,13 +29,14 @@ import im.threads.business.imageLoading.ImageLoader;
 import im.threads.business.imageLoading.ImageModifications;
 import im.threads.business.logger.LoggerEdna;
 import im.threads.business.utils.FileUtils;
-import im.threads.internal.Config;
+import im.threads.internal.config.BaseConfig;
 import im.threads.internal.activities.QuickAnswerActivity;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.model.InputFieldEnableModel;
 import im.threads.internal.useractivity.LastUserActivityTimeCounter;
 import im.threads.internal.useractivity.LastUserActivityTimeCounterSingletonProvider;
 import im.threads.internal.utils.ColorsHelper;
+import im.threads.ui.Config;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
 public final class QuickAnswerFragment extends BaseDialogFragment {
@@ -58,7 +59,7 @@ public final class QuickAnswerFragment extends BaseDialogFragment {
     @NonNull
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        ChatStyle style = Config.instance.getChatStyle();
+        ChatStyle style = ((Config)BaseConfig.instance).getChatStyle();
         View v = inflater.inflate(R.layout.dialog_fast_answer, container, false);
         TextView consultNameTextView = v.findViewById(R.id.consult_name);
         TextView textView = v.findViewById(R.id.question);
@@ -152,7 +153,7 @@ public final class QuickAnswerFragment extends BaseDialogFragment {
     @Override
     public void onStart() {
         super.onStart();
-        Config.instance.transport.setLifecycle(getLifecycle());
+        BaseConfig.instance.transport.setLifecycle(getLifecycle());
         Dialog d = getDialog();
         if (null != d) {
             int width = getResources().getDisplayMetrics().widthPixels;
@@ -181,7 +182,7 @@ public final class QuickAnswerFragment extends BaseDialogFragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Config.instance.transport.setLifecycle(null);
+        BaseConfig.instance.transport.setLifecycle(null);
     }
 
     private void initUserInputState() {

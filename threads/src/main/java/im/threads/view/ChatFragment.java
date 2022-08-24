@@ -93,7 +93,7 @@ import im.threads.business.models.UserPhrase;
 import im.threads.business.utils.FileUtils;
 import im.threads.business.utils.FileUtilsKt;
 import im.threads.databinding.FragmentChatBinding;
-import im.threads.internal.Config;
+import im.threads.internal.config.BaseConfig;
 import im.threads.internal.activities.CameraActivity;
 import im.threads.internal.activities.GalleryActivity;
 import im.threads.internal.activities.ImagesActivity;
@@ -131,6 +131,7 @@ import im.threads.internal.utils.ThreadsPermissionChecker;
 import im.threads.internal.views.VoiceTimeLabelFormatter;
 import im.threads.internal.views.VoiceTimeLabelFormatterKt;
 import im.threads.styles.permissions.PermissionDescriptionType;
+import im.threads.ui.Config;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -212,6 +213,7 @@ public final class ChatFragment extends BaseFragment implements
 
     private QuickReplyItem quickReplyItem = null;
     private int previousChatItemsCount = 0;
+    private Config config = ((Config)BaseConfig.instance);
 
     public static ChatFragment newInstance() {
         return newInstance(OpenWay.DEFAULT);
@@ -233,7 +235,7 @@ public final class ChatFragment extends BaseFragment implements
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         Activity activity = getActivity();
-        style = Config.instance.getChatStyle();
+        style = config.getChatStyle();
 
         // Статус бар подкрашивается только при использовании чата в стандартном Activity.
         if (activity instanceof ChatActivity) {
@@ -307,7 +309,7 @@ public final class ChatFragment extends BaseFragment implements
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Config.instance.transport.setLifecycle(null);
+        BaseConfig.instance.transport.setLifecycle(null);
     }
 
     private void initController() {
@@ -346,7 +348,7 @@ public final class ChatFragment extends BaseFragment implements
 
     private void initInputLayout(@NonNull Activity activity) {
         applyTintAndColorState(activity);
-        int attachmentVisibility = Config.instance.attachmentEnabled ? View.VISIBLE : View.GONE;
+        int attachmentVisibility = config.getAttachmentEnabled() ? View.VISIBLE : View.GONE;
         binding.addAttachment.setVisibility(attachmentVisibility);
         binding.addAttachment.setOnClickListener(v -> openBottomSheetAndGallery());
         binding.sendMessage.setOnClickListener(v -> onSendButtonClick());
@@ -381,7 +383,7 @@ public final class ChatFragment extends BaseFragment implements
 
     private void initRecording() {
         final RecordButton recordButton = binding.recordButton;
-        if (!style.voiceMessageEnabled || !Config.instance.attachmentEnabled) {
+        if (!style.voiceMessageEnabled || !config.getAttachmentEnabled()) {
             recordButton.setVisibility(View.GONE);
             return;
         }
@@ -769,7 +771,7 @@ public final class ChatFragment extends BaseFragment implements
 
     private void setRecordButtonVisibility(@NonNull Boolean isInputEmpty) {
         boolean isButtonVisible = isInputEmpty && style.voiceMessageEnabled
-                && Config.instance.attachmentEnabled;
+                && config.getAttachmentEnabled();
         binding.recordButton.setVisibility(isButtonVisible ? View.VISIBLE : View.GONE);
     }
 
@@ -1027,7 +1029,7 @@ public final class ChatFragment extends BaseFragment implements
         boolean isWriteGranted = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q || ThreadsPermissionChecker.isWriteExternalPermissionGranted(activity);
         LoggerEdna.info("isCameraGranted = " + isCameraGranted + " isWriteGranted " + isWriteGranted);
         if (isCameraGranted && isWriteGranted) {
-            if (Config.instance.getChatStyle().useExternalCameraApp) {
+            if (config.getChatStyle().useExternalCameraApp) {
                 try {
                     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                     externalCameraPhotoFile = FileHelper.INSTANCE.createImageFile(activity);
@@ -1100,7 +1102,7 @@ public final class ChatFragment extends BaseFragment implements
             s2.setSpan(new ForegroundColorSpan(ContextCompat.getColor(activity, style.menuItemTextColorResId)), 0, s2.length(), 0);
             filesAndMedia.setTitle(s2);
         }
-        filesAndMedia.setVisible(Config.instance.filesAndMediaMenuItemEnabled);
+        filesAndMedia.setVisible(config.getFilesAndMediaMenuItemEnabled());
         popup.show();
     }
 
@@ -1420,7 +1422,7 @@ public final class ChatFragment extends BaseFragment implements
         setFileDescription(
                 new FileDescription(
                         requireContext().getString(R.string.threads_image),
-                        FileProviderHelper.getUriForFile(Config.instance.context, externalCameraPhotoFile),
+                        FileProviderHelper.getUriForFile(BaseConfig.instance.context, externalCameraPhotoFile),
                         externalCameraPhotoFile.length(),
                         System.currentTimeMillis()
                 )
@@ -1440,8 +1442,8 @@ public final class ChatFragment extends BaseFragment implements
     private void onFileResult(@NonNull Intent data) {
         Uri uri = data.getData();
         if (uri != null) {
-            if (FileHelper.INSTANCE.isAllowedFileExtension(FileUtils.getExtensionFromMediaStore(Config.instance.context, uri))) {
-                if (FileHelper.INSTANCE.isAllowedFileSize(FileUtils.getFileSizeFromMediaStore(Config.instance.context, uri))) {
+            if (FileHelper.INSTANCE.isAllowedFileExtension(FileUtils.getExtensionFromMediaStore(BaseConfig.instance.context, uri))) {
+                if (FileHelper.INSTANCE.isAllowedFileSize(FileUtils.getFileSizeFromMediaStore(BaseConfig.instance.context, uri))) {
                     try {
                         if (FileUtils.canBeSent(requireContext(), uri)) {
                             onFileResult(uri);
@@ -2073,8 +2075,8 @@ public final class ChatFragment extends BaseFragment implements
     public void onStart() {
         super.onStart();
         setCurrentThreadId(PrefUtils.getThreadId());
-        Config.instance.transport.setLifecycle(getLifecycle());
-        Config.instance.transport.getSettings();
+        BaseConfig.instance.transport.setLifecycle(getLifecycle());
+        BaseConfig.instance.transport.getSettings();
         ChatController.getInstance().loadHistory();
     }
 
@@ -2591,7 +2593,7 @@ public final class ChatFragment extends BaseFragment implements
 
         @Override
         public void onConsultAvatarClick(String consultId) {
-            if (Config.instance.getChatStyle().canShowSpecialistInfo) {
+            if (config.getChatStyle().canShowSpecialistInfo) {
                 Activity activity = getActivity();
                 if (activity != null) {
                     mChatController.onConsultChoose(activity, consultId);

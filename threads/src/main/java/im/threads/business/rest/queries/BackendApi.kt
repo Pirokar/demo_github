@@ -1,8 +1,8 @@
 package im.threads.business.rest.queries
 
-import im.threads.internal.Config
+import im.threads.internal.config.BaseConfig
 
-class BackendApi private constructor(config: Config) : ApiGenerator(config, false) {
+class BackendApi private constructor(config: BaseConfig) : ApiGenerator(config, false) {
     override fun createThreadsApi() {
         threadsApi = ThreadsApi(
             apiBuild.create(OldThreadsBackendApi::class.java),
@@ -14,7 +14,7 @@ class BackendApi private constructor(config: Config) : ApiGenerator(config, fals
         private var apiGenerator: BackendApi? = null
 
         @JvmStatic
-        fun init(config: Config) {
+        fun init(config: BaseConfig) {
             apiGenerator = BackendApi(config)
         }
 

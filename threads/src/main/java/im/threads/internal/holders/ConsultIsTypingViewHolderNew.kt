@@ -12,8 +12,9 @@ import im.threads.R
 import im.threads.business.imageLoading.ImageModifications
 import im.threads.business.imageLoading.loadImage
 import im.threads.business.utils.FileUtils
-import im.threads.internal.Config
+import im.threads.internal.config.BaseConfig
 import im.threads.internal.model.ConsultTyping
+import im.threads.ui.Config
 
 /**
  * layout/item_consult_typing.xml
@@ -21,7 +22,9 @@ import im.threads.internal.model.ConsultTyping
 class ConsultIsTypingViewHolderNew(parent: ViewGroup) : RecyclerView.ViewHolder(
     LayoutInflater.from(parent.context).inflate(R.layout.item_consult_typing, parent, false)
 ) {
-    private val style: ChatStyle = Config.instance.chatStyle
+    private val config: Config by lazy { BaseConfig.instance as Config }
+
+    private val style: ChatStyle = config.getChatStyle()
 
     private val mConsultAvatar = itemView.findViewById<ImageView>(R.id.image).apply {
         layoutParams.height =

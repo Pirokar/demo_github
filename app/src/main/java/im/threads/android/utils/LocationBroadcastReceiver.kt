@@ -6,7 +6,7 @@ import android.content.Intent
 import com.google.android.gms.location.LocationAvailability
 import com.google.android.gms.location.LocationResult
 import im.threads.business.logger.LoggerEdna
-import im.threads.internal.Config
+import im.threads.internal.config.BaseConfig
 
 class LocationBroadcastReceiver : BroadcastReceiver() {
 
@@ -21,7 +21,7 @@ class LocationBroadcastReceiver : BroadcastReceiver() {
             LocationResult.extractResult(intent)?.let { locationResult ->
                 locationResult.locations.map { location ->
                     LoggerEdna.debug("Location received.   $location")
-                    Config.instance.transport.updateLocation(location.latitude, location.longitude)
+                    BaseConfig.instance.transport.updateLocation(location.latitude, location.longitude)
                 }
             }
         }

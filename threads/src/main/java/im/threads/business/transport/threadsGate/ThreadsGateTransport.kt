@@ -9,7 +9,6 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
-import im.threads.business.config.SocketClientSettings
 import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.CampaignMessage
 import im.threads.business.models.ConsultInfo
@@ -17,6 +16,7 @@ import im.threads.business.models.SpeechMessageUpdate
 import im.threads.business.models.SslSocketFactoryConfig
 import im.threads.business.models.Survey
 import im.threads.business.models.UserPhrase
+import im.threads.business.rest.config.SocketClientSettings
 import im.threads.business.transport.ApplicationConfig
 import im.threads.business.transport.AuthInterceptor
 import im.threads.business.transport.ChatItemProviderData
@@ -35,8 +35,8 @@ import im.threads.business.transport.threadsGate.responses.GetMessagesData
 import im.threads.business.transport.threadsGate.responses.GetStatusesData
 import im.threads.business.transport.threadsGate.responses.RegisterDeviceData
 import im.threads.business.transport.threadsGate.responses.SendMessageData
-import im.threads.internal.Config
 import im.threads.internal.chat_updates.ChatUpdateProcessor
+import im.threads.internal.config.BaseConfig
 import im.threads.internal.formatters.ChatItemType
 import im.threads.internal.model.ChatItemSendErrorModel
 import im.threads.internal.utils.AppInfoHelper
@@ -194,7 +194,7 @@ class ThreadsGateTransport(
             PrefUtils.userName,
             PrefUtils.clientID,
             PrefUtils.clientIDEncrypted,
-            Config.instance.context
+            BaseConfig.instance.context
         )
         sendMessage(content, sendInit = false)
     }
@@ -242,7 +242,7 @@ class ThreadsGateTransport(
             sendInitChatMessage(false)
             sendEnvironmentMessage(false)
         }
-        val text = Config.instance.gson.toJson(
+        val text = BaseConfig.instance.gson.toJson(
             SendMessageRequest(
                 correlationId,
                 SendMessageRequest.Data(PrefUtils.deviceAddress, content, important)
@@ -274,13 +274,13 @@ class ThreadsGateTransport(
             PrefUtils.deviceUid,
             "Android",
             DeviceInfoHelper.getOsVersion(),
-            DeviceInfoHelper.getLocale(Config.instance.context),
+            DeviceInfoHelper.getLocale(BaseConfig.instance.context),
             Calendar.getInstance().timeZone.displayName,
             if (!TextUtils.isEmpty(deviceName)) deviceName else deviceModel,
             deviceModel,
             PrefUtils.deviceAddress
         )
-        val text = Config.instance.gson.toJson(
+        val text = BaseConfig.instance.gson.toJson(
             RegisterDeviceRequest(UUID.randomUUID().toString(), data)
         )
         LoggerEdna.info("Sending : $text")
@@ -305,7 +305,7 @@ class ThreadsGateTransport(
                 PrefUtils.clientID,
                 PrefUtils.clientIDEncrypted,
                 PrefUtils.data,
-                Config.instance.context
+                BaseConfig.instance.context
             ),
             tryOpeningWebSocket = tryOpeningWebSocket,
             sendInit = false
@@ -347,14 +347,14 @@ class ThreadsGateTransport(
     private fun getDeviceName(): String {
         val deviceName = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
             Settings.Secure.getString(
-                Config.instance.context.contentResolver,
+                BaseConfig.instance.context.contentResolver,
                 Settings.Global.DEVICE_NAME
             )
         } else null
 
         return if (deviceName.isNullOrBlank() && Build.VERSION.SDK_INT <= Build.VERSION_CODES.S) {
             val blName = try {
-                Settings.Secure.getString(Config.instance.context.contentResolver, "bluetooth_name")
+                Settings.Secure.getString(BaseConfig.instance.context.contentResolver, "bluetooth_name")
             } catch (ignored: Exception) {
                 getSimpleDeviceName()
             }
@@ -391,7 +391,7 @@ class ThreadsGateTransport(
         override fun onMessage(webSocket: WebSocket, text: String) {
             LoggerEdna.info("Receiving : $text")
             postSocketResponseMap(text)
-            val response = Config.instance.gson.fromJson(text, BaseResponse::class.java)
+            val response = BaseConfig.instance.gson.fromJson(text, BaseResponse::class.java)
             LoggerEdna.error("Receiving : daseResponse ${response.data}")
             val action = response.action
 
@@ -400,7 +400,7 @@ class ThreadsGateTransport(
                     .postError(TransportException(response.data[KEY_ERROR].asString))
             } else if (action != null) {
                 if (action == Action.REGISTER_DEVICE) {
-                    val data = Config.instance.gson.fromJson(
+                    val data = BaseConfig.instance.gson.fromJson(
                         response.data.toString(),
                         RegisterDeviceData::class.java
                     )
@@ -412,7 +412,7 @@ class ThreadsGateTransport(
                     }
                 }
                 if (action == Action.SEND_MESSAGE) {
-                    val data = Config.instance.gson.fromJson(
+                    val data = BaseConfig.instance.gson.fromJson(
                         response.data.toString(),
                         SendMessageData::class.java
                     )
@@ -451,7 +451,7 @@ class ThreadsGateTransport(
                     }
                 }
                 if (action == Action.GET_STATUSES) {
-                    val data = Config.instance.gson.fromJson(
+                    val data = BaseConfig.instance.gson.fromJson(
                         response.data.toString(),
                         GetStatusesData::class.java
                     )
@@ -463,7 +463,7 @@ class ThreadsGateTransport(
                     }
                 }
                 if (action == Action.GET_MESSAGES) {
-                    val data = Config.instance.gson.fromJson(
+                    val data = BaseConfig.instance.gson.fromJson(
                         response.data.toString(),
                         GetMessagesData::class.java
                     )
@@ -472,13 +472,13 @@ class ThreadsGateTransport(
                             val type =
                                 ChatItemType.fromString(ThreadsGateMessageParser.getType(message))
                             if (ChatItemType.TYPING == type) {
-                                val content = Config.instance.gson.fromJson(
+                                val content = BaseConfig.instance.gson.fromJson(
                                     message.content,
                                     TypingContent::class.java
                                 )
                                 ChatUpdateProcessor.getInstance().postTyping(content.clientId)
                             } else if (ChatItemType.ATTACHMENT_SETTINGS == type) {
-                                val attachmentSettings = Config.instance.gson.fromJson(
+                                val attachmentSettings = BaseConfig.instance.gson.fromJson(
                                     message.content,
                                     AttachmentSettings::class.java
                                 )
@@ -489,7 +489,7 @@ class ThreadsGateTransport(
                                 (message.content.get(ATTACHMENTS) as JsonArray).let {
                                     for (i in 0 until it.size()) {
                                         attachments.add(
-                                            Config.instance.gson.fromJson(
+                                            BaseConfig.instance.gson.fromJson(
                                                 it[i],
                                                 Attachment::class.java
                                             )

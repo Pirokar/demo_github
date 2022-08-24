@@ -1,4 +1,4 @@
-package im.threads.internal;
+package im.threads.internal.config;
 
 import android.content.Context;
 import android.net.Uri;
@@ -17,42 +17,31 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import im.threads.ChatStyle;
 import im.threads.ThreadsLib;
-import im.threads.business.config.RequestConfig;
-import im.threads.business.config.SocketClientSettings;
 import im.threads.business.imageLoading.ImageLoaderOkHttpProvider;
 import im.threads.business.logger.LoggerConfig;
 import im.threads.business.models.SslSocketFactoryConfig;
+import im.threads.business.rest.config.RequestConfig;
+import im.threads.business.rest.config.SocketClientSettings;
 import im.threads.business.transport.Transport;
 import im.threads.business.transport.threadsGate.ThreadsGateTransport;
 import im.threads.internal.exceptions.MetaConfigurationException;
 import im.threads.internal.model.gson.UriDeserializer;
 import im.threads.internal.model.gson.UriSerializer;
 import im.threads.internal.utils.MetaDataUtils;
-import im.threads.internal.utils.PrefUtils;
 import im.threads.internal.utils.TlsConfigurationUtils;
-import im.threads.styles.permissions.PermissionDescriptionDialogStyle;
-import im.threads.styles.permissions.PermissionDescriptionType;
 import okhttp3.Interceptor;
 
-public final class Config {
+public class BaseConfig {
 
-    private static final String TAG = Config.class.getSimpleName();
-    public static Config instance;
+    private static final String TAG = BaseConfig.class.getSimpleName();
+    public static BaseConfig instance;
 
     @NonNull
     public final Context context;
 
     public final RequestConfig requestConfig;
     public final SslSocketFactoryConfig sslSocketFactoryConfig;
-    private volatile ChatStyle chatStyle = null;
-    private volatile PermissionDescriptionDialogStyle
-            storagePermissionDescriptionDialogStyle = null;
-    private volatile PermissionDescriptionDialogStyle
-            recordAudioPermissionDescriptionDialogStyle = null;
-    private volatile PermissionDescriptionDialogStyle
-            cameraPermissionDescriptionDialogStyle = null;
 
     @NonNull
     public final ThreadsLib.PendingIntentCreator pendingIntentCreator;
@@ -80,31 +69,27 @@ public final class Config {
     @Nullable
     public final LoggerConfig loggerConfig;
 
-    public final boolean attachmentEnabled;
-    public final boolean filesAndMediaMenuItemEnabled;
-
     public final Gson gson = new GsonBuilder()
             .registerTypeAdapter(Uri.class, new UriSerializer())
             .registerTypeAdapter(Uri.class, new UriDeserializer())
             .create();
 
-    public Config(@NonNull Context context,
-                  @Nullable String serverBaseUrl,
-                  @Nullable String datastoreUrl,
-                  @Nullable String threadsGateUrl,
-                  @Nullable String threadsGateProviderUid,
-                  @Nullable String threadsGateHCMProviderUid,
-                  @Nullable Boolean isNewChatCenterApi,
-                  @Nullable LoggerConfig loggerConfig,
-                  @NonNull ThreadsLib.PendingIntentCreator pendingIntentCreator,
-                  @Nullable ThreadsLib.UnreadMessagesCountListener unreadMessagesCountListener,
-                  @Nullable Interceptor networkInterceptor,
-                  @Nullable ChatStyle chatStyle,
-                  boolean isDebugLoggingEnabled,
-                  int historyLoadingCount,
-                  int surveyCompletionDelay,
-                  @NonNull RequestConfig requestConfig,
-                  List<Integer> certificateRawResIds) {
+    public BaseConfig(@NonNull Context context,
+                      @Nullable String serverBaseUrl,
+                      @Nullable String datastoreUrl,
+                      @Nullable String threadsGateUrl,
+                      @Nullable String threadsGateProviderUid,
+                      @Nullable String threadsGateHCMProviderUid,
+                      @Nullable Boolean isNewChatCenterApi,
+                      @Nullable LoggerConfig loggerConfig,
+                      @NonNull ThreadsLib.PendingIntentCreator pendingIntentCreator,
+                      @Nullable ThreadsLib.UnreadMessagesCountListener unreadMessagesCountListener,
+                      @Nullable Interceptor networkInterceptor,
+                      @Nullable ChatStyle chatStyle,boolean isDebugLoggingEnabled,
+                      int historyLoadingCount,
+                      int surveyCompletionDelay,
+                      @NonNull RequestConfig requestConfig,
+                      List<Integer> certificateRawResIds) {
         this.context = context.getApplicationContext();
         this.pendingIntentCreator = pendingIntentCreator;
         this.unreadMessagesCountListener = unreadMessagesCountListener;
@@ -113,8 +98,6 @@ public final class Config {
         this.isDebugLoggingEnabled = isDebugLoggingEnabled;
         this.newChatCenterApi = getIsNewChatCenterApi(isNewChatCenterApi);
         this.loggerConfig = loggerConfig;
-        this.attachmentEnabled = MetaDataUtils.getAttachmentEnabled(this.context);
-        this.filesAndMediaMenuItemEnabled = MetaDataUtils.getFilesAndMeniaMenuItemEnabled(this.context);
         this.historyLoadingCount = historyLoadingCount;
         this.surveyCompletionDelay = surveyCompletionDelay;
         this.sslSocketFactoryConfig = getSslSocketFactoryConfig(certificateRawResIds);
@@ -142,108 +125,6 @@ public final class Config {
         SSLSocketFactory sslSocketFactory =
                 TlsConfigurationUtils.createTlsPinningSocketFactory(trustManagers);
         return new SslSocketFactoryConfig(sslSocketFactory, trustManager);
-    }
-
-    public void applyChatStyle(ChatStyle chatStyle) {
-        this.chatStyle = chatStyle;
-        PrefUtils.setIncomingStyle(chatStyle);
-    }
-
-    public void applyStoragePermissionDescriptionDialogStyle(
-            @NonNull PermissionDescriptionDialogStyle dialogStyle
-    ) {
-        this.storagePermissionDescriptionDialogStyle = dialogStyle;
-        PrefUtils.setIncomingStyle(PermissionDescriptionType.STORAGE, dialogStyle);
-    }
-
-    public void applyRecordAudioPermissionDescriptionDialogStyle(
-            @NonNull PermissionDescriptionDialogStyle dialogStyle
-    ) {
-        this.recordAudioPermissionDescriptionDialogStyle = dialogStyle;
-        PrefUtils.setIncomingStyle(PermissionDescriptionType.RECORD_AUDIO, dialogStyle);
-    }
-
-    public void applyCameraPermissionDescriptionDialogStyle(
-            @NonNull PermissionDescriptionDialogStyle dialogStyle
-    ) {
-        this.cameraPermissionDescriptionDialogStyle = dialogStyle;
-        PrefUtils.setIncomingStyle(PermissionDescriptionType.CAMERA, dialogStyle);
-    }
-
-    @NonNull
-    public ChatStyle getChatStyle() {
-        ChatStyle localInstance = chatStyle;
-        if (localInstance == null) {
-            synchronized (ChatStyle.class) {
-                localInstance = chatStyle;
-                if (localInstance == null) {
-                    localInstance = PrefUtils.getIncomingStyle();
-                    if (localInstance == null) {
-                        localInstance = new ChatStyle();
-                    }
-                    chatStyle = localInstance;
-                }
-            }
-        }
-        return localInstance;
-    }
-
-    @NonNull
-    public PermissionDescriptionDialogStyle getStoragePermissionDescriptionDialogStyle() {
-        PermissionDescriptionDialogStyle localInstance = storagePermissionDescriptionDialogStyle;
-        if (localInstance == null) {
-            synchronized (PermissionDescriptionDialogStyle.class) {
-                localInstance = storagePermissionDescriptionDialogStyle;
-                if (localInstance == null) {
-                    localInstance = PrefUtils.getIncomingStyle(PermissionDescriptionType.STORAGE);
-                    if (localInstance == null) {
-                        localInstance = PermissionDescriptionDialogStyle
-                                .getDefaultDialogStyle(PermissionDescriptionType.STORAGE);
-                    }
-                    storagePermissionDescriptionDialogStyle = localInstance;
-                }
-            }
-        }
-        return localInstance;
-    }
-
-    @NonNull
-    public PermissionDescriptionDialogStyle getRecordAudioPermissionDescriptionDialogStyle() {
-        PermissionDescriptionDialogStyle localInstance = recordAudioPermissionDescriptionDialogStyle;
-        if (localInstance == null) {
-            synchronized (PermissionDescriptionDialogStyle.class) {
-                localInstance = recordAudioPermissionDescriptionDialogStyle;
-                if (localInstance == null) {
-                    localInstance =
-                            PrefUtils.getIncomingStyle(PermissionDescriptionType.RECORD_AUDIO);
-                    if (localInstance == null) {
-                        localInstance = PermissionDescriptionDialogStyle
-                                .getDefaultDialogStyle(PermissionDescriptionType.RECORD_AUDIO);
-                    }
-                    recordAudioPermissionDescriptionDialogStyle = localInstance;
-                }
-            }
-        }
-        return localInstance;
-    }
-
-    @NonNull
-    public PermissionDescriptionDialogStyle getCameraPermissionDescriptionDialogStyle() {
-        PermissionDescriptionDialogStyle localInstance = cameraPermissionDescriptionDialogStyle;
-        if (localInstance == null) {
-            synchronized (PermissionDescriptionDialogStyle.class) {
-                localInstance = cameraPermissionDescriptionDialogStyle;
-                if (localInstance == null) {
-                    localInstance = PrefUtils.getIncomingStyle(PermissionDescriptionType.CAMERA);
-                    if (localInstance == null) {
-                        localInstance = PermissionDescriptionDialogStyle
-                                .getDefaultDialogStyle(PermissionDescriptionType.CAMERA);
-                    }
-                    cameraPermissionDescriptionDialogStyle = localInstance;
-                }
-            }
-        }
-        return localInstance;
     }
 
     private Transport getTransport(@Nullable String providedThreadsGateUrl,

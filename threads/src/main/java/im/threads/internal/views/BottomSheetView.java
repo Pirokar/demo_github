@@ -18,9 +18,10 @@ import java.util.Arrays;
 
 import im.threads.ChatStyle;
 import im.threads.R;
-import im.threads.internal.Config;
+import im.threads.internal.config.BaseConfig;
 import im.threads.internal.utils.ColorsHelper;
 import im.threads.internal.utils.ViewUtils;
+import im.threads.ui.Config;
 
 public final class BottomSheetView extends LinearLayout {
     private ButtonsListener buttonsListener;
@@ -28,6 +29,7 @@ public final class BottomSheetView extends LinearLayout {
     private Button file;
     private Button gallery;
     private Button send;
+    private ChatStyle chatStyle = ((Config)BaseConfig.instance).getChatStyle();
 
     public BottomSheetView(Context context) {
         super(context);
@@ -65,29 +67,28 @@ public final class BottomSheetView extends LinearLayout {
     }
 
     private void init() {
-        ChatStyle style = Config.instance.getChatStyle();
         ((LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.view_bottom_attachment_sheet, this, true);
         camera = findViewById(R.id.camera);
         ViewUtils.setCompoundDrawablesWithIntrinsicBoundsCompat(camera,
-                style.attachmentCameraIconResId, ViewUtils.DrawablePosition.TOP);
+                chatStyle.attachmentCameraIconResId, ViewUtils.DrawablePosition.TOP);
         camera.setOnClickListener(v -> {
             if (null != buttonsListener) buttonsListener.onCameraClick();
         });
         gallery = findViewById(R.id.gallery);
         ViewUtils.setCompoundDrawablesWithIntrinsicBoundsCompat(gallery,
-                style.attachmentGalleryIconResId, ViewUtils.DrawablePosition.TOP);
+                chatStyle.attachmentGalleryIconResId, ViewUtils.DrawablePosition.TOP);
         gallery.setOnClickListener(v -> {
             if (null != buttonsListener) buttonsListener.onGalleryClick();
         });
         file = findViewById(R.id.file);
         ViewUtils.setCompoundDrawablesWithIntrinsicBoundsCompat(file,
-                style.attachmentFileIconResId, ViewUtils.DrawablePosition.TOP);
+                chatStyle.attachmentFileIconResId, ViewUtils.DrawablePosition.TOP);
         file.setOnClickListener(v -> {
             if (null != buttonsListener) buttonsListener.onFilePickerClick();
         });
         send = findViewById(R.id.send);
         ViewUtils.setCompoundDrawablesWithIntrinsicBoundsCompat(send,
-                style.attachmentSendIconResId, ViewUtils.DrawablePosition.TOP);
+                chatStyle.attachmentSendIconResId, ViewUtils.DrawablePosition.TOP);
         send.setOnClickListener(v -> {
             if (buttonsListener != null) {
                 buttonsListener.onSendClick();
@@ -99,7 +100,7 @@ public final class BottomSheetView extends LinearLayout {
     public void setButtonsTint(@ColorRes int colorRes) {
         int textColor;
         if (colorRes == 0) {
-            textColor = Config.instance.getChatStyle().inputTextColor;
+            textColor = chatStyle.inputTextColor;
         } else {
             textColor = colorRes;
         }

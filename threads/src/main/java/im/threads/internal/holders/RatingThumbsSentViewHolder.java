@@ -18,7 +18,6 @@ import java.util.Locale;
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.business.models.Survey;
-import im.threads.internal.Config;
 
 /**
  * ViewHolder для результатов бинарного опроса
@@ -28,7 +27,6 @@ public final class RatingThumbsSentViewHolder extends BaseHolder {
     private TextView mHeader;
     private TextView mTimeStampTextView;
     private SimpleDateFormat sdf;
-    private ChatStyle style;
     private View mBubble;
 
     public RatingThumbsSentViewHolder(ViewGroup parent) {
@@ -41,27 +39,26 @@ public final class RatingThumbsSentViewHolder extends BaseHolder {
         mHeader = itemView.findViewById(R.id.header);
         mBubble = itemView.findViewById(R.id.bubble);
         sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
-        style = Config.instance.getChatStyle();
-        mBubble.setBackground(AppCompatResources.getDrawable(itemView.getContext(), style.outgoingMessageBubbleBackground));
+        mBubble.setBackground(AppCompatResources.getDrawable(itemView.getContext(), getStyle().outgoingMessageBubbleBackground));
         mBubble.setPadding(
-                itemView.getContext().getResources().getDimensionPixelSize(style.bubbleOutgoingPaddingLeft),
-                itemView.getContext().getResources().getDimensionPixelSize(style.bubbleOutgoingPaddingTop),
-                itemView.getContext().getResources().getDimensionPixelSize(style.bubbleOutgoingPaddingRight),
-                itemView.getContext().getResources().getDimensionPixelSize(style.bubbleOutgoingPaddingBottom)
+                itemView.getContext().getResources().getDimensionPixelSize(getStyle().bubbleOutgoingPaddingLeft),
+                itemView.getContext().getResources().getDimensionPixelSize(getStyle().bubbleOutgoingPaddingTop),
+                itemView.getContext().getResources().getDimensionPixelSize(getStyle().bubbleOutgoingPaddingRight),
+                itemView.getContext().getResources().getDimensionPixelSize(getStyle().bubbleOutgoingPaddingBottom)
         );
-        mBubble.getBackground().setColorFilter(getColorInt(style.outgoingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
-        setTextColorToViews(new TextView[]{mHeader}, style.outgoingMessageTextColor);
-        mTimeStampTextView.setTextColor(getColorInt(style.outgoingMessageTimeColor));
+        mBubble.getBackground().setColorFilter(getColorInt(getStyle().outgoingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
+        setTextColorToViews(new TextView[]{mHeader}, getStyle().outgoingMessageTextColor);
+        mTimeStampTextView.setTextColor(getColorInt(getStyle().outgoingMessageTimeColor));
     }
 
     public void bind(Survey survey) {
         int rate = survey.getQuestions().get(0).getRate();
         if (rate == 1) {
-            thumb.setImageResource(style.binarySurveyLikeSelectedIconResId);
+            thumb.setImageResource(getStyle().binarySurveyLikeSelectedIconResId);
         } else {
-            thumb.setImageResource(style.binarySurveyDislikeSelectedIconResId);
+            thumb.setImageResource(getStyle().binarySurveyDislikeSelectedIconResId);
         }
-        thumb.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor), PorterDuff.Mode.SRC_ATOP);
+        thumb.setColorFilter(ContextCompat.getColor(itemView.getContext(), getStyle().outgoingMessageTextColor), PorterDuff.Mode.SRC_ATOP);
         mHeader.setText(survey.getQuestions().get(0).getText());
         mTimeStampTextView.setText(sdf.format(new Date(survey.getTimeStamp())));
         Drawable d;

@@ -11,9 +11,10 @@ import androidx.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 
-import im.threads.business.config.RequestConfig;
+import im.threads.business.rest.config.RequestConfig;
 import im.threads.business.logger.LoggerConfig;
-import im.threads.internal.Config;
+import im.threads.internal.config.BaseConfig;
+import im.threads.ui.Config;
 import im.threads.view.ChatActivity;
 import okhttp3.Interceptor;
 
@@ -145,7 +146,28 @@ public final class ConfigBuilder {
         return this;
     }
 
-    Config build() {
+    BaseConfig build() {
+        return new BaseConfig(
+                context,
+                serverBaseUrl,
+                datastoreUrl,
+                threadsGateUrl,
+                threadsGateProviderUid,
+                threadsGateHCMProviderUid,
+                isNewChatCenterApi,
+                loggerConfig,
+                pendingIntentCreator,
+                unreadMessagesCountListener,
+                networkInterceptor,
+                isDebugLoggingEnabled,
+                historyLoadingCount,
+                surveyCompletionDelay,
+                requestConfig,
+                certificateRawResIds
+        );
+    }
+
+    Config buildWithUI() {
         return new Config(
                 context,
                 serverBaseUrl,

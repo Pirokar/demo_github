@@ -14,7 +14,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.core.view.isVisible
-import im.threads.ChatStyle
 import im.threads.R
 import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.imageLoading.ImageModifications
@@ -26,6 +25,7 @@ import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.utils.FileUtils
 import im.threads.internal.Config
 import io.reactivex.subjects.PublishSubject
+import im.threads.internal.utils.ColorsHelper
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -44,6 +44,14 @@ class ImageFromConsultViewHolder(
 ) {
 
     private val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
+    private val rotateAnim = RotateAnimation(
+        0f,
+        360f,
+        Animation.RELATIVE_TO_SELF,
+        0.5f,
+        Animation.RELATIVE_TO_SELF,
+        0.5f
+    )
     private val style: ChatStyle = Config.instance.chatStyle
 
     private val timeStampTextView = itemView.findViewById<TextView>(R.id.timeStamp).apply {
@@ -124,7 +132,6 @@ class ImageFromConsultViewHolder(
 
     private fun applyBubbleLayoutStyle() {
         val res = itemView.context.resources
-        val style = Config.instance.chatStyle
         loaderLayout.background = AppCompatResources.getDrawable(
             itemView.context,
             style.incomingMessageBubbleBackground
