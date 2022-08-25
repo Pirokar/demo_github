@@ -1,8 +1,8 @@
 package im.threads.business.rest.queries
 
 import im.threads.R
+import im.threads.business.config.BaseConfig
 import im.threads.business.transport.AuthInterceptor
-import im.threads.internal.config.BaseConfig
 import im.threads.internal.utils.AppInfoHelper
 import im.threads.internal.utils.DeviceInfoHelper
 import im.threads.internal.utils.SSLCertificateInterceptor

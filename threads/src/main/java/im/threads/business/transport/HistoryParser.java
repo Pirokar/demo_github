@@ -31,7 +31,7 @@ import im.threads.business.models.Survey;
 import im.threads.business.models.UserPhrase;
 import im.threads.business.rest.models.HistoryResponse;
 import im.threads.business.utils.DateHelper;
-import im.threads.internal.config.BaseConfig;
+import im.threads.business.config.BaseConfig;
 import im.threads.internal.formatters.ChatItemType;
 
 public final class HistoryParser {

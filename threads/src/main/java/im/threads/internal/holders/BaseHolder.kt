@@ -33,7 +33,7 @@ import im.threads.internal.utils.UrlUtils
 import im.threads.internal.utils.ViewUtils
 import im.threads.internal.views.CircularProgressButton
 import im.threads.internal.widget.textView.BubbleMessageTextView
-import im.threads.ui.Config
+import im.threads.ui.config.Config
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
@@ -53,7 +53,6 @@ abstract class BaseHolder internal constructor(
     private var compositeDisposable: CompositeDisposable = CompositeDisposable()
     private val linksHighlighter: LinksHighlighter = LinkifyLinksHighlighter()
     private val openGraphParser: OpenGraphParser = OpenGraphParserJsoupImpl()
-    private val style = Config.instance.chatStyle
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
     protected val rotateAnim = RotateAnimation(
         0f,
@@ -90,9 +89,6 @@ abstract class BaseHolder internal constructor(
             )*/
         }
     }
-
-    val config: Config by lazy { BaseConfig.instance as Config }
-    val style = config.getChatStyle()
 
     protected fun subscribe(event: Disposable): Boolean {
         if (compositeDisposable?.isDisposed != false) {

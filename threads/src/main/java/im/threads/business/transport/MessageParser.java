@@ -32,7 +32,7 @@ import im.threads.business.transport.models.SpeechMessageUpdatedContent;
 import im.threads.business.transport.models.SurveyContent;
 import im.threads.business.transport.models.SystemMessageContent;
 import im.threads.business.transport.models.TextContent;
-import im.threads.internal.config.BaseConfig;
+import im.threads.business.config.BaseConfig;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.formatters.ChatItemType;
 import im.threads.internal.model.MessageRead;

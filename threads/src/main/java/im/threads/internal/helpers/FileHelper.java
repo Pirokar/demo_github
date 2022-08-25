@@ -6,7 +6,7 @@ import java.io.File;
 
 import im.threads.business.logger.LoggerEdna;
 import im.threads.business.transport.models.AttachmentSettings;
-import im.threads.internal.config.BaseConfig;
+import im.threads.business.config.BaseConfig;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.utils.PrefUtils;
 

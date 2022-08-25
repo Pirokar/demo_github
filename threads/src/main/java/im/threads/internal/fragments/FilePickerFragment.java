@@ -24,9 +24,9 @@ import java.util.Arrays;
 
 import im.threads.ChatStyle;
 import im.threads.R;
-import im.threads.internal.config.BaseConfig;
+import im.threads.business.config.BaseConfig;
 import im.threads.internal.helpers.FileHelper;
-import im.threads.ui.Config;
+import im.threads.ui.config.Config;
 
 /**
  * Dialog fragment for picking folder

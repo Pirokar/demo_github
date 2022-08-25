@@ -9,6 +9,7 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import im.threads.business.config.BaseConfig
 import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.CampaignMessage
 import im.threads.business.models.ConsultInfo
@@ -36,7 +37,6 @@ import im.threads.business.transport.threadsGate.responses.GetStatusesData
 import im.threads.business.transport.threadsGate.responses.RegisterDeviceData
 import im.threads.business.transport.threadsGate.responses.SendMessageData
 import im.threads.internal.chat_updates.ChatUpdateProcessor
-import im.threads.internal.config.BaseConfig
 import im.threads.internal.formatters.ChatItemType
 import im.threads.internal.model.ChatItemSendErrorModel
 import im.threads.internal.utils.AppInfoHelper

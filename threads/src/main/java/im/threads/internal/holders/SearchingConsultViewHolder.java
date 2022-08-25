@@ -11,8 +11,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import im.threads.ChatStyle;
 import im.threads.R;
-import im.threads.internal.config.BaseConfig;
-import im.threads.ui.Config;
+import im.threads.business.config.BaseConfig;
+import im.threads.ui.config.Config;
 
 public final class SearchingConsultViewHolder extends RecyclerView.ViewHolder {
 

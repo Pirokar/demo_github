@@ -8,20 +8,22 @@ import android.os.Build
 import android.text.TextUtils
 import im.threads.business.audioConverter.AudioConverter
 import im.threads.business.audioConverter.callback.ILoadCallback
+import im.threads.business.config.BaseConfig
+import im.threads.business.config.BaseConfigBuilder
+import im.threads.business.config.UIConfig
 import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.FileDescription
 import im.threads.business.rest.queries.BackendApi
 import im.threads.business.rest.queries.DatastoreApi
 import im.threads.business.utils.FileUtils.getFileSize
 import im.threads.internal.chat_updates.ChatUpdateProcessor
-import im.threads.internal.config.BaseConfig
-import im.threads.internal.config.UIConfig
 import im.threads.internal.controllers.ChatController
 import im.threads.internal.controllers.UnreadMessagesController
 import im.threads.internal.helpers.FileProviderHelper
 import im.threads.internal.model.UpcomingUserMessage
 import im.threads.internal.useractivity.LastUserActivityTimeCounterSingletonProvider.getLastUserActivityTimeCounter
 import im.threads.internal.utils.PrefUtils
+import im.threads.ui.config.ConfigBuilder
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.exceptions.UndeliverableException
 import io.reactivex.plugins.RxJavaPlugins
@@ -143,13 +145,13 @@ class ThreadsLib private constructor() {
 
         @SuppressLint("CheckResult")
         @JvmStatic
-        fun init(configBuilder: ConfigBuilder, withUI: Boolean = true) {
+        fun init(configBuilder: BaseConfigBuilder) {
             check(instance == null) { "ThreadsLib has already been initialized" }
             val startInitTime = System.currentTimeMillis()
             instance = ThreadsLib()
 
-            BaseConfig.instance = if (withUI) {
-                configBuilder.buildWithUI()
+            BaseConfig.instance = if (configBuilder is ConfigBuilder) {
+                configBuilder.build()
             } else {
                 configBuilder.build()
             }

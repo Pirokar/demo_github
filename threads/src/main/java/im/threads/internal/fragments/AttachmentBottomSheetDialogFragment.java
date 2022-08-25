@@ -25,14 +25,14 @@ import java.util.List;
 
 import im.threads.ChatStyle;
 import im.threads.R;
-import im.threads.internal.config.BaseConfig;
+import im.threads.business.config.BaseConfig;
 import im.threads.internal.helpers.MediaHelper;
 import im.threads.internal.useractivity.LastUserActivityTimeCounter;
 import im.threads.internal.useractivity.LastUserActivityTimeCounterSingletonProvider;
 import im.threads.internal.utils.ColorsHelper;
 import im.threads.internal.views.BottomGallery;
 import im.threads.internal.views.BottomSheetView;
-import im.threads.ui.Config;
+import im.threads.ui.config.Config;
 
 public class AttachmentBottomSheetDialogFragment extends BottomSheetDialogFragment implements BottomSheetView.ButtonsListener {
 

@@ -14,8 +14,8 @@ import java.util.ArrayList;
 
 import im.threads.ChatStyle;
 import im.threads.R;
-import im.threads.internal.config.BaseConfig;
-import im.threads.ui.Config;
+import im.threads.business.config.BaseConfig;
+import im.threads.ui.config.Config;
 
 /**
  * Контрол для показа и изменения рейтинга

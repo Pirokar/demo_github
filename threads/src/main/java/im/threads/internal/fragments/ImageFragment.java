@@ -19,9 +19,9 @@ import im.threads.R;
 import im.threads.business.imageLoading.ImageLoader;
 import im.threads.business.models.FileDescription;
 import im.threads.business.utils.FileUtils;
-import im.threads.internal.config.BaseConfig;
+import im.threads.business.config.BaseConfig;
 import im.threads.internal.formatters.RussianFormatSymbols;
-import im.threads.ui.Config;
+import im.threads.ui.config.Config;
 
 public final class ImageFragment extends Fragment {
     private static SimpleDateFormat sdf;

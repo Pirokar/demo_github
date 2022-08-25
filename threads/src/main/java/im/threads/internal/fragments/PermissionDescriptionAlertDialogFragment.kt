@@ -25,7 +25,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.widget.TextViewCompat
 import androidx.fragment.app.DialogFragment
 import im.threads.R
-import im.threads.internal.config.BaseConfig
+import im.threads.business.config.BaseConfig
 import im.threads.internal.utils.ColorsHelper
 import im.threads.styles.permissions.ContentGravity
 import im.threads.styles.permissions.PermissionDescriptionButtonStyle
@@ -33,7 +33,7 @@ import im.threads.styles.permissions.PermissionDescriptionDialogBackgroundStyle
 import im.threads.styles.permissions.PermissionDescriptionImageStyle
 import im.threads.styles.permissions.PermissionDescriptionTextStyle
 import im.threads.styles.permissions.PermissionDescriptionType
-import im.threads.ui.Config
+import im.threads.ui.config.Config
 
 /**
  * Диалоговое окно с описанием причины запроса разрешения.
