@@ -86,6 +86,7 @@ import im.threads.internal.utils.ThreadUtils;
 import im.threads.internal.views.VoiceTimeLabelFormatterKt;
 
 public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private static final int TYPE_UNDEFINED = 0;
     private static final int TYPE_CONSULT_TYPING = 1;
     private static final int TYPE_DATE = 2;
     private static final int TYPE_SEARCHING_CONSULT = 3;
@@ -314,29 +315,21 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
         if (o instanceof SystemMessage) {
             return TYPE_SYSTEM_MESSAGE;
-        }
-        if (o instanceof ConsultTyping) {
+        } else if (o instanceof ConsultTyping) {
             return TYPE_CONSULT_TYPING;
-        }
-        if (o instanceof DateRow) {
+        } else if (o instanceof DateRow) {
             return TYPE_DATE;
-        }
-        if (o instanceof SearchingConsult) {
+        } else if (o instanceof SearchingConsult) {
             return TYPE_SEARCHING_CONSULT;
-        }
-        if (o instanceof Space) {
+        } else if (o instanceof Space) {
             return TYPE_FREE_SPACE;
-        }
-        if (o instanceof UnreadMessages) {
+        } else if (o instanceof UnreadMessages) {
             return TYPE_UNREAD_MESSAGES;
-        }
-        if (o instanceof ScheduleInfo) {
+        } else if (o instanceof ScheduleInfo) {
             return TYPE_SCHEDULE;
-        }
-        if (o instanceof RequestResolveThread) {
+        } else if (o instanceof RequestResolveThread) {
             return TYPE_REQ_RESOLVE_THREAD;
-        }
-        if (o instanceof ConsultPhrase) {
+        } else if (o instanceof ConsultPhrase) {
             final ConsultPhrase cp = (ConsultPhrase) o;
             if (cp.isVoiceMessage()) {
                 return TYPE_VOICE_MESSAGE_FROM_CONSULT;
@@ -348,8 +341,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 return TYPE_FILE_FROM_CONSULT;
             }
             return TYPE_CONSULT_PHRASE;
-        }
-        if (o instanceof UserPhrase) {
+        } else if (o instanceof UserPhrase) {
             final UserPhrase up = (UserPhrase) o;
             if (up.isOnlyImage()) {
                 return TYPE_IMAGE_FROM_USER;
@@ -358,8 +350,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 return TYPE_FILE_FROM_USER;
             }
             return TYPE_USER_PHRASE;
-        }
-        if (o instanceof Survey) {
+        } else if (o instanceof Survey && !((Survey) o).getQuestions().isEmpty()) {
             final Survey survey = (Survey) o;
             final QuestionDTO questionDTO = survey.getQuestions().get(0);
             if (questionDTO.isSimple()) {
@@ -375,11 +366,11 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     return TYPE_RATING_STARS;
                 }
             }
-        }
-        if (o instanceof QuickReplyItem) {
+        } else if (o instanceof QuickReplyItem) {
             return TYPE_QUICK_REPLIES;
+        } else {
+            return TYPE_UNDEFINED;
         }
-        return super.getItemViewType(position);
     }
 
     @Override

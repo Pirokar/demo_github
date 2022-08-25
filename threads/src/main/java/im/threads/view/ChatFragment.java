@@ -1657,23 +1657,6 @@ public final class ChatFragment extends BaseFragment implements
                 isInMessageSearchMode) {
             return;
         }
-        /*String firstUnreadUuid = mChatController.getFirstUnreadUuidId();
-        ArrayList<ChatItem> newList = chatAdapter.getList();
-        if (newList != null && !newList.isEmpty() && firstUnreadUuid != null) {
-            for (int i = 1; i < newList.size(); i++) {
-                if (newList.get(i) instanceof ConsultPhrase) {
-                    ConsultPhrase cp = (ConsultPhrase) newList.get(i);
-                    if (firstUnreadUuid.equalsIgnoreCase(cp.getId())) {
-                        final int index = i;
-                        h.postDelayed(
-                                () -> binding.recycler.post(() -> layoutManager.scrollToPositionWithOffset(index - 1, 0)),
-                                600
-                        );
-                        return;
-                    }
-                }
-            }
-        }*/
         int newAdapterSize = chatAdapter.getList().size();
         if (oldAdapterSize == 0) {
             scrollToPosition(chatAdapter.getItemCount() - 1, false);
