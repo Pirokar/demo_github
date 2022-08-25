@@ -16,13 +16,13 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.isVisible
 import im.threads.R
+import im.threads.business.config.BaseConfig
 import im.threads.business.imageLoading.loadImage
 import im.threads.business.utils.FileUtils.convertRelativeUrlToAbsolute
 import im.threads.databinding.ActivityConsultPageBinding
 import im.threads.internal.activities.filesActivity.FilesActivity
-import im.threads.internal.config.BaseConfig
 import im.threads.internal.utils.setColorFilter
-import im.threads.ui.Config
+import im.threads.ui.config.Config
 import im.threads.view.ChatFragment
 
 internal open class ConsultActivity : BaseActivity() {

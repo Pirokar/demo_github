@@ -8,10 +8,10 @@ import android.webkit.WebViewClient
 import androidx.databinding.DataBindingUtil
 import im.threads.android.R
 import im.threads.android.databinding.ActivityWebviewBinding
+import im.threads.business.config.BaseConfig
 import im.threads.internal.activities.BaseActivity
-import im.threads.internal.config.BaseConfig
 import im.threads.internal.utils.ColorsHelper
-import im.threads.ui.Config
+import im.threads.ui.config.Config
 
 /**
  * Активность для открытия ссылок вида : webview://www.mail.ru

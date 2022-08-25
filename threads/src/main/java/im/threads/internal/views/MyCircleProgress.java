@@ -10,8 +10,8 @@ import android.view.View;
 import androidx.core.content.ContextCompat;
 
 import im.threads.ChatStyle;
-import im.threads.internal.config.BaseConfig;
-import im.threads.ui.Config;
+import im.threads.business.config.BaseConfig;
+import im.threads.ui.config.Config;
 
 public final class MyCircleProgress extends View {
     private Paint finishedPaint;

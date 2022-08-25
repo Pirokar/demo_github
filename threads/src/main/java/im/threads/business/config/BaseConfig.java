@@ -1,4 +1,4 @@
-package im.threads.internal.config;
+package im.threads.business.config;
 
 import android.content.Context;
 import android.net.Uri;
@@ -43,8 +43,6 @@ public class BaseConfig {
     public final RequestConfig requestConfig;
     public final SslSocketFactoryConfig sslSocketFactoryConfig;
 
-    @NonNull
-    public final ThreadsLib.PendingIntentCreator pendingIntentCreator;
     @Nullable
     public final Interceptor networkInterceptor;
     @Nullable
@@ -82,7 +80,6 @@ public class BaseConfig {
                       @Nullable String threadsGateHCMProviderUid,
                       @Nullable Boolean isNewChatCenterApi,
                       @Nullable LoggerConfig loggerConfig,
-                      @NonNull ThreadsLib.PendingIntentCreator pendingIntentCreator,
                       @Nullable ThreadsLib.UnreadMessagesCountListener unreadMessagesCountListener,
                       @Nullable Interceptor networkInterceptor,
                       boolean isDebugLoggingEnabled,
@@ -91,7 +88,6 @@ public class BaseConfig {
                       @NonNull RequestConfig requestConfig,
                       List<Integer> certificateRawResIds) {
         this.context = context.getApplicationContext();
-        this.pendingIntentCreator = pendingIntentCreator;
         this.unreadMessagesCountListener = unreadMessagesCountListener;
         this.networkInterceptor = networkInterceptor;
         this.isDebugLoggingEnabled = isDebugLoggingEnabled;

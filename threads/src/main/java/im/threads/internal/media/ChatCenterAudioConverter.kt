@@ -3,8 +3,8 @@ package im.threads.internal.media
 import im.threads.business.audioConverter.AudioConverter
 import im.threads.business.audioConverter.callback.IConvertCallback
 import im.threads.business.audioConverter.model.AudioFormat
+import im.threads.business.config.BaseConfig
 import im.threads.business.logger.LoggerEdna
-import im.threads.internal.config.BaseConfig
 import java.io.File
 import java.lang.ref.WeakReference
 

@@ -13,9 +13,9 @@ import androidx.annotation.NonNull;
 
 import im.threads.ChatStyle;
 import im.threads.R;
-import im.threads.internal.config.BaseConfig;
+import im.threads.business.config.BaseConfig;
 import im.threads.internal.utils.ColorsHelper;
-import im.threads.ui.Config;
+import im.threads.ui.config.Config;
 
 public final class WelcomeScreen extends LinearLayout {
 

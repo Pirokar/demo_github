@@ -1,6 +1,6 @@
 package im.threads.business.rest.queries
 
-import im.threads.internal.config.BaseConfig
+import im.threads.business.config.BaseConfig
 
 class BackendApi private constructor(config: BaseConfig) : ApiGenerator(config, false) {
     override fun createThreadsApi() {

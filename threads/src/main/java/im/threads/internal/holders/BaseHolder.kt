@@ -15,6 +15,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import im.threads.R
+import im.threads.business.config.BaseConfig
 import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.imageLoading.loadImage
 import im.threads.business.logger.LoggerEdna
@@ -23,7 +24,6 @@ import im.threads.business.models.enums.ErrorStateEnum
 import im.threads.business.ogParser.OGData
 import im.threads.business.ogParser.OpenGraphParser
 import im.threads.business.ogParser.OpenGraphParserJsoupImpl
-import im.threads.internal.config.BaseConfig
 import im.threads.internal.markdown.LinkifyLinksHighlighter
 import im.threads.internal.markdown.LinksHighlighter
 import im.threads.internal.utils.ColorsHelper
@@ -31,7 +31,7 @@ import im.threads.internal.utils.UrlUtils
 import im.threads.internal.utils.ViewUtils
 import im.threads.internal.views.CircularProgressButton
 import im.threads.internal.widget.textView.BubbleMessageTextView
-import im.threads.ui.Config
+import im.threads.ui.config.Config
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import kotlinx.coroutines.CoroutineScope

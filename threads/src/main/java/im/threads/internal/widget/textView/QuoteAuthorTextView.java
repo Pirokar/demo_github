@@ -6,9 +6,9 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 
 import im.threads.ChatStyle;
-import im.threads.internal.config.BaseConfig;
+import im.threads.business.config.BaseConfig;
 import im.threads.internal.widget.BoldCustomFontTextView;
-import im.threads.ui.Config;
+import im.threads.ui.config.Config;
 
 public final class QuoteAuthorTextView extends BoldCustomFontTextView {
 

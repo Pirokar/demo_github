@@ -2,9 +2,9 @@ package im.threads.internal.markdown
 
 import android.content.Context
 import android.text.Spanned
-import im.threads.internal.config.BaseConfig
+import im.threads.business.config.BaseConfig
 import im.threads.internal.utils.UrlUtils
-import im.threads.ui.Config
+import im.threads.ui.config.Config
 import io.noties.markwon.AbstractMarkwonPlugin
 import io.noties.markwon.Markwon
 import io.noties.markwon.MarkwonConfiguration
