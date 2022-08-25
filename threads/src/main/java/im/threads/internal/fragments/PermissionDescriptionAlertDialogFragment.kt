@@ -27,13 +27,13 @@ import androidx.fragment.app.DialogFragment
 import im.threads.R
 import im.threads.business.config.BaseConfig
 import im.threads.internal.utils.ColorsHelper
+import im.threads.ui.config.Config
 import im.threads.ui.styles.permissions.ContentGravity
 import im.threads.ui.styles.permissions.PermissionDescriptionButtonStyle
 import im.threads.ui.styles.permissions.PermissionDescriptionDialogBackgroundStyle
 import im.threads.ui.styles.permissions.PermissionDescriptionImageStyle
 import im.threads.ui.styles.permissions.PermissionDescriptionTextStyle
 import im.threads.ui.styles.permissions.PermissionDescriptionType
-import im.threads.ui.config.Config
 
 /**
  * Диалоговое окно с описанием причины запроса разрешения.

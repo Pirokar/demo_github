@@ -13,10 +13,10 @@ import im.threads.business.rest.queries.OldThreadsBackendApi.Companion.API_VERSI
 import im.threads.business.utils.FileUtils.getFileName
 import im.threads.business.utils.FileUtils.getFileSize
 import im.threads.business.utils.FileUtils.getMimeType
+import im.threads.business.utils.preferences.PrefUtilsBase
 import im.threads.internal.formatters.ChatItemType
 import im.threads.internal.utils.AppInfoHelper
 import im.threads.internal.utils.DeviceInfoHelper
-import im.threads.business.utils.preferences.PrefUtilsBase
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
