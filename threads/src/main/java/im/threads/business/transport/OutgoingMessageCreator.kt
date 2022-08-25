@@ -16,7 +16,7 @@ import im.threads.business.utils.FileUtils.getMimeType
 import im.threads.internal.formatters.ChatItemType
 import im.threads.internal.utils.AppInfoHelper
 import im.threads.internal.utils.DeviceInfoHelper
-import im.threads.internal.utils.PrefUtils.Companion.appMarker
+import im.threads.business.utils.preferences.PrefUtilsBase
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
@@ -28,7 +28,7 @@ object OutgoingMessageCreator {
             addProperty(MessageAttributes.CLIENT_ID, clientId)
             addProperty(MessageAttributes.TYPE, ChatItemType.INIT_CHAT.name)
             addProperty(MessageAttributes.DATA, data)
-            addProperty(MessageAttributes.APP_MARKER_KEY, appMarker)
+            addProperty(MessageAttributes.APP_MARKER_KEY, PrefUtilsBase.appMarker)
         }
         return jsonObject
     }
@@ -52,7 +52,7 @@ object OutgoingMessageCreator {
             addProperty("appVersion", AppInfoHelper.getAppVersion())
             addProperty("appName", AppInfoHelper.getAppName())
             addProperty(MessageAttributes.APP_BUNDLE_KEY, AppInfoHelper.getAppId())
-            addProperty(MessageAttributes.APP_MARKER_KEY, appMarker)
+            addProperty(MessageAttributes.APP_MARKER_KEY, PrefUtilsBase.appMarker)
             addProperty("libVersion", AppInfoHelper.getLibVersion())
             addProperty("clientLocale", DeviceInfoHelper.getLocale(ctx))
             addProperty("chatApiVersion", API_VERSION)
@@ -66,7 +66,7 @@ object OutgoingMessageCreator {
             addProperty(MessageAttributes.CLIENT_ID, clientId)
             addProperty(MessageAttributes.TYPE, ChatItemType.TYPING.name)
             addProperty(MessageAttributes.TYPING_DRAFT, input)
-            addProperty(MessageAttributes.APP_MARKER_KEY, appMarker)
+            addProperty(MessageAttributes.APP_MARKER_KEY, PrefUtilsBase.appMarker)
         }
         return jsonObject
     }
@@ -88,7 +88,7 @@ object OutgoingMessageCreator {
         val jsonObject = JsonObject().apply {
             addProperty(MessageAttributes.CLIENT_ID, clientId)
             addProperty(MessageAttributes.TYPE, ChatItemType.CLOSE_THREAD.name)
-            addProperty(MessageAttributes.APP_MARKER_KEY, appMarker)
+            addProperty(MessageAttributes.APP_MARKER_KEY, PrefUtilsBase.appMarker)
         }
         return jsonObject
     }
@@ -97,7 +97,7 @@ object OutgoingMessageCreator {
         val jsonObject = JsonObject().apply {
             addProperty(MessageAttributes.CLIENT_ID, clientId)
             addProperty(MessageAttributes.TYPE, ChatItemType.REOPEN_THREAD.name)
-            addProperty(MessageAttributes.APP_MARKER_KEY, appMarker)
+            addProperty(MessageAttributes.APP_MARKER_KEY, PrefUtilsBase.appMarker)
         }
         return jsonObject
     }
@@ -106,7 +106,7 @@ object OutgoingMessageCreator {
         val jsonObject = JsonObject()
         jsonObject.addProperty(MessageAttributes.CLIENT_ID, clientId)
         jsonObject.addProperty(MessageAttributes.TYPE, ChatItemType.CLIENT_OFFLINE.name)
-        jsonObject.addProperty(MessageAttributes.APP_MARKER_KEY, appMarker)
+        jsonObject.addProperty(MessageAttributes.APP_MARKER_KEY, PrefUtilsBase.appMarker)
         return jsonObject
     }
 
@@ -133,7 +133,7 @@ object OutgoingMessageCreator {
             addProperty("appVersion", AppInfoHelper.getAppVersion())
             addProperty("appName", AppInfoHelper.getAppName())
             addProperty(MessageAttributes.APP_BUNDLE_KEY, AppInfoHelper.getAppId())
-            addProperty(MessageAttributes.APP_MARKER_KEY, appMarker)
+            addProperty(MessageAttributes.APP_MARKER_KEY, PrefUtilsBase.appMarker)
             addProperty("libVersion", AppInfoHelper.getLibVersion())
             addProperty("clientLocale", DeviceInfoHelper.getLocale(ctx))
             addProperty("chatApiVersion", API_VERSION)
@@ -157,7 +157,7 @@ object OutgoingMessageCreator {
             addProperty(MessageAttributes.UUID, userPhrase.id)
             addProperty(MessageAttributes.CLIENT_ID, clientId)
             addProperty(MessageAttributes.TEXT, phrase ?: "")
-            addProperty(MessageAttributes.APP_MARKER_KEY, appMarker)
+            addProperty(MessageAttributes.APP_MARKER_KEY, PrefUtilsBase.appMarker)
         }
         val quotes = JsonArray().apply {
             campaignMessage?.let {

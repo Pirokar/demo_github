@@ -2,19 +2,16 @@ package im.threads.ui.config
 
 import android.content.Context
 import im.threads.ChatStyle
-import im.threads.ThreadsLib
-import im.threads.ThreadsLib.PendingIntentCreator
 import im.threads.business.config.BaseConfig
-import im.threads.business.config.UIConfig
+import im.threads.business.core.UnreadMessagesCountListener
 import im.threads.business.logger.LoggerConfig
 import im.threads.business.rest.config.RequestConfig
-import im.threads.internal.utils.MetaDataUtils
-import im.threads.internal.utils.PrefUtils.Companion.getIncomingStyle
-import im.threads.internal.utils.PrefUtils.Companion.incomingStyle
-import im.threads.internal.utils.PrefUtils.Companion.setIncomingStyle
-import im.threads.styles.permissions.PermissionDescriptionDialogStyle
-import im.threads.styles.permissions.PermissionDescriptionDialogStyle.Companion.getDefaultDialogStyle
-import im.threads.styles.permissions.PermissionDescriptionType
+import im.threads.ui.core.PendingIntentCreator
+import im.threads.ui.styles.permissions.PermissionDescriptionDialogStyle
+import im.threads.ui.styles.permissions.PermissionDescriptionDialogStyle.Companion.getDefaultDialogStyle
+import im.threads.ui.styles.permissions.PermissionDescriptionType
+import im.threads.ui.utils.MetadataUi
+import im.threads.ui.utils.preferences.PrefUtilsUi
 import okhttp3.Interceptor
 
 class Config(
@@ -27,7 +24,7 @@ class Config(
     isNewChatCenterApi: Boolean?,
     loggerConfig: LoggerConfig?,
     val pendingIntentCreator: PendingIntentCreator,
-    unreadMessagesCountListener: ThreadsLib.UnreadMessagesCountListener?,
+    unreadMessagesCountListener: UnreadMessagesCountListener?,
     networkInterceptor: Interceptor?,
     isDebugLoggingEnabled: Boolean,
     historyLoadingCount: Int,
@@ -38,8 +35,7 @@ class Config(
     context, serverBaseUrl, datastoreUrl, threadsGateUrl, threadsGateProviderUid, threadsGateHCMProviderUid,
     isNewChatCenterApi, loggerConfig, unreadMessagesCountListener, networkInterceptor,
     isDebugLoggingEnabled, historyLoadingCount, surveyCompletionDelay, requestConfig, certificateRawResIds
-),
-    UIConfig {
+) {
     @Volatile
     private var chatStyle: ChatStyle? = null
 
@@ -56,70 +52,69 @@ class Config(
     var filesAndMediaMenuItemEnabled = false
 
     init {
-        attachmentEnabled = MetaDataUtils.getAttachmentEnabled(this.context)
-        filesAndMediaMenuItemEnabled = MetaDataUtils.getFilesAndMeniaMenuItemEnabled(this.context)
-        ThreadsLib.getInstance().uiConfig = this
+        attachmentEnabled = MetadataUi.getAttachmentEnabled(this.context)
+        filesAndMediaMenuItemEnabled = MetadataUi.getFilesAndMediaMenuItemEnabled(this.context)
     }
 
-    override fun getChatStyle(): ChatStyle {
+    fun getChatStyle(): ChatStyle {
         if (chatStyle == null) {
             synchronized(ChatStyle::class.java) {
-                chatStyle = incomingStyle ?: ChatStyle()
+                chatStyle = PrefUtilsUi.incomingStyle ?: ChatStyle()
             }
         }
         return chatStyle!!
     }
 
-    override fun setChatStyle(style: ChatStyle?) {
+    fun setChatStyle(style: ChatStyle?) {
         style?.let {
             chatStyle = it
-            setIncomingStyle(it)
+            PrefUtilsUi.setIncomingStyle(it)
         }
     }
 
-    override fun getStoragePermissionDescriptionDialogStyle(): PermissionDescriptionDialogStyle {
+    fun getStoragePermissionDescriptionDialogStyle(): PermissionDescriptionDialogStyle {
         if (storagePermissionDescriptionDialogStyle == null) {
-            storagePermissionDescriptionDialogStyle = getIncomingStyle(PermissionDescriptionType.STORAGE)
+            storagePermissionDescriptionDialogStyle = PrefUtilsUi.getIncomingStyle(PermissionDescriptionType.STORAGE)
                 ?: getDefaultDialogStyle(PermissionDescriptionType.STORAGE)
         }
         return storagePermissionDescriptionDialogStyle!!
     }
 
-    override fun setStoragePermissionDescriptionDialogStyle(style: PermissionDescriptionDialogStyle?) {
+    fun setStoragePermissionDescriptionDialogStyle(style: PermissionDescriptionDialogStyle?) {
         style?.let {
             storagePermissionDescriptionDialogStyle = it
-            setIncomingStyle(PermissionDescriptionType.STORAGE, it)
+            PrefUtilsUi.setIncomingStyle(PermissionDescriptionType.STORAGE, it)
         }
     }
 
-    override fun getRecordAudioPermissionDescriptionDialogStyle(): PermissionDescriptionDialogStyle {
+    fun getRecordAudioPermissionDescriptionDialogStyle(): PermissionDescriptionDialogStyle {
         if (recordAudioPermissionDescriptionDialogStyle == null) {
-            recordAudioPermissionDescriptionDialogStyle = getIncomingStyle(PermissionDescriptionType.RECORD_AUDIO)
+            recordAudioPermissionDescriptionDialogStyle = PrefUtilsUi.getIncomingStyle(PermissionDescriptionType.RECORD_AUDIO)
                 ?: getDefaultDialogStyle(PermissionDescriptionType.RECORD_AUDIO)
         }
         return recordAudioPermissionDescriptionDialogStyle!!
     }
 
-    override fun setRecordAudioPermissionDescriptionDialogStyle(style: PermissionDescriptionDialogStyle?) {
+    fun setRecordAudioPermissionDescriptionDialogStyle(style: PermissionDescriptionDialogStyle?) {
         style?.let {
             recordAudioPermissionDescriptionDialogStyle = it
-            setIncomingStyle(PermissionDescriptionType.RECORD_AUDIO, it)
+            PrefUtilsUi.setIncomingStyle(PermissionDescriptionType.RECORD_AUDIO, it)
         }
     }
 
-    override fun getCameraPermissionDescriptionDialogStyle(): PermissionDescriptionDialogStyle {
+    fun getCameraPermissionDescriptionDialogStyle(): PermissionDescriptionDialogStyle {
         if (cameraPermissionDescriptionDialogStyle == null) {
-            cameraPermissionDescriptionDialogStyle = getIncomingStyle(PermissionDescriptionType.CAMERA)
+            cameraPermissionDescriptionDialogStyle = PrefUtilsUi.getIncomingStyle(PermissionDescriptionType.CAMERA)
                 ?: getDefaultDialogStyle(PermissionDescriptionType.CAMERA)
         }
 
         return cameraPermissionDescriptionDialogStyle!!
     }
 
-    override fun setCameraPermissionDescriptionDialogStyle(style: PermissionDescriptionDialogStyle?) {
+    fun setCameraPermissionDescriptionDialogStyle(style: PermissionDescriptionDialogStyle?) {
         style?.let {
             cameraPermissionDescriptionDialogStyle = it
-            setIncomingStyle(PermissionDescriptionType.CAMERA, it)
+            PrefUtilsUi.setIncomingStyle(PermissionDescriptionType.CAMERA, it)
         }
     }
 }

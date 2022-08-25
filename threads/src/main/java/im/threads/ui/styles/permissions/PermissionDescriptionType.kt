@@ -1,4 +1,4 @@
-package im.threads.styles.permissions
+package im.threads.ui.styles.permissions
 
 /**
  * Типы диалогов с описанием причины запросов доступов.

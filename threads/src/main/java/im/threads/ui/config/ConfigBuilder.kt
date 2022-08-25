@@ -4,8 +4,8 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import im.threads.ThreadsLib.PendingIntentCreator
 import im.threads.business.config.BaseConfigBuilder
+import im.threads.ui.core.PendingIntentCreator
 import im.threads.view.ChatActivity
 
 class ConfigBuilder(context: Context) : BaseConfigBuilder(context) {

@@ -28,6 +28,7 @@ import java.util.ListIterator;
 import java.util.Set;
 
 import im.threads.ChatStyle;
+import im.threads.business.config.BaseConfig;
 import im.threads.business.imageLoading.ImageModifications;
 import im.threads.business.logger.LoggerEdna;
 import im.threads.business.models.ChatItem;
@@ -47,7 +48,7 @@ import im.threads.business.models.SystemMessage;
 import im.threads.business.models.UserPhrase;
 import im.threads.business.utils.FileUtils;
 import im.threads.business.utils.FileUtilsKt;
-import im.threads.business.config.BaseConfig;
+import im.threads.business.utils.preferences.PrefUtilsBase;
 import im.threads.internal.formatters.ChatItemType;
 import im.threads.internal.helpers.ChatItemListHelper;
 import im.threads.internal.holders.BaseHolder;
@@ -83,11 +84,11 @@ import im.threads.internal.model.ScheduleInfo;
 import im.threads.internal.model.SearchingConsult;
 import im.threads.internal.model.Space;
 import im.threads.internal.model.UnreadMessages;
-import im.threads.internal.utils.PrefUtils;
 import im.threads.internal.utils.ThreadUtils;
 import im.threads.internal.views.VoiceTimeLabelFormatterKt;
 import im.threads.ui.config.Config;
 import io.reactivex.subjects.PublishSubject;
+import im.threads.ui.utils.preferences.PrefUtilsUi;
 
 public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_UNDEFINED = 0;
@@ -153,8 +154,8 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         this.incomingImageMaskTransformation = new ImageModifications.MaskedModification(
                 ctx.getResources().getDrawable(style.incomingImageBubbleMask)
         );
-        clientNotificationDisplayType = PrefUtils.getClientNotificationDisplayType();
-        currentThreadId = PrefUtils.getThreadId();
+        clientNotificationDisplayType = PrefUtilsUi.getClientNotificationDisplayType();
+        currentThreadId = PrefUtilsBase.getThreadId();
     }
 
     private static int getUnreadCount(final List<ChatItem> list) {

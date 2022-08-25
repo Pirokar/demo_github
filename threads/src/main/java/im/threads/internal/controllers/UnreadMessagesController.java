@@ -1,7 +1,7 @@
 package im.threads.internal.controllers;
 
 import im.threads.business.secureDatabase.DatabaseHolder;
-import im.threads.internal.utils.PrefUtils;
+import im.threads.business.utils.preferences.PrefUtilsBase;
 import io.reactivex.processors.BehaviorProcessor;
 
 public enum UnreadMessagesController {
@@ -15,12 +15,12 @@ public enum UnreadMessagesController {
     }
 
     public void incrementUnreadPush() {
-        PrefUtils.setUnreadPushCount(PrefUtils.getUnreadPushCount() + 1);
+        PrefUtilsBase.setUnreadPushCount(PrefUtilsBase.getUnreadPushCount() + 1);
         refreshUnreadMessagesCount();
     }
 
     public void clearUnreadPush() {
-        PrefUtils.setUnreadPushCount(0);
+        PrefUtilsBase.setUnreadPushCount(0);
         refreshUnreadMessagesCount();
     }
 
@@ -40,6 +40,6 @@ public enum UnreadMessagesController {
     }
 
     public int getUnreadMessages() {
-        return DatabaseHolder.getInstance().getUnreadMessagesCount() + PrefUtils.getUnreadPushCount();
+        return DatabaseHolder.getInstance().getUnreadMessagesCount() + PrefUtilsBase.getUnreadPushCount();
     }
 }

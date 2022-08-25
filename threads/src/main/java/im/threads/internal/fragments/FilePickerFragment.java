@@ -25,7 +25,7 @@ import java.util.Arrays;
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.business.config.BaseConfig;
-import im.threads.internal.helpers.FileHelper;
+import im.threads.ui.utils.FileHelper;
 import im.threads.ui.config.Config;
 
 /**
