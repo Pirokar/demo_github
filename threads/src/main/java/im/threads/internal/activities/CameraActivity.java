@@ -33,7 +33,7 @@ import java.util.concurrent.Executors;
 import im.threads.R;
 import im.threads.business.imageLoading.ImageLoader;
 import im.threads.business.logger.LoggerEdna;
-import im.threads.internal.helpers.FileHelper;
+import im.threads.business.utils.FileUtils;
 
 public final class CameraActivity extends BaseActivity {
     public static final String IMAGE_EXTRA = "IMAGE_EXTRA";
@@ -142,7 +142,7 @@ public final class CameraActivity extends BaseActivity {
                             out = Bitmap.createBitmap(raw, 0, 0, raw.getWidth(), raw.getHeight(), m, false);
                             raw.recycle();
                         }
-                        File output = FileHelper.INSTANCE.createImageFile(CameraActivity.this);
+                        File output = FileUtils.createImageFile(CameraActivity.this);
                         try {
                             FileOutputStream fio = new FileOutputStream(output);
                             out.compress(Bitmap.CompressFormat.JPEG, 100, fio);

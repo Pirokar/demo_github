@@ -1,79 +1,67 @@
-package im.threads;
+package im.threads
 
-import android.text.TextUtils;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-public final class UserInfoBuilder {
-    @NonNull
-    String clientId;
-    @Nullable
-    String authToken;
-    @Nullable
-    String authSchema;
-    @Nullable
-    String clientData = null;
-    @Nullable
-    String clientIdSignature = null;
-    @Nullable
-    String userName = null;
-    @Nullable
-    String appMarker = null;
+class UserInfoBuilder(val clientId: String) {
+    var authToken: String? = null
+        private set
+    var authSchema: String? = null
+        private set
+    var clientData: String? = null
+        private set
+    var clientIdSignature: String? = null
+        private set
+    var userName: String? = null
+        private set
+    var appMarker: String? = null
+        private set
 
     /**
      * true if client id is encrypted
      */
-    boolean clientIdEncrypted = false;
-
-    public UserInfoBuilder(@NonNull String clientId) {
-        if (TextUtils.isEmpty(clientId)) {
-            throw new IllegalArgumentException("clientId must not be empty");
-        }
-        this.clientId = clientId;
+    var clientIdEncrypted = false
+    fun setAuthData(authToken: String, authSchema: String): UserInfoBuilder {
+        this.authToken = authToken
+        this.authSchema = authSchema
+        return this
     }
 
-    public UserInfoBuilder setAuthData(@NonNull String authToken, @NonNull String authSchema) {
-        this.authToken = authToken;
-        this.authSchema = authSchema;
-        return this;
+    fun setClientIdSignature(clientIdSignature: String?): UserInfoBuilder {
+        this.clientIdSignature = clientIdSignature
+        return this
     }
 
-    public UserInfoBuilder setClientIdSignature(String clientIdSignature) {
-        this.clientIdSignature = clientIdSignature;
-        return this;
-    }
-
-    public UserInfoBuilder setUserName(String userName) {
-        this.userName = userName;
-        return this;
-    }
-
-    /**
-     * Any additional information can be provided in data string, i.e. "{balance:"1000.00", fio:"Vasya Pupkin"}"
-     * @deprecated use {@link #setClientData(String)} instead
-     */
-    @Deprecated
-    public UserInfoBuilder setData(String clientData) {
-        this.clientData = clientData;
-        return this;
+    fun setUserName(userName: String?): UserInfoBuilder {
+        this.userName = userName
+        return this
     }
 
     /**
      * Any additional information can be provided in data string, i.e. "{balance:"1000.00", fio:"Vasya Pupkin"}"
      */
-    public UserInfoBuilder setClientData(String clientData) {
-        this.clientData = clientData;
-        return this;
+    @Deprecated("use {@link #setClientData(String)} instead")
+    fun setData(clientData: String?): UserInfoBuilder {
+        this.clientData = clientData
+        return this
     }
 
-    public UserInfoBuilder setAppMarker(String appMarker) {
-        this.appMarker = appMarker;
-        return this;
+    /**
+     * Any additional information can be provided in data string, i.e. "{balance:"1000.00", fio:"Vasya Pupkin"}"
+     */
+    fun setClientData(clientData: String?): UserInfoBuilder {
+        this.clientData = clientData
+        return this
     }
 
-    public UserInfoBuilder setClientIdEncrypted(boolean clientIdEncrypted) {
-        this.clientIdEncrypted = clientIdEncrypted;
-        return this;
+    fun setAppMarker(appMarker: String?): UserInfoBuilder {
+        this.appMarker = appMarker
+        return this
+    }
+
+    fun setClientIdEncrypted(clientIdEncrypted: Boolean): UserInfoBuilder {
+        this.clientIdEncrypted = clientIdEncrypted
+        return this
+    }
+
+    init {
+        require(clientId.isNotBlank()) { "clientId must not be empty" }
     }
 }

@@ -1,4 +1,4 @@
-package im.threads.internal.exceptions;
+package im.threads.business.exceptions;
 
 public final class MetaConfigurationException extends RuntimeException {
     public MetaConfigurationException(String detailMessage) {

@@ -8,9 +8,9 @@ import androidx.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 
-import im.threads.ThreadsLib;
-import im.threads.business.rest.config.RequestConfig;
+import im.threads.business.core.UnreadMessagesCountListener;
 import im.threads.business.logger.LoggerConfig;
+import im.threads.business.rest.config.RequestConfig;
 import okhttp3.Interceptor;
 
 public class BaseConfigBuilder {
@@ -18,7 +18,7 @@ public class BaseConfigBuilder {
     protected Context context;
 
     @Nullable
-    protected ThreadsLib.UnreadMessagesCountListener unreadMessagesCountListener = null;
+    protected UnreadMessagesCountListener unreadMessagesCountListener = null;
 
     protected boolean isDebugLoggingEnabled = true;
 
@@ -75,7 +75,7 @@ public class BaseConfigBuilder {
         return this;
     }
 
-    public BaseConfigBuilder unreadMessagesCountListener(ThreadsLib.UnreadMessagesCountListener unreadMessagesCountListener) {
+    public BaseConfigBuilder unreadMessagesCountListener(UnreadMessagesCountListener unreadMessagesCountListener) {
         this.unreadMessagesCountListener = unreadMessagesCountListener;
         return this;
     }

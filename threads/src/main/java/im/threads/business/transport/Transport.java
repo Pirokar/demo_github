@@ -10,14 +10,9 @@ import im.threads.business.logger.LoggerEdna;
 import im.threads.business.models.ConsultInfo;
 import im.threads.business.models.Survey;
 import im.threads.business.models.UserPhrase;
-import im.threads.business.rest.models.SettingsResponse;
 import im.threads.business.rest.queries.BackendApi;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
-import im.threads.internal.model.ClientNotificationDisplayType;
-import im.threads.internal.utils.PrefUtils;
 import io.reactivex.Completable;
-import io.reactivex.Single;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
@@ -40,33 +35,6 @@ public abstract class Transport {
                                 },
                                 e -> {
                                     LoggerEdna.info("error on messages read : " + uuidList);
-                                    chatUpdateProcessor.postError(new TransportException(e.getMessage()));
-                                }
-                        )
-
-        );
-    }
-
-    public void getSettings() {
-        subscribe(
-                Single.fromCallable(() -> BackendApi.get().settings().execute())
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                response -> {
-                                    final SettingsResponse responseBody = response.body();
-                                    if (responseBody != null) {
-                                        LoggerEdna.info("getting settings : " + responseBody);
-                                        String clientNotificationType = responseBody.getClientNotificationDisplayType();
-                                        if (clientNotificationType != null && !clientNotificationType.isEmpty()) {
-                                            final ClientNotificationDisplayType type = ClientNotificationDisplayType.fromString(clientNotificationType);
-                                            PrefUtils.setClientNotificationDisplayType(type);
-                                            chatUpdateProcessor.postClientNotificationDisplayType(type);
-                                        }
-                                    }
-                                },
-                                e -> {
-                                    LoggerEdna.info("error on getting settings : " + e.getMessage());
                                     chatUpdateProcessor.postError(new TransportException(e.getMessage()));
                                 }
                         )

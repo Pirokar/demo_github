@@ -27,12 +27,12 @@ import androidx.fragment.app.DialogFragment
 import im.threads.R
 import im.threads.business.config.BaseConfig
 import im.threads.internal.utils.ColorsHelper
-import im.threads.styles.permissions.ContentGravity
-import im.threads.styles.permissions.PermissionDescriptionButtonStyle
-import im.threads.styles.permissions.PermissionDescriptionDialogBackgroundStyle
-import im.threads.styles.permissions.PermissionDescriptionImageStyle
-import im.threads.styles.permissions.PermissionDescriptionTextStyle
-import im.threads.styles.permissions.PermissionDescriptionType
+import im.threads.ui.styles.permissions.ContentGravity
+import im.threads.ui.styles.permissions.PermissionDescriptionButtonStyle
+import im.threads.ui.styles.permissions.PermissionDescriptionDialogBackgroundStyle
+import im.threads.ui.styles.permissions.PermissionDescriptionImageStyle
+import im.threads.ui.styles.permissions.PermissionDescriptionTextStyle
+import im.threads.ui.styles.permissions.PermissionDescriptionType
 import im.threads.ui.config.Config
 
 /**

@@ -1,4 +1,4 @@
-package im.threads.styles.permissions
+package im.threads.ui.styles.permissions
 
 import androidx.annotation.ColorRes
 import androidx.annotation.DimenRes

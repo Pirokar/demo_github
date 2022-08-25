@@ -1,4 +1,4 @@
-package im.threads.internal.model.gson;
+package im.threads.business.utils.gson;
 
 import android.net.Uri;
 

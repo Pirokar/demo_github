@@ -1,7 +1,5 @@
 package im.threads.view;
 
-import static im.threads.internal.utils.PrefUtils.getFileDescriptionDraft;
-
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
@@ -75,6 +73,7 @@ import java.util.concurrent.TimeUnit;
 
 import im.threads.ChatStyle;
 import im.threads.R;
+import im.threads.business.config.BaseConfig;
 import im.threads.business.imageLoading.ImageLoader;
 import im.threads.business.logger.LoggerEdna;
 import im.threads.business.models.CampaignMessage;
@@ -91,8 +90,8 @@ import im.threads.business.models.SystemMessage;
 import im.threads.business.models.UserPhrase;
 import im.threads.business.utils.FileUtils;
 import im.threads.business.utils.FileUtilsKt;
+import im.threads.business.utils.preferences.PrefUtilsBase;
 import im.threads.databinding.FragmentChatBinding;
-import im.threads.business.config.BaseConfig;
 import im.threads.internal.activities.CameraActivity;
 import im.threads.internal.activities.GalleryActivity;
 import im.threads.internal.activities.ImagesActivity;
@@ -105,7 +104,6 @@ import im.threads.internal.fragments.AttachmentBottomSheetDialogFragment;
 import im.threads.internal.fragments.BaseFragment;
 import im.threads.internal.fragments.FilePickerFragment;
 import im.threads.internal.fragments.PermissionDescriptionAlertDialogFragment;
-import im.threads.internal.helpers.FileHelper;
 import im.threads.internal.helpers.FileProviderHelper;
 import im.threads.internal.helpers.MediaHelper;
 import im.threads.internal.media.ChatCenterAudioConverter;
@@ -124,13 +122,13 @@ import im.threads.internal.useractivity.LastUserActivityTimeCounter;
 import im.threads.internal.useractivity.LastUserActivityTimeCounterSingletonProvider;
 import im.threads.internal.utils.ColorsHelper;
 import im.threads.internal.utils.Keyboard;
-import im.threads.internal.utils.PrefUtils;
 import im.threads.internal.utils.RxUtils;
 import im.threads.internal.utils.ThreadsPermissionChecker;
 import im.threads.internal.views.VoiceTimeLabelFormatter;
 import im.threads.internal.views.VoiceTimeLabelFormatterKt;
-import im.threads.styles.permissions.PermissionDescriptionType;
 import im.threads.ui.config.Config;
+import im.threads.ui.styles.permissions.PermissionDescriptionType;
+import im.threads.ui.utils.FileHelper;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -265,12 +263,12 @@ public final class ChatFragment extends BaseFragment implements
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        FileDescription fileDescriptionDraft = getFileDescriptionDraft();
+        FileDescription fileDescriptionDraft = PrefUtilsBase.getFileDescriptionDraft();
         if (FileUtils.isVoiceMessage(fileDescriptionDraft)) {
             setFileDescription(fileDescriptionDraft);
             mQuoteLayoutHolder.setVoice();
         }
-        CampaignMessage campaignMessage = PrefUtils.getCampaignMessage();
+        CampaignMessage campaignMessage = PrefUtilsBase.getCampaignMessage();
         Bundle arguments = getArguments();
         if (arguments != null && campaignMessage != null) {
             @OpenWay int from = arguments.getInt(ARG_OPEN_WAY);
@@ -285,7 +283,7 @@ public final class ChatFragment extends BaseFragment implements
                     campaignMessage.getText(),
                     null
             );
-            PrefUtils.setCampaignMessage(null);
+            PrefUtilsBase.setCampaignMessage(null);
         }
     }
 
@@ -726,7 +724,7 @@ public final class ChatFragment extends BaseFragment implements
     private void setMessagesAsReadForStorages() {
         if (previousChatItemsCount == 0 || chatAdapter.getItemCount() != previousChatItemsCount) {
             mChatController.setMessagesInCurrentThreadAsReadInDB();
-            PrefUtils.setUnreadPushCount(0);
+            PrefUtilsBase.setUnreadPushCount(0);
             previousChatItemsCount = chatAdapter.getItemCount();
         }
     }
@@ -1030,7 +1028,7 @@ public final class ChatFragment extends BaseFragment implements
             if (config.getChatStyle().useExternalCameraApp) {
                 try {
                     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    externalCameraPhotoFile = FileHelper.INSTANCE.createImageFile(activity);
+                    externalCameraPhotoFile = FileUtils.createImageFile(activity);
                     Uri photoUri = FileProviderHelper.getUriForFile(activity, externalCameraPhotoFile);
                     LoggerEdna.debug("Image File uri resolved: " + photoUri.toString());
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
@@ -1186,7 +1184,7 @@ public final class ChatFragment extends BaseFragment implements
             return;
         }
         cm.setPrimaryClip(new ClipData("", new String[]{"text/plain"}, new ClipData.Item(cp.getPhraseText())));
-        PrefUtils.setLastCopyText(cp.getPhraseText());
+        PrefUtilsBase.setLastCopyText(cp.getPhraseText());
         unChooseItem();
     }
 
@@ -1774,10 +1772,10 @@ public final class ChatFragment extends BaseFragment implements
         if (TextUtils.isEmpty(text)) {
             return false;
         }
-        if (TextUtils.isEmpty(PrefUtils.getLastCopyText())) {
+        if (TextUtils.isEmpty(PrefUtilsBase.getLastCopyText())) {
             return false;
         }
-        return text.contains(PrefUtils.getLastCopyText());
+        return text.contains(PrefUtilsBase.getLastCopyText());
     }
 
     private void hideCopyControls() {
@@ -2079,9 +2077,9 @@ public final class ChatFragment extends BaseFragment implements
     @Override
     public void onStart() {
         super.onStart();
-        setCurrentThreadId(PrefUtils.getThreadId());
+        setCurrentThreadId(PrefUtilsBase.getThreadId());
         BaseConfig.instance.transport.setLifecycle(getLifecycle());
-        BaseConfig.instance.transport.getSettings();
+        ChatController.getInstance().getSettings();
         ChatController.getInstance().loadHistory();
     }
 
@@ -2099,7 +2097,7 @@ public final class ChatFragment extends BaseFragment implements
         stopRecording();
         FileDescription fileDescription = getFileDescription();
         if (fileDescription == null || FileUtils.isVoiceMessage(fileDescription)) {
-            PrefUtils.setFileDescriptionDraft(fileDescription);
+            PrefUtilsBase.setFileDescriptionDraft(fileDescription);
         }
         mChatController.setActivityIsForeground(false);
         if (binding.swipeRefresh != null) {

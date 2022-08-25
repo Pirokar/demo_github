@@ -5,6 +5,7 @@ import android.net.Uri
 import android.text.TextUtils
 import im.threads.business.config.BaseConfig
 import im.threads.business.logger.LoggerEdna
+import im.threads.business.utils.preferences.PrefUtilsBase
 import java.io.BufferedInputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -38,12 +39,12 @@ class FileDownloader(private val path: String, fileName: String, ctx: Context, p
             }
             try {
                 urlConnection.requestMethod = "GET"
-                urlConnection.setRequestProperty("X-Ext-Client-ID", PrefUtils.clientID)
-                if (!TextUtils.isEmpty(PrefUtils.authToken)) {
-                    urlConnection.setRequestProperty("Authorization", PrefUtils.authToken)
+                urlConnection.setRequestProperty("X-Ext-Client-ID", PrefUtilsBase.clientID)
+                if (!TextUtils.isEmpty(PrefUtilsBase.authToken)) {
+                    urlConnection.setRequestProperty("Authorization", PrefUtilsBase.authToken)
                 }
-                if (!TextUtils.isEmpty(PrefUtils.authSchema)) {
-                    urlConnection.setRequestProperty("X-Auth-Schema", PrefUtils.authSchema)
+                if (!TextUtils.isEmpty(PrefUtilsBase.authSchema)) {
+                    urlConnection.setRequestProperty("X-Auth-Schema", PrefUtilsBase.authSchema)
                 }
                 urlConnection.doOutput = false
                 urlConnection.useCaches = false

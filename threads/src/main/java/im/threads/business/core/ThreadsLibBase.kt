@@ -1,29 +1,31 @@
-package im.threads
+package im.threads.business.core
 
 import android.annotation.SuppressLint
-import android.app.PendingIntent
-import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.text.TextUtils
+import im.threads.BuildConfig
+import im.threads.R
+import im.threads.UserInfoBuilder
 import im.threads.business.audioConverter.AudioConverter
 import im.threads.business.audioConverter.callback.ILoadCallback
 import im.threads.business.config.BaseConfig
 import im.threads.business.config.BaseConfigBuilder
-import im.threads.business.config.UIConfig
 import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.FileDescription
 import im.threads.business.rest.queries.BackendApi
 import im.threads.business.rest.queries.DatastoreApi
 import im.threads.business.utils.FileUtils.getFileSize
+import im.threads.business.utils.preferences.PrefUtilsBase
+import im.threads.business.utils.preferences.PreferencesMigrationBase
 import im.threads.internal.chat_updates.ChatUpdateProcessor
 import im.threads.internal.controllers.ChatController
 import im.threads.internal.controllers.UnreadMessagesController
 import im.threads.internal.helpers.FileProviderHelper
 import im.threads.internal.model.UpcomingUserMessage
 import im.threads.internal.useractivity.LastUserActivityTimeCounterSingletonProvider.getLastUserActivityTimeCounter
-import im.threads.internal.utils.PrefUtils
 import im.threads.ui.config.ConfigBuilder
+import im.threads.ui.utils.preferences.PreferencesMigrationUi
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.exceptions.UndeliverableException
 import io.reactivex.plugins.RxJavaPlugins
@@ -35,12 +37,7 @@ import kotlinx.coroutines.launch
 import java.io.File
 
 @Suppress("unused")
-class ThreadsLib private constructor() {
-    /**
-     * Ссылка на ui config, если подключен ui слой
-     */
-    var uiConfig: UIConfig? = null
-
+open class ThreadsLibBase protected constructor() {
     /**
      * @return time in seconds since the last user activity
      */
@@ -50,7 +47,7 @@ class ThreadsLib private constructor() {
             return timeCounter.getSecondsSinceLastActivity()
         }
 
-    val isUserInitialized: Boolean get() = !PrefUtils.isClientIdEmpty
+    val isUserInitialized: Boolean get() = !PrefUtilsBase.isClientIdEmpty
 
     /**
      * @return FlowableProcessor that emits responses from WebSocket connection
@@ -61,14 +58,14 @@ class ThreadsLib private constructor() {
     fun initUser(userInfoBuilder: UserInfoBuilder) {
         // it will only affect GPB, every time they try to init user we will delete user related data
         ChatController.getInstance().cleanAll()
-        PrefUtils.appMarker = userInfoBuilder.appMarker
-        PrefUtils.setNewClientId(userInfoBuilder.clientId)
-        PrefUtils.authToken = userInfoBuilder.authToken
-        PrefUtils.authSchema = userInfoBuilder.authSchema
-        PrefUtils.clientIdSignature = userInfoBuilder.clientIdSignature
-        PrefUtils.userName = userInfoBuilder.userName
-        PrefUtils.data = userInfoBuilder.clientData
-        PrefUtils.setClientIdEncrypted(userInfoBuilder.clientIdEncrypted)
+        PrefUtilsBase.appMarker = userInfoBuilder.appMarker
+        PrefUtilsBase.setNewClientId(userInfoBuilder.clientId)
+        PrefUtilsBase.authToken = userInfoBuilder.authToken
+        PrefUtilsBase.authSchema = userInfoBuilder.authSchema
+        PrefUtilsBase.clientIdSignature = userInfoBuilder.clientIdSignature
+        PrefUtilsBase.userName = userInfoBuilder.userName
+        PrefUtilsBase.data = userInfoBuilder.clientData
+        PrefUtilsBase.setClientIdEncrypted(userInfoBuilder.clientIdEncrypted)
         ChatController.getInstance().loadHistory()
     }
 
@@ -103,7 +100,7 @@ class ThreadsLib private constructor() {
      */
     fun sendMessage(message: String?, fileUri: Uri?): Boolean {
         val chatController = ChatController.getInstance()
-        return if (!PrefUtils.isClientIdEmpty) {
+        return if (!PrefUtilsBase.isClientIdEmpty) {
             var fileDescription: FileDescription? = null
             if (fileUri != null) {
                 fileDescription = FileDescription(
@@ -128,16 +125,9 @@ class ThreadsLib private constructor() {
         }
     }
 
-    interface PendingIntentCreator {
-        fun create(context: Context, appMarker: String?): PendingIntent?
-    }
-
-    interface UnreadMessagesCountListener {
-        fun onUnreadMessagesCountChanged(count: Int)
-    }
-
     companion object {
-        private var instance: ThreadsLib? = null
+        @JvmStatic
+        protected var libInstance: ThreadsLibBase? = null
         private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
         @JvmStatic
@@ -146,9 +136,8 @@ class ThreadsLib private constructor() {
         @SuppressLint("CheckResult")
         @JvmStatic
         fun init(configBuilder: BaseConfigBuilder) {
-            check(instance == null) { "ThreadsLib has already been initialized" }
             val startInitTime = System.currentTimeMillis()
-            instance = ThreadsLib()
+            createInstance()
 
             BaseConfig.instance = if (configBuilder is ConfigBuilder) {
                 configBuilder.build()
@@ -156,12 +145,16 @@ class ThreadsLib private constructor() {
                 configBuilder.build()
             }
 
+            BaseConfig.instance.loggerConfig?.let { LoggerEdna.init(it) }
+
             BackendApi.init(BaseConfig.instance)
             DatastoreApi.init(BaseConfig.instance)
 
-            BaseConfig.instance.loggerConfig?.let { LoggerEdna.init(it) }
-
-            PrefUtils.migrateMainSharedPreferences()
+            if (configBuilder is ConfigBuilder) {
+                PreferencesMigrationUi().migrateMainSharedPreferences()
+            } else {
+                PreferencesMigrationBase().migrateMainSharedPreferences()
+            }
 
             BaseConfig.instance.unreadMessagesCountListener?.let { unreadMessagesCountListener ->
                 UnreadMessagesController.INSTANCE.unreadMessagesPublishProcessor
@@ -227,9 +220,14 @@ class ThreadsLib private constructor() {
         }
 
         @JvmStatic
-        fun getInstance(): ThreadsLib {
-            checkNotNull(instance) { "ThreadsLib should be initialized first with ThreadsLib.init()" }
-            return instance ?: ThreadsLib()
+        fun getInstance(): ThreadsLibBase {
+            checkNotNull(libInstance) { "ThreadsLib should be initialized first with ThreadsLib.init()" }
+            return libInstance ?: ThreadsLibBase()
+        }
+
+        protected fun createInstance() {
+            check(libInstance == null) { "ThreadsLib has already been initialized" }
+            libInstance = ThreadsLibBase()
         }
     }
 }

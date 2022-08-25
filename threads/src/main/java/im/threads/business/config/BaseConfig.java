@@ -17,7 +17,8 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import im.threads.ThreadsLib;
+import im.threads.business.core.UnreadMessagesCountListener;
+import im.threads.business.exceptions.MetaConfigurationException;
 import im.threads.business.imageLoading.ImageLoaderOkHttpProvider;
 import im.threads.business.logger.LoggerConfig;
 import im.threads.business.models.SslSocketFactoryConfig;
@@ -25,11 +26,10 @@ import im.threads.business.rest.config.RequestConfig;
 import im.threads.business.rest.config.SocketClientSettings;
 import im.threads.business.transport.Transport;
 import im.threads.business.transport.threadsGate.ThreadsGateTransport;
-import im.threads.internal.exceptions.MetaConfigurationException;
-import im.threads.internal.model.gson.UriDeserializer;
-import im.threads.internal.model.gson.UriSerializer;
-import im.threads.internal.utils.MetaDataUtils;
-import im.threads.internal.utils.TlsConfigurationUtils;
+import im.threads.business.utils.MetadataBusiness;
+import im.threads.business.utils.TlsConfigurationUtils;
+import im.threads.business.utils.gson.UriDeserializer;
+import im.threads.business.utils.gson.UriSerializer;
 import okhttp3.Interceptor;
 
 public class BaseConfig {
@@ -46,7 +46,7 @@ public class BaseConfig {
     @Nullable
     public final Interceptor networkInterceptor;
     @Nullable
-    public final ThreadsLib.UnreadMessagesCountListener unreadMessagesCountListener;
+    public final UnreadMessagesCountListener unreadMessagesCountListener;
     @NonNull
     public final Transport transport;
     @NonNull
@@ -80,7 +80,7 @@ public class BaseConfig {
                       @Nullable String threadsGateHCMProviderUid,
                       @Nullable Boolean isNewChatCenterApi,
                       @Nullable LoggerConfig loggerConfig,
-                      @Nullable ThreadsLib.UnreadMessagesCountListener unreadMessagesCountListener,
+                      @Nullable UnreadMessagesCountListener unreadMessagesCountListener,
                       @Nullable Interceptor networkInterceptor,
                       boolean isDebugLoggingEnabled,
                       int historyLoadingCount,
@@ -128,13 +128,13 @@ public class BaseConfig {
                                    SocketClientSettings socketClientSettings) {
         String threadsGateProviderUid = !TextUtils.isEmpty(providedThreadsGateProviderUid)
                 ? providedThreadsGateProviderUid
-                : MetaDataUtils.getThreadsGateProviderUid(this.context);
+                : MetadataBusiness.getThreadsGateProviderUid(this.context);
         String threadsGateHCMProviderUid = !TextUtils.isEmpty(providedThreadsGateHCMProviderUid)
                 ? providedThreadsGateHCMProviderUid
-                : MetaDataUtils.getThreadsGateHCMProviderUid(this.context);
+                : MetadataBusiness.getThreadsGateHCMProviderUid(this.context);
         String threadsGateUrl = !TextUtils.isEmpty(providedThreadsGateUrl)
                 ? providedThreadsGateUrl
-                : MetaDataUtils.getThreadsGateUrl(this.context);
+                : MetadataBusiness.getThreadsGateUrl(this.context);
         if (TextUtils.isEmpty(threadsGateUrl)) {
             throw new MetaConfigurationException("Threads gate url is not set");
         }
@@ -154,7 +154,7 @@ public class BaseConfig {
 
     @NonNull
     private String getServerBaseUrl(@Nullable String serverBaseUrl) {
-        String baseUrl = TextUtils.isEmpty(serverBaseUrl) ? MetaDataUtils.getServerBaseUrl(this.context) : serverBaseUrl;
+        String baseUrl = TextUtils.isEmpty(serverBaseUrl) ? MetadataBusiness.getServerBaseUrl(this.context) : serverBaseUrl;
         if (baseUrl == null) {
             throw new MetaConfigurationException("Neither im.threads.getServerUrl meta variable, nor serverBaseUrl were provided");
         }
@@ -166,7 +166,7 @@ public class BaseConfig {
 
     @NonNull
     private String getDatastoreUrl(@Nullable String dataStoreUrl) {
-        String datastoreUrl = TextUtils.isEmpty(dataStoreUrl) ? MetaDataUtils.getDatastoreUrl(this.context) : dataStoreUrl;
+        String datastoreUrl = TextUtils.isEmpty(dataStoreUrl) ? MetadataBusiness.getDatastoreUrl(this.context) : dataStoreUrl;
         if (datastoreUrl == null) {
             throw new MetaConfigurationException("Neither im.threads.getDatastoreUrl meta variable, nor datastoreUrl were provided");
         }
@@ -177,6 +177,6 @@ public class BaseConfig {
     }
 
     private boolean getIsNewChatCenterApi(@Nullable Boolean isNewChatCenterApi) {
-        return isNewChatCenterApi == null ? MetaDataUtils.getNewChatCenterApi(this.context) : isNewChatCenterApi;
+        return isNewChatCenterApi == null ? MetadataBusiness.getNewChatCenterApi(this.context) : isNewChatCenterApi;
     }
 }
