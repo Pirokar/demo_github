@@ -1,6 +1,7 @@
 package im.threads.business.secureDatabase
 
 import im.threads.annotation.OpenForTesting
+import im.threads.business.config.BaseConfig
 import im.threads.business.models.ChatItem
 import im.threads.business.models.ConsultInfo
 import im.threads.business.models.ConsultPhrase
@@ -9,7 +10,6 @@ import im.threads.business.models.MessageState
 import im.threads.business.models.SpeechMessageUpdate
 import im.threads.business.models.Survey
 import im.threads.business.models.UserPhrase
-import im.threads.internal.config.BaseConfig
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers

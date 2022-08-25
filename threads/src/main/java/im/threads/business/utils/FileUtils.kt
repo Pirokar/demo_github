@@ -14,10 +14,10 @@ import android.provider.OpenableColumns
 import android.text.TextUtils
 import android.webkit.MimeTypeMap
 import im.threads.R
+import im.threads.business.config.BaseConfig
 import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.FileDescription
-import im.threads.internal.config.BaseConfig
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileNotFoundException

@@ -13,9 +13,9 @@ import java.util.Locale;
 
 import im.threads.ChatStyle;
 import im.threads.R;
-import im.threads.internal.config.BaseConfig;
+import im.threads.business.config.BaseConfig;
 import im.threads.internal.formatters.RussianFormatSymbols;
-import im.threads.ui.Config;
+import im.threads.ui.config.Config;
 
 /**
  * layout/item_date.xml

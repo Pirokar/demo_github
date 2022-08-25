@@ -1,8 +1,8 @@
 package im.threads.business.rest.queries
 
+import im.threads.business.config.BaseConfig
 import im.threads.business.rest.models.HistoryResponse
 import im.threads.business.rest.models.SettingsResponse
-import im.threads.internal.config.BaseConfig
 import im.threads.internal.model.FileUploadResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody

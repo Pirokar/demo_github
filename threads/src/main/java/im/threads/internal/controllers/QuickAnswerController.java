@@ -5,7 +5,7 @@ import androidx.fragment.app.Fragment;
 
 import java.util.List;
 
-import im.threads.internal.config.BaseConfig;
+import im.threads.business.config.BaseConfig;
 import im.threads.internal.activities.QuickAnswerActivity;
 import im.threads.business.logger.LoggerEdna;
 import im.threads.internal.model.UpcomingUserMessage;

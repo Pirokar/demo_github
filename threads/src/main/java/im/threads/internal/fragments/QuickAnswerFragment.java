@@ -29,14 +29,14 @@ import im.threads.business.imageLoading.ImageLoader;
 import im.threads.business.imageLoading.ImageModifications;
 import im.threads.business.logger.LoggerEdna;
 import im.threads.business.utils.FileUtils;
-import im.threads.internal.config.BaseConfig;
+import im.threads.business.config.BaseConfig;
 import im.threads.internal.activities.QuickAnswerActivity;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.model.InputFieldEnableModel;
 import im.threads.internal.useractivity.LastUserActivityTimeCounter;
 import im.threads.internal.useractivity.LastUserActivityTimeCounterSingletonProvider;
 import im.threads.internal.utils.ColorsHelper;
-import im.threads.ui.Config;
+import im.threads.ui.config.Config;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
 public final class QuickAnswerFragment extends BaseDialogFragment {

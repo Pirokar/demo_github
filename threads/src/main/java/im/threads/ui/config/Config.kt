@@ -1,12 +1,13 @@
-package im.threads.ui
+package im.threads.ui.config
 
 import android.content.Context
 import im.threads.ChatStyle
 import im.threads.ThreadsLib
+import im.threads.ThreadsLib.PendingIntentCreator
+import im.threads.business.config.BaseConfig
+import im.threads.business.config.UIConfig
 import im.threads.business.logger.LoggerConfig
 import im.threads.business.rest.config.RequestConfig
-import im.threads.internal.config.BaseConfig
-import im.threads.internal.config.UIConfig
 import im.threads.internal.utils.MetaDataUtils
 import im.threads.internal.utils.PrefUtils.Companion.getIncomingStyle
 import im.threads.internal.utils.PrefUtils.Companion.incomingStyle
@@ -25,7 +26,7 @@ class Config(
     threadsGateHCMProviderUid: String?,
     isNewChatCenterApi: Boolean?,
     loggerConfig: LoggerConfig?,
-    pendingIntentCreator: ThreadsLib.PendingIntentCreator,
+    val pendingIntentCreator: PendingIntentCreator,
     unreadMessagesCountListener: ThreadsLib.UnreadMessagesCountListener?,
     networkInterceptor: Interceptor?,
     isDebugLoggingEnabled: Boolean,
@@ -35,7 +36,7 @@ class Config(
     certificateRawResIds: List<Int>?
 ) : BaseConfig(
     context, serverBaseUrl, datastoreUrl, threadsGateUrl, threadsGateProviderUid, threadsGateHCMProviderUid,
-    isNewChatCenterApi, loggerConfig, pendingIntentCreator, unreadMessagesCountListener, networkInterceptor,
+    isNewChatCenterApi, loggerConfig, unreadMessagesCountListener, networkInterceptor,
     isDebugLoggingEnabled, historyLoadingCount, surveyCompletionDelay, requestConfig, certificateRawResIds
 ),
     UIConfig {

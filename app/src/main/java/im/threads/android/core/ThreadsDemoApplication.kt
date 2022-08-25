@@ -6,7 +6,6 @@ import android.text.TextUtils
 import androidx.multidex.MultiDexApplication
 import com.edna.android.push_lite.PushController
 import com.pandulapeter.beagle.logOkHttp.BeagleOkHttpLogger
-import im.threads.ConfigBuilder
 import im.threads.ThreadsLib
 import im.threads.ThreadsLib.PendingIntentCreator
 import im.threads.android.R
@@ -20,6 +19,7 @@ import im.threads.android.utils.PrefUtilsApp.getTheme
 import im.threads.android.utils.PrefUtilsApp.getTransportConfig
 import im.threads.business.logger.LoggerConfig
 import im.threads.business.logger.LoggerRetentionPolicy
+import im.threads.ui.config.ConfigBuilder
 import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable

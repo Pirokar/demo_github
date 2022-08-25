@@ -1,4 +1,4 @@
-package im.threads.internal.config
+package im.threads.business.config
 
 import im.threads.ChatStyle
 import im.threads.styles.permissions.PermissionDescriptionDialogStyle

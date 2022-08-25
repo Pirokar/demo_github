@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 import im.threads.business.logger.LoggerEdna;
 import im.threads.business.models.FileDescription;
-import im.threads.internal.config.BaseConfig;
+import im.threads.business.config.BaseConfig;
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
