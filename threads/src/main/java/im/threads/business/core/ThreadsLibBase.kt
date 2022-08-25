@@ -24,8 +24,6 @@ import im.threads.internal.controllers.UnreadMessagesController
 import im.threads.internal.helpers.FileProviderHelper
 import im.threads.internal.model.UpcomingUserMessage
 import im.threads.internal.useractivity.LastUserActivityTimeCounterSingletonProvider.getLastUserActivityTimeCounter
-import im.threads.ui.config.ConfigBuilder
-import im.threads.ui.utils.preferences.PreferencesMigrationUi
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.exceptions.UndeliverableException
 import io.reactivex.plugins.RxJavaPlugins
@@ -137,24 +135,17 @@ open class ThreadsLibBase protected constructor() {
         @JvmStatic
         fun init(configBuilder: BaseConfigBuilder) {
             val startInitTime = System.currentTimeMillis()
-            createInstance()
+            val isUIMode = BaseConfig.instance != null
 
-            BaseConfig.instance = if (configBuilder is ConfigBuilder) {
+            if (!isUIMode) {
                 configBuilder.build()
-            } else {
-                configBuilder.build()
+                createInstance()
+                BaseConfig.instance.loggerConfig?.let { LoggerEdna.init(it) }
+                PreferencesMigrationBase().migrateMainSharedPreferences()
             }
-
-            BaseConfig.instance.loggerConfig?.let { LoggerEdna.init(it) }
 
             BackendApi.init(BaseConfig.instance)
             DatastoreApi.init(BaseConfig.instance)
-
-            if (configBuilder is ConfigBuilder) {
-                PreferencesMigrationUi().migrateMainSharedPreferences()
-            } else {
-                PreferencesMigrationBase().migrateMainSharedPreferences()
-            }
 
             BaseConfig.instance.unreadMessagesCountListener?.let { unreadMessagesCountListener ->
                 UnreadMessagesController.INSTANCE.unreadMessagesPublishProcessor
@@ -225,7 +216,12 @@ open class ThreadsLibBase protected constructor() {
             return libInstance ?: ThreadsLibBase()
         }
 
-        protected fun createInstance() {
+        @JvmStatic
+        protected fun setLibraryInstance(instance: ThreadsLibBase) {
+            libInstance = instance
+        }
+
+        private fun createInstance() {
             check(libInstance == null) { "ThreadsLib has already been initialized" }
             libInstance = ThreadsLibBase()
         }

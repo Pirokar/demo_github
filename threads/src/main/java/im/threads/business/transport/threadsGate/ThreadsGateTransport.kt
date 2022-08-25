@@ -36,6 +36,7 @@ import im.threads.business.transport.threadsGate.responses.GetMessagesData
 import im.threads.business.transport.threadsGate.responses.GetStatusesData
 import im.threads.business.transport.threadsGate.responses.RegisterDeviceData
 import im.threads.business.transport.threadsGate.responses.SendMessageData
+import im.threads.business.utils.preferences.PrefUtilsBase
 import im.threads.internal.chat_updates.ChatUpdateProcessor
 import im.threads.internal.formatters.ChatItemType
 import im.threads.internal.model.ChatItemSendErrorModel
@@ -43,7 +44,6 @@ import im.threads.internal.utils.AppInfoHelper
 import im.threads.internal.utils.DeviceInfoHelper
 import im.threads.internal.utils.SSLCertificateInterceptor
 import im.threads.internal.utils.capitalize
-import im.threads.business.utils.preferences.PrefUtilsBase
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
