@@ -17,6 +17,7 @@ import im.threads.R
 import im.threads.business.config.BaseConfig
 import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.logger.LoggerEdna
+import im.threads.business.logger.LoggerEdna.debug
 import im.threads.business.models.FileDescription
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -192,6 +193,14 @@ object FileUtils {
             LoggerEdna.error("file can't be sent", e)
             return false
         }
+    }
+
+    @JvmStatic
+    fun createImageFile(context: Context): File? {
+        val filename = "thr" + System.currentTimeMillis() + ".jpg"
+        val output = File(context.filesDir, filename)
+        debug("File genereated into filesDir : " + output.absolutePath)
+        return output
     }
 
     private fun getExtensionFromFileDescription(fileDescription: FileDescription): Int {

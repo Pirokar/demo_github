@@ -2,7 +2,7 @@ package im.threads.business.imageLoading
 
 import im.threads.business.models.SslSocketFactoryConfig
 import im.threads.business.rest.config.HttpClientSettings
-import im.threads.internal.utils.PrefUtils
+import im.threads.business.utils.preferences.PrefUtilsBase
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.util.concurrent.TimeUnit
@@ -18,12 +18,12 @@ object ImageLoaderOkHttpProvider {
         val httpClientBuilder = OkHttpClient.Builder()
             .addInterceptor { chain ->
                 val builder = chain.request().newBuilder().apply {
-                    addHeader("X-Ext-Client-ID", PrefUtils.clientID)
-                    if (!PrefUtils.authToken.isNullOrBlank()) {
-                        addHeader("Authorization", PrefUtils.authToken!!)
+                    addHeader("X-Ext-Client-ID", PrefUtilsBase.clientID)
+                    if (!PrefUtilsBase.authToken.isNullOrBlank()) {
+                        addHeader("Authorization", PrefUtilsBase.authToken!!)
                     }
-                    if (!PrefUtils.authSchema.isNullOrBlank()) {
-                        addHeader("X-Auth-Schema", PrefUtils.authSchema!!)
+                    if (!PrefUtilsBase.authSchema.isNullOrBlank()) {
+                        addHeader("X-Auth-Schema", PrefUtilsBase.authSchema!!)
                     }
                 }
                 val newRequest: Request = builder.build()

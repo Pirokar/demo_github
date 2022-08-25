@@ -31,6 +31,7 @@ import java.util.concurrent.TimeUnit;
 
 import im.threads.ChatStyle;
 import im.threads.R;
+import im.threads.business.config.BaseConfig;
 import im.threads.business.logger.LoggerEdna;
 import im.threads.business.models.ChatItem;
 import im.threads.business.models.ChatPhrase;
@@ -47,18 +48,22 @@ import im.threads.business.models.Survey;
 import im.threads.business.models.SystemMessage;
 import im.threads.business.models.UserPhrase;
 import im.threads.business.rest.models.HistoryResponse;
+import im.threads.business.rest.models.SettingsResponse;
+import im.threads.business.rest.queries.BackendApi;
 import im.threads.business.secureDatabase.DatabaseHolder;
 import im.threads.business.transport.HistoryLoader;
 import im.threads.business.transport.HistoryParser;
+import im.threads.business.transport.TransportException;
 import im.threads.business.transport.models.Attachment;
 import im.threads.business.utils.FileUtils;
-import im.threads.business.config.BaseConfig;
+import im.threads.business.utils.preferences.PrefUtilsBase;
 import im.threads.internal.activities.ConsultActivity;
 import im.threads.internal.activities.ImagesActivity;
 import im.threads.internal.broadcastReceivers.ProgressReceiver;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.formatters.ChatItemType;
 import im.threads.internal.model.ChatItemSendErrorModel;
+import im.threads.internal.model.ClientNotificationDisplayType;
 import im.threads.internal.model.ConsultTyping;
 import im.threads.internal.model.InputFieldEnableModel;
 import im.threads.internal.model.MessageRead;
@@ -68,12 +73,13 @@ import im.threads.internal.model.SearchingConsult;
 import im.threads.internal.model.UpcomingUserMessage;
 import im.threads.internal.utils.ConsultWriter;
 import im.threads.internal.utils.DeviceInfoHelper;
-import im.threads.internal.utils.PrefUtils;
 import im.threads.internal.utils.Seeker;
 import im.threads.internal.utils.ThreadUtils;
 import im.threads.internal.workers.FileDownloadWorker;
 import im.threads.internal.workers.NotificationWorker;
 import im.threads.ui.config.Config;
+import im.threads.ui.utils.preferences.PrefUtilsUi;
+import im.threads.ui.utils.preferences.PreferencesMigrationUi;
 import im.threads.view.ChatFragment;
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
@@ -149,13 +155,13 @@ public final class ChatController {
     private CompositeDisposable compositeDisposable;
 
     private ChatController() {
-        PrefUtils.migrateNamedPreferences(ChatController.class.getSimpleName());
+        new PreferencesMigrationUi().migrateNamedPreferences(ChatController.class.getSimpleName());
         inputEnabledDuringQuickReplies = chatStyle.inputEnabledDuringQuickReplies;
         appContext = BaseConfig.instance.context;
         chatUpdateProcessor = ChatUpdateProcessor.getInstance();
         databaseHolder = DatabaseHolder.getInstance();
 
-        consultWriter = new ConsultWriter(PrefUtils.getDefaultSharedPreferences());
+        consultWriter = new ConsultWriter(PrefUtilsBase.getDefaultSharedPreferences());
         ThreadUtils.runOnUiThread(() -> unsendMessageHandler = new Handler(msg -> {
                     if (msg.what == RESEND_MSG) {
                         if (!unsendMessages.isEmpty()) {
@@ -190,14 +196,14 @@ public final class ChatController {
     }
 
     private static void initClientId() {
-        String newClientId = PrefUtils.getNewClientID();
-        String oldClientId = PrefUtils.getClientID();
+        String newClientId = PrefUtilsBase.getNewClientID();
+        String oldClientId = PrefUtilsBase.getClientID();
         LoggerEdna.info("getInstance newClientId = " + newClientId + ", oldClientId = " + oldClientId);
         if (Objects.equals(newClientId, oldClientId)) {
             // clientId has not changed
-            PrefUtils.setNewClientId("");
+            PrefUtilsBase.setNewClientId("");
         } else if (!TextUtils.isEmpty(newClientId)) {
-            PrefUtils.setClientId(newClientId);
+            PrefUtilsBase.setClientId(newClientId);
             instance.subscribe(
                     Single.fromCallable(() -> instance.onClientIdChanged())
                             .subscribeOn(Schedulers.io())
@@ -398,7 +404,7 @@ public final class ChatController {
     public Observable<List<ChatItem>> requestItems() {
         return Observable
                 .fromCallable(() -> {
-                    if (instance.fragment != null && !PrefUtils.isClientIdEmpty()) {
+                    if (instance.fragment != null && !PrefUtilsBase.isClientIdEmpty()) {
                         int currentOffset = instance.fragment.getCurrentItemsCount();
                         int count = BaseConfig.instance.historyLoadingCount;
                         try {
@@ -475,7 +481,7 @@ public final class ChatController {
         if (consultWriter.isSearchingConsult()) {
             fragment.setStateSearchingConsult();
         }
-        if (PrefUtils.isClientIdEmpty()) {
+        if (PrefUtilsBase.isClientIdEmpty()) {
             fragment.showEmptyState();
         }
         subscribe(
@@ -528,7 +534,7 @@ public final class ChatController {
     }
 
     public void setMessagesInCurrentThreadAsReadInDB() {
-        subscribe(DatabaseHolder.getInstance().setAllConsultMessagesWereReadInThread(PrefUtils.getThreadId())
+        subscribe(DatabaseHolder.getInstance().setAllConsultMessagesWereReadInThread(PrefUtilsBase.getThreadId())
                 .subscribe(UnreadMessagesController.INSTANCE::refreshUnreadMessagesCount,
                         error -> LoggerEdna.error("setAllMessagesWereRead() ", error))
         );
@@ -587,7 +593,7 @@ public final class ChatController {
 
     public void sendInit() {
         BaseConfig.instance.transport.sendInit();
-        if (!PrefUtils.isClientIdEmpty()) {
+        if (!PrefUtilsBase.isClientIdEmpty()) {
             if (fragment != null) {
                 fragment.hideEmptyState();
             }
@@ -638,6 +644,33 @@ public final class ChatController {
                             )
             );
         }
+    }
+
+    public void getSettings() {
+        subscribe(
+                Single.fromCallable(() -> BackendApi.get().settings().execute())
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                response -> {
+                                    final SettingsResponse responseBody = response.body();
+                                    if (responseBody != null) {
+                                        LoggerEdna.info("getting settings : " + responseBody);
+                                        String clientNotificationType = responseBody.getClientNotificationDisplayType();
+                                        if (clientNotificationType != null && !clientNotificationType.isEmpty()) {
+                                            final ClientNotificationDisplayType type = ClientNotificationDisplayType.fromString(clientNotificationType);
+                                            PrefUtilsUi.setClientNotificationDisplayType(type);
+                                            chatUpdateProcessor.postClientNotificationDisplayType(type);
+                                        }
+                                    }
+                                },
+                                e -> {
+                                    LoggerEdna.info("error on getting settings : " + e.getMessage());
+                                    chatUpdateProcessor.postError(new TransportException(e.getMessage()));
+                                }
+                        )
+
+        );
     }
 
     private List<ChatItem> setLastAvatars(final List<ChatItem> list) {
@@ -964,7 +997,7 @@ public final class ChatController {
                                             fragment.showConnectionError();
                                         }
                                         if (!isActive) {
-                                            NotificationWorker.addUnsentMessage(appContext, PrefUtils.getAppMarker());
+                                            NotificationWorker.addUnsentMessage(appContext, PrefUtilsBase.getAppMarker());
                                         }
                                         proceedSendingQueue(userPhrase);
                                     }
@@ -1179,7 +1212,7 @@ public final class ChatController {
         if (fragment != null) {
             fragment.cleanChat();
         }
-        PrefUtils.setThreadId(-1);
+        PrefUtilsBase.setThreadId(-1);
         consultWriter.setCurrentConsultLeft();
         consultWriter.setSearchingConsult(false);
         removePushNotification();
@@ -1214,7 +1247,7 @@ public final class ChatController {
 
     private void onDeviceAddressChanged() {
         LoggerEdna.info("onDeviceAddressChanged:");
-        String clientId = PrefUtils.getClientID();
+        String clientId = PrefUtilsBase.getClientID();
         if (fragment != null && !TextUtils.isEmpty(clientId)) {
             subscribe(
                     Single.fromCallable(() -> {
@@ -1258,7 +1291,7 @@ public final class ChatController {
         for (ChatItem chatItem : chatItems) {
             if (chatItem instanceof SystemMessage) {
                 final Long threadId = chatItem.getThreadId();
-                if (threadId != null && threadId >= PrefUtils.getThreadId()) {
+                if (threadId != null && threadId >= PrefUtilsBase.getThreadId()) {
                     final String type = ((SystemMessage) chatItem).getType();
                     if (ChatItemType.OPERATOR_JOINED.toString().equalsIgnoreCase(type) ||
                             ChatItemType.THREAD_ENQUEUED.toString().equalsIgnoreCase(type) ||
@@ -1288,7 +1321,7 @@ public final class ChatController {
     private void processConsultConnectionMessage(ConsultConnectionMessage ccm) {
         if (ccm.getType().equalsIgnoreCase(ChatItemType.OPERATOR_JOINED.name())) {
             if (ccm.getThreadId() != null) {
-                PrefUtils.setThreadId(ccm.getThreadId());
+                PrefUtilsBase.setThreadId(ccm.getThreadId());
                 if (fragment != null) {
                     fragment.setCurrentThreadId(ccm.getThreadId());
                 }
@@ -1314,7 +1347,7 @@ public final class ChatController {
     private void processSimpleSystemMessage(SimpleSystemMessage systemMessage) {
         final String type = systemMessage.getType();
         if (ChatItemType.THREAD_CLOSED.name().equalsIgnoreCase(type)) {
-            PrefUtils.setThreadId(-1);
+            PrefUtilsBase.setThreadId(-1);
             removeResolveRequest();
             consultWriter.setCurrentConsultLeft();
             if (fragment != null && !consultWriter.isSearchingConsult()) {
@@ -1322,7 +1355,7 @@ public final class ChatController {
             }
         } else {
             if (systemMessage.getThreadId() != null) {
-                PrefUtils.setThreadId(systemMessage.getThreadId());
+                PrefUtilsBase.setThreadId(systemMessage.getThreadId());
                 if (fragment != null) {
                     fragment.setCurrentThreadId(systemMessage.getThreadId());
                 }

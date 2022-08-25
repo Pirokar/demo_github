@@ -1,14 +1,10 @@
-package im.threads.internal.helpers;
+package im.threads.ui.utils;
 
-import android.content.Context;
-
-import java.io.File;
-
+import im.threads.business.config.BaseConfig;
 import im.threads.business.logger.LoggerEdna;
 import im.threads.business.transport.models.AttachmentSettings;
-import im.threads.business.config.BaseConfig;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
-import im.threads.internal.utils.PrefUtils;
+import im.threads.ui.utils.preferences.PrefUtilsUi;
 
 public enum FileHelper {
 
@@ -21,13 +17,6 @@ public enum FileHelper {
                 .subscribe(attachmentSettings -> saveAttachmentSettings(attachmentSettings.getContent()),
                         LoggerEdna::error
                 );
-    }
-
-    public static File createImageFile(Context context) {
-        String filename = "thr" + System.currentTimeMillis() + ".jpg";
-        File output = new File(context.getFilesDir(), filename);
-        LoggerEdna.debug("File genereated into filesDir : " + output.getAbsolutePath());
-        return output;
     }
 
     public boolean isAllowedFileSize(long fileSize) {
@@ -49,11 +38,11 @@ public enum FileHelper {
     }
 
     private void saveAttachmentSettings(AttachmentSettings.Content attachmentSettingsContent) {
-        PrefUtils.setAttachmentSettings(BaseConfig.instance.gson.toJson(attachmentSettingsContent));
+        PrefUtilsUi.setAttachmentSettings(BaseConfig.instance.gson.toJson(attachmentSettingsContent));
     }
 
     private AttachmentSettings.Content getAttachmentSettings() {
-        String settingsStr = PrefUtils.getAttachmentSettings();
+        String settingsStr = PrefUtilsUi.getAttachmentSettings();
         if (settingsStr.isEmpty()) {
             return getDefaultAttachmentSettings();
         } else {

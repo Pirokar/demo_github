@@ -1,6 +1,6 @@
 @file:JvmName("TlsConfigurationUtils")
 
-package im.threads.internal.utils
+package im.threads.business.utils
 
 import android.content.res.Resources
 import androidx.annotation.RawRes

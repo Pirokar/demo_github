@@ -1,6 +1,6 @@
 package im.threads.business.transport
 
-import im.threads.internal.utils.PrefUtils
+import im.threads.business.utils.preferences.PrefUtilsBase
 
 class ApplicationConfig(
     private val threadsGateProviderUid: String,
@@ -9,13 +9,13 @@ class ApplicationConfig(
 
     fun getCloudPair(): CloudPair {
         return when {
-            PrefUtils.fcmToken != null -> CloudPair(
+            PrefUtilsBase.fcmToken != null -> CloudPair(
                 threadsGateProviderUid,
-                PrefUtils.fcmToken
+                PrefUtilsBase.fcmToken
             )
-            threadsGateHuaweiProviderUid != null && PrefUtils.hcmToken != null -> CloudPair(
+            threadsGateHuaweiProviderUid != null && PrefUtilsBase.hcmToken != null -> CloudPair(
                 threadsGateHuaweiProviderUid,
-                PrefUtils.hcmToken
+                PrefUtilsBase.hcmToken
             )
             else -> CloudPair(threadsGateProviderUid, null)
         }
