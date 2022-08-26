@@ -24,12 +24,12 @@ import im.threads.business.imageLoading.ImageModifications
 import im.threads.business.imageLoading.loadImage
 import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.FileDescription
+import im.threads.business.models.Quote
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.utils.FileUtils
 import im.threads.business.utils.FileUtils.isImage
 import im.threads.internal.Config
 import im.threads.internal.formatters.RussianFormatSymbols
-import im.threads.business.models.Quote
 import im.threads.internal.utils.UrlUtils
 import im.threads.internal.utils.ViewUtils
 import im.threads.internal.views.CircularProgressButton
