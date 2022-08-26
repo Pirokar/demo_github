@@ -174,10 +174,10 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
         } else {
             mPhraseTextView.bindTimestampView(mTimeStampTextView)
             mPhraseTextView.visibility = View.VISIBLE
-            val url = UrlUtils.extractLink(phrase)
+            val extractedLink = UrlUtils.extractLink(phrase)
             highlightOperatorText(mPhraseTextView, consultPhrase)
-            if (url != null) {
-                bindOGData(ogDataLayout, mTimeStampTextView, url)
+            if (extractedLink?.link != null && !extractedLink.isEmail) {
+                bindOGData(ogDataLayout, mTimeStampTextView, extractedLink.link)
             } else {
                 hideOGView(ogDataLayout, mTimeStampTextView)
             }
