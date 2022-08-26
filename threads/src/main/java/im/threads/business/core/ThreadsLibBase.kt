@@ -124,6 +124,9 @@ open class ThreadsLibBase protected constructor() {
         }
     }
 
+    /**
+     * Устанавливает [CampaignMessage], который необходим для цитирования сообщений
+     */
     fun setCampaignMessage(campaignMessage: CampaignMessage) {
         PrefUtilsBase.campaignMessage = campaignMessage
     }
