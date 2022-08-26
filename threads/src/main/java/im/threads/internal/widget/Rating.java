@@ -14,7 +14,6 @@ import java.util.ArrayList;
 
 import im.threads.ChatStyle;
 import im.threads.R;
-import im.threads.business.config.BaseConfig;
 import im.threads.ui.config.Config;
 
 /**
@@ -39,7 +38,7 @@ public final class Rating extends LinearLayout {
     public void initRating(Context context, int ratingCount, int starsCount) {
         this.context = context;
         this.ratingCount = ratingCount;
-        style = ((Config)BaseConfig.instance).getChatStyle();
+        style = Config.getInstance().getChatStyle();
         countStars = starsCount;
         LayoutInflater inflater = LayoutInflater.from(context);
         // Чтобы при повторной инициализации не было в 2 раза больше звезд

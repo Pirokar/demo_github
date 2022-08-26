@@ -19,7 +19,7 @@ class MarkwonMarkdownProcessor(
     incomingMarkdownConfig: MarkdownConfig? = null,
     outgoingMarkdownConfig: MarkdownConfig? = null
 ) : MarkdownProcessor {
-    private val config by lazy { BaseConfig.instance as Config }
+    private val config by lazy { Config.getInstance() }
     private val context: Context by lazy { nullableContext ?: config.context }
     private val incomingMarkdownConfiguration: MarkdownConfig by lazy {
         incomingMarkdownConfig ?: config.getChatStyle().incomingMarkdownConfiguration

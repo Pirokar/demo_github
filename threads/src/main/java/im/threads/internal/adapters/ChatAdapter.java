@@ -28,7 +28,6 @@ import java.util.ListIterator;
 import java.util.Set;
 
 import im.threads.ChatStyle;
-import im.threads.business.config.BaseConfig;
 import im.threads.business.imageLoading.ImageModifications;
 import im.threads.business.logger.LoggerEdna;
 import im.threads.business.models.ChatItem;
@@ -147,7 +146,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         this.mCallback = callback;
         this.fdMediaPlayer = fdMediaPlayer;
         this.mediaMetadataRetriever = mediaMetadataRetriever;
-        ChatStyle style = ((Config)BaseConfig.instance).getChatStyle();
+        ChatStyle style = Config.getInstance().getChatStyle();
         this.outgoingImageMaskTransformation = new ImageModifications.MaskedModification(
                 ctx.getResources().getDrawable(style.outgoingImageBubbleMask)
         );

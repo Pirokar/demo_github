@@ -22,7 +22,6 @@ import java.util.List;
 
 import im.threads.ChatStyle;
 import im.threads.R;
-import im.threads.business.config.BaseConfig;
 import im.threads.business.logger.LoggerEdna;
 import im.threads.business.models.FileDescription;
 import im.threads.business.secureDatabase.DatabaseHolder;
@@ -62,7 +61,7 @@ public final class ImagesActivity extends BaseActivity implements ViewPager.OnPa
         setContentView(R.layout.activity_images);
         mViewPager = findViewById(R.id.pager);
         mViewPager.addOnPageChangeListener(this);
-        style = ((Config)BaseConfig.instance).getChatStyle();
+        style = Config.getInstance().getChatStyle();
         initToolbar(findViewById(R.id.toolbar), findViewById(R.id.toolbar_shadow));
         compositeDisposable.add(DatabaseHolder.getInstance().getAllFileDescriptions()
                 .doOnSuccess(data -> {

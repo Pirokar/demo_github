@@ -13,7 +13,6 @@ import androidx.annotation.NonNull;
 
 import im.threads.ChatStyle;
 import im.threads.R;
-import im.threads.business.config.BaseConfig;
 import im.threads.internal.utils.ColorsHelper;
 import im.threads.ui.config.Config;
 
@@ -35,7 +34,7 @@ public final class WelcomeScreen extends LinearLayout {
             return;
         }
         inflater.inflate(R.layout.view_welcome, this, true);
-        final ChatStyle style = ((Config)BaseConfig.instance).getChatStyle();
+        final ChatStyle style = Config.getInstance().getChatStyle();
         initLogo(style);
         initTitle(style);
         initSubtitle(style);

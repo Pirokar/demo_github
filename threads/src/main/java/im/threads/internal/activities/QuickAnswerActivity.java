@@ -19,7 +19,6 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import im.threads.ChatStyle;
 import im.threads.business.logger.LoggerEdna;
 import im.threads.business.models.ConsultPhrase;
-import im.threads.business.config.BaseConfig;
 import im.threads.internal.controllers.QuickAnswerController;
 import im.threads.internal.fragments.QuickAnswerFragment;
 import im.threads.internal.model.UpcomingUserMessage;
@@ -58,7 +57,7 @@ public final class QuickAnswerActivity
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ChatStyle style = ((Config)BaseConfig.instance).getChatStyle();
+        ChatStyle style = Config.getInstance().getChatStyle();
         Window window = getWindow();
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);

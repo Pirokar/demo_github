@@ -42,7 +42,7 @@ class PermissionDescriptionAlertDialogFragment : DialogFragment() {
 
     private var onAllowPermissionClickListener: OnAllowPermissionClickListener? = null
     private val config: Config by lazy {
-        BaseConfig.instance as Config
+        Config.getInstance()
     }
 
     override fun onAttach(context: Context) {

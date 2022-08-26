@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import im.threads.ChatStyle;
 import im.threads.R;
-import im.threads.business.config.BaseConfig;
 import im.threads.internal.model.UnreadMessages;
 import im.threads.ui.config.Config;
 
@@ -19,7 +18,7 @@ public final class UnreadMessageViewHolder extends RecyclerView.ViewHolder {
     public UnreadMessageViewHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_unread_counter, parent, false));
         mTextView = itemView.findViewById(R.id.text);
-        ChatStyle style = ((Config)BaseConfig.instance).getChatStyle();
+        ChatStyle style = Config.getInstance().getChatStyle();
         mTextView.setTextColor(ContextCompat.getColor(itemView.getContext(), style.chatSystemMessageTextColor));
     }
 

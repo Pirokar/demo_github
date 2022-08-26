@@ -25,11 +25,11 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import im.threads.ChatStyle;
 import im.threads.R;
+import im.threads.business.config.BaseConfig;
 import im.threads.business.imageLoading.ImageLoader;
 import im.threads.business.imageLoading.ImageModifications;
 import im.threads.business.logger.LoggerEdna;
 import im.threads.business.utils.FileUtils;
-import im.threads.business.config.BaseConfig;
 import im.threads.internal.activities.QuickAnswerActivity;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.model.InputFieldEnableModel;
@@ -59,7 +59,7 @@ public final class QuickAnswerFragment extends BaseDialogFragment {
     @NonNull
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        ChatStyle style = ((Config)BaseConfig.instance).getChatStyle();
+        ChatStyle style = Config.getInstance().getChatStyle();
         View v = inflater.inflate(R.layout.dialog_fast_answer, container, false);
         TextView consultNameTextView = v.findViewById(R.id.consult_name);
         TextView textView = v.findViewById(R.id.question);
