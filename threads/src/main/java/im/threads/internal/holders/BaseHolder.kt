@@ -5,6 +5,8 @@ import android.graphics.drawable.Drawable
 import android.text.method.LinkMovementMethod
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.RotateAnimation
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.ColorInt
@@ -44,6 +46,14 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
     private val linksHighlighter: LinksHighlighter = LinkifyLinksHighlighter()
     private val openGraphParser: OpenGraphParser = OpenGraphParserJsoupImpl()
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
+    protected val rotateAnim = RotateAnimation(
+        0f,
+        360f,
+        Animation.RELATIVE_TO_SELF,
+        0.5f,
+        Animation.RELATIVE_TO_SELF,
+        0.5f
+    )
 
     protected fun subscribe(event: Disposable): Boolean {
         if (compositeDisposable?.isDisposed != false) {
@@ -195,7 +205,7 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
                         ogDataLayout,
                         View.OnClickListener {
                             UrlUtils.openUrl(
-                                ogDataLayout.getContext(),
+                                ogDataLayout.context,
                                 normalizedUrl
                             )
                         }
@@ -257,7 +267,7 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
      * @param ogDataLayout layout, в котором размещены вьюхи Open Graph
      * @param timeStampView текстовая вьюха для отображения времени
      */
-    protected fun showOGView(ogDataLayout: ViewGroup, timeStampView: TextView) {
+    private fun showOGView(ogDataLayout: ViewGroup, timeStampView: TextView) {
         ogDataLayout.visibility = View.VISIBLE
         timeStampView.visibility = View.GONE
     }
@@ -292,5 +302,22 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
             return it.getString(stringId)
         }
         return null
+    }
+
+    protected fun initAnimation(view: ImageView, isIncomingMessage: Boolean) {
+        view.setImageResource(R.drawable.im_loading_themed)
+        ColorsHelper.setTint(
+            itemView.context,
+            view,
+            if (isIncomingMessage) {
+                Config.instance.chatStyle.incomingMessageLoaderColor
+            } else {
+                Config.instance.chatStyle.outgoingMessageLoaderColor
+            }
+        )
+        rotateAnim.duration = 3000
+        rotateAnim.repeatCount = Animation.INFINITE
+        view.animation = rotateAnim
+        rotateAnim.start()
     }
 }

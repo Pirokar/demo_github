@@ -1,35 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rootLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
     <FrameLayout
-        android:id="@+id/loaderLayout"
-        style="@style/consultBubble"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/consultant_height_error_item_layout"
-        android:layout_marginLeft="@dimen/threads_margin_zero"
-        android:visibility="gone">
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_half"
+        android:layout_marginEnd="@dimen/consultant_margin_right">
 
         <ImageView
-            android:id="@+id/consultAvatarDuplicate"
+            android:id="@+id/consultAvatar"
             android:layout_width="@dimen/threads_operator_photo_size"
             android:layout_height="@dimen/threads_operator_photo_size"
-            android:layout_gravity="bottom"
-            android:layout_marginStart="@dimen/margin_half" />
+            android:layout_gravity="bottom" />
 
         <LinearLayout
-            android:id="@+id/bubble"
+            android:id="@+id/loaderLayout"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/consultant_height_error_bubble_item_layout"
-            android:layout_gravity="end"
+            android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/consultant_margin_right"
+            android:layout_marginBottom="@dimen/margin_big"
             android:orientation="horizontal"
-            android:paddingStart="0dp"
-            android:paddingEnd="17dp">
+            android:visibility="gone">
 
             <ImageView
                 android:id="@+id/loader"
@@ -39,122 +35,80 @@
                 android:layout_marginStart="@dimen/margin_material"
                 android:layout_marginTop="@dimen/margin_material"
                 android:layout_marginEnd="@dimen/margin_three_fourth"
-                android:layout_marginBottom="@dimen/margin_material"
-                app:srcCompat="@drawable/im_loading_themed" />
+                android:layout_marginBottom="@dimen/margin_material" />
 
             <View
                 android:id="@+id/delimiter"
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
                 android:layout_marginTop="@dimen/margin_quarter"
+                android:layout_marginBottom="@dimen/margin_quarter"
                 android:background="@color/threads_incoming_message_text" />
 
             <im.threads.internal.widget.text_view.BubbleMessageTextView
                 android:id="@+id/fileName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/margin_half"
+                android:layout_marginStart="@dimen/margin_three_fourth"
                 android:layout_marginTop="@dimen/margin_half"
-                android:maxLines="2"
+                android:layout_marginEnd="@dimen/margin_half"
+                android:layout_marginBottom="@dimen/margin_half"
                 android:ellipsize="end"
+                android:maxLines="5"
                 android:textColor="@color/threads_incoming_message_text"
-                tools:text="ddddddddddddddd.pdf" />
+                tools:text="ddddddddddd.pdf" />
 
         </LinearLayout>
 
+        <RelativeLayout
+            android:id="@+id/commonLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/threads_operator_photo_size"
+            android:layout_marginBottom="@dimen/margin_big"
+            android:visibility="visible">
+
+            <ImageView
+                android:id="@+id/image"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:layout_marginTop="@dimen/margin_quarter"
+                android:minHeight="240dp" />
+
+            <ImageView
+                android:id="@+id/loaderImage"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:layout_alignStart="@id/image"
+                android:layout_alignTop="@id/image"
+                android:layout_alignEnd="@id/image"
+                android:layout_alignBottom="@id/image"
+                android:minHeight="240dp"
+                android:padding="75dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/im_loading_themed"
+                android:visibility="gone" />
+
+        </RelativeLayout>
+
         <im.threads.internal.widget.text_view.BubbleTimeTextView
-            android:id="@+id/timestampDuplicate"
+            android:id="@+id/timeStamp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="end|bottom"
-            android:layout_marginEnd="@dimen/icon_small_size"
+            android:layout_gravity="bottom|end"
+            android:layout_marginEnd="@dimen/margin_half"
             android:layout_marginBottom="@dimen/margin_large"
             android:background="@drawable/timestamp_incoming_underlayer"
             android:paddingLeft="2dp"
             android:paddingRight="2dp"
             android:textColor="@color/threads_incoming_message_time"
             tools:text="10:19" />
+
     </FrameLayout>
-
-    <RelativeLayout
-        android:id="@+id/commonLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:visibility="visible">
-
-        <ImageView
-            android:id="@+id/consult_avatar"
-            android:layout_width="@dimen/threads_operator_photo_size"
-            android:layout_height="@dimen/threads_operator_photo_size"
-            android:layout_below="@+id/image"
-            android:layout_alignTop="@+id/timestamp"
-            android:layout_gravity="bottom|end"
-            android:layout_marginStart="@dimen/margin_half"
-            android:layout_marginTop="@dimen/margin_big" />
-
-        <ImageView
-            android:id="@+id/image"
-            android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:layout_marginTop="@dimen/margin_quarter"
-            android:layout_marginEnd="@dimen/consultant_margin_right"
-            android:layout_toEndOf="@+id/consult_avatar"
-            android:minHeight="240dp" />
-
-        <ImageView
-            android:id="@+id/loaderImage"
-            android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:layout_alignStart="@id/image"
-            android:layout_alignTop="@id/image"
-            android:layout_alignEnd="@id/image"
-            android:layout_alignBottom="@id/image"
-            android:minHeight="240dp"
-            android:padding="75dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/im_loading_themed"
-            android:visibility="gone" />
-
-        <im.threads.internal.widget.text_view.BubbleTimeTextView
-            android:id="@+id/timestamp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignEnd="@+id/image"
-            android:layout_alignBottom="@+id/image"
-            android:layout_gravity="bottom|end"
-            android:layout_marginEnd="@dimen/margin_half"
-            android:layout_marginBottom="@dimen/margin_big"
-            android:background="@drawable/timestamp_incoming_underlayer"
-            android:paddingLeft="2dp"
-            android:paddingRight="2dp"
-            android:textColor="@color/threads_incoming_message_time"
-            tools:text="10:19" />
-
-        <View
-            android:id="@+id/filter"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignBottom="@+id/image"
-            android:layout_alignParentTop="true"
-            android:layout_marginTop="0dp"
-            android:layout_marginBottom="0dp"
-            android:background="@color/threads_chat_highlighting" />
-
-        <View
-            android:id="@+id/filter_second"
-            android:layout_width="match_parent"
-            android:layout_height="24dp"
-            android:layout_below="@+id/filter"
-            android:background="@color/threads_chat_highlighting" />
-
-
-    </RelativeLayout>
 
     <im.threads.internal.widget.text_view.BubbleTimeTextView
         android:id="@+id/errorText"
         style="@style/timestamp"
-        android:layout_below="@+id/filter_second"
         android:layout_marginStart="@dimen/consultant_margin_right"
         android:textColor="@color/threads_error_red_df0000"
         android:textSize="@dimen/error_text_size"

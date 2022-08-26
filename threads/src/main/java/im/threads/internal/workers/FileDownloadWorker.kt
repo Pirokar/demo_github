@@ -28,7 +28,6 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
     private var runningDownloads = HashMap<FileDescription, FileDownloader>()
 
     override fun doWork(): Result {
-
         val data = inputData.getByteArray(FD_TAG)?.let { unmarshall(it) }
         val fileDescription: FileDescription = FileDescription.CREATOR.createFromParcel(data)
             ?: return Result.failure()
@@ -92,7 +91,7 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
                 runningDownloads[fileDescription] = fileDownloader
                 fileDescription.downloadProgress = 1
                 sendDownloadProgressBroadcast(fileDescription)
-                runningDownloads.put(fileDescription, fileDownloader)
+                runningDownloads[fileDescription] = fileDownloader
                 fileDownloader.download()
             }
         } else if (START_DOWNLOAD_WITH_NO_STOP == inputData.getString(START_DOWNLOAD_ACTION)) {
@@ -100,7 +99,7 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
                 runningDownloads[fileDescription] = fileDownloader
                 fileDescription.downloadProgress = 1
                 sendDownloadProgressBroadcast(fileDescription)
-                runningDownloads.put(fileDescription, fileDownloader)
+                runningDownloads[fileDescription] = fileDownloader
                 fileDownloader.download()
             }
         }

@@ -96,6 +96,11 @@ public final class ChatStyle implements Serializable {
     @ColorRes
     public int outgoingMessageTimeColor = R.color.threads_user_message_timestamp;
 
+    @ColorRes
+    public int incomingMessageLoaderColor = R.color.threads_green_83B144;
+    @ColorRes
+    public int outgoingMessageLoaderColor = R.color.threads_teal_004D40;
+
     @DimenRes
     public int incomingMessageTimeTextSize = 0;
     @DimenRes
@@ -286,6 +291,8 @@ public final class ChatStyle implements Serializable {
     public int inputHeight = R.dimen.threads_input_height;
     @DrawableRes
     public int inputBackground = R.drawable.threads_chat_input_background;
+    @DrawableRes
+    public int quoteAttachmentIconResId = R.drawable.ic_reply_gray_24dp;
 
     //attachment bottom sheet style
     @ColorRes
@@ -863,6 +870,11 @@ public final class ChatStyle implements Serializable {
         return this;
     }
 
+    public ChatStyle setQuoteAttachmentIconResId(@DrawableRes final int quoteAttachmentIconResId) {
+        this.quoteAttachmentIconResId = quoteAttachmentIconResId;
+        return this;
+    }
+
     public ChatStyle setAttachmentIconResId(@DrawableRes final int attachmentIconResId) {
         this.attachmentIconResId = attachmentIconResId;
         return this;
@@ -880,6 +892,16 @@ public final class ChatStyle implements Serializable {
 
     public ChatStyle setLoaderTintResId(@ColorRes final int loaderTintResId) {
         this.loaderTintResId = loaderTintResId;
+        return this;
+    }
+
+    public ChatStyle setIncomingMessageLoaderColorResId(@ColorRes final int incomingMessageLoaderColor) {
+        this.incomingMessageLoaderColor = incomingMessageLoaderColor;
+        return this;
+    }
+
+    public ChatStyle setOutgoingMessageLoaderColorResId(@ColorRes final int outgoingMessageLoaderColor) {
+        this.outgoingMessageLoaderColor = outgoingMessageLoaderColor;
         return this;
     }
 

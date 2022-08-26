@@ -14,11 +14,21 @@ import java.net.URL
 import javax.net.ssl.HttpsURLConnection
 import kotlin.math.floor
 
-class FileDownloader(private val path: String, fileName: String, ctx: Context, private val downloadLister: DownloadLister) {
+const val DOWNLOAD_PROGRESS_DELTA_TIME_MILLIS = 100
+const val MAX_DOWNLOAD_PROGRESS = 100
+const val DELTA_DOWNLOAD_PROGRESS = 2
+
+class FileDownloader(
+    private val path: String,
+    fileName: String,
+    ctx: Context,
+    private val downloadLister: DownloadLister
+) {
     private val outputFile: File = File(
         getDownloadDir(ctx),
         generateFileName(
-            path, fileName
+            path,
+            fileName
         )
     )
 
@@ -51,7 +61,7 @@ class FileDownloader(private val path: String, fileName: String, ctx: Context, p
                 urlConnection.readTimeout = 60000
 
                 if (urlConnection is HttpsURLConnection) {
-                    urlConnection.setHostnameVerifier { hostname, session -> true }
+                    urlConnection.setHostnameVerifier { _, _ -> true }
                 }
 
                 val length = getFileLength(urlConnection)
@@ -60,15 +70,25 @@ class FileDownloader(private val path: String, fileName: String, ctx: Context, p
                 var tempLength: Int
                 var bytesRead: Long = 0
                 var lastReadTime = System.currentTimeMillis()
+                var lastReadProgress = 0
                 val buffer = ByteArray(1024 * 8)
 
                 while (`in`.read(buffer).also { tempLength = it } > 0 && !isStopped) {
                     fileOutputStream.write(buffer, 0, tempLength)
                     bytesRead += tempLength.toLong()
-                    if (length != null && System.currentTimeMillis() > lastReadTime + 500) {
-                        val progress = floor(bytesRead.toDouble() / length * 100.0).toInt()
-                        lastReadTime = System.currentTimeMillis()
-                        downloadLister.onProgress(progress.toDouble())
+                    if (System.currentTimeMillis() > lastReadTime + DOWNLOAD_PROGRESS_DELTA_TIME_MILLIS) {
+                        length?.let {
+                            val progress =
+                                floor(bytesRead.toDouble() / it * MAX_DOWNLOAD_PROGRESS).toInt()
+                            lastReadTime = System.currentTimeMillis()
+                            downloadLister.onProgress(progress.toDouble())
+                        } ?: run {
+                            lastReadProgress += DELTA_DOWNLOAD_PROGRESS
+                            if (lastReadProgress >= MAX_DOWNLOAD_PROGRESS) {
+                                lastReadProgress = 0
+                            }
+                            downloadLister.onProgress(lastReadProgress.toDouble())
+                        }
                     }
                 }
 

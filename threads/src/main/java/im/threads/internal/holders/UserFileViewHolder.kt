@@ -1,0 +1,192 @@
+package im.threads.internal.holders
+
+import android.graphics.drawable.Drawable
+import android.text.format.Formatter
+import android.util.TypedValue
+import android.view.LayoutInflater
+import android.view.View
+import android.view.View.OnLongClickListener
+import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.RelativeLayout
+import android.widget.TextView
+import androidx.annotation.ColorRes
+import androidx.annotation.DrawableRes
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.BlendModeColorFilterCompat
+import androidx.core.graphics.BlendModeCompat
+import androidx.core.view.isVisible
+import im.threads.R
+import im.threads.internal.Config
+import im.threads.internal.model.AttachmentStateEnum
+import im.threads.internal.model.FileDescription
+import im.threads.internal.model.MessageState
+import im.threads.internal.utils.FileUtils.getFileName
+import im.threads.internal.views.CircularProgressButton
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+
+class UserFileViewHolder(parent: ViewGroup) :
+    BaseHolder(
+        LayoutInflater.from(parent.context).inflate(R.layout.item_user_chat_file, parent, false)
+    ) {
+
+    private val style = Config.instance.chatStyle
+    private val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
+
+    private val fileHeaderTextView: TextView = itemView.findViewById(R.id.header)
+    private val fileSizeTextView: TextView = itemView.findViewById(R.id.fileSize)
+    private val errorTextView: TextView = itemView.findViewById(R.id.errorText)
+    private val loader: ImageView = itemView.findViewById(R.id.loader)
+    private val rootLayout: RelativeLayout = itemView.findViewById(R.id.rootLayout)
+
+    private val circularProgressButton =
+        itemView.findViewById<CircularProgressButton>(R.id.buttonDownload).apply {
+            setBackgroundColorResId(style.outgoingMessageTextColor)
+            setUpProgressButton(this)
+        }
+
+    private val timeStampTextView = itemView.findViewById<TextView>(R.id.timeStamp).apply {
+        setTextColor(getColorInt(style.outgoingImageTimeColor))
+        val timeColorBg = getColorInt(style.outgoingImageTimeBackgroundColor)
+        background.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
+            timeColorBg,
+            BlendModeCompat.SRC_ATOP
+        )
+        if (style.outgoingMessageTimeTextSize > 0) {
+            val textSize = context.resources.getDimension(style.outgoingMessageTimeTextSize)
+            setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
+        }
+    }
+
+    init {
+        itemView.findViewById<RelativeLayout>(R.id.bubble).apply {
+            background =
+                AppCompatResources.getDrawable(
+                    itemView.context,
+                    style.outgoingMessageBubbleBackground
+                )
+            setPadding(
+                itemView.context.resources.getDimensionPixelSize(style.bubbleOutgoingPaddingLeft),
+                itemView.context.resources.getDimensionPixelSize(style.bubbleOutgoingPaddingTop),
+                itemView.context.resources.getDimensionPixelSize(style.bubbleOutgoingPaddingRight),
+                itemView.context.resources.getDimensionPixelSize(style.bubbleOutgoingPaddingBottom)
+            )
+            background.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
+                getColorInt(style.outgoingMessageBubbleColor),
+                BlendModeCompat.SRC_ATOP
+            )
+        }
+        setTextColorToViews(
+            arrayOf(fileHeaderTextView, fileSizeTextView),
+            style.outgoingMessageTextColor
+        )
+    }
+
+    fun onBind(
+        timeStamp: Long,
+        fileDescription: FileDescription?,
+        buttonClickListener: View.OnClickListener,
+        rowClickListener: View.OnClickListener,
+        onLongClick: OnLongClickListener,
+        isFilterVisible: Boolean,
+        sentState: MessageState
+    ) {
+        fileDescription?.let {
+            val viewGroup = itemView as ViewGroup
+            fileHeaderTextView.text = getFileName(it)
+            fileSizeTextView.text = Formatter.formatFileSize(viewGroup.context, it.size)
+            fileSizeTextView.visibility = if (it.size > 0) View.VISIBLE else View.GONE
+            for (i in 0 until viewGroup.childCount) {
+                viewGroup.getChildAt(i).setOnLongClickListener(onLongClick)
+                viewGroup.getChildAt(i).setOnClickListener(rowClickListener)
+            }
+            updateFileView(it, buttonClickListener)
+
+            rootLayout.setOnLongClickListener(onLongClick)
+            rootLayout.apply {
+                setBackgroundColor(
+                    ContextCompat.getColor(
+                        viewGroup.context,
+                        if (isFilterVisible) style.chatHighlightingColor else R.color.threads_transparent
+                    )
+                )
+            }
+        }
+        bindTimeStamp(sentState, timeStamp, onLongClick)
+    }
+
+    private fun bindTimeStamp(
+        messageState: MessageState,
+        timeStamp: Long,
+        onLongClick: OnLongClickListener
+    ) {
+        timeStampTextView.setOnLongClickListener {
+            onLongClick.onLongClick(it)
+            true
+        }
+        timeStampTextView.text = sdf.format(Date(timeStamp))
+        val rightDrawable: Drawable? =
+            when (messageState) {
+                MessageState.STATE_WAS_READ -> getColoredDrawable(
+                    R.drawable.threads_image_message_received,
+                    R.color.threads_outgoing_message_image_received_icon
+                )
+                MessageState.STATE_SENT -> getColoredDrawable(
+                    R.drawable.threads_message_image_sent,
+                    R.color.threads_outgoing_message_image_sent_icon
+                )
+                MessageState.STATE_NOT_SENT -> getColoredDrawable(
+                    R.drawable.threads_message_image_waiting,
+                    R.color.threads_outgoing_message_image_not_send_icon
+                )
+                MessageState.STATE_SENDING -> AppCompatResources.getDrawable(
+                    itemView.context,
+                    R.drawable.empty_space_24dp
+                )
+            }
+        timeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, rightDrawable, null)
+    }
+
+    private fun getColoredDrawable(@DrawableRes res: Int, @ColorRes color: Int): Drawable? {
+        val drawable = AppCompatResources.getDrawable(itemView.context, res)
+        drawable?.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
+            ContextCompat.getColor(itemView.context, color),
+            BlendModeCompat.SRC_ATOP
+        )
+        return drawable
+    }
+
+    private fun updateFileView(
+        fileDescription: FileDescription,
+        buttonClickListener: View.OnClickListener
+    ) {
+        when (fileDescription.state) {
+            AttachmentStateEnum.ERROR -> {
+                loader.isVisible = true
+                errorTextView.isVisible = false
+                circularProgressButton.isVisible = false
+                loader.setImageResource(getErrorImageResByErrorCode(fileDescription.errorCode))
+                val errorString = getString(getErrorStringResByErrorCode(fileDescription.errorCode))
+                errorTextView.text = errorString
+            }
+            AttachmentStateEnum.PENDING -> {
+                circularProgressButton.isVisible = false
+                loader.isVisible = true
+                errorTextView.isVisible = false
+                initAnimation(loader, false)
+            }
+            else -> {
+                loader.isVisible = false
+                errorTextView.isVisible = false
+                circularProgressButton.isVisible = true
+                circularProgressButton.setProgress(
+                    if (fileDescription.fileUri != null) 100 else fileDescription.downloadProgress
+                )
+                circularProgressButton.setOnClickListener(buttonClickListener)
+            }
+        }
+    }
+}
