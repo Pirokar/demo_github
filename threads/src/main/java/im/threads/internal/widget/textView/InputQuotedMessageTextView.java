@@ -6,7 +6,6 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 
 import im.threads.ChatStyle;
-import im.threads.business.config.BaseConfig;
 import im.threads.internal.widget.CustomFontTextView;
 import im.threads.ui.config.Config;
 
@@ -22,7 +21,7 @@ public final class InputQuotedMessageTextView extends CustomFontTextView {
 
     @Override
     public void setTypefaceView(Context context) {
-        ChatStyle style = ((Config)BaseConfig.instance).getChatStyle();;
+        ChatStyle style = Config.getInstance().getChatStyle();
         if (!TextUtils.isEmpty(style.inputQuotedMessageFont)) {
             setTypeface(Typeface.createFromAsset(context.getAssets(), style.inputQuotedMessageFont));
         } else {

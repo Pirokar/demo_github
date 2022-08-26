@@ -150,7 +150,7 @@ public final class ChatController {
     // Если пользователь не ответил на вопрос (quickReply), то блокируем поле ввода
     private boolean inputEnabledDuringQuickReplies;
 
-    private final ChatStyle chatStyle = ((Config)BaseConfig.instance).getChatStyle();
+    private final ChatStyle chatStyle = Config.getInstance().getChatStyle();
 
     private CompositeDisposable compositeDisposable;
 

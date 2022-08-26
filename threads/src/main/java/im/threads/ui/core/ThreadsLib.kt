@@ -11,7 +11,7 @@ import im.threads.ui.utils.preferences.PreferencesMigrationUi
 
 class ThreadsLib : ThreadsLibBase() {
     private val config by lazy {
-        BaseConfig.instance as Config
+        Config.getInstance()
     }
     fun applyChatStyle(chatStyle: ChatStyle?) {
         config.setChatStyle(chatStyle)
@@ -41,8 +41,9 @@ class ThreadsLib : ThreadsLibBase() {
 
         @JvmStatic
         fun init(configBuilder: ConfigBuilder) {
-            BaseConfig.instance = configBuilder.build()
-            createInstance()
+            Config.setInstance(configBuilder.build())
+            BaseConfig.instance = Config.getInstance()
+            createLibInstance()
             BaseConfig.instance.loggerConfig?.let { LoggerEdna.init(it) }
             PreferencesMigrationUi().migrateMainSharedPreferences()
 
@@ -56,7 +57,7 @@ class ThreadsLib : ThreadsLibBase() {
         }
 
         @JvmStatic
-        private fun createInstance() {
+        private fun createLibInstance() {
             check(libInstance == null) { "ThreadsLib has already been initialized" }
             setLibraryInstance(ThreadsLib())
         }

@@ -213,7 +213,7 @@ public final class ChatFragment extends BaseFragment implements
 
     private QuickReplyItem quickReplyItem = null;
     private int previousChatItemsCount = 0;
-    private Config config = ((Config)BaseConfig.instance);
+    private Config config = Config.getInstance();
 
     public static ChatFragment newInstance() {
         return newInstance(OpenWay.DEFAULT);

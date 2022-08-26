@@ -8,7 +8,6 @@ import android.webkit.WebViewClient
 import androidx.databinding.DataBindingUtil
 import im.threads.android.R
 import im.threads.android.databinding.ActivityWebviewBinding
-import im.threads.business.config.BaseConfig
 import im.threads.internal.activities.BaseActivity
 import im.threads.internal.utils.ColorsHelper
 import im.threads.ui.config.Config
@@ -32,7 +31,7 @@ class WebViewActivity : BaseActivity() {
     }
 
     private fun initView() {
-        val chatStyle = (BaseConfig.instance as Config).getChatStyle()
+        val chatStyle = Config.getInstance().getChatStyle()
         binding = DataBindingUtil.setContentView(this, R.layout.activity_webview)
         binding.backButton.setOnClickListener { finish() }
 

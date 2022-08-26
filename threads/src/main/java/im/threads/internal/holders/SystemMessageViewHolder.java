@@ -18,7 +18,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.business.models.SystemMessage;
-import im.threads.business.config.BaseConfig;
 import im.threads.internal.utils.UrlUtils;
 import im.threads.ui.config.Config;
 
@@ -32,7 +31,7 @@ public class SystemMessageViewHolder extends RecyclerView.ViewHolder {
         context = parent.getContext();
         tvSystemMessage = itemView.findViewById(R.id.tv_system_message);
         if (style == null) {
-            style = ((Config)BaseConfig.instance).getChatStyle();
+            style = Config.getInstance().getChatStyle();
         }
     }
 

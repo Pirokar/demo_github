@@ -15,7 +15,6 @@ import java.util.Locale;
 
 import im.threads.ChatStyle;
 import im.threads.R;
-import im.threads.business.config.BaseConfig;
 import im.threads.internal.formatters.RussianFormatSymbols;
 import im.threads.ui.config.Config;
 
@@ -33,7 +32,7 @@ public final class FilesDateStampHolder extends RecyclerView.ViewHolder {
         } else {
             sdf = new SimpleDateFormat("dd MMMM yyyy", Locale.getDefault());
         }
-        if (style == null) style = ((Config)BaseConfig.instance).getChatStyle();
+        if (style == null) style = Config.getInstance().getChatStyle();
         mDateTextView.setTextColor(ContextCompat.getColor(itemView.getContext(), style.chatSystemMessageTextColor));
         linearLayout.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatBackgroundColor));
     }

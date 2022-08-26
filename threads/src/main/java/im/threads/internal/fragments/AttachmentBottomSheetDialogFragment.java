@@ -25,7 +25,6 @@ import java.util.List;
 
 import im.threads.ChatStyle;
 import im.threads.R;
-import im.threads.business.config.BaseConfig;
 import im.threads.internal.helpers.MediaHelper;
 import im.threads.internal.useractivity.LastUserActivityTimeCounter;
 import im.threads.internal.useractivity.LastUserActivityTimeCounterSingletonProvider;
@@ -89,7 +88,7 @@ public class AttachmentBottomSheetDialogFragment extends BottomSheetDialogFragme
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        ChatStyle chatStyle = ((Config)BaseConfig.instance).getChatStyle();
+        ChatStyle chatStyle = Config.getInstance().getChatStyle();
         View view = inflater.inflate(R.layout.bottom_sheet_dialog_attachment, container, false);
         BottomSheetView fileInputSheet = view.findViewById(R.id.file_input_sheet);
         BottomGallery bottomGallery = view.findViewById(R.id.bottom_gallery);

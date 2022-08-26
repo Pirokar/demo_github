@@ -18,7 +18,6 @@ import java.util.Arrays;
 
 import im.threads.ChatStyle;
 import im.threads.R;
-import im.threads.business.config.BaseConfig;
 import im.threads.internal.utils.ColorsHelper;
 import im.threads.internal.utils.ViewUtils;
 import im.threads.ui.config.Config;
@@ -29,7 +28,7 @@ public final class BottomSheetView extends LinearLayout {
     private Button file;
     private Button gallery;
     private Button send;
-    private ChatStyle chatStyle = ((Config)BaseConfig.instance).getChatStyle();
+    private ChatStyle chatStyle = Config.getInstance().getChatStyle();
 
     public BottomSheetView(Context context) {
         super(context);

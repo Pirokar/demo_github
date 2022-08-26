@@ -24,9 +24,8 @@ import java.util.Arrays;
 
 import im.threads.ChatStyle;
 import im.threads.R;
-import im.threads.business.config.BaseConfig;
-import im.threads.ui.utils.FileHelper;
 import im.threads.ui.config.Config;
+import im.threads.ui.utils.FileHelper;
 
 /**
  * Dialog fragment for picking folder
@@ -43,7 +42,7 @@ public final class FilePickerFragment extends DialogFragment
     private SelectedListener mSelectedListener;
     private FileFilter mFileFilter;
     private boolean isFilterEnabled;
-    private ChatStyle chatStyle = ((Config)BaseConfig.instance).getChatStyle();
+    private ChatStyle chatStyle = Config.getInstance().getChatStyle();
 
     public static FilePickerFragment newInstance() {
         FilePickerFragment fragment = new FilePickerFragment();

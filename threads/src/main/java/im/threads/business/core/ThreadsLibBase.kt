@@ -138,8 +138,8 @@ open class ThreadsLibBase protected constructor() {
             val isUIMode = BaseConfig.instance != null
 
             if (!isUIMode) {
-                configBuilder.build()
-                createInstance()
+                BaseConfig.instance = configBuilder.build()
+                createLibInstance()
                 BaseConfig.instance.loggerConfig?.let { LoggerEdna.init(it) }
                 PreferencesMigrationBase().migrateMainSharedPreferences()
             }
@@ -221,7 +221,7 @@ open class ThreadsLibBase protected constructor() {
             libInstance = instance
         }
 
-        private fun createInstance() {
+        private fun createLibInstance() {
             check(libInstance == null) { "ThreadsLib has already been initialized" }
             libInstance = ThreadsLibBase()
         }

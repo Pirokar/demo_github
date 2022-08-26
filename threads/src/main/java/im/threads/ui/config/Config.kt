@@ -13,6 +13,7 @@ import im.threads.ui.styles.permissions.PermissionDescriptionType
 import im.threads.ui.utils.MetadataUi
 import im.threads.ui.utils.preferences.PrefUtilsUi
 import okhttp3.Interceptor
+import java.lang.NullPointerException
 
 class Config(
     context: Context,
@@ -115,6 +116,24 @@ class Config(
         style?.let {
             cameraPermissionDescriptionDialogStyle = it
             PrefUtilsUi.setIncomingStyle(PermissionDescriptionType.CAMERA, it)
+        }
+    }
+
+    companion object {
+        @JvmStatic
+        private var instance: Config? = null
+
+        @JvmStatic
+        fun getInstance(): Config {
+            if (instance == null) {
+                throw NullPointerException("Config instance is not initialized. Called from business logic?")
+            }
+
+            return instance!!
+        }
+
+        fun setInstance(config: Config) {
+            instance = config
         }
     }
 }
