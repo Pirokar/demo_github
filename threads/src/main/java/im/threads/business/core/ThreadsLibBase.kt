@@ -12,6 +12,7 @@ import im.threads.business.audioConverter.callback.ILoadCallback
 import im.threads.business.config.BaseConfig
 import im.threads.business.config.BaseConfigBuilder
 import im.threads.business.logger.LoggerEdna
+import im.threads.business.models.CampaignMessage
 import im.threads.business.models.FileDescription
 import im.threads.business.rest.queries.BackendApi
 import im.threads.business.rest.queries.DatastoreApi
@@ -121,6 +122,10 @@ open class ThreadsLibBase protected constructor() {
             LoggerEdna.info("You might need to initialize user first with ThreadsLib.userInfo()")
             false
         }
+    }
+
+    fun setCampaignMessage(campaignMessage: CampaignMessage) {
+        PrefUtilsBase.campaignMessage = campaignMessage
     }
 
     companion object {

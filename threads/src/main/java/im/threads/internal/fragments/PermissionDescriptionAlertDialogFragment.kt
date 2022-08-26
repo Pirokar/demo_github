@@ -25,7 +25,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.widget.TextViewCompat
 import androidx.fragment.app.DialogFragment
 import im.threads.R
-import im.threads.business.config.BaseConfig
 import im.threads.internal.utils.ColorsHelper
 import im.threads.ui.config.Config
 import im.threads.ui.styles.permissions.ContentGravity
