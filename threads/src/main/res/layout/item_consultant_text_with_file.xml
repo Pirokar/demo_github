@@ -14,7 +14,7 @@
         android:layout_marginStart="@dimen/margin_half"
         android:layout_marginTop="@dimen/consultant_photo_offset_size" />
 
-    <im.threads.internal.widget.text_view.BubbleTimeTextView
+    <im.threads.internal.widget.textView.BubbleTimeTextView
         android:id="@+id/errorText"
         style="@style/timestamp"
         android:layout_below="@+id/bubble"
@@ -106,7 +106,7 @@
                     android:textStyle="bold"
                     tools:text="Иван Петров" />
 
-                <im.threads.internal.widget.text_view.QuoteMessageTextView
+                <im.threads.internal.widget.textView.QuoteMessageTextView
                     android:id="@+id/fileSpecs"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -117,7 +117,7 @@
                     android:textColor="@color/threads_incoming_message_text"
                     tools:text="счет на оплату очень длинное название очень длинное название очень длинное название.pdf" />
 
-                <im.threads.internal.widget.text_view.QuoteTimeTextView
+                <im.threads.internal.widget.textView.QuoteTimeTextView
                     android:id="@+id/sendAt"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -150,7 +150,7 @@
                 app:last_line_extra_padding_symbols="@dimen/last_line_extra_padding_symbols"
                 tools:text="text text text text google.com" />
 
-            <im.threads.internal.widget.text_view.BubbleTimeTextView
+            <im.threads.internal.widget.textView.BubbleTimeTextView
                 android:id="@+id/timeStamp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -222,7 +222,7 @@
                     tools:text="http://my.awesome.site.com" />
             </LinearLayout>
 
-            <im.threads.internal.widget.text_view.BubbleTimeTextView
+            <im.threads.internal.widget.textView.BubbleTimeTextView
                 android:id="@+id/ogTimeStamp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

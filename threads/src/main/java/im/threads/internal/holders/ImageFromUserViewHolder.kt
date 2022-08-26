@@ -17,20 +17,20 @@ import androidx.core.graphics.BlendModeCompat
 import androidx.core.view.isVisible
 import im.threads.ChatStyle
 import im.threads.R
+import im.threads.business.imageLoading.ImageLoader.Companion.get
+import im.threads.business.imageLoading.ImageModifications
+import im.threads.business.models.FileDescription
+import im.threads.business.models.MessageState
+import im.threads.business.models.UserPhrase
+import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.internal.Config
-import im.threads.internal.imageLoading.ImageLoader.Companion.get
-import im.threads.internal.imageLoading.ImageModifications.MaskedModification
-import im.threads.internal.model.AttachmentStateEnum
-import im.threads.internal.model.FileDescription
-import im.threads.internal.model.MessageState
-import im.threads.internal.model.UserPhrase
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 class ImageFromUserViewHolder(
     parent: ViewGroup,
-    private val maskedTransformation: MaskedModification
+    private val maskedTransformation: ImageModifications.MaskedModification
 ) :
     BaseHolder(
         LayoutInflater.from(parent.context).inflate(R.layout.item_user_image_from, parent, false)

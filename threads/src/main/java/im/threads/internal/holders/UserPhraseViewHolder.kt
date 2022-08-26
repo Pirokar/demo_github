@@ -22,23 +22,23 @@ import com.google.android.material.slider.Slider
 import im.threads.R
 import im.threads.internal.Config
 import im.threads.internal.formatters.RussianFormatSymbols
-import im.threads.internal.imageLoading.ImageLoader.Companion.get
-import im.threads.internal.model.AttachmentStateEnum
-import im.threads.internal.model.CampaignMessage
-import im.threads.internal.model.FileDescription
-import im.threads.internal.model.MessageState
-import im.threads.internal.model.Quote
-import im.threads.internal.model.UserPhrase
-import im.threads.internal.utils.FileUtils
-import im.threads.internal.utils.FileUtils.isImage
-import im.threads.internal.utils.FileUtils.isVoiceMessage
+import im.threads.business.imageLoading.ImageLoader.Companion.get
+import im.threads.business.models.CampaignMessage
+import im.threads.business.models.FileDescription
+import im.threads.business.models.MessageState
+import im.threads.business.models.Quote
+import im.threads.business.models.UserPhrase
+import im.threads.business.models.enums.AttachmentStateEnum
+import im.threads.business.utils.FileUtils
+import im.threads.business.utils.FileUtils.isImage
+import im.threads.business.utils.FileUtils.isVoiceMessage
 import im.threads.internal.utils.UrlUtils
 import im.threads.internal.utils.ViewUtils
 import im.threads.internal.views.CircularProgressButton
 import im.threads.internal.views.VoiceTimeLabelFormatter
 import im.threads.internal.views.formatAsDuration
-import im.threads.internal.widget.text_view.BubbleMessageTextView
-import im.threads.internal.widget.text_view.BubbleTimeTextView
+import im.threads.internal.widget.textView.BubbleMessageTextView
+import im.threads.internal.widget.textView.BubbleTimeTextView
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -218,11 +218,12 @@ class UserPhraseViewHolder(parent: ViewGroup) :
     private fun showPhrase(phrase: String) {
         phraseTextView.isVisible = true
         phraseTextView.bindTimestampView(timeStampTextView)
-        val url = UrlUtils.extractLink(phrase)
         highlightClientText(phraseTextView, phrase)
-        if (url != null) {
-            bindOGData(ogDataLayout, timeStampTextView, url)
-        } else {
+        UrlUtils.extractLink(phrase)?.let {
+            it.link?.let { link ->
+                bindOGData(ogDataLayout, timeStampTextView, link)
+            }
+        } ?: run {
             hideOGView(ogDataLayout, timeStampTextView)
         }
     }

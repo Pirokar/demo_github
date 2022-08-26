@@ -24,13 +24,6 @@ import im.threads.business.models.FileDescription
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.utils.FileUtils
 import im.threads.internal.Config
-import im.threads.internal.imageLoading.ImageLoader
-import im.threads.internal.imageLoading.ImageModifications
-import im.threads.internal.imageLoading.loadImage
-import im.threads.internal.model.AttachmentStateEnum
-import im.threads.internal.model.ConsultPhrase
-import im.threads.internal.model.FileDescription
-import im.threads.internal.utils.FileUtils
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

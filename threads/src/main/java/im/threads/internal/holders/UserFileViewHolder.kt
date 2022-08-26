@@ -18,11 +18,11 @@ import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.core.view.isVisible
 import im.threads.R
+import im.threads.business.models.FileDescription
+import im.threads.business.models.MessageState
+import im.threads.business.models.enums.AttachmentStateEnum
+import im.threads.business.utils.FileUtils.getFileName
 import im.threads.internal.Config
-import im.threads.internal.model.AttachmentStateEnum
-import im.threads.internal.model.FileDescription
-import im.threads.internal.model.MessageState
-import im.threads.internal.utils.FileUtils.getFileName
 import im.threads.internal.views.CircularProgressButton
 import java.text.SimpleDateFormat
 import java.util.Date

@@ -72,7 +72,7 @@
 
         </FrameLayout>
 
-        <im.threads.internal.widget.text_view.BubbleTimeTextView
+        <im.threads.internal.widget.textView.BubbleTimeTextView
             android:id="@+id/timeStamp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -88,7 +88,7 @@
 
     </FrameLayout>
 
-    <im.threads.internal.widget.text_view.BubbleTimeTextView
+    <im.threads.internal.widget.textView.BubbleTimeTextView
         android:id="@+id/errorText"
         style="@style/timestamp"
         android:layout_gravity="end"

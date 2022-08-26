@@ -61,7 +61,7 @@
             android:textColor="@color/threads_outgoing_message_text"
             tools:text="счетddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.pdf" />
 
-        <im.threads.internal.widget.text_view.BubbleMessageTextView
+        <im.threads.internal.widget.textView.BubbleMessageTextView
             android:id="@+id/fileSize"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -74,7 +74,7 @@
             android:textColor="@color/threads_outgoing_message_text"
             android:textSize="@dimen/error_text_size" />
 
-        <im.threads.internal.widget.text_view.BubbleTimeTextView
+        <im.threads.internal.widget.textView.BubbleTimeTextView
             android:id="@+id/timeStamp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
