@@ -2456,6 +2456,7 @@ public final class ChatFragment extends BaseFragment implements
             }
             binding.quoteText.setVisibility(View.VISIBLE);
             binding.quotePast.setVisibility(View.VISIBLE);
+            binding.quotePast.setImageResource(style.quoteAttachmentIconResId);
             binding.quoteButtonPlayPause.setVisibility(View.GONE);
             binding.quoteSlider.setVisibility(View.GONE);
             binding.quoteDuration.setVisibility(View.GONE);
