@@ -14,7 +14,7 @@ import java.net.URL
 import javax.net.ssl.HttpsURLConnection
 import kotlin.math.floor
 
-const val DOWNLOAD_PROGRESS_DELTA_TIME_MILLIS = 100
+const val DOWNLOAD_PROGRESS_DELTA_TIME_MILLIS = 50
 const val MAX_DOWNLOAD_PROGRESS = 100
 const val DELTA_DOWNLOAD_PROGRESS = 2
 
@@ -77,12 +77,12 @@ class FileDownloader(
                     fileOutputStream.write(buffer, 0, tempLength)
                     bytesRead += tempLength.toLong()
                     if (System.currentTimeMillis() > lastReadTime + DOWNLOAD_PROGRESS_DELTA_TIME_MILLIS) {
-                        length?.let {
+                        if (length != null) {
                             val progress =
-                                floor(bytesRead.toDouble() / it * MAX_DOWNLOAD_PROGRESS).toInt()
+                                floor(bytesRead.toDouble() / length * MAX_DOWNLOAD_PROGRESS).toInt()
                             lastReadTime = System.currentTimeMillis()
                             downloadLister.onProgress(progress.toDouble())
-                        } ?: run {
+                        } else {
                             lastReadProgress += DELTA_DOWNLOAD_PROGRESS
                             if (lastReadProgress >= MAX_DOWNLOAD_PROGRESS) {
                                 lastReadProgress = 0

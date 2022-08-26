@@ -40,7 +40,7 @@ class ImageFromUserViewHolder(
     private val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
 
     private val loaderLayout: LinearLayout =
-        (itemView.findViewById(R.id.loaderLayout) as LinearLayout).also { applyBubbleLayoutStyle(it) }
+        itemView.findViewById<LinearLayout>(R.id.loaderLayout).also { applyBubbleLayoutStyle(it) }
     private val mImage: ImageView =
         itemView.findViewById<ImageView>(R.id.image).also { applyImageParams(it) }
     private val mTimeStampTextView = itemView.findViewById<TextView>(R.id.timeStamp).apply {
