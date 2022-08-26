@@ -26,7 +26,6 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import im.threads.ChatStyle
 import im.threads.R
-import im.threads.business.config.BaseConfig
 import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.imageLoading.ImageModifications
 import im.threads.business.logger.LoggerEdna

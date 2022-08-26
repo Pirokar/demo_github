@@ -16,7 +16,7 @@ import java.security.GeneralSecurityException
 import java.util.UUID
 
 @SuppressLint("ApplySharedPref")
-object PrefUtilsBase {
+internal object PrefUtilsBase {
     private val keys = PrefUtilsBaseKeys()
 
     @JvmStatic

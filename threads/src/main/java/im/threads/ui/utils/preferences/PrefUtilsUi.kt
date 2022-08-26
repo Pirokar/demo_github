@@ -10,7 +10,7 @@ import im.threads.ui.styles.permissions.PermissionDescriptionDialogStyle
 import im.threads.ui.styles.permissions.PermissionDescriptionType
 import java.io.Serializable
 
-object PrefUtilsUi {
+internal object PrefUtilsUi {
     private val keys = PrefUtilsKeys()
 
     @JvmStatic

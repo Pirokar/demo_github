@@ -9,7 +9,6 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import im.threads.ChatStyle
 import im.threads.R
-import im.threads.business.config.BaseConfig
 import im.threads.business.imageLoading.ImageModifications
 import im.threads.business.imageLoading.loadImage
 import im.threads.business.utils.FileUtils
