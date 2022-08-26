@@ -6,7 +6,6 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 
 import im.threads.ChatStyle;
-import im.threads.business.config.BaseConfig;
 import im.threads.ui.config.Config;
 
 public class CustomFontTextView extends androidx.appcompat.widget.AppCompatTextView {
@@ -29,7 +28,7 @@ public class CustomFontTextView extends androidx.appcompat.widget.AppCompatTextV
     }
 
     public void setTypefaceView(Context context) {
-        ChatStyle style = ((Config)BaseConfig.instance).getChatStyle();
+        ChatStyle style = Config.getInstance().getChatStyle();
         if (!TextUtils.isEmpty(style.defaultFontRegular)) {
             setTypeface(Typeface.createFromAsset(context.getAssets(), style.defaultFontRegular));
         }

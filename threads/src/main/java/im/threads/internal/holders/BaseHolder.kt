@@ -46,7 +46,7 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
     private val openGraphParser: OpenGraphParser = OpenGraphParserJsoupImpl()
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
-    val config: Config by lazy { BaseConfig.instance as Config }
+    val config: Config by lazy { Config.getInstance() }
     val style = config.getChatStyle()
 
     protected fun subscribe(event: Disposable): Boolean {

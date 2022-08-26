@@ -23,7 +23,7 @@ public final class BottomGalleryAdapter extends RecyclerView.Adapter<BottomGalle
     private List<BottomGalleryItem> list;
     private List<Uri> mChosenItems = new ArrayList<>();
     private OnChooseItemsListener mOnChooseItemsListener;
-    private Config config = (Config)BaseConfig.instance;
+    private Config config = Config.getInstance();
 
     public BottomGalleryAdapter(List<BottomGalleryItem> list, OnChooseItemsListener listener) {
         this.list = list;

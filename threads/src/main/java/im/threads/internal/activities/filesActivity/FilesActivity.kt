@@ -24,7 +24,6 @@ import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import im.threads.ChatStyle
 import im.threads.R
-import im.threads.business.config.BaseConfig
 import im.threads.business.models.FileDescription
 import im.threads.business.secureDatabase.DatabaseHolder
 import im.threads.databinding.ActivityFilesAndMediaBinding
@@ -42,11 +41,11 @@ internal class FilesActivity : BaseActivity(), OnFileClick {
     private val binding: ActivityFilesAndMediaBinding by lazy {
         ActivityFilesAndMediaBinding.inflate(layoutInflater)
     }
-    private val filesViewModel: FilesViewModel by viewModels {
-        FilesViewModel.Factory(BaseConfig.instance.context, DatabaseHolder.getInstance())
-    }
     private val config: Config by lazy {
-        BaseConfig.instance as Config
+        Config.getInstance()
+    }
+    private val filesViewModel: FilesViewModel by viewModels {
+        FilesViewModel.Factory(config.context, DatabaseHolder.getInstance())
     }
     private var filesAndMediaAdapter: FilesAndMediaAdapter? = null
 

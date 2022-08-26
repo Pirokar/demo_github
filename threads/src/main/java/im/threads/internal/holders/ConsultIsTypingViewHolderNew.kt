@@ -22,7 +22,7 @@ import im.threads.ui.config.Config
 class ConsultIsTypingViewHolderNew(parent: ViewGroup) : RecyclerView.ViewHolder(
     LayoutInflater.from(parent.context).inflate(R.layout.item_consult_typing, parent, false)
 ) {
-    private val config: Config by lazy { BaseConfig.instance as Config }
+    private val config: Config by lazy { Config.getInstance() }
 
     private val style: ChatStyle = config.getChatStyle()
 

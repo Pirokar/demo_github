@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import im.threads.ChatStyle;
 import im.threads.R;
-import im.threads.business.config.BaseConfig;
 import im.threads.internal.model.ScheduleInfo;
 import im.threads.ui.config.Config;
 
@@ -28,7 +27,7 @@ public final class ScheduleInfoViewHolder extends RecyclerView.ViewHolder {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_schedule_info, parent, false));
         icon = itemView.findViewById(R.id.schedule_icon);
         text = itemView.findViewById(R.id.schedule_text);
-        style = ((Config)BaseConfig.instance).getChatStyle();
+        style = Config.getInstance().getChatStyle();
         text.setTextColor(ContextCompat.getColor(itemView.getContext(), style.scheduleMessageTextColorResId));
         icon.setImageResource(style.scheduleMessageIconResId);
     }
