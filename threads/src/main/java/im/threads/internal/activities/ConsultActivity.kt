@@ -16,7 +16,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.isVisible
 import im.threads.R
-import im.threads.business.config.BaseConfig
 import im.threads.business.imageLoading.loadImage
 import im.threads.business.utils.FileUtils.convertRelativeUrlToAbsolute
 import im.threads.databinding.ActivityConsultPageBinding

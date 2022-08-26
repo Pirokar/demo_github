@@ -40,7 +40,6 @@ import im.threads.android.utils.PrefUtilsApp.getTheme
 import im.threads.android.utils.PrefUtilsApp.storeCards
 import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.CampaignMessage
-import im.threads.business.utils.preferences.PrefUtilsBase
 import im.threads.ui.core.ThreadsLib
 import im.threads.ui.styles.permissions.PermissionDescriptionType
 import im.threads.view.ChatActivity
@@ -342,7 +341,7 @@ class MainActivity : AppCompatActivity(), EditCardDialogActionsListener, YesNoDi
 
     fun goToChatWithQuote() {
         val campaignMessage = getTestCampaignMessage()
-        PrefUtilsBase.campaignMessage = campaignMessage
+        ThreadsLib.getInstance().setCampaignMessage(campaignMessage)
         val intent = prepareBottomNavigationActivityIntent("dte.chc.mobile3.android")
         intent?.putExtra(ARG_NEEDS_SHOW_CHAT, true)
         startActivity(intent)
