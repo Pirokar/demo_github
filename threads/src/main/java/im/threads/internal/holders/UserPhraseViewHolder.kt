@@ -22,6 +22,7 @@ import com.google.android.material.slider.Slider
 import im.threads.R
 import im.threads.business.imageLoading.ImageLoader.Companion.get
 import im.threads.business.models.CampaignMessage
+import im.threads.business.models.ChatItem
 import im.threads.business.models.FileDescription
 import im.threads.business.models.MessageState
 import im.threads.business.models.Quote
@@ -39,18 +40,19 @@ import im.threads.internal.views.VoiceTimeLabelFormatter
 import im.threads.internal.views.formatAsDuration
 import im.threads.internal.widget.textView.BubbleMessageTextView
 import im.threads.internal.widget.textView.BubbleTimeTextView
+import io.reactivex.subjects.PublishSubject
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import kotlin.math.min
 
 /** layout/item_user_text_with_file.xml */
-class UserPhraseViewHolder(parent: ViewGroup) :
+class UserPhraseViewHolder(parent: ViewGroup, highlightingStream: PublishSubject<ChatItem>) :
     VoiceMessageBaseHolder(
         LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_user_text_with_file, parent, false)
+            .inflate(R.layout.item_user_text_with_file, parent, false),
+        highlightingStream
     ) {
-
     private val style = Config.instance.chatStyle
     private val sdf = SimpleDateFormat("HH:mm", Locale.US)
 
@@ -165,15 +167,9 @@ class UserPhraseViewHolder(parent: ViewGroup) :
         onLongClickListener: OnLongClickListener?,
         isChosen: Boolean
     ) {
+        subscribeForHighlighting(userPhrase, rootLayout)
         rootLayout.setOnLongClickListener(onLongClickListener)
-        rootLayout.apply {
-            setBackgroundColor(
-                ContextCompat.getColor(
-                    context,
-                    if (isChosen) style.chatHighlightingColor else R.color.threads_transparent
-                )
-            )
-        }
+        changeHighlighting(isChosen)
         val phrase =
             if (userPhrase.phraseText != null) userPhrase.phraseText.trim { it <= ' ' } else null
         val timeStamp = userPhrase.timeStamp

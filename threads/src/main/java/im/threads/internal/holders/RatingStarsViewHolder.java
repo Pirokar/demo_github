@@ -27,7 +27,10 @@ public final class RatingStarsViewHolder extends BaseHolder {
     private ChatStyle style;
 
     public RatingStarsViewHolder(ViewGroup parent) {
-        super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_rate_stars, parent, false));
+        super(
+                LayoutInflater.from(parent.getContext()).inflate(R.layout.item_rate_stars, parent, false),
+                null
+        );
         topSeparator = itemView.findViewById(R.id.top_separator);
         bottomSeparator = itemView.findViewById(R.id.bottom_separator);
         rating = itemView.findViewById(R.id.mark);

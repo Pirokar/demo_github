@@ -20,6 +20,7 @@ import im.threads.R
 import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.imageLoading.loadImage
 import im.threads.business.logger.LoggerEdna
+import im.threads.business.models.ChatItem
 import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.enums.ErrorStateEnum
 import im.threads.business.ogParser.OGData
@@ -33,18 +34,26 @@ import im.threads.internal.utils.UrlUtils
 import im.threads.internal.utils.ViewUtils
 import im.threads.internal.views.CircularProgressButton
 import im.threads.internal.widget.textView.BubbleMessageTextView
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
+import io.reactivex.subjects.PublishSubject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
-
-    private var compositeDisposable: CompositeDisposable? = CompositeDisposable()
+abstract class BaseHolder internal constructor(
+    itemView: View,
+    private val highlightingStream: PublishSubject<ChatItem>? = null
+) : RecyclerView.ViewHolder(itemView) {
+    private var currentChatItem: ChatItem? = null
+    private var viewsToHighlight: Array<out View>? = null
+    private var isThisItemHighlighted = false
+    private var compositeDisposable: CompositeDisposable = CompositeDisposable()
     private val linksHighlighter: LinksHighlighter = LinkifyLinksHighlighter()
     private val openGraphParser: OpenGraphParser = OpenGraphParserJsoupImpl()
+    private val style = Config.instance.chatStyle
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
     protected val rotateAnim = RotateAnimation(
         0f,
@@ -54,6 +63,33 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
         Animation.RELATIVE_TO_SELF,
         0.5f
     )
+
+    /**
+     * Подписывается на уведомления о новом подсвеченном элементе
+     * @param chatItem новый подсвеченный элемент
+     */
+    fun subscribeForHighlighting(chatItem: ChatItem, vararg viewsToHighlight: View) {
+        currentChatItem = chatItem
+        this.viewsToHighlight = viewsToHighlight
+        if (highlightingStream != null) {
+            compositeDisposable.add(
+                highlightingStream.observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({ streamChatItem ->
+                        val isOurItem = currentChatItem?.isTheSameItem(streamChatItem) ?: false
+                        val needToHighlight = (isOurItem && !isThisItemHighlighted) ||
+                            (isThisItemHighlighted && !isOurItem)
+                        if (needToHighlight) {
+                            changeHighlighting(isOurItem)
+                        }
+                    }, {
+                        LoggerEdna.error("Error when trying to get highlighted item", it)
+                    })
+            )
+            /*compositeDisposable?.add(
+
+            )*/
+        }
+    }
 
     protected fun subscribe(event: Disposable): Boolean {
         if (compositeDisposable?.isDisposed != false) {
@@ -74,7 +110,7 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
     }
 
     fun setUpProgressButton(button: CircularProgressButton) {
-        val chatStyle = Config.instance.chatStyle
+        val chatStyle = style
         val downloadButtonTintResId = if (chatStyle.chatBodyIconsTint == 0) {
             chatStyle.downloadButtonTintResId
         } else {
@@ -89,10 +125,25 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
     }
 
     fun onClear() {
-        compositeDisposable?.apply {
-            dispose()
+        compositeDisposable.clear()
+    }
+
+    /**
+     * Меняет подсветку бэкраунда при выделении
+     * @param isHighlighted информация о том, должен ли быть подсвечен бэкграунд у сообщения
+     */
+    open fun changeHighlighting(isHighlighted: Boolean) {
+        val views = viewsToHighlight ?: arrayOf(itemView.rootView)
+        views.forEach {
+            it.setBackgroundColor(
+                ContextCompat.getColor(
+                    itemView.context,
+                    if (isHighlighted) style.chatHighlightingColor else R.color.threads_transparent
+                )
+            )
         }
-        compositeDisposable = null
+
+        isThisItemHighlighted = isHighlighted
     }
 
     /**
@@ -109,7 +160,7 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
             textView.setText(phrase.phraseText, TextView.BufferType.NORMAL)
             setTextWithHighlighting(
                 textView,
-                Config.instance.chatStyle.incomingMarkdownConfiguration.isLinkUnderlined
+                style.incomingMarkdownConfiguration.isLinkUnderlined
             )
         } else {
             (textView as? BubbleMessageTextView)?.let {
@@ -131,7 +182,7 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
         textView.setText(phrase, TextView.BufferType.NORMAL)
         setTextWithHighlighting(
             textView,
-            Config.instance.chatStyle.outgoingMarkdownConfiguration.isLinkUnderlined
+            style.outgoingMarkdownConfiguration.isLinkUnderlined
         )
     }
 
@@ -249,7 +300,7 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
             ogImage.visibility = View.VISIBLE
             ogImage.loadImage(
                 ogData.imageUrl,
-                errorDrawableResId = Config.instance.chatStyle.imagePlaceholder,
+                errorDrawableResId = style.imagePlaceholder,
                 isExternalImage = true,
                 callback = object : ImageLoader.ImageLoaderCallback {
                     override fun onImageLoadError() {
@@ -310,9 +361,9 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
             itemView.context,
             view,
             if (isIncomingMessage) {
-                Config.instance.chatStyle.incomingMessageLoaderColor
+                style.incomingMessageLoaderColor
             } else {
-                Config.instance.chatStyle.outgoingMessageLoaderColor
+                style.outgoingMessageLoaderColor
             }
         )
         rotateAnim.duration = 3000

@@ -30,7 +30,10 @@ public final class RatingThumbsViewHolder extends BaseHolder {
     private ChatStyle style;
 
     public RatingThumbsViewHolder(ViewGroup parent) {
-        super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_rate_thumbs, parent, false));
+        super(
+                LayoutInflater.from(parent.getContext()).inflate(R.layout.item_rate_thumbs, parent, false),
+                null
+        );
         topSeparator = itemView.findViewById(R.id.top_separator);
         bottomSeparator = itemView.findViewById(R.id.bottom_separator);
         thumbUp = itemView.findViewById(R.id.thumb_up);

@@ -36,7 +36,10 @@ public final class RatingStarsSentViewHolder extends BaseHolder {
     private View mBubble;
 
     public RatingStarsSentViewHolder(ViewGroup parent) {
-        super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_rate_stars_sent, parent, false));
+        super(
+                LayoutInflater.from(parent.getContext()).inflate(R.layout.item_rate_stars_sent, parent, false),
+                null
+        );
         star = itemView.findViewById(R.id.star);
         mTimeStampTextView = itemView.findViewById(R.id.timestamp);
         mHeader = itemView.findViewById(R.id.header);

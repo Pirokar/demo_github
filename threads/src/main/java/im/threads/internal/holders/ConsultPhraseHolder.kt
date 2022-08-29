@@ -14,7 +14,6 @@ import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.core.view.isVisible
@@ -22,6 +21,7 @@ import im.threads.R
 import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.imageLoading.ImageModifications
 import im.threads.business.imageLoading.loadImage
+import im.threads.business.models.ChatItem
 import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.FileDescription
 import im.threads.business.models.Quote
@@ -35,14 +35,16 @@ import im.threads.internal.utils.ViewUtils
 import im.threads.internal.views.CircularProgressButton
 import im.threads.internal.widget.textView.BubbleMessageTextView
 import im.threads.internal.widget.textView.BubbleTimeTextView
+import io.reactivex.subjects.PublishSubject
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 /** layout/item_consultant_text_with_file.xml */
-class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
+class ConsultPhraseHolder(parent: ViewGroup, highlightingStream: PublishSubject<ChatItem>) : BaseHolder(
     LayoutInflater.from(parent.context)
-        .inflate(R.layout.item_consultant_text_with_file, parent, false)
+        .inflate(R.layout.item_consultant_text_with_file, parent, false),
+    highlightingStream
 ) {
     private val style = Config.instance.chatStyle
     private val timeStampSdf = SimpleDateFormat("HH:mm", Locale.getDefault())
@@ -147,6 +149,7 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
         onRowLongClickListener: OnLongClickListener,
         onAvatarClickListener: View.OnClickListener
     ) {
+        subscribeForHighlighting(consultPhrase, rootLayout)
         ViewUtils.setClickListener(itemView as ViewGroup, onRowLongClickListener)
         val timeText = timeStampSdf.format(Date(consultPhrase.timeStamp))
         timeStampTextView.text = timeText
@@ -187,14 +190,7 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
 
         consultAvatar.setOnClickListener(onAvatarClickListener)
         showAvatar(consultPhrase)
-        rootLayout.apply {
-            setBackgroundColor(
-                ContextCompat.getColor(
-                    context,
-                    if (highlighted) style.chatHighlightingColor else R.color.threads_transparent
-                )
-            )
-        }
+        changeHighlighting(highlighted)
         if (consultPhrase.fileDescription != null || consultPhrase.quote != null) {
             phraseFrame.layoutParams.width = FrameLayout.LayoutParams.MATCH_PARENT
         } else {

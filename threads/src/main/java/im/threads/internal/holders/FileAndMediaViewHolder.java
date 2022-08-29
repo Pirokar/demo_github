@@ -35,7 +35,10 @@ public final class FileAndMediaViewHolder extends BaseHolder {
     private Context context;
 
     public FileAndMediaViewHolder(ViewGroup parent) {
-        super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_file_and_media, parent, false));
+        super(
+                LayoutInflater.from(parent.getContext()).inflate(R.layout.item_file_and_media, parent, false),
+                null
+        );
         context = parent.getContext();
 
         mImageButton = itemView.findViewById(R.id.file_button);

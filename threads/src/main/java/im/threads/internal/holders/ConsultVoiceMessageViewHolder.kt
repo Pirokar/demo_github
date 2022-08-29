@@ -11,7 +11,6 @@ import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.core.view.isVisible
@@ -22,6 +21,7 @@ import im.threads.business.formatters.SpeechStatus
 import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.imageLoading.ImageModifications
 import im.threads.business.imageLoading.loadImage
+import im.threads.business.models.ChatItem
 import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.FileDescription
 import im.threads.business.models.enums.AttachmentStateEnum
@@ -30,12 +30,17 @@ import im.threads.internal.Config
 import im.threads.internal.views.VoiceTimeLabelFormatter
 import im.threads.internal.views.formatAsDuration
 import im.threads.internal.widget.textView.QuoteMessageTextView
+import io.reactivex.subjects.PublishSubject
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class ConsultVoiceMessageViewHolder(parent: ViewGroup) : VoiceMessageBaseHolder(
-    LayoutInflater.from(parent.context).inflate(R.layout.item_consult_voice_message, parent, false)
+class ConsultVoiceMessageViewHolder(
+    parent: ViewGroup,
+    highlightingStream: PublishSubject<ChatItem>
+) : VoiceMessageBaseHolder(
+    LayoutInflater.from(parent.context).inflate(R.layout.item_consult_voice_message, parent, false),
+    highlightingStream
 ) {
     private val style: ChatStyle = Config.instance.chatStyle
     private val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
@@ -126,6 +131,7 @@ class ConsultVoiceMessageViewHolder(parent: ViewGroup) : VoiceMessageBaseHolder(
         onChangeListener: Slider.OnChangeListener,
         onSliderTouchListener: Slider.OnSliderTouchListener
     ) {
+        subscribeForHighlighting(consultPhrase, rootLayout)
         consultAvatar.setOnClickListener(onAvatarClickListener)
         consultPhrase.fileDescription?.let {
             fileDescription = it
@@ -160,14 +166,7 @@ class ConsultVoiceMessageViewHolder(parent: ViewGroup) : VoiceMessageBaseHolder(
             timeStampTextView.text = sdf.format(Date(consultPhrase.timeStamp))
             showAvatar(consultPhrase)
 
-            rootLayout.apply {
-                setBackgroundColor(
-                    ContextCompat.getColor(
-                        viewGroup.context,
-                        if (highlighted) style.chatHighlightingColor else R.color.threads_transparent
-                    )
-                )
-            }
+            changeHighlighting(highlighted)
         }
     }
 
