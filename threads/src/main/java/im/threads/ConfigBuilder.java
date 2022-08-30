@@ -55,6 +55,8 @@ public final class ConfigBuilder {
     private Boolean isNewChatCenterApi = false;
     @Nullable
     private LoggerConfig loggerConfig = null;
+    @Nullable
+    private ChatStyle chatStyle = null;
 
     private RequestConfig requestConfig = new RequestConfig();
     private List<Integer> certificateRawResIds = Collections.emptyList();
@@ -133,6 +135,11 @@ public final class ConfigBuilder {
         return this;
     }
 
+    public ConfigBuilder applyChatStyle(ChatStyle chatStyle) {
+        this.chatStyle = chatStyle;
+        return this;
+    }
+
     public ConfigBuilder enableLogging(LoggerConfig config) {
         this.loggerConfig = config;
         return this;
@@ -151,6 +158,7 @@ public final class ConfigBuilder {
                 pendingIntentCreator,
                 unreadMessagesCountListener,
                 networkInterceptor,
+                chatStyle,
                 isDebugLoggingEnabled,
                 historyLoadingCount,
                 surveyCompletionDelay,
