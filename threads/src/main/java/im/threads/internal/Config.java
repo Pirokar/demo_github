@@ -99,6 +99,7 @@ public final class Config {
                   @NonNull ThreadsLib.PendingIntentCreator pendingIntentCreator,
                   @Nullable ThreadsLib.UnreadMessagesCountListener unreadMessagesCountListener,
                   @Nullable Interceptor networkInterceptor,
+                  @Nullable ChatStyle chatStyle,
                   boolean isDebugLoggingEnabled,
                   int historyLoadingCount,
                   int surveyCompletionDelay,
@@ -108,6 +109,7 @@ public final class Config {
         this.pendingIntentCreator = pendingIntentCreator;
         this.unreadMessagesCountListener = unreadMessagesCountListener;
         this.networkInterceptor = networkInterceptor;
+        this.chatStyle = chatStyle;
         this.isDebugLoggingEnabled = isDebugLoggingEnabled;
         this.newChatCenterApi = getIsNewChatCenterApi(isNewChatCenterApi);
         this.loggerConfig = loggerConfig;
