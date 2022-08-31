@@ -9,7 +9,9 @@ data class OGData(
     var imageUrl: String = "",
     var url: String = "",
     var siteName: String = "",
-    var type: String = ""
+    var type: String = "",
+    var parsedUrl: String = "",
+    var messageText: String? = null
 ) {
     fun isEmpty() = title.isEmpty() && description.isEmpty() && url.isEmpty()
 

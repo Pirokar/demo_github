@@ -52,19 +52,22 @@ class OpenGraphParserJsoupImpl : OpenGraphParser {
      * Метод для запроса og data. Возвращает распарсенные данные. Работает синхронно,
      *  необходимо обернуть в фоновый поток
      * @param urlToParse ссылка на сайт, где необходимо запросить Open Graph
+     * @param messageText текст всего сообщения
      */
-    override fun getContents(urlToParse: String): OGData? {
-        val hostAndPath = Uri.parse(urlToParse)?.let {
-            var host = it.host ?: ""
-            if (host.contains("www.")) {
-                host = host.replace("www.", "")
-            }
-            "$host${it.path ?: ""}${it.query?.let { query -> "?$query" } ?: ""}"
-        } ?: urlToParse
+    override fun getContents(urlToParse: String?, messageText: String?): OGData {
+        val content = getContents(urlToParse)
+        return content?.also {
+            it.messageText = messageText
+        } ?: OGData().also { it.messageText = messageText }
+    }
 
-        existedOpenGraphs[hostAndPath]?.let {
-            return it
-        }
+    /**
+     * Метод для запроса og data онлайн. Возвращает распарсенные данные. Работает синхронно,
+     *  необходимо обернуть в фоновый поток
+     * @param urlToParse ссылка на сайт, где необходимо запросить Open Graph
+     */
+    override fun getContents(urlToParse: String?): OGData? {
+        if (urlToParse == null) return null
 
         return try {
             val response = Jsoup.connect(urlToParse)
@@ -75,15 +78,39 @@ class OpenGraphParserJsoupImpl : OpenGraphParser {
                 .timeout(12000)
                 .followRedirects(true)
                 .execute()
-            val doc = response.parse()
-            val result = organizeFetchedData(doc)
 
-            existedOpenGraphs[hostAndPath] = result
+            val doc = response.parse()
+            val result = organizeFetchedData(doc).apply {
+                parsedUrl = urlToParse
+            }
+            existedOpenGraphs[getHostAndPath(urlToParse)] = result
+
             result
         } catch (e: Exception) {
             LoggerEdna.error("Error when parsing OG data!", e)
             null
         }
+    }
+
+    /**
+     * Метод для запроса og data онлайн. Возвращает распарсенные данные из кэша, если доступны.
+     * @param urlToParse ссылка на сайт, где необходимо запросить Open Graph
+     */
+    override fun getCachedContents(urlToParse: String?): OGData? {
+        if (urlToParse == null) return null
+
+        val hostAndPath = getHostAndPath(urlToParse)
+        return existedOpenGraphs[hostAndPath]
+    }
+
+    private fun getHostAndPath(urlToParse: String?): String {
+        return Uri.parse(urlToParse)?.let {
+            var host = it.host ?: ""
+            if (host.contains("www.")) {
+                host = host.replace("www.", "")
+            }
+            "$host${it.path ?: ""}${it.query?.let { query -> "?$query" } ?: ""}"
+        } ?: urlToParse ?: ""
     }
 
     private fun organizeFetchedData(doc: Document): OGData {

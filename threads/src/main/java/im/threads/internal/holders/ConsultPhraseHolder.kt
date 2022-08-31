@@ -26,6 +26,7 @@ import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.FileDescription
 import im.threads.business.models.Quote
 import im.threads.business.models.enums.AttachmentStateEnum
+import im.threads.business.ogParser.OGDataContent
 import im.threads.business.utils.FileUtils
 import im.threads.business.utils.FileUtils.isImage
 import im.threads.internal.Config
@@ -150,6 +151,7 @@ class ConsultPhraseHolder(parent: ViewGroup, highlightingStream: PublishSubject<
         onAvatarClickListener: View.OnClickListener
     ) {
         subscribeForHighlighting(consultPhrase, rootLayout)
+        subscribeForOpenGraphData(OGDataContent(ogDataLayout, timeStampTextView, consultPhrase.phraseText))
         ViewUtils.setClickListener(itemView as ViewGroup, onRowLongClickListener)
         val timeText = timeStampSdf.format(Date(consultPhrase.timeStamp))
         timeStampTextView.text = timeText
@@ -247,13 +249,7 @@ class ConsultPhraseHolder(parent: ViewGroup, highlightingStream: PublishSubject<
         phraseTextView.bindTimestampView(timeStampTextView)
         phraseTextView.visibility = View.VISIBLE
         highlightOperatorText(phraseTextView, consultPhrase)
-        UrlUtils.extractLink(phrase)?.let {
-            it.link?.let { link ->
-                bindOGData(ogDataLayout, timeStampTextView, link)
-            }
-        } ?: run {
-            hideOGView(ogDataLayout, timeStampTextView)
-        }
+        bindOGData(phrase)
     }
 
     private fun showQuote(

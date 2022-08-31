@@ -28,12 +28,12 @@ import im.threads.business.models.MessageState
 import im.threads.business.models.Quote
 import im.threads.business.models.UserPhrase
 import im.threads.business.models.enums.AttachmentStateEnum
+import im.threads.business.ogParser.OGDataContent
 import im.threads.business.utils.FileUtils
 import im.threads.business.utils.FileUtils.isImage
 import im.threads.business.utils.FileUtils.isVoiceMessage
 import im.threads.internal.Config
 import im.threads.internal.formatters.RussianFormatSymbols
-import im.threads.internal.utils.UrlUtils
 import im.threads.internal.utils.ViewUtils
 import im.threads.internal.views.CircularProgressButton
 import im.threads.internal.views.VoiceTimeLabelFormatter
@@ -168,6 +168,7 @@ class UserPhraseViewHolder(parent: ViewGroup, highlightingStream: PublishSubject
         isChosen: Boolean
     ) {
         subscribeForHighlighting(userPhrase, rootLayout)
+        subscribeForOpenGraphData(OGDataContent(ogDataLayout, timeStampTextView, userPhrase.phraseText))
         rootLayout.setOnLongClickListener(onLongClickListener)
         changeHighlighting(isChosen)
         val phrase =
@@ -215,13 +216,7 @@ class UserPhraseViewHolder(parent: ViewGroup, highlightingStream: PublishSubject
         phraseTextView.isVisible = true
         phraseTextView.bindTimestampView(timeStampTextView)
         highlightClientText(phraseTextView, phrase)
-        UrlUtils.extractLink(phrase)?.let {
-            it.link?.let { link ->
-                bindOGData(ogDataLayout, timeStampTextView, link)
-            }
-        } ?: run {
-            hideOGView(ogDataLayout, timeStampTextView)
-        }
+        bindOGData(phrase)
     }
 
     private fun showFiles(
