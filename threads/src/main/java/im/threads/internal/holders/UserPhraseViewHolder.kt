@@ -32,7 +32,6 @@ import im.threads.business.ogParser.OGDataContent
 import im.threads.business.utils.FileUtils
 import im.threads.business.utils.FileUtils.isImage
 import im.threads.business.utils.FileUtils.isVoiceMessage
-import im.threads.internal.Config
 import im.threads.internal.formatters.RussianFormatSymbols
 import im.threads.internal.utils.ViewUtils
 import im.threads.internal.views.CircularProgressButton
@@ -53,7 +52,6 @@ class UserPhraseViewHolder(parent: ViewGroup, highlightingStream: PublishSubject
             .inflate(R.layout.item_user_text_with_file, parent, false),
         highlightingStream
     ) {
-    private val style = Config.instance.chatStyle
     private val sdf = SimpleDateFormat("HH:mm", Locale.US)
 
     @SuppressLint("SimpleDateFormat")

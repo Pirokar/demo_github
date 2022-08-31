@@ -34,7 +34,7 @@ internal open class ConsultActivity : BaseActivity() {
     private val isFilesAndMediaEnabled: Boolean
         get() {
             return try {
-                Config.instance.filesAndMediaMenuItemEnabled
+                Config.getInstance().filesAndMediaMenuItemEnabled
             } catch (exc: NullPointerException) {
                 false
             }

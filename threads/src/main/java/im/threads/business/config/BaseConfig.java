@@ -82,7 +82,7 @@ public class BaseConfig {
                       @Nullable LoggerConfig loggerConfig,
                       @Nullable UnreadMessagesCountListener unreadMessagesCountListener,
                       @Nullable Interceptor networkInterceptor,
-                      @Nullable ChatStyle chatStyle,boolean isDebugLoggingEnabled,
+                      boolean isDebugLoggingEnabled,
                       int historyLoadingCount,
                       int surveyCompletionDelay,
                       @NonNull RequestConfig requestConfig,
@@ -90,7 +90,6 @@ public class BaseConfig {
         this.context = context.getApplicationContext();
         this.unreadMessagesCountListener = unreadMessagesCountListener;
         this.networkInterceptor = networkInterceptor;
-        this.chatStyle = chatStyle;
         this.isDebugLoggingEnabled = isDebugLoggingEnabled;
         this.newChatCenterApi = getIsNewChatCenterApi(isNewChatCenterApi);
         this.loggerConfig = loggerConfig;
