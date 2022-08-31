@@ -8,12 +8,13 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import androidx.core.content.ContextCompat;
+
 import java.util.ArrayList;
 
-import androidx.core.content.ContextCompat;
 import im.threads.ChatStyle;
 import im.threads.R;
-import im.threads.internal.Config;
+import im.threads.ui.config.Config;
 
 /**
  * Контрол для показа и изменения рейтинга
@@ -37,7 +38,7 @@ public final class Rating extends LinearLayout {
     public void initRating(Context context, int ratingCount, int starsCount) {
         this.context = context;
         this.ratingCount = ratingCount;
-        style = Config.instance.getChatStyle();
+        style = Config.getInstance().getChatStyle();
         countStars = starsCount;
         LayoutInflater inflater = LayoutInflater.from(context);
         // Чтобы при повторной инициализации не было в 2 раза больше звезд

@@ -11,14 +11,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import im.threads.R;
-import im.threads.internal.Config;
 import im.threads.internal.holders.GalleryItemHolder;
 import im.threads.internal.model.MediaPhoto;
+import im.threads.ui.config.Config;
 
 public final class GalleryAdapter extends RecyclerView.Adapter<GalleryItemHolder> {
     private final List<MediaPhoto> list;
     private final List<MediaPhoto> chosenList = new ArrayList<>();
     private final OnGalleryItemClick onGalleryItemClick;
+    private final Config config = Config.getInstance();
 
     public GalleryAdapter(List<MediaPhoto> list, OnGalleryItemClick onGalleryItemClick) {
         this.list = list;
@@ -40,8 +41,8 @@ public final class GalleryAdapter extends RecyclerView.Adapter<GalleryItemHolder
                     if (photo.isChecked()) {
                         photo.setChecked(false);
                     } else {
-                        Context context = Config.instance.context;
-                        if (chosenList.size() >= Config.instance.getChatStyle().getMaxGalleryImagesCount(context)) {
+                        Context context = config.context;
+                        if (chosenList.size() >= config.getChatStyle().getMaxGalleryImagesCount(context)) {
                             Toast.makeText(context, context.getString(R.string.threads_achieve_images_count_limit_message), Toast.LENGTH_SHORT)
                                     .show();
                         } else {

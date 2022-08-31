@@ -3,8 +3,9 @@ package im.threads.internal.utils
 import android.content.Context
 import android.net.Uri
 import android.text.TextUtils
+import im.threads.business.config.BaseConfig
 import im.threads.business.logger.LoggerEdna
-import im.threads.internal.Config
+import im.threads.business.utils.preferences.PrefUtilsBase
 import java.io.BufferedInputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -37,7 +38,7 @@ class FileDownloader(
     fun download() {
         try {
             val url = URL(path)
-            Config.instance.sslSocketFactoryConfig?.let {
+            BaseConfig.instance.sslSocketFactoryConfig?.let {
                 HttpsURLConnection.setDefaultSSLSocketFactory(it.sslSocketFactory)
             }
             val urlConnection = if (url.protocol.equals("https", ignoreCase = true)) {
@@ -47,12 +48,12 @@ class FileDownloader(
             }
             try {
                 urlConnection.requestMethod = "GET"
-                urlConnection.setRequestProperty("X-Ext-Client-ID", PrefUtils.clientID)
-                if (!TextUtils.isEmpty(PrefUtils.authToken)) {
-                    urlConnection.setRequestProperty("Authorization", PrefUtils.authToken)
+                urlConnection.setRequestProperty("X-Ext-Client-ID", PrefUtilsBase.clientID)
+                if (!TextUtils.isEmpty(PrefUtilsBase.authToken)) {
+                    urlConnection.setRequestProperty("Authorization", PrefUtilsBase.authToken)
                 }
-                if (!TextUtils.isEmpty(PrefUtils.authSchema)) {
-                    urlConnection.setRequestProperty("X-Auth-Schema", PrefUtils.authSchema)
+                if (!TextUtils.isEmpty(PrefUtilsBase.authSchema)) {
+                    urlConnection.setRequestProperty("X-Auth-Schema", PrefUtilsBase.authSchema)
                 }
                 urlConnection.doOutput = false
                 urlConnection.useCaches = false

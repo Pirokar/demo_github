@@ -1,27 +1,30 @@
-package im.threads
+package im.threads.business.core
 
 import android.annotation.SuppressLint
-import android.app.PendingIntent
-import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.text.TextUtils
+import im.threads.BuildConfig
+import im.threads.R
+import im.threads.UserInfoBuilder
 import im.threads.business.audioConverter.AudioConverter
 import im.threads.business.audioConverter.callback.ILoadCallback
+import im.threads.business.config.BaseConfig
+import im.threads.business.config.BaseConfigBuilder
 import im.threads.business.logger.LoggerEdna
+import im.threads.business.models.CampaignMessage
 import im.threads.business.models.FileDescription
 import im.threads.business.rest.queries.BackendApi
 import im.threads.business.rest.queries.DatastoreApi
 import im.threads.business.utils.FileUtils.getFileSize
-import im.threads.internal.Config
+import im.threads.business.utils.preferences.PrefUtilsBase
+import im.threads.business.utils.preferences.PreferencesMigrationBase
 import im.threads.internal.chat_updates.ChatUpdateProcessor
 import im.threads.internal.controllers.ChatController
 import im.threads.internal.controllers.UnreadMessagesController
 import im.threads.internal.helpers.FileProviderHelper
 import im.threads.internal.model.UpcomingUserMessage
 import im.threads.internal.useractivity.LastUserActivityTimeCounterSingletonProvider.getLastUserActivityTimeCounter
-import im.threads.internal.utils.PrefUtils
-import im.threads.styles.permissions.PermissionDescriptionDialogStyle
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.exceptions.UndeliverableException
 import io.reactivex.plugins.RxJavaPlugins
@@ -33,7 +36,7 @@ import kotlinx.coroutines.launch
 import java.io.File
 
 @Suppress("unused")
-class ThreadsLib private constructor() {
+open class ThreadsLibBase protected constructor() {
     /**
      * @return time in seconds since the last user activity
      */
@@ -43,7 +46,7 @@ class ThreadsLib private constructor() {
             return timeCounter.getSecondsSinceLastActivity()
         }
 
-    val isUserInitialized: Boolean get() = !PrefUtils.isClientIdEmpty
+    val isUserInitialized: Boolean get() = !PrefUtilsBase.isClientIdEmpty
 
     /**
      * @return FlowableProcessor that emits responses from WebSocket connection
@@ -54,37 +57,15 @@ class ThreadsLib private constructor() {
     fun initUser(userInfoBuilder: UserInfoBuilder) {
         // it will only affect GPB, every time they try to init user we will delete user related data
         ChatController.getInstance().cleanAll()
-        PrefUtils.appMarker = userInfoBuilder.appMarker
-        PrefUtils.setNewClientId(userInfoBuilder.clientId)
-        PrefUtils.authToken = userInfoBuilder.authToken
-        PrefUtils.authSchema = userInfoBuilder.authSchema
-        PrefUtils.clientIdSignature = userInfoBuilder.clientIdSignature
-        PrefUtils.userName = userInfoBuilder.userName
-        PrefUtils.data = userInfoBuilder.clientData
-        PrefUtils.setClientIdEncrypted(userInfoBuilder.clientIdEncrypted)
+        PrefUtilsBase.appMarker = userInfoBuilder.appMarker
+        PrefUtilsBase.setNewClientId(userInfoBuilder.clientId)
+        PrefUtilsBase.authToken = userInfoBuilder.authToken
+        PrefUtilsBase.authSchema = userInfoBuilder.authSchema
+        PrefUtilsBase.clientIdSignature = userInfoBuilder.clientIdSignature
+        PrefUtilsBase.userName = userInfoBuilder.userName
+        PrefUtilsBase.data = userInfoBuilder.clientData
+        PrefUtilsBase.setClientIdEncrypted(userInfoBuilder.clientIdEncrypted)
         ChatController.getInstance().loadHistory()
-    }
-
-    fun applyChatStyle(chatStyle: ChatStyle?) {
-        Config.instance.applyChatStyle(chatStyle)
-    }
-
-    fun applyStoragePermissionDescriptionDialogStyle(
-        dialogStyle: PermissionDescriptionDialogStyle
-    ) {
-        Config.instance.applyStoragePermissionDescriptionDialogStyle(dialogStyle)
-    }
-
-    fun applyRecordAudioPermissionDescriptionDialogStyle(
-        dialogStyle: PermissionDescriptionDialogStyle
-    ) {
-        Config.instance.applyRecordAudioPermissionDescriptionDialogStyle(dialogStyle)
-    }
-
-    fun applyCameraPermissionDescriptionDialogStyle(
-        dialogStyle: PermissionDescriptionDialogStyle
-    ) {
-        Config.instance.applyCameraPermissionDescriptionDialogStyle(dialogStyle)
     }
 
     /**
@@ -92,7 +73,7 @@ class ThreadsLib private constructor() {
      */
     fun logoutClient(clientId: String) {
         if (!TextUtils.isEmpty(clientId)) {
-            Config.instance.transport.sendClientOffline(clientId)
+            BaseConfig.instance.transport.sendClientOffline(clientId)
         } else {
             LoggerEdna.info("clientId must not be empty")
         }
@@ -105,7 +86,7 @@ class ThreadsLib private constructor() {
      */
     fun sendMessage(message: String?, file: File?): Boolean {
         val fileUri = if (file != null) FileProviderHelper.getUriForFile(
-            Config.instance.context,
+            BaseConfig.instance.context,
             file
         ) else null
         return sendMessage(message, fileUri)
@@ -118,11 +99,11 @@ class ThreadsLib private constructor() {
      */
     fun sendMessage(message: String?, fileUri: Uri?): Boolean {
         val chatController = ChatController.getInstance()
-        return if (!PrefUtils.isClientIdEmpty) {
+        return if (!PrefUtilsBase.isClientIdEmpty) {
             var fileDescription: FileDescription? = null
             if (fileUri != null) {
                 fileDescription = FileDescription(
-                    Config.instance.context.getString(R.string.threads_I),
+                    BaseConfig.instance.context.getString(R.string.threads_I),
                     fileUri,
                     getFileSize(fileUri),
                     System.currentTimeMillis()
@@ -143,16 +124,16 @@ class ThreadsLib private constructor() {
         }
     }
 
-    interface PendingIntentCreator {
-        fun create(context: Context, appMarker: String?): PendingIntent?
-    }
-
-    interface UnreadMessagesCountListener {
-        fun onUnreadMessagesCountChanged(count: Int)
+    /**
+     * Устанавливает [CampaignMessage], который необходим для цитирования сообщений
+     */
+    fun setCampaignMessage(campaignMessage: CampaignMessage) {
+        PrefUtilsBase.campaignMessage = campaignMessage
     }
 
     companion object {
-        private var instance: ThreadsLib? = null
+        @JvmStatic
+        protected var libInstance: ThreadsLibBase? = null
         private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
         @JvmStatic
@@ -160,20 +141,21 @@ class ThreadsLib private constructor() {
 
         @SuppressLint("CheckResult")
         @JvmStatic
-        fun init(configBuilder: ConfigBuilder) {
-            check(instance == null) { "ThreadsLib has already been initialized" }
+        fun init(configBuilder: BaseConfigBuilder) {
             val startInitTime = System.currentTimeMillis()
-            Config.instance = configBuilder.build()
-            instance = ThreadsLib()
+            val isUIMode = BaseConfig.instance != null
 
-            BackendApi.init(Config.instance)
-            DatastoreApi.init(Config.instance)
+            if (!isUIMode) {
+                BaseConfig.instance = configBuilder.build()
+                createLibInstance()
+                BaseConfig.instance.loggerConfig?.let { LoggerEdna.init(it) }
+                PreferencesMigrationBase().migrateMainSharedPreferences()
+            }
 
-            Config.instance.loggerConfig?.let { LoggerEdna.init(it) }
+            BackendApi.init(BaseConfig.instance)
+            DatastoreApi.init(BaseConfig.instance)
 
-            PrefUtils.migrateMainSharedPreferences()
-
-            Config.instance.unreadMessagesCountListener?.let { unreadMessagesCountListener ->
+            BaseConfig.instance.unreadMessagesCountListener?.let { unreadMessagesCountListener ->
                 UnreadMessagesController.INSTANCE.unreadMessagesPublishProcessor
                     .distinctUntilChanged()
                     .observeOn(AndroidSchedulers.mainThread())
@@ -194,7 +176,7 @@ class ThreadsLib private constructor() {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
                 try {
                     AudioConverter.load(
-                        Config.instance.context,
+                        BaseConfig.instance.context,
                         object : ILoadCallback {
                             override fun onSuccess() {
                                 LoggerEdna.info("AndroidAudioConverter was successfully loaded")
@@ -237,9 +219,19 @@ class ThreadsLib private constructor() {
         }
 
         @JvmStatic
-        fun getInstance(): ThreadsLib {
-            checkNotNull(instance) { "ThreadsLib should be initialized first with ThreadsLib.init()" }
-            return instance ?: ThreadsLib()
+        fun getInstance(): ThreadsLibBase {
+            checkNotNull(libInstance) { "ThreadsLib should be initialized first with ThreadsLib.init()" }
+            return libInstance ?: ThreadsLibBase()
+        }
+
+        @JvmStatic
+        protected fun setLibraryInstance(instance: ThreadsLibBase) {
+            libInstance = instance
+        }
+
+        private fun createLibInstance() {
+            check(libInstance == null) { "ThreadsLib has already been initialized" }
+            libInstance = ThreadsLibBase()
         }
     }
 }

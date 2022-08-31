@@ -15,7 +15,6 @@ import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.core.view.isVisible
 import com.google.android.material.slider.Slider
-import im.threads.ChatStyle
 import im.threads.R
 import im.threads.business.formatters.SpeechStatus
 import im.threads.business.imageLoading.ImageLoader
@@ -26,7 +25,6 @@ import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.FileDescription
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.utils.FileUtils
-import im.threads.internal.Config
 import im.threads.internal.views.VoiceTimeLabelFormatter
 import im.threads.internal.views.formatAsDuration
 import im.threads.internal.widget.textView.QuoteMessageTextView
@@ -42,7 +40,6 @@ class ConsultVoiceMessageViewHolder(
     LayoutInflater.from(parent.context).inflate(R.layout.item_consult_voice_message, parent, false),
     highlightingStream
 ) {
-    private val style: ChatStyle = Config.instance.chatStyle
     private val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
 
     private var fileDescription: FileDescription? = null

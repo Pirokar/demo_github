@@ -9,11 +9,11 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
+import im.threads.business.config.BaseConfig
 import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.FileDescription
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.secureDatabase.DatabaseHolder
-import im.threads.internal.Config
 import im.threads.internal.broadcastReceivers.ProgressReceiver
 import im.threads.internal.helpers.FileProviderHelper
 import im.threads.internal.utils.FileDownloader
@@ -62,7 +62,7 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
                 override fun onComplete(file: File) {
                     fileDescription.downloadProgress = 100
                     fileDescription.fileUri = FileProviderHelper.getUriForFile(
-                        Config.instance.context,
+                        BaseConfig.instance.context,
                         file
                     )
                     DatabaseHolder.getInstance().updateFileDescription(fileDescription)

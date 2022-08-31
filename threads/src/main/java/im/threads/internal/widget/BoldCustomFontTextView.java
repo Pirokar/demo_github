@@ -6,7 +6,7 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 
 import im.threads.ChatStyle;
-import im.threads.internal.Config;
+import im.threads.ui.config.Config;
 
 public class BoldCustomFontTextView extends androidx.appcompat.widget.AppCompatTextView {
 
@@ -27,7 +27,7 @@ public class BoldCustomFontTextView extends androidx.appcompat.widget.AppCompatT
     }
 
     public void setTypefaceView(Context context) {
-        ChatStyle style = Config.instance.getChatStyle();
+        ChatStyle style = Config.getInstance().getChatStyle();
         if (!TextUtils.isEmpty(style.defaultFontBold)) {
             setTypeface(Typeface.createFromAsset(context.getAssets(), style.defaultFontBold));
         }

@@ -1,7 +1,5 @@
 package im.threads.view;
 
-import static im.threads.internal.utils.PrefUtils.getFileDescriptionDraft;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -76,6 +74,7 @@ import java.util.concurrent.TimeUnit;
 
 import im.threads.ChatStyle;
 import im.threads.R;
+import im.threads.business.config.BaseConfig;
 import im.threads.business.imageLoading.ImageLoader;
 import im.threads.business.logger.LoggerEdna;
 import im.threads.business.models.CampaignMessage;
@@ -92,8 +91,8 @@ import im.threads.business.models.SystemMessage;
 import im.threads.business.models.UserPhrase;
 import im.threads.business.utils.FileUtils;
 import im.threads.business.utils.FileUtilsKt;
+import im.threads.business.utils.preferences.PrefUtilsBase;
 import im.threads.databinding.FragmentChatBinding;
-import im.threads.internal.Config;
 import im.threads.internal.activities.CameraActivity;
 import im.threads.internal.activities.GalleryActivity;
 import im.threads.internal.activities.ImagesActivity;
@@ -106,7 +105,6 @@ import im.threads.internal.fragments.AttachmentBottomSheetDialogFragment;
 import im.threads.internal.fragments.BaseFragment;
 import im.threads.internal.fragments.FilePickerFragment;
 import im.threads.internal.fragments.PermissionDescriptionAlertDialogFragment;
-import im.threads.internal.helpers.FileHelper;
 import im.threads.internal.helpers.FileProviderHelper;
 import im.threads.internal.helpers.MediaHelper;
 import im.threads.internal.media.ChatCenterAudioConverter;
@@ -125,12 +123,13 @@ import im.threads.internal.useractivity.LastUserActivityTimeCounter;
 import im.threads.internal.useractivity.LastUserActivityTimeCounterSingletonProvider;
 import im.threads.internal.utils.ColorsHelper;
 import im.threads.internal.utils.Keyboard;
-import im.threads.internal.utils.PrefUtils;
 import im.threads.internal.utils.RxUtils;
 import im.threads.internal.utils.ThreadsPermissionChecker;
 import im.threads.internal.views.VoiceTimeLabelFormatter;
 import im.threads.internal.views.VoiceTimeLabelFormatterKt;
-import im.threads.styles.permissions.PermissionDescriptionType;
+import im.threads.ui.config.Config;
+import im.threads.ui.styles.permissions.PermissionDescriptionType;
+import im.threads.ui.utils.FileHelper;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -212,6 +211,7 @@ public final class ChatFragment extends BaseFragment implements
 
     private QuickReplyItem quickReplyItem = null;
     private int previousChatItemsCount = 0;
+    private Config config = Config.getInstance();
 
     public static ChatFragment newInstance() {
         return newInstance(OpenWay.DEFAULT);
@@ -233,7 +233,7 @@ public final class ChatFragment extends BaseFragment implements
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         Activity activity = getActivity();
-        style = Config.instance.getChatStyle();
+        style = config.getChatStyle();
 
         // Статус бар подкрашивается только при использовании чата в стандартном Activity.
         if (activity instanceof ChatActivity) {
@@ -264,12 +264,12 @@ public final class ChatFragment extends BaseFragment implements
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        FileDescription fileDescriptionDraft = getFileDescriptionDraft();
+        FileDescription fileDescriptionDraft = PrefUtilsBase.getFileDescriptionDraft();
         if (FileUtils.isVoiceMessage(fileDescriptionDraft)) {
             setFileDescription(fileDescriptionDraft);
             mQuoteLayoutHolder.setVoice();
         }
-        CampaignMessage campaignMessage = PrefUtils.getCampaignMessage();
+        CampaignMessage campaignMessage = PrefUtilsBase.getCampaignMessage();
         Bundle arguments = getArguments();
         if (arguments != null && campaignMessage != null) {
             @OpenWay int from = arguments.getInt(ARG_OPEN_WAY);
@@ -285,7 +285,7 @@ public final class ChatFragment extends BaseFragment implements
                     null,
                     false
             );
-            PrefUtils.setCampaignMessage(null);
+            PrefUtilsBase.setCampaignMessage(null);
         }
     }
 
@@ -307,7 +307,7 @@ public final class ChatFragment extends BaseFragment implements
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Config.instance.transport.setLifecycle(null);
+        BaseConfig.instance.transport.setLifecycle(null);
     }
 
     private void initController() {
@@ -346,7 +346,7 @@ public final class ChatFragment extends BaseFragment implements
 
     private void initInputLayout(@NonNull Activity activity) {
         applyTintAndColorState(activity);
-        int attachmentVisibility = Config.instance.attachmentEnabled ? View.VISIBLE : View.GONE;
+        int attachmentVisibility = config.getAttachmentEnabled() ? View.VISIBLE : View.GONE;
         binding.addAttachment.setVisibility(attachmentVisibility);
         binding.addAttachment.setOnClickListener(v -> openBottomSheetAndGallery());
         binding.sendMessage.setOnClickListener(v -> onSendButtonClick());
@@ -381,7 +381,7 @@ public final class ChatFragment extends BaseFragment implements
 
     private void initRecording() {
         final RecordButton recordButton = binding.recordButton;
-        if (!style.voiceMessageEnabled || !Config.instance.attachmentEnabled) {
+        if (!style.voiceMessageEnabled || !config.getAttachmentEnabled()) {
             recordButton.setVisibility(View.GONE);
             return;
         }
@@ -726,7 +726,7 @@ public final class ChatFragment extends BaseFragment implements
     private void setMessagesAsReadForStorages() {
         if (previousChatItemsCount == 0 || chatAdapter.getItemCount() != previousChatItemsCount) {
             mChatController.setMessagesInCurrentThreadAsReadInDB();
-            PrefUtils.setUnreadPushCount(0);
+            PrefUtilsBase.setUnreadPushCount(0);
             previousChatItemsCount = chatAdapter.getItemCount();
         }
     }
@@ -769,7 +769,7 @@ public final class ChatFragment extends BaseFragment implements
 
     private void setRecordButtonVisibility(@NonNull Boolean isInputEmpty) {
         boolean isButtonVisible = isInputEmpty && style.voiceMessageEnabled
-                && Config.instance.attachmentEnabled;
+                && config.getAttachmentEnabled();
         binding.recordButton.setVisibility(isButtonVisible ? View.VISIBLE : View.GONE);
     }
 
@@ -1027,10 +1027,10 @@ public final class ChatFragment extends BaseFragment implements
         boolean isWriteGranted = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q || ThreadsPermissionChecker.isWriteExternalPermissionGranted(activity);
         LoggerEdna.info("isCameraGranted = " + isCameraGranted + " isWriteGranted " + isWriteGranted);
         if (isCameraGranted && isWriteGranted) {
-            if (Config.instance.getChatStyle().useExternalCameraApp) {
+            if (config.getChatStyle().useExternalCameraApp) {
                 try {
                     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    externalCameraPhotoFile = FileHelper.INSTANCE.createImageFile(activity);
+                    externalCameraPhotoFile = FileUtils.createImageFile(activity);
                     Uri photoUri = FileProviderHelper.getUriForFile(activity, externalCameraPhotoFile);
                     LoggerEdna.debug("Image File uri resolved: " + photoUri.toString());
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
@@ -1100,7 +1100,7 @@ public final class ChatFragment extends BaseFragment implements
             s2.setSpan(new ForegroundColorSpan(ContextCompat.getColor(activity, style.menuItemTextColorResId)), 0, s2.length(), 0);
             filesAndMedia.setTitle(s2);
         }
-        filesAndMedia.setVisible(Config.instance.filesAndMediaMenuItemEnabled);
+        filesAndMedia.setVisible(config.getFilesAndMediaMenuItemEnabled());
         popup.show();
     }
 
@@ -1191,7 +1191,7 @@ public final class ChatFragment extends BaseFragment implements
             return;
         }
         cm.setPrimaryClip(new ClipData("", new String[]{"text/plain"}, new ClipData.Item(cp.getPhraseText())));
-        PrefUtils.setLastCopyText(cp.getPhraseText());
+        PrefUtilsBase.setLastCopyText(cp.getPhraseText());
         unChooseItem();
     }
 
@@ -1420,7 +1420,7 @@ public final class ChatFragment extends BaseFragment implements
         setFileDescription(
                 new FileDescription(
                         requireContext().getString(R.string.threads_image),
-                        FileProviderHelper.getUriForFile(Config.instance.context, externalCameraPhotoFile),
+                        FileProviderHelper.getUriForFile(BaseConfig.instance.context, externalCameraPhotoFile),
                         externalCameraPhotoFile.length(),
                         System.currentTimeMillis()
                 )
@@ -1440,8 +1440,8 @@ public final class ChatFragment extends BaseFragment implements
     private void onFileResult(@NonNull Intent data) {
         Uri uri = data.getData();
         if (uri != null) {
-            if (FileHelper.INSTANCE.isAllowedFileExtension(FileUtils.getExtensionFromMediaStore(Config.instance.context, uri))) {
-                if (FileHelper.INSTANCE.isAllowedFileSize(FileUtils.getFileSizeFromMediaStore(Config.instance.context, uri))) {
+            if (FileHelper.INSTANCE.isAllowedFileExtension(FileUtils.getExtensionFromMediaStore(BaseConfig.instance.context, uri))) {
+                if (FileHelper.INSTANCE.isAllowedFileSize(FileUtils.getFileSizeFromMediaStore(BaseConfig.instance.context, uri))) {
                     try {
                         if (FileUtils.canBeSent(requireContext(), uri)) {
                             onFileResult(uri);
@@ -1767,10 +1767,10 @@ public final class ChatFragment extends BaseFragment implements
         if (TextUtils.isEmpty(text)) {
             return false;
         }
-        if (TextUtils.isEmpty(PrefUtils.getLastCopyText())) {
+        if (TextUtils.isEmpty(PrefUtilsBase.getLastCopyText())) {
             return false;
         }
-        return text.contains(PrefUtils.getLastCopyText());
+        return text.contains(PrefUtilsBase.getLastCopyText());
     }
 
     private void hideCopyControls() {
@@ -2072,9 +2072,9 @@ public final class ChatFragment extends BaseFragment implements
     @Override
     public void onStart() {
         super.onStart();
-        setCurrentThreadId(PrefUtils.getThreadId());
-        Config.instance.transport.setLifecycle(getLifecycle());
-        Config.instance.transport.getSettings();
+        setCurrentThreadId(PrefUtilsBase.getThreadId());
+        BaseConfig.instance.transport.setLifecycle(getLifecycle());
+        ChatController.getInstance().getSettings();
         ChatController.getInstance().loadHistory();
     }
 
@@ -2092,7 +2092,7 @@ public final class ChatFragment extends BaseFragment implements
         stopRecording();
         FileDescription fileDescription = getFileDescription();
         if (fileDescription == null || FileUtils.isVoiceMessage(fileDescription)) {
-            PrefUtils.setFileDescriptionDraft(fileDescription);
+            PrefUtilsBase.setFileDescriptionDraft(fileDescription);
         }
         mChatController.setActivityIsForeground(false);
         if (binding.swipeRefresh != null) {
@@ -2591,7 +2591,7 @@ public final class ChatFragment extends BaseFragment implements
 
         @Override
         public void onConsultAvatarClick(String consultId) {
-            if (Config.instance.getChatStyle().canShowSpecialistInfo) {
+            if (config.getChatStyle().canShowSpecialistInfo) {
                 Activity activity = getActivity();
                 if (activity != null) {
                     mChatController.onConsultChoose(activity, consultId);

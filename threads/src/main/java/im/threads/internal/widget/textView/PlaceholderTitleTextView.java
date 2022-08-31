@@ -6,8 +6,8 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 
 import im.threads.ChatStyle;
-import im.threads.internal.Config;
 import im.threads.internal.widget.BoldCustomFontTextView;
+import im.threads.ui.config.Config;
 
 public final class PlaceholderTitleTextView extends BoldCustomFontTextView {
 
@@ -21,7 +21,7 @@ public final class PlaceholderTitleTextView extends BoldCustomFontTextView {
 
     @Override
     public void setTypefaceView(Context context) {
-        ChatStyle style = Config.instance.getChatStyle();
+        ChatStyle style = Config.getInstance().getChatStyle();
         if (!TextUtils.isEmpty(style.placeholderTitleFont)) {
             setTypeface(Typeface.createFromAsset(context.getAssets(), style.placeholderTitleFont));
         } else {

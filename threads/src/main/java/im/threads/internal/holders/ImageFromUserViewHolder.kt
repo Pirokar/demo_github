@@ -15,7 +15,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.core.view.isVisible
-import im.threads.ChatStyle
 import im.threads.R
 import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.imageLoading.ImageModifications
@@ -24,7 +23,6 @@ import im.threads.business.models.FileDescription
 import im.threads.business.models.MessageState
 import im.threads.business.models.UserPhrase
 import im.threads.business.models.enums.AttachmentStateEnum
-import im.threads.internal.Config
 import io.reactivex.subjects.PublishSubject
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -39,8 +37,6 @@ class ImageFromUserViewHolder(
         LayoutInflater.from(parent.context).inflate(R.layout.item_user_image_from, parent, false),
         highlightingStream
     ) {
-
-    private val style: ChatStyle = Config.instance.chatStyle
     private val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
 
     private var loadedUri: String? = null
@@ -158,7 +154,6 @@ class ImageFromUserViewHolder(
 
     private fun applyBubbleLayoutStyle(layout: LinearLayout) {
         val res = itemView.context.resources
-        val style = Config.instance.chatStyle
         layout.background = AppCompatResources.getDrawable(
             itemView.context,
             style.outgoingMessageBubbleBackground

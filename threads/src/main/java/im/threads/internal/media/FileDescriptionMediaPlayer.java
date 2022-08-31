@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 import im.threads.business.logger.LoggerEdna;
 import im.threads.business.models.FileDescription;
-import im.threads.internal.Config;
+import im.threads.business.config.BaseConfig;
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -122,7 +122,7 @@ public class FileDescriptionMediaPlayer {
 
     private void startMediaPlayer(@NonNull FileDescription fileDescription) {
         this.fileDescription = fileDescription;
-        mediaPlayer = MediaPlayer.create(Config.instance.context, fileDescription.getFileUri());
+        mediaPlayer = MediaPlayer.create(BaseConfig.instance.context, fileDescription.getFileUri());
         mediaPlayer.setOnCompletionListener(mp -> {
             abandonAudioFocus();
             releaseMediaPlayer();

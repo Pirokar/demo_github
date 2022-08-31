@@ -6,8 +6,9 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 
 import androidx.appcompat.widget.AppCompatButton;
+
 import im.threads.ChatStyle;
-import im.threads.internal.Config;
+import im.threads.ui.config.Config;
 
 public final class CustomFontButton extends AppCompatButton {
     public CustomFontButton(Context context) {
@@ -27,7 +28,7 @@ public final class CustomFontButton extends AppCompatButton {
     }
 
     public void setTypefaceView(Context context) {
-        ChatStyle style = Config.instance.getChatStyle();
+        ChatStyle style = Config.getInstance().getChatStyle();
         if (!TextUtils.isEmpty(style.defaultFontRegular)) {
             setTypeface(Typeface.createFromAsset(context.getAssets(), style.defaultFontRegular));
         }

@@ -12,16 +12,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import im.threads.R;
+import im.threads.business.config.BaseConfig;
 import im.threads.business.utils.FileUtils;
-import im.threads.internal.Config;
-import im.threads.internal.helpers.FileHelper;
 import im.threads.internal.holders.BottomGalleryImageHolder;
 import im.threads.internal.model.BottomGalleryItem;
+import im.threads.ui.config.Config;
+import im.threads.ui.utils.FileHelper;
 
 public final class BottomGalleryAdapter extends RecyclerView.Adapter<BottomGalleryImageHolder> {
     private List<BottomGalleryItem> list;
     private List<Uri> mChosenItems = new ArrayList<>();
     private OnChooseItemsListener mOnChooseItemsListener;
+    private Config config = Config.getInstance();
 
     public BottomGalleryAdapter(List<BottomGalleryItem> list, OnChooseItemsListener listener) {
         this.list = list;
@@ -40,11 +42,9 @@ public final class BottomGalleryAdapter extends RecyclerView.Adapter<BottomGalle
         holder.onBind(list.get(position), v -> {
             if (!isSendingAllowed(item, holder.itemView.getContext())) return;
             if (!item.isChosen() &&
-                    mChosenItems.size() >= Config.instance.getChatStyle().getMaxGalleryImagesCount(Config.instance.context)) {
-                if (Config.instance.context != null) {
-                    Toast.makeText(Config.instance.context, Config.instance.context.getString(R.string.threads_achieve_images_count_limit_message), Toast.LENGTH_SHORT)
-                            .show();
-                }
+                    mChosenItems.size() >= config.getChatStyle().getMaxGalleryImagesCount(BaseConfig.instance.context)) {
+                Toast.makeText(BaseConfig.instance.context, BaseConfig.instance.context.getString(R.string.threads_achieve_images_count_limit_message), Toast.LENGTH_SHORT)
+                        .show();
                 return;
             }
             item.setChosen(!item.isChosen());
@@ -66,10 +66,10 @@ public final class BottomGalleryAdapter extends RecyclerView.Adapter<BottomGalle
         Uri uri = item.getImagePath();
         if (uri != null) {
             if (FileHelper.INSTANCE.isAllowedFileExtension(
-                    FileUtils.getExtensionFromMediaStore(Config.instance.context, uri))
+                    FileUtils.getExtensionFromMediaStore(BaseConfig.instance.context, uri))
             ) {
                 if (FileHelper.INSTANCE.isAllowedFileSize(
-                        FileUtils.getFileSizeFromMediaStore(Config.instance.context, uri))
+                        FileUtils.getFileSizeFromMediaStore(BaseConfig.instance.context, uri))
                 ) {
                     return true;
                 } else {

@@ -6,8 +6,8 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 
 import im.threads.ChatStyle;
-import im.threads.internal.Config;
 import im.threads.internal.widget.CustomFontTextView;
+import im.threads.ui.config.Config;
 
 public final class TypingTextView extends CustomFontTextView {
     public TypingTextView(Context context) {
@@ -20,7 +20,7 @@ public final class TypingTextView extends CustomFontTextView {
 
     @Override
     public void setTypefaceView(Context context) {
-        ChatStyle style = Config.instance.getChatStyle();
+        ChatStyle style = Config.getInstance().getChatStyle();
         if (!TextUtils.isEmpty(style.typingFont)) {
             setTypeface(Typeface.createFromAsset(context.getAssets(), style.typingFont));
         } else {

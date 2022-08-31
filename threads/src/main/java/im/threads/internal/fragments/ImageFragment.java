@@ -19,8 +19,8 @@ import im.threads.R;
 import im.threads.business.imageLoading.ImageLoader;
 import im.threads.business.models.FileDescription;
 import im.threads.business.utils.FileUtils;
-import im.threads.internal.Config;
 import im.threads.internal.formatters.RussianFormatSymbols;
+import im.threads.ui.config.Config;
 
 public final class ImageFragment extends Fragment {
     private static SimpleDateFormat sdf;
@@ -46,7 +46,7 @@ public final class ImageFragment extends Fragment {
                 sdf = new SimpleDateFormat("dd MMMM yyyy", Locale.getDefault());
             }
         }
-        ChatStyle style = Config.instance.getChatStyle();
+        ChatStyle style = Config.getInstance().getChatStyle();
         final ImageView imageView = v.findViewById(R.id.image);
         TextView from = v.findViewById(R.id.from);
         TextView date = v.findViewById(R.id.date);

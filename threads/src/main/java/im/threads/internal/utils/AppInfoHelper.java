@@ -6,13 +6,13 @@ import android.content.pm.PackageManager;
 
 import im.threads.BuildConfig;
 import im.threads.business.logger.LoggerEdna;
-import im.threads.internal.Config;
+import im.threads.business.config.BaseConfig;
 
 public final class AppInfoHelper {
     public static String getAppVersion() {
         PackageInfo pInfo = null;
         try {
-            pInfo = Config.instance.context.getPackageManager().getPackageInfo(Config.instance.context.getPackageName(), 0);
+            pInfo = BaseConfig.instance.context.getPackageManager().getPackageInfo(BaseConfig.instance.context.getPackageName(), 0);
         } catch (PackageManager.NameNotFoundException e) {
             LoggerEdna.error("getAppVersion", e);
         }
@@ -24,10 +24,10 @@ public final class AppInfoHelper {
     }
 
     public static String getAppName() {
-        ApplicationInfo applicationInfo = Config.instance.context.getApplicationInfo();
+        ApplicationInfo applicationInfo = BaseConfig.instance.context.getApplicationInfo();
         if (applicationInfo != null) {
             try {
-                return applicationInfo.loadLabel(Config.instance.context.getPackageManager()).toString();
+                return applicationInfo.loadLabel(BaseConfig.instance.context.getPackageManager()).toString();
             } catch (Exception e) {
                 LoggerEdna.error("getAppName", e);
             }
@@ -36,7 +36,7 @@ public final class AppInfoHelper {
     }
 
     public static String getAppId() {
-        ApplicationInfo applicationInfo = Config.instance.context.getApplicationInfo();
+        ApplicationInfo applicationInfo = BaseConfig.instance.context.getApplicationInfo();
         if (applicationInfo != null) {
             try {
                 return applicationInfo.packageName;

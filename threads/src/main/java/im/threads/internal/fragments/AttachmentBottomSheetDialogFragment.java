@@ -25,13 +25,13 @@ import java.util.List;
 
 import im.threads.ChatStyle;
 import im.threads.R;
-import im.threads.internal.Config;
 import im.threads.internal.helpers.MediaHelper;
 import im.threads.internal.useractivity.LastUserActivityTimeCounter;
 import im.threads.internal.useractivity.LastUserActivityTimeCounterSingletonProvider;
 import im.threads.internal.utils.ColorsHelper;
 import im.threads.internal.views.BottomGallery;
 import im.threads.internal.views.BottomSheetView;
+import im.threads.ui.config.Config;
 
 public class AttachmentBottomSheetDialogFragment extends BottomSheetDialogFragment implements BottomSheetView.ButtonsListener {
 
@@ -88,7 +88,7 @@ public class AttachmentBottomSheetDialogFragment extends BottomSheetDialogFragme
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        ChatStyle chatStyle = Config.instance.getChatStyle();
+        ChatStyle chatStyle = Config.getInstance().getChatStyle();
         View view = inflater.inflate(R.layout.bottom_sheet_dialog_attachment, container, false);
         BottomSheetView fileInputSheet = view.findViewById(R.id.file_input_sheet);
         BottomGallery bottomGallery = view.findViewById(R.id.bottom_gallery);
