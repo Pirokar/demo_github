@@ -4,6 +4,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import im.threads.ChatStyle
 import im.threads.business.config.BaseConfigBuilder
 import im.threads.business.core.UnreadMessagesCountListener
 import im.threads.business.logger.LoggerConfig
@@ -13,6 +14,8 @@ import im.threads.view.ChatActivity
 import okhttp3.Interceptor
 
 class ConfigBuilder(context: Context) : BaseConfigBuilder(context) {
+    private var chatStyle: ChatStyle? = null
+
     private var pendingIntentCreator: PendingIntentCreator =
         object : PendingIntentCreator {
             override fun create(context: Context, appMarker: String?): PendingIntent? {
@@ -99,6 +102,11 @@ class ConfigBuilder(context: Context) : BaseConfigBuilder(context) {
         return this
     }
 
+    fun applyChatStyle(chatStyle: ChatStyle): ConfigBuilder {
+        this.chatStyle = chatStyle
+        return this
+    }
+
     override fun enableLogging(config: LoggerConfig?): ConfigBuilder {
         super.loggerConfig = config
         return this
@@ -117,6 +125,7 @@ class ConfigBuilder(context: Context) : BaseConfigBuilder(context) {
             pendingIntentCreator,
             unreadMessagesCountListener,
             networkInterceptor,
+            chatStyle,
             isDebugLoggingEnabled,
             historyLoadingCount,
             surveyCompletionDelay,

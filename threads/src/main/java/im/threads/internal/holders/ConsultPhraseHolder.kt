@@ -45,15 +45,6 @@ class ConsultPhraseHolder(parent: ViewGroup, highlightingStream: PublishSubject<
         .inflate(R.layout.item_consultant_text_with_file, parent, false),
     highlightingStream
 ) {
-    private val rotateAnim = RotateAnimation(
-        0f,
-        360f,
-        Animation.RELATIVE_TO_SELF,
-        0.5f,
-        Animation.RELATIVE_TO_SELF,
-        0.5f
-    )
-    private val style = Config.instance.chatStyle
     private val timeStampSdf = SimpleDateFormat("HH:mm", Locale.getDefault())
 
     @SuppressLint("SimpleDateFormat")

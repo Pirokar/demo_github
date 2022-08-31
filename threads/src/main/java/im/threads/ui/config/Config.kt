@@ -27,6 +27,7 @@ class Config(
     val pendingIntentCreator: PendingIntentCreator,
     unreadMessagesCountListener: UnreadMessagesCountListener?,
     networkInterceptor: Interceptor?,
+    chatStyle: ChatStyle?,
     isDebugLoggingEnabled: Boolean,
     historyLoadingCount: Int,
     surveyCompletionDelay: Int,
@@ -55,6 +56,7 @@ class Config(
     init {
         attachmentEnabled = MetadataUi.getAttachmentEnabled(this.context)
         filesAndMediaMenuItemEnabled = MetadataUi.getFilesAndMediaMenuItemEnabled(this.context)
+        setChatStyle(chatStyle)
     }
 
     fun getChatStyle(): ChatStyle {

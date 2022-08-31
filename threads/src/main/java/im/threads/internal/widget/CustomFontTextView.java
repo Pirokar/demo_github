@@ -36,7 +36,7 @@ public class CustomFontTextView extends androidx.appcompat.widget.AppCompatTextV
 
     private ChatStyle getChatStyle() {
         try {
-            return ((Config)BaseConfig.instance).getChatStyle();
+            return Config.getInstance().getChatStyle();
         } catch (NullPointerException exc) {
             return new ChatStyle();
         }
