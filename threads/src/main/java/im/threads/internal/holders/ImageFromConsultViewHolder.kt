@@ -19,26 +19,29 @@ import im.threads.R
 import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.imageLoading.ImageModifications
 import im.threads.business.imageLoading.loadImage
+import im.threads.business.models.ChatItem
 import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.FileDescription
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.utils.FileUtils
 import im.threads.internal.Config
+import io.reactivex.subjects.PublishSubject
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 class ImageFromConsultViewHolder(
     parent: ViewGroup,
-    private val maskedTransformation: ImageModifications.MaskedModification
-) :
-    BaseHolder(
-        LayoutInflater.from(parent.context).inflate(
-            R.layout.item_image_from_consult,
-            parent,
-            false
-        )
-    ) {
+    private val maskedTransformation: ImageModifications.MaskedModification,
+    highlightingStream: PublishSubject<ChatItem>
+) : BaseHolder(
+    LayoutInflater.from(parent.context).inflate(
+        R.layout.item_image_from_consult,
+        parent,
+        false
+    ),
+    highlightingStream
+) {
 
     private val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
     private val style: ChatStyle = Config.instance.chatStyle
@@ -83,6 +86,7 @@ class ImageFromConsultViewHolder(
         onLongClickListener: OnLongClickListener,
         onAvatarClickListener: View.OnClickListener
     ) {
+        subscribeForHighlighting(consultPhrase, rootLayout)
         applyBubbleLayoutStyle()
         timeStampTextView.setOnClickListener(buttonClickListener)
         timeStampTextView.setOnLongClickListener(onLongClickListener)

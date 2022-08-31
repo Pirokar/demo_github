@@ -18,19 +18,23 @@ import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.core.view.isVisible
 import im.threads.R
+import im.threads.business.models.ChatItem
 import im.threads.business.models.FileDescription
 import im.threads.business.models.MessageState
+import im.threads.business.models.UserPhrase
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.utils.FileUtils.getFileName
 import im.threads.internal.Config
 import im.threads.internal.views.CircularProgressButton
+import io.reactivex.subjects.PublishSubject
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class UserFileViewHolder(parent: ViewGroup) :
+class UserFileViewHolder(parent: ViewGroup, highlightingStream: PublishSubject<ChatItem>) :
     BaseHolder(
-        LayoutInflater.from(parent.context).inflate(R.layout.item_user_chat_file, parent, false)
+        LayoutInflater.from(parent.context).inflate(R.layout.item_user_chat_file, parent, false),
+        highlightingStream
     ) {
 
     private val style = Config.instance.chatStyle
@@ -86,15 +90,14 @@ class UserFileViewHolder(parent: ViewGroup) :
     }
 
     fun onBind(
-        timeStamp: Long,
-        fileDescription: FileDescription?,
+        userPhrase: UserPhrase,
         buttonClickListener: View.OnClickListener,
         rowClickListener: View.OnClickListener,
         onLongClick: OnLongClickListener,
-        isFilterVisible: Boolean,
-        sentState: MessageState
+        isFilterVisible: Boolean
     ) {
-        fileDescription?.let {
+        subscribeForHighlighting(userPhrase, rootLayout)
+        userPhrase.fileDescription?.let {
             val viewGroup = itemView as ViewGroup
             fileHeaderTextView.text = getFileName(it)
             fileSizeTextView.text = Formatter.formatFileSize(viewGroup.context, it.size)
@@ -106,16 +109,9 @@ class UserFileViewHolder(parent: ViewGroup) :
             updateFileView(it, buttonClickListener)
 
             rootLayout.setOnLongClickListener(onLongClick)
-            rootLayout.apply {
-                setBackgroundColor(
-                    ContextCompat.getColor(
-                        viewGroup.context,
-                        if (isFilterVisible) style.chatHighlightingColor else R.color.threads_transparent
-                    )
-                )
-            }
+            changeHighlighting(isFilterVisible)
         }
-        bindTimeStamp(sentState, timeStamp, onLongClick)
+        bindTimeStamp(userPhrase.sentState, userPhrase.timeStamp, onLongClick)
     }
 
     private fun bindTimeStamp(

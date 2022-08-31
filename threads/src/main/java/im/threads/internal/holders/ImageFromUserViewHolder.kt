@@ -17,30 +17,36 @@ import androidx.core.graphics.BlendModeCompat
 import androidx.core.view.isVisible
 import im.threads.ChatStyle
 import im.threads.R
-import im.threads.business.imageLoading.ImageLoader.Companion.get
+import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.imageLoading.ImageModifications
+import im.threads.business.models.ChatItem
 import im.threads.business.models.FileDescription
 import im.threads.business.models.MessageState
 import im.threads.business.models.UserPhrase
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.internal.Config
+import io.reactivex.subjects.PublishSubject
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 class ImageFromUserViewHolder(
     parent: ViewGroup,
-    private val maskedTransformation: ImageModifications.MaskedModification
+    private val maskedTransformation: ImageModifications.MaskedModification,
+    highlightingStream: PublishSubject<ChatItem>
 ) :
     BaseHolder(
-        LayoutInflater.from(parent.context).inflate(R.layout.item_user_image_from, parent, false)
+        LayoutInflater.from(parent.context).inflate(R.layout.item_user_image_from, parent, false),
+        highlightingStream
     ) {
 
     private val style: ChatStyle = Config.instance.chatStyle
     private val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
 
+    private var loadedUri: String? = null
+
     private val loaderLayout: LinearLayout =
-        (itemView.findViewById(R.id.loaderLayout) as LinearLayout).also { applyBubbleLayoutStyle(it) }
+        itemView.findViewById<LinearLayout>(R.id.loaderLayout).also { applyBubbleLayoutStyle(it) }
     private val mImage: ImageView =
         itemView.findViewById<ImageView>(R.id.image).also { applyImageParams(it) }
     private val mTimeStampTextView = itemView.findViewById<TextView>(R.id.timeStamp).apply {
@@ -75,6 +81,7 @@ class ImageFromUserViewHolder(
         clickRunnable: Runnable,
         longClickRunnable: Runnable
     ) {
+        subscribeForHighlighting(userPhrase, rootLayout)
         mImage.setOnClickListener { clickRunnable.run() }
         mImage.setOnLongClickListener {
             longClickRunnable.run()
@@ -90,14 +97,7 @@ class ImageFromUserViewHolder(
             longClickRunnable.run()
             true
         }
-        rootLayout.apply {
-            setBackgroundColor(
-                ContextCompat.getColor(
-                    itemView.context,
-                    if (isChosen) style.chatHighlightingColor else R.color.threads_transparent
-                )
-            )
-        }
+        changeHighlighting(isChosen)
     }
 
     private fun bindImage(
@@ -208,14 +208,18 @@ class ImageFromUserViewHolder(
         loaderLayout.isVisible = false
         rotateAnim.cancel()
         val isDownloadError = fileDescription.isDownloadError
-        if (fileDescription.fileUri != null && !isDownloadError) {
-            get()
+        val uri = fileDescription.fileUri
+
+        if (uri != null && !isDownloadError) {
+            ImageLoader.get()
                 .autoRotateWithExif(true)
-                .load(fileDescription.fileUri.toString())
+                .load(uri.toString())
                 .scales(ImageView.ScaleType.FIT_END, ImageView.ScaleType.CENTER_CROP)
                 .modifications(maskedTransformation)
                 .errorDrawableResourceId(style.imagePlaceholder)
                 .into(mImage)
+
+            loadedUri = uri.toString()
         } else if (isDownloadError) {
             mImage.setImageResource(style.imagePlaceholder)
         }

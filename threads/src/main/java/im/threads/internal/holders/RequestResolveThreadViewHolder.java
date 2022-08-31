@@ -21,7 +21,10 @@ public final class RequestResolveThreadViewHolder extends BaseHolder {
     private final TextView denyRequest;
 
     public RequestResolveThreadViewHolder(ViewGroup parent) {
-        super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_request_resolve_thread, parent, false));
+        super(
+                LayoutInflater.from(parent.getContext()).inflate(R.layout.item_request_resolve_thread, parent, false),
+                null
+        );
         View topSeparator = itemView.findViewById(R.id.top_separator);
         View bottomSeparator = itemView.findViewById(R.id.bottom_separator);
         TextView requestToResolveThread = itemView.findViewById(R.id.request_to_resolve_thread);

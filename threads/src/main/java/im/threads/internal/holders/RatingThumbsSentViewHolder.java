@@ -32,7 +32,10 @@ public final class RatingThumbsSentViewHolder extends BaseHolder {
     private View mBubble;
 
     public RatingThumbsSentViewHolder(ViewGroup parent) {
-        super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_rate_thumbs_sent, parent, false));
+        super(
+                LayoutInflater.from(parent.getContext()).inflate(R.layout.item_rate_thumbs_sent, parent, false),
+                null
+        );
         thumb = itemView.findViewById(R.id.thumb);
         mTimeStampTextView = itemView.findViewById(R.id.timestamp);
         mHeader = itemView.findViewById(R.id.header);
