@@ -100,11 +100,7 @@ class OpenGraphParserJsoupImpl : OpenGraphParser {
         if (urlToParse == null) return null
 
         val hostAndPath = getHostAndPath(urlToParse)
-        val cachedData = existedOpenGraphs[hostAndPath]
-
-        LoggerEdna.info("Getting cached OpenGraph data. Url: $urlToParse, data: $cachedData")
-
-        return cachedData
+        return existedOpenGraphs[hostAndPath]
     }
 
     private fun getHostAndPath(urlToParse: String?): String {
