@@ -54,7 +54,7 @@ class ConsultVoiceMessageViewHolder(
 
     private val phraseTextView =
         itemView.findViewById<QuoteMessageTextView>(R.id.voiceMessageConsultText).apply {
-            setLinkTextColor(getColorInt(style.incomingMessageTextColor))
+            setLinkTextColor(getColorInt(style.incomingMessageLinkColor))
         }
     private val slider: Slider = itemView.findViewById(R.id.voiceMessageConsultSlider)
     private val buttonPlayPause =
