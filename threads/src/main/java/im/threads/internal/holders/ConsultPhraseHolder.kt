@@ -375,12 +375,7 @@ class ConsultPhraseHolder(parent: ViewGroup, highlightingStream: PublishSubject<
                 consultAvatar.loadImage(
                     FileUtils.convertRelativeUrlToAbsolute(it),
                     listOf(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_INSIDE),
-                    modifications = listOf(ImageModifications.CircleCropModification),
-                    callback = object : ImageLoader.ImageLoaderCallback {
-                        override fun onImageLoaded() {
-                            consultAvatar.setImageResource(style.defaultOperatorAvatar)
-                        }
-                    }
+                    modifications = listOf(ImageModifications.CircleCropModification)
                 )
             } ?: run {
                 consultAvatar.setImageResource(style.defaultOperatorAvatar)
