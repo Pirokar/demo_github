@@ -81,7 +81,7 @@ class ConsultPhraseHolder(parent: ViewGroup, highlightingStream: PublishSubject<
             }
         }
     private val phraseTextView = itemView.findViewById<BubbleMessageTextView>(R.id.text).apply {
-        setLinkTextColor(getColorInt(style.incomingMessageTextColor))
+        setLinkTextColor(getColorInt(style.incomingMessageLinkColor))
     }
     private val consultAvatar = itemView.findViewById<ImageView>(R.id.consultAvatar).apply {
         layoutParams.height =
