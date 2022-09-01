@@ -2,7 +2,6 @@ package im.threads.internal.holders
 
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
-import android.text.method.LinkMovementMethod
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.RotateAnimation
@@ -36,6 +35,7 @@ import im.threads.internal.utils.gone
 import im.threads.internal.utils.visible
 import im.threads.internal.views.CircularProgressButton
 import im.threads.internal.widget.textView.BubbleMessageTextView
+import im.threads.ui.utils.NoLongClickMovementMethod
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
@@ -351,7 +351,7 @@ abstract class BaseHolder internal constructor(
     }
 
     private fun setMovementMethod(textView: TextView) {
-        textView.movementMethod = LinkMovementMethod.getInstance()
+        textView.movementMethod = NoLongClickMovementMethod.getInstance()
     }
 
     private fun setUpDrawable(@DrawableRes iconResId: Int, @ColorRes colorRes: Int): Drawable? {
