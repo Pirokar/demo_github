@@ -34,8 +34,8 @@ import im.threads.internal.utils.gone
 import im.threads.internal.utils.visible
 import im.threads.internal.views.CircularProgressButton
 import im.threads.internal.widget.textView.BubbleMessageTextView
-import im.threads.ui.utils.NoLongClickMovementMethod
 import im.threads.ui.config.Config
+import im.threads.ui.utils.NoLongClickMovementMethod
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
