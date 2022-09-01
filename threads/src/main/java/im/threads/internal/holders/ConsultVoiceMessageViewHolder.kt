@@ -17,7 +17,6 @@ import androidx.core.view.isVisible
 import com.google.android.material.slider.Slider
 import im.threads.R
 import im.threads.business.formatters.SpeechStatus
-import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.imageLoading.ImageModifications
 import im.threads.business.imageLoading.loadImage
 import im.threads.business.models.ChatItem
@@ -51,7 +50,7 @@ class ConsultVoiceMessageViewHolder(
 
     private val phraseTextView =
         itemView.findViewById<QuoteMessageTextView>(R.id.voiceMessageConsultText).apply {
-            setLinkTextColor(getColorInt(style.incomingMessageTextColor))
+            setLinkTextColor(getColorInt(style.incomingMessageLinkColor))
         }
     private val slider: Slider = itemView.findViewById(R.id.voiceMessageConsultSlider)
     private val buttonPlayPause =
@@ -174,12 +173,7 @@ class ConsultVoiceMessageViewHolder(
                 consultAvatar.loadImage(
                     FileUtils.convertRelativeUrlToAbsolute(it),
                     listOf(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_INSIDE),
-                    modifications = listOf(ImageModifications.CircleCropModification),
-                    callback = object : ImageLoader.ImageLoaderCallback {
-                        override fun onImageLoaded() {
-                            consultAvatar.setImageResource(style.defaultOperatorAvatar)
-                        }
-                    }
+                    modifications = listOf(ImageModifications.CircleCropModification)
                 )
             } ?: run {
                 consultAvatar.setImageResource(style.defaultOperatorAvatar)

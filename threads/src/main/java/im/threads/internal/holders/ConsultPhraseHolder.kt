@@ -26,6 +26,7 @@ import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.FileDescription
 import im.threads.business.models.Quote
 import im.threads.business.models.enums.AttachmentStateEnum
+import im.threads.business.ogParser.OGDataContent
 import im.threads.business.utils.FileUtils
 import im.threads.business.utils.FileUtils.isImage
 import im.threads.internal.formatters.RussianFormatSymbols
@@ -78,7 +79,7 @@ class ConsultPhraseHolder(parent: ViewGroup, highlightingStream: PublishSubject<
             }
         }
     private val phraseTextView = itemView.findViewById<BubbleMessageTextView>(R.id.text).apply {
-        setLinkTextColor(getColorInt(style.incomingMessageTextColor))
+        setLinkTextColor(getColorInt(style.incomingMessageLinkColor))
     }
     private val consultAvatar = itemView.findViewById<ImageView>(R.id.consultAvatar).apply {
         layoutParams.height =
@@ -148,6 +149,7 @@ class ConsultPhraseHolder(parent: ViewGroup, highlightingStream: PublishSubject<
         onAvatarClickListener: View.OnClickListener
     ) {
         subscribeForHighlighting(consultPhrase, rootLayout)
+        subscribeForOpenGraphData(OGDataContent(ogDataLayout, timeStampTextView, consultPhrase.phraseText))
         ViewUtils.setClickListener(itemView as ViewGroup, onRowLongClickListener)
         val timeText = timeStampSdf.format(Date(consultPhrase.timeStamp))
         timeStampTextView.text = timeText
@@ -245,13 +247,7 @@ class ConsultPhraseHolder(parent: ViewGroup, highlightingStream: PublishSubject<
         phraseTextView.bindTimestampView(timeStampTextView)
         phraseTextView.visibility = View.VISIBLE
         highlightOperatorText(phraseTextView, consultPhrase)
-        UrlUtils.extractLink(phrase)?.let {
-            it.link?.let { link ->
-                bindOGData(ogDataLayout, timeStampTextView, link)
-            }
-        } ?: run {
-            hideOGView(ogDataLayout, timeStampTextView)
-        }
+        bindOGData(phrase)
     }
 
     private fun showQuote(
@@ -377,12 +373,7 @@ class ConsultPhraseHolder(parent: ViewGroup, highlightingStream: PublishSubject<
                 consultAvatar.loadImage(
                     FileUtils.convertRelativeUrlToAbsolute(it),
                     listOf(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_INSIDE),
-                    modifications = listOf(ImageModifications.CircleCropModification),
-                    callback = object : ImageLoader.ImageLoaderCallback {
-                        override fun onImageLoaded() {
-                            consultAvatar.setImageResource(style.defaultOperatorAvatar)
-                        }
-                    }
+                    modifications = listOf(ImageModifications.CircleCropModification)
                 )
             } ?: run {
                 consultAvatar.setImageResource(style.defaultOperatorAvatar)
