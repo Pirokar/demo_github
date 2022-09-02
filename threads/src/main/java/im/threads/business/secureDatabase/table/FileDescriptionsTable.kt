@@ -4,10 +4,9 @@ import android.content.ContentValues
 import im.threads.business.models.FileDescription
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.models.enums.ErrorStateEnum
-import im.threads.business.secureDatabase.ThreadsDbHelper.Companion.DB_PASSWORD
 import im.threads.business.utils.FileUtils.safeParse
-import net.sqlcipher.database.SQLiteDatabase
-import net.sqlcipher.database.SQLiteOpenHelper
+import net.zetetic.database.sqlcipher.SQLiteDatabase
+import net.zetetic.database.sqlcipher.SQLiteOpenHelper
 import java.util.Locale
 
 class FileDescriptionsTable : Table() {
@@ -36,7 +35,7 @@ class FileDescriptionsTable : Table() {
     }
 
     override fun cleanTable(sqlHelper: SQLiteOpenHelper) {
-        sqlHelper.getWritableDatabase(DB_PASSWORD).execSQL("delete from $TABLE_FILE_DESCRIPTION")
+        sqlHelper.writableDatabase.execSQL("delete from $TABLE_FILE_DESCRIPTION")
     }
 
     fun getFileDescription(sqlHelper: SQLiteOpenHelper, messageUuid: String?): FileDescription? {
@@ -49,7 +48,7 @@ class FileDescriptionsTable : Table() {
             TABLE_FILE_DESCRIPTION,
             COLUMN_FD_MESSAGE_UUID_EXT
         )
-        sqlHelper.getWritableDatabase(DB_PASSWORD).rawQuery(query, arrayOf(messageUuid)).use { c ->
+        sqlHelper.writableDatabase.rawQuery(query, arrayOf(messageUuid)).use { c ->
             if (!c.moveToFirst()) {
                 return null
             }
@@ -104,7 +103,7 @@ class FileDescriptionsTable : Table() {
                 " where " + COLUMN_FD_MESSAGE_UUID_EXT + " = ?"
             )
         val selectionArgs = arrayOf(fdMessageUuid)
-        sqlHelper.getWritableDatabase(DB_PASSWORD).rawQuery(sql, selectionArgs).use { c ->
+        sqlHelper.writableDatabase.rawQuery(sql, selectionArgs).use { c ->
             val existsInDb: Boolean = c.count > 0
             if (existsInDb) {
                 c.moveToFirst()
@@ -112,7 +111,7 @@ class FileDescriptionsTable : Table() {
                 if (localPath.isNullOrEmpty()) {
                     cv.put(COLUMN_FD_DOWNLOAD_PROGRESS, fileDescription.downloadProgress)
                 }
-                sqlHelper.getWritableDatabase(DB_PASSWORD)
+                sqlHelper.writableDatabase
                     .update(
                         TABLE_FILE_DESCRIPTION,
                         cv,
@@ -121,7 +120,7 @@ class FileDescriptionsTable : Table() {
                     )
             } else {
                 cv.put(COLUMN_FD_DOWNLOAD_PROGRESS, fileDescription.downloadProgress)
-                sqlHelper.getWritableDatabase(DB_PASSWORD)
+                sqlHelper.writableDatabase
                     .insert(TABLE_FILE_DESCRIPTION, null, cv)
             }
         }
@@ -135,7 +134,7 @@ class FileDescriptionsTable : Table() {
             COLUMN_FD_TIMESTAMP
         )
         val list: MutableList<FileDescription> = ArrayList()
-        sqlHelper.getWritableDatabase(DB_PASSWORD).rawQuery(query, arrayOf()).use { c ->
+        sqlHelper.writableDatabase.rawQuery(query, arrayOf()).use { c ->
             if (!c.moveToFirst()) {
                 return list
             }
@@ -185,7 +184,7 @@ class FileDescriptionsTable : Table() {
                 cv.put(COLUMN_FD_ATTACHMENT_STATE, it.state.state)
                 cv.put(COLUMN_FD_ERROR_CODE, it.errorCode.state)
                 cv.put(COLUMN_FD_ERROR_MESSAGE, it.errorMessage)
-                sqlHelper.getWritableDatabase(DB_PASSWORD).update(
+                sqlHelper.writableDatabase.update(
                     TABLE_FILE_DESCRIPTION,
                     cv,
                     (
@@ -200,7 +199,7 @@ class FileDescriptionsTable : Table() {
 
     fun updateFileDescriptionByName(sqlHelper: SQLiteOpenHelper, fileDescription: FileDescription) {
         val cv = getCvFromFileDescription(fileDescription)
-        sqlHelper.getWritableDatabase(DB_PASSWORD).update(
+        sqlHelper.writableDatabase.update(
             TABLE_FILE_DESCRIPTION,
             cv,
             ("$COLUMN_FD_FILENAME like ? and $COLUMN_FD_URL like ?"),
@@ -210,7 +209,7 @@ class FileDescriptionsTable : Table() {
 
     fun updateFileDescriptionByUrl(sqlHelper: SQLiteOpenHelper, fileDescription: FileDescription) {
         val cv = getCvFromFileDescription(fileDescription)
-        sqlHelper.getWritableDatabase(DB_PASSWORD).update(
+        sqlHelper.writableDatabase.update(
             TABLE_FILE_DESCRIPTION,
             cv,
             ("$COLUMN_FD_URL = ?"),
