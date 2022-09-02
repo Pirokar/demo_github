@@ -21,7 +21,7 @@ class DatabaseHolder {
      *
      * @return MyOpenHelper instance
      */
-    val myOpenHelper = ThreadsDbHelper(BaseConfig.instance.context)
+    val myOpenHelper = ThreadsDbHelper.getInstance(BaseConfig.instance.context)
 
     fun cleanDatabase() {
         myOpenHelper.cleanDatabase()

@@ -14,14 +14,15 @@ import im.threads.business.secureDatabase.table.MessagesTable
 import im.threads.business.secureDatabase.table.QuestionsTable
 import im.threads.business.secureDatabase.table.QuickRepliesTable
 import im.threads.business.secureDatabase.table.QuotesTable
+import im.threads.business.utils.preferences.PrefUtilsBase
 import net.zetetic.database.sqlcipher.SQLiteDatabase
 import net.zetetic.database.sqlcipher.SQLiteOpenHelper
 
-class ThreadsDbHelper(val context: Context) :
+class ThreadsDbHelper private constructor(val context: Context, password: String) :
     SQLiteOpenHelper(
         context,
         DATABASE_NAME,
-        DB_PASSWORD,
+        password,
         null,
         VERSION,
         0,
@@ -38,7 +39,7 @@ class ThreadsDbHelper(val context: Context) :
     private var messagesTable: MessagesTable
 
     init {
-        System.loadLibrary("sqlcipher")
+        loadLibrary()
         fileDescriptionTable = FileDescriptionsTable()
         questionsTable = QuestionsTable()
         quotesTable = QuotesTable(fileDescriptionTable)
@@ -149,6 +150,29 @@ class ThreadsDbHelper(val context: Context) :
     companion object {
         private const val DATABASE_NAME = "messages_secure.db"
         private const val VERSION = 2
-        const val DB_PASSWORD = "password"
+        private var isLibraryLoaded = false
+        private const val oldPassword = "password"
+        const val DB_PASSWORD = "CdgF9rEjzaes8G"
+
+        fun getInstance(context: Context): ThreadsDbHelper {
+            migratePassword(context)
+            return ThreadsDbHelper(context, DB_PASSWORD)
+        }
+
+        private fun migratePassword(context: Context) {
+            if (!PrefUtilsBase.isDatabasePasswordMigrated) {
+                val oldDatabase = ThreadsDbHelper(context, oldPassword)
+                oldDatabase.writableDatabase.rawQuery("PRAGMA rekey = '$DB_PASSWORD'")
+                oldDatabase.close()
+                PrefUtilsBase.isDatabasePasswordMigrated = true
+            }
+        }
+
+        private fun loadLibrary() {
+            if (!isLibraryLoaded) {
+                System.loadLibrary("sqlcipher")
+                isLibraryLoaded = true
+            }
+        }
     }
 }

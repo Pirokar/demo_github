@@ -22,6 +22,7 @@ open class PrefUtilsBaseKeys {
     val UNREAD_PUSH_COUNT = "UNREAD_PUSH_COUNT"
     val STORE_NAME = "im.threads.internal.utils.PrefStore"
     val ENCRYPTED_STORE_NAME = "im.threads.internal.utils.EncryptedPrefStore"
+    val IS_DATABASE_PASSWORD_MIGRATED = "IS_DATABASE_PASSWORD_MIGRATED"
 
     open val allPrefKeys = arrayListOf(
         TAG_CLIENT_ID,
@@ -44,6 +45,7 @@ open class PrefUtilsBaseKeys {
         CAMPAIGN_MESSAGE,
         UNREAD_PUSH_COUNT,
         STORE_NAME,
-        ENCRYPTED_STORE_NAME
+        ENCRYPTED_STORE_NAME,
+        IS_DATABASE_PASSWORD_MIGRATED
     )
 }
