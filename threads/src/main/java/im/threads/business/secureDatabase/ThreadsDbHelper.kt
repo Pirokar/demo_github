@@ -14,11 +14,12 @@ import im.threads.business.secureDatabase.table.MessagesTable
 import im.threads.business.secureDatabase.table.QuestionsTable
 import im.threads.business.secureDatabase.table.QuickRepliesTable
 import im.threads.business.secureDatabase.table.QuotesTable
-import net.sqlcipher.database.SQLiteDatabase
-import net.sqlcipher.database.SQLiteOpenHelper
+import net.zetetic.database.sqlcipher.SQLiteDatabase
+import net.zetetic.database.sqlcipher.SQLiteOpenHelper
+import java.io.File
 
 class ThreadsDbHelper(val context: Context) :
-    SQLiteOpenHelper(context, "messages_secure.db", null, VERSION),
+    SQLiteOpenHelper(context, DATABASE_NAME, null, VERSION),
     DBHelper {
 
     private var quotesTable: QuotesTable
@@ -26,9 +27,13 @@ class ThreadsDbHelper(val context: Context) :
     private var fileDescriptionTable: FileDescriptionsTable
     private var questionsTable: QuestionsTable
     private var messagesTable: MessagesTable
+    private lateinit var database: SQLiteDatabase
 
     init {
-        SQLiteDatabase.loadLibs(context)
+        System.loadLibrary("sqlcipher")
+        val databaseFile: File = context.getDatabasePath(DATABASE_NAME)
+        database =
+            SQLiteDatabase.openOrCreateDatabase(databaseFile, DB_PASSWORD, null, null)
         fileDescriptionTable = FileDescriptionsTable()
         questionsTable = QuestionsTable()
         quotesTable = QuotesTable(fileDescriptionTable)
@@ -136,7 +141,16 @@ class ThreadsDbHelper(val context: Context) :
         messagesTable.speechMessageUpdated(this, speechMessageUpdate!!)
     }
 
+    override fun getWritableDatabase(): SQLiteDatabase {
+        return database
+    }
+
+    override fun getReadableDatabase(): SQLiteDatabase {
+        return database
+    }
+
     companion object {
+        private const val DATABASE_NAME = "messages_secure.db"
         private const val VERSION = 2
         const val DB_PASSWORD = "password"
     }
