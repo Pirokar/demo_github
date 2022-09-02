@@ -130,9 +130,10 @@
 
                     <ImageButton
                         android:id="@+id/quote_past"
-                        android:layout_width="60dp"
+                        android:layout_width="24dp"
                         android:layout_height="match_parent"
                         android:background="@null"
+                        android:layout_marginStart="@dimen/activity_horizontal_margin"
                         app:srcCompat="@drawable/ic_reply_gray_24dp"
                         tools:visibility="gone" />
 
@@ -160,6 +161,7 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:gravity="center"
+                        android:layout_marginStart="@dimen/activity_horizontal_margin"
                         android:orientation="vertical">
 
                         <com.google.android.material.slider.Slider
@@ -169,7 +171,7 @@
                             android:theme="@style/ThemeOverlay.ChatCenter.Slider.Preview"
                             android:visibility="gone" />
 
-                        <im.threads.internal.widget.text_view.InputQuotedMessageAuthorTextView
+                        <im.threads.internal.widget.textView.InputQuotedMessageAuthorTextView
                             android:id="@+id/quote_header"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -180,7 +182,7 @@
                             android:textSize="@dimen/text_medium"
                             tools:text="title_title_title" />
 
-                        <im.threads.internal.widget.text_view.InputQuotedMessageTextView
+                        <im.threads.internal.widget.textView.InputQuotedMessageTextView
                             android:id="@+id/quote_text"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -366,7 +368,7 @@
                         android:gravity="center_vertical"
                         android:orientation="vertical">
 
-                        <im.threads.internal.widget.text_view.ToolbarTitleTextView
+                        <im.threads.internal.widget.textView.ToolbarTitleTextView
                             android:id="@+id/consult_name"
                             android:layout_width="wrap_content"
                             android:layout_height="26dp"
@@ -377,7 +379,7 @@
                             android:textSize="@dimen/text_big"
                             tools:text="@string/threads_searching_operator" />
 
-                        <im.threads.internal.widget.text_view.ToolbarSubtitleTextView
+                        <im.threads.internal.widget.textView.ToolbarSubtitleTextView
                             android:id="@+id/subtitle"
                             android:layout_width="wrap_content"
                             android:layout_height="22dp"

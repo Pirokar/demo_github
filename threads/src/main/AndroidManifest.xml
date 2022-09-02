@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     package="im.threads">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
@@ -34,7 +33,7 @@
             android:name=".internal.activities.ConsultActivity"
             android:theme="@style/ThreadsStyleConsultPage"/>
         <activity
-            android:name=".internal.activities.files_activity.FilesActivity"
+            android:name=".internal.activities.filesActivity.FilesActivity"
             android:theme="@style/ThreadsStyle"/>
         <activity
             android:name=".internal.activities.GalleryActivity"

@@ -12,14 +12,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import im.threads.R;
-import im.threads.internal.model.ChatItem;
-import im.threads.internal.model.ConsultConnectionMessage;
-import im.threads.internal.model.ConsultPhrase;
-import im.threads.internal.model.FileDescription;
-import im.threads.internal.model.QuestionDTO;
-import im.threads.internal.model.SimpleSystemMessage;
-import im.threads.internal.model.Survey;
-import im.threads.internal.utils.FileUtils;
+import im.threads.business.models.ChatItem;
+import im.threads.business.models.ConsultConnectionMessage;
+import im.threads.business.models.ConsultPhrase;
+import im.threads.business.models.FileDescription;
+import im.threads.business.models.QuestionDTO;
+import im.threads.business.models.SimpleSystemMessage;
+import im.threads.business.models.Survey;
+import im.threads.business.utils.FileUtils;
 
 public final class MessageFormatter {
 

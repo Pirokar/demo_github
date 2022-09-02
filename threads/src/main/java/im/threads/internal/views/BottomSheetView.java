@@ -27,7 +27,6 @@ public final class BottomSheetView extends LinearLayout {
     private Button camera;
     private Button file;
     private Button gallery;
-    private Button selfie;
     private Button send;
 
     public BottomSheetView(Context context) {
@@ -43,6 +42,26 @@ public final class BottomSheetView extends LinearLayout {
     public BottomSheetView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
+    }
+
+    private static void animateShow(View view) {
+        view.setVisibility(VISIBLE);
+        view.setAlpha(0.0f);
+        view.animate()
+                .alpha(1.0f)
+                .setListener(null);
+    }
+
+    private static void animateHide(View view) {
+        view.animate()
+                .alpha(0.0f)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        view.setVisibility(View.GONE);
+                    }
+                });
     }
 
     private void init() {
@@ -66,18 +85,6 @@ public final class BottomSheetView extends LinearLayout {
         file.setOnClickListener(v -> {
             if (null != buttonsListener) buttonsListener.onFilePickerClick();
         });
-        selfie = findViewById(R.id.selfie);
-        ViewUtils.setCompoundDrawablesWithIntrinsicBoundsCompat(selfie,
-                style.attachmentSelfieCameraIconResId, ViewUtils.DrawablePosition.TOP);
-        if (Config.instance.getChatStyle().selfieEnabled) {
-            selfie.setOnClickListener(v -> {
-                if (buttonsListener != null) {
-                    buttonsListener.onSelfieClick();
-                }
-            });
-        } else {
-            selfie.setVisibility(GONE);
-        }
         send = findViewById(R.id.send);
         ViewUtils.setCompoundDrawablesWithIntrinsicBoundsCompat(send,
                 style.attachmentSendIconResId, ViewUtils.DrawablePosition.TOP);
@@ -100,13 +107,11 @@ public final class BottomSheetView extends LinearLayout {
         file.setTextColor(color);
         camera.setTextColor(color);
         gallery.setTextColor(color);
-        selfie.setTextColor(color);
         send.setTextColor(color);
         ArrayList<Drawable> drawables = new ArrayList<>();
         drawables.addAll(Arrays.asList(file.getCompoundDrawables()));
         drawables.addAll(Arrays.asList(camera.getCompoundDrawables()));
         drawables.addAll(Arrays.asList(gallery.getCompoundDrawables()));
-        drawables.addAll(Arrays.asList(selfie.getCompoundDrawables()));
         drawables.addAll(Arrays.asList(send.getCompoundDrawables()));
         for (Drawable drawable : drawables) {
             ColorsHelper.setDrawableColor(file.getContext(), drawable, colorRes);
@@ -129,9 +134,6 @@ public final class BottomSheetView extends LinearLayout {
                             animateShow(file);
                             animateShow(camera);
                             animateShow(gallery);
-                            if (Config.instance.getChatStyle().selfieEnabled) {
-                                animateShow(selfie);
-                            }
                         }
                     });
         }
@@ -141,9 +143,6 @@ public final class BottomSheetView extends LinearLayout {
         if (send.getVisibility() == GONE) {
             animateHide(camera);
             animateHide(gallery);
-            if (Config.instance.getChatStyle().selfieEnabled) {
-                animateHide(selfie);
-            }
             file.animate()
                     .alpha(0.0f)
                     .setListener(new AnimatorListenerAdapter() {
@@ -157,34 +156,12 @@ public final class BottomSheetView extends LinearLayout {
         }
     }
 
-    private static void animateShow(View view) {
-        view.setVisibility(VISIBLE);
-        view.setAlpha(0.0f);
-        view.animate()
-                .alpha(1.0f)
-                .setListener(null);
-    }
-
-    private static void animateHide(View view) {
-        view.animate()
-                .alpha(0.0f)
-                .setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                        view.setVisibility(View.GONE);
-                    }
-                });
-    }
-
     public interface ButtonsListener {
         void onCameraClick();
 
         void onGalleryClick();
 
         void onFilePickerClick();
-
-        void onSelfieClick();
 
         void onSendClick();
     }

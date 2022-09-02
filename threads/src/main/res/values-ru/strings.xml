@@ -26,7 +26,6 @@
     <string name="threads_to_photo">для фото</string>
     <string name="threads_no_cameras_detected">На устройстве отсутствует камера</string>
     <string name="threads_camera_could_not_start_error">Не удалось запустить приложение камеры</string>
-    <string name="threads_front_camera_could_not_start_error">Не удалось запустить фронтальную камеру.</string>
     <string name="threads_back_camera_could_not_start_error">Не удалось запустить тыльную камеру.</string>
     <string name="threads_retake">Переснять</string>
     <string name="threads_consult">Консультант</string>
@@ -131,8 +130,6 @@
     <string name="threads_welcome_screen_title_text">Добро пожаловать</string>
     <string name="threads_welcome_screen_subtitle_text">Отправьте ваш вопрос</string>
     <string name="threads_input_hint">Ваше сообщение…</string>
-    <string name="threads_selfie">Селфи</string>
-    <string name="threads_selfie_hint">Убедитесь, что на фото ваше лицо размещено прямо и его отчетливо видно</string>
 
     <string name="threads_not_allowed_file_extension">Недопустимый формат файла</string>
     <string name="threads_not_allowed_file_size">Файл превышает максимально допустимый размер %1$d МБ</string>

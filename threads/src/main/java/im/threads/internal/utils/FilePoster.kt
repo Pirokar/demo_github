@@ -1,18 +1,18 @@
-package im.threads.internal.utils
+package im.threads.internal.utils // ktlint-disable filename
 
 import android.accounts.NetworkErrorException
 import android.graphics.Bitmap
 import android.net.Uri
 import android.widget.ImageView
+import im.threads.business.imageLoading.ImageLoader
+import im.threads.business.logger.LoggerEdna
+import im.threads.business.models.FileDescription
+import im.threads.business.rest.queries.DatastoreApi
+import im.threads.business.transport.InputStreamRequestBody
+import im.threads.business.utils.FileUtils.getFileName
+import im.threads.business.utils.FileUtils.getMimeType
 import im.threads.internal.Config
-import im.threads.internal.domain.logger.LoggerEdna
-import im.threads.internal.imageLoading.ImageLoader
 import im.threads.internal.model.ErrorResponse
-import im.threads.internal.model.FileDescription
-import im.threads.internal.retrofit.DatastoreApiGenerator
-import im.threads.internal.transport.InputStreamRequestBody
-import im.threads.internal.utils.FileUtils.getFileName
-import im.threads.internal.utils.FileUtils.getMimeType
 import im.threads.internal.utils.PrefUtils.Companion.clientID
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -24,7 +24,6 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
-import java.net.URLEncoder
 
 private const val PHOTO_RESIZE_MAX_SIDE = 1600
 
@@ -52,11 +51,11 @@ private fun sendFile(uri: Uri, mimeType: String, token: String): String {
     LoggerEdna.info("sendFile: $uri")
     val part: MultipartBody.Part = MultipartBody.Part.createFormData(
         "file",
-        URLEncoder.encode(getFileName(uri), "utf-8"),
+        getFileName(uri),
         getFileRequestBody(uri, mimeType)
     )
     val agent: RequestBody = token.toRequestBody("text/plain".toMediaTypeOrNull())
-    val response = DatastoreApiGenerator.getApi().upload(part, agent, token)?.execute()
+    val response = DatastoreApi.get().upload(part, agent, token)?.execute()
     response?.let {
         if (it.isSuccessful) {
             response.body()?.let { fileUploadResponse ->

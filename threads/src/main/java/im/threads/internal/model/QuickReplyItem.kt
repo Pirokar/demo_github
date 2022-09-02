@@ -1,6 +1,10 @@
 package im.threads.internal.model
 
-class QuickReplyItem(val items: List<QuickReply>, override val timeStamp: Long) : ChatItem {
+import im.threads.business.models.ChatItem
+import im.threads.business.models.QuickReply
+
+class QuickReplyItem(val items: List<QuickReply>, override val timeStamp: Long) :
+    ChatItem {
 
     override val threadId: Long?
         get() = null

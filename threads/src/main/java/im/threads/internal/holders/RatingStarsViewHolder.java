@@ -6,10 +6,11 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
+
 import im.threads.ChatStyle;
 import im.threads.R;
+import im.threads.business.models.Survey;
 import im.threads.internal.Config;
-import im.threads.internal.model.Survey;
 import im.threads.internal.widget.Rating;
 
 /**
@@ -26,7 +27,10 @@ public final class RatingStarsViewHolder extends BaseHolder {
     private ChatStyle style;
 
     public RatingStarsViewHolder(ViewGroup parent) {
-        super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_rate_stars, parent, false));
+        super(
+                LayoutInflater.from(parent.getContext()).inflate(R.layout.item_rate_stars, parent, false),
+                null
+        );
         topSeparator = itemView.findViewById(R.id.top_separator);
         bottomSeparator = itemView.findViewById(R.id.bottom_separator);
         rating = itemView.findViewById(R.id.mark);

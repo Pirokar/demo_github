@@ -31,36 +31,29 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import im.threads.R;
-import im.threads.internal.domain.logger.LoggerEdna;
+import im.threads.business.imageLoading.ImageLoader;
+import im.threads.business.logger.LoggerEdna;
 import im.threads.internal.helpers.FileHelper;
-import im.threads.internal.imageLoading.ImageLoader;
 
 public final class CameraActivity extends BaseActivity {
     public static final String IMAGE_EXTRA = "IMAGE_EXTRA";
     public static final int FLASH_ON = 1;
     public static final int FLASH_OFF = 2;
     public static final int FLASH_AUTO = 3;
-    private static final String SELFIE_MODE_EXTRA = "SELFIE_MODE_EXTRA";
     private Camera mCamera;
     private SurfaceView mSurfaceView;
     private int mFlashMode = 3;
-    private boolean isFrontCamera;
     private boolean isCameraReleased = false;
     private String mCurrentPhoto;
     private Executor mExecutor = Executors.newSingleThreadExecutor();
-    private boolean selfieMode = false;
 
-    public static Intent getStartIntent(Context context, boolean selfieMode) {
-        Intent intent = new Intent(context, CameraActivity.class);
-        intent.putExtra(SELFIE_MODE_EXTRA, selfieMode);
-        return intent;
+    public static Intent getStartIntent(Context context) {
+        return new Intent(context, CameraActivity.class);
     }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        selfieMode = getIntent().getBooleanExtra(SELFIE_MODE_EXTRA, false);
-        isFrontCamera = selfieMode;
         setContentView(R.layout.activity_camera);
         initPreview();
     }
@@ -100,7 +93,7 @@ public final class CameraActivity extends BaseActivity {
                 try {
                     if (mSurfaceView.getVisibility() == View.VISIBLE) {
                         releaseCamera();
-                        mCamera = Camera.open(isFrontCamera ? Camera.CameraInfo.CAMERA_FACING_FRONT : Camera.CameraInfo.CAMERA_FACING_BACK);
+                        mCamera = Camera.open(Camera.CameraInfo.CAMERA_FACING_BACK);
                         isCameraReleased = false;
                         mCamera.setPreviewDisplay(holder);
                         setUpCameraInitialParameters();
@@ -124,50 +117,15 @@ public final class CameraActivity extends BaseActivity {
 
     private void setStateCameraPreview() {
         findViewById(R.id.photo_preview).setVisibility(View.GONE);
-        if (selfieMode) {
-            findViewById(R.id.label_top_selfie).setVisibility(View.VISIBLE);
-            findViewById(R.id.ll_selfie_mask).setVisibility(View.VISIBLE);
-            findViewById(R.id.label_top).setVisibility(View.GONE);
-        } else {
-            findViewById(R.id.label_top).setVisibility(View.VISIBLE);
-            findViewById(R.id.label_top_selfie).setVisibility(View.GONE);
-            findViewById(R.id.ll_selfie_mask).setVisibility(View.GONE);
-        }
+        findViewById(R.id.label_top).setVisibility(View.VISIBLE);
         findViewById(R.id.bottom_buttons_photo).setVisibility(View.VISIBLE);
         findViewById(R.id.bottom_buttons_image).setVisibility(View.GONE);
         final ImageButton flashButton = findViewById(R.id.flash_control);
         final ImageButton takePhotoButton = findViewById(R.id.take_photo);
-        ImageButton switchCamButton = findViewById(R.id.switch_cams);
         if (Camera.getNumberOfCameras() == 0) {
             Toast.makeText(this, getResources().getString(R.string.threads_no_cameras_detected), Toast.LENGTH_SHORT).show();
             finish();
         }
-        if (selfieMode) {
-            switchCamButton.setVisibility(View.INVISIBLE);
-            flashButton.setVisibility(View.INVISIBLE);
-        }
-        switchCamButton.setOnClickListener(v -> {
-            int currentCameraId;
-            if (Camera.getNumberOfCameras() > 1) {
-                releaseCamera();
-                if (isFrontCamera) {
-                    currentCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
-                } else {
-                    currentCameraId = Camera.CameraInfo.CAMERA_FACING_FRONT;
-                }
-                isFrontCamera = !isFrontCamera;
-                mCamera = Camera.open(currentCameraId);
-                isCameraReleased = false;
-                setUpCameraInitialParameters();
-                try {
-                    mCamera.setPreviewDisplay(mSurfaceView.getHolder());
-                    mCamera.startPreview();
-                } catch (IOException e) {
-                    LoggerEdna.error("error while switching cameras", e);
-                    finish();
-                }
-            }
-        });
         takePhotoButton.setEnabled(true);
         takePhotoButton.setOnClickListener(v -> {
             takePhotoButton.setEnabled(false);
@@ -178,19 +136,10 @@ public final class CameraActivity extends BaseActivity {
                     , (data, camera) -> mExecutor.execute(() -> {
                         Bitmap raw = BitmapFactory.decodeByteArray(data, 0, data.length);
                         Bitmap out = raw;
-                        if (raw.getWidth() > raw.getHeight() && !isFrontCamera) {
+                        if (raw.getWidth() > raw.getHeight()) {
                             Matrix m = new Matrix();
                             m.setRotate(90);
                             out = Bitmap.createBitmap(raw, 0, 0, raw.getWidth(), raw.getHeight(), m, false);
-                            raw.recycle();
-                        } else if (isFrontCamera && raw.getWidth() > raw.getHeight()) {
-                            float[] mirrorY = {-1, 0, 0, 0, 1, 0, 0, 0, 1};
-                            Matrix matrix = new Matrix();
-                            Matrix matrixMirrorY = new Matrix();
-                            matrixMirrorY.setValues(mirrorY);
-                            matrix.postConcat(matrixMirrorY);
-                            matrix.postRotate(90);
-                            out = Bitmap.createBitmap(raw, 0, 0, raw.getWidth(), raw.getHeight(), matrix, true);
                             raw.recycle();
                         }
                         File output = FileHelper.INSTANCE.createImageFile(CameraActivity.this);
@@ -256,7 +205,6 @@ public final class CameraActivity extends BaseActivity {
 
     private void setStateImagePreview(String imagePath) {
         findViewById(R.id.label_top).setVisibility(View.GONE);
-        findViewById(R.id.ll_selfie_mask).setVisibility(View.GONE);
         findViewById(R.id.bottom_buttons_photo).setVisibility(View.GONE);
         ImageView image = findViewById(R.id.photo_preview);
         image.setVisibility(View.VISIBLE);
@@ -284,7 +232,7 @@ public final class CameraActivity extends BaseActivity {
     private void restoreCamera() {
         releaseCamera();
         try {
-            mCamera = Camera.open(isFrontCamera ? Camera.CameraInfo.CAMERA_FACING_FRONT : Camera.CameraInfo.CAMERA_FACING_BACK);
+            mCamera = Camera.open(Camera.CameraInfo.CAMERA_FACING_BACK);
             setUpCameraInitialParameters();
             mCamera.setPreviewDisplay(mSurfaceView.getHolder());
             mCamera.startPreview();
@@ -293,9 +241,7 @@ public final class CameraActivity extends BaseActivity {
         } catch (IOException e) {
             LoggerEdna.error("restoreCamera", e);
         } catch (RuntimeException ex) {
-            String error = getResources().getString(isFrontCamera ?
-                    R.string.threads_front_camera_could_not_start_error
-                    : R.string.threads_back_camera_could_not_start_error);
+            String error = getResources().getString(R.string.threads_back_camera_could_not_start_error);
             Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
             LoggerEdna.error("restoreCamera", ex);
         }

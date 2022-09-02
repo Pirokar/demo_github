@@ -9,12 +9,12 @@ import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.google.gson.JsonSyntaxException
 import im.threads.ChatStyle
+import im.threads.business.logger.LoggerEdna
+import im.threads.business.models.CampaignMessage
+import im.threads.business.models.FileDescription
+import im.threads.business.transport.CloudMessagingType
 import im.threads.internal.Config
-import im.threads.internal.domain.logger.LoggerEdna
-import im.threads.internal.model.CampaignMessage
 import im.threads.internal.model.ClientNotificationDisplayType
-import im.threads.internal.model.FileDescription
-import im.threads.internal.transport.CloudMessagingType
 import im.threads.styles.permissions.PermissionDescriptionDialogStyle
 import im.threads.styles.permissions.PermissionDescriptionType
 import java.io.File
@@ -332,7 +332,7 @@ class PrefUtils private constructor() {
         var fcmToken: String?
             get() {
                 val fcmToken = defaultSharedPreferences.getString(FCM_TOKEN, "") ?: ""
-                return if (fcmToken.isNotEmpty()) fcmToken else null
+                return fcmToken.ifEmpty { null }
             }
             set(fcmToken) {
                 val cloudMessagingType = cloudMessagingType
@@ -349,7 +349,7 @@ class PrefUtils private constructor() {
         var hcmToken: String?
             get() {
                 val hcmToken = defaultSharedPreferences.getString(HCM_TOKEN, "") ?: ""
-                return if (hcmToken.isNotEmpty()) hcmToken else null
+                return hcmToken.ifEmpty { null }
             }
             set(hcmToken) {
                 val cloudMessagingType = cloudMessagingType
@@ -380,7 +380,7 @@ class PrefUtils private constructor() {
         var deviceAddress: String?
             get() {
                 val deviceAddress = defaultSharedPreferences.getString(DEVICE_ADDRESS, "") ?: ""
-                return if (deviceAddress.isNotEmpty()) deviceAddress else null
+                return deviceAddress.ifEmpty { null }
             }
             set(deviceAddress) {
                 defaultSharedPreferences

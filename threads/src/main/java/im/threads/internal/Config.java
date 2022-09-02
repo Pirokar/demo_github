@@ -19,16 +19,16 @@ import javax.net.ssl.X509TrustManager;
 
 import im.threads.ChatStyle;
 import im.threads.ThreadsLib;
-import im.threads.config.RequestConfig;
-import im.threads.config.SocketClientSettings;
-import im.threads.internal.domain.logger.LoggerConfig;
+import im.threads.business.config.RequestConfig;
+import im.threads.business.config.SocketClientSettings;
+import im.threads.business.imageLoading.ImageLoaderOkHttpProvider;
+import im.threads.business.logger.LoggerConfig;
+import im.threads.business.models.SslSocketFactoryConfig;
+import im.threads.business.transport.Transport;
+import im.threads.business.transport.threadsGate.ThreadsGateTransport;
 import im.threads.internal.exceptions.MetaConfigurationException;
-import im.threads.internal.imageLoading.ImageLoaderOkHttpProvider;
-import im.threads.internal.model.SslSocketFactoryConfig;
 import im.threads.internal.model.gson.UriDeserializer;
 import im.threads.internal.model.gson.UriSerializer;
-import im.threads.internal.transport.Transport;
-import im.threads.internal.transport.threads_gate.ThreadsGateTransport;
 import im.threads.internal.utils.MetaDataUtils;
 import im.threads.internal.utils.PrefUtils;
 import im.threads.internal.utils.TlsConfigurationUtils;
@@ -99,6 +99,7 @@ public final class Config {
                   @NonNull ThreadsLib.PendingIntentCreator pendingIntentCreator,
                   @Nullable ThreadsLib.UnreadMessagesCountListener unreadMessagesCountListener,
                   @Nullable Interceptor networkInterceptor,
+                  @Nullable ChatStyle chatStyle,
                   boolean isDebugLoggingEnabled,
                   int historyLoadingCount,
                   int surveyCompletionDelay,
@@ -108,6 +109,7 @@ public final class Config {
         this.pendingIntentCreator = pendingIntentCreator;
         this.unreadMessagesCountListener = unreadMessagesCountListener;
         this.networkInterceptor = networkInterceptor;
+        this.chatStyle = chatStyle;
         this.isDebugLoggingEnabled = isDebugLoggingEnabled;
         this.newChatCenterApi = getIsNewChatCenterApi(isNewChatCenterApi);
         this.loggerConfig = loggerConfig;

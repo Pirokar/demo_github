@@ -9,13 +9,13 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
+import im.threads.business.logger.LoggerEdna
+import im.threads.business.models.FileDescription
+import im.threads.business.models.enums.AttachmentStateEnum
+import im.threads.business.secureDatabase.DatabaseHolder
 import im.threads.internal.Config
 import im.threads.internal.broadcastReceivers.ProgressReceiver
-import im.threads.internal.domain.logger.LoggerEdna
 import im.threads.internal.helpers.FileProviderHelper
-import im.threads.internal.model.AttachmentStateEnum
-import im.threads.internal.model.FileDescription
-import im.threads.internal.secureDatabase.DatabaseHolder
 import im.threads.internal.utils.FileDownloader
 import im.threads.internal.utils.FileDownloader.DownloadLister
 import im.threads.internal.utils.WorkerUtils.marshall
@@ -28,7 +28,6 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
     private var runningDownloads = HashMap<FileDescription, FileDownloader>()
 
     override fun doWork(): Result {
-
         val data = inputData.getByteArray(FD_TAG)?.let { unmarshall(it) }
         val fileDescription: FileDescription = FileDescription.CREATOR.createFromParcel(data)
             ?: return Result.failure()
@@ -92,7 +91,7 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
                 runningDownloads[fileDescription] = fileDownloader
                 fileDescription.downloadProgress = 1
                 sendDownloadProgressBroadcast(fileDescription)
-                runningDownloads.put(fileDescription, fileDownloader)
+                runningDownloads[fileDescription] = fileDownloader
                 fileDownloader.download()
             }
         } else if (START_DOWNLOAD_WITH_NO_STOP == inputData.getString(START_DOWNLOAD_ACTION)) {
@@ -100,7 +99,7 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
                 runningDownloads[fileDescription] = fileDownloader
                 fileDescription.downloadProgress = 1
                 sendDownloadProgressBroadcast(fileDescription)
-                runningDownloads.put(fileDescription, fileDownloader)
+                runningDownloads[fileDescription] = fileDownloader
                 fileDownloader.download()
             }
         }

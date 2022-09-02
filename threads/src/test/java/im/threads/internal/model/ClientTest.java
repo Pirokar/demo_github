@@ -7,6 +7,8 @@ import org.junit.runners.Parameterized;
 
 import java.util.Arrays;
 
+import im.threads.business.models.Client;
+
 @RunWith(Parameterized.class)
 public class ClientTest {
 

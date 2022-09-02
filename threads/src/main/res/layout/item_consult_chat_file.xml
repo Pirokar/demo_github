@@ -1,24 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/rootLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 xmlns:tools="http://schemas.android.com/tools">
-
-    <View
-        android:id="@+id/filter"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/bubble"
-        android:layout_alignParentTop="true"
-        android:background="@color/threads_chat_highlighting"/>
-
-    <View
-        android:id="@+id/filter_second"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/filter_offset_size"
-        android:layout_below="@+id/filter"
-        android:background="@color/threads_chat_highlighting"/>
 
     <ImageView
         android:id="@+id/consult_avatar"
@@ -66,7 +52,7 @@
             android:layout_toEndOf="@+id/loader"
             android:background="@color/threads_incoming_message_text" />
 
-        <im.threads.internal.widget.text_view.BubbleMessageTextView
+        <im.threads.internal.widget.textView.BubbleMessageTextView
             android:id="@+id/header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -76,7 +62,7 @@
             android:textColor="@color/threads_incoming_message_text"
             tools:text="счет на оплатуrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr.pdf" />
 
-        <im.threads.internal.widget.text_view.BubbleMessageTextView
+        <im.threads.internal.widget.textView.BubbleMessageTextView
             android:id="@+id/file_size"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -89,7 +75,7 @@
             android:textColor="@color/threads_incoming_message_text"
             tools:text="1,2 mb" />
 
-        <im.threads.internal.widget.text_view.BubbleTimeTextView
+        <im.threads.internal.widget.textView.BubbleTimeTextView
             android:id="@+id/timestamp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -100,7 +86,7 @@
             tools:text="10:19" />
     </RelativeLayout>
 
-    <im.threads.internal.widget.text_view.BubbleTimeTextView
+    <im.threads.internal.widget.textView.BubbleTimeTextView
         android:id="@+id/errortext"
         style="@style/timestamp"
         android:layout_below="@+id/bubble"

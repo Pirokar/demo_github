@@ -8,16 +8,17 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.ContextCompat;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.content.ContextCompat;
 import im.threads.ChatStyle;
 import im.threads.R;
+import im.threads.business.models.Survey;
 import im.threads.internal.Config;
-import im.threads.internal.model.Survey;
 
 /**
  * ViewHolder для результатов бинарного опроса
@@ -31,7 +32,10 @@ public final class RatingThumbsSentViewHolder extends BaseHolder {
     private View mBubble;
 
     public RatingThumbsSentViewHolder(ViewGroup parent) {
-        super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_rate_thumbs_sent, parent, false));
+        super(
+                LayoutInflater.from(parent.getContext()).inflate(R.layout.item_rate_thumbs_sent, parent, false),
+                null
+        );
         thumb = itemView.findViewById(R.id.thumb);
         mTimeStampTextView = itemView.findViewById(R.id.timestamp);
         mHeader = itemView.findViewById(R.id.header);

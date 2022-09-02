@@ -15,7 +15,7 @@
         android:layout_gravity="center_horizontal"
         app:srcCompat="@drawable/threads_welcome_logo"/>
 
-    <im.threads.internal.widget.text_view.PlaceholderTitleTextView
+    <im.threads.internal.widget.textView.PlaceholderTitleTextView
         android:id="@+id/welcome_title"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
@@ -27,7 +27,7 @@
         android:textSize="@dimen/threads_welcome_screen_title"
         android:textStyle="bold" />
 
-    <im.threads.internal.widget.text_view.PlaceholderSubtitleTextView
+    <im.threads.internal.widget.textView.PlaceholderSubtitleTextView
         android:id="@+id/welcome_subtitle"
         android:layout_width="220dp"
         android:layout_height="wrap_content"

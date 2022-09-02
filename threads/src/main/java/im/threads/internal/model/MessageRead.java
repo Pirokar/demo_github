@@ -4,6 +4,8 @@ import androidx.core.util.ObjectsCompat;
 
 import java.util.List;
 
+import im.threads.business.models.ChatItem;
+
 public class MessageRead implements ChatItem {
 
     private final List<String> messageIds;

@@ -1,6 +1,6 @@
 package im.threads.internal.helpers
 
-import im.threads.internal.model.ChatItem
+import im.threads.business.models.ChatItem
 
 object ChatItemListHelper {
     @JvmStatic

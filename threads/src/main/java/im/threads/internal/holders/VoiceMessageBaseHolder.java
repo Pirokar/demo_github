@@ -4,12 +4,14 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
-import im.threads.internal.model.FileDescription;
+import im.threads.business.models.ChatItem;
+import im.threads.business.models.FileDescription;
+import io.reactivex.subjects.PublishSubject;
 
 public abstract class VoiceMessageBaseHolder extends BaseHolder {
 
-    VoiceMessageBaseHolder(View itemView) {
-        super(itemView);
+    VoiceMessageBaseHolder(View itemView, PublishSubject<ChatItem> highlightStream) {
+        super(itemView, highlightStream);
     }
 
     @Nullable

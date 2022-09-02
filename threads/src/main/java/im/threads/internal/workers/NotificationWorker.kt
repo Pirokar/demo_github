@@ -26,14 +26,14 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import im.threads.ChatStyle
 import im.threads.R
+import im.threads.business.imageLoading.ImageLoader
+import im.threads.business.imageLoading.ImageModifications
+import im.threads.business.logger.LoggerEdna
+import im.threads.business.utils.FileUtils.convertRelativeUrlToAbsolute
 import im.threads.internal.Config
 import im.threads.internal.activities.QuickAnswerActivity
 import im.threads.internal.controllers.UnreadMessagesController
-import im.threads.internal.domain.logger.LoggerEdna
 import im.threads.internal.formatters.MessageFormatter
-import im.threads.internal.imageLoading.ImageLoader
-import im.threads.internal.imageLoading.ImageModifications
-import im.threads.internal.utils.FileUtils.convertRelativeUrlToAbsolute
 import im.threads.internal.utils.WorkerUtils
 import im.threads.internal.utils.WorkerUtils.unmarshall
 import im.threads.view.ChatFragment
@@ -65,9 +65,7 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
             createNotificationChannel(context)
         }
 
-        val action: String? = inputData.getString(NOTIFICATION_ACTION)
-
-        when (action) {
+        when (inputData.getString(NOTIFICATION_ACTION)) {
             ACTION_REMOVE_NOTIFICATION -> {
                 notificationManager.cancel(UNREAD_MESSAGE_GROUP_PUSH_ID)
                 notificationManager.cancel(CAMPAIGN_MESSAGE_PUSH_ID)
@@ -136,7 +134,7 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private final fun createNotificationChannel(context: Context) {
+    private fun createNotificationChannel(context: Context) {
         if (notificationChannel == null) {
             val notificationManager =
                 context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager?
@@ -337,7 +335,7 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
                 }
 
                 override fun onImageLoadError() {
-                    onImageLoadError(pushSmall, pushBig, R.id.icon_large)
+                    onImageLoadError(pushSmall, pushBig)
                 }
             })
             .getBitmap(context)
@@ -367,8 +365,7 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
 
     private fun onImageLoadError(
         pushSmall: RemoteViews,
-        pushBig: RemoteViews,
-        pushContainerResId: Int
+        pushBig: RemoteViews
     ) {
         val big = BitmapFactory.decodeResource(
             context.resources,

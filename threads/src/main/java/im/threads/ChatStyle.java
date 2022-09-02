@@ -96,6 +96,11 @@ public final class ChatStyle implements Serializable {
     @ColorRes
     public int outgoingMessageTimeColor = R.color.threads_user_message_timestamp;
 
+    @ColorRes
+    public int incomingMessageLoaderColor = R.color.threads_green_83B144;
+    @ColorRes
+    public int outgoingMessageLoaderColor = R.color.threads_teal_004D40;
+
     @DimenRes
     public int incomingMessageTimeTextSize = 0;
     @DimenRes
@@ -286,6 +291,8 @@ public final class ChatStyle implements Serializable {
     public int inputHeight = R.dimen.threads_input_height;
     @DrawableRes
     public int inputBackground = R.drawable.threads_chat_input_background;
+    @DrawableRes
+    public int quoteAttachmentIconResId = R.drawable.ic_reply_gray_24dp;
 
     //attachment bottom sheet style
     @ColorRes
@@ -298,8 +305,6 @@ public final class ChatStyle implements Serializable {
     public int attachmentGalleryIconResId = R.drawable.threads_ic_photo_42dp;
     @DrawableRes
     public int attachmentFileIconResId = R.drawable.threads_ic_file_fill_42dp;
-    @DrawableRes
-    public int attachmentSelfieCameraIconResId = R.drawable.threads_ic_camera_front_42dp;
     @DrawableRes
     public int attachmentSendIconResId = R.drawable.threads_ic_send_42dp;
 
@@ -447,8 +452,6 @@ public final class ChatStyle implements Serializable {
 
     public boolean useExternalCameraApp = true;
 
-    public boolean selfieEnabled = false;
-
     public boolean voiceMessageEnabled = false;
 
     // specify fonts
@@ -583,11 +586,6 @@ public final class ChatStyle implements Serializable {
 
     public ChatStyle setUseExternalCameraApp(final boolean useExternal) {
         this.useExternalCameraApp = useExternal;
-        return this;
-    }
-
-    public ChatStyle setSelfieEnabled(final boolean selfieEnabled) {
-        this.selfieEnabled = selfieEnabled;
         return this;
     }
 
@@ -750,11 +748,6 @@ public final class ChatStyle implements Serializable {
         return this;
     }
 
-    public ChatStyle setAttachmentSelfieCameraIconResId(@DrawableRes final int attachmentSelfieCameraIconResId) {
-        this.attachmentSelfieCameraIconResId = attachmentSelfieCameraIconResId;
-        return this;
-    }
-
     public ChatStyle setAttachmentSendIconResId(@DrawableRes final int attachmentSendIconResId) {
         this.attachmentSendIconResId = attachmentSendIconResId;
         return this;
@@ -864,7 +857,7 @@ public final class ChatStyle implements Serializable {
     public ChatStyle setChatBodyIconsColorStateTint(@ColorRes final int iconStateDisabledTint,
                                                     @ColorRes final int iconStateEnabledTint,
                                                     @ColorRes final int iconStatePressedTint) {
-        this.chatBodyIconsColorState = new int[] {
+        this.chatBodyIconsColorState = new int[]{
                 iconStateDisabledTint,
                 iconStateEnabledTint,
                 iconStatePressedTint
@@ -874,6 +867,11 @@ public final class ChatStyle implements Serializable {
 
     public ChatStyle setInputIconTintResId(@ColorRes final int inputIconTintResId) {
         this.inputIconTintResId = inputIconTintResId;
+        return this;
+    }
+
+    public ChatStyle setQuoteAttachmentIconResId(@DrawableRes final int quoteAttachmentIconResId) {
+        this.quoteAttachmentIconResId = quoteAttachmentIconResId;
         return this;
     }
 
@@ -894,6 +892,16 @@ public final class ChatStyle implements Serializable {
 
     public ChatStyle setLoaderTintResId(@ColorRes final int loaderTintResId) {
         this.loaderTintResId = loaderTintResId;
+        return this;
+    }
+
+    public ChatStyle setIncomingMessageLoaderColorResId(@ColorRes final int incomingMessageLoaderColor) {
+        this.incomingMessageLoaderColor = incomingMessageLoaderColor;
+        return this;
+    }
+
+    public ChatStyle setOutgoingMessageLoaderColorResId(@ColorRes final int outgoingMessageLoaderColor) {
+        this.outgoingMessageLoaderColor = outgoingMessageLoaderColor;
         return this;
     }
 
@@ -1301,11 +1309,6 @@ public final class ChatStyle implements Serializable {
         return this;
     }
 
-    public ChatStyle setIncomingMarkdownConfiguration(MarkdownConfig incoming) {
-        this.incomingMarkdownConfiguration = incoming;
-        return this;
-    }
-
     public MarkdownConfig getIncomingMarkdownConfiguration() {
         if (incomingMarkdownConfiguration == null) {
             incomingMarkdownConfiguration = new MarkdownConfig();
@@ -1313,8 +1316,8 @@ public final class ChatStyle implements Serializable {
         return incomingMarkdownConfiguration;
     }
 
-    public ChatStyle setOutgoingMarkdownConfiguration(MarkdownConfig outgoing) {
-        this.outgoingMarkdownConfiguration = outgoing;
+    public ChatStyle setIncomingMarkdownConfiguration(MarkdownConfig incoming) {
+        this.incomingMarkdownConfiguration = incoming;
         return this;
     }
 
@@ -1323,6 +1326,11 @@ public final class ChatStyle implements Serializable {
             outgoingMarkdownConfiguration = new MarkdownConfig();
         }
         return outgoingMarkdownConfiguration;
+    }
+
+    public ChatStyle setOutgoingMarkdownConfiguration(MarkdownConfig outgoing) {
+        this.outgoingMarkdownConfiguration = outgoing;
+        return this;
     }
 
     /**

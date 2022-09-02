@@ -11,9 +11,9 @@ import androidx.core.content.ContextCompat;
 
 import im.threads.ChatStyle;
 import im.threads.R;
+import im.threads.business.models.Survey;
 import im.threads.internal.Config;
 import im.threads.internal.adapters.ChatAdapter;
-import im.threads.internal.model.Survey;
 
 /**
  * ViewHolder для бинарных опросов
@@ -30,7 +30,10 @@ public final class RatingThumbsViewHolder extends BaseHolder {
     private ChatStyle style;
 
     public RatingThumbsViewHolder(ViewGroup parent) {
-        super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_rate_thumbs, parent, false));
+        super(
+                LayoutInflater.from(parent.getContext()).inflate(R.layout.item_rate_thumbs, parent, false),
+                null
+        );
         topSeparator = itemView.findViewById(R.id.top_separator);
         bottomSeparator = itemView.findViewById(R.id.bottom_separator);
         thumbUp = itemView.findViewById(R.id.thumb_up);

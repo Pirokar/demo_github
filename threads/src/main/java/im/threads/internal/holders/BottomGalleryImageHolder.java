@@ -11,8 +11,8 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import im.threads.ChatStyle;
 import im.threads.R;
+import im.threads.business.imageLoading.ImageLoader;
 import im.threads.internal.Config;
-import im.threads.internal.imageLoading.ImageLoader;
 import im.threads.internal.model.BottomGalleryItem;
 import im.threads.internal.utils.ColorsHelper;
 
@@ -23,7 +23,7 @@ public final class BottomGalleryImageHolder extends BaseHolder {
 
     public BottomGalleryImageHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_gallery_bottom, parent, false));
+                .inflate(R.layout.item_gallery_bottom, parent, false), null);
         image = itemView.findViewById(R.id.image);
         chosenMark = itemView.findViewById(R.id.mark);
         style = Config.instance.getChatStyle();

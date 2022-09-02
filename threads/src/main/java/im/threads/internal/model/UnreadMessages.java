@@ -5,6 +5,7 @@ import android.content.Context;
 import androidx.core.util.ObjectsCompat;
 
 import im.threads.R;
+import im.threads.business.models.ChatItem;
 
 public final class UnreadMessages implements ChatItem {
     private long timeStamp;

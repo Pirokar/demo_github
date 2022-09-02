@@ -4,8 +4,8 @@ import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
 import com.github.tomakehurst.wiremock.junit.WireMockRule
-import im.threads.internal.domain.ogParser.OpenGraphParser
-import im.threads.internal.domain.ogParser.OpenGraphParserJsoupImpl
+import im.threads.business.ogParser.OpenGraphParser
+import im.threads.business.ogParser.OpenGraphParserJsoupImpl
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test

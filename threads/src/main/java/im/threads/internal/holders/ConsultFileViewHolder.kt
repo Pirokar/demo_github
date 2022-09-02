@@ -14,23 +14,25 @@ import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import im.threads.ChatStyle
 import im.threads.R
+import im.threads.business.imageLoading.ImageModifications
+import im.threads.business.imageLoading.loadImage
+import im.threads.business.models.ChatItem
+import im.threads.business.models.ConsultPhrase
+import im.threads.business.models.enums.AttachmentStateEnum
+import im.threads.business.utils.FileUtils
 import im.threads.internal.Config
-import im.threads.internal.imageLoading.ImageModifications
-import im.threads.internal.imageLoading.loadImage
-import im.threads.internal.model.AttachmentStateEnum
-import im.threads.internal.model.ConsultPhrase
-import im.threads.internal.utils.FileUtils
 import im.threads.internal.views.CircularProgressButton
+import io.reactivex.subjects.PublishSubject
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class ConsultFileViewHolder(parent: ViewGroup) : BaseHolder(
-    LayoutInflater.from(parent.context).inflate(R.layout.item_consult_chat_file, parent, false)
+class ConsultFileViewHolder(parent: ViewGroup, highlightingStream: PublishSubject<ChatItem>) : BaseHolder(
+    LayoutInflater.from(parent.context).inflate(R.layout.item_consult_chat_file, parent, false),
+    highlightingStream
 ) {
     private val style: ChatStyle = Config.instance.chatStyle
     private val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
@@ -43,10 +45,12 @@ class ConsultFileViewHolder(parent: ViewGroup) : BaseHolder(
     private val loader: ImageView = itemView.findViewById(R.id.loader)
     private val mFileHeader: TextView = itemView.findViewById(R.id.header)
     private val mSizeTextView: TextView = itemView.findViewById(R.id.file_size)
+    private val rootLayout: RelativeLayout = itemView.findViewById(R.id.rootLayout)
     private val mTimeStampTextView = itemView.findViewById<TextView>(R.id.timestamp).apply {
         setTextColor(getColorInt(style.incomingMessageTimeColor))
-        if (style.incomingMessageTimeTextSize > 0)
+        if (style.incomingMessageTimeTextSize > 0) {
             setTextSize(TypedValue.COMPLEX_UNIT_PX, itemView.context.resources.getDimension(style.incomingMessageTimeTextSize))
+        }
     }
     private val mConsultAvatar = itemView.findViewById<ImageView>(R.id.consult_avatar).apply {
         layoutParams.height =
@@ -55,22 +59,6 @@ class ConsultFileViewHolder(parent: ViewGroup) : BaseHolder(
         layoutParams.width =
             itemView.context.resources.getDimension(style.operatorAvatarSize)
                 .toInt()
-    }
-    private val filterView = itemView.findViewById<View>(R.id.filter).apply {
-        setBackgroundColor(
-            ContextCompat.getColor(
-                itemView.context,
-                style.chatHighlightingColor
-            )
-        )
-    }
-    private val secondFilterView = itemView.findViewById<View>(R.id.filter_second).apply {
-        setBackgroundColor(
-            ContextCompat.getColor(
-                itemView.context,
-                style.chatHighlightingColor
-            )
-        )
     }
 
     init {
@@ -112,6 +100,7 @@ class ConsultFileViewHolder(parent: ViewGroup) : BaseHolder(
         onLongClickListener: OnLongClickListener,
         onAvatarClickListener: View.OnClickListener
     ) {
+        subscribeForHighlighting(consultPhrase, rootLayout)
         val fileDescription = consultPhrase.fileDescription
         if (fileDescription != null) {
             if (fileDescription.state == AttachmentStateEnum.ERROR) {
@@ -131,8 +120,11 @@ class ConsultFileViewHolder(parent: ViewGroup) : BaseHolder(
                 loader.isVisible = true
                 errortext.isVisible = false
                 val rotate = RotateAnimation(
-                    0f, 360f,
-                    Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF,
+                    0f,
+                    360f,
+                    Animation.RELATIVE_TO_SELF,
+                    0.5f,
+                    Animation.RELATIVE_TO_SELF,
                     0.5f
                 )
                 rotate.duration = 3000
@@ -156,8 +148,7 @@ class ConsultFileViewHolder(parent: ViewGroup) : BaseHolder(
             vg.getChildAt(i).setOnLongClickListener(onLongClickListener)
         }
         mCircularProgressButton.setOnClickListener(buttonClickListener)
-        filterView.visibility = if (highlighted) View.VISIBLE else View.INVISIBLE
-        secondFilterView.visibility = if (highlighted) View.VISIBLE else View.INVISIBLE
+        changeHighlighting(highlighted)
         if (consultPhrase.isAvatarVisible) {
             mConsultAvatar.visibility = View.VISIBLE
             mConsultAvatar.setOnClickListener(onAvatarClickListener)

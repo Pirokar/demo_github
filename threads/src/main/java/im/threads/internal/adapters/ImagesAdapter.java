@@ -14,9 +14,9 @@ import androidx.viewpager.widget.PagerAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-import im.threads.internal.domain.logger.LoggerEdna;
+import im.threads.business.logger.LoggerEdna;
+import im.threads.business.models.FileDescription;
 import im.threads.internal.fragments.ImageFragment;
-import im.threads.internal.model.FileDescription;
 import im.threads.internal.utils.ThreadUtils;
 
 /**

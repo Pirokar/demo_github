@@ -14,10 +14,11 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.core.text.util.LinkifyCompat;
 import androidx.recyclerview.widget.RecyclerView;
+
 import im.threads.ChatStyle;
 import im.threads.R;
+import im.threads.business.models.SystemMessage;
 import im.threads.internal.Config;
-import im.threads.internal.model.SystemMessage;
 import im.threads.internal.utils.UrlUtils;
 
 public class SystemMessageViewHolder extends RecyclerView.ViewHolder {
@@ -41,7 +42,7 @@ public class SystemMessageViewHolder extends RecyclerView.ViewHolder {
         tvSystemMessage.setLinkTextColor(ContextCompat.getColor(itemView.getContext(), style.systemMessageLinkColor));
         tvSystemMessage.setOnClickListener(view -> {
             String deepLink = UrlUtils.extractDeepLink(systemMessage.getText());
-            String url = UrlUtils.extractLink(systemMessage.getText());
+            String url = UrlUtils.extractLink(systemMessage.getText()).getLink();
             if (deepLink != null) {
                 UrlUtils.openUrl(context, deepLink);
             } else if (url != null) {

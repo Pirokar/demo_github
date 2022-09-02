@@ -6,18 +6,20 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.text.TextUtils
+import im.threads.business.audioConverter.AudioConverter
+import im.threads.business.audioConverter.callback.ILoadCallback
+import im.threads.business.logger.LoggerEdna
+import im.threads.business.models.FileDescription
+import im.threads.business.rest.queries.BackendApi
+import im.threads.business.rest.queries.DatastoreApi
+import im.threads.business.utils.FileUtils.getFileSize
 import im.threads.internal.Config
 import im.threads.internal.chat_updates.ChatUpdateProcessor
 import im.threads.internal.controllers.ChatController
 import im.threads.internal.controllers.UnreadMessagesController
-import im.threads.internal.domain.audio_converter.AudioConverter
-import im.threads.internal.domain.audio_converter.callback.ILoadCallback
-import im.threads.internal.domain.logger.LoggerEdna
 import im.threads.internal.helpers.FileProviderHelper
-import im.threads.internal.model.FileDescription
 import im.threads.internal.model.UpcomingUserMessage
 import im.threads.internal.useractivity.LastUserActivityTimeCounterSingletonProvider.getLastUserActivityTimeCounter
-import im.threads.internal.utils.FileUtils.getFileSize
 import im.threads.internal.utils.PrefUtils
 import im.threads.styles.permissions.PermissionDescriptionDialogStyle
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -31,7 +33,7 @@ import kotlinx.coroutines.launch
 import java.io.File
 
 @Suppress("unused")
-class ThreadsLib private constructor(context: Context?) {
+class ThreadsLib private constructor() {
     /**
      * @return time in seconds since the last user activity
      */
@@ -162,7 +164,10 @@ class ThreadsLib private constructor(context: Context?) {
             check(instance == null) { "ThreadsLib has already been initialized" }
             val startInitTime = System.currentTimeMillis()
             Config.instance = configBuilder.build()
-            instance = ThreadsLib(configBuilder.context)
+            instance = ThreadsLib()
+
+            BackendApi.init(Config.instance)
+            DatastoreApi.init(Config.instance)
 
             Config.instance.loggerConfig?.let { LoggerEdna.init(it) }
 
@@ -234,7 +239,7 @@ class ThreadsLib private constructor(context: Context?) {
         @JvmStatic
         fun getInstance(): ThreadsLib {
             checkNotNull(instance) { "ThreadsLib should be initialized first with ThreadsLib.init()" }
-            return instance ?: ThreadsLib(null)
+            return instance ?: ThreadsLib()
         }
     }
 }

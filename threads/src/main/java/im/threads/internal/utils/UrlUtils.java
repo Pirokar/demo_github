@@ -14,7 +14,7 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import im.threads.internal.domain.logger.LoggerEdna;
+import im.threads.internal.model.ExtractedLink;
 
 public final class UrlUtils {
 
@@ -95,7 +95,7 @@ public final class UrlUtils {
     private static final String[] imageExtensions = new String[] { ".jpg", ".png", ".gif", ".tiff", ".raw" };
 
     @Nullable
-    public static String extractLink(@NonNull String text) {
+    public static ExtractedLink extractLink(@NonNull String text) {
         return getLink(text);
     }
 
@@ -112,7 +112,7 @@ public final class UrlUtils {
         return getLink(url) != null;
     }
 
-    private static String getLink(@NonNull String text) {
+    private static ExtractedLink getLink(@NonNull String text) {
         if (TextUtils.isEmpty(text)) {
             return null;
         }
@@ -120,12 +120,14 @@ public final class UrlUtils {
         Matcher matcherWithBrackets = WEB_URL_PATTERN.matcher(text);
         if (matcherWithBrackets.find()) {
             String url = matcherWithBrackets.group();
-            return trimInvalidUrlCharacters(url);
+            boolean isEmailOnly = !isTextContainsNotOnlyEmail(text, url);
+            return new ExtractedLink(trimInvalidUrlCharacters(url), isEmailOnly);
         }
         Matcher m = WEB_URL.matcher(text);
         if (m.find()) {
             String url = m.group();
-            return trimInvalidUrlCharacters(url);
+            boolean isEmailOnly = !isTextContainsNotOnlyEmail(text, url);
+            return new ExtractedLink(trimInvalidUrlCharacters(url), isEmailOnly);
         }
         return null;
     }
@@ -133,8 +135,9 @@ public final class UrlUtils {
     @Nullable
     public static String extractImageMarkdownLink(@NonNull String text) {
         if (!text.contains("](http")) return null;
-        String link = extractLink(text);
-        if (link == null) return null;
+        ExtractedLink extractedLink = extractLink(text);
+        if (extractedLink == null || extractedLink.getLink() == null) return null;
+        String link = extractedLink.getLink();
 
         link = link.toLowerCase(Locale.getDefault());
         for (String extension : imageExtensions) {
@@ -168,5 +171,21 @@ public final class UrlUtils {
         }
 
         return url;
+    }
+
+    private static Boolean isTextContainsNotOnlyEmail(String text, String url) {
+        int indexOfUrl = 0;
+
+        while (true) {
+            indexOfUrl = text.indexOf(url);
+            if (indexOfUrl == 0 || (indexOfUrl > 0 && text.charAt(indexOfUrl - 1) != '@')) {
+                return true;
+            }
+            if (indexOfUrl >= 0) {
+                text = text.substring(indexOfUrl + url.length());
+            } else {
+                return false;
+            }
+        }
     }
 }

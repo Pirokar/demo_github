@@ -5,7 +5,7 @@ import androidx.recyclerview.widget.DiffUtil;
 
 import java.util.List;
 
-import im.threads.internal.model.ChatItem;
+import im.threads.business.models.ChatItem;
 
 public class ChatDiffCallback extends DiffUtil.Callback {
 

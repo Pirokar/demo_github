@@ -3,11 +3,11 @@ package im.threads
 import android.content.Context
 import android.os.Bundle
 import androidx.core.os.bundleOf
-import im.threads.internal.domain.logger.LoggerEdna
-import im.threads.internal.model.CAMPAIGN_DATE_FORMAT_PARSE
-import im.threads.internal.model.CampaignMessage
-import im.threads.internal.transport.MessageAttributes
-import im.threads.internal.transport.PushMessageAttributes
+import im.threads.business.logger.LoggerEdna
+import im.threads.business.models.CAMPAIGN_DATE_FORMAT_PARSE
+import im.threads.business.models.CampaignMessage
+import im.threads.business.transport.MessageAttributes
+import im.threads.business.transport.PushMessageAttributes
 import im.threads.internal.utils.PrefUtils
 import im.threads.internal.workers.NotificationWorker
 import java.text.SimpleDateFormat
@@ -59,7 +59,7 @@ object ChatCenterPushMessageHelper {
                             ?: Date(),
                         bundle.getString(MessageAttributes.SKILL_ID)?.toInt() ?: 0,
                         campaign,
-                        bundle.getString(MessageAttributes.PRIORITY)?.toInt() ?: 0,
+                        bundle.getString(MessageAttributes.PRIORITY)?.toInt() ?: 0
                     )
                     PrefUtils.campaignMessage = campaignMessage
                     NotificationWorker.addCampaignMessage(context, alertStr)

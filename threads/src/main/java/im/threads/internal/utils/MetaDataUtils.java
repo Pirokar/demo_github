@@ -8,7 +8,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import im.threads.internal.domain.logger.LoggerEdna;
+import im.threads.business.logger.LoggerEdna;
 
 public class MetaDataUtils {
     private static final String DATASTORE_URL = "im.threads.getDatastoreUrl";

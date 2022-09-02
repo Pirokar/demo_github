@@ -2,6 +2,7 @@ package im.threads.view;
 
 import static im.threads.internal.utils.PrefUtils.getFileDescriptionDraft;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
@@ -75,17 +76,32 @@ import java.util.concurrent.TimeUnit;
 
 import im.threads.ChatStyle;
 import im.threads.R;
+import im.threads.business.imageLoading.ImageLoader;
+import im.threads.business.logger.LoggerEdna;
+import im.threads.business.models.CampaignMessage;
+import im.threads.business.models.ChatItem;
+import im.threads.business.models.ChatPhrase;
+import im.threads.business.models.ConsultInfo;
+import im.threads.business.models.ConsultPhrase;
+import im.threads.business.models.FileDescription;
+import im.threads.business.models.MessageState;
+import im.threads.business.models.QuickReply;
+import im.threads.business.models.Quote;
+import im.threads.business.models.Survey;
+import im.threads.business.models.SystemMessage;
+import im.threads.business.models.UserPhrase;
+import im.threads.business.utils.FileUtils;
+import im.threads.business.utils.FileUtilsKt;
 import im.threads.databinding.FragmentChatBinding;
 import im.threads.internal.Config;
 import im.threads.internal.activities.CameraActivity;
 import im.threads.internal.activities.GalleryActivity;
 import im.threads.internal.activities.ImagesActivity;
-import im.threads.internal.activities.files_activity.FilesActivity;
+import im.threads.internal.activities.filesActivity.FilesActivity;
 import im.threads.internal.adapters.ChatAdapter;
 import im.threads.internal.broadcastReceivers.ProgressReceiver;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.controllers.ChatController;
-import im.threads.internal.domain.logger.LoggerEdna;
 import im.threads.internal.fragments.AttachmentBottomSheetDialogFragment;
 import im.threads.internal.fragments.BaseFragment;
 import im.threads.internal.fragments.FilePickerFragment;
@@ -93,36 +109,21 @@ import im.threads.internal.fragments.PermissionDescriptionAlertDialogFragment;
 import im.threads.internal.helpers.FileHelper;
 import im.threads.internal.helpers.FileProviderHelper;
 import im.threads.internal.helpers.MediaHelper;
-import im.threads.internal.imageLoading.ImageLoader;
 import im.threads.internal.media.ChatCenterAudioConverter;
 import im.threads.internal.media.ChatCenterAudioConverterCallback;
 import im.threads.internal.media.FileDescriptionMediaPlayer;
-import im.threads.internal.model.CampaignMessage;
-import im.threads.internal.model.ChatItem;
-import im.threads.internal.model.ChatPhrase;
 import im.threads.internal.model.ClientNotificationDisplayType;
-import im.threads.internal.model.ConsultInfo;
-import im.threads.internal.model.ConsultPhrase;
 import im.threads.internal.model.ConsultRole;
 import im.threads.internal.model.ConsultTyping;
-import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.InputFieldEnableModel;
-import im.threads.internal.model.MessageState;
-import im.threads.internal.model.QuickReply;
 import im.threads.internal.model.QuickReplyItem;
-import im.threads.internal.model.Quote;
 import im.threads.internal.model.ScheduleInfo;
-import im.threads.internal.model.Survey;
-import im.threads.internal.model.SystemMessage;
 import im.threads.internal.model.UnreadMessages;
 import im.threads.internal.model.UpcomingUserMessage;
-import im.threads.internal.model.UserPhrase;
 import im.threads.internal.permissions.PermissionsActivity;
 import im.threads.internal.useractivity.LastUserActivityTimeCounter;
 import im.threads.internal.useractivity.LastUserActivityTimeCounterSingletonProvider;
 import im.threads.internal.utils.ColorsHelper;
-import im.threads.internal.utils.FileUtils;
-import im.threads.internal.utils.FileUtilsKt;
 import im.threads.internal.utils.Keyboard;
 import im.threads.internal.utils.PrefUtils;
 import im.threads.internal.utils.RxUtils;
@@ -152,13 +153,11 @@ public final class ChatFragment extends BaseFragment implements
 
     public static final int REQUEST_CODE_PHOTOS = 100;
     public static final int REQUEST_CODE_PHOTO = 101;
-    public static final int REQUEST_CODE_SELFIE = 102;
-    public static final int REQUEST_EXTERNAL_CAMERA_PHOTO = 103;
-    public static final int REQUEST_CODE_FILE = 104;
+    public static final int REQUEST_EXTERNAL_CAMERA_PHOTO = 102;
+    public static final int REQUEST_CODE_FILE = 103;
     public static final int REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY = 200;
     public static final int REQUEST_PERMISSION_CAMERA = 201;
     public static final int REQUEST_PERMISSION_READ_EXTERNAL = 202;
-    public static final int REQUEST_PERMISSION_SELFIE_CAMERA = 203;
     public static final String ACTION_SEARCH_CHAT_FILES = "ACTION_SEARCH_CHAT_FILES";
     public static final String ACTION_SEARCH = "ACTION_SEARCH";
     public static final String ACTION_SEND_QUICK_MESSAGE = "ACTION_SEND_QUICK_MESSAGE";
@@ -186,8 +185,6 @@ public final class ChatFragment extends BaseFragment implements
     private final ChatCenterAudioConverter audioConverter = new ChatCenterAudioConverter();
     @Nullable
     private FileDescriptionMediaPlayer fdMediaPlayer;
-    @Nullable
-    private AudioManager audioManager;
     private ChatController mChatController;
     private ChatAdapter chatAdapter;
     private ChatAdapter.Callback chatAdapterCallback;
@@ -246,7 +243,7 @@ public final class ChatFragment extends BaseFragment implements
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_chat, container, false);
         binding.setInputTextObservable(inputTextObservable);
         chatAdapterCallback = new ChatFragment.AdapterCallback();
-        audioManager = (AudioManager) requireContext().getSystemService(Context.AUDIO_SERVICE);
+        AudioManager audioManager = (AudioManager) requireContext().getSystemService(Context.AUDIO_SERVICE);
         fdMediaPlayer = new FileDescriptionMediaPlayer(audioManager);
         initViews();
         initRecording();
@@ -285,7 +282,8 @@ public final class ChatFragment extends BaseFragment implements
             mQuoteLayoutHolder.setContent(
                     campaignMessage.getSenderName(),
                     campaignMessage.getText(),
-                    null
+                    null,
+                    false
             );
             PrefUtils.setCampaignMessage(null);
         }
@@ -1010,11 +1008,6 @@ public final class ChatFragment extends BaseFragment implements
                     REQUEST_PERMISSION_CAMERA,
                     R.string.threads_permissions_camera_and_write_external_storage_help_text,
                     cameraPermissions.toArray(new String[]{}));
-        } else if (requestCode == REQUEST_PERMISSION_SELFIE_CAMERA) {
-            PermissionsActivity.startActivityForResult(this,
-                    REQUEST_PERMISSION_SELFIE_CAMERA,
-                    R.string.threads_permissions_camera_and_write_external_storage_help_text,
-                    cameraPermissions.toArray(new String[]{}));
         }
     }
 
@@ -1051,7 +1044,7 @@ public final class ChatFragment extends BaseFragment implements
 
             } else {
                 setBottomStateDefault();
-                startActivityForResult(CameraActivity.getStartIntent(activity, false), REQUEST_CODE_PHOTO);
+                startActivityForResult(CameraActivity.getStartIntent(activity), REQUEST_CODE_PHOTO);
             }
         } else {
             ArrayList<String> permissions = new ArrayList<>();
@@ -1062,7 +1055,7 @@ public final class ChatFragment extends BaseFragment implements
                 permissions.add(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
             }
             if (style.arePermissionDescriptionDialogsEnabled) {
-                showSafelyCameraPermissionDescriptionDialog(REQUEST_PERMISSION_CAMERA, permissions);
+                showSafelyCameraPermissionDescriptionDialog(permissions);
             } else {
                 this.cameraPermissions = permissions;
                 startCameraPermissionActivity(REQUEST_PERMISSION_CAMERA);
@@ -1165,7 +1158,8 @@ public final class ChatFragment extends BaseFragment implements
             mQuoteLayoutHolder.setContent(
                     TextUtils.isEmpty(mQuote.getPhraseOwnerTitle()) ? "" : mQuote.getPhraseOwnerTitle(),
                     TextUtils.isEmpty(text) ? requireContext().getString(R.string.threads_image) : text,
-                    cp.getFileDescription().getFileUri()
+                    cp.getFileDescription().getFileUri(),
+                    false
             );
         } else if (cp.getFileDescription() != null) {
             String fileName = "";
@@ -1179,11 +1173,15 @@ public final class ChatFragment extends BaseFragment implements
             }
             mQuoteLayoutHolder.setContent(TextUtils.isEmpty(mQuote.getPhraseOwnerTitle()) ? "" : mQuote.getPhraseOwnerTitle(),
                     fileName,
-                    null);
+                    null,
+                    false
+            );
         } else {
             mQuoteLayoutHolder.setContent(TextUtils.isEmpty(mQuote.getPhraseOwnerTitle()) ? "" : mQuote.getPhraseOwnerTitle(),
                     TextUtils.isEmpty(text) ? "" : text,
-                    null);
+                    null,
+                    false
+            );
         }
     }
 
@@ -1211,33 +1209,6 @@ public final class ChatFragment extends BaseFragment implements
                     REQUEST_PERMISSION_READ_EXTERNAL);
         } else {
             startStoragePermissionActivity(REQUEST_PERMISSION_READ_EXTERNAL);
-        }
-    }
-
-    @Override
-    public void onSelfieClick() {
-        Activity activity = getActivity();
-        boolean isCameraGranted = ThreadsPermissionChecker.isCameraPermissionGranted(activity);
-        boolean isWriteGranted = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q || ThreadsPermissionChecker.isWriteExternalPermissionGranted(activity);
-        LoggerEdna.info("isCameraGranted = " + isCameraGranted + " isWriteGranted " + isWriteGranted);
-        if (isCameraGranted && isWriteGranted) {
-            setBottomStateDefault();
-            startActivityForResult(CameraActivity.getStartIntent(activity, true), REQUEST_CODE_SELFIE);
-        } else {
-            ArrayList<String> permissions = new ArrayList<>();
-            if (!isCameraGranted) {
-                permissions.add(android.Manifest.permission.CAMERA);
-            }
-            if (!isWriteGranted) {
-                permissions.add(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
-            }
-            if (style.arePermissionDescriptionDialogsEnabled) {
-                showSafelyCameraPermissionDescriptionDialog(REQUEST_PERMISSION_SELFIE_CAMERA,
-                        permissions);
-            } else {
-                this.cameraPermissions = permissions;
-                startCameraPermissionActivity(REQUEST_PERMISSION_SELFIE_CAMERA);
-            }
         }
     }
 
@@ -1355,7 +1326,7 @@ public final class ChatFragment extends BaseFragment implements
         }
         for (int i = 0; i < data.size(); i++) {
             if (data.get(i) instanceof ChatPhrase) {
-                if (((ChatPhrase) data.get(i)).equals(highlightedItem)) {
+                if ((data.get(i)).equals(highlightedItem)) {
                     //для поиска - если можно перемещаться, подсвечиваем
                     if (first != -1 && i > first) {
                         binding.searchUpIb.setAlpha(ENABLED_ALPHA);
@@ -1500,10 +1471,15 @@ public final class ChatFragment extends BaseFragment implements
     private void onFileResult(@NonNull Uri uri) {
         LoggerEdna.info("onFileSelected: " + uri);
         setFileDescription(new FileDescription(requireContext().getString(R.string.threads_I), uri, FileUtils.getFileSize(uri), System.currentTimeMillis()));
-        mQuoteLayoutHolder.setContent(requireContext().getString(R.string.threads_I), FileUtils.getFileName(uri), null);
+        mQuoteLayoutHolder.setContent(
+                requireContext().getString(R.string.threads_file),
+                FileUtils.getFileName(uri),
+                null,
+                true
+        );
     }
 
-    private void onPhotoResult(@NonNull Intent data, boolean selfie) {
+    private void onPhotoResult(@NonNull Intent data) {
         String imageExtra = data.getStringExtra(CameraActivity.IMAGE_EXTRA);
         if (imageExtra != null) {
             File file = new File(imageExtra);
@@ -1513,7 +1489,6 @@ public final class ChatFragment extends BaseFragment implements
                     file.length(),
                     System.currentTimeMillis()
             );
-            fileDescription.setSelfie(selfie);
             setFileDescription(
                     fileDescription
             );
@@ -1694,23 +1669,6 @@ public final class ChatFragment extends BaseFragment implements
                 isInMessageSearchMode) {
             return;
         }
-        /*String firstUnreadUuid = mChatController.getFirstUnreadUuidId();
-        ArrayList<ChatItem> newList = chatAdapter.getList();
-        if (newList != null && !newList.isEmpty() && firstUnreadUuid != null) {
-            for (int i = 1; i < newList.size(); i++) {
-                if (newList.get(i) instanceof ConsultPhrase) {
-                    ConsultPhrase cp = (ConsultPhrase) newList.get(i);
-                    if (firstUnreadUuid.equalsIgnoreCase(cp.getId())) {
-                        final int index = i;
-                        h.postDelayed(
-                                () -> binding.recycler.post(() -> layoutManager.scrollToPositionWithOffset(index - 1, 0)),
-                                600
-                        );
-                        return;
-                    }
-                }
-            }
-        }*/
         int newAdapterSize = chatAdapter.getList().size();
         if (oldAdapterSize == 0) {
             scrollToPosition(chatAdapter.getItemCount() - 1, false);
@@ -2032,12 +1990,7 @@ public final class ChatFragment extends BaseFragment implements
                 break;
             case REQUEST_CODE_PHOTO:
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    onPhotoResult(data, false);
-                }
-                break;
-            case REQUEST_CODE_SELFIE:
-                if (resultCode == Activity.RESULT_OK && data != null) {
-                    onPhotoResult(data, true);
+                    onPhotoResult(data);
                 }
                 break;
             case REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY:
@@ -2048,11 +2001,6 @@ public final class ChatFragment extends BaseFragment implements
             case REQUEST_PERMISSION_CAMERA:
                 if (resultCode == PermissionsActivity.RESPONSE_GRANTED) {
                     onCameraClick();
-                }
-                break;
-            case REQUEST_PERMISSION_SELFIE_CAMERA:
-                if (resultCode == PermissionsActivity.RESPONSE_GRANTED) {
-                    onSelfieClick();
                 }
                 break;
             case REQUEST_PERMISSION_READ_EXTERNAL:
@@ -2408,11 +2356,10 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     private void showSafelyCameraPermissionDescriptionDialog(
-            int requestCode,
             @NonNull List<String> cameraPermissions) {
         if (permissionDescriptionAlertDialogFragment == null) {
             this.cameraPermissions = cameraPermissions;
-            showPermissionDescriptionDialog(PermissionDescriptionType.CAMERA, requestCode);
+            showPermissionDescriptionDialog(PermissionDescriptionType.CAMERA, REQUEST_PERMISSION_CAMERA);
         }
     }
 
@@ -2431,6 +2378,7 @@ public final class ChatFragment extends BaseFragment implements
                 PermissionDescriptionAlertDialogFragment.TAG);
     }
 
+    @SuppressLint("RestrictedApi")
     private class QuoteLayoutHolder {
         private boolean ignorePlayerUpdates = false;
         @NonNull
@@ -2511,16 +2459,18 @@ public final class ChatFragment extends BaseFragment implements
             ChatUpdateProcessor.getInstance().postAttachAudioFile(false);
         }
 
-        private void setContent(String header, String text, Uri imagePath) {
+        private void setContent(String header, String text, Uri imagePath, boolean isFromFilePicker) {
             setIsVisible(true);
+            setQuotePast(isFromFilePicker);
+
             if (header == null || header.equals("null")) {
                 binding.quoteHeader.setVisibility(View.INVISIBLE);
             } else {
                 binding.quoteHeader.setVisibility(View.VISIBLE);
                 binding.quoteHeader.setText(header);
             }
+
             binding.quoteText.setVisibility(View.VISIBLE);
-            binding.quotePast.setVisibility(View.VISIBLE);
             binding.quoteButtonPlayPause.setVisibility(View.GONE);
             binding.quoteSlider.setVisibility(View.GONE);
             binding.quoteDuration.setVisibility(View.GONE);
@@ -2534,6 +2484,15 @@ public final class ChatFragment extends BaseFragment implements
                         .into(binding.quoteImage);
             } else {
                 binding.quoteImage.setVisibility(View.GONE);
+            }
+        }
+
+        private void setQuotePast(boolean isFromFilePicker) {
+            if (isFromFilePicker) {
+                binding.quotePast.setVisibility(View.GONE);
+            } else {
+                binding.quotePast.setVisibility(View.VISIBLE);
+                binding.quotePast.setImageResource(style.quoteAttachmentIconResId);
             }
         }
 
