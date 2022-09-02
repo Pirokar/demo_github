@@ -14,7 +14,7 @@
         android:layout_marginStart="@dimen/margin_half"
         android:layout_marginTop="@dimen/consultant_photo_offset_size" />
 
-    <im.threads.internal.widget.textView.BubbleTimeTextView
+    <im.threads.ui.widget.textView.BubbleTimeTextView
         android:id="@+id/errorText"
         style="@style/timestamp"
         android:layout_below="@+id/bubble"

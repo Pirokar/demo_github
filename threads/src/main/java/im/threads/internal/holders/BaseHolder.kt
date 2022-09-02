@@ -33,10 +33,9 @@ import im.threads.ui.config.Config
 import im.threads.ui.markdown.LinkifyLinksHighlighter
 import im.threads.ui.markdown.LinksHighlighter
 import im.threads.ui.utils.ColorsHelper
+import im.threads.ui.utils.NoLongClickMovementMethod
 import im.threads.ui.views.CircularProgressButton
 import im.threads.ui.widget.textView.BubbleMessageTextView
-import im.threads.ui.config.Config
-import im.threads.ui.utils.NoLongClickMovementMethod
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
@@ -104,9 +103,6 @@ abstract class BaseHolder internal constructor(
             )
         }
     }
-    val config: Config by lazy { Config.getInstance() }
-    val style = config.getChatStyle()
-
     val config: Config by lazy { Config.getInstance() }
     val style = config.getChatStyle()
 

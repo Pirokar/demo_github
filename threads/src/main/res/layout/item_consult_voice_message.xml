@@ -125,7 +125,7 @@
 
     </RelativeLayout>
 
-    <im.threads.internal.widget.textView.BubbleTimeTextView
+    <im.threads.ui.widget.textView.BubbleTimeTextView
         android:id="@+id/errorText"
         style="@style/timestamp"
         android:layout_marginStart="@dimen/consultant_margin_right"

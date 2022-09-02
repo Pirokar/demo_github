@@ -22,8 +22,8 @@ import im.threads.business.imageLoading.loadImage
 import im.threads.business.models.ChatItem
 import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.FileDescription
-import im.threads.business.utils.FileUtils.convertRelativeUrlToAbsolute
-import im.threads.internal.utils.UrlUtils
+import im.threads.business.models.enums.AttachmentStateEnum
+import im.threads.business.utils.FileUtils
 import im.threads.ui.views.VoiceTimeLabelFormatter
 import im.threads.ui.views.formatAsDuration
 import im.threads.ui.widget.textView.QuoteMessageTextView

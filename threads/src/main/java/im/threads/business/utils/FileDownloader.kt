@@ -87,7 +87,7 @@ class FileDownloader(
                             if (lastReadProgress >= MAX_DOWNLOAD_PROGRESS) {
                                 lastReadProgress = 0
                             }
-                            downloadLister.onProgress(lastReadProgress.toDouble())
+                            downloadListener.onProgress(lastReadProgress.toDouble())
                         }
                     }
                 }
