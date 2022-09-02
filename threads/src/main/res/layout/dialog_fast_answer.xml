@@ -22,7 +22,7 @@
             android:layout_gravity="center_vertical"
             android:layout_marginStart="@dimen/margin_half"/>
 
-        <im.threads.internal.widget.CustomFontTextView
+        <im.threads.ui.widget.CustomFontTextView
             android:id="@+id/consult_name"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -34,7 +34,7 @@
 
     </LinearLayout>
 
-    <im.threads.internal.widget.CustomFontTextView
+    <im.threads.ui.widget.CustomFontTextView
         android:id="@+id/question"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -57,7 +57,7 @@
         android:background="@color/threads_input_background"
         android:gravity="center_vertical">
 
-        <im.threads.internal.widget.CustomFontEditText
+        <im.threads.ui.widget.CustomFontEditText
             android:id="@+id/answer"
             style="@style/InputEditTextStyle"
             android:layout_marginLeft="@dimen/margin_big"
@@ -74,7 +74,7 @@
 
     </LinearLayout>
 
-    <im.threads.internal.widget.CustomFontButton
+    <im.threads.ui.widget.CustomFontButton
         android:id="@+id/close_button"
         style="@style/Base.Widget.AppCompat.Button.Borderless"
         android:layout_width="140dp"

@@ -31,7 +31,9 @@ import java.util.concurrent.TimeUnit;
 
 import im.threads.ChatStyle;
 import im.threads.R;
+import im.threads.business.broadcastReceivers.ProgressReceiver;
 import im.threads.business.config.BaseConfig;
+import im.threads.business.formatters.ChatItemType;
 import im.threads.business.logger.LoggerEdna;
 import im.threads.business.models.ChatItem;
 import im.threads.business.models.ChatPhrase;
@@ -57,29 +59,27 @@ import im.threads.business.transport.TransportException;
 import im.threads.business.transport.models.Attachment;
 import im.threads.business.utils.FileUtils;
 import im.threads.business.utils.preferences.PrefUtilsBase;
-import im.threads.internal.activities.ConsultActivity;
-import im.threads.internal.activities.ImagesActivity;
-import im.threads.internal.broadcastReceivers.ProgressReceiver;
+import im.threads.business.workers.FileDownloadWorker;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
-import im.threads.internal.formatters.ChatItemType;
-import im.threads.internal.model.ChatItemSendErrorModel;
-import im.threads.internal.model.ClientNotificationDisplayType;
-import im.threads.internal.model.ConsultTyping;
+import im.threads.business.models.ChatItemSendErrorModel;
+import im.threads.business.models.ClientNotificationDisplayType;
+import im.threads.business.models.ConsultTyping;
 import im.threads.internal.model.InputFieldEnableModel;
-import im.threads.internal.model.MessageRead;
-import im.threads.internal.model.QuickReplyItem;
-import im.threads.internal.model.ScheduleInfo;
-import im.threads.internal.model.SearchingConsult;
-import im.threads.internal.model.UpcomingUserMessage;
+import im.threads.business.models.MessageRead;
+import im.threads.business.models.QuickReplyItem;
+import im.threads.business.models.ScheduleInfo;
+import im.threads.business.models.SearchingConsult;
+import im.threads.business.models.UpcomingUserMessage;
 import im.threads.internal.utils.ConsultWriter;
-import im.threads.internal.utils.DeviceInfoHelper;
+import im.threads.business.utils.DeviceInfoHelper;
 import im.threads.internal.utils.Seeker;
-import im.threads.internal.utils.ThreadUtils;
-import im.threads.internal.workers.FileDownloadWorker;
-import im.threads.internal.workers.NotificationWorker;
+import im.threads.ui.activities.ConsultActivity;
+import im.threads.ui.activities.ImagesActivity;
 import im.threads.ui.config.Config;
+import im.threads.ui.utils.ThreadRunnerKt;
 import im.threads.ui.utils.preferences.PrefUtilsUi;
 import im.threads.ui.utils.preferences.PreferencesMigrationUi;
+import im.threads.ui.workers.NotificationWorker;
 import im.threads.view.ChatFragment;
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
@@ -162,28 +162,27 @@ public final class ChatController {
         databaseHolder = DatabaseHolder.getInstance();
 
         consultWriter = new ConsultWriter(PrefUtilsBase.getDefaultSharedPreferences());
-        ThreadUtils.runOnUiThread(() -> unsendMessageHandler = new Handler(msg -> {
-                    if (msg.what == RESEND_MSG) {
-                        if (!unsendMessages.isEmpty()) {
-                            if (DeviceInfoHelper.hasNoInternet(appContext)) {
-                                scheduleResend();
-                            } else {
-                                // try to send all unsent messages
-                                unsendMessageHandler.removeMessages(RESEND_MSG);
-                                synchronized (unsendMessages) {
-                                    final ListIterator<UserPhrase> iterator = unsendMessages.listIterator();
-                                    while (iterator.hasNext()) {
-                                        final UserPhrase phrase = iterator.next();
-                                        checkAndResendPhrase(phrase);
-                                        iterator.remove();
-                                    }
-                                }
+        ThreadRunnerKt.runOnUiThread(() -> unsendMessageHandler = new Handler(msg -> {
+            if (msg.what == RESEND_MSG) {
+                if (!unsendMessages.isEmpty()) {
+                    if (DeviceInfoHelper.hasNoInternet(appContext)) {
+                        scheduleResend();
+                    } else {
+                        // try to send all unsent messages
+                        unsendMessageHandler.removeMessages(RESEND_MSG);
+                        synchronized (unsendMessages) {
+                            final ListIterator<UserPhrase> iterator = unsendMessages.listIterator();
+                            while (iterator.hasNext()) {
+                                final UserPhrase phrase = iterator.next();
+                                checkAndResendPhrase(phrase);
+                                iterator.remove();
                             }
                         }
                     }
-                    return false;
-                })
-        );
+                }
+            }
+            return false;
+        }));
         subscribeToChatEvents();
     }
 
@@ -256,7 +255,7 @@ public final class ChatController {
                         .flatMap(isAllMessagesDownloaded -> {
                             if (!isAllMessagesDownloaded) {
                                 if (query.length() == 1) {
-                                    ThreadUtils.runOnUiThread(() -> {
+                                    ThreadRunnerKt.runOnUiThread(() -> {
                                         fragment.showProgressBar();
                                         Toast.makeText(appContext, appContext.getString(R.string.threads_history_loading_message), Toast.LENGTH_LONG).show();
                                     });
@@ -276,7 +275,7 @@ public final class ChatController {
                                         seeker = new Seeker();
                                     }
                                     lastSearchQuery = query;
-                                    ThreadUtils.runOnUiThread(() -> {
+                                    ThreadRunnerKt.runOnUiThread(() -> {
                                         fragment.hideProgressBar();
                                     });
                                 })
@@ -287,7 +286,7 @@ public final class ChatController {
                                 () -> consumer.accept(seeker.seek(lastItems, !forward, query)),
                                 e -> {
                                     LoggerEdna.error(e);
-                                    ThreadUtils.runOnUiThread(() -> {
+                                    ThreadRunnerKt.runOnUiThread(() -> {
                                         fragment.hideProgressBar();
                                     });
                                 }
@@ -1307,7 +1306,7 @@ public final class ChatController {
         }
         if (latestSystemMessage != null) {
             final ChatItem systemMessage = latestSystemMessage;
-            ThreadUtils.runOnUiThread(() -> {
+            ThreadRunnerKt.runOnUiThread(() -> {
                 if (systemMessage instanceof ConsultConnectionMessage) {
                     processConsultConnectionMessage((ConsultConnectionMessage) systemMessage);
                 } else {

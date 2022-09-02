@@ -16,7 +16,7 @@ import androidx.annotation.StyleRes;
 
 import java.io.Serializable;
 
-import im.threads.internal.markdown.MarkdownConfig;
+import im.threads.ui.markdown.MarkdownConfig;
 
 /**
  * Стиль чата.

@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import im.threads.ChatStyle;
 import im.threads.R;
-import im.threads.internal.model.UnreadMessages;
+import im.threads.business.models.UnreadMessages;
 import im.threads.ui.config.Config;
 
 public final class UnreadMessageViewHolder extends RecyclerView.ViewHolder {

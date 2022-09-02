@@ -9,7 +9,7 @@ import androidx.core.content.ContextCompat;
 
 import im.threads.R;
 import im.threads.business.models.Survey;
-import im.threads.internal.widget.Rating;
+import im.threads.ui.widget.Rating;
 
 /**
  * ViewHolder для опросов с рейтингом

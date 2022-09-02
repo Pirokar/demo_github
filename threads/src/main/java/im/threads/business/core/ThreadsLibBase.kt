@@ -14,17 +14,18 @@ import im.threads.business.config.BaseConfigBuilder
 import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.CampaignMessage
 import im.threads.business.models.FileDescription
+import im.threads.business.models.UpcomingUserMessage
 import im.threads.business.rest.queries.BackendApi
 import im.threads.business.rest.queries.DatastoreApi
+import im.threads.business.useractivity.UserActivityTimeProvider.getLastUserActivityTimeCounter
+import im.threads.business.useractivity.UserActivityTimeProvider.initializeLastUserActivity
+import im.threads.business.utils.FileProviderHelper
 import im.threads.business.utils.FileUtils.getFileSize
 import im.threads.business.utils.preferences.PrefUtilsBase
 import im.threads.business.utils.preferences.PreferencesMigrationBase
 import im.threads.internal.chat_updates.ChatUpdateProcessor
 import im.threads.internal.controllers.ChatController
 import im.threads.internal.controllers.UnreadMessagesController
-import im.threads.internal.helpers.FileProviderHelper
-import im.threads.internal.model.UpcomingUserMessage
-import im.threads.internal.useractivity.LastUserActivityTimeCounterSingletonProvider.getLastUserActivityTimeCounter
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.exceptions.UndeliverableException
 import io.reactivex.plugins.RxJavaPlugins
@@ -195,7 +196,7 @@ open class ThreadsLibBase protected constructor() {
                 }
             }
             ChatController.getInstance()
-            getLastUserActivityTimeCounter()
+            initializeLastUserActivity()
             if (RxJavaPlugins.getErrorHandler() == null) {
                 RxJavaPlugins.setErrorHandler { throwable: Throwable? ->
                     var throwableCause: Throwable? = null

@@ -4,8 +4,8 @@ import com.google.gson.JsonSyntaxException
 import im.threads.ChatStyle
 import im.threads.business.config.BaseConfig
 import im.threads.business.logger.LoggerEdna
+import im.threads.business.models.ClientNotificationDisplayType
 import im.threads.business.utils.preferences.PrefUtilsBase
-import im.threads.internal.model.ClientNotificationDisplayType
 import im.threads.ui.styles.permissions.PermissionDescriptionDialogStyle
 import im.threads.ui.styles.permissions.PermissionDescriptionType
 import java.io.Serializable

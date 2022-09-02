@@ -5,7 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 
 import im.threads.R;
-import im.threads.internal.activities.BaseActivity;
+import im.threads.ui.activities.BaseActivity;
 
 /**
  * Вся логика находится во фрагменте. Смотрите {@link ChatFragment}

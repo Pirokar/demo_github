@@ -11,8 +11,8 @@ import java.io.File;
 import java.io.IOException;
 
 import androidx.test.InstrumentationRegistry;
-import im.threads.internal.helpers.FileProviderHelper;
-import im.threads.internal.utils.FileDownloader;
+import im.threads.business.utils.FileProviderHelper;
+import im.threads.business.utils.FileDownloader;
 
 public class FileProviderHelperTest {
 

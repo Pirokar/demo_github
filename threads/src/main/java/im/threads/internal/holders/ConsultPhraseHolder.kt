@@ -17,6 +17,7 @@ import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import im.threads.R
+import im.threads.business.formatters.RussianFormatSymbols
 import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.imageLoading.ImageModifications
 import im.threads.business.imageLoading.loadImage
@@ -25,12 +26,11 @@ import im.threads.business.models.FileDescription
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.utils.FileUtils
 import im.threads.business.utils.FileUtils.isImage
-import im.threads.internal.formatters.RussianFormatSymbols
 import im.threads.internal.utils.UrlUtils
 import im.threads.internal.utils.ViewUtils
-import im.threads.internal.views.CircularProgressButton
-import im.threads.internal.widget.textView.BubbleMessageTextView
-import im.threads.internal.widget.textView.BubbleTimeTextView
+import im.threads.ui.views.CircularProgressButton
+import im.threads.ui.widget.textView.BubbleMessageTextView
+import im.threads.ui.widget.textView.BubbleTimeTextView
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

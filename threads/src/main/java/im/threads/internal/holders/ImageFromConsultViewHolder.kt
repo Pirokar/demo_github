@@ -23,7 +23,7 @@ import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.FileDescription
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.utils.FileUtils
-import im.threads.internal.utils.ColorsHelper
+import im.threads.ui.utils.ColorsHelper
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

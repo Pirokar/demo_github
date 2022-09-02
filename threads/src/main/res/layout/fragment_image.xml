@@ -17,7 +17,7 @@
         android:layout_gravity="bottom"
         android:orientation="vertical">
 
-        <im.threads.internal.widget.CustomFontTextView
+        <im.threads.ui.widget.CustomFontTextView
             android:id="@+id/from"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -28,7 +28,7 @@
             android:textSize="@dimen/threads_attachments_author_text_size"
             tools:text="from"/>
 
-        <im.threads.internal.widget.CustomFontTextView
+        <im.threads.ui.widget.CustomFontTextView
             android:id="@+id/date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

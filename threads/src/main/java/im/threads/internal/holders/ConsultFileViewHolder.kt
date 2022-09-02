@@ -22,7 +22,7 @@ import im.threads.business.imageLoading.loadImage
 import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.utils.FileUtils
-import im.threads.internal.views.CircularProgressButton
+import im.threads.ui.views.CircularProgressButton
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

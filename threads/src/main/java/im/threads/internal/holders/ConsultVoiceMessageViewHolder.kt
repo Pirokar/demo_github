@@ -21,9 +21,9 @@ import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.FileDescription
 import im.threads.business.utils.FileUtils.convertRelativeUrlToAbsolute
 import im.threads.internal.utils.UrlUtils
-import im.threads.internal.views.VoiceTimeLabelFormatter
-import im.threads.internal.views.formatAsDuration
-import im.threads.internal.widget.textView.QuoteMessageTextView
+import im.threads.ui.views.VoiceTimeLabelFormatter
+import im.threads.ui.views.formatAsDuration
+import im.threads.ui.widget.textView.QuoteMessageTextView
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

@@ -11,8 +11,8 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import im.threads.R;
 import im.threads.business.imageLoading.ImageLoader;
-import im.threads.internal.model.BottomGalleryItem;
-import im.threads.internal.utils.ColorsHelper;
+import im.threads.ui.models.BottomGalleryItem;
+import im.threads.ui.utils.ColorsHelper;
 
 public final class BottomGalleryImageHolder extends BaseHolder {
     private final ImageView image;

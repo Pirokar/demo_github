@@ -24,7 +24,7 @@ import im.threads.business.models.FileDescription;
 import im.threads.business.models.MessageState;
 import im.threads.business.models.enums.AttachmentStateEnum;
 import im.threads.business.utils.FileUtils;
-import im.threads.internal.views.CircularProgressButton;
+import im.threads.ui.views.CircularProgressButton;
 
 public final class UserFileViewHolder extends BaseHolder {
     private final CircularProgressButton mCircularProgressButton;

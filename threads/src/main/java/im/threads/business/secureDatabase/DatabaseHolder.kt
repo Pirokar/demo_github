@@ -1,6 +1,6 @@
 package im.threads.business.secureDatabase
 
-import im.threads.annotation.OpenForTesting
+import im.threads.business.annotation.OpenForTesting
 import im.threads.business.config.BaseConfig
 import im.threads.business.models.ChatItem
 import im.threads.business.models.ConsultInfo

@@ -21,7 +21,7 @@
             android:layout_marginRight="@dimen/margin_material"
             android:gravity="center_vertical">
 
-            <im.threads.internal.widget.CustomFontTextView
+            <im.threads.ui.widget.CustomFontTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignBottom="@+id/p"
@@ -38,7 +38,7 @@
                 android:layout_centerHorizontal="true"
                 app:srcCompat="@drawable/ic_c_in_c_white_24dp" />
 
-            <im.threads.internal.widget.CustomFontTextView
+            <im.threads.ui.widget.CustomFontTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignBottom="@+id/p"
@@ -118,7 +118,7 @@
             android:layout_gravity="center"
             android:visibility="gone">
 
-            <im.threads.internal.widget.CustomFontButton
+            <im.threads.ui.widget.CustomFontButton
                 android:id="@+id/retake"
                 style="@style/bottomButtonTransparent"
                 android:layout_width="0dp"
@@ -126,7 +126,7 @@
                 android:layout_weight="1"
                 android:text="@string/threads_retake" />
 
-            <im.threads.internal.widget.CustomFontButton
+            <im.threads.ui.widget.CustomFontButton
                 android:id="@+id/send"
                 style="@style/bottomButtonTransparent"
                 android:layout_width="0dp"

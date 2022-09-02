@@ -5,9 +5,9 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import com.google.android.flexbox.FlexboxLayout
 import im.threads.R
-import im.threads.internal.adapters.ChatAdapter
-import im.threads.internal.model.QuickReplyItem
-import im.threads.internal.widget.CustomFontTextView
+import im.threads.business.models.QuickReplyItem
+import im.threads.ui.adapters.ChatAdapter
+import im.threads.ui.widget.CustomFontTextView
 
 /**
  * ViewHolder для отображения быстрых ответов

@@ -36,15 +36,15 @@ import im.threads.business.models.Quote;
 import im.threads.business.models.UserPhrase;
 import im.threads.business.models.enums.AttachmentStateEnum;
 import im.threads.business.utils.FileUtils;
-import im.threads.internal.formatters.RussianFormatSymbols;
+import im.threads.business.formatters.RussianFormatSymbols;
 import im.threads.internal.utils.UrlUtils;
 import im.threads.internal.utils.ViewUtils;
-import im.threads.internal.views.CircularProgressButton;
-import im.threads.internal.views.VoiceTimeLabelFormatter;
-import im.threads.internal.views.VoiceTimeLabelFormatterKt;
-import im.threads.internal.widget.textView.BubbleMessageTextView;
-import im.threads.internal.widget.textView.BubbleTimeTextView;
+import im.threads.ui.views.CircularProgressButton;
+import im.threads.ui.views.VoiceTimeLabelFormatter;
+import im.threads.ui.widget.textView.BubbleMessageTextView;
+import im.threads.ui.widget.textView.BubbleTimeTextView;
 import im.threads.ui.config.Config;
+import im.threads.ui.views.VoiceTimeLabelFormatterKt;
 
 /**
  * layout/item_user_text_with_file.xml

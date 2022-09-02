@@ -4,7 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.widget.FrameLayout
-import im.threads.internal.useractivity.LastUserActivityTimeCounterSingletonProvider.getLastUserActivityTimeCounter
+import im.threads.business.useractivity.UserActivityTimeProvider.getLastUserActivityTimeCounter
 
 /**
  * Layout, перехватывающий касания для отслеживания активности пользователя.

@@ -34,10 +34,10 @@ import im.threads.business.transport.models.SystemMessageContent;
 import im.threads.business.transport.models.TextContent;
 import im.threads.business.config.BaseConfig;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
-import im.threads.internal.formatters.ChatItemType;
-import im.threads.internal.model.MessageRead;
-import im.threads.internal.model.ScheduleInfo;
-import im.threads.internal.model.SearchingConsult;
+import im.threads.business.formatters.ChatItemType;
+import im.threads.business.models.MessageRead;
+import im.threads.business.models.ScheduleInfo;
+import im.threads.business.models.SearchingConsult;
 
 public final class MessageParser {
     private MessageParser() {
