@@ -40,7 +40,7 @@ android {
         vectorDrawables.useSupportLibrary = true
 
         ndk {
-            abiFilters "armeabi", "armeabi-v7a", "x86"
+            abiFilters "armeabi", "armeabi-v7a", "x86", "x86_64", "arm64_v8a"
         }
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
