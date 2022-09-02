@@ -31,6 +31,14 @@ internal open class ConsultActivity : BaseActivity() {
     private val config: Config by lazy {
         Config.getInstance()
     }
+    private val isFilesAndMediaEnabled: Boolean
+        get() {
+            return try {
+                Config.getInstance().filesAndMediaMenuItemEnabled
+            } catch (exc: NullPointerException) {
+                false
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,8 +80,7 @@ internal open class ConsultActivity : BaseActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.threads_menu_main, menu)
-        menu.findItem(R.id.files_and_media).isVisible =
-            config.filesAndMediaMenuItemEnabled
+        menu.findItem(R.id.files_and_media).isVisible = isFilesAndMediaEnabled
 
         return true
     }
@@ -122,6 +129,7 @@ internal open class ConsultActivity : BaseActivity() {
         if (!imagePath.isNullOrEmpty()) {
             imagePath = convertRelativeUrlToAbsolute(imagePath)
             consultImage.loadImage(imagePath)
+            consultImage.tag = imagePath
         }
     }
 

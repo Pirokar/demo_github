@@ -1,5 +1,6 @@
 package im.threads.view;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
@@ -281,7 +282,8 @@ public final class ChatFragment extends BaseFragment implements
             mQuoteLayoutHolder.setContent(
                     campaignMessage.getSenderName(),
                     campaignMessage.getText(),
-                    null
+                    null,
+                    false
             );
             PrefUtilsBase.setCampaignMessage(null);
         }
@@ -1156,7 +1158,8 @@ public final class ChatFragment extends BaseFragment implements
             mQuoteLayoutHolder.setContent(
                     TextUtils.isEmpty(mQuote.getPhraseOwnerTitle()) ? "" : mQuote.getPhraseOwnerTitle(),
                     TextUtils.isEmpty(text) ? requireContext().getString(R.string.threads_image) : text,
-                    cp.getFileDescription().getFileUri()
+                    cp.getFileDescription().getFileUri(),
+                    false
             );
         } else if (cp.getFileDescription() != null) {
             String fileName = "";
@@ -1170,11 +1173,15 @@ public final class ChatFragment extends BaseFragment implements
             }
             mQuoteLayoutHolder.setContent(TextUtils.isEmpty(mQuote.getPhraseOwnerTitle()) ? "" : mQuote.getPhraseOwnerTitle(),
                     fileName,
-                    null);
+                    null,
+                    false
+            );
         } else {
             mQuoteLayoutHolder.setContent(TextUtils.isEmpty(mQuote.getPhraseOwnerTitle()) ? "" : mQuote.getPhraseOwnerTitle(),
                     TextUtils.isEmpty(text) ? "" : text,
-                    null);
+                    null,
+                    false
+            );
         }
     }
 
@@ -1464,7 +1471,12 @@ public final class ChatFragment extends BaseFragment implements
     private void onFileResult(@NonNull Uri uri) {
         LoggerEdna.info("onFileSelected: " + uri);
         setFileDescription(new FileDescription(requireContext().getString(R.string.threads_I), uri, FileUtils.getFileSize(uri), System.currentTimeMillis()));
-        mQuoteLayoutHolder.setContent(requireContext().getString(R.string.threads_I), FileUtils.getFileName(uri), null);
+        mQuoteLayoutHolder.setContent(
+                requireContext().getString(R.string.threads_file),
+                FileUtils.getFileName(uri),
+                null,
+                true
+        );
     }
 
     private void onPhotoResult(@NonNull Intent data) {
@@ -1657,23 +1669,6 @@ public final class ChatFragment extends BaseFragment implements
                 isInMessageSearchMode) {
             return;
         }
-        /*String firstUnreadUuid = mChatController.getFirstUnreadUuidId();
-        ArrayList<ChatItem> newList = chatAdapter.getList();
-        if (newList != null && !newList.isEmpty() && firstUnreadUuid != null) {
-            for (int i = 1; i < newList.size(); i++) {
-                if (newList.get(i) instanceof ConsultPhrase) {
-                    ConsultPhrase cp = (ConsultPhrase) newList.get(i);
-                    if (firstUnreadUuid.equalsIgnoreCase(cp.getId())) {
-                        final int index = i;
-                        h.postDelayed(
-                                () -> binding.recycler.post(() -> layoutManager.scrollToPositionWithOffset(index - 1, 0)),
-                                600
-                        );
-                        return;
-                    }
-                }
-            }
-        }*/
         int newAdapterSize = chatAdapter.getList().size();
         if (oldAdapterSize == 0) {
             scrollToPosition(chatAdapter.getItemCount() - 1, false);
@@ -2383,6 +2378,7 @@ public final class ChatFragment extends BaseFragment implements
                 PermissionDescriptionAlertDialogFragment.TAG);
     }
 
+    @SuppressLint("RestrictedApi")
     private class QuoteLayoutHolder {
         private boolean ignorePlayerUpdates = false;
         @NonNull
@@ -2463,16 +2459,18 @@ public final class ChatFragment extends BaseFragment implements
             ChatUpdateProcessor.getInstance().postAttachAudioFile(false);
         }
 
-        private void setContent(String header, String text, Uri imagePath) {
+        private void setContent(String header, String text, Uri imagePath, boolean isFromFilePicker) {
             setIsVisible(true);
+            setQuotePast(isFromFilePicker);
+
             if (header == null || header.equals("null")) {
                 binding.quoteHeader.setVisibility(View.INVISIBLE);
             } else {
                 binding.quoteHeader.setVisibility(View.VISIBLE);
                 binding.quoteHeader.setText(header);
             }
+
             binding.quoteText.setVisibility(View.VISIBLE);
-            binding.quotePast.setVisibility(View.VISIBLE);
             binding.quoteButtonPlayPause.setVisibility(View.GONE);
             binding.quoteSlider.setVisibility(View.GONE);
             binding.quoteDuration.setVisibility(View.GONE);
@@ -2486,6 +2484,15 @@ public final class ChatFragment extends BaseFragment implements
                         .into(binding.quoteImage);
             } else {
                 binding.quoteImage.setVisibility(View.GONE);
+            }
+        }
+
+        private void setQuotePast(boolean isFromFilePicker) {
+            if (isFromFilePicker) {
+                binding.quotePast.setVisibility(View.GONE);
+            } else {
+                binding.quotePast.setVisibility(View.VISIBLE);
+                binding.quotePast.setImageResource(style.quoteAttachmentIconResId);
             }
         }
 

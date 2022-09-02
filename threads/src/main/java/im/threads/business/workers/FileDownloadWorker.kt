@@ -91,7 +91,7 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
                 runningDownloads[fileDescription] = fileDownloader
                 fileDescription.downloadProgress = 1
                 sendDownloadProgressBroadcast(fileDescription)
-                runningDownloads.put(fileDescription, fileDownloader)
+                runningDownloads[fileDescription] = fileDownloader
                 fileDownloader.download()
             }
         } else if (START_DOWNLOAD_WITH_NO_STOP == inputData.getString(START_DOWNLOAD_ACTION)) {
@@ -99,7 +99,7 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
                 runningDownloads[fileDescription] = fileDownloader
                 fileDescription.downloadProgress = 1
                 sendDownloadProgressBroadcast(fileDescription)
-                runningDownloads.put(fileDescription, fileDownloader)
+                runningDownloads[fileDescription] = fileDownloader
                 fileDownloader.download()
             }
         }

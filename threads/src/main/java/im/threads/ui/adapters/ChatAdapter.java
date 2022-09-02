@@ -1,5 +1,6 @@
 package im.threads.ui.adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
@@ -82,11 +83,16 @@ import im.threads.business.models.SearchingConsult;
 import im.threads.business.models.Space;
 import im.threads.business.models.UnreadMessages;
 import im.threads.ui.config.Config;
+import im.threads.internal.utils.ThreadUtils;
+import im.threads.internal.views.VoiceTimeLabelFormatterKt;
+import im.threads.ui.config.Config;
+import io.reactivex.subjects.PublishSubject;
 import im.threads.ui.utils.ThreadRunnerKt;
 import im.threads.ui.utils.preferences.PrefUtilsUi;
 import im.threads.ui.views.VoiceTimeLabelFormatterKt;
 
 public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private static final int TYPE_UNDEFINED = 0;
     private static final int TYPE_CONSULT_TYPING = 1;
     private static final int TYPE_DATE = 2;
     private static final int TYPE_SEARCHING_CONSULT = 3;
@@ -124,6 +130,8 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private final MediaMetadataRetriever mediaMetadataRetriever;
     @Nullable
     private ChatItem highlightedItem = null;
+    @NonNull
+    PublishSubject<ChatItem> highlightingStream = PublishSubject.create();
     @NonNull
     private ClientNotificationDisplayType clientNotificationDisplayType;
     private long currentThreadId;
@@ -200,19 +208,19 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             case TYPE_SYSTEM_MESSAGE:
                 return new SystemMessageViewHolder(parent);
             case TYPE_CONSULT_PHRASE:
-                return new ConsultPhraseHolder(parent);
+                return new ConsultPhraseHolder(parent, highlightingStream);
             case TYPE_USER_PHRASE:
-                return new UserPhraseViewHolder(parent);
+                return new UserPhraseViewHolder(parent, highlightingStream);
             case TYPE_FREE_SPACE:
                 return new SpaceViewHolder(parent);
             case TYPE_IMAGE_FROM_CONSULT:
-                return new ImageFromConsultViewHolder(parent, incomingImageMaskTransformation);
+                return new ImageFromConsultViewHolder(parent, incomingImageMaskTransformation, highlightingStream);
             case TYPE_IMAGE_FROM_USER:
-                return new ImageFromUserViewHolder(parent, outgoingImageMaskTransformation);
+                return new ImageFromUserViewHolder(parent, outgoingImageMaskTransformation, highlightingStream);
             case TYPE_FILE_FROM_CONSULT:
-                return new ConsultFileViewHolder(parent);
+                return new ConsultFileViewHolder(parent, highlightingStream);
             case TYPE_FILE_FROM_USER:
-                return new UserFileViewHolder(parent);
+                return new UserFileViewHolder(parent, highlightingStream);
             case TYPE_UNREAD_MESSAGES:
                 return new UnreadMessageViewHolder(parent);
             case TYPE_SCHEDULE:
@@ -228,7 +236,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             case TYPE_REQ_RESOLVE_THREAD:
                 return new RequestResolveThreadViewHolder(parent);
             case TYPE_VOICE_MESSAGE_FROM_CONSULT:
-                return new ConsultVoiceMessageViewHolder(parent);
+                return new ConsultVoiceMessageViewHolder(parent, highlightingStream);
             case TYPE_QUICK_REPLIES:
                 return new QuickRepliesViewHolder(parent);
             default:
@@ -315,29 +323,21 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
         if (o instanceof SystemMessage) {
             return TYPE_SYSTEM_MESSAGE;
-        }
-        if (o instanceof ConsultTyping) {
+        } else if (o instanceof ConsultTyping) {
             return TYPE_CONSULT_TYPING;
-        }
-        if (o instanceof DateRow) {
+        } else if (o instanceof DateRow) {
             return TYPE_DATE;
-        }
-        if (o instanceof SearchingConsult) {
+        } else if (o instanceof SearchingConsult) {
             return TYPE_SEARCHING_CONSULT;
-        }
-        if (o instanceof Space) {
+        } else if (o instanceof Space) {
             return TYPE_FREE_SPACE;
-        }
-        if (o instanceof UnreadMessages) {
+        } else if (o instanceof UnreadMessages) {
             return TYPE_UNREAD_MESSAGES;
-        }
-        if (o instanceof ScheduleInfo) {
+        } else if (o instanceof ScheduleInfo) {
             return TYPE_SCHEDULE;
-        }
-        if (o instanceof RequestResolveThread) {
+        } else if (o instanceof RequestResolveThread) {
             return TYPE_REQ_RESOLVE_THREAD;
-        }
-        if (o instanceof ConsultPhrase) {
+        } else if (o instanceof ConsultPhrase) {
             final ConsultPhrase cp = (ConsultPhrase) o;
             if (cp.isVoiceMessage()) {
                 return TYPE_VOICE_MESSAGE_FROM_CONSULT;
@@ -349,8 +349,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 return TYPE_FILE_FROM_CONSULT;
             }
             return TYPE_CONSULT_PHRASE;
-        }
-        if (o instanceof UserPhrase) {
+        } else if (o instanceof UserPhrase) {
             final UserPhrase up = (UserPhrase) o;
             if (up.isOnlyImage()) {
                 return TYPE_IMAGE_FROM_USER;
@@ -359,8 +358,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 return TYPE_FILE_FROM_USER;
             }
             return TYPE_USER_PHRASE;
-        }
-        if (o instanceof Survey) {
+        } else if (o instanceof Survey && !((Survey) o).getQuestions().isEmpty()) {
             final Survey survey = (Survey) o;
             final QuestionDTO questionDTO = survey.getQuestions().get(0);
             if (questionDTO.isSimple()) {
@@ -376,11 +374,11 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     return TYPE_RATING_STARS;
                 }
             }
-        }
-        if (o instanceof QuickReplyItem) {
+        } else if (o instanceof QuickReplyItem) {
             return TYPE_QUICK_REPLIES;
+        } else {
+            return TYPE_UNDEFINED;
         }
-        return super.getItemViewType(position);
     }
 
     @Override
@@ -432,31 +430,28 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     public void removeHighlight() {
-        for (int i = 0; i < list.size(); i++) {
-            if (list.get(i).isTheSameItem(highlightedItem)) {
-                highlightedItem = null;
-                notifyItemChanged(i);
-                return;
-            }
-        }
+        highlightingStream.onNext(new NoChatItem());
+        highlightedItem = null;
     }
 
     public int setItemHighlighted(@NonNull final ChatItem chatItem) {
         int index = -1;
+        highlightingStream.onNext(chatItem);
+
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i).isTheSameItem(chatItem)) {
-                highlightedItem = ((ChatPhrase) list.get(i));
+                highlightedItem = list.get(i);
                 index = i;
-                notifyItemChanged(index);
             }
         }
+
         return index;
     }
 
     public int setItemHighlighted(final String uuid) {
         for (ChatItem chatItem : list) {
             if (chatItem instanceof ChatPhrase && ((ChatPhrase) chatItem).getId().equals(uuid)) {
-                setItemHighlighted((ChatPhrase) chatItem);
+                setItemHighlighted(chatItem);
                 return ChatItemListFinder.lastIndexOf(list, chatItem);
             }
         }
@@ -786,6 +781,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 );
     }
 
+    @SuppressLint("RestrictedApi")
     private void bindUserPhraseVH(@NonNull final UserPhraseViewHolder holder, UserPhrase userPhrase) {
         downloadImageIfNeeded(userPhrase.getFileDescription());
         downloadVoiceIfNeeded(userPhrase.getFileDescription());
@@ -890,16 +886,14 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     private void bindFileFromUserVH(@NonNull final UserFileViewHolder holder, UserPhrase userPhrase) {
         holder.onBind(
-                userPhrase.getTimeStamp(),
-                userPhrase.getFileDescription(),
+                userPhrase,
                 v -> mCallback.onFileClick(userPhrase.getFileDescription()),
                 v -> mCallback.onUserPhraseClick(userPhrase, holder.getAdapterPosition()),
                 v -> {
                     phraseLongClick(userPhrase, holder.getAdapterPosition());
                     return true;
                 },
-                userPhrase.equals(highlightedItem),
-                userPhrase.getSentState()
+                userPhrase.equals(highlightedItem)
         );
     }
 
@@ -916,6 +910,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         );
     }
 
+    @SuppressLint("RestrictedApi")
     private void bindVoiceMessageFromConsultVH(@NonNull final ConsultVoiceMessageViewHolder holder, ConsultPhrase consultPhrase) {
         downloadVoiceIfNeeded(consultPhrase.getFileDescription());
         holder.onBind(

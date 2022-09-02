@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 
 import im.threads.ChatStyle;
 import im.threads.R;
+import im.threads.R;
 import im.threads.ui.utils.ColorsHelper;
 import im.threads.ui.config.Config;
 

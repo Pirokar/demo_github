@@ -10,6 +10,7 @@
     <color name="threads_disabled_text_color">#9a9a9a</color>
     <color name="threads_toolbar_gray">#333333</color>
     <color name="threads_white">#ffffff</color>
+    <color name="threads_transparent">#00000000</color>
 
     <!-- значения по умолчанию в ChatStyle-->
 

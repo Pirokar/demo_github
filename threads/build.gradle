@@ -172,6 +172,9 @@ dependencies {
     testImplementation "org.mockito:mockito-core:$rootProject.mockitoVersion"
     testImplementation group: 'org.mockito', name: 'mockito-inline', version: rootProject.mockitoInlineVersion
     testImplementation "com.github.tomakehurst:wiremock-jre8:$webserver_version"
+    androidTestImplementation "com.squareup.okhttp3:mockwebserver:$okhttp_webserver_version"
+    androidTestImplementation "androidx.test.ext:junit-ktx:$test_ext"
+    androidTestImplementation "com.kaspersky.android-components:kaspresso:$kaspresso_version"
     androidTestImplementation "androidx.test:runner:$rootProject.androidXTestVersion"
     androidTestImplementation "androidx.test:rules:$rootProject.androidXTestVersion"
     androidTestImplementation "org.mockito:mockito-core:$rootProject.mockitoVersion"

@@ -20,6 +20,8 @@ import im.threads.ChatStyle;
 import im.threads.business.logger.LoggerEdna;
 import im.threads.business.models.ConsultPhrase;
 import im.threads.internal.controllers.QuickAnswerController;
+import im.threads.internal.fragments.QuickAnswerFragment;
+import im.threads.internal.controllers.QuickAnswerController;
 import im.threads.ui.fragments.QuickAnswerFragment;
 import im.threads.business.models.UpcomingUserMessage;
 import im.threads.ui.config.Config;

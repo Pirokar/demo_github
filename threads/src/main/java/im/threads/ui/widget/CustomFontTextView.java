@@ -28,9 +28,17 @@ public class CustomFontTextView extends androidx.appcompat.widget.AppCompatTextV
     }
 
     public void setTypefaceView(Context context) {
-        ChatStyle style = Config.getInstance().getChatStyle();
+        ChatStyle style = getChatStyle();
         if (!TextUtils.isEmpty(style.defaultFontRegular)) {
             setTypeface(Typeface.createFromAsset(context.getAssets(), style.defaultFontRegular));
+        }
+    }
+
+    private ChatStyle getChatStyle() {
+        try {
+            return Config.getInstance().getChatStyle();
+        } catch (NullPointerException exc) {
+            return new ChatStyle();
         }
     }
 }

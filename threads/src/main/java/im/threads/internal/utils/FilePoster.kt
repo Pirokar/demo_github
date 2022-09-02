@@ -24,7 +24,6 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
-import java.net.URLEncoder
 
 private const val PHOTO_RESIZE_MAX_SIDE = 1600
 
@@ -52,7 +51,7 @@ private fun sendFile(uri: Uri, mimeType: String, token: String): String {
     LoggerEdna.info("sendFile: $uri")
     val part: MultipartBody.Part = MultipartBody.Part.createFormData(
         "file",
-        URLEncoder.encode(getFileName(uri), "utf-8"),
+        getFileName(uri),
         getFileRequestBody(uri, mimeType)
     )
     val agent: RequestBody = token.toRequestBody("text/plain".toMediaTypeOrNull())

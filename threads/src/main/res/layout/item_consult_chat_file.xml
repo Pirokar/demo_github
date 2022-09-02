@@ -1,24 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/rootLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 xmlns:tools="http://schemas.android.com/tools">
-
-    <View
-        android:id="@+id/filter"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/bubble"
-        android:layout_alignParentTop="true"
-        android:background="@color/threads_chat_highlighting"/>
-
-    <View
-        android:id="@+id/filter_second"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/filter_offset_size"
-        android:layout_below="@+id/filter"
-        android:background="@color/threads_chat_highlighting"/>
 
     <ImageView
         android:id="@+id/consult_avatar"

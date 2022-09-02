@@ -48,7 +48,7 @@ public final class MyCircleProgress extends View {
                 finishedStrokeSize,
                 getWidth() - finishedStrokeSize,
                 getHeight() - finishedStrokeSize);
-        canvas.drawArc(finishedOuterRect, 0, -getProgressAngle(), false, finishedPaint);
+        canvas.drawArc(finishedOuterRect, 0, getProgressAngle(), false, finishedPaint);
     }
 
     @Override

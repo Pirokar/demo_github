@@ -52,7 +52,7 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
     override fun doWork(): Result {
         LoggerEdna.info("doWork")
 
-        return (Config.getInstance()).let { config ->
+        return (Config.getInstance())?.let { config ->
             val systemService = context.getSystemService(Context.NOTIFICATION_SERVICE)
             val notificationManager: NotificationManager
             if (systemService is NotificationManager) {
