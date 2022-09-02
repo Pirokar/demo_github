@@ -16,10 +16,19 @@ import im.threads.business.secureDatabase.table.QuickRepliesTable
 import im.threads.business.secureDatabase.table.QuotesTable
 import net.zetetic.database.sqlcipher.SQLiteDatabase
 import net.zetetic.database.sqlcipher.SQLiteOpenHelper
-import java.io.File
 
 class ThreadsDbHelper(val context: Context) :
-    SQLiteOpenHelper(context, DATABASE_NAME, null, VERSION),
+    SQLiteOpenHelper(
+        context,
+        DATABASE_NAME,
+        DB_PASSWORD,
+        null,
+        VERSION,
+        0,
+        null,
+        null,
+        true
+    ),
     DBHelper {
 
     private var quotesTable: QuotesTable
@@ -27,13 +36,9 @@ class ThreadsDbHelper(val context: Context) :
     private var fileDescriptionTable: FileDescriptionsTable
     private var questionsTable: QuestionsTable
     private var messagesTable: MessagesTable
-    private lateinit var database: SQLiteDatabase
 
     init {
         System.loadLibrary("sqlcipher")
-        val databaseFile: File = context.getDatabasePath(DATABASE_NAME)
-        database =
-            SQLiteDatabase.openOrCreateDatabase(databaseFile, DB_PASSWORD, null, null)
         fileDescriptionTable = FileDescriptionsTable()
         questionsTable = QuestionsTable()
         quotesTable = QuotesTable(fileDescriptionTable)
@@ -139,14 +144,6 @@ class ThreadsDbHelper(val context: Context) :
 
     fun speechMessageUpdated(speechMessageUpdate: SpeechMessageUpdate?) {
         messagesTable.speechMessageUpdated(this, speechMessageUpdate!!)
-    }
-
-    override fun getWritableDatabase(): SQLiteDatabase {
-        return database
-    }
-
-    override fun getReadableDatabase(): SQLiteDatabase {
-        return database
     }
 
     companion object {
