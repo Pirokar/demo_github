@@ -225,11 +225,13 @@ abstract class BaseHolder internal constructor(
 
     protected fun bindOGData(messageText: String?) {
         val link = if (messageText != null) {
-            val extractedLink = UrlUtils.extractLink(messageText)?.link
-            if (extractedLink != null && !extractedLink.startsWith("http")) {
-                "https://$extractedLink"
+            val extractedLink = UrlUtils.extractLink(messageText)
+            if (extractedLink != null && extractedLink.isEmail) {
+                null
+            } else if (extractedLink?.link != null && !extractedLink.link.startsWith("http")) {
+                "https://${extractedLink.link}"
             } else {
-                extractedLink
+                extractedLink?.link
             }
         } else {
             null
