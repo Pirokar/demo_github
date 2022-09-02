@@ -25,7 +25,7 @@
             android:layout_marginEnd="@dimen/margin_three_fourth"
             android:layout_marginBottom="@dimen/margin_material">
 
-            <im.threads.internal.views.CircularProgressButton
+            <im.threads.ui.views.CircularProgressButton
                 android:id="@+id/buttonDownload"
                 android:layout_width="42dp"
                 android:layout_height="42dp"
@@ -51,7 +51,7 @@
             android:background="@color/threads_outgoing_message_text"
             android:minHeight="70dp" />
 
-        <im.threads.internal.widget.textView.BubbleMessageTextView
+        <im.threads.ui.widget.textView.BubbleMessageTextView
             android:id="@+id/header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -61,7 +61,7 @@
             android:textColor="@color/threads_outgoing_message_text"
             tools:text="счетddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.pdf" />
 
-        <im.threads.internal.widget.textView.BubbleMessageTextView
+        <im.threads.ui.widget.textView.BubbleMessageTextView
             android:id="@+id/fileSize"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -74,7 +74,7 @@
             android:textColor="@color/threads_outgoing_message_text"
             android:textSize="@dimen/error_text_size" />
 
-        <im.threads.internal.widget.textView.BubbleTimeTextView
+        <im.threads.ui.widget.textView.BubbleTimeTextView
             android:id="@+id/timeStamp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -91,7 +91,7 @@
 
     </RelativeLayout>
 
-    <im.threads.internal.widget.textView.BubbleTimeTextView
+    <im.threads.ui.widget.textView.BubbleTimeTextView
         android:id="@+id/errorText"
         style="@style/timestamp"
         android:layout_below="@+id/bubble"

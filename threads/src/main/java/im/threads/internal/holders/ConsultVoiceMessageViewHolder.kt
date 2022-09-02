@@ -24,9 +24,9 @@ import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.FileDescription
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.utils.FileUtils
-import im.threads.internal.views.VoiceTimeLabelFormatter
-import im.threads.internal.views.formatAsDuration
-import im.threads.internal.widget.textView.QuoteMessageTextView
+import im.threads.ui.views.VoiceTimeLabelFormatter
+import im.threads.ui.views.formatAsDuration
+import im.threads.ui.widget.textView.QuoteMessageTextView
 import io.reactivex.subjects.PublishSubject
 import java.text.SimpleDateFormat
 import java.util.Date

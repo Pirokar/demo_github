@@ -3,9 +3,9 @@ package im.threads.business.rest.queries
 import im.threads.R
 import im.threads.business.config.BaseConfig
 import im.threads.business.transport.AuthInterceptor
-import im.threads.internal.utils.AppInfoHelper
-import im.threads.internal.utils.DeviceInfoHelper
-import im.threads.internal.utils.SSLCertificateInterceptor
+import im.threads.business.utils.AppInfoHelper
+import im.threads.business.utils.DeviceInfoHelper
+import im.threads.business.utils.SSLCertificateInterceptor
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor

@@ -93,43 +93,43 @@ import im.threads.business.utils.FileUtils;
 import im.threads.business.utils.FileUtilsKt;
 import im.threads.business.utils.preferences.PrefUtilsBase;
 import im.threads.databinding.FragmentChatBinding;
-import im.threads.internal.activities.CameraActivity;
-import im.threads.internal.activities.GalleryActivity;
-import im.threads.internal.activities.ImagesActivity;
-import im.threads.internal.activities.filesActivity.FilesActivity;
-import im.threads.internal.adapters.ChatAdapter;
-import im.threads.internal.broadcastReceivers.ProgressReceiver;
+import im.threads.ui.activities.CameraActivity;
+import im.threads.ui.activities.GalleryActivity;
+import im.threads.ui.activities.ImagesActivity;
+import im.threads.ui.activities.filesActivity.FilesActivity;
+import im.threads.ui.adapters.ChatAdapter;
+import im.threads.business.broadcastReceivers.ProgressReceiver;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.controllers.ChatController;
-import im.threads.internal.fragments.AttachmentBottomSheetDialogFragment;
-import im.threads.internal.fragments.BaseFragment;
-import im.threads.internal.fragments.FilePickerFragment;
-import im.threads.internal.fragments.PermissionDescriptionAlertDialogFragment;
-import im.threads.internal.helpers.FileProviderHelper;
+import im.threads.ui.fragments.AttachmentBottomSheetDialogFragment;
+import im.threads.ui.fragments.BaseFragment;
+import im.threads.ui.fragments.FilePickerFragment;
+import im.threads.ui.fragments.PermissionDescriptionAlertDialogFragment;
+import im.threads.business.utils.FileProviderHelper;
 import im.threads.internal.helpers.MediaHelper;
-import im.threads.internal.media.ChatCenterAudioConverter;
-import im.threads.internal.media.ChatCenterAudioConverterCallback;
-import im.threads.internal.media.FileDescriptionMediaPlayer;
-import im.threads.internal.model.ClientNotificationDisplayType;
+import im.threads.business.media.ChatCenterAudioConverter;
+import im.threads.business.media.ChatCenterAudioConverterCallback;
+import im.threads.business.media.FileDescriptionMediaPlayer;
+import im.threads.business.models.ClientNotificationDisplayType;
 import im.threads.internal.model.ConsultRole;
-import im.threads.internal.model.ConsultTyping;
+import im.threads.business.models.ConsultTyping;
 import im.threads.internal.model.InputFieldEnableModel;
-import im.threads.internal.model.QuickReplyItem;
-import im.threads.internal.model.ScheduleInfo;
-import im.threads.internal.model.UnreadMessages;
-import im.threads.internal.model.UpcomingUserMessage;
-import im.threads.internal.permissions.PermissionsActivity;
-import im.threads.internal.useractivity.LastUserActivityTimeCounter;
-import im.threads.internal.useractivity.LastUserActivityTimeCounterSingletonProvider;
-import im.threads.internal.utils.ColorsHelper;
-import im.threads.internal.utils.Keyboard;
+import im.threads.business.models.QuickReplyItem;
+import im.threads.business.models.ScheduleInfo;
+import im.threads.business.models.UnreadMessages;
+import im.threads.business.models.UpcomingUserMessage;
+import im.threads.ui.permissions.PermissionsActivity;
+import im.threads.business.useractivity.UserActivityTime;
+import im.threads.business.useractivity.UserActivityTimeProvider;
+import im.threads.ui.utils.ColorsHelper;
+import im.threads.ui.utils.Keyboard;
 import im.threads.internal.utils.RxUtils;
-import im.threads.internal.utils.ThreadsPermissionChecker;
-import im.threads.internal.views.VoiceTimeLabelFormatter;
-import im.threads.internal.views.VoiceTimeLabelFormatterKt;
+import im.threads.business.utils.ThreadsPermissionChecker;
+import im.threads.ui.views.VoiceTimeLabelFormatter;
 import im.threads.ui.config.Config;
 import im.threads.ui.styles.permissions.PermissionDescriptionType;
 import im.threads.ui.utils.FileHelper;
+import im.threads.ui.views.VoiceTimeLabelFormatterKt;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -748,7 +748,7 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     private void updateLastUserActivityTime() {
-        LastUserActivityTimeCounter timeCounter = LastUserActivityTimeCounterSingletonProvider
+        UserActivityTime timeCounter = UserActivityTimeProvider
                 .INSTANCE.getLastUserActivityTimeCounter();
         timeCounter.updateLastUserActivityTime();
     }
@@ -1035,7 +1035,7 @@ public final class ChatFragment extends BaseFragment implements
                     LoggerEdna.debug("Image File uri resolved: " + photoUri.toString());
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
                     // https://stackoverflow.com/a/48391446/1321401
-                    MediaHelper.grantPermissions(activity, intent, photoUri);
+                    MediaHelper.grantPermissionsForUri(activity, intent, photoUri);
                     startActivityForResult(intent, REQUEST_EXTERNAL_CAMERA_PHOTO);
                 } catch (IllegalArgumentException e) {
                     LoggerEdna.error("Could not start external camera", e);

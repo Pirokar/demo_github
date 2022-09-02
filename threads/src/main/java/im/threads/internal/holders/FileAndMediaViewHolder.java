@@ -20,8 +20,8 @@ import im.threads.R;
 import im.threads.business.imageLoading.ImageLoader;
 import im.threads.business.models.FileDescription;
 import im.threads.business.utils.FileUtils;
-import im.threads.internal.utils.ColorsHelper;
-import im.threads.internal.views.CircularProgressButton;
+import im.threads.ui.utils.ColorsHelper;
+import im.threads.ui.views.CircularProgressButton;
 
 public final class FileAndMediaViewHolder extends BaseHolder {
     private ImageButton mImageButton;

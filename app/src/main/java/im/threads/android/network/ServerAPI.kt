@@ -7,7 +7,7 @@ import im.threads.android.useCases.developerOptions.DebugMenuInteractor
 import im.threads.android.useCases.developerOptions.DebugMenuUseCase
 import im.threads.business.config.BaseConfig
 import im.threads.business.logger.LoggerEdna
-import im.threads.internal.utils.SSLCertificateInterceptor
+import im.threads.business.utils.SSLCertificateInterceptor
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient.Builder
 import okhttp3.logging.HttpLoggingInterceptor

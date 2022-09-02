@@ -9,7 +9,7 @@ import im.threads.business.models.CampaignMessage
 import im.threads.business.transport.MessageAttributes
 import im.threads.business.transport.PushMessageAttributes
 import im.threads.business.utils.preferences.PrefUtilsBase
-import im.threads.internal.workers.NotificationWorker
+import im.threads.ui.workers.NotificationWorker
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

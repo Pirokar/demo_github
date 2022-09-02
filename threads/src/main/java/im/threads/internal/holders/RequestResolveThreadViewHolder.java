@@ -8,7 +8,7 @@ import android.widget.TextView;
 import androidx.core.content.ContextCompat;
 
 import im.threads.R;
-import im.threads.internal.adapters.ChatAdapter;
+import im.threads.ui.adapters.ChatAdapter;
 
 /**
  * ViewHolder для запроса о завершении чата

@@ -22,7 +22,7 @@ import im.threads.business.models.ChatItem
 import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.utils.FileUtils
-import im.threads.internal.views.CircularProgressButton
+import im.threads.ui.views.CircularProgressButton
 import io.reactivex.subjects.PublishSubject
 import java.text.SimpleDateFormat
 import java.util.Date

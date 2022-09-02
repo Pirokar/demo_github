@@ -32,7 +32,7 @@ import im.threads.business.models.UserPhrase;
 import im.threads.business.rest.models.HistoryResponse;
 import im.threads.business.utils.DateHelper;
 import im.threads.business.config.BaseConfig;
-import im.threads.internal.formatters.ChatItemType;
+import im.threads.business.formatters.ChatItemType;
 
 public final class HistoryParser {
     private HistoryParser() {

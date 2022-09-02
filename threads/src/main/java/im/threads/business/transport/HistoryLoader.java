@@ -11,7 +11,7 @@ import im.threads.business.rest.queries.BackendApi;
 import im.threads.business.rest.queries.ThreadsApi;
 import im.threads.business.utils.DateHelper;
 import im.threads.business.config.BaseConfig;
-import im.threads.internal.utils.AppInfoHelper;
+import im.threads.business.utils.AppInfoHelper;
 import retrofit2.Call;
 import retrofit2.Response;
 

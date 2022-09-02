@@ -4,7 +4,7 @@
     android:layout_height="100dp"
     android:orientation="horizontal">
 
-    <im.threads.internal.widget.CustomFontButton
+    <im.threads.ui.widget.CustomFontButton
         android:id="@+id/camera"
         style="@style/Base.Widget.AppCompat.Button.Borderless.BottomSheetButtonsStyle"
         android:layout_width="0dp"
@@ -12,7 +12,7 @@
         android:layout_weight="1"
         android:text="@string/threads_camera" />
 
-    <im.threads.internal.widget.CustomFontButton
+    <im.threads.ui.widget.CustomFontButton
         android:id="@+id/gallery"
         style="@style/Base.Widget.AppCompat.Button.Borderless.BottomSheetButtonsStyle"
         android:layout_width="0dp"
@@ -20,7 +20,7 @@
         android:layout_weight="1"
         android:text="@string/threads_gallery" />
 
-    <im.threads.internal.widget.CustomFontButton
+    <im.threads.ui.widget.CustomFontButton
         android:id="@+id/file"
         style="@style/Base.Widget.AppCompat.Button.Borderless.BottomSheetButtonsStyle"
         android:layout_width="0dp"
@@ -28,7 +28,7 @@
         android:layout_weight="1"
         android:text="@string/threads_file" />
 
-    <im.threads.internal.widget.CustomFontButton
+    <im.threads.ui.widget.CustomFontButton
         android:id="@+id/send"
         style="@style/Base.Widget.AppCompat.Button.Borderless.BottomSheetButtonsStyle"
         android:layout_width="wrap_content"
