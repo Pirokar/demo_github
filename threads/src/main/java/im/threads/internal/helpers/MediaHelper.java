@@ -17,7 +17,7 @@ public final class MediaHelper {
 
     public static void grantPermissionsForUri(final Context context, final Intent intent, final Uri imageUri) {
         final List<ResolveInfo> resInfoList = context.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
-        if (!resInfoList.isEmpty()) {
+        if (resInfoList != null && !resInfoList.isEmpty()) {
             for (final ResolveInfo resolveInfo : resInfoList) {
                 final String packageName = resolveInfo.activityInfo.packageName;
                 context.grantUriPermission(packageName, imageUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);

@@ -8,16 +8,21 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import im.threads.business.config.BaseConfig;
+import im.threads.business.formatters.ChatItemType;
 import im.threads.business.formatters.SpeechStatus;
 import im.threads.business.logger.LoggerEdna;
 import im.threads.business.models.ChatItem;
 import im.threads.business.models.ConsultConnectionMessage;
 import im.threads.business.models.ConsultPhrase;
 import im.threads.business.models.FileDescription;
+import im.threads.business.models.MessageRead;
 import im.threads.business.models.MessageState;
 import im.threads.business.models.QuestionDTO;
 import im.threads.business.models.Quote;
 import im.threads.business.models.RequestResolveThread;
+import im.threads.business.models.ScheduleInfo;
+import im.threads.business.models.SearchingConsult;
 import im.threads.business.models.SimpleSystemMessage;
 import im.threads.business.models.SpeechMessageUpdate;
 import im.threads.business.models.Survey;
@@ -32,12 +37,7 @@ import im.threads.business.transport.models.SpeechMessageUpdatedContent;
 import im.threads.business.transport.models.SurveyContent;
 import im.threads.business.transport.models.SystemMessageContent;
 import im.threads.business.transport.models.TextContent;
-import im.threads.business.config.BaseConfig;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
-import im.threads.business.formatters.ChatItemType;
-import im.threads.business.models.MessageRead;
-import im.threads.business.models.ScheduleInfo;
-import im.threads.business.models.SearchingConsult;
 
 public final class MessageParser {
     private MessageParser() {
@@ -216,7 +216,7 @@ public final class MessageParser {
 
     private static FileDescription getFileDescription(final List<Attachment> attachments, String from, long timeStamp) {
         FileDescription fileDescription = null;
-        if (!attachments.isEmpty() && attachments.get(0) != null) {
+        if (attachments != null && !attachments.isEmpty() && attachments.get(0) != null) {
             Attachment attachment = attachments.get(0);
             fileDescription = new FileDescription(
                     from,
@@ -238,7 +238,7 @@ public final class MessageParser {
     }
 
     private static Quote getQuote(final List<im.threads.business.transport.models.Quote> quotes) {
-        if (!quotes.isEmpty() && quotes.get(0) != null) {
+        if (quotes != null && !quotes.isEmpty() && quotes.get(0) != null) {
             im.threads.business.transport.models.Quote quote = quotes.get(0);
             String authorName = quote.getOperator() != null ? quote.getOperator().getAliasOrName() : null;
             long timestamp = quote.getReceivedDate() != null ? quote.getReceivedDate().getTime() : System.currentTimeMillis();
