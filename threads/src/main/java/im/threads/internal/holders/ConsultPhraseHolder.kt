@@ -32,6 +32,7 @@ import im.threads.business.utils.FileUtils
 import im.threads.business.utils.FileUtils.isImage
 import im.threads.internal.utils.UrlUtils
 import im.threads.internal.utils.ViewUtils
+import im.threads.internal.utils.visible
 import im.threads.ui.views.CircularProgressButton
 import im.threads.ui.widget.textView.BubbleMessageTextView
 import im.threads.ui.widget.textView.BubbleTimeTextView
@@ -245,9 +246,9 @@ class ConsultPhraseHolder(parent: ViewGroup, highlightingStream: PublishSubject<
         phrase: String
     ) {
         phraseTextView.bindTimestampView(timeStampTextView)
-        phraseTextView.visibility = View.VISIBLE
-        highlightOperatorText(phraseTextView, consultPhrase)
-        bindOGData(phrase)
+        phraseTextView.visible()
+        val extractedLink = bindOGData(phrase)
+        highlightOperatorText(phraseTextView, consultPhrase, extractedLink?.link)
     }
 
     private fun showQuote(

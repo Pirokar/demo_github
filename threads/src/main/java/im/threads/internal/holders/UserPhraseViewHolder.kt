@@ -213,8 +213,8 @@ class UserPhraseViewHolder(parent: ViewGroup, highlightingStream: PublishSubject
     private fun showPhrase(phrase: String) {
         phraseTextView.isVisible = true
         phraseTextView.bindTimestampView(timeStampTextView)
-        highlightClientText(phraseTextView, phrase)
         bindOGData(phrase)
+        highlightClientText(phraseTextView, phrase)
     }
 
     private fun showFiles(

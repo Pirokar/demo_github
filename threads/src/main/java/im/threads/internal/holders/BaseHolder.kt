@@ -25,6 +25,7 @@ import im.threads.business.ogParser.OGData
 import im.threads.business.ogParser.OGDataContent
 import im.threads.business.ogParser.OpenGraphParser
 import im.threads.business.ogParser.OpenGraphParserJsoupImpl
+import im.threads.internal.model.ExtractedLink
 import im.threads.internal.utils.UrlUtils
 import im.threads.internal.utils.ViewUtils
 import im.threads.internal.utils.gone
@@ -166,16 +167,19 @@ abstract class BaseHolder internal constructor(
      * Если поле formattedText внутри phrase не будет пустым, производится форматирование текста.
      * @param textView вью, где необходимо произвести обработку - подсветку, форматирование
      * @param phrase данные для отображение во вью
+     * @param url url, содержащийся в сообщении (если известен)
      */
     protected fun highlightOperatorText(
         textView: TextView,
-        phrase: ConsultPhrase
+        phrase: ConsultPhrase,
+        url: String? = null
     ) {
         if (phrase.formattedPhrase.isNullOrBlank()) {
             textView.setText(phrase.phraseText, TextView.BufferType.NORMAL)
             setTextWithHighlighting(
                 textView,
-                style.incomingMarkdownConfiguration.isLinkUnderlined
+                style.incomingMarkdownConfiguration.isLinkUnderlined,
+                url
             )
         } else {
             (textView as? BubbleMessageTextView)?.let {
@@ -189,15 +193,18 @@ abstract class BaseHolder internal constructor(
      * Подсчвечивает ссылки, email, номера телефонов.
      * @param textView вью, где необходимо произвести подсветку
      * @param phrase текст для отображение во вью
+     * @param url url, содержащийся в сообщении (если известен)
      */
     protected fun highlightClientText(
         textView: BubbleMessageTextView,
-        phrase: String
+        phrase: String,
+        url: String? = null
     ) {
         textView.setText(phrase, TextView.BufferType.NORMAL)
         setTextWithHighlighting(
             textView,
-            style.outgoingMarkdownConfiguration.isLinkUnderlined
+            style.outgoingMarkdownConfiguration.isLinkUnderlined,
+            url
         )
     }
 
@@ -223,12 +230,14 @@ abstract class BaseHolder internal constructor(
         ErrorStateEnum.ANY -> R.string.threads_some_error_during_load_file
     }
 
-    protected fun bindOGData(messageText: String?) {
+    protected fun bindOGData(messageText: String?): ExtractedLink? {
+        var extractedLink: ExtractedLink? = null
+
         val link = if (messageText != null) {
-            val extractedLink = UrlUtils.extractLink(messageText)
+            extractedLink = UrlUtils.extractLink(messageText)
             if (extractedLink != null && extractedLink.isEmail) {
                 null
-            } else if (extractedLink?.link != null && !extractedLink.link.startsWith("http")) {
+            } else if (extractedLink?.link != null && !extractedLink.link!!.startsWith("http")) {
                 "https://${extractedLink.link}"
             } else {
                 extractedLink?.link
@@ -239,7 +248,7 @@ abstract class BaseHolder internal constructor(
         ogDataContent?.url = link ?: ""
 
         if (ogDataContent?.ogDataLayout?.tag == link) {
-            return
+            return extractedLink
         } else {
             openGraphParser.getCachedContents(link)?.let {
                 openGraphParsingStream.onNext(it)
@@ -252,6 +261,8 @@ abstract class BaseHolder internal constructor(
             }
             openGraphParsingStream.onNext(requestJob.await())
         }
+
+        return extractedLink
     }
 
     private fun onOgDataReceived(ogData: OGData) {
@@ -348,9 +359,17 @@ abstract class BaseHolder internal constructor(
         ogDataContent?.ogDataLayout?.tag = ""
     }
 
-    private fun setTextWithHighlighting(textView: TextView, isUnderlined: Boolean) {
+    private fun setTextWithHighlighting(
+        textView: TextView,
+        isUnderlined: Boolean,
+        url: String? = null
+    ) {
         setMovementMethod(textView)
-        linksHighlighter.highlightAllTypeOfLinks(textView, isUnderlined)
+        if (url != null) {
+            linksHighlighter.highlightAllTypeOfLinks(textView, url, isUnderlined)
+        } else {
+            linksHighlighter.highlightAllTypeOfLinks(textView, isUnderlined)
+        }
     }
 
     private fun setMovementMethod(textView: TextView) {
