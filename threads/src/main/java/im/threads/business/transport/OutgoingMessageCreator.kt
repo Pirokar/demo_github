@@ -55,7 +55,7 @@ object OutgoingMessageCreator {
             addProperty(MessageAttributes.APP_MARKER_KEY, appMarker)
             addProperty("libVersion", AppInfoHelper.getLibVersion())
             addProperty("clientLocale", DeviceInfoHelper.getLocale(ctx))
-            addProperty("chatApiVersion", API_VERSION)
+            addProperty("chatApiVersion", ThreadsApi.API_VERSION)
             addProperty(MessageAttributes.TYPE, ChatItemType.CLIENT_INFO.name)
         }
         return jsonObject
@@ -136,7 +136,7 @@ object OutgoingMessageCreator {
             addProperty(MessageAttributes.APP_MARKER_KEY, appMarker)
             addProperty("libVersion", AppInfoHelper.getLibVersion())
             addProperty("clientLocale", DeviceInfoHelper.getLocale(ctx))
-            addProperty("chatApiVersion", API_VERSION)
+            addProperty("chatApiVersion", ThreadsApi.API_VERSION)
             addProperty(MessageAttributes.TYPE, ChatItemType.UPDATE_LOCATION.name)
         }
         return jsonObject

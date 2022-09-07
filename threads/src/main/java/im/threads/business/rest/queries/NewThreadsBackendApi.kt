@@ -18,7 +18,8 @@ interface NewThreadsBackendApi {
         @Header("X-Client-Token") token: String?,
         @Query("before") beforeDate: String?,
         @Query("count") count: Int?,
-        @Query("libVersion") version: String?
+        @Query("libVersion") version: String?,
+        @Query("chatApiVersion") chatApiVersion: String = ThreadsApi.API_VERSION
     ): Call<HistoryResponse?>?
 
     @POST("api/messages/read")
