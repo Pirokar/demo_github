@@ -3,7 +3,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
-    <im.threads.internal.widget.CustomFontTextView
+    <im.threads.ui.widget.CustomFontTextView
         android:id="@+id/chip"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

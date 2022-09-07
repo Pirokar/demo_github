@@ -26,15 +26,15 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.concurrent.TimeUnit;
 
 import im.threads.ChatStyle;
-import im.threads.ThreadsLib;
 import im.threads.UserInfoBuilder;
 import im.threads.android.R;
 import im.threads.android.utils.ChatDesign;
 import im.threads.android.utils.ChatStyleBuilderHelper;
 import im.threads.android.utils.PermissionDescriptionDialogStyleBuilderHelper;
 import im.threads.business.logger.LoggerEdna;
-import im.threads.internal.utils.ColorsHelper;
-import im.threads.styles.permissions.PermissionDescriptionType;
+import im.threads.ui.utils.ColorsHelper;
+import im.threads.ui.core.ThreadsLib;
+import im.threads.ui.styles.permissions.PermissionDescriptionType;
 import im.threads.view.ChatFragment;
 import im.threads.view.OpenWay;
 import io.reactivex.Completable;

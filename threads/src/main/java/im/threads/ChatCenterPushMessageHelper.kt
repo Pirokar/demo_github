@@ -8,8 +8,8 @@ import im.threads.business.models.CAMPAIGN_DATE_FORMAT_PARSE
 import im.threads.business.models.CampaignMessage
 import im.threads.business.transport.MessageAttributes
 import im.threads.business.transport.PushMessageAttributes
-import im.threads.internal.utils.PrefUtils
-import im.threads.internal.workers.NotificationWorker
+import im.threads.business.utils.preferences.PrefUtilsBase
+import im.threads.ui.workers.NotificationWorker
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -18,12 +18,12 @@ object ChatCenterPushMessageHelper {
 
     @JvmStatic
     fun setFcmToken(fcmToken: String?) {
-        PrefUtils.fcmToken = fcmToken
+        PrefUtilsBase.fcmToken = fcmToken
     }
 
     @JvmStatic
     fun setHcmToken(hcmToken: String?) {
-        PrefUtils.hcmToken = hcmToken
+        PrefUtilsBase.hcmToken = hcmToken
     }
 
     @JvmStatic
@@ -61,7 +61,7 @@ object ChatCenterPushMessageHelper {
                         campaign,
                         bundle.getString(MessageAttributes.PRIORITY)?.toInt() ?: 0
                     )
-                    PrefUtils.campaignMessage = campaignMessage
+                    PrefUtilsBase.campaignMessage = campaignMessage
                     NotificationWorker.addCampaignMessage(context, alertStr)
                     LoggerEdna.info("campaign message handled: $campaignMessage")
                 }

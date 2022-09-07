@@ -10,8 +10,8 @@ import im.threads.business.rest.models.HistoryResponse;
 import im.threads.business.rest.queries.BackendApi;
 import im.threads.business.rest.queries.ThreadsApi;
 import im.threads.business.utils.DateHelper;
-import im.threads.internal.Config;
-import im.threads.internal.utils.AppInfoHelper;
+import im.threads.business.config.BaseConfig;
+import im.threads.business.utils.AppInfoHelper;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -28,9 +28,9 @@ public final class HistoryLoader {
      */
     @WorkerThread
     public static HistoryResponse getHistorySync(Long beforeTimestamp, Integer count) throws Exception {
-        String token = Config.instance.transport.getToken();
+        String token = BaseConfig.instance.transport.getToken();
         if (count == null) {
-            count = Config.instance.historyLoadingCount;
+            count = BaseConfig.instance.historyLoadingCount;
         }
         if (!token.isEmpty()) {
             ThreadsApi threadsApi = BackendApi.get();

@@ -13,7 +13,7 @@ import org.robolectric.RuntimeEnvironment;
 import java.util.Arrays;
 import java.util.Collection;
 
-import im.threads.internal.utils.PrefUtils;
+import im.threads.business.utils.preferences.PrefUtilsBase;
 
 @RunWith(ParameterizedRobolectricTestRunner.class)
 public class PrefUtilsSignatureTest {
@@ -34,8 +34,8 @@ public class PrefUtilsSignatureTest {
 
     @Test
     public void saveAndGetSignature() {
-        PrefUtils.setClientIdSignature(inputSignature);
-        String signature = PrefUtils.getClientIdSignature();
+        PrefUtilsBase.setClientIdSignature(inputSignature);
+        String signature = PrefUtilsBase.getClientIdSignature();
 
         Assert.assertEquals(expectedSignature, signature);
     }

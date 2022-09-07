@@ -5,10 +5,10 @@ import androidx.fragment.app.Fragment;
 
 import java.util.List;
 
-import im.threads.internal.Config;
-import im.threads.internal.activities.QuickAnswerActivity;
+import im.threads.business.config.BaseConfig;
+import im.threads.ui.activities.QuickAnswerActivity;
 import im.threads.business.logger.LoggerEdna;
-import im.threads.internal.model.UpcomingUserMessage;
+import im.threads.business.models.UpcomingUserMessage;
 import im.threads.business.secureDatabase.DatabaseHolder;
 import im.threads.business.transport.HistoryLoader;
 import im.threads.business.transport.HistoryParser;
@@ -32,7 +32,7 @@ public final class QuickAnswerController extends Fragment {
                             DatabaseHolder.getInstance().putChatItems(chatItems);
                             final List<String> uuidList = DatabaseHolder.getInstance().getUnreadMessagesUuid();
                             if (!uuidList.isEmpty()) {
-                                Config.instance.transport.markMessagesAsRead(uuidList);
+                                BaseConfig.instance.transport.markMessagesAsRead(uuidList);
                             }
                         })
                         .flatMap(items -> DatabaseHolder.getInstance().getLastConsultPhrase())

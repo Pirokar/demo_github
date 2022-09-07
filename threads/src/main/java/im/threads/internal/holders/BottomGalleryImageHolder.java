@@ -9,24 +9,20 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
 
-import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.business.imageLoading.ImageLoader;
-import im.threads.internal.Config;
-import im.threads.internal.model.BottomGalleryItem;
-import im.threads.internal.utils.ColorsHelper;
+import im.threads.ui.models.BottomGalleryItem;
+import im.threads.ui.utils.ColorsHelper;
 
 public final class BottomGalleryImageHolder extends BaseHolder {
     private final ImageView image;
     private final ImageView chosenMark;
-    private final ChatStyle style;
 
     public BottomGalleryImageHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_gallery_bottom, parent, false), null);
         image = itemView.findViewById(R.id.image);
         chosenMark = itemView.findViewById(R.id.mark);
-        style = Config.instance.getChatStyle();
     }
 
     public void onBind(@NonNull BottomGalleryItem item, @NonNull View.OnClickListener listener) {
@@ -47,11 +43,11 @@ public final class BottomGalleryImageHolder extends BaseHolder {
         Drawable drawable;
         if (item.isChosen()) {
             drawable = AppCompatResources.getDrawable(itemView.getContext(),
-                    style.attachmentDoneIconResId);
+                    getStyle().attachmentDoneIconResId);
             if (drawable != null) {
-                int attachmentBottomSheetButtonTintResId = style.chatBodyIconsTint == 0
-                        ? style.attachmentBottomSheetButtonTintResId
-                        : style.chatBodyIconsTint;
+                int attachmentBottomSheetButtonTintResId = getStyle().chatBodyIconsTint == 0
+                        ? getStyle().attachmentBottomSheetButtonTintResId
+                        : getStyle().chatBodyIconsTint;
                 ColorsHelper.setDrawableColor(itemView.getContext(), drawable.mutate(),
                         attachmentBottomSheetButtonTintResId);
             }

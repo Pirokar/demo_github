@@ -4,6 +4,7 @@ import android.accounts.NetworkErrorException
 import android.graphics.Bitmap
 import android.net.Uri
 import android.widget.ImageView
+import im.threads.business.config.BaseConfig
 import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.FileDescription
@@ -11,9 +12,8 @@ import im.threads.business.rest.queries.DatastoreApi
 import im.threads.business.transport.InputStreamRequestBody
 import im.threads.business.utils.FileUtils.getFileName
 import im.threads.business.utils.FileUtils.getMimeType
-import im.threads.internal.Config
+import im.threads.business.utils.preferences.PrefUtilsBase
 import im.threads.internal.model.ErrorResponse
-import im.threads.internal.utils.PrefUtils.Companion.clientID
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -28,7 +28,7 @@ import java.io.InputStream
 private const val PHOTO_RESIZE_MAX_SIDE = 1600
 
 fun postFile(fileDescription: FileDescription): String? {
-    val token = clientID
+    val token = PrefUtilsBase.clientID
     LoggerEdna.info("token = $token")
     if (token.isNotEmpty()) {
         fileDescription.fileUri?.let {
@@ -64,7 +64,7 @@ private fun sendFile(uri: Uri, mimeType: String, token: String): String {
         } else {
             response.errorBody()?.let { responseBody ->
                 val errorBody: ErrorResponse =
-                    Config.instance.gson.fromJson(responseBody.string(), ErrorResponse::class.java)
+                    BaseConfig.instance.gson.fromJson(responseBody.string(), ErrorResponse::class.java)
                 if (!errorBody.message.isNullOrEmpty()) {
                     throw IOException(errorBody.code)
                 }
@@ -83,14 +83,14 @@ private fun getFileRequestBody(uri: Uri, mimeType: String): RequestBody {
     }
     return InputStreamRequestBody(
         mimeType.toMediaTypeOrNull(),
-        Config.instance.context.contentResolver,
+        BaseConfig.instance.context.contentResolver,
         uri
     )
 }
 
 private fun isJpeg(uri: Uri): Boolean {
     try {
-        Config.instance.context.contentResolver.openInputStream(uri)?.use { iStream ->
+        BaseConfig.instance.context.contentResolver.openInputStream(uri)?.use { iStream ->
             val inputData = getBytes(iStream)
             return inputData[0] == (-1).toByte() && inputData[1] == (-40).toByte() && inputData[2] == (-1).toByte()
         }
@@ -124,8 +124,8 @@ private fun compressImage(uri: Uri?): File? {
         .onlyScaleDown()
         .scales(ImageView.ScaleType.CENTER_INSIDE)
         .autoRotateWithExif(true)
-        .getBitmapSync(Config.instance.context)
-    val downsizedImageFile = File(Config.instance.context.cacheDir, getFileName(uri))
+        .getBitmapSync(BaseConfig.instance.context)
+    val downsizedImageFile = File(BaseConfig.instance.context.cacheDir, getFileName(uri))
     val byteArrayOutputStream = ByteArrayOutputStream()
     bitmap?.let {
         it.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)

@@ -15,7 +15,7 @@ import java.util.List;
 
 public final class MediaHelper {
 
-    public static void grantPermissions(final Context context, final Intent intent, final Uri imageUri) {
+    public static void grantPermissionsForUri(final Context context, final Intent intent, final Uri imageUri) {
         final List<ResolveInfo> resInfoList = context.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
         if (!resInfoList.isEmpty()) {
             for (final ResolveInfo resolveInfo : resInfoList) {

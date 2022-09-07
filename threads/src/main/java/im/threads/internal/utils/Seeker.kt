@@ -2,7 +2,7 @@ package im.threads.internal.utils
 
 import im.threads.business.models.ChatItem
 import im.threads.business.models.ChatPhrase
-import im.threads.internal.helpers.ChatItemListHelper.lastIndexOf
+import im.threads.business.utils.ChatItemListFinder.lastIndexOf
 import java.util.Locale
 
 class Seeker {

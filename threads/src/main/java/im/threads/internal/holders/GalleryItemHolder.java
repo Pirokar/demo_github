@@ -14,8 +14,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.business.imageLoading.ImageLoader;
-import im.threads.internal.Config;
-import im.threads.internal.utils.ColorsHelper;
+import im.threads.ui.utils.ColorsHelper;
+import im.threads.ui.config.Config;
 
 public final class GalleryItemHolder extends RecyclerView.ViewHolder {
     private final ImageView mImageView;
@@ -27,7 +27,7 @@ public final class GalleryItemHolder extends RecyclerView.ViewHolder {
 
         mImageView = itemView.findViewById(R.id.image);
         mCheckBox = itemView.findViewById(R.id.checkbox);
-        mStyle = Config.instance.getChatStyle();
+        mStyle = Config.getInstance().getChatStyle();
     }
 
     public void onBind(final Uri imagePath, final View.OnClickListener listener, final boolean isChecked) {

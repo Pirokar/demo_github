@@ -24,8 +24,7 @@ import im.threads.business.models.MessageState
 import im.threads.business.models.UserPhrase
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.utils.FileUtils.getFileName
-import im.threads.internal.Config
-import im.threads.internal.views.CircularProgressButton
+import im.threads.ui.views.CircularProgressButton
 import io.reactivex.subjects.PublishSubject
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -36,8 +35,6 @@ class UserFileViewHolder(parent: ViewGroup, highlightingStream: PublishSubject<C
         LayoutInflater.from(parent.context).inflate(R.layout.item_user_chat_file, parent, false),
         highlightingStream
     ) {
-
-    private val style = Config.instance.chatStyle
     private val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
 
     private val fileHeaderTextView: TextView = itemView.findViewById(R.id.header)

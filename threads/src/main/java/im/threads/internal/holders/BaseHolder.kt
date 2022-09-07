@@ -25,17 +25,17 @@ import im.threads.business.ogParser.OGData
 import im.threads.business.ogParser.OGDataContent
 import im.threads.business.ogParser.OpenGraphParser
 import im.threads.business.ogParser.OpenGraphParserJsoupImpl
-import im.threads.internal.Config
-import im.threads.internal.markdown.LinkifyLinksHighlighter
-import im.threads.internal.markdown.LinksHighlighter
-import im.threads.internal.utils.ColorsHelper
 import im.threads.internal.utils.UrlUtils
 import im.threads.internal.utils.ViewUtils
 import im.threads.internal.utils.gone
 import im.threads.internal.utils.visible
-import im.threads.internal.views.CircularProgressButton
-import im.threads.internal.widget.textView.BubbleMessageTextView
+import im.threads.ui.config.Config
+import im.threads.ui.markdown.LinkifyLinksHighlighter
+import im.threads.ui.markdown.LinksHighlighter
+import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.utils.NoLongClickMovementMethod
+import im.threads.ui.views.CircularProgressButton
+import im.threads.ui.widget.textView.BubbleMessageTextView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
@@ -55,7 +55,6 @@ abstract class BaseHolder internal constructor(
     private var compositeDisposable: CompositeDisposable = CompositeDisposable()
     private val linksHighlighter: LinksHighlighter = LinkifyLinksHighlighter()
     private val openGraphParser: OpenGraphParser = OpenGraphParserJsoupImpl()
-    private val style = Config.instance.chatStyle
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
     protected val rotateAnim = RotateAnimation(
         0f,
@@ -104,6 +103,8 @@ abstract class BaseHolder internal constructor(
             )
         }
     }
+    val config: Config by lazy { Config.getInstance() }
+    val style = config.getChatStyle()
 
     protected fun subscribe(event: Disposable): Boolean {
         if (compositeDisposable.isDisposed) {
@@ -224,11 +225,13 @@ abstract class BaseHolder internal constructor(
 
     protected fun bindOGData(messageText: String?) {
         val link = if (messageText != null) {
-            val extractedLink = UrlUtils.extractLink(messageText)?.link
-            if (extractedLink != null && !extractedLink.startsWith("http")) {
-                "https://$extractedLink"
+            val extractedLink = UrlUtils.extractLink(messageText)
+            if (extractedLink != null && extractedLink.isEmail) {
+                null
+            } else if (extractedLink?.link != null && !extractedLink.link.startsWith("http")) {
+                "https://${extractedLink.link}"
             } else {
-                extractedLink
+                extractedLink?.link
             }
         } else {
             null

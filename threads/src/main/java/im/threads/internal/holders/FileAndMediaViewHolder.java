@@ -20,9 +20,8 @@ import im.threads.R;
 import im.threads.business.imageLoading.ImageLoader;
 import im.threads.business.models.FileDescription;
 import im.threads.business.utils.FileUtils;
-import im.threads.internal.Config;
-import im.threads.internal.utils.ColorsHelper;
-import im.threads.internal.views.CircularProgressButton;
+import im.threads.ui.utils.ColorsHelper;
+import im.threads.ui.views.CircularProgressButton;
 
 public final class FileAndMediaViewHolder extends BaseHolder {
     private ImageButton mImageButton;
@@ -46,11 +45,10 @@ public final class FileAndMediaViewHolder extends BaseHolder {
         fileHeaderTextView = itemView.findViewById(R.id.file_title);
         fileSizeTextView = itemView.findViewById(R.id.file_size);
         timeStampTextView = itemView.findViewById(R.id.timestamp);
-        ChatStyle style = Config.instance.getChatStyle();
-        setUpTintedDrawable(style);
-        fileSizeTextView.setTextColor(getColorInt(style.mediaAndFilesTextColor));
-        fileHeaderTextView.setTextColor(getColorInt(style.mediaAndFilesTextColor));
-        timeStampTextView.setTextColor(getColorInt(style.mediaAndFilesTextColor));
+        setUpTintedDrawable(getStyle());
+        fileSizeTextView.setTextColor(getColorInt(getStyle().mediaAndFilesTextColor));
+        fileHeaderTextView.setTextColor(getColorInt(getStyle().mediaAndFilesTextColor));
+        timeStampTextView.setTextColor(getColorInt(getStyle().mediaAndFilesTextColor));
     }
 
     private void setUpTintedDrawable(ChatStyle style) {
@@ -105,13 +103,12 @@ public final class FileAndMediaViewHolder extends BaseHolder {
     }
 
     private void setUpDownloadButton(CircularProgressButton button) {
-        ChatStyle chatStyle = Config.instance.getChatStyle();
-        int downloadButtonTintResId = chatStyle.chatBodyIconsTint == 0 ?
-            chatStyle.downloadButtonTintResId : chatStyle.chatBodyIconsTint;
+        int downloadButtonTintResId = getStyle().chatBodyIconsTint == 0 ?
+                getStyle().downloadButtonTintResId : getStyle().chatBodyIconsTint;
 
-        Drawable startDownload = setUpDrawable(chatStyle.startDownloadIconResId, downloadButtonTintResId);
-        Drawable inProgress = setUpDrawable(chatStyle.inProgressIconResId, downloadButtonTintResId);
-        Drawable completed = setUpDrawable(chatStyle.completedIconResId, downloadButtonTintResId);
+        Drawable startDownload = setUpDrawable(getStyle().startDownloadIconResId, downloadButtonTintResId);
+        Drawable inProgress = setUpDrawable(getStyle().inProgressIconResId, downloadButtonTintResId);
+        Drawable completed = setUpDrawable(getStyle().completedIconResId, downloadButtonTintResId);
         button.setStartDownloadDrawable(startDownload);
         button.setInProgress(inProgress);
         button.setCompletedDrawable(completed);

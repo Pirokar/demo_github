@@ -2,9 +2,8 @@ package im.threads.business.secureDatabase.table
 
 import android.content.ContentValues
 import im.threads.business.models.Quote
-import im.threads.business.secureDatabase.ThreadsDbHelper.Companion.DB_PASSWORD
-import net.sqlcipher.database.SQLiteDatabase
-import net.sqlcipher.database.SQLiteOpenHelper
+import net.zetetic.database.sqlcipher.SQLiteDatabase
+import net.zetetic.database.sqlcipher.SQLiteOpenHelper
 import java.util.Locale
 
 class QuotesTable(private val fileDescriptionsTable: FileDescriptionsTable) : Table() {
@@ -25,7 +24,7 @@ class QuotesTable(private val fileDescriptionsTable: FileDescriptionsTable) : Ta
     }
 
     override fun cleanTable(sqlHelper: SQLiteOpenHelper) {
-        sqlHelper.getWritableDatabase(DB_PASSWORD).execSQL("delete from $TABLE_QUOTE")
+        sqlHelper.writableDatabase.execSQL("delete from $TABLE_QUOTE")
     }
 
     fun putQuote(sqlHelper: SQLiteOpenHelper, quotedByMessageUuid: String, quote: Quote?) {
@@ -37,7 +36,7 @@ class QuotesTable(private val fileDescriptionsTable: FileDescriptionsTable) : Ta
             cv.put(COLUMN_QUOTE_FROM, quote.phraseOwnerTitle)
             cv.put(COLUMN_QUOTE_BODY, quote.text)
             cv.put(COLUMN_QUOTE_TIMESTAMP, quote.timeStamp)
-            sqlHelper.getWritableDatabase(DB_PASSWORD).rawQuery(
+            sqlHelper.writableDatabase.rawQuery(
                 (
                     "select " + COLUMN_QUOTED_BY_MESSAGE_UUID_EXT + " from " + TABLE_QUOTE +
                         " where " + COLUMN_QUOTED_BY_MESSAGE_UUID_EXT + " = ?"
@@ -46,7 +45,7 @@ class QuotesTable(private val fileDescriptionsTable: FileDescriptionsTable) : Ta
             ).use { c ->
                 val existsInDb: Boolean = c.count > 0
                 if (existsInDb) {
-                    sqlHelper.getWritableDatabase(DB_PASSWORD)
+                    sqlHelper.writableDatabase
                         .update(
                             TABLE_QUOTE,
                             cv,
@@ -54,7 +53,7 @@ class QuotesTable(private val fileDescriptionsTable: FileDescriptionsTable) : Ta
                             arrayOf(quotedByMessageUuid)
                         )
                 } else {
-                    sqlHelper.getWritableDatabase(DB_PASSWORD)
+                    sqlHelper.writableDatabase
                         .insert(TABLE_QUOTE, null, cv)
                 }
                 it.fileDescription?.let {
@@ -76,7 +75,7 @@ class QuotesTable(private val fileDescriptionsTable: FileDescriptionsTable) : Ta
             TABLE_QUOTE,
             COLUMN_QUOTED_BY_MESSAGE_UUID_EXT
         )
-        sqlHelper.getWritableDatabase(DB_PASSWORD).rawQuery(query, arrayOf(quotedByMessageUuid))
+        sqlHelper.writableDatabase.rawQuery(query, arrayOf(quotedByMessageUuid))
             .use { c ->
                 if (c.moveToFirst()) {
                     return Quote(
@@ -102,7 +101,7 @@ class QuotesTable(private val fileDescriptionsTable: FileDescriptionsTable) : Ta
             COLUMN_QUOTE_TIMESTAMP
         )
         val list: MutableList<Quote> = ArrayList()
-        sqlHelper.getWritableDatabase(DB_PASSWORD).rawQuery(query, arrayOf()).use { c ->
+        sqlHelper.writableDatabase.rawQuery(query, arrayOf()).use { c ->
             if (!c.moveToFirst()) {
                 return list
             }

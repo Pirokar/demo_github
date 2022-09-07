@@ -20,7 +20,7 @@
             android:layout_height="match_parent"
             android:background="@color/threads_chat_background">
 
-            <im.threads.internal.widget.CustomFontButton
+            <im.threads.ui.widget.CustomFontButton
                 android:id="@+id/search_more"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
@@ -39,7 +39,7 @@
                 android:layout_below="@+id/toolbar"
                 android:layout_alignParentStart="true">
 
-                <im.threads.internal.views.MySwipeRefreshLayout
+                <im.threads.ui.views.MySwipeRefreshLayout
                     android:id="@+id/swipe_refresh"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
@@ -52,9 +52,9 @@
                         android:paddingTop="4dp"
                         android:paddingBottom="4dp" />
 
-                </im.threads.internal.views.MySwipeRefreshLayout>
+                </im.threads.ui.views.MySwipeRefreshLayout>
 
-                <im.threads.internal.views.WelcomeScreen
+                <im.threads.ui.views.WelcomeScreen
                     android:id="@+id/welcome"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
@@ -97,7 +97,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <im.threads.internal.widget.CustomFontTextView
+                <im.threads.ui.widget.CustomFontTextView
                     android:id="@+id/unread_msg_count"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
@@ -171,7 +171,7 @@
                             android:theme="@style/ThemeOverlay.ChatCenter.Slider.Preview"
                             android:visibility="gone" />
 
-                        <im.threads.internal.widget.textView.InputQuotedMessageAuthorTextView
+                        <im.threads.ui.widget.textView.InputQuotedMessageAuthorTextView
                             android:id="@+id/quote_header"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -182,7 +182,7 @@
                             android:textSize="@dimen/text_medium"
                             tools:text="title_title_title" />
 
-                        <im.threads.internal.widget.textView.InputQuotedMessageTextView
+                        <im.threads.ui.widget.textView.InputQuotedMessageTextView
                             android:id="@+id/quote_text"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -240,7 +240,7 @@
                             android:background="@android:color/transparent"
                             app:srcCompat="@drawable/threads_ic_attachment_button" />
 
-                        <im.threads.internal.widget.CustomFontEditText
+                        <im.threads.ui.widget.CustomFontEditText
                             android:id="@+id/input_edit_view"
                             style="@style/InputEditTextStyle"
                             android:hint="@string/threads_input_hint"
@@ -368,7 +368,7 @@
                         android:gravity="center_vertical"
                         android:orientation="vertical">
 
-                        <im.threads.internal.widget.textView.ToolbarTitleTextView
+                        <im.threads.ui.widget.textView.ToolbarTitleTextView
                             android:id="@+id/consult_name"
                             android:layout_width="wrap_content"
                             android:layout_height="26dp"
@@ -379,7 +379,7 @@
                             android:textSize="@dimen/text_big"
                             tools:text="@string/threads_searching_operator" />
 
-                        <im.threads.internal.widget.textView.ToolbarSubtitleTextView
+                        <im.threads.ui.widget.textView.ToolbarSubtitleTextView
                             android:id="@+id/subtitle"
                             android:layout_width="wrap_content"
                             android:layout_height="22dp"
@@ -396,7 +396,7 @@
                             android:layout_height="match_parent"
                             android:visibility="gone">
 
-                            <im.threads.internal.widget.CustomFontEditText
+                            <im.threads.ui.widget.CustomFontEditText
                                 android:id="@+id/search"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"

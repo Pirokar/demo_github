@@ -5,7 +5,7 @@ import android.net.Uri
 import androidx.test.core.app.ApplicationProvider
 import im.threads.business.models.FileDescription
 import im.threads.business.secureDatabase.DatabaseHolder
-import im.threads.internal.activities.filesActivity.FilesViewModel
+import im.threads.ui.activities.filesActivity.FilesViewModel
 import io.reactivex.Single
 import org.junit.Before
 import org.junit.Test

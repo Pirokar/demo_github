@@ -20,6 +20,7 @@ import androidx.core.graphics.BlendModeCompat
 import androidx.core.view.isVisible
 import com.google.android.material.slider.Slider
 import im.threads.R
+import im.threads.business.formatters.RussianFormatSymbols
 import im.threads.business.imageLoading.ImageLoader.Companion.get
 import im.threads.business.models.CampaignMessage
 import im.threads.business.models.ChatItem
@@ -32,14 +33,12 @@ import im.threads.business.ogParser.OGDataContent
 import im.threads.business.utils.FileUtils
 import im.threads.business.utils.FileUtils.isImage
 import im.threads.business.utils.FileUtils.isVoiceMessage
-import im.threads.internal.Config
-import im.threads.internal.formatters.RussianFormatSymbols
 import im.threads.internal.utils.ViewUtils
-import im.threads.internal.views.CircularProgressButton
-import im.threads.internal.views.VoiceTimeLabelFormatter
-import im.threads.internal.views.formatAsDuration
-import im.threads.internal.widget.textView.BubbleMessageTextView
-import im.threads.internal.widget.textView.BubbleTimeTextView
+import im.threads.ui.views.CircularProgressButton
+import im.threads.ui.views.VoiceTimeLabelFormatter
+import im.threads.ui.views.formatAsDuration
+import im.threads.ui.widget.textView.BubbleMessageTextView
+import im.threads.ui.widget.textView.BubbleTimeTextView
 import io.reactivex.subjects.PublishSubject
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -53,7 +52,6 @@ class UserPhraseViewHolder(parent: ViewGroup, highlightingStream: PublishSubject
             .inflate(R.layout.item_user_text_with_file, parent, false),
         highlightingStream
     ) {
-    private val style = Config.instance.chatStyle
     private val sdf = SimpleDateFormat("HH:mm", Locale.US)
 
     @SuppressLint("SimpleDateFormat")
