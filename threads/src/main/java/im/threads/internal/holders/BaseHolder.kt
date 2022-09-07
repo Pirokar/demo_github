@@ -181,6 +181,9 @@ abstract class BaseHolder internal constructor(
             (textView as? BubbleMessageTextView)?.let {
                 setMovementMethod(it)
                 it.setFormattedText(phrase.formattedPhrase, true)
+            } ?: run {
+                setMovementMethod(textView)
+                textView.setText(phrase.phraseText, TextView.BufferType.NORMAL)
             }
         }
     }
