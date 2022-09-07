@@ -13,7 +13,6 @@ import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
-import androidx.core.view.isVisible
 import com.google.android.material.slider.Slider
 import im.threads.ChatStyle
 import im.threads.R
@@ -25,6 +24,8 @@ import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.FileDescription
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.utils.FileUtils
+import im.threads.internal.utils.gone
+import im.threads.internal.utils.visible
 import im.threads.internal.Config
 import im.threads.internal.views.VoiceTimeLabelFormatter
 import im.threads.internal.views.formatAsDuration
@@ -132,6 +133,8 @@ class ConsultVoiceMessageViewHolder(
     ) {
         subscribeForHighlighting(consultPhrase, rootLayout)
         consultAvatar.setOnClickListener(onAvatarClickListener)
+        checkText(consultPhrase)
+
         consultPhrase.fileDescription?.let {
             fileDescription = it
             buttonPlayPause.setOnClickListener(pausePlayClickListener)
@@ -155,12 +158,6 @@ class ConsultVoiceMessageViewHolder(
                 }
             }
 
-            phraseTextView.isVisible = false
-            if (consultPhrase.phraseText?.trim()?.isNotEmpty() == true) {
-                phraseTextView.isVisible = true
-                highlightOperatorText(phraseTextView, consultPhrase)
-            }
-
             fileSizeTextView.text = formattedDuration
             timeStampTextView.text = sdf.format(Date(consultPhrase.timeStamp))
             showAvatar(consultPhrase)
@@ -169,9 +166,18 @@ class ConsultVoiceMessageViewHolder(
         }
     }
 
+    private fun checkText(consultPhrase: ConsultPhrase) {
+        if (!consultPhrase.phraseText.isNullOrBlank()) {
+            phraseTextView.visible()
+            highlightOperatorText(phraseTextView, consultPhrase)
+        } else {
+            phraseTextView.gone()
+        }
+    }
+
     private fun showAvatar(consultPhrase: ConsultPhrase) {
         if (consultPhrase.isAvatarVisible) {
-            consultAvatar.isVisible = true
+            consultAvatar.visible()
             consultPhrase.avatarPath?.let {
                 consultAvatar.loadImage(
                     FileUtils.convertRelativeUrlToAbsolute(it),
@@ -182,7 +188,7 @@ class ConsultVoiceMessageViewHolder(
                 consultAvatar.setImageResource(style.defaultOperatorAvatar)
             }
         } else {
-            consultAvatar.isVisible = false
+            consultAvatar.gone()
         }
     }
 
@@ -218,17 +224,17 @@ class ConsultVoiceMessageViewHolder(
     }
 
     private fun showLoaderLayout(fileDescription: FileDescription) {
-        loader.isVisible = true
-        buttonPlayPause.isVisible = false
-        errorTextView.isVisible = false
+        loader.visible()
+        buttonPlayPause.gone()
+        errorTextView.gone()
         audioStatusTextView.text = fileDescription.incomingName
         initAnimation(loader, true)
     }
 
     private fun showErrorLayout(fileDescription: FileDescription) {
-        loader.isVisible = true
-        errorTextView.isVisible = true
-        buttonPlayPause.isVisible = false
+        loader.visible()
+        errorTextView.visible()
+        buttonPlayPause.gone()
         loader.setImageResource(getErrorImageResByErrorCode(fileDescription.errorCode))
         audioStatusTextView.text = fileDescription.incomingName
         val errorString = getString(getErrorStringResByErrorCode(fileDescription.errorCode))
@@ -237,33 +243,33 @@ class ConsultVoiceMessageViewHolder(
     }
 
     private fun showCommonLayout(consultPhrase: ConsultPhrase) {
-        buttonPlayPause.isVisible = true
-        loader.isVisible = false
-        errorTextView.isVisible = false
+        buttonPlayPause.visible()
+        loader.gone()
+        errorTextView.gone()
         rotateAnim.cancel()
         when (consultPhrase.speechStatus) {
             SpeechStatus.SUCCESS -> {
                 buttonPlayPause.isClickable = true
                 buttonPlayPause.alpha = 1f
-                audioStatusTextView.isVisible = false
-                fileSizeTextView.isVisible = true
-                slider.isVisible = false
+                audioStatusTextView.gone()
+                fileSizeTextView.visible()
+                slider.gone()
                 slider.setLabelFormatter(VoiceTimeLabelFormatter())
             }
             SpeechStatus.PROCESSING -> {
                 buttonPlayPause.isClickable = false
                 buttonPlayPause.alpha = 0.3f
-                audioStatusTextView.isVisible = true
-                fileSizeTextView.isVisible = false
-                slider.isVisible = false
+                audioStatusTextView.visible()
+                fileSizeTextView.gone()
+                slider.gone()
                 audioStatusTextView.setText(R.string.threads_voice_message_is_processing)
             }
             else -> {
                 buttonPlayPause.isClickable = false
                 buttonPlayPause.alpha = 0.3f
-                audioStatusTextView.isVisible = true
-                fileSizeTextView.isVisible = false
-                slider.isVisible = false
+                audioStatusTextView.visible()
+                fileSizeTextView.gone()
+                slider.gone()
                 audioStatusTextView.setText(R.string.threads_voice_message_error)
             }
         }
