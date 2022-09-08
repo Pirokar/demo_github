@@ -22,6 +22,7 @@ import com.google.android.material.slider.Slider
 import im.threads.R
 import im.threads.business.formatters.RussianFormatSymbols
 import im.threads.business.imageLoading.ImageLoader.Companion.get
+import im.threads.business.media.FileDescriptionMediaPlayer
 import im.threads.business.models.CampaignMessage
 import im.threads.business.models.ChatItem
 import im.threads.business.models.FileDescription
@@ -46,12 +47,16 @@ import java.util.Locale
 import kotlin.math.min
 
 /** layout/item_user_text_with_file.xml */
-class UserPhraseViewHolder(parent: ViewGroup, highlightingStream: PublishSubject<ChatItem>) :
-    VoiceMessageBaseHolder(
-        LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_user_text_with_file, parent, false),
-        highlightingStream
-    ) {
+class UserPhraseViewHolder(
+    parent: ViewGroup,
+    highlightingStream: PublishSubject<ChatItem>,
+    fdMediaPlayer: FileDescriptionMediaPlayer
+) : VoiceMessageBaseHolder(
+    LayoutInflater.from(parent.context)
+        .inflate(R.layout.item_user_text_with_file, parent, false),
+    highlightingStream,
+    fdMediaPlayer
+) {
     private val sdf = SimpleDateFormat("HH:mm", Locale.US)
 
     @SuppressLint("SimpleDateFormat")
@@ -60,7 +65,7 @@ class UserPhraseViewHolder(parent: ViewGroup, highlightingStream: PublishSubject
     } else {
         SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
     }
-    private var fileDescription: FileDescription? = null
+    override var fileDescription: FileDescription? = null
     private var formattedDuration = ""
 
     private val rootLayout: RelativeLayout = itemView.findViewById(R.id.rootLayout)
@@ -96,7 +101,7 @@ class UserPhraseViewHolder(parent: ViewGroup, highlightingStream: PublishSubject
             setBackgroundColorResId(style.outgoingMessageTextColor)
         }
 
-    private val buttonPlayPause =
+    override val buttonPlayPause: ImageView =
         itemView.findViewById<ImageView>(R.id.voiceMessageUserButtonPlayPause).apply {
             drawable.colorFilter =
                 BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
@@ -224,6 +229,8 @@ class UserPhraseViewHolder(parent: ViewGroup, highlightingStream: PublishSubject
     ) {
         userPhrase.fileDescription?.let {
             fileDescription = it
+            subscribeForVoiceMessageDownloaded(false)
+
             rightTextDescription.text = getFileDescriptionText(it)
             if (it.state == AttachmentStateEnum.PENDING || userPhrase.sentState == MessageState.STATE_SENDING) {
                 rightTextRow.isVisible = true
@@ -319,10 +326,6 @@ class UserPhraseViewHolder(parent: ViewGroup, highlightingStream: PublishSubject
             fileSdf.format(campaignMessage.receivedDate)
         )
         quoteTextTimeStamp.text = text
-    }
-
-    override fun getFileDescription(): FileDescription? {
-        return fileDescription
     }
 
     override fun init(maxValue: Int, progress: Int, isPlaying: Boolean) {
