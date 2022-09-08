@@ -8,16 +8,21 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import im.threads.business.config.BaseConfig;
+import im.threads.business.formatters.ChatItemType;
 import im.threads.business.formatters.SpeechStatus;
 import im.threads.business.logger.LoggerEdna;
 import im.threads.business.models.ChatItem;
 import im.threads.business.models.ConsultConnectionMessage;
 import im.threads.business.models.ConsultPhrase;
 import im.threads.business.models.FileDescription;
+import im.threads.business.models.MessageRead;
 import im.threads.business.models.MessageState;
 import im.threads.business.models.QuestionDTO;
 import im.threads.business.models.Quote;
 import im.threads.business.models.RequestResolveThread;
+import im.threads.business.models.ScheduleInfo;
+import im.threads.business.models.SearchingConsult;
 import im.threads.business.models.SimpleSystemMessage;
 import im.threads.business.models.SpeechMessageUpdate;
 import im.threads.business.models.Survey;
@@ -167,7 +172,14 @@ public final class MessageParser {
         if (content.getText() == null && content.getAttachments() == null && content.getQuotes() == null) {
             return null;
         }
-        String phrase = content.getText() != null ? content.getText() : shortMessage;
+        String phrase;
+        if (content.getText() != null) {
+            phrase = content.getText();
+        } else if (content.getSpeechText() != null) {
+            phrase = content.getSpeechText();
+        } else {
+            phrase = shortMessage;
+        }
         Quote quote = null;
         if (content.getQuotes() != null) {
             quote = getQuote(content.getQuotes());

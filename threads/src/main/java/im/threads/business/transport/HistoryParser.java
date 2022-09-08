@@ -12,6 +12,8 @@ import java.util.Date;
 import java.util.List;
 
 import im.threads.R;
+import im.threads.business.config.BaseConfig;
+import im.threads.business.formatters.ChatItemType;
 import im.threads.business.formatters.SpeechStatus;
 import im.threads.business.logger.LoggerEdna;
 import im.threads.business.models.Attachment;
@@ -113,7 +115,12 @@ public final class HistoryParser {
                         out.add(new RequestResolveThread(uuid, message.getHideAfter(), timeStamp, message.getThreadId(), message.isRead()));
                         break;
                     default:
-                        final String phraseText = message.getText();
+                        String phraseText = "";
+                        if (message.getText() != null) {
+                            phraseText = message.getText();
+                        } else if (message.getSpeechText() != null) {
+                            phraseText = message.getSpeechText();
+                        }
                         final FileDescription fileDescription = message.getAttachments() != null ? fileDescriptionFromList(message.getAttachments()) : null;
                         if (fileDescription != null) {
                             fileDescription.setFrom(name);
