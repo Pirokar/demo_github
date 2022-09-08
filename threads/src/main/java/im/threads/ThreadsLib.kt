@@ -62,6 +62,7 @@ class ThreadsLib private constructor() {
         PrefUtils.userName = userInfoBuilder.userName
         PrefUtils.data = userInfoBuilder.clientData
         PrefUtils.setClientIdEncrypted(userInfoBuilder.clientIdEncrypted)
+        ChatController.getInstance().sendInit()
         ChatController.getInstance().loadHistory()
     }
 
