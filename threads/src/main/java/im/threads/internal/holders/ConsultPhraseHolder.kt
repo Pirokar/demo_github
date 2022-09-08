@@ -30,8 +30,8 @@ import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.ogParser.OGDataContent
 import im.threads.business.utils.FileUtils
 import im.threads.business.utils.FileUtils.isImage
-import im.threads.internal.utils.UrlUtils
-import im.threads.internal.utils.ViewUtils
+import im.threads.business.utils.UrlUtils
+import im.threads.ui.utils.ViewUtils
 import im.threads.ui.views.CircularProgressButton
 import im.threads.ui.widget.textView.BubbleMessageTextView
 import im.threads.ui.widget.textView.BubbleTimeTextView

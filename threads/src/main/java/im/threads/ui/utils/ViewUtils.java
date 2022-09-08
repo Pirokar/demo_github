@@ -1,4 +1,4 @@
-package im.threads.internal.utils;
+package im.threads.ui.utils;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;

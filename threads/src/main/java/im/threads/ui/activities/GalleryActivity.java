@@ -24,13 +24,13 @@ import java.util.Map;
 
 import im.threads.R;
 import im.threads.databinding.ActivityGalleryBinding;
-import im.threads.ui.adapters.GalleryAdapter;
-import im.threads.ui.adapters.PhotoBucketsGalleryAdapter;
 import im.threads.internal.helpers.MediaHelper;
 import im.threads.internal.model.MediaPhoto;
 import im.threads.internal.model.PhotoBucketItem;
-import im.threads.internal.utils.BucketsGalleryDecorator;
-import im.threads.internal.utils.GalleryDecorator;
+import im.threads.ui.adapters.GalleryAdapter;
+import im.threads.ui.adapters.PhotoBucketsGalleryAdapter;
+import im.threads.ui.utils.BucketsGalleryDecorator;
+import im.threads.ui.utils.GalleryDecorator;
 
 public final class GalleryActivity
         extends BaseActivity

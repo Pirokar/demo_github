@@ -1,4 +1,4 @@
-package im.threads.internal.utils;
+package im.threads.business.utils;
 
 import android.content.Context;
 import android.content.Intent;
@@ -106,10 +106,6 @@ public final class UrlUtils {
             return deeplinkMatcher.group();
         }
         return null;
-    }
-
-    public static Boolean isValidUrl(@NonNull String url) {
-        return getLink(url) != null;
     }
 
     private static ExtractedLink getLink(@NonNull String text) {

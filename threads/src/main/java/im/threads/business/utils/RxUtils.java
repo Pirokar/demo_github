@@ -1,7 +1,8 @@
-package im.threads.internal.utils;
+package im.threads.business.utils;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.ObservableField;
+
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
