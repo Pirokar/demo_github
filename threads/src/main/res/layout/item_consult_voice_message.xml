@@ -48,7 +48,7 @@
                     android:id="@+id/loader"
                     android:layout_width="@dimen/threads_operator_photo_size"
                     android:layout_height="@dimen/threads_operator_photo_size"
-                    android:layout_gravity="center_vertical"/>
+                    android:layout_gravity="center_vertical" />
 
                 <View
                     android:layout_width="1dp"

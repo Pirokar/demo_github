@@ -10,10 +10,11 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import androidx.annotation.ColorRes;
-import androidx.core.content.ContextCompat;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.ContextCompat;
+
 import im.threads.R;
-import im.threads.internal.utils.ViewUtils;
+import im.threads.ui.utils.ViewUtils;
 
 public final class CircularProgressButton extends FrameLayout {
     private MyCircleProgress mcp;

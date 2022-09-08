@@ -1,14 +1,15 @@
-package im.threads.internal.utils
+package im.threads.business.utils
 
 import im.threads.business.models.ChatItem
 import im.threads.business.models.ChatPhrase
 import im.threads.business.utils.ChatItemListFinder.lastIndexOf
 import java.util.Locale
 
-class Seeker {
+class ChatMessageSeeker {
     private var lastQuery = ""
     private var lastHighlightedItem: ChatItem? = null
-    fun seek(
+
+    fun searchMessages(
         target: List<ChatItem>,
         forward: Boolean,
         query: String

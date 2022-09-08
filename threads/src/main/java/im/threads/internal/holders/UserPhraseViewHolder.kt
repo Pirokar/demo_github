@@ -33,7 +33,7 @@ import im.threads.business.ogParser.OGDataContent
 import im.threads.business.utils.FileUtils
 import im.threads.business.utils.FileUtils.isImage
 import im.threads.business.utils.FileUtils.isVoiceMessage
-import im.threads.internal.utils.ViewUtils
+import im.threads.ui.utils.ViewUtils
 import im.threads.ui.views.CircularProgressButton
 import im.threads.ui.views.VoiceTimeLabelFormatter
 import im.threads.ui.views.formatAsDuration

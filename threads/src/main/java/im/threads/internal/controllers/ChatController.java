@@ -65,14 +65,14 @@ import im.threads.business.transport.HistoryLoader;
 import im.threads.business.transport.HistoryParser;
 import im.threads.business.transport.TransportException;
 import im.threads.business.transport.models.Attachment;
+import im.threads.business.utils.ChatMessageSeeker;
+import im.threads.business.utils.ConsultWriter;
 import im.threads.business.utils.DeviceInfoHelper;
 import im.threads.business.utils.FileUtils;
 import im.threads.business.utils.preferences.PrefUtilsBase;
 import im.threads.business.workers.FileDownloadWorker;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.model.InputFieldEnableModel;
-import im.threads.internal.utils.ConsultWriter;
-import im.threads.internal.utils.Seeker;
 import im.threads.ui.activities.ConsultActivity;
 import im.threads.ui.activities.ImagesActivity;
 import im.threads.ui.config.Config;
@@ -135,7 +135,7 @@ public final class ChatController {
     @NonNull
     private List<ChatItem> lastItems = new ArrayList<>();
     // TODO: вынести в отдельный класс поиск сообщений
-    private Seeker seeker = new Seeker();
+    private ChatMessageSeeker seeker = new ChatMessageSeeker();
     private long lastFancySearchDate = 0;
     private String lastSearchQuery = "";
     private boolean isAllMessagesDownloaded = false;
@@ -272,7 +272,7 @@ public final class ChatController {
                                         lastFancySearchDate = System.currentTimeMillis();
                                     }
                                     if (query.isEmpty() || !query.equals(lastSearchQuery)) {
-                                        seeker = new Seeker();
+                                        seeker = new ChatMessageSeeker();
                                     }
                                     lastSearchQuery = query;
                                     ThreadRunnerKt.runOnUiThread(() -> {
@@ -283,7 +283,7 @@ public final class ChatController {
                         .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                () -> consumer.accept(seeker.seek(lastItems, !forward, query)),
+                                () -> consumer.accept(seeker.searchMessages(lastItems, !forward, query)),
                                 e -> {
                                     LoggerEdna.error(e);
                                     ThreadRunnerKt.runOnUiThread(() -> {

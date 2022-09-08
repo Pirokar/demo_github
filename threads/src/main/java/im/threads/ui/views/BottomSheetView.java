@@ -18,9 +18,9 @@ import java.util.Arrays;
 
 import im.threads.ChatStyle;
 import im.threads.R;
-import im.threads.ui.utils.ColorsHelper;
-import im.threads.internal.utils.ViewUtils;
 import im.threads.ui.config.Config;
+import im.threads.ui.utils.ColorsHelper;
+import im.threads.ui.utils.ViewUtils;
 
 public final class BottomSheetView extends LinearLayout {
     private ButtonsListener buttonsListener;
