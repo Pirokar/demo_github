@@ -108,6 +108,10 @@ public final class UrlUtils {
         return null;
     }
 
+    public static Boolean isValidUrl(@NonNull String url) {
+        return getLink(url) != null;
+    }
+
     private static ExtractedLink getLink(@NonNull String text) {
         if (TextUtils.isEmpty(text)) {
             return null;

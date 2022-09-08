@@ -25,8 +25,7 @@ import im.threads.business.ogParser.OGData
 import im.threads.business.ogParser.OGDataContent
 import im.threads.business.ogParser.OpenGraphParser
 import im.threads.business.ogParser.OpenGraphParserJsoupImpl
-import im.threads.internal.utils.UrlUtils
-import im.threads.internal.utils.ViewUtils
+import im.threads.business.utils.UrlUtils
 import im.threads.internal.utils.gone
 import im.threads.internal.utils.visible
 import im.threads.ui.config.Config
@@ -34,6 +33,7 @@ import im.threads.ui.markdown.LinkifyLinksHighlighter
 import im.threads.ui.markdown.LinksHighlighter
 import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.utils.NoLongClickMovementMethod
+import im.threads.ui.utils.ViewUtils
 import im.threads.ui.views.CircularProgressButton
 import im.threads.ui.widget.textView.BubbleMessageTextView
 import io.reactivex.android.schedulers.AndroidSchedulers
