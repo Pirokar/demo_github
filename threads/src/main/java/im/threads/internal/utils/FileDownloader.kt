@@ -21,7 +21,7 @@ const val DELTA_DOWNLOAD_PROGRESS = 2
 class FileDownloader(
     private val path: String,
     fileName: String,
-    ctx: Context,
+    private val ctx: Context,
     private val downloadLister: DownloadLister
 ) {
     private val outputFile: File = File(
@@ -37,7 +37,20 @@ class FileDownloader(
     fun download() {
         try {
             val url = URL(path)
-            Config.instance.sslSocketFactoryConfig?.let {
+
+            Uri.parse(path).lastPathSegment?.let { lastPath ->
+                val files = getDownloadDir(ctx).listFiles { _, name ->
+                    name.contains(lastPath)
+                }
+                if (!files.isNullOrEmpty()) {
+                    downloadListener.onProgress(100.0)
+                    downloadListener.onComplete(files[0])
+
+                    return
+                }
+            }
+
+            BaseConfig.instance.sslSocketFactoryConfig?.let {
                 HttpsURLConnection.setDefaultSSLSocketFactory(it.sslSocketFactory)
             }
             val urlConnection = if (url.protocol.equals("https", ignoreCase = true)) {

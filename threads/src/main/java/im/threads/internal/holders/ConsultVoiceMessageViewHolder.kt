@@ -19,6 +19,7 @@ import im.threads.R
 import im.threads.business.formatters.SpeechStatus
 import im.threads.business.imageLoading.ImageModifications
 import im.threads.business.imageLoading.loadImage
+import im.threads.business.media.FileDescriptionMediaPlayer
 import im.threads.business.models.ChatItem
 import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.FileDescription
@@ -37,15 +38,17 @@ import java.util.Locale
 
 class ConsultVoiceMessageViewHolder(
     parent: ViewGroup,
-    highlightingStream: PublishSubject<ChatItem>
+    highlightingStream: PublishSubject<ChatItem>,
+    fdMediaPlayer: FileDescriptionMediaPlayer
 ) : VoiceMessageBaseHolder(
     LayoutInflater.from(parent.context).inflate(R.layout.item_consult_voice_message, parent, false),
-    highlightingStream
+    highlightingStream,
+    fdMediaPlayer
 ) {
     private val style: ChatStyle = Config.instance.chatStyle
     private val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
 
-    private var fileDescription: FileDescription? = null
+    override var fileDescription: FileDescription? = null
     private var formattedDuration = ""
 
     private val errorTextView: TextView = itemView.findViewById(R.id.errorText)
@@ -57,7 +60,7 @@ class ConsultVoiceMessageViewHolder(
             setLinkTextColor(getColorInt(style.incomingMessageLinkColor))
         }
     private val slider: Slider = itemView.findViewById(R.id.voiceMessageConsultSlider)
-    private val buttonPlayPause =
+    override val buttonPlayPause: ImageView =
         itemView.findViewById<ImageView>(R.id.voiceMessageConsultButtonPlayPause).apply {
             setColorFilter(
                 getColorInt(style.incomingPlayPauseButtonColor),
@@ -137,6 +140,8 @@ class ConsultVoiceMessageViewHolder(
 
         consultPhrase.fileDescription?.let {
             fileDescription = it
+            subscribeForVoiceMessageDownloaded(true)
+
             buttonPlayPause.setOnClickListener(pausePlayClickListener)
             slider.addOnChangeListener(onChangeListener)
             slider.addOnSliderTouchListener(onSliderTouchListener)
@@ -190,10 +195,6 @@ class ConsultVoiceMessageViewHolder(
         } else {
             consultAvatar.gone()
         }
-    }
-
-    override fun getFileDescription(): FileDescription? {
-        return fileDescription
     }
 
     override fun init(maxValue: Int, progress: Int, isPlaying: Boolean) {

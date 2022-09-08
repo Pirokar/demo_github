@@ -345,7 +345,11 @@ fun MediaMetadataRetriever.getDuration(uri: Uri): Long {
     try {
         setDataSource(Config.instance.context, uri)
     } catch (exc: Exception) {
-        setDataSource(uri.toString(), mutableMapOf<String, String>())
+        try {
+            setDataSource(uri.toString(), mutableMapOf<String, String>())
+        } catch (exc: Exception) {
+            return 0
+        }
     }
     return extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLong() ?: 0
 }

@@ -50,6 +50,7 @@ import im.threads.business.utils.FileUtilsKt;
 import im.threads.internal.Config;
 import im.threads.internal.formatters.ChatItemType;
 import im.threads.internal.helpers.ChatItemListHelper;
+import im.threads.business.workers.FileDownloadWorker;
 import im.threads.internal.holders.BaseHolder;
 import im.threads.internal.holders.ConsultFileViewHolder;
 import im.threads.internal.holders.ConsultIsTypingViewHolderNew;
@@ -207,7 +208,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             case TYPE_CONSULT_PHRASE:
                 return new ConsultPhraseHolder(parent, highlightingStream);
             case TYPE_USER_PHRASE:
-                return new UserPhraseViewHolder(parent, highlightingStream);
+                return new UserPhraseViewHolder(parent, highlightingStream, fdMediaPlayer);
             case TYPE_FREE_SPACE:
                 return new SpaceViewHolder(parent);
             case TYPE_IMAGE_FROM_CONSULT:
@@ -233,7 +234,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             case TYPE_REQ_RESOLVE_THREAD:
                 return new RequestResolveThreadViewHolder(parent);
             case TYPE_VOICE_MESSAGE_FROM_CONSULT:
-                return new ConsultVoiceMessageViewHolder(parent, highlightingStream);
+                return new ConsultVoiceMessageViewHolder(parent, highlightingStream, fdMediaPlayer);
             case TYPE_QUICK_REPLIES:
                 return new QuickRepliesViewHolder(parent);
             default:
@@ -744,6 +745,21 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         });
     }
 
+    private void onVoiceMessagePlayClick(VoiceMessageBaseHolder holder) {
+        if (holder.getFileDescription() == null) {
+            return;
+        }
+        if (holder.getFileDescription().getFileUri() == null) {
+            fdMediaPlayer.setClickedDownloadPath(holder.getFileDescription().getDownloadPath());
+            holder.startLoader();
+            FileDownloadWorker.startDownloadFD(ctx, holder.getFileDescription());
+        } else {
+            fdMediaPlayer.clearClickedDownloadPath();
+            holder.stopLoader();
+            fdMediaPlayer.processPlayPause(holder.getFileDescription());
+        }
+    }
+
     private void bindSystemMessageVH(@NonNull final SystemMessageViewHolder holder, SystemMessage sm) {
         holder.onBind(
                 sm,
@@ -794,9 +810,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     }
                 },
                 v -> {
-                    if (holder.getFileDescription() != null) {
-                        fdMediaPlayer.processPlayPause(holder.getFileDescription());
-                    }
+                    onVoiceMessagePlayClick(holder);
                 },
                 v -> mCallback.onUserPhraseClick(userPhrase, holder.getAdapterPosition()),
                 (slider, value, fromUser) -> {
@@ -828,7 +842,11 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         if (ObjectsCompat.equals(holder.getFileDescription(), fdMediaPlayer.getFileDescription())) {
             MediaPlayer mediaPlayer = fdMediaPlayer.getMediaPlayer();
             if (mediaPlayer != null) {
-                holder.init(mediaPlayer.getDuration(), mediaPlayer.getCurrentPosition(), mediaPlayer.isPlaying());
+                int duration = fdMediaPlayer.getDuration();
+                int currentPosition = mediaPlayer.getCurrentPosition();
+                if (currentPosition < 0) currentPosition = 0;
+
+                holder.init(duration, currentPosition, mediaPlayer.isPlaying());
             }
             playingHolder = holder;
         } else {
@@ -920,9 +938,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 },
                 v -> mCallback.onConsultAvatarClick(consultPhrase.getConsultId()),
                 v -> {
-                    if (holder.getFileDescription() != null) {
-                        fdMediaPlayer.processPlayPause(holder.getFileDescription());
-                    }
+                    onVoiceMessagePlayClick(holder);
                 },
                 (slider, value, fromUser) -> {
                     if (fromUser) {
