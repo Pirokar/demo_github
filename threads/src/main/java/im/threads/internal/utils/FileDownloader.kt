@@ -22,7 +22,7 @@ class FileDownloader(
     private val path: String,
     fileName: String,
     private val ctx: Context,
-    private val downloadLister: DownloadLister
+    private val downloadListener: DownloadLister
 ) {
     private val outputFile: File = File(
         getDownloadDir(ctx),
@@ -50,7 +50,7 @@ class FileDownloader(
                 }
             }
 
-            BaseConfig.instance.sslSocketFactoryConfig?.let {
+            Config.instance.sslSocketFactoryConfig?.let {
                 HttpsURLConnection.setDefaultSSLSocketFactory(it.sslSocketFactory)
             }
             val urlConnection = if (url.protocol.equals("https", ignoreCase = true)) {
@@ -94,13 +94,13 @@ class FileDownloader(
                             val progress =
                                 floor(bytesRead.toDouble() / length * MAX_DOWNLOAD_PROGRESS).toInt()
                             lastReadTime = System.currentTimeMillis()
-                            downloadLister.onProgress(progress.toDouble())
+                            downloadListener.onProgress(progress.toDouble())
                         } else {
                             lastReadProgress += DELTA_DOWNLOAD_PROGRESS
                             if (lastReadProgress >= MAX_DOWNLOAD_PROGRESS) {
                                 lastReadProgress = 0
                             }
-                            downloadLister.onProgress(lastReadProgress.toDouble())
+                            downloadListener.onProgress(lastReadProgress.toDouble())
                         }
                     }
                 }
@@ -109,17 +109,17 @@ class FileDownloader(
                 fileOutputStream.close()
 
                 if (!isStopped) {
-                    downloadLister.onComplete(outputFile)
+                    downloadListener.onComplete(outputFile)
                 }
             } catch (e: Exception) {
                 LoggerEdna.error("1 ", e)
-                downloadLister.onFileDownloadError(e)
+                downloadListener.onFileDownloadError(e)
             } finally {
                 urlConnection.disconnect()
             }
         } catch (e: Exception) {
             LoggerEdna.error("2 ", e)
-            downloadLister.onFileDownloadError(e)
+            downloadListener.onFileDownloadError(e)
         }
     }
 

@@ -50,7 +50,6 @@ import im.threads.business.utils.FileUtilsKt;
 import im.threads.internal.Config;
 import im.threads.internal.formatters.ChatItemType;
 import im.threads.internal.helpers.ChatItemListHelper;
-import im.threads.business.workers.FileDownloadWorker;
 import im.threads.internal.holders.BaseHolder;
 import im.threads.internal.holders.ConsultFileViewHolder;
 import im.threads.internal.holders.ConsultIsTypingViewHolderNew;
@@ -87,6 +86,7 @@ import im.threads.internal.model.UnreadMessages;
 import im.threads.internal.utils.PrefUtils;
 import im.threads.internal.utils.ThreadUtils;
 import im.threads.internal.views.VoiceTimeLabelFormatterKt;
+import im.threads.internal.workers.FileDownloadWorker;
 import io.reactivex.subjects.PublishSubject;
 
 public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {

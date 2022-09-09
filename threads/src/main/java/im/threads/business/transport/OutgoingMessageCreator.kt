@@ -9,7 +9,7 @@ import im.threads.business.models.ConsultInfo
 import im.threads.business.models.FileDescription
 import im.threads.business.models.Survey
 import im.threads.business.models.UserPhrase
-import im.threads.business.rest.queries.OldThreadsBackendApi.Companion.API_VERSION
+import im.threads.business.rest.queries.ThreadsApi
 import im.threads.business.utils.FileUtils.getFileName
 import im.threads.business.utils.FileUtils.getFileSize
 import im.threads.business.utils.FileUtils.getMimeType

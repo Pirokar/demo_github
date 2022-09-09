@@ -21,7 +21,6 @@ import androidx.core.view.isVisible
 import com.google.android.material.slider.Slider
 import im.threads.R
 import im.threads.business.imageLoading.ImageLoader.Companion.get
-import im.threads.business.media.FileDescriptionMediaPlayer
 import im.threads.business.models.CampaignMessage
 import im.threads.business.models.ChatItem
 import im.threads.business.models.FileDescription
@@ -35,6 +34,7 @@ import im.threads.business.utils.FileUtils.isImage
 import im.threads.business.utils.FileUtils.isVoiceMessage
 import im.threads.internal.Config
 import im.threads.internal.formatters.RussianFormatSymbols
+import im.threads.internal.media.FileDescriptionMediaPlayer
 import im.threads.internal.utils.ViewUtils
 import im.threads.internal.views.CircularProgressButton
 import im.threads.internal.views.VoiceTimeLabelFormatter

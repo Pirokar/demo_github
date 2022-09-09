@@ -10,7 +10,6 @@ import androidx.core.util.ObjectsCompat;
 
 import java.util.concurrent.TimeUnit;
 
-import im.threads.business.config.BaseConfig;
 import im.threads.business.logger.LoggerEdna;
 import im.threads.business.models.FileDescription;
 import im.threads.internal.Config;

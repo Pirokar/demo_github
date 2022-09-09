@@ -12,8 +12,6 @@ import java.util.Date;
 import java.util.List;
 
 import im.threads.R;
-import im.threads.business.config.BaseConfig;
-import im.threads.business.formatters.ChatItemType;
 import im.threads.business.formatters.SpeechStatus;
 import im.threads.business.logger.LoggerEdna;
 import im.threads.business.models.Attachment;
