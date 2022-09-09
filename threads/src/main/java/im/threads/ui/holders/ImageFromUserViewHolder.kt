@@ -1,4 +1,4 @@
-package im.threads.internal.holders
+package im.threads.ui.holders
 
 import android.graphics.drawable.Drawable
 import android.util.TypedValue

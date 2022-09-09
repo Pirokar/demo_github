@@ -1,4 +1,4 @@
-package im.threads.internal.holders
+package im.threads.ui.holders
 
 import android.annotation.SuppressLint
 import android.text.TextUtils
@@ -32,8 +32,8 @@ import im.threads.business.utils.FileUtils
 import im.threads.business.utils.FileUtils.isImage
 import im.threads.business.utils.UrlUtils
 import im.threads.ui.utils.ViewUtils
-import im.threads.internal.utils.invisible
-import im.threads.internal.utils.visible
+import im.threads.ui.utils.invisible
+import im.threads.ui.utils.visible
 import im.threads.ui.views.CircularProgressButton
 import im.threads.ui.widget.textView.BubbleMessageTextView
 import im.threads.ui.widget.textView.BubbleTimeTextView

@@ -1,4 +1,4 @@
-package im.threads.internal.holders;
+package im.threads.ui.holders;
 
 import android.content.Context;
 import android.graphics.Typeface;

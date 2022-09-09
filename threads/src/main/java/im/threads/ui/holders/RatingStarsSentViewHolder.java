@@ -1,4 +1,4 @@
-package im.threads.internal.holders;
+package im.threads.ui.holders;
 
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -15,31 +15,39 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.business.models.Survey;
 
 /**
- * ViewHolder для результатов бинарного опроса
+ * ViewHolder для результатов опроса с рейтингом
  */
-public final class RatingThumbsSentViewHolder extends BaseHolder {
-    private ImageView thumb;
+public final class RatingStarsSentViewHolder extends BaseHolder {
+
+    private ImageView star;
     private TextView mHeader;
+    private TextView rateStarsCount;
+    private TextView from;
+    private TextView totalStarsCount;
     private TextView mTimeStampTextView;
     private SimpleDateFormat sdf;
     private View mBubble;
 
-    public RatingThumbsSentViewHolder(ViewGroup parent) {
+    public RatingStarsSentViewHolder(ViewGroup parent) {
         super(
-                LayoutInflater.from(parent.getContext()).inflate(R.layout.item_rate_thumbs_sent, parent, false),
+                LayoutInflater.from(parent.getContext()).inflate(R.layout.item_rate_stars_sent, parent, false),
                 null
         );
-        thumb = itemView.findViewById(R.id.thumb);
+        star = itemView.findViewById(R.id.star);
         mTimeStampTextView = itemView.findViewById(R.id.timestamp);
         mHeader = itemView.findViewById(R.id.header);
-        mBubble = itemView.findViewById(R.id.bubble);
+        rateStarsCount = itemView.findViewById(R.id.rate_stars_count);
+        from = itemView.findViewById(R.id.from);
+        totalStarsCount = itemView.findViewById(R.id.total_stars_count);
         sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        mBubble = itemView.findViewById(R.id.bubble);
+        rateStarsCount.setTextColor(getColorInt(getStyle().outgoingMessageBubbleColor));
         mBubble.setBackground(AppCompatResources.getDrawable(itemView.getContext(), getStyle().outgoingMessageBubbleBackground));
+
         mBubble.setPadding(
                 itemView.getContext().getResources().getDimensionPixelSize(getStyle().bubbleOutgoingPaddingLeft),
                 itemView.getContext().getResources().getDimensionPixelSize(getStyle().bubbleOutgoingPaddingTop),
@@ -47,20 +55,19 @@ public final class RatingThumbsSentViewHolder extends BaseHolder {
                 itemView.getContext().getResources().getDimensionPixelSize(getStyle().bubbleOutgoingPaddingBottom)
         );
         mBubble.getBackground().setColorFilter(getColorInt(getStyle().outgoingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
-        setTextColorToViews(new TextView[]{mHeader}, getStyle().outgoingMessageTextColor);
+        setTextColorToViews(new TextView[]{mHeader, from, totalStarsCount}, getStyle().outgoingMessageTextColor);
         mTimeStampTextView.setTextColor(getColorInt(getStyle().outgoingMessageTimeColor));
+        star.setColorFilter(ContextCompat.getColor(itemView.getContext(), getStyle().outgoingMessageTextColor), PorterDuff.Mode.SRC_ATOP);
+        star.setImageResource(getStyle().optionsSurveySelectedIconResId);
     }
 
     public void bind(Survey survey) {
         int rate = survey.getQuestions().get(0).getRate();
-        if (rate == 1) {
-            thumb.setImageResource(getStyle().binarySurveyLikeSelectedIconResId);
-        } else {
-            thumb.setImageResource(getStyle().binarySurveyDislikeSelectedIconResId);
-        }
-        thumb.setColorFilter(ContextCompat.getColor(itemView.getContext(), getStyle().outgoingMessageTextColor), PorterDuff.Mode.SRC_ATOP);
-        mHeader.setText(survey.getQuestions().get(0).getText());
+        int scale = survey.getQuestions().get(0).getScale();
+        rateStarsCount.setText(String.valueOf(rate));
+        totalStarsCount.setText(String.valueOf(scale));
         mTimeStampTextView.setText(sdf.format(new Date(survey.getTimeStamp())));
+        mHeader.setText(survey.getQuestions().get(0).getText());
         Drawable d;
         switch (survey.getSentState()) {
             case STATE_WAS_READ:

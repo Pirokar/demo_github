@@ -1,4 +1,4 @@
-package im.threads.internal.holders
+package im.threads.ui.holders
 
 import android.annotation.SuppressLint
 import android.content.Context
