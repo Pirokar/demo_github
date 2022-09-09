@@ -32,6 +32,8 @@ import im.threads.business.utils.FileUtils
 import im.threads.business.utils.FileUtils.isImage
 import im.threads.business.utils.UrlUtils
 import im.threads.ui.utils.ViewUtils
+import im.threads.internal.utils.invisible
+import im.threads.internal.utils.visible
 import im.threads.ui.views.CircularProgressButton
 import im.threads.ui.widget.textView.BubbleMessageTextView
 import im.threads.ui.widget.textView.BubbleTimeTextView
@@ -368,7 +370,7 @@ class ConsultPhraseHolder(parent: ViewGroup, highlightingStream: PublishSubject<
 
     private fun showAvatar(consultPhrase: ConsultPhrase) {
         if (consultPhrase.isAvatarVisible) {
-            consultAvatar.isVisible = true
+            consultAvatar.visible()
             consultPhrase.avatarPath?.let {
                 consultAvatar.loadImage(
                     FileUtils.convertRelativeUrlToAbsolute(it),
@@ -379,7 +381,7 @@ class ConsultPhraseHolder(parent: ViewGroup, highlightingStream: PublishSubject<
                 consultAvatar.setImageResource(style.defaultOperatorAvatar)
             }
         } else {
-            consultAvatar.isVisible = false
+            consultAvatar.invisible()
         }
     }
 }

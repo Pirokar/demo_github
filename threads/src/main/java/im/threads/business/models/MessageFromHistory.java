@@ -20,6 +20,7 @@ public final class MessageFromHistory implements ChatItem {
     private boolean read;
     private String formattedText;
     private String text;
+    private String speechText;
     private List<Attachment> attachments;
     private List<QuickReply> quickReplies;
     @Nullable
@@ -125,6 +126,14 @@ public final class MessageFromHistory implements ChatItem {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public String getSpeechText() {
+        return speechText;
+    }
+
+    public void setSpeechText(String text) {
+        speechText = text;
     }
 
     public List<Attachment> getAttachments() {
