@@ -21,8 +21,8 @@ const val DELTA_DOWNLOAD_PROGRESS = 2
 class FileDownloader(
     private val path: String,
     fileName: String,
-    ctx: Context,
-    private val downloadLister: DownloadLister
+    private val ctx: Context,
+    private val downloadListener: DownloadLister
 ) {
     private val outputFile: File = File(
         getDownloadDir(ctx),
@@ -37,6 +37,19 @@ class FileDownloader(
     fun download() {
         try {
             val url = URL(path)
+
+            Uri.parse(path).lastPathSegment?.let { lastPath ->
+                val files = getDownloadDir(ctx).listFiles { _, name ->
+                    name.contains(lastPath)
+                }
+                if (!files.isNullOrEmpty()) {
+                    downloadListener.onProgress(100.0)
+                    downloadListener.onComplete(files[0])
+
+                    return
+                }
+            }
+
             Config.instance.sslSocketFactoryConfig?.let {
                 HttpsURLConnection.setDefaultSSLSocketFactory(it.sslSocketFactory)
             }
@@ -81,13 +94,13 @@ class FileDownloader(
                             val progress =
                                 floor(bytesRead.toDouble() / length * MAX_DOWNLOAD_PROGRESS).toInt()
                             lastReadTime = System.currentTimeMillis()
-                            downloadLister.onProgress(progress.toDouble())
+                            downloadListener.onProgress(progress.toDouble())
                         } else {
                             lastReadProgress += DELTA_DOWNLOAD_PROGRESS
                             if (lastReadProgress >= MAX_DOWNLOAD_PROGRESS) {
                                 lastReadProgress = 0
                             }
-                            downloadLister.onProgress(lastReadProgress.toDouble())
+                            downloadListener.onProgress(lastReadProgress.toDouble())
                         }
                     }
                 }
@@ -96,17 +109,17 @@ class FileDownloader(
                 fileOutputStream.close()
 
                 if (!isStopped) {
-                    downloadLister.onComplete(outputFile)
+                    downloadListener.onComplete(outputFile)
                 }
             } catch (e: Exception) {
                 LoggerEdna.error("1 ", e)
-                downloadLister.onFileDownloadError(e)
+                downloadListener.onFileDownloadError(e)
             } finally {
                 urlConnection.disconnect()
             }
         } catch (e: Exception) {
             LoggerEdna.error("2 ", e)
-            downloadLister.onFileDownloadError(e)
+            downloadListener.onFileDownloadError(e)
         }
     }
 

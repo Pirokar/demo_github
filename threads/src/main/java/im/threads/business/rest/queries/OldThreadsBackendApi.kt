@@ -25,10 +25,6 @@ interface OldThreadsBackendApi {
     @POST("messages/read")
     fun markMessageAsRead(@Body ids: List<String?>?): Call<Void?>?
 
-    @GET("v$API_VERSION/chat/settings?channelType=MOBILE&auth=false")
+    @GET("v${ThreadsApi.API_VERSION}/chat/settings?channelType=MOBILE&auth=false")
     fun settings(): Call<SettingsResponse?>?
-
-    companion object {
-        const val API_VERSION = "14"
-    }
 }

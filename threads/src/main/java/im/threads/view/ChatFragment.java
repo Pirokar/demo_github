@@ -2084,6 +2084,9 @@ public final class ChatFragment extends BaseFragment implements
         isResumed = false;
         chatIsShown = false;
         isInMessageSearchMode = false;
+        if (fdMediaPlayer != null) {
+            fdMediaPlayer.clearClickedDownloadPath();
+        }
     }
 
     @Override

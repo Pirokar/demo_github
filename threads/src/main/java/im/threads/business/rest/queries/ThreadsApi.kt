@@ -35,7 +35,7 @@ class ThreadsApi(
                 beforeDate,
                 count,
                 version,
-                OldThreadsBackendApi.API_VERSION
+                ThreadsApi.API_VERSION
             )
         }
     }
@@ -53,6 +53,7 @@ class ThreadsApi(
     }
 
     companion object {
+        const val API_VERSION = "14"
         private const val SIGNATURE_STRING = "super-duper-signature-string:"
     }
 }

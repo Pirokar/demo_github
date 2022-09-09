@@ -9,7 +9,7 @@ import im.threads.business.models.ConsultInfo
 import im.threads.business.models.FileDescription
 import im.threads.business.models.Survey
 import im.threads.business.models.UserPhrase
-import im.threads.business.rest.queries.OldThreadsBackendApi.Companion.API_VERSION
+import im.threads.business.rest.queries.ThreadsApi
 import im.threads.business.utils.FileUtils.getFileName
 import im.threads.business.utils.FileUtils.getFileSize
 import im.threads.business.utils.FileUtils.getMimeType
@@ -55,7 +55,7 @@ object OutgoingMessageCreator {
             addProperty(MessageAttributes.APP_MARKER_KEY, appMarker)
             addProperty("libVersion", AppInfoHelper.getLibVersion())
             addProperty("clientLocale", DeviceInfoHelper.getLocale(ctx))
-            addProperty("chatApiVersion", API_VERSION)
+            addProperty("chatApiVersion", ThreadsApi.API_VERSION)
             addProperty(MessageAttributes.TYPE, ChatItemType.CLIENT_INFO.name)
         }
         return jsonObject
@@ -136,7 +136,7 @@ object OutgoingMessageCreator {
             addProperty(MessageAttributes.APP_MARKER_KEY, appMarker)
             addProperty("libVersion", AppInfoHelper.getLibVersion())
             addProperty("clientLocale", DeviceInfoHelper.getLocale(ctx))
-            addProperty("chatApiVersion", API_VERSION)
+            addProperty("chatApiVersion", ThreadsApi.API_VERSION)
             addProperty(MessageAttributes.TYPE, ChatItemType.UPDATE_LOCATION.name)
         }
         return jsonObject

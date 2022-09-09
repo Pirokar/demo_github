@@ -113,7 +113,12 @@ public final class HistoryParser {
                         out.add(new RequestResolveThread(uuid, message.getHideAfter(), timeStamp, message.getThreadId(), message.isRead()));
                         break;
                     default:
-                        final String phraseText = message.getText();
+                        String phraseText = "";
+                        if (message.getText() != null) {
+                            phraseText = message.getText();
+                        } else if (message.getSpeechText() != null) {
+                            phraseText = message.getSpeechText();
+                        }
                         final FileDescription fileDescription = message.getAttachments() != null ? fileDescriptionFromList(message.getAttachments()) : null;
                         if (fileDescription != null) {
                             fileDescription.setFrom(name);

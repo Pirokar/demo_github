@@ -180,6 +180,9 @@ abstract class BaseHolder internal constructor(
             (textView as? BubbleMessageTextView)?.let {
                 setMovementMethod(it)
                 it.setFormattedText(phrase.formattedPhrase, true)
+            } ?: run {
+                setMovementMethod(textView)
+                textView.setText(phrase.phraseText, TextView.BufferType.NORMAL)
             }
         }
     }
@@ -368,15 +371,20 @@ abstract class BaseHolder internal constructor(
     }
 
     protected fun initAnimation(view: ImageView, isIncomingMessage: Boolean) {
+        val colorRes = if (isIncomingMessage) {
+            style.incomingMessageLoaderColor
+        } else {
+            style.outgoingMessageLoaderColor
+        }
+        initAnimation(view, colorRes)
+    }
+
+    protected fun initAnimation(view: ImageView, @ColorRes colorOfLoader: Int) {
         view.setImageResource(R.drawable.im_loading_themed)
         ColorsHelper.setTint(
             itemView.context,
             view,
-            if (isIncomingMessage) {
-                style.incomingMessageLoaderColor
-            } else {
-                style.outgoingMessageLoaderColor
-            }
+            colorOfLoader
         )
         rotateAnim.duration = 3000
         rotateAnim.repeatCount = Animation.INFINITE
