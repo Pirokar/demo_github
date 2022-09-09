@@ -33,6 +33,8 @@ import im.threads.internal.Config
 import im.threads.internal.formatters.RussianFormatSymbols
 import im.threads.internal.utils.UrlUtils
 import im.threads.internal.utils.ViewUtils
+import im.threads.internal.utils.invisible
+import im.threads.internal.utils.visible
 import im.threads.internal.views.CircularProgressButton
 import im.threads.internal.widget.textView.BubbleMessageTextView
 import im.threads.internal.widget.textView.BubbleTimeTextView
@@ -370,7 +372,7 @@ class ConsultPhraseHolder(parent: ViewGroup, highlightingStream: PublishSubject<
 
     private fun showAvatar(consultPhrase: ConsultPhrase) {
         if (consultPhrase.isAvatarVisible) {
-            consultAvatar.isVisible = true
+            consultAvatar.visible()
             consultPhrase.avatarPath?.let {
                 consultAvatar.loadImage(
                     FileUtils.convertRelativeUrlToAbsolute(it),
@@ -381,7 +383,7 @@ class ConsultPhraseHolder(parent: ViewGroup, highlightingStream: PublishSubject<
                 consultAvatar.setImageResource(style.defaultOperatorAvatar)
             }
         } else {
-            consultAvatar.isVisible = false
+            consultAvatar.invisible()
         }
     }
 }

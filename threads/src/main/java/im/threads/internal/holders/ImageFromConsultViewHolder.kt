@@ -25,6 +25,8 @@ import im.threads.business.models.FileDescription
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.utils.FileUtils
 import im.threads.internal.Config
+import im.threads.internal.utils.invisible
+import im.threads.internal.utils.visible
 import io.reactivex.subjects.PublishSubject
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -221,7 +223,7 @@ class ImageFromConsultViewHolder(
 
     private fun showAvatar(consultPhrase: ConsultPhrase) {
         if (consultPhrase.isAvatarVisible) {
-            consultAvatar.isVisible = true
+            consultAvatar.visible()
             consultPhrase.avatarPath?.let {
                 consultAvatar.loadImage(
                     FileUtils.convertRelativeUrlToAbsolute(it),
@@ -232,7 +234,7 @@ class ImageFromConsultViewHolder(
                 consultAvatar.setImageResource(style.defaultOperatorAvatar)
             }
         } else {
-            consultAvatar.isVisible = false
+            consultAvatar.invisible()
         }
     }
 }

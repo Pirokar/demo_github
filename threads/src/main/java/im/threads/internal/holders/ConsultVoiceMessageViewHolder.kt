@@ -26,6 +26,7 @@ import im.threads.business.models.FileDescription
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.utils.FileUtils
 import im.threads.internal.utils.gone
+import im.threads.internal.utils.invisible
 import im.threads.internal.utils.visible
 import im.threads.internal.Config
 import im.threads.internal.views.VoiceTimeLabelFormatter
@@ -193,7 +194,7 @@ class ConsultVoiceMessageViewHolder(
                 consultAvatar.setImageResource(style.defaultOperatorAvatar)
             }
         } else {
-            consultAvatar.gone()
+            consultAvatar.invisible()
         }
     }
 
