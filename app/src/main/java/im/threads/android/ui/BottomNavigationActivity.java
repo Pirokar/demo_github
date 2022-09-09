@@ -32,9 +32,9 @@ import im.threads.android.utils.ChatDesign;
 import im.threads.android.utils.ChatStyleBuilderHelper;
 import im.threads.android.utils.PermissionDescriptionDialogStyleBuilderHelper;
 import im.threads.business.logger.LoggerEdna;
-import im.threads.ui.utils.ColorsHelper;
 import im.threads.ui.core.ThreadsLib;
 import im.threads.ui.styles.permissions.PermissionDescriptionType;
+import im.threads.ui.utils.ColorsHelper;
 import im.threads.view.ChatFragment;
 import im.threads.view.OpenWay;
 import io.reactivex.Completable;
@@ -330,6 +330,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
         } else {
             if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q
                     && isTaskRoot()
+                    && getSupportFragmentManager().getPrimaryNavigationFragment() != null
                     && getSupportFragmentManager().getPrimaryNavigationFragment().getChildFragmentManager().getBackStackEntryCount() == 0
                     && getSupportFragmentManager().getBackStackEntryCount() == 0
             ) {
