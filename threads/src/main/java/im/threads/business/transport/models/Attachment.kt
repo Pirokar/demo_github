@@ -10,7 +10,7 @@ class Attachment(
     val name: String? = null,
     val size: Long = 0,
     val type: String? = null,
-    var state: AttachmentStateEnum = AttachmentStateEnum.ERROR,
+    var state: AttachmentStateEnum = AttachmentStateEnum.ANY,
     var errorCode: String? = null,
     val errorMessage: String = ""
 ) {
