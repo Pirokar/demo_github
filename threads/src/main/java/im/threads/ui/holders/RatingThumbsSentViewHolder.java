@@ -1,4 +1,4 @@
-package im.threads.internal.holders;
+package im.threads.ui.holders;
 
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -19,35 +19,26 @@ import im.threads.R;
 import im.threads.business.models.Survey;
 
 /**
- * ViewHolder для результатов опроса с рейтингом
+ * ViewHolder для результатов бинарного опроса
  */
-public final class RatingStarsSentViewHolder extends BaseHolder {
-
-    private ImageView star;
+public final class RatingThumbsSentViewHolder extends BaseHolder {
+    private ImageView thumb;
     private TextView mHeader;
-    private TextView rateStarsCount;
-    private TextView from;
-    private TextView totalStarsCount;
     private TextView mTimeStampTextView;
     private SimpleDateFormat sdf;
     private View mBubble;
 
-    public RatingStarsSentViewHolder(ViewGroup parent) {
+    public RatingThumbsSentViewHolder(ViewGroup parent) {
         super(
-                LayoutInflater.from(parent.getContext()).inflate(R.layout.item_rate_stars_sent, parent, false),
+                LayoutInflater.from(parent.getContext()).inflate(R.layout.item_rate_thumbs_sent, parent, false),
                 null
         );
-        star = itemView.findViewById(R.id.star);
+        thumb = itemView.findViewById(R.id.thumb);
         mTimeStampTextView = itemView.findViewById(R.id.timestamp);
         mHeader = itemView.findViewById(R.id.header);
-        rateStarsCount = itemView.findViewById(R.id.rate_stars_count);
-        from = itemView.findViewById(R.id.from);
-        totalStarsCount = itemView.findViewById(R.id.total_stars_count);
-        sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
         mBubble = itemView.findViewById(R.id.bubble);
-        rateStarsCount.setTextColor(getColorInt(getStyle().outgoingMessageBubbleColor));
+        sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
         mBubble.setBackground(AppCompatResources.getDrawable(itemView.getContext(), getStyle().outgoingMessageBubbleBackground));
-
         mBubble.setPadding(
                 itemView.getContext().getResources().getDimensionPixelSize(getStyle().bubbleOutgoingPaddingLeft),
                 itemView.getContext().getResources().getDimensionPixelSize(getStyle().bubbleOutgoingPaddingTop),
@@ -55,19 +46,20 @@ public final class RatingStarsSentViewHolder extends BaseHolder {
                 itemView.getContext().getResources().getDimensionPixelSize(getStyle().bubbleOutgoingPaddingBottom)
         );
         mBubble.getBackground().setColorFilter(getColorInt(getStyle().outgoingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
-        setTextColorToViews(new TextView[]{mHeader, from, totalStarsCount}, getStyle().outgoingMessageTextColor);
+        setTextColorToViews(new TextView[]{mHeader}, getStyle().outgoingMessageTextColor);
         mTimeStampTextView.setTextColor(getColorInt(getStyle().outgoingMessageTimeColor));
-        star.setColorFilter(ContextCompat.getColor(itemView.getContext(), getStyle().outgoingMessageTextColor), PorterDuff.Mode.SRC_ATOP);
-        star.setImageResource(getStyle().optionsSurveySelectedIconResId);
     }
 
     public void bind(Survey survey) {
         int rate = survey.getQuestions().get(0).getRate();
-        int scale = survey.getQuestions().get(0).getScale();
-        rateStarsCount.setText(String.valueOf(rate));
-        totalStarsCount.setText(String.valueOf(scale));
-        mTimeStampTextView.setText(sdf.format(new Date(survey.getTimeStamp())));
+        if (rate == 1) {
+            thumb.setImageResource(getStyle().binarySurveyLikeSelectedIconResId);
+        } else {
+            thumb.setImageResource(getStyle().binarySurveyDislikeSelectedIconResId);
+        }
+        thumb.setColorFilter(ContextCompat.getColor(itemView.getContext(), getStyle().outgoingMessageTextColor), PorterDuff.Mode.SRC_ATOP);
         mHeader.setText(survey.getQuestions().get(0).getText());
+        mTimeStampTextView.setText(sdf.format(new Date(survey.getTimeStamp())));
         Drawable d;
         switch (survey.getSentState()) {
             case STATE_WAS_READ:

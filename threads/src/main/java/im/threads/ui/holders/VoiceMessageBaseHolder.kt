@@ -1,4 +1,4 @@
-package im.threads.internal.holders
+package im.threads.ui.holders
 
 import android.view.View
 import android.widget.ImageView

@@ -1,4 +1,4 @@
-package im.threads.internal.utils
+package im.threads.ui.utils
 
 import android.view.View
 

@@ -9,9 +9,9 @@ import im.threads.business.models.FileAndMediaItem
 import im.threads.business.models.FileDescription
 import im.threads.business.models.MediaAndFileItem
 import im.threads.business.utils.FileUtils.getFileName
-import im.threads.internal.holders.EmptyViewHolder
-import im.threads.internal.holders.FileAndMediaViewHolder
-import im.threads.internal.holders.FilesDateStampHolder
+import im.threads.ui.holders.EmptyViewHolder
+import im.threads.ui.holders.FileAndMediaViewHolder
+import im.threads.ui.holders.FilesDateStampHolder
 import java.util.Calendar
 import java.util.Locale
 

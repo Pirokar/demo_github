@@ -1,4 +1,4 @@
-package im.threads.internal.holders
+package im.threads.ui.holders
 
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -23,8 +23,8 @@ import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.FileDescription
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.utils.FileUtils
-import im.threads.internal.utils.invisible
-import im.threads.internal.utils.visible
+import im.threads.ui.utils.invisible
+import im.threads.ui.utils.visible
 import io.reactivex.subjects.PublishSubject
 import java.text.SimpleDateFormat
 import java.util.Date

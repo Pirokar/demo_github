@@ -1,4 +1,4 @@
-package im.threads.internal.holders;
+package im.threads.ui.holders;
 
 import android.graphics.PorterDuff;
 import android.view.LayoutInflater;
@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import im.threads.ChatStyle;
 import im.threads.R;
-import im.threads.business.config.BaseConfig;
 import im.threads.ui.config.Config;
 
 public final class SearchingConsultViewHolder extends RecyclerView.ViewHolder {
