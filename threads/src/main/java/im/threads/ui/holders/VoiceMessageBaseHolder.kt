@@ -2,6 +2,7 @@ package im.threads.ui.holders
 
 import android.view.View
 import android.widget.ImageView
+import androidx.core.view.doOnDetach
 import im.threads.R
 import im.threads.business.logger.LoggerEdna
 import im.threads.business.media.FileDescriptionMediaPlayer
@@ -10,6 +11,7 @@ import im.threads.business.models.FileDescription
 import im.threads.business.models.FileDescriptionUri
 import im.threads.ui.config.Config
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.PublishSubject
 
 abstract class VoiceMessageBaseHolder internal constructor(
@@ -29,6 +31,8 @@ abstract class VoiceMessageBaseHolder internal constructor(
     protected abstract val buttonPlayPause: ImageView
     private var isIncomingMessage = false
 
+    private val disposables = CompositeDisposable()
+
     fun startLoader() {
         val color = if (isIncomingMessage) {
             Config.getInstance().getChatStyle().incomingMessageLoaderColor
@@ -45,31 +49,37 @@ abstract class VoiceMessageBaseHolder internal constructor(
     fun subscribeForVoiceMessageDownloaded(isIncomingMessage: Boolean) {
         this.isIncomingMessage = isIncomingMessage
 
+        itemView.doOnDetach {
+            disposables.clear()
+        }
+
         fileDescription?.run {
-            this.onCompleteSubject
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { fileDescriptionUri: FileDescriptionUri ->
-                        val ourDownloadPath = fileDescription?.downloadPath
-                        val isCurrentPath = ourDownloadPath == fileDescriptionUri.downloadPath
-                        val isClickedPath = ourDownloadPath == fdMediaPlayer.clickedDownloadPath
+            disposables.add(
+                this.onCompleteSubject
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                        { fileDescriptionUri: FileDescriptionUri ->
+                            val ourDownloadPath = fileDescription?.downloadPath
+                            val isCurrentPath = ourDownloadPath == fileDescriptionUri.downloadPath
+                            val isClickedPath = ourDownloadPath == fdMediaPlayer.clickedDownloadPath
 
-                        if (isCurrentPath && isClickedPath) {
-                            stopLoader()
-                            fileDescription?.fileUri = fileDescriptionUri.fileUri
-                            val mediaPlayer = fdMediaPlayer.restartMediaPlayer(fileDescription!!)
-                            if (mediaPlayer != null) {
-                                val duration: Int = fdMediaPlayer.duration
-                                var currentPosition = mediaPlayer.currentPosition
-                                if (currentPosition < 0) currentPosition = 0
+                            if (isCurrentPath && isClickedPath) {
+                                stopLoader()
+                                fileDescription?.fileUri = fileDescriptionUri.fileUri
+                                val mediaPlayer = fdMediaPlayer.restartMediaPlayer(fileDescription!!)
+                                if (mediaPlayer != null) {
+                                    val duration: Int = fdMediaPlayer.duration
+                                    var currentPosition = mediaPlayer.currentPosition
+                                    if (currentPosition < 0) currentPosition = 0
 
-                                init(duration, currentPosition, mediaPlayer.isPlaying)
-                                fdMediaPlayer.processPlayPause(fileDescription!!)
+                                    init(duration, currentPosition, mediaPlayer.isPlaying)
+                                    fdMediaPlayer.processPlayPause(fileDescription!!)
+                                }
                             }
-                        }
-                    },
-                    LoggerEdna::error
-                )
+                        },
+                        LoggerEdna::error
+                    )
+            )
         }
     }
 }

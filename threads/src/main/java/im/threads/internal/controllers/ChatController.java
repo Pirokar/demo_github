@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.widget.Toast;
@@ -67,7 +68,6 @@ import im.threads.business.transport.TransportException;
 import im.threads.business.transport.models.Attachment;
 import im.threads.business.utils.ChatMessageSeeker;
 import im.threads.business.utils.ConsultWriter;
-import im.threads.business.utils.DeviceInfoHelper;
 import im.threads.business.utils.FileUtils;
 import im.threads.business.utils.preferences.PrefUtilsBase;
 import im.threads.business.workers.FileDownloadWorker;
@@ -165,7 +165,7 @@ public final class ChatController {
         ThreadRunnerKt.runOnUiThread(() -> unsendMessageHandler = new Handler(msg -> {
             if (msg.what == RESEND_MSG) {
                 if (!unsendMessages.isEmpty()) {
-                    if (DeviceInfoHelper.hasNoInternet(appContext)) {
+                    if (hasNoInternet(appContext)) {
                         scheduleResend();
                     } else {
                         // try to send all unsent messages
@@ -373,19 +373,16 @@ public final class ChatController {
     public void setActivityIsForeground(final boolean isForeground) {
         this.isActive = isForeground;
         if (isForeground && fragment != null && fragment.isAdded()) {
-            final Activity activity = fragment.getActivity();
-            if (activity != null) {
-                final ConnectivityManager cm = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
-                if (cm != null
-                        && cm.getActiveNetworkInfo() != null
-                        && cm.getActiveNetworkInfo().isConnectedOrConnecting()) {
-                    final List<String> uuidList = databaseHolder.getUnreadMessagesUuid();
-                    if (!uuidList.isEmpty()) {
-                        BaseConfig.instance.transport.markMessagesAsRead(uuidList);
-                        firstUnreadUuidId = uuidList.get(0); // для скролла к первому непрочитанному сообщению
-                    } else {
-                        firstUnreadUuidId = null;
-                    }
+            final ConnectivityManager cm = (ConnectivityManager) appContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+            if (cm != null
+                    && cm.getActiveNetworkInfo() != null
+                    && cm.getActiveNetworkInfo().isConnectedOrConnecting()) {
+                final List<String> uuidList = databaseHolder.getUnreadMessagesUuid();
+                if (!uuidList.isEmpty()) {
+                    BaseConfig.instance.transport.markMessagesAsRead(uuidList);
+                    firstUnreadUuidId = uuidList.get(0); // для скролла к первому непрочитанному сообщению
+                } else {
+                    firstUnreadUuidId = null;
                 }
             }
         }
@@ -1436,5 +1433,11 @@ public final class ChatController {
             }
         }
         return null;
+    }
+
+    private boolean hasNoInternet(final Context context) {
+        final ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        final NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return null == netInfo || !netInfo.isConnected();
     }
 }

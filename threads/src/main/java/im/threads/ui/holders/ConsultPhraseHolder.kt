@@ -38,6 +38,7 @@ import im.threads.ui.views.CircularProgressButton
 import im.threads.ui.widget.textView.BubbleMessageTextView
 import im.threads.ui.widget.textView.BubbleTimeTextView
 import io.reactivex.subjects.PublishSubject
+import java.lang.ref.WeakReference
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -151,7 +152,13 @@ class ConsultPhraseHolder(parent: ViewGroup, highlightingStream: PublishSubject<
         onAvatarClickListener: View.OnClickListener
     ) {
         subscribeForHighlighting(consultPhrase, rootLayout)
-        subscribeForOpenGraphData(OGDataContent(ogDataLayout, timeStampTextView, consultPhrase.phraseText))
+        subscribeForOpenGraphData(
+            OGDataContent(
+                WeakReference(ogDataLayout),
+                WeakReference(timeStampTextView),
+                consultPhrase.phraseText
+            )
+        )
         ViewUtils.setClickListener(itemView as ViewGroup, onRowLongClickListener)
         val timeText = timeStampSdf.format(Date(consultPhrase.timeStamp))
         timeStampTextView.text = timeText

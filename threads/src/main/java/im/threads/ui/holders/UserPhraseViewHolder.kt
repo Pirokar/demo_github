@@ -41,6 +41,7 @@ import im.threads.ui.views.formatAsDuration
 import im.threads.ui.widget.textView.BubbleMessageTextView
 import im.threads.ui.widget.textView.BubbleTimeTextView
 import io.reactivex.subjects.PublishSubject
+import java.lang.ref.WeakReference
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -48,12 +49,12 @@ import kotlin.math.min
 
 /** layout/item_user_text_with_file.xml */
 class UserPhraseViewHolder(
-    parent: ViewGroup,
+    private val parentView: ViewGroup,
     highlightingStream: PublishSubject<ChatItem>,
     fdMediaPlayer: FileDescriptionMediaPlayer
 ) : VoiceMessageBaseHolder(
-    LayoutInflater.from(parent.context)
-        .inflate(R.layout.item_user_text_with_file, parent, false),
+    LayoutInflater.from(parentView.context)
+        .inflate(R.layout.item_user_text_with_file, parentView, false),
     highlightingStream,
     fdMediaPlayer
 ) {
@@ -115,7 +116,7 @@ class UserPhraseViewHolder(
             setTextColor(getColorInt(style.outgoingMessageTimeColor))
             if (style.outgoingMessageTimeTextSize > 0) {
                 val textSize =
-                    parent.context.resources.getDimension(style.outgoingMessageTimeTextSize)
+                    parentView.context.resources.getDimension(style.outgoingMessageTimeTextSize)
                 setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
             }
         }
@@ -124,14 +125,14 @@ class UserPhraseViewHolder(
         itemView.findViewById<View>(R.id.bubble).apply {
             background =
                 AppCompatResources.getDrawable(
-                    itemView.context,
+                    parentView.context,
                     style.outgoingMessageBubbleBackground
                 )
             setPadding(
-                itemView.context.resources.getDimensionPixelSize(style.bubbleOutgoingPaddingLeft),
-                itemView.context.resources.getDimensionPixelSize(style.bubbleOutgoingPaddingTop),
-                itemView.context.resources.getDimensionPixelSize(style.bubbleOutgoingPaddingRight),
-                itemView.context.resources.getDimensionPixelSize(style.bubbleOutgoingPaddingBottom)
+                parentView.context.resources.getDimensionPixelSize(style.bubbleOutgoingPaddingLeft),
+                parentView.context.resources.getDimensionPixelSize(style.bubbleOutgoingPaddingTop),
+                parentView.context.resources.getDimensionPixelSize(style.bubbleOutgoingPaddingRight),
+                parentView.context.resources.getDimensionPixelSize(style.bubbleOutgoingPaddingBottom)
             )
             background.colorFilter =
                 BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
@@ -171,7 +172,13 @@ class UserPhraseViewHolder(
         isChosen: Boolean
     ) {
         subscribeForHighlighting(userPhrase, rootLayout)
-        subscribeForOpenGraphData(OGDataContent(ogDataLayout, timeStampTextView, userPhrase.phraseText))
+        subscribeForOpenGraphData(
+            OGDataContent(
+                WeakReference(ogDataLayout),
+                WeakReference(timeStampTextView),
+                userPhrase.phraseText
+            )
+        )
         rootLayout.setOnLongClickListener(onLongClickListener)
         changeHighlighting(isChosen)
         val phrase =
@@ -266,7 +273,7 @@ class UserPhraseViewHolder(
                         ViewUtils.setClickListener(rightTextRow, null as View.OnClickListener?)
                         fileImageButton.isVisible = true
                         rightTextHeader.text = it.from
-                        val timeStampText = itemView.context.getString(
+                        val timeStampText = parentView.context.getString(
                             R.string.threads_sent_at,
                             fileSdf.format(Date(it.timeStamp))
                         )
@@ -286,7 +293,7 @@ class UserPhraseViewHolder(
         ViewUtils.setClickListener(quoteTextRow, onQuoteClickListener)
         quoteTextDescription.text = quote.text
         quoteTextHeader.text = quote.phraseOwnerTitle
-        val timeStampText = itemView.context.resources.getString(
+        val timeStampText = parentView.context.resources.getString(
             R.string.threads_sent_at,
             fileSdf.format(Date(quote.timeStamp))
         )
@@ -321,7 +328,7 @@ class UserPhraseViewHolder(
         quoteTextRow.isVisible = true
         quoteTextDescription.text = campaignMessage.text
         quoteTextHeader.text = campaignMessage.senderName
-        val text = itemView.context.resources.getString(
+        val text = parentView.context.resources.getString(
             R.string.threads_sent_at,
             fileSdf.format(campaignMessage.receivedDate)
         )
@@ -362,22 +369,22 @@ class UserPhraseViewHolder(
     private fun setSendState(sendState: MessageState) {
         when (sendState) {
             MessageState.STATE_WAS_READ -> updateDrawable(
-                itemView.context,
+                parentView.context,
                 R.drawable.threads_message_received,
                 R.color.threads_outgoing_message_received_icon
             )
             MessageState.STATE_SENT -> updateDrawable(
-                itemView.context,
+                parentView.context,
                 R.drawable.threads_message_sent,
                 R.color.threads_outgoing_message_sent_icon
             )
             MessageState.STATE_NOT_SENT -> updateDrawable(
-                itemView.context,
+                parentView.context,
                 R.drawable.threads_message_waiting,
                 R.color.threads_outgoing_message_not_send_icon
             )
             MessageState.STATE_SENDING -> updateDrawable(
-                itemView.context,
+                parentView.context,
                 R.drawable.empty_space_24dp,
                 -1
             )
@@ -426,7 +433,7 @@ class UserPhraseViewHolder(
     private fun getFileDescriptionText(fileDescription: FileDescription): String {
         return "${FileUtils.getFileName(fileDescription)} " +
             if (fileDescription.size > 0) {
-                Formatter.formatFileSize(itemView.context, fileDescription.size).trimIndent()
+                Formatter.formatFileSize(parentView.context, fileDescription.size).trimIndent()
             } else {
                 ""
             }
