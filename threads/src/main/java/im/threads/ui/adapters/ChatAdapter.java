@@ -580,6 +580,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
         ArrayList<ChatItem> newList = new ArrayList<>(list);
         ChatMessagesOrderer.addAndOrder(newList, items, clientNotificationDisplayType, currentThreadId);
+        newList = removeSurveyIfNotLatest(newList);
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new ChatDiffCallback(list, newList));
         list.clear();
         list.addAll(newList);
@@ -1018,6 +1019,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
     }
 
+
     @Nullable
     private ChatItem findByFileDescription(FileDescription fileDescription) {
         for (ChatItem chatPhrase : list) {
@@ -1050,6 +1052,18 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             notifyItemRemoved(index);
             list.remove(index);
         }
+    }
+
+    private ArrayList<ChatItem> removeSurveyIfNotLatest(ArrayList<ChatItem> list)  {
+        boolean isListSizeMoreThat1Element = list != null && list.size() > 1;
+        boolean isPreviousItemSurvey = isListSizeMoreThat1Element &&
+                list.get(list.size() - 2) instanceof Survey;
+
+        if (isPreviousItemSurvey) {
+            list.remove(list.size() - 2);
+        }
+
+        return list;
     }
 
     public interface Callback {
@@ -1143,20 +1157,6 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 items.remove(sc);
                 items.add(sc);
             }
-            /*boolean hasUnread = false;
-            for (final ChatItem ci : items) {
-                if (ci instanceof ConsultPhrase) {
-                    if (!((ConsultPhrase) ci).isRead()) {
-                        hasUnread = true;
-                    }
-                }
-            }
-            if (hasUnread) {
-                final long lastUnreadStamp = getLastUnreadStamp(items);
-                final int counter = getUnreadCount(items);
-                removeUnreadMessagesTitle(items);
-                items.add(new UnreadMessages(lastUnreadStamp - 1, counter));
-            }*/
             Collections.sort(items, (lhs, rhs) -> Long.compare(lhs.getTimeStamp(), rhs.getTimeStamp()));
             boolean isWithTyping = false;
             ConsultTyping ct = null;
