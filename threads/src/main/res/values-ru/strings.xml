@@ -155,5 +155,10 @@
     <string name="threads_history_loading_message">Выполняется загрузка сообщений из истории, подождите завершения</string>
     <string name="threads_consult_portrait">Consult portrait</string>
     <string name="threads_file_not_supported">No application support this type of file</string>
+    <string name="threads_bytes">Б</string>
+    <string name="threads_kbytes">КБ</string>
+    <string name="threads_mbytes">МБ</string>
+    <string name="threads_gbytes">ГБ</string>
+    <string name="threads_tbytes">ТБ</string>
 
 </resources>

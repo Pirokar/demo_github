@@ -2,7 +2,6 @@ package im.threads.ui.holders
 
 import android.graphics.PorterDuff
 import android.text.TextUtils
-import android.text.format.Formatter
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -22,6 +21,7 @@ import im.threads.business.models.ChatItem
 import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.utils.FileUtils
+import im.threads.business.utils.toFileSize
 import im.threads.ui.views.CircularProgressButton
 import io.reactivex.subjects.PublishSubject
 import java.text.SimpleDateFormat
@@ -137,7 +137,7 @@ class ConsultFileViewHolder(parent: ViewGroup, highlightingStream: PublishSubjec
             if (mFileHeader.text.toString().equals("null", ignoreCase = true)) mFileHeader.text = ""
         }
         val size = fileDescription?.size ?: 0
-        mSizeTextView.text = Formatter.formatFileSize(itemView.context, size)
+        mSizeTextView.text = size.toFileSize()
         mSizeTextView.visibility = if (size > 0) View.VISIBLE else View.GONE
         mTimeStampTextView.text = sdf.format(Date(consultPhrase.timeStamp))
         val vg = itemView as ViewGroup

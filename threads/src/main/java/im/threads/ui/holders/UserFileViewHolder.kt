@@ -1,7 +1,6 @@
 package im.threads.ui.holders
 
 import android.graphics.drawable.Drawable
-import android.text.format.Formatter
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -24,6 +23,7 @@ import im.threads.business.models.MessageState
 import im.threads.business.models.UserPhrase
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.utils.FileUtils.getFileName
+import im.threads.business.utils.toFileSize
 import im.threads.ui.views.CircularProgressButton
 import io.reactivex.subjects.PublishSubject
 import java.text.SimpleDateFormat
@@ -97,7 +97,7 @@ class UserFileViewHolder(parent: ViewGroup, highlightingStream: PublishSubject<C
         userPhrase.fileDescription?.let {
             val viewGroup = itemView as ViewGroup
             fileHeaderTextView.text = getFileName(it)
-            fileSizeTextView.text = Formatter.formatFileSize(viewGroup.context, it.size)
+            fileSizeTextView.text = it.size.toFileSize()
             fileSizeTextView.visibility = if (it.size > 0) View.VISIBLE else View.GONE
             for (i in 0 until viewGroup.childCount) {
                 viewGroup.getChildAt(i).setOnLongClickListener(onLongClick)
