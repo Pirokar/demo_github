@@ -1,24 +1,28 @@
-package im.threads.internal.utils // ktlint-disable filename
+package im.threads.business.utils // ktlint-disable filename
 
 import android.accounts.NetworkErrorException
 import android.graphics.Bitmap
 import android.net.Uri
 import android.widget.ImageView
+import com.google.gson.Gson
 import im.threads.business.config.BaseConfig
 import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.FileDescription
 import im.threads.business.rest.queries.DatastoreApi
+import im.threads.business.rest.queries.ThreadsApi
 import im.threads.business.transport.InputStreamRequestBody
 import im.threads.business.utils.FileUtils.getFileName
 import im.threads.business.utils.FileUtils.getMimeType
 import im.threads.business.utils.preferences.PrefUtilsBase
 import im.threads.internal.model.ErrorResponse
+import im.threads.internal.model.FileUploadResponse
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import retrofit2.Response
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -29,7 +33,7 @@ private const val PHOTO_RESIZE_MAX_SIDE = 1600
 
 fun postFile(fileDescription: FileDescription): String? {
     val token = PrefUtilsBase.clientID
-    LoggerEdna.info("token = $token")
+    LoggerEdna.info(ThreadsApi.REST_TAG, "Posting file with token = $token")
     if (token.isNotEmpty()) {
         fileDescription.fileUri?.let {
             if (it.toString().isNotEmpty()) {
@@ -48,15 +52,21 @@ fun postFile(fileDescription: FileDescription): String? {
 }
 
 private fun sendFile(uri: Uri, mimeType: String, token: String): String {
-    LoggerEdna.info("sendFile: $uri")
+    val type = "file"
+    val fileName = getFileName(uri)
+    val fileRequestBody = getFileRequestBody(uri, mimeType)
     val part: MultipartBody.Part = MultipartBody.Part.createFormData(
-        "file",
-        getFileName(uri),
-        getFileRequestBody(uri, mimeType)
+        type,
+        fileName,
+        fileRequestBody
     )
     val agent: RequestBody = token.toRequestBody("text/plain".toMediaTypeOrNull())
+
+    showSendingFileLog(uri, fileName, fileRequestBody)
+
     val response = DatastoreApi.get().upload(part, agent, token)?.execute()
     response?.let {
+        showFileSentLog(it)
         if (it.isSuccessful) {
             response.body()?.let { fileUploadResponse ->
                 return fileUploadResponse.result
@@ -66,12 +76,14 @@ private fun sendFile(uri: Uri, mimeType: String, token: String): String {
                 val errorBody: ErrorResponse =
                     BaseConfig.instance.gson.fromJson(responseBody.string(), ErrorResponse::class.java)
                 if (!errorBody.message.isNullOrEmpty()) {
+                    showErrorMessageLog(errorBody.message)
                     throw IOException(errorBody.code)
                 }
             }
         }
     }
-    LoggerEdna.error("response = $response")
+
+    LoggerEdna.error(ThreadsApi.REST_TAG, "Sending file error. Response: $response")
     throw IOException(response.toString())
 }
 
@@ -144,4 +156,34 @@ private fun compressImage(uri: Uri?): File? {
         }
     }
     return null
+}
+
+private fun showSendingFileLog(
+    uri: Uri,
+    fileName: String,
+    fileRequestBody: RequestBody
+) {
+    LoggerEdna.info(
+        ThreadsApi.REST_TAG,
+        "Sending file. Uri: $uri, fileName: $fileName, requestBody: $fileRequestBody"
+    )
+}
+
+private fun showFileSentLog(response: Response<FileUploadResponse?>) {
+    val responseBody = try {
+        Gson().toJson(response.body())
+    } catch (exc: Exception) {
+        val error = response.errorBody()?.string() ?: "no error message"
+        "Sending file error when parsing the body. Response: $response. Error message: $error.\n" +
+            "Exception:$exc"
+    }
+
+    LoggerEdna.info(
+        ThreadsApi.REST_TAG,
+        "File has been sent. Response: $response. Body: $responseBody"
+    )
+}
+
+private fun showErrorMessageLog(message: String) {
+    LoggerEdna.error(ThreadsApi.REST_TAG, "Sending file error. Reason: $message.")
 }

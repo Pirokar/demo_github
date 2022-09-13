@@ -1,23 +1,22 @@
-package im.threads.business.transport;
+package im.threads.business.transport
 
-import androidx.annotation.WorkerThread;
+import androidx.annotation.WorkerThread
+import com.google.gson.Gson
+import im.threads.business.config.BaseConfig
+import im.threads.business.logger.LoggerEdna.error
+import im.threads.business.logger.LoggerEdna.info
+import im.threads.business.models.MessageFromHistory
+import im.threads.business.rest.models.HistoryResponse
+import im.threads.business.rest.queries.BackendApi.Companion.get
+import im.threads.business.rest.queries.ThreadsApi
+import im.threads.business.utils.AppInfoHelper
+import im.threads.business.utils.DateHelper
+import retrofit2.Call
+import retrofit2.Response
+import java.io.IOException
 
-import java.io.IOException;
-import java.util.List;
-
-import im.threads.business.models.MessageFromHistory;
-import im.threads.business.rest.models.HistoryResponse;
-import im.threads.business.rest.queries.BackendApi;
-import im.threads.business.rest.queries.ThreadsApi;
-import im.threads.business.utils.DateHelper;
-import im.threads.business.config.BaseConfig;
-import im.threads.business.utils.AppInfoHelper;
-import retrofit2.Call;
-import retrofit2.Response;
-
-public final class HistoryLoader {
-
-    private static Long lastLoadedTimestamp;
+object HistoryLoader {
+    private var lastLoadedTimestamp: Long? = null
 
     /**
      * метод обертка для запроса истории сообщений
@@ -27,19 +26,33 @@ public final class HistoryLoader {
      * @param count           количество сообщений для загрузки
      */
     @WorkerThread
-    public static HistoryResponse getHistorySync(Long beforeTimestamp, Integer count) throws Exception {
-        String token = BaseConfig.instance.transport.getToken();
+    @Throws(Exception::class)
+    fun getHistorySync(beforeTimestamp: Long?, count: Int?): HistoryResponse? {
+        var count = count
+        val token = BaseConfig.instance.transport.token
         if (count == null) {
-            count = BaseConfig.instance.historyLoadingCount;
+            count = BaseConfig.instance.historyLoadingCount
         }
-        if (!token.isEmpty()) {
-            ThreadsApi threadsApi = BackendApi.get();
-            String beforeDate = beforeTimestamp == null ? null : DateHelper.getMessageDateStringFromTimestamp(beforeTimestamp);
-            Call<HistoryResponse> call = threadsApi.history(token, beforeDate, count, AppInfoHelper.getLibVersion());
-            Response<HistoryResponse> response = call.execute();
-            return response.body();
+        return if (token.isNotEmpty()) {
+            val threadsApi = get()
+            val beforeDate = if (beforeTimestamp == null) {
+                null
+            } else {
+                DateHelper.getMessageDateStringFromTimestamp(beforeTimestamp)
+            }
+
+            showStartLoadingHistoryLog(token, beforeDate, count)
+
+            val call = threadsApi.history(token, beforeDate, count, AppInfoHelper.getLibVersion())
+            val response = call?.execute()
+            val body = response?.body()
+
+            showHistoryLoadedLog(call, response, body)
+
+            body
         } else {
-            throw new IOException();
+            error(ThreadsApi.REST_TAG, "Loading history - token is empty!")
+            throw IOException()
         }
     }
 
@@ -51,13 +64,42 @@ public final class HistoryLoader {
      * @param fromBeginning загружать ли историю с начала или с последнего полученного сообщения
      */
     @WorkerThread
-    public static HistoryResponse getHistorySync(Integer count, boolean fromBeginning) throws Exception {
-        return getHistorySync(fromBeginning ? null : lastLoadedTimestamp, count);
+    @Throws(Exception::class)
+    fun getHistorySync(count: Int?, fromBeginning: Boolean): HistoryResponse? {
+        return getHistorySync(if (fromBeginning) null else lastLoadedTimestamp, count)
     }
 
-    static void setupLastItemIdFromHistory(List<MessageFromHistory> list) {
-        if (list != null && !list.isEmpty()) {
-            lastLoadedTimestamp = list.get(0).getTimeStamp();
+    fun setupLastItemIdFromHistory(list: List<MessageFromHistory>?) {
+        if (!list.isNullOrEmpty()) {
+            lastLoadedTimestamp = list[0].timeStamp
         }
+    }
+
+    private fun showStartLoadingHistoryLog(token: String, beforeDate: String?, count: Int?) {
+        info(
+            ThreadsApi.REST_TAG,
+            "Loading history. token: $token, beforeDate: $beforeDate, count: $count," +
+                " version: ${AppInfoHelper.getLibVersion()}, chatApiVersion: ${ThreadsApi.API_VERSION}," +
+                " isNewChatCenterApi: ${BaseConfig.instance.newChatCenterApi}"
+        )
+    }
+
+    private fun showHistoryLoadedLog(
+        call: Call<HistoryResponse?>?,
+        response: Response<HistoryResponse?>?,
+        body: HistoryResponse?
+    ) {
+        val responseBody = try {
+            Gson().toJson(body)
+        } catch (exc: Exception) {
+            val error = response?.errorBody()?.string() ?: "no error message"
+            "Loading history - error when getting response body. Error message: $error.\n" +
+                "Exception: $exc"
+        }
+        info(
+            ThreadsApi.REST_TAG,
+            "Loading history done. Call is null = ${call == null}. Response: ${response?.raw()}." +
+                "Body: $responseBody"
+        )
     }
 }

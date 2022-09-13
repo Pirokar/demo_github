@@ -1,6 +1,6 @@
 package im.threads.internal.controllers;
 
-import static im.threads.internal.utils.FilePosterKt.postFile;
+import static im.threads.business.utils.FilePosterKt.postFile;
 import static im.threads.internal.utils.NetworkErrorUtilsKt.getErrorStringResByCode;
 
 import android.app.Activity;
@@ -60,6 +60,7 @@ import im.threads.business.models.UserPhrase;
 import im.threads.business.rest.models.HistoryResponse;
 import im.threads.business.rest.models.SettingsResponse;
 import im.threads.business.rest.queries.BackendApi;
+import im.threads.business.rest.queries.ThreadsApi;
 import im.threads.business.secureDatabase.DatabaseHolder;
 import im.threads.business.transport.HistoryLoader;
 import im.threads.business.transport.HistoryParser;
@@ -300,9 +301,9 @@ public final class ChatController {
                             synchronized (this) {
                                 if (!isDownloadingMessages) {
                                     isDownloadingMessages = true;
-                                    LoggerEdna.debug("downloadMessagesTillEnd");
+                                    LoggerEdna.debug(ThreadsApi.REST_TAG, "downloadMessagesTillEnd");
                                     while (!isAllMessagesDownloaded) {
-                                        final HistoryResponse response = HistoryLoader.getHistorySync(lastMessageTimestamp, PER_PAGE_COUNT);
+                                        final HistoryResponse response = HistoryLoader.INSTANCE.getHistorySync(lastMessageTimestamp, PER_PAGE_COUNT);
                                         final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
                                         if (serverItems.isEmpty()) {
                                             isAllMessagesDownloaded = true;
@@ -313,6 +314,7 @@ public final class ChatController {
                                         }
                                     }
                                 }
+                                LoggerEdna.debug(ThreadsApi.REST_TAG, "Messages are loaded");
                                 isDownloadingMessages = false;
                                 return databaseHolder.getChatItems(0, -1);
                             }
@@ -371,6 +373,7 @@ public final class ChatController {
     }
 
     public void setActivityIsForeground(final boolean isForeground) {
+        LoggerEdna.info("setActivityIsForeground");
         this.isActive = isForeground;
         if (isForeground && fragment != null && fragment.isAdded()) {
             final Activity activity = fragment.getActivity();
@@ -404,15 +407,19 @@ public final class ChatController {
         return Observable
                 .fromCallable(() -> {
                     if (instance.fragment != null && !PrefUtilsBase.isClientIdEmpty()) {
+                        LoggerEdna.info(ThreadsApi.REST_TAG, "Requesting history items");
                         int currentOffset = instance.fragment.getCurrentItemsCount();
                         int count = BaseConfig.instance.historyLoadingCount;
                         try {
-                            final HistoryResponse response = HistoryLoader.getHistorySync(null, false);
+                            final HistoryResponse response = HistoryLoader.INSTANCE.getHistorySync(
+                                    null,
+                                    false
+                            );
                             final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
                             saveMessages(serverItems);
                             return setLastAvatars(databaseHolder.getChatItems(currentOffset, count));
                         } catch (final Exception e) {
-                            LoggerEdna.error("requestItems", e);
+                            LoggerEdna.error(ThreadsApi.REST_TAG, "Requesting history items error", e);
                             return setLastAvatars(databaseHolder.getChatItems(currentOffset, count));
                         }
                     }
@@ -574,11 +581,15 @@ public final class ChatController {
     }
 
     private List<ChatItem> onClientIdChanged() throws Exception {
+        LoggerEdna.info(ThreadsApi.REST_TAG, "Client id changed. Loading history.");
         cleanAll();
         if (fragment != null) {
             fragment.removeSearching();
         }
-        final HistoryResponse response = HistoryLoader.getHistorySync(null, true);
+        final HistoryResponse response = HistoryLoader.INSTANCE.getHistorySync(
+                null,
+                true
+        );
         final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
         saveMessages(serverItems);
         if (fragment != null) {
@@ -601,11 +612,15 @@ public final class ChatController {
 
     public void loadHistory() {
         if (!isDownloadingMessages) {
+            LoggerEdna.info(ThreadsApi.REST_TAG, "Loading history from " + ChatController.class.getSimpleName());
             isDownloadingMessages = true;
             subscribe(
                     Single.fromCallable(() -> {
                                 final int count = BaseConfig.instance.historyLoadingCount;
-                                final HistoryResponse response = HistoryLoader.getHistorySync(count, true);
+                                final HistoryResponse response = HistoryLoader.INSTANCE.getHistorySync(
+                                        count,
+                                        true
+                                );
                                 final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
                                 saveMessages(serverItems);
                                 if (fragment != null && isActive) {
@@ -642,6 +657,8 @@ public final class ChatController {
                                     }
                             )
             );
+        } else {
+            LoggerEdna.info(ThreadsApi.REST_TAG, "Loading history cancelled. isDownloadingMessages = true");
         }
     }
 
@@ -1245,13 +1262,16 @@ public final class ChatController {
     }
 
     private void onDeviceAddressChanged() {
-        LoggerEdna.info("onDeviceAddressChanged:");
+        LoggerEdna.info(ThreadsApi.REST_TAG, "onDeviceAddressChanged. Loading history.");
         String clientId = PrefUtilsBase.getClientID();
         if (fragment != null && !TextUtils.isEmpty(clientId)) {
             subscribe(
                     Single.fromCallable(() -> {
                                 BaseConfig.instance.transport.sendInit();
-                                final HistoryResponse response = HistoryLoader.getHistorySync(null, true);
+                                final HistoryResponse response = HistoryLoader.INSTANCE.getHistorySync(
+                                        null,
+                                        true
+                                );
                                 List<ChatItem> chatItems = HistoryParser.getChatItems(response);
                                 saveMessages(chatItems);
                                 return new Pair<>(response != null ? response.getConsultInfo() : null, setLastAvatars(chatItems));
@@ -1272,6 +1292,12 @@ public final class ChatController {
                                     },
                                     LoggerEdna::error
                             )
+            );
+        } else {
+            LoggerEdna.info(
+                    ThreadsApi.REST_TAG,
+                    "Loading history cancelled in onDeviceAddressChanged. " +
+                            "fragment != null && !TextUtils.isEmpty(clientId) == false"
             );
         }
     }
