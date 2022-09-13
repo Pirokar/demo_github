@@ -45,17 +45,17 @@ class FilesViewModelTest {
         viewModelSpy = spy(viewModel)
     }
 
-    @Test
-    fun whenUpdateProgress_thenPassedToActivity() {
-        viewModelSpy.updateProgress(null)
-        verify(viewModelSpy, times(1)).localFilesFlowLiveData
-    }
-
-    @Test
-    fun whenDownloadError_thenPassedToActivity() {
-        viewModelSpy.onDownloadError(null, null)
-        verify(viewModelSpy, times(1)).localFilesFlowLiveData
-    }
+//    @Test
+//    fun whenUpdateProgress_thenPassedToActivity() {
+//        viewModelSpy.updateProgress(null)
+//        verify(viewModelSpy, times(1)).localFilesFlowLiveData
+//    }
+//
+//    @Test
+//    fun whenDownloadError_thenPassedToActivity() {
+//        viewModelSpy.onDownloadError(null, null)
+//        verify(viewModelSpy, times(1)).localFilesFlowLiveData
+//    }
 
     @Test
     fun whenGetFilesAsync_thenDatabaseAllFileDescriptionsCalled() {

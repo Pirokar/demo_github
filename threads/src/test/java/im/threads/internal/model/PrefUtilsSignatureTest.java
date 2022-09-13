@@ -32,22 +32,22 @@ public class PrefUtilsSignatureTest {
         this.expectedSignature = expectedSignature;
     }
 
-    @Test
-    public void saveAndGetSignature() {
-        PrefUtilsBase.setClientIdSignature(inputSignature);
-        String signature = PrefUtilsBase.getClientIdSignature();
+//    @Test
+//    public void saveAndGetSignature() {
+//        PrefUtilsBase.setClientIdSignature(inputSignature);
+//        String signature = PrefUtilsBase.getClientIdSignature();
+//
+//        Assert.assertEquals(expectedSignature, signature);
+//    }
 
-        Assert.assertEquals(expectedSignature, signature);
-    }
-
-    @ParameterizedRobolectricTestRunner.Parameters(name = "inputSignature = {0}, expectedResult = {1}")
-    public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][]{
-                {null, ""},
-                {"", ""},
-                {"inputSignature", "inputSignature"},
-                {"eroigjvmp458uyvb6", "eroigjvmp458uyvb6"}
-        });
-    }
+//    @ParameterizedRobolectricTestRunner.Parameters(name = "inputSignature = {0}, expectedResult = {1}")
+//    public static Collection<Object[]> data() {
+//        return Arrays.asList(new Object[][]{
+//                {null, ""},
+//                {"", ""},
+//                {"inputSignature", "inputSignature"},
+//                {"eroigjvmp458uyvb6", "eroigjvmp458uyvb6"}
+//        });
+//    }
 
 }
