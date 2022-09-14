@@ -228,13 +228,13 @@ public class MessagesTable extends Table {
         String[] selectionArgs = new String[]{id};
         try (Cursor c = sqlHelper.getWritableDatabase().rawQuery(sql, selectionArgs)) {
             if (c.moveToFirst()) {
-                return new ConsultInfo(
-                        cGetString(c, COLUMN_NAME),
-                        id,
-                        cGetString(c, COLUMN_CONSULT_STATUS),
-                        cGetString(c, COLUMN_CONSULT_ORG_UNIT),
-                        cGetString(c, COLUMN_AVATAR_PATH)
-                );
+                ConsultInfo consultInfo = new ConsultInfo();
+                consultInfo.setName(cGetString(c, COLUMN_NAME));
+                consultInfo.setId(id);
+                consultInfo.setStatus(cGetString(c, COLUMN_CONSULT_STATUS));
+                consultInfo.setOrganizationUnit(cGetString(c, COLUMN_CONSULT_ORG_UNIT));
+                consultInfo.setPhotoUrl(cGetString(c, COLUMN_AVATAR_PATH));
+                return consultInfo;
             }
         }
         return null;

@@ -122,6 +122,7 @@ public final class ChatController {
     // TODO: вынести в отдельный класс отправку сообщений
     private final List<UserPhrase> unsendMessages = new ArrayList<>();
     private final List<UserPhrase> sendQueue = new ArrayList<>();
+    private final ChatStyle chatStyle = Config.getInstance().getChatStyle();
     // this flag is keeping the visibility state of the request to resolve thread
     private boolean surveyCompletionInProgress = false;
     // Ссылка на фрагмент, которым управляет контроллер
@@ -143,16 +144,12 @@ public final class ChatController {
     private boolean isDownloadingMessages;
     private Handler unsendMessageHandler;
     private String firstUnreadUuidId;
-
     // На основе этих переменных определяется возможность отправки сообщений в чат
     private ScheduleInfo currentScheduleInfo;
     // Если пользователь не ответил на вопрос (quickReply), то блокируем поле ввода
     private boolean hasQuickReplies = false;
     // Если пользователь не ответил на вопрос (quickReply), то блокируем поле ввода
     private boolean inputEnabledDuringQuickReplies;
-
-    private final ChatStyle chatStyle = Config.getInstance().getChatStyle();
-
     private CompositeDisposable compositeDisposable;
 
     private ChatController() {
@@ -443,7 +440,7 @@ public final class ChatController {
         } else {
             ConsultInfo info = databaseHolder.getConsultInfo(consultId);
             if (info != null) {
-                ConsultActivity.startActivity(activity, info.getPhotoUrl(), info.getName(), info.getStatus());
+                ConsultActivity.startActivity(activity, info);
             } else {
                 ConsultActivity.startActivity(activity);
             }

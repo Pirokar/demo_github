@@ -43,11 +43,12 @@ import java.util.Date
 import java.util.Locale
 
 /** layout/item_consultant_text_with_file.xml */
-class ConsultPhraseHolder(parent: ViewGroup, highlightingStream: PublishSubject<ChatItem>) : BaseHolder(
-    LayoutInflater.from(parent.context)
-        .inflate(R.layout.item_consultant_text_with_file, parent, false),
-    highlightingStream
-) {
+class ConsultPhraseHolder(parent: ViewGroup, highlightingStream: PublishSubject<ChatItem>) :
+    BaseHolder(
+        LayoutInflater.from(parent.context)
+            .inflate(R.layout.item_consultant_text_with_file, parent, false),
+        highlightingStream
+    ) {
     private val timeStampSdf = SimpleDateFormat("HH:mm", Locale.getDefault())
 
     @SuppressLint("SimpleDateFormat")
@@ -151,7 +152,13 @@ class ConsultPhraseHolder(parent: ViewGroup, highlightingStream: PublishSubject<
         onAvatarClickListener: View.OnClickListener
     ) {
         subscribeForHighlighting(consultPhrase, rootLayout)
-        subscribeForOpenGraphData(OGDataContent(ogDataLayout, timeStampTextView, consultPhrase.phraseText))
+        subscribeForOpenGraphData(
+            OGDataContent(
+                ogDataLayout,
+                timeStampTextView,
+                consultPhrase.phraseText
+            )
+        )
         ViewUtils.setClickListener(itemView as ViewGroup, onRowLongClickListener)
         val timeText = timeStampSdf.format(Date(consultPhrase.timeStamp))
         timeStampTextView.text = timeText
