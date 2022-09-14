@@ -142,7 +142,7 @@ public final class HistoryParser {
                                             operatorId,
                                             photoUrl,
                                             message.isRead(),
-                                            null,
+                                            message.getOperator().getStatus(),
                                             false,
                                             message.getThreadId(),
                                             message.getQuickReplies(),

@@ -17,6 +17,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.isVisible
 import im.threads.R
 import im.threads.business.imageLoading.loadImage
+import im.threads.business.models.ConsultInfo
 import im.threads.business.utils.FileUtils.convertRelativeUrlToAbsolute
 import im.threads.databinding.ActivityConsultPageBinding
 import im.threads.ui.activities.filesActivity.FilesActivity
@@ -46,8 +47,11 @@ internal open class ConsultActivity : BaseActivity() {
         hideSystemUI()
         setStatusBarColor()
         setContentView(binding.root)
-        setConsultAvatar()
-        setConsultInfo()
+        val consultInfo = intent.getParcelableExtra<ConsultInfo>(consultInfoKey)
+        consultInfo?.let {
+            setConsultAvatar(it)
+            setConsultInfo(it)
+        }
         setupToolbar()
     }
 
@@ -55,7 +59,12 @@ internal open class ConsultActivity : BaseActivity() {
         val searchMenuItem = menu.getItem(0)
         val searchMenuSpannable = SpannableString(searchMenuItem.title)
         searchMenuSpannable.setSpan(
-            ForegroundColorSpan(ContextCompat.getColor(this, config.getChatStyle().menuItemTextColorResId)),
+            ForegroundColorSpan(
+                ContextCompat.getColor(
+                    this,
+                    config.getChatStyle().menuItemTextColorResId
+                )
+            ),
             0,
             searchMenuSpannable.length,
             0
@@ -119,13 +128,13 @@ internal open class ConsultActivity : BaseActivity() {
         super.setStatusBarColor(isStatusBarLight, statusBarColor)
     }
 
-    private fun setConsultAvatar() = with(binding) {
+    private fun setConsultAvatar(consultInfo: ConsultInfo) = with(binding) {
         consultImage.background = AppCompatResources.getDrawable(
             this@ConsultActivity,
             config.getChatStyle().defaultOperatorAvatar
         )
 
-        var imagePath = intent.getStringExtra(imageUrlKey)
+        var imagePath = intent.getStringExtra(consultInfo.photoUrl)
         if (!imagePath.isNullOrEmpty()) {
             imagePath = convertRelativeUrlToAbsolute(imagePath)
             consultImage.loadImage(imagePath)
@@ -133,9 +142,9 @@ internal open class ConsultActivity : BaseActivity() {
         }
     }
 
-    private fun setConsultInfo() = with(binding) {
-        setTextForConsultInfo(titleKey, consultTitle)
-        setTextForConsultInfo(statusKey, consultStatus)
+    private fun setConsultInfo(consultInfo: ConsultInfo) = with(binding) {
+        setTextForConsultInfo(consultInfo.name, consultTitle)
+        setTextForConsultInfo(consultInfo.status, consultStatus)
     }
 
     private fun setupToolbar() = with(binding) {
@@ -143,7 +152,12 @@ internal open class ConsultActivity : BaseActivity() {
         setSupportActionBar(toolbar)
         toolbar.setNavigationOnClickListener { finish() }
         toolbar.showOverflowMenu()
-        toolbar.overflowIcon?.setColorFilter(ContextCompat.getColor(baseContext, android.R.color.white))
+        toolbar.overflowIcon?.setColorFilter(
+            ContextCompat.getColor(
+                baseContext,
+                android.R.color.white
+            )
+        )
 
         val layoutParams = RelativeLayout.LayoutParams(
             RelativeLayout.LayoutParams.MATCH_PARENT,
@@ -154,9 +168,8 @@ internal open class ConsultActivity : BaseActivity() {
         toolbar.layoutParams = layoutParams
     }
 
-    private fun setTextForConsultInfo(intentKey: String, textView: TextView) {
-        val text = intent.getStringExtra(intentKey)
-        if (null != text && text != "null") {
+    private fun setTextForConsultInfo(text: String?, textView: TextView) {
+        if (!text.isNullOrEmpty()) {
             textView.text = text
             textView.isVisible = true
         } else {
@@ -165,9 +178,7 @@ internal open class ConsultActivity : BaseActivity() {
     }
 
     companion object {
-        const val imageUrlKey = "imagePath"
-        const val titleKey = "title"
-        const val statusKey = "status"
+        const val consultInfoKey = "consultInfoKey"
 
         /**
          * Запускает текущую активити.
@@ -180,16 +191,11 @@ internal open class ConsultActivity : BaseActivity() {
         @JvmStatic
         fun startActivity(
             activity: Activity?,
-            avatarPath: String?,
-            name: String?,
-            status: String?
+            consultInfo: ConsultInfo
         ) {
             val intent = Intent(activity, ConsultActivity::class.java).apply {
-                putExtra(imageUrlKey, avatarPath)
-                putExtra(titleKey, name)
-                putExtra(statusKey, status)
+                putExtra(consultInfoKey, consultInfo)
             }
-
             activity?.startActivity(intent)
         }
 

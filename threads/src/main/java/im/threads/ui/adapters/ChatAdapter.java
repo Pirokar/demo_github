@@ -1109,7 +1109,9 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 final int index = indexOf(items, ci);
                 if (index == (items.size() - 1)) continue;//removing dups of date rows
                 if (ci instanceof ConsultPhrase && items.get(index + 1) instanceof ConsultPhrase) {
-                    ((ConsultPhrase) ci).setAvatarVisible(false);
+                    if(((ConsultPhrase)ci).getConsultId().equals(((ConsultPhrase) items.get(index + 1)).getConsultId())) {
+                        ((ConsultPhrase) ci).setAvatarVisible(false);
+                    }
                 }
             }
             for (int i = 0; i < daterows.size(); i++) {
@@ -1130,7 +1132,9 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 if (index == (items.size() - 1))
                     continue;//removing wrong avatar visibility of consult of date rows
                 if (ci instanceof ConsultPhrase && items.get(index + 1) instanceof ConsultPhrase) {
-                    ((ConsultPhrase) ci).setAvatarVisible(false);
+                    if(((ConsultPhrase)ci).getConsultId().equals(((ConsultPhrase) items.get(index + 1)).getConsultId())) {
+                        ((ConsultPhrase) ci).setAvatarVisible(false);
+                    }
                 }
             }
             SearchingConsult sc = null;
@@ -1175,8 +1179,10 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 final ChatItem prev = items.get(i - 1);
                 final ChatItem current = items.get(i);
                 if (prev instanceof ConsultPhrase && current instanceof ConsultPhrase) {
-                    ((ConsultPhrase) prev).setAvatarVisible(false);//setting proper visibility of consult avatars
-                    ((ConsultPhrase) current).setAvatarVisible(true);
+                    if(((ConsultPhrase)prev).getConsultId().equals(((ConsultPhrase)current).getConsultId())) {
+                        ((ConsultPhrase) prev).setAvatarVisible(false);//setting proper visibility of consult avatars
+                        ((ConsultPhrase) current).setAvatarVisible(true);
+                    }
                 }
             }
             insertSpacing(items);
@@ -1248,7 +1254,9 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 if (itemToInsert instanceof ConsultPhrase && listToInsertTo.size() != 1) {
                     final int prev = listToInsertTo.size() - 2;
                     if (listToInsertTo.get(prev) instanceof ConsultPhrase) {
-                        ((ConsultPhrase) listToInsertTo.get(prev)).setAvatarVisible(false);
+                        if(((ConsultPhrase)itemToInsert).getConsultId().equals(((ConsultPhrase) listToInsertTo.get(prev)).getConsultId())) {
+                            ((ConsultPhrase) listToInsertTo.get(prev)).setAvatarVisible(false);
+                        }
                     }
                 }
             }
