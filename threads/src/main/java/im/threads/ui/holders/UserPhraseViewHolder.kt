@@ -34,7 +34,6 @@ import im.threads.business.ogParser.OGDataContent
 import im.threads.business.utils.FileUtils
 import im.threads.business.utils.FileUtils.isImage
 import im.threads.business.utils.FileUtils.isVoiceMessage
-import im.threads.ui.utils.ViewUtils
 import im.threads.ui.views.CircularProgressButton
 import im.threads.ui.views.VoiceTimeLabelFormatter
 import im.threads.ui.views.formatAsDuration
@@ -188,8 +187,8 @@ class UserPhraseViewHolder(
         val quote = userPhrase.quote
         val campaignMessage = userPhrase.campaignMessage
         this.formattedDuration = formattedDuration
-        ViewUtils.setClickListener(rootLayout, onLongClickListener)
-        ViewUtils.setClickListener(rootLayout, onRowClickListener)
+        viewUtils.setClickListener(rootLayout, onLongClickListener)
+        viewUtils.setClickListener(rootLayout, onRowClickListener)
         buttonPlayPause.setOnClickListener(buttonClickListener)
         slider.addOnChangeListener(onChangeListener)
         slider.addOnSliderTouchListener(onSliderTouchListener)
@@ -270,7 +269,7 @@ class UserPhraseViewHolder(
                             it.downloadProgress = 100
                         }
                         rightTextRow.isVisible = true
-                        ViewUtils.setClickListener(rightTextRow, null as View.OnClickListener?)
+                        viewUtils.setClickListener(rightTextRow, null as View.OnClickListener?)
                         fileImageButton.isVisible = true
                         rightTextHeader.text = it.from
                         val timeStampText = parentView.context.getString(
@@ -290,7 +289,7 @@ class UserPhraseViewHolder(
 
     private fun showQuote(quote: Quote, onQuoteClickListener: View.OnClickListener?) {
         quoteTextRow.isVisible = true
-        ViewUtils.setClickListener(quoteTextRow, onQuoteClickListener)
+        viewUtils.setClickListener(quoteTextRow, onQuoteClickListener)
         quoteTextDescription.text = quote.text
         quoteTextHeader.text = quote.phraseOwnerTitle
         val timeStampText = parentView.context.resources.getString(

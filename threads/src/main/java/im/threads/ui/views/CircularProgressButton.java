@@ -24,6 +24,7 @@ public final class CircularProgressButton extends FrameLayout {
     private Drawable inProgress;
     private Drawable startDownloadDrawable;
     private Drawable progressBackgroundDrawable;
+    private ViewUtils viewUtils = new ViewUtils();
 
     public CircularProgressButton(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -85,11 +86,10 @@ public final class CircularProgressButton extends FrameLayout {
 
     @Override
     public void setOnClickListener(View.OnClickListener ocl) {
-        ViewUtils.setClickListener(findViewById(R.id.frame), ocl);
+        viewUtils.setClickListener(findViewById(R.id.frame), ocl);
     }
 
     public void setBackgroundColorResId(@ColorRes int colorResourceIntId) {
         progressBackgroundDrawable.setColorFilter(ContextCompat.getColor(getContext(), colorResourceIntId), PorterDuff.Mode.SRC_ATOP);
     }
-
 }

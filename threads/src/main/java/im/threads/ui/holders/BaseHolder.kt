@@ -65,6 +65,7 @@ abstract class BaseHolder internal constructor(
         0.5f
     )
     private var ogDataContent: OGDataContent? = null
+    val viewUtils = ViewUtils()
 
     protected fun subscribeForOpenGraphData(ogDataContent: OGDataContent) {
         this.ogDataContent = ogDataContent
@@ -278,7 +279,7 @@ abstract class BaseHolder internal constructor(
                     setOgDataUrl(ogUrl, ogData)
                     setOgDataImage(ogData, ogImage)
 
-                    ViewUtils.setClickListener(
+                    viewUtils.setClickListener(
                         ogDataLayout,
                         View.OnClickListener { _ ->
                             UrlUtils.openUrl(
