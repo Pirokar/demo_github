@@ -233,6 +233,7 @@ public final class ChatFragment extends BaseFragment implements
     @NonNull
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+        LoggerEdna.info(ChatFragment.class.getSimpleName() + " onCreateView.");
         Activity activity = getActivity();
         style = config.getChatStyle();
 
@@ -264,6 +265,8 @@ public final class ChatFragment extends BaseFragment implements
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        LoggerEdna.info(ChatFragment.class.getSimpleName() + " onViewCreated.");
+
         super.onViewCreated(view, savedInstanceState);
         FileDescription fileDescriptionDraft = PrefUtilsBase.getFileDescriptionDraft();
         if (FileUtils.isVoiceMessage(fileDescriptionDraft)) {
@@ -292,6 +295,8 @@ public final class ChatFragment extends BaseFragment implements
 
     @Override
     public void onDestroyView() {
+        LoggerEdna.info(ChatFragment.class.getSimpleName() + " onDestroyView.");
+
         if (fdMediaPlayer != null) {
             fdMediaPlayer.release();
             fdMediaPlayer = null;
@@ -308,6 +313,8 @@ public final class ChatFragment extends BaseFragment implements
 
     @Override
     public void onDestroy() {
+        LoggerEdna.info(ChatFragment.class.getSimpleName() + " onDestroy.");
+
         super.onDestroy();
         BaseConfig.instance.transport.setLifecycle(null);
     }
@@ -2021,6 +2028,8 @@ public final class ChatFragment extends BaseFragment implements
 
     @Override
     public void onResume() {
+        LoggerEdna.info(ChatFragment.class.getSimpleName() + " onResume.");
+
         super.onResume();
         mChatController.setActivityIsForeground(true);
         scrollToFirstUnreadMessage();
@@ -2074,6 +2083,7 @@ public final class ChatFragment extends BaseFragment implements
     @Override
     public void onStart() {
         super.onStart();
+        LoggerEdna.info(ChatFragment.class.getSimpleName() + " onStart.");
         setCurrentThreadId(PrefUtilsBase.getThreadId());
         BaseConfig.instance.transport.setLifecycle(getLifecycle());
         ChatController.getInstance().getSettings();
@@ -2082,6 +2092,8 @@ public final class ChatFragment extends BaseFragment implements
 
     @Override
     public void onStop() {
+        LoggerEdna.info(ChatFragment.class.getSimpleName() + " onStop.");
+
         super.onStop();
         isResumed = false;
         chatIsShown = false;
@@ -2094,6 +2106,8 @@ public final class ChatFragment extends BaseFragment implements
     @Override
     public void onPause() {
         super.onPause();
+        LoggerEdna.info(ChatFragment.class.getSimpleName() + " onPause.");
+
         stopRecording();
         FileDescription fileDescription = getFileDescription();
         if (fileDescription == null || FileUtils.isVoiceMessage(fileDescription)) {
