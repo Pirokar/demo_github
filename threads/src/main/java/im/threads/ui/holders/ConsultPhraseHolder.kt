@@ -43,12 +43,11 @@ import java.util.Date
 import java.util.Locale
 
 /** layout/item_consultant_text_with_file.xml */
-class ConsultPhraseHolder(parent: ViewGroup, highlightingStream: PublishSubject<ChatItem>) :
-    BaseHolder(
-        LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_consultant_text_with_file, parent, false),
-        highlightingStream
-    ) {
+class ConsultPhraseHolder(parent: ViewGroup, highlightingStream: PublishSubject<ChatItem>) : BaseHolder(
+    LayoutInflater.from(parent.context)
+        .inflate(R.layout.item_consultant_text_with_file, parent, false),
+    highlightingStream
+) {
     private val timeStampSdf = SimpleDateFormat("HH:mm", Locale.getDefault())
 
     @SuppressLint("SimpleDateFormat")

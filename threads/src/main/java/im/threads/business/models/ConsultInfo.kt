@@ -6,32 +6,26 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class ConsultInfo(
-    var name: String? = null,
-    var id: String? = null,
-    var status: String? = null,
-    var organizationUnit: String? = null,
-    var photoUrl: String? = null,
-    var role: String? = null
+    val name: String? = null,
+    val id: String? = null,
+    val status: String? = null,
+    val organizationUnit: String? = null,
+    val photoUrl: String? = null,
+    val role: String? = null
 ) : Parcelable {
 
     override fun toString(): String {
-        return "ConsultInfo{" +
-            "name='" + name + '\'' +
-            ", id=" + id +
-            ", status='" + status + '\'' +
-            ", organizationUnit='" + organizationUnit + '\'' +
-            ", photoUrl='" + photoUrl + '\'' +
-            ", role='" + role + '\'' +
-            '}'
+        return """ConsultInfo{name='$name', id=$id, status='$status', organizationUnit='$organizationUnit', photoUrl='$photoUrl', role='$role'}"""
     }
 
     fun toJson(): JsonObject {
-        val jsonObject = JsonObject()
-        jsonObject.addProperty("name", name)
-        jsonObject.addProperty("status", status)
-        jsonObject.addProperty("id", id)
-        jsonObject.addProperty("photoUrl", photoUrl)
-        jsonObject.addProperty("role", role)
+        val jsonObject = JsonObject().apply {
+            addProperty("name", name)
+            addProperty("status", status)
+            addProperty("id", id)
+            addProperty("photoUrl", photoUrl)
+            addProperty("role", role)
+        }
         return jsonObject
     }
 }
