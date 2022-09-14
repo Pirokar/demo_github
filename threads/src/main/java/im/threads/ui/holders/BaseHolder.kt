@@ -65,6 +65,7 @@ abstract class BaseHolder internal constructor(
         0.5f
     )
     private var ogDataContent: OGDataContent? = null
+    val viewUtils = ViewUtils()
 
     protected fun subscribeForOpenGraphData(ogDataContent: OGDataContent) {
         this.ogDataContent = ogDataContent
@@ -241,7 +242,7 @@ abstract class BaseHolder internal constructor(
         }
         ogDataContent?.url = link ?: ""
 
-        if (ogDataContent?.ogDataLayout?.tag == link) {
+        if (ogDataContent?.ogDataLayout?.get()?.tag == link) {
             return
         } else {
             openGraphParser.getCachedContents(link)?.let {
@@ -260,34 +261,39 @@ abstract class BaseHolder internal constructor(
     private fun onOgDataReceived(ogData: OGData) {
         ogDataContent?.let { ogDataContent ->
             if (ogData.messageText == ogDataContent.messageText) {
-                val ogImage: ImageView = ogDataContent.ogDataLayout.findViewById(R.id.og_image)
+                ogDataContent.ogDataLayout.get()?.let { ogDataLayout ->
+                    val ogImage: ImageView = ogDataLayout.findViewById(R.id.og_image)
 
-                if (ogData.isEmpty()) {
-                    hideOGView()
-                    return
+                    if (ogData.isEmpty()) {
+                        hideOGView()
+                        return
+                    }
+
+                    val ogTitle: TextView = ogDataLayout.findViewById(R.id.og_title)
+                    val ogDescription: TextView = ogDataLayout.findViewById(R.id.og_description)
+                    val ogUrl: TextView = ogDataLayout.findViewById(R.id.og_url)
+
+                    showOGView()
+                    setOgDataTitle(ogData, ogTitle)
+                    setOgDataDescription(ogData, ogDescription)
+                    setOgDataUrl(ogUrl, ogData)
+                    setOgDataImage(ogData, ogImage)
+
+                    viewUtils.setClickListener(
+                        ogDataLayout,
+                        View.OnClickListener { _ ->
+                            UrlUtils.openUrl(
+                                ogDataLayout.context,
+                                ogDataContent.url
+                            )
+                        }
+                    )
+
+                    ogDataLayout.tag = ogDataContent.url
                 }
 
-                val ogTitle: TextView = ogDataContent.ogDataLayout.findViewById(R.id.og_title)
-                val ogDescription: TextView = ogDataContent.ogDataLayout.findViewById(R.id.og_description)
-                val ogUrl: TextView = ogDataContent.ogDataLayout.findViewById(R.id.og_url)
-
-                showOGView()
-                setOgDataTitle(ogData, ogTitle)
-                setOgDataDescription(ogData, ogDescription)
-                setOgDataUrl(ogUrl, ogData)
-                setOgDataImage(ogData, ogImage)
-
-                ViewUtils.setClickListener(
-                    ogDataContent.ogDataLayout,
-                    View.OnClickListener {
-                        UrlUtils.openUrl(
-                            ogDataContent.ogDataLayout.context,
-                            ogDataContent.url
-                        )
-                    }
-                )
-
-                ogDataContent.ogDataLayout.tag = ogDataContent.url
+                ogDataContent.ogDataLayout.clear()
+                ogDataContent.timeStampView.clear()
             }
         }
     }
@@ -317,7 +323,7 @@ abstract class BaseHolder internal constructor(
 
     private fun setOgDataImage(ogData: OGData, ogImage: ImageView) {
         if (UrlUtils.isValidUrl(ogData.imageUrl)) {
-            ogImage.visibility = View.VISIBLE
+            ogImage.visible()
             if (ogImage.tag != ogData.imageUrl) {
                 ogImage.loadImage(
                     ogData.imageUrl,
@@ -330,25 +336,25 @@ abstract class BaseHolder internal constructor(
                         }
 
                         override fun onImageLoadError() {
-                            ogImage.visibility = View.GONE
+                            ogImage.gone()
                         }
                     }
                 )
             }
         } else {
-            ogImage.visibility = View.GONE
+            ogImage.gone()
         }
     }
 
     private fun showOGView() {
-        ogDataContent?.ogDataLayout?.visible()
-        ogDataContent?.timeStampView?.gone()
+        ogDataContent?.ogDataLayout?.get()?.visible()
+        ogDataContent?.timeStampView?.get()?.gone()
     }
 
     private fun hideOGView() {
-        ogDataContent?.ogDataLayout?.gone()
-        ogDataContent?.timeStampView?.visible()
-        ogDataContent?.ogDataLayout?.tag = ""
+        ogDataContent?.ogDataLayout?.get()?.gone()
+        ogDataContent?.timeStampView?.get()?.visible()
+        ogDataContent?.ogDataLayout?.get()?.tag = ""
     }
 
     private fun setTextWithHighlighting(textView: TextView, isUnderlined: Boolean) {

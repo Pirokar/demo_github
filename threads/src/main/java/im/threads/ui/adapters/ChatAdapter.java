@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.core.util.ObjectsCompat;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,6 +26,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Objects;
 import java.util.Set;
 
 import im.threads.ChatStyle;
@@ -115,14 +117,14 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     private final Handler viewHandler = new Handler(Looper.getMainLooper());
     private final ArrayList<ChatItem> list = new ArrayList<>();
-    @NonNull
-    private final Context ctx;
+
+    private Context ctx;
     @NonNull
     private final Callback mCallback;
-    @NonNull
-    private final ImageModifications.MaskedModification outgoingImageMaskTransformation;
-    @NonNull
-    private final ImageModifications.MaskedModification incomingImageMaskTransformation;
+
+    private ImageModifications.MaskedModification outgoingImageMaskTransformation;
+
+    private ImageModifications.MaskedModification incomingImageMaskTransformation;
     @NonNull
     private final FileDescriptionMediaPlayer fdMediaPlayer;
     @NonNull
@@ -139,21 +141,13 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private VoiceMessageBaseHolder playingHolder = null;
 
     public ChatAdapter(
-            @NonNull Context ctx,
             @NonNull Callback callback,
             @NonNull FileDescriptionMediaPlayer fdMediaPlayer,
             @NonNull MediaMetadataRetriever mediaMetadataRetriever) {
-        this.ctx = ctx;
         this.mCallback = callback;
         this.fdMediaPlayer = fdMediaPlayer;
         this.mediaMetadataRetriever = mediaMetadataRetriever;
-        ChatStyle style = Config.getInstance().getChatStyle();
-        this.outgoingImageMaskTransformation = new ImageModifications.MaskedModification(
-                ctx.getResources().getDrawable(style.outgoingImageBubbleMask)
-        );
-        this.incomingImageMaskTransformation = new ImageModifications.MaskedModification(
-                ctx.getResources().getDrawable(style.incomingImageBubbleMask)
-        );
+
         clientNotificationDisplayType = PrefUtilsUi.getClientNotificationDisplayType();
         currentThreadId = PrefUtilsBase.getThreadId();
     }
@@ -194,9 +188,22 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
     }
 
+    private void setupMaskTransformations() {
+        if (outgoingImageMaskTransformation == null || incomingImageMaskTransformation == null) {
+            ChatStyle style = Config.getInstance().getChatStyle();
+            outgoingImageMaskTransformation = new ImageModifications.MaskedModification(
+                    Objects.requireNonNull(ContextCompat.getDrawable(ctx, style.outgoingImageBubbleMask))
+            );
+            incomingImageMaskTransformation = new ImageModifications.MaskedModification(
+                    Objects.requireNonNull(ContextCompat.getDrawable(ctx, style.incomingImageBubbleMask))
+            );
+        }
+    }
+
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull final ViewGroup parent, final int viewType) {
+        ctx = parent.getContext();
         switch (viewType) {
             case TYPE_CONSULT_TYPING:
                 return new ConsultIsTypingViewHolderNew(parent);
@@ -245,6 +252,8 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     @Override
     public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position) {
+        setupMaskTransformations();
+
         if (holder instanceof SystemMessageViewHolder) {
             bindSystemMessageVH((SystemMessageViewHolder) holder, (SystemMessage) list.get(position));
         }

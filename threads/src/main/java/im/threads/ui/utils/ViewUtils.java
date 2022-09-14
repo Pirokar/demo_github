@@ -17,10 +17,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 public final class ViewUtils {
 
-    private ViewUtils() {
-    }
-
-    public static void setClickListener(ViewGroup viewGroup, View.OnClickListener listener) {
+    public void setClickListener(ViewGroup viewGroup, View.OnClickListener listener) {
         viewGroup.setOnClickListener(listener);
         for (int i = 0; i < viewGroup.getChildCount(); i++) {
             if (viewGroup.getChildAt(i) instanceof ViewGroup) {
@@ -31,7 +28,7 @@ public final class ViewUtils {
         }
     }
 
-    public static void setClickListener(ViewGroup viewGroup, View.OnLongClickListener listener) {
+    public void setClickListener(ViewGroup viewGroup, View.OnLongClickListener listener) {
         viewGroup.setOnLongClickListener(listener);
         for (int i = 0; i < viewGroup.getChildCount(); i++) {
             if (viewGroup.getChildAt(i) instanceof ViewGroup) {
@@ -42,7 +39,7 @@ public final class ViewUtils {
         }
     }
 
-    public static void setCompoundDrawablesWithIntrinsicBoundsCompat(TextView tv, @DrawableRes int drawableId, @DrawablePosition int drawablePosition) {
+    public void setCompoundDrawablesWithIntrinsicBoundsCompat(TextView tv, @DrawableRes int drawableId, @DrawablePosition int drawablePosition) {
         Context context = tv.getContext();
         Drawable drawable;
         drawable = AppCompatResources.getDrawable(context, drawableId);
