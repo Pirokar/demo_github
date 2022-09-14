@@ -1109,7 +1109,9 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 final int index = indexOf(items, ci);
                 if (index == (items.size() - 1)) continue;//removing dups of date rows
                 if (ci instanceof ConsultPhrase && items.get(index + 1) instanceof ConsultPhrase) {
-                    if(((ConsultPhrase)ci).getConsultId().equals(((ConsultPhrase) items.get(index + 1)).getConsultId())) {
+                    String currentItemOperatorId = ((ConsultPhrase)ci).getConsultId();
+                    String nextItemOperatorId = ((ConsultPhrase) items.get(index + 1)).getConsultId();
+                    if((currentItemOperatorId.equals(nextItemOperatorId))) {
                         ((ConsultPhrase) ci).setAvatarVisible(false);
                     }
                 }
@@ -1132,7 +1134,9 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 if (index == (items.size() - 1))
                     continue;//removing wrong avatar visibility of consult of date rows
                 if (ci instanceof ConsultPhrase && items.get(index + 1) instanceof ConsultPhrase) {
-                    if(((ConsultPhrase)ci).getConsultId().equals(((ConsultPhrase) items.get(index + 1)).getConsultId())) {
+                    String currentItemOperatorId = ((ConsultPhrase)ci).getConsultId();
+                    String nextItemOperatorId = ((ConsultPhrase) items.get(index + 1)).getConsultId();
+                    if(currentItemOperatorId.equals(nextItemOperatorId)) {
                         ((ConsultPhrase) ci).setAvatarVisible(false);
                     }
                 }
@@ -1179,7 +1183,9 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 final ChatItem prev = items.get(i - 1);
                 final ChatItem current = items.get(i);
                 if (prev instanceof ConsultPhrase && current instanceof ConsultPhrase) {
-                    if(((ConsultPhrase)prev).getConsultId().equals(((ConsultPhrase)current).getConsultId())) {
+                    String currentItemOperatorId = ((ConsultPhrase)current).getConsultId();
+                    String nextItemOperatorId = ((ConsultPhrase)prev).getConsultId();
+                    if(currentItemOperatorId.equals(nextItemOperatorId)) {
                         ((ConsultPhrase) prev).setAvatarVisible(false);//setting proper visibility of consult avatars
                         ((ConsultPhrase) current).setAvatarVisible(true);
                     }
@@ -1254,7 +1260,9 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 if (itemToInsert instanceof ConsultPhrase && listToInsertTo.size() != 1) {
                     final int prev = listToInsertTo.size() - 2;
                     if (listToInsertTo.get(prev) instanceof ConsultPhrase) {
-                        if(((ConsultPhrase)itemToInsert).getConsultId().equals(((ConsultPhrase) listToInsertTo.get(prev)).getConsultId())) {
+                        String currentItemOperatorId = ((ConsultPhrase)itemToInsert).getConsultId();
+                        String nextItemOperatorId = ((ConsultPhrase) listToInsertTo.get(prev)).getConsultId();
+                        if(currentItemOperatorId.equals(nextItemOperatorId)) {
                             ((ConsultPhrase) listToInsertTo.get(prev)).setAvatarVisible(false);
                         }
                     }
