@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.View.OnLongClickListener
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
@@ -58,8 +59,8 @@ class ConsultVoiceMessageViewHolder(
             setLinkTextColor(getColorInt(style.incomingMessageLinkColor))
         }
     private val slider: Slider = itemView.findViewById(R.id.voiceMessageConsultSlider)
-    override val buttonPlayPause: ImageView =
-        itemView.findViewById<ImageView>(R.id.voiceMessageConsultButtonPlayPause).apply {
+    override val buttonPlayPause: ImageButton =
+        itemView.findViewById<ImageButton>(R.id.voiceMessageConsultButtonPlayPause).apply {
             setColorFilter(
                 getColorInt(style.incomingPlayPauseButtonColor),
                 PorterDuff.Mode.SRC_ATOP
@@ -252,7 +253,7 @@ class ConsultVoiceMessageViewHolder(
                 buttonPlayPause.alpha = 1f
                 audioStatusTextView.gone()
                 fileSizeTextView.visible()
-                slider.gone()
+                slider.isEnabled = true
                 slider.setLabelFormatter(VoiceTimeLabelFormatter())
             }
             SpeechStatus.PROCESSING -> {
@@ -260,7 +261,7 @@ class ConsultVoiceMessageViewHolder(
                 buttonPlayPause.alpha = 0.3f
                 audioStatusTextView.visible()
                 fileSizeTextView.gone()
-                slider.gone()
+                slider.isEnabled = false
                 audioStatusTextView.setText(R.string.threads_voice_message_is_processing)
             }
             else -> {
@@ -268,7 +269,7 @@ class ConsultVoiceMessageViewHolder(
                 buttonPlayPause.alpha = 0.3f
                 audioStatusTextView.visible()
                 fileSizeTextView.gone()
-                slider.gone()
+                slider.isEnabled = false
                 audioStatusTextView.setText(R.string.threads_voice_message_error)
             }
         }

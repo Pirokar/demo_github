@@ -27,113 +27,117 @@
 
             <FrameLayout
                 android:id="@+id/buttonsLayout"
-                android:layout_width="@dimen/threads_input_height"
-                android:layout_height="match_parent"
+                android:layout_width="@dimen/threads_file_icon_size"
+                android:layout_height="@dimen/threads_file_icon_size"
                 android:layout_marginStart="@dimen/margin_material"
-                android:layout_marginTop="@dimen/margin_three_fourth"
                 android:layout_marginEnd="@dimen/margin_half"
                 android:layout_marginBottom="@dimen/margin_three_fourth"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <ImageView
+                <ImageButton
                     android:id="@+id/voiceMessageConsultButtonPlayPause"
-                    android:layout_width="@dimen/threads_operator_photo_size"
-                    android:layout_height="@dimen/threads_operator_photo_size"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:background="@null"
+                    android:scaleType="fitXY"
                     app:srcCompat="@drawable/threads_voice_message_play" />
 
                 <ImageView
                     android:id="@+id/loader"
-                    android:layout_width="@dimen/threads_operator_photo_size"
-                    android:layout_height="@dimen/threads_operator_photo_size"
-                    android:layout_gravity="center_vertical" />
-
-                <View
-                    android:layout_width="1dp"
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_gravity="end"
-                    android:layout_marginEnd="@dimen/margin_three_fourth"
-                    android:background="@color/threads_incoming_message_text"
-                    android:minHeight="50dp" />
+                    android:layout_gravity="center_vertical" />
 
             </FrameLayout>
 
-            <FrameLayout
+            <RelativeLayout
                 android:id="@+id/voiceMessageConsultSliderContainer"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="-11dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/buttonsLayout"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="@id/buttonsLayout">
 
                 <com.google.android.material.slider.Slider
                     android:id="@+id/voiceMessageConsultSlider"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:theme="@style/ThemeOverlay.ChatCenter.Slider.Consult"
-                    tools:visibility="gone" />
+                    app:thumbRadius="@dimen/thumb_size"
+                    app:haloRadius="@dimen/halo_radius"
+                    android:theme="@style/ThemeOverlay.ChatCenter.Slider.Consult"/>
 
                 <im.threads.ui.widget.textView.BubbleMessageTextView
                     android:id="@+id/voiceMessageConsultAudioStatus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:layout_margin="@dimen/margin_half"
+                    android:textSize="@dimen/text_small"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:layout_marginTop="-10dp"
+                    android:layout_below="@id/voiceMessageConsultSlider"
                     android:text="@string/threads_voice_message_is_processing"
                     android:textColor="@color/threads_incoming_message_text"
                     android:visibility="gone"
-                    tools:visibility="visible" />
+                    tools:visibility="visible"
+                    android:layout_marginStart="@dimen/margin_half"
+                    android:layout_marginEnd="@dimen/margin_half"
+                    android:layout_marginBottom="@dimen/margin_half" />
 
-            </FrameLayout>
+                <im.threads.ui.widget.textView.BubbleMessageTextView
+                    android:id="@+id/file_size"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="@dimen/margin_half"
+                    android:layout_marginTop="-10dp"
+                    android:textSize="@dimen/text_small"
+                    android:textColor="@color/threads_incoming_message_text"
+                    android:layout_below="@id/voiceMessageConsultSlider"
+                    tools:text="1:20" />
 
-            <im.threads.ui.widget.textView.BubbleMessageTextView
-                android:id="@+id/file_size"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginStart="@dimen/margin_half"
-                android:textColor="@color/threads_incoming_message_text"
-                app:layout_constraintStart_toEndOf="@+id/buttonsLayout"
-                app:layout_constraintTop_toBottomOf="@+id/voiceMessageConsultSliderContainer"
-                tools:text="1:20" />
+                <im.threads.ui.widget.textView.BubbleTimeTextView
+                    android:id="@+id/timeStamp"
+                    style="@style/timestamp"
+                    android:layout_marginEnd="15dp"
+                    android:textSize="@dimen/text_small"
+                    android:textColor="@color/threads_operator_message_timestamp"
+                    android:layout_alignTop="@id/file_size"
+                    android:layout_alignParentEnd="true"
+                    tools:text="10:19" />
 
-            <im.threads.ui.widget.textView.BubbleTimeTextView
-                android:id="@+id/timeStamp"
-                style="@style/timestamp"
-                android:layout_marginEnd="@dimen/margin_half"
-                android:textColor="@color/threads_operator_message_timestamp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/voiceMessageConsultSliderContainer"
-                tools:text="10:19" />
+            </RelativeLayout>
 
             <im.threads.ui.widget.textView.QuoteMessageTextView
                 android:id="@+id/voiceMessageConsultText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/margin_half"
                 android:ellipsize="end"
                 android:paddingBottom="@dimen/margin_half"
+                android:layout_marginTop="@dimen/margin_material"
                 android:textColor="@color/threads_incoming_message_text"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/buttonsLayout"
-                app:layout_constraintTop_toBottomOf="@+id/timeStamp"
+                app:layout_constraintStart_toStartOf="@id/buttonsLayout"
+                app:layout_constraintTop_toBottomOf="@+id/buttonsLayout"
                 tools:text="счет на оплату очень длинное название очень длинное название очень длинное название или счет на оплату очень длинное название очень длинное название очень длинное название" />
 
+            <im.threads.ui.widget.textView.BubbleTimeTextView
+                android:id="@+id/errorText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="@id/buttonsLayout"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/voiceMessageConsultText"
+                android:textColor="@color/threads_error_red_df0000"
+                android:textSize="@dimen/error_text_size"
+                android:visibility="gone"
+                tools:text="Some error text"
+                tools:visibility="visible" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </RelativeLayout>
-
-    <im.threads.ui.widget.textView.BubbleTimeTextView
-        android:id="@+id/errorText"
-        style="@style/timestamp"
-        android:layout_marginStart="@dimen/consultant_margin_right"
-        android:textColor="@color/threads_error_red_df0000"
-        android:textSize="@dimen/error_text_size"
-        android:visibility="gone"
-        tools:text="Some error text"
-        tools:visibility="visible" />
 
 </LinearLayout>
 
