@@ -60,6 +60,8 @@ import im.threads.business.utils.FileUtils;
 import im.threads.business.utils.FileUtilsKt;
 import im.threads.business.utils.preferences.PrefUtilsBase;
 import im.threads.business.workers.FileDownloadWorker;
+import im.threads.internal.model.NoChatItem;
+import im.threads.ui.config.Config;
 import im.threads.ui.holders.BaseHolder;
 import im.threads.ui.holders.ConsultFileViewHolder;
 import im.threads.ui.holders.ConsultIsTypingViewHolderNew;
@@ -83,8 +85,6 @@ import im.threads.ui.holders.UnreadMessageViewHolder;
 import im.threads.ui.holders.UserFileViewHolder;
 import im.threads.ui.holders.UserPhraseViewHolder;
 import im.threads.ui.holders.VoiceMessageBaseHolder;
-import im.threads.internal.model.NoChatItem;
-import im.threads.ui.config.Config;
 import im.threads.ui.utils.ThreadRunnerKt;
 import im.threads.ui.utils.preferences.PrefUtilsUi;
 import im.threads.ui.views.VoiceTimeLabelFormatterKt;
@@ -127,10 +127,10 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private final FileDescriptionMediaPlayer fdMediaPlayer;
     @NonNull
     private final MediaMetadataRetriever mediaMetadataRetriever;
-    @Nullable
-    private ChatItem highlightedItem = null;
     @NonNull
     PublishSubject<ChatItem> highlightingStream = PublishSubject.create();
+    @Nullable
+    private ChatItem highlightedItem = null;
     @NonNull
     private ClientNotificationDisplayType clientNotificationDisplayType;
     private long currentThreadId;
@@ -1054,7 +1054,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
     }
 
-    private ArrayList<ChatItem> removeSurveyIfNotLatest(ArrayList<ChatItem> list)  {
+    private ArrayList<ChatItem> removeSurveyIfNotLatest(ArrayList<ChatItem> list) {
         boolean isListSizeMoreThat1Element = list != null && list.size() > 1;
         boolean isPreviousItemSurvey = isListSizeMoreThat1Element &&
                 list.get(list.size() - 2) instanceof Survey;
@@ -1123,11 +1123,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 final int index = indexOf(items, ci);
                 if (index == (items.size() - 1)) continue;//removing dups of date rows
                 if (ci instanceof ConsultPhrase && items.get(index + 1) instanceof ConsultPhrase) {
-                    String currentItemOperatorId = ((ConsultPhrase)ci).getConsultId();
-                    String nextItemOperatorId = ((ConsultPhrase) items.get(index + 1)).getConsultId();
-                    if((currentItemOperatorId.equals(nextItemOperatorId))) {
-                        ((ConsultPhrase) ci).setAvatarVisible(false);
-                    }
+                    hideConsultAvatar((ConsultPhrase) ci, (ConsultPhrase) items.get(index + 1));
                 }
             }
             for (int i = 0; i < daterows.size(); i++) {
@@ -1148,11 +1144,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 if (index == (items.size() - 1))
                     continue;//removing wrong avatar visibility of consult of date rows
                 if (ci instanceof ConsultPhrase && items.get(index + 1) instanceof ConsultPhrase) {
-                    String currentItemOperatorId = ((ConsultPhrase)ci).getConsultId();
-                    String nextItemOperatorId = ((ConsultPhrase) items.get(index + 1)).getConsultId();
-                    if(currentItemOperatorId.equals(nextItemOperatorId)) {
-                        ((ConsultPhrase) ci).setAvatarVisible(false);
-                    }
+                    hideConsultAvatar((ConsultPhrase) ci, (ConsultPhrase) items.get(index + 1));
                 }
             }
             SearchingConsult sc = null;
@@ -1180,18 +1172,28 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             Collections.sort(items, (lhs, rhs) -> Long.compare(lhs.getTimeStamp(), rhs.getTimeStamp()));
             removeAllSpacings(items);
             for (int i = 1; i < items.size(); i++) {
-                final ChatItem prev = items.get(i - 1);
-                final ChatItem current = items.get(i);
-                if (prev instanceof ConsultPhrase && current instanceof ConsultPhrase) {
-                    String currentItemOperatorId = ((ConsultPhrase)current).getConsultId();
-                    String nextItemOperatorId = ((ConsultPhrase)prev).getConsultId();
-                    if(currentItemOperatorId.equals(nextItemOperatorId)) {
-                        ((ConsultPhrase) prev).setAvatarVisible(false);//setting proper visibility of consult avatars
-                        ((ConsultPhrase) current).setAvatarVisible(true);
-                    }
-                }
+                updateConsultAvatarIfNeed(items.get(i - 1), items.get(i));
             }
             insertSpacing(items);
+        }
+
+        private static void updateConsultAvatarIfNeed(ChatItem prevItem, ChatItem currentItem) {
+            if (prevItem instanceof ConsultPhrase && currentItem instanceof ConsultPhrase) {
+                String currentItemOperatorId = ((ConsultPhrase) currentItem).getConsultId();
+                String nextItemOperatorId = ((ConsultPhrase) prevItem).getConsultId();
+                if (currentItemOperatorId != null && currentItemOperatorId.equals(nextItemOperatorId)) {
+                    ((ConsultPhrase) prevItem).setAvatarVisible(false);
+                    ((ConsultPhrase) currentItem).setAvatarVisible(true);
+                }
+            }
+        }
+
+        private static void hideConsultAvatar(ConsultPhrase currentPhrase, ConsultPhrase nextPhrase) {
+            String currentItemOperatorId = currentPhrase.getConsultId();
+            String nextItemOperatorId = nextPhrase.getConsultId();
+            if (currentItemOperatorId != null && currentItemOperatorId.equals(nextItemOperatorId)) {
+                currentPhrase.setAvatarVisible(false);
+            }
         }
 
         private static void filter(@NonNull List<ChatItem> items, ClientNotificationDisplayType type, long currentThreadId) {
@@ -1260,11 +1262,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 if (itemToInsert instanceof ConsultPhrase && listToInsertTo.size() != 1) {
                     final int prev = listToInsertTo.size() - 2;
                     if (listToInsertTo.get(prev) instanceof ConsultPhrase) {
-                        String currentItemOperatorId = ((ConsultPhrase)itemToInsert).getConsultId();
-                        String nextItemOperatorId = ((ConsultPhrase) listToInsertTo.get(prev)).getConsultId();
-                        if(currentItemOperatorId.equals(nextItemOperatorId)) {
-                            ((ConsultPhrase) listToInsertTo.get(prev)).setAvatarVisible(false);
-                        }
+                        hideConsultAvatar((ConsultPhrase) listToInsertTo.get(prev), (ConsultPhrase) itemToInsert);
                     }
                 }
             }
