@@ -10,10 +10,11 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import androidx.annotation.ColorRes;
-import androidx.core.content.ContextCompat;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.ContextCompat;
+
 import im.threads.R;
-import im.threads.internal.utils.ViewUtils;
+import im.threads.ui.utils.ViewUtils;
 
 public final class CircularProgressButton extends FrameLayout {
     private MyCircleProgress mcp;
@@ -23,6 +24,7 @@ public final class CircularProgressButton extends FrameLayout {
     private Drawable inProgress;
     private Drawable startDownloadDrawable;
     private Drawable progressBackgroundDrawable;
+    private ViewUtils viewUtils = new ViewUtils();
 
     public CircularProgressButton(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -84,11 +86,10 @@ public final class CircularProgressButton extends FrameLayout {
 
     @Override
     public void setOnClickListener(View.OnClickListener ocl) {
-        ViewUtils.setClickListener(findViewById(R.id.frame), ocl);
+        viewUtils.setClickListener(findViewById(R.id.frame), ocl);
     }
 
     public void setBackgroundColorResId(@ColorRes int colorResourceIntId) {
-        progressBackgroundDrawable.setColorFilter(ContextCompat.getColor(this.getContext(), colorResourceIntId), PorterDuff.Mode.SRC_ATOP);
+        progressBackgroundDrawable.setColorFilter(ContextCompat.getColor(getContext(), colorResourceIntId), PorterDuff.Mode.SRC_ATOP);
     }
-
 }

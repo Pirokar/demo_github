@@ -59,10 +59,13 @@ abstract class ApiGenerator protected constructor(
             httpClientBuilder.addInterceptor(
                 HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
             )
-            httpClientBuilder.addInterceptor(SSLCertificateInterceptor())
         }
         val sslSocketFactoryConfig = config.sslSocketFactoryConfig
         if (sslSocketFactoryConfig != null) {
+            if (config.isDebugLoggingEnabled) {
+                httpClientBuilder.addInterceptor(SSLCertificateInterceptor())
+            }
+
             httpClientBuilder.sslSocketFactory(
                 sslSocketFactoryConfig.sslSocketFactory,
                 sslSocketFactoryConfig.trustManager

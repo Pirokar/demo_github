@@ -1,6 +1,6 @@
 package im.threads.internal.controllers;
 
-import static im.threads.internal.utils.FilePosterKt.postFile;
+import static im.threads.business.utils.FilePosterKt.postFile;
 import static im.threads.internal.utils.NetworkErrorUtilsKt.getErrorStringResByCode;
 
 import android.app.Activity;
@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.widget.Toast;
@@ -60,19 +61,19 @@ import im.threads.business.models.UserPhrase;
 import im.threads.business.rest.models.HistoryResponse;
 import im.threads.business.rest.models.SettingsResponse;
 import im.threads.business.rest.queries.BackendApi;
+import im.threads.business.rest.queries.ThreadsApi;
 import im.threads.business.secureDatabase.DatabaseHolder;
 import im.threads.business.transport.HistoryLoader;
 import im.threads.business.transport.HistoryParser;
 import im.threads.business.transport.TransportException;
 import im.threads.business.transport.models.Attachment;
-import im.threads.business.utils.DeviceInfoHelper;
+import im.threads.business.utils.ChatMessageSeeker;
+import im.threads.business.utils.ConsultWriter;
 import im.threads.business.utils.FileUtils;
 import im.threads.business.utils.preferences.PrefUtilsBase;
 import im.threads.business.workers.FileDownloadWorker;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.model.InputFieldEnableModel;
-import im.threads.internal.utils.ConsultWriter;
-import im.threads.internal.utils.Seeker;
 import im.threads.ui.activities.ConsultActivity;
 import im.threads.ui.activities.ImagesActivity;
 import im.threads.ui.config.Config;
@@ -135,7 +136,7 @@ public final class ChatController {
     @NonNull
     private List<ChatItem> lastItems = new ArrayList<>();
     // TODO: вынести в отдельный класс поиск сообщений
-    private Seeker seeker = new Seeker();
+    private ChatMessageSeeker seeker = new ChatMessageSeeker();
     private long lastFancySearchDate = 0;
     private String lastSearchQuery = "";
     private boolean isAllMessagesDownloaded = false;
@@ -165,7 +166,7 @@ public final class ChatController {
         ThreadRunnerKt.runOnUiThread(() -> unsendMessageHandler = new Handler(msg -> {
             if (msg.what == RESEND_MSG) {
                 if (!unsendMessages.isEmpty()) {
-                    if (DeviceInfoHelper.hasNoInternet(appContext)) {
+                    if (hasNoInternet(appContext)) {
                         scheduleResend();
                     } else {
                         // try to send all unsent messages
@@ -272,7 +273,7 @@ public final class ChatController {
                                         lastFancySearchDate = System.currentTimeMillis();
                                     }
                                     if (query.isEmpty() || !query.equals(lastSearchQuery)) {
-                                        seeker = new Seeker();
+                                        seeker = new ChatMessageSeeker();
                                     }
                                     lastSearchQuery = query;
                                     ThreadRunnerKt.runOnUiThread(() -> {
@@ -283,7 +284,7 @@ public final class ChatController {
                         .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                () -> consumer.accept(seeker.seek(lastItems, !forward, query)),
+                                () -> consumer.accept(seeker.searchMessages(lastItems, !forward, query)),
                                 e -> {
                                     LoggerEdna.error(e);
                                     ThreadRunnerKt.runOnUiThread(() -> {
@@ -300,9 +301,9 @@ public final class ChatController {
                             synchronized (this) {
                                 if (!isDownloadingMessages) {
                                     isDownloadingMessages = true;
-                                    LoggerEdna.debug("downloadMessagesTillEnd");
+                                    LoggerEdna.debug(ThreadsApi.REST_TAG, "downloadMessagesTillEnd");
                                     while (!isAllMessagesDownloaded) {
-                                        final HistoryResponse response = HistoryLoader.getHistorySync(lastMessageTimestamp, PER_PAGE_COUNT);
+                                        final HistoryResponse response = HistoryLoader.INSTANCE.getHistorySync(lastMessageTimestamp, PER_PAGE_COUNT);
                                         final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
                                         if (serverItems.isEmpty()) {
                                             isAllMessagesDownloaded = true;
@@ -313,6 +314,7 @@ public final class ChatController {
                                         }
                                     }
                                 }
+                                LoggerEdna.debug(ThreadsApi.REST_TAG, "Messages are loaded");
                                 isDownloadingMessages = false;
                                 return databaseHolder.getChatItems(0, -1);
                             }
@@ -371,21 +373,19 @@ public final class ChatController {
     }
 
     public void setActivityIsForeground(final boolean isForeground) {
+        LoggerEdna.info("setActivityIsForeground");
         this.isActive = isForeground;
         if (isForeground && fragment != null && fragment.isAdded()) {
-            final Activity activity = fragment.getActivity();
-            if (activity != null) {
-                final ConnectivityManager cm = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
-                if (cm != null
-                        && cm.getActiveNetworkInfo() != null
-                        && cm.getActiveNetworkInfo().isConnectedOrConnecting()) {
-                    final List<String> uuidList = databaseHolder.getUnreadMessagesUuid();
-                    if (!uuidList.isEmpty()) {
-                        BaseConfig.instance.transport.markMessagesAsRead(uuidList);
-                        firstUnreadUuidId = uuidList.get(0); // для скролла к первому непрочитанному сообщению
-                    } else {
-                        firstUnreadUuidId = null;
-                    }
+            final ConnectivityManager cm = (ConnectivityManager) appContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+            if (cm != null
+                    && cm.getActiveNetworkInfo() != null
+                    && cm.getActiveNetworkInfo().isConnectedOrConnecting()) {
+                final List<String> uuidList = databaseHolder.getUnreadMessagesUuid();
+                if (!uuidList.isEmpty()) {
+                    BaseConfig.instance.transport.markMessagesAsRead(uuidList);
+                    firstUnreadUuidId = uuidList.get(0); // для скролла к первому непрочитанному сообщению
+                } else {
+                    firstUnreadUuidId = null;
                 }
             }
         }
@@ -404,15 +404,19 @@ public final class ChatController {
         return Observable
                 .fromCallable(() -> {
                     if (instance.fragment != null && !PrefUtilsBase.isClientIdEmpty()) {
+                        LoggerEdna.info(ThreadsApi.REST_TAG, "Requesting history items");
                         int currentOffset = instance.fragment.getCurrentItemsCount();
                         int count = BaseConfig.instance.historyLoadingCount;
                         try {
-                            final HistoryResponse response = HistoryLoader.getHistorySync(null, false);
+                            final HistoryResponse response = HistoryLoader.INSTANCE.getHistorySync(
+                                    null,
+                                    false
+                            );
                             final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
                             saveMessages(serverItems);
                             return setLastAvatars(databaseHolder.getChatItems(currentOffset, count));
                         } catch (final Exception e) {
-                            LoggerEdna.error("requestItems", e);
+                            LoggerEdna.error(ThreadsApi.REST_TAG, "Requesting history items error", e);
                             return setLastAvatars(databaseHolder.getChatItems(currentOffset, count));
                         }
                     }
@@ -574,11 +578,15 @@ public final class ChatController {
     }
 
     private List<ChatItem> onClientIdChanged() throws Exception {
+        LoggerEdna.info(ThreadsApi.REST_TAG, "Client id changed. Loading history.");
         cleanAll();
         if (fragment != null) {
             fragment.removeSearching();
         }
-        final HistoryResponse response = HistoryLoader.getHistorySync(null, true);
+        final HistoryResponse response = HistoryLoader.INSTANCE.getHistorySync(
+                null,
+                true
+        );
         final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
         saveMessages(serverItems);
         if (fragment != null) {
@@ -601,11 +609,15 @@ public final class ChatController {
 
     public void loadHistory() {
         if (!isDownloadingMessages) {
+            LoggerEdna.info(ThreadsApi.REST_TAG, "Loading history from " + ChatController.class.getSimpleName());
             isDownloadingMessages = true;
             subscribe(
                     Single.fromCallable(() -> {
                                 final int count = BaseConfig.instance.historyLoadingCount;
-                                final HistoryResponse response = HistoryLoader.getHistorySync(count, true);
+                                final HistoryResponse response = HistoryLoader.INSTANCE.getHistorySync(
+                                        count,
+                                        true
+                                );
                                 final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
                                 saveMessages(serverItems);
                                 if (fragment != null && isActive) {
@@ -642,6 +654,8 @@ public final class ChatController {
                                     }
                             )
             );
+        } else {
+            LoggerEdna.info(ThreadsApi.REST_TAG, "Loading history cancelled. isDownloadingMessages = true");
         }
     }
 
@@ -1245,13 +1259,16 @@ public final class ChatController {
     }
 
     private void onDeviceAddressChanged() {
-        LoggerEdna.info("onDeviceAddressChanged:");
+        LoggerEdna.info(ThreadsApi.REST_TAG, "onDeviceAddressChanged. Loading history.");
         String clientId = PrefUtilsBase.getClientID();
         if (fragment != null && !TextUtils.isEmpty(clientId)) {
             subscribe(
                     Single.fromCallable(() -> {
                                 BaseConfig.instance.transport.sendInit();
-                                final HistoryResponse response = HistoryLoader.getHistorySync(null, true);
+                                final HistoryResponse response = HistoryLoader.INSTANCE.getHistorySync(
+                                        null,
+                                        true
+                                );
                                 List<ChatItem> chatItems = HistoryParser.getChatItems(response);
                                 saveMessages(chatItems);
                                 return new Pair<>(response != null ? response.getConsultInfo() : null, setLastAvatars(chatItems));
@@ -1272,6 +1289,12 @@ public final class ChatController {
                                     },
                                     LoggerEdna::error
                             )
+            );
+        } else {
+            LoggerEdna.info(
+                    ThreadsApi.REST_TAG,
+                    "Loading history cancelled in onDeviceAddressChanged. " +
+                            "fragment != null && !TextUtils.isEmpty(clientId) == false"
             );
         }
     }
@@ -1436,5 +1459,11 @@ public final class ChatController {
             }
         }
         return null;
+    }
+
+    private boolean hasNoInternet(final Context context) {
+        final ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        final NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return null == netInfo || !netInfo.isConnected();
     }
 }

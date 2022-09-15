@@ -62,6 +62,7 @@ import com.google.android.material.slider.Slider;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -74,61 +75,61 @@ import java.util.concurrent.TimeUnit;
 
 import im.threads.ChatStyle;
 import im.threads.R;
+import im.threads.business.broadcastReceivers.ProgressReceiver;
 import im.threads.business.config.BaseConfig;
 import im.threads.business.imageLoading.ImageLoader;
 import im.threads.business.logger.LoggerEdna;
+import im.threads.business.media.ChatCenterAudioConverter;
+import im.threads.business.media.ChatCenterAudioConverterCallback;
+import im.threads.business.media.FileDescriptionMediaPlayer;
 import im.threads.business.models.CampaignMessage;
 import im.threads.business.models.ChatItem;
 import im.threads.business.models.ChatPhrase;
+import im.threads.business.models.ClientNotificationDisplayType;
 import im.threads.business.models.ConsultInfo;
 import im.threads.business.models.ConsultPhrase;
+import im.threads.business.models.ConsultTyping;
 import im.threads.business.models.FileDescription;
 import im.threads.business.models.MessageState;
 import im.threads.business.models.QuickReply;
+import im.threads.business.models.QuickReplyItem;
 import im.threads.business.models.Quote;
+import im.threads.business.models.ScheduleInfo;
 import im.threads.business.models.Survey;
 import im.threads.business.models.SystemMessage;
+import im.threads.business.models.UnreadMessages;
+import im.threads.business.models.UpcomingUserMessage;
 import im.threads.business.models.UserPhrase;
+import im.threads.business.useractivity.UserActivityTime;
+import im.threads.business.useractivity.UserActivityTimeProvider;
+import im.threads.business.utils.FileProviderHelper;
 import im.threads.business.utils.FileUtils;
 import im.threads.business.utils.FileUtilsKt;
+import im.threads.business.utils.RxUtils;
+import im.threads.business.utils.ThreadsPermissionChecker;
 import im.threads.business.utils.preferences.PrefUtilsBase;
 import im.threads.databinding.FragmentChatBinding;
+import im.threads.internal.chat_updates.ChatUpdateProcessor;
+import im.threads.internal.controllers.ChatController;
+import im.threads.internal.helpers.MediaHelper;
+import im.threads.internal.model.ConsultRole;
+import im.threads.internal.model.InputFieldEnableModel;
 import im.threads.ui.activities.CameraActivity;
 import im.threads.ui.activities.GalleryActivity;
 import im.threads.ui.activities.ImagesActivity;
 import im.threads.ui.activities.filesActivity.FilesActivity;
 import im.threads.ui.adapters.ChatAdapter;
-import im.threads.business.broadcastReceivers.ProgressReceiver;
-import im.threads.internal.chat_updates.ChatUpdateProcessor;
-import im.threads.internal.controllers.ChatController;
+import im.threads.ui.config.Config;
+import im.threads.ui.files.FileSelectedListener;
 import im.threads.ui.fragments.AttachmentBottomSheetDialogFragment;
 import im.threads.ui.fragments.BaseFragment;
-import im.threads.ui.fragments.FilePickerFragment;
 import im.threads.ui.fragments.PermissionDescriptionAlertDialogFragment;
-import im.threads.business.utils.FileProviderHelper;
-import im.threads.internal.helpers.MediaHelper;
-import im.threads.business.media.ChatCenterAudioConverter;
-import im.threads.business.media.ChatCenterAudioConverterCallback;
-import im.threads.business.media.FileDescriptionMediaPlayer;
-import im.threads.business.models.ClientNotificationDisplayType;
-import im.threads.internal.model.ConsultRole;
-import im.threads.business.models.ConsultTyping;
-import im.threads.internal.model.InputFieldEnableModel;
-import im.threads.business.models.QuickReplyItem;
-import im.threads.business.models.ScheduleInfo;
-import im.threads.business.models.UnreadMessages;
-import im.threads.business.models.UpcomingUserMessage;
 import im.threads.ui.permissions.PermissionsActivity;
-import im.threads.business.useractivity.UserActivityTime;
-import im.threads.business.useractivity.UserActivityTimeProvider;
-import im.threads.ui.utils.ColorsHelper;
-import im.threads.ui.utils.Keyboard;
-import im.threads.internal.utils.RxUtils;
-import im.threads.business.utils.ThreadsPermissionChecker;
-import im.threads.ui.views.VoiceTimeLabelFormatter;
-import im.threads.ui.config.Config;
 import im.threads.ui.styles.permissions.PermissionDescriptionType;
+import im.threads.ui.utils.ColorsHelper;
 import im.threads.ui.utils.FileHelper;
+import im.threads.ui.utils.Keyboard;
+import im.threads.ui.views.VoiceTimeLabelFormatter;
 import im.threads.ui.views.VoiceTimeLabelFormatterKt;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
@@ -146,7 +147,7 @@ public final class ChatFragment extends BaseFragment implements
         AttachmentBottomSheetDialogFragment.Callback,
         ProgressReceiver.Callback,
         PopupMenu.OnMenuItemClickListener,
-        FilePickerFragment.SelectedListener,
+        FileSelectedListener,
         ChatCenterAudioConverterCallback,
         PermissionDescriptionAlertDialogFragment.OnAllowPermissionClickListener {
 
@@ -232,12 +233,13 @@ public final class ChatFragment extends BaseFragment implements
     @NonNull
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+        LoggerEdna.info(ChatFragment.class.getSimpleName() + " onCreateView.");
         Activity activity = getActivity();
         style = config.getChatStyle();
 
         // Статус бар подкрашивается только при использовании чата в стандартном Activity.
         if (activity instanceof ChatActivity) {
-            ColorsHelper.setStatusBarColor(activity, style.chatStatusBarColorResId, style.windowLightStatusBarResId);
+            ColorsHelper.setStatusBarColor(new WeakReference<>(activity), style.chatStatusBarColorResId, style.windowLightStatusBarResId);
         }
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_chat, container, false);
@@ -263,6 +265,8 @@ public final class ChatFragment extends BaseFragment implements
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        LoggerEdna.info(ChatFragment.class.getSimpleName() + " onViewCreated.");
+
         super.onViewCreated(view, savedInstanceState);
         FileDescription fileDescriptionDraft = PrefUtilsBase.getFileDescriptionDraft();
         if (FileUtils.isVoiceMessage(fileDescriptionDraft)) {
@@ -291,7 +295,8 @@ public final class ChatFragment extends BaseFragment implements
 
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
+        LoggerEdna.info(ChatFragment.class.getSimpleName() + " onDestroyView.");
+
         if (fdMediaPlayer != null) {
             fdMediaPlayer.release();
             fdMediaPlayer = null;
@@ -302,10 +307,14 @@ public final class ChatFragment extends BaseFragment implements
             activity.unregisterReceiver(mChatReceiver);
         }
         chatIsShown = false;
+
+        super.onDestroyView();
     }
 
     @Override
     public void onDestroy() {
+        LoggerEdna.info(ChatFragment.class.getSimpleName() + " onDestroy.");
+
         super.onDestroy();
         BaseConfig.instance.transport.setLifecycle(null);
     }
@@ -334,7 +343,7 @@ public final class ChatFragment extends BaseFragment implements
         mQuoteLayoutHolder = new QuoteLayoutHolder();
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(activity);
         binding.recycler.setLayoutManager(mLayoutManager);
-        chatAdapter = new ChatAdapter(activity, chatAdapterCallback, fdMediaPlayer, mediaMetadataRetriever);
+        chatAdapter = new ChatAdapter(chatAdapterCallback, fdMediaPlayer, mediaMetadataRetriever);
         RecyclerView.ItemAnimator itemAnimator = binding.recycler.getItemAnimator();
         if (itemAnimator != null) {
             itemAnimator.setChangeDuration(0);
@@ -1826,7 +1835,7 @@ public final class ChatFragment extends BaseFragment implements
             if (fdMediaPlayer == null) {
                 return;
             }
-            chatAdapter = new ChatAdapter(activity, chatAdapterCallback, fdMediaPlayer, mediaMetadataRetriever);
+            chatAdapter = new ChatAdapter(chatAdapterCallback, fdMediaPlayer, mediaMetadataRetriever);
             binding.recycler.setAdapter(chatAdapter);
             setTitleStateDefault();
             welcomeScreenVisibility(false);
@@ -2019,6 +2028,8 @@ public final class ChatFragment extends BaseFragment implements
 
     @Override
     public void onResume() {
+        LoggerEdna.info(ChatFragment.class.getSimpleName() + " onResume.");
+
         super.onResume();
         mChatController.setActivityIsForeground(true);
         scrollToFirstUnreadMessage();
@@ -2072,6 +2083,7 @@ public final class ChatFragment extends BaseFragment implements
     @Override
     public void onStart() {
         super.onStart();
+        LoggerEdna.info(ChatFragment.class.getSimpleName() + " onStart.");
         setCurrentThreadId(PrefUtilsBase.getThreadId());
         BaseConfig.instance.transport.setLifecycle(getLifecycle());
         ChatController.getInstance().getSettings();
@@ -2080,15 +2092,22 @@ public final class ChatFragment extends BaseFragment implements
 
     @Override
     public void onStop() {
+        LoggerEdna.info(ChatFragment.class.getSimpleName() + " onStop.");
+
         super.onStop();
         isResumed = false;
         chatIsShown = false;
         isInMessageSearchMode = false;
+        if (fdMediaPlayer != null) {
+            fdMediaPlayer.clearClickedDownloadPath();
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        LoggerEdna.info(ChatFragment.class.getSimpleName() + " onPause.");
+
         stopRecording();
         FileDescription fileDescription = getFileDescription();
         if (fileDescription == null || FileUtils.isVoiceMessage(fileDescription)) {

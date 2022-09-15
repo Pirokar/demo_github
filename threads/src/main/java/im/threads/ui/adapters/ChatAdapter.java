@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.core.util.ObjectsCompat;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,6 +26,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Objects;
 import java.util.Set;
 
 import im.threads.ChatStyle;
@@ -59,29 +61,30 @@ import im.threads.business.utils.ChatItemListFinder;
 import im.threads.business.utils.FileUtils;
 import im.threads.business.utils.FileUtilsKt;
 import im.threads.business.utils.preferences.PrefUtilsBase;
-import im.threads.internal.holders.BaseHolder;
-import im.threads.internal.holders.ConsultFileViewHolder;
-import im.threads.internal.holders.ConsultIsTypingViewHolderNew;
-import im.threads.internal.holders.ConsultPhraseHolder;
-import im.threads.internal.holders.ConsultVoiceMessageViewHolder;
-import im.threads.internal.holders.DateViewHolder;
-import im.threads.internal.holders.EmptyViewHolder;
-import im.threads.internal.holders.ImageFromConsultViewHolder;
-import im.threads.internal.holders.ImageFromUserViewHolder;
-import im.threads.internal.holders.QuickRepliesViewHolder;
-import im.threads.internal.holders.RatingStarsSentViewHolder;
-import im.threads.internal.holders.RatingStarsViewHolder;
-import im.threads.internal.holders.RatingThumbsSentViewHolder;
-import im.threads.internal.holders.RatingThumbsViewHolder;
-import im.threads.internal.holders.RequestResolveThreadViewHolder;
-import im.threads.internal.holders.ScheduleInfoViewHolder;
-import im.threads.internal.holders.SearchingConsultViewHolder;
-import im.threads.internal.holders.SpaceViewHolder;
-import im.threads.internal.holders.SystemMessageViewHolder;
-import im.threads.internal.holders.UnreadMessageViewHolder;
-import im.threads.internal.holders.UserFileViewHolder;
-import im.threads.internal.holders.UserPhraseViewHolder;
-import im.threads.internal.holders.VoiceMessageBaseHolder;
+import im.threads.business.workers.FileDownloadWorker;
+import im.threads.ui.holders.BaseHolder;
+import im.threads.ui.holders.ConsultFileViewHolder;
+import im.threads.ui.holders.ConsultIsTypingViewHolderNew;
+import im.threads.ui.holders.ConsultPhraseHolder;
+import im.threads.ui.holders.ConsultVoiceMessageViewHolder;
+import im.threads.ui.holders.DateViewHolder;
+import im.threads.ui.holders.EmptyViewHolder;
+import im.threads.ui.holders.ImageFromConsultViewHolder;
+import im.threads.ui.holders.ImageFromUserViewHolder;
+import im.threads.ui.holders.QuickRepliesViewHolder;
+import im.threads.ui.holders.RatingStarsSentViewHolder;
+import im.threads.ui.holders.RatingStarsViewHolder;
+import im.threads.ui.holders.RatingThumbsSentViewHolder;
+import im.threads.ui.holders.RatingThumbsViewHolder;
+import im.threads.ui.holders.RequestResolveThreadViewHolder;
+import im.threads.ui.holders.ScheduleInfoViewHolder;
+import im.threads.ui.holders.SearchingConsultViewHolder;
+import im.threads.ui.holders.SpaceViewHolder;
+import im.threads.ui.holders.SystemMessageViewHolder;
+import im.threads.ui.holders.UnreadMessageViewHolder;
+import im.threads.ui.holders.UserFileViewHolder;
+import im.threads.ui.holders.UserPhraseViewHolder;
+import im.threads.ui.holders.VoiceMessageBaseHolder;
 import im.threads.internal.model.NoChatItem;
 import im.threads.ui.config.Config;
 import im.threads.ui.utils.ThreadRunnerKt;
@@ -114,14 +117,14 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     private final Handler viewHandler = new Handler(Looper.getMainLooper());
     private final ArrayList<ChatItem> list = new ArrayList<>();
-    @NonNull
-    private final Context ctx;
+
+    private Context ctx;
     @NonNull
     private final Callback mCallback;
-    @NonNull
-    private final ImageModifications.MaskedModification outgoingImageMaskTransformation;
-    @NonNull
-    private final ImageModifications.MaskedModification incomingImageMaskTransformation;
+
+    private ImageModifications.MaskedModification outgoingImageMaskTransformation;
+
+    private ImageModifications.MaskedModification incomingImageMaskTransformation;
     @NonNull
     private final FileDescriptionMediaPlayer fdMediaPlayer;
     @NonNull
@@ -138,21 +141,13 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private VoiceMessageBaseHolder playingHolder = null;
 
     public ChatAdapter(
-            @NonNull Context ctx,
             @NonNull Callback callback,
             @NonNull FileDescriptionMediaPlayer fdMediaPlayer,
             @NonNull MediaMetadataRetriever mediaMetadataRetriever) {
-        this.ctx = ctx;
         this.mCallback = callback;
         this.fdMediaPlayer = fdMediaPlayer;
         this.mediaMetadataRetriever = mediaMetadataRetriever;
-        ChatStyle style = Config.getInstance().getChatStyle();
-        this.outgoingImageMaskTransformation = new ImageModifications.MaskedModification(
-                ctx.getResources().getDrawable(style.outgoingImageBubbleMask)
-        );
-        this.incomingImageMaskTransformation = new ImageModifications.MaskedModification(
-                ctx.getResources().getDrawable(style.incomingImageBubbleMask)
-        );
+
         clientNotificationDisplayType = PrefUtilsUi.getClientNotificationDisplayType();
         currentThreadId = PrefUtilsBase.getThreadId();
     }
@@ -193,9 +188,22 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
     }
 
+    private void setupMaskTransformations() {
+        if (outgoingImageMaskTransformation == null || incomingImageMaskTransformation == null) {
+            ChatStyle style = Config.getInstance().getChatStyle();
+            outgoingImageMaskTransformation = new ImageModifications.MaskedModification(
+                    Objects.requireNonNull(ContextCompat.getDrawable(ctx, style.outgoingImageBubbleMask))
+            );
+            incomingImageMaskTransformation = new ImageModifications.MaskedModification(
+                    Objects.requireNonNull(ContextCompat.getDrawable(ctx, style.incomingImageBubbleMask))
+            );
+        }
+    }
+
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull final ViewGroup parent, final int viewType) {
+        ctx = parent.getContext();
         switch (viewType) {
             case TYPE_CONSULT_TYPING:
                 return new ConsultIsTypingViewHolderNew(parent);
@@ -208,7 +216,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             case TYPE_CONSULT_PHRASE:
                 return new ConsultPhraseHolder(parent, highlightingStream);
             case TYPE_USER_PHRASE:
-                return new UserPhraseViewHolder(parent, highlightingStream);
+                return new UserPhraseViewHolder(parent, highlightingStream, fdMediaPlayer);
             case TYPE_FREE_SPACE:
                 return new SpaceViewHolder(parent);
             case TYPE_IMAGE_FROM_CONSULT:
@@ -234,7 +242,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             case TYPE_REQ_RESOLVE_THREAD:
                 return new RequestResolveThreadViewHolder(parent);
             case TYPE_VOICE_MESSAGE_FROM_CONSULT:
-                return new ConsultVoiceMessageViewHolder(parent, highlightingStream);
+                return new ConsultVoiceMessageViewHolder(parent, highlightingStream, fdMediaPlayer);
             case TYPE_QUICK_REPLIES:
                 return new QuickRepliesViewHolder(parent);
             default:
@@ -244,6 +252,8 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     @Override
     public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position) {
+        setupMaskTransformations();
+
         if (holder instanceof SystemMessageViewHolder) {
             bindSystemMessageVH((SystemMessageViewHolder) holder, (SystemMessage) list.get(position));
         }
@@ -579,6 +589,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
         ArrayList<ChatItem> newList = new ArrayList<>(list);
         ChatMessagesOrderer.addAndOrder(newList, items, clientNotificationDisplayType, currentThreadId);
+        newList = removeSurveyIfNotLatest(newList);
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new ChatDiffCallback(list, newList));
         list.clear();
         list.addAll(newList);
@@ -745,6 +756,21 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         });
     }
 
+    private void onVoiceMessagePlayClick(VoiceMessageBaseHolder holder) {
+        if (holder.getFileDescription() == null) {
+            return;
+        }
+        if (holder.getFileDescription().getFileUri() == null) {
+            fdMediaPlayer.setClickedDownloadPath(holder.getFileDescription().getDownloadPath());
+            holder.startLoader();
+            FileDownloadWorker.startDownloadFD(ctx, holder.getFileDescription());
+        } else {
+            fdMediaPlayer.clearClickedDownloadPath();
+            holder.stopLoader();
+            fdMediaPlayer.processPlayPause(holder.getFileDescription());
+        }
+    }
+
     private void bindSystemMessageVH(@NonNull final SystemMessageViewHolder holder, SystemMessage sm) {
         holder.onBind(
                 sm,
@@ -795,9 +821,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     }
                 },
                 v -> {
-                    if (holder.getFileDescription() != null) {
-                        fdMediaPlayer.processPlayPause(holder.getFileDescription());
-                    }
+                    onVoiceMessagePlayClick(holder);
                 },
                 v -> mCallback.onUserPhraseClick(userPhrase, holder.getAdapterPosition()),
                 (slider, value, fromUser) -> {
@@ -829,7 +853,11 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         if (ObjectsCompat.equals(holder.getFileDescription(), fdMediaPlayer.getFileDescription())) {
             MediaPlayer mediaPlayer = fdMediaPlayer.getMediaPlayer();
             if (mediaPlayer != null) {
-                holder.init(mediaPlayer.getDuration(), mediaPlayer.getCurrentPosition(), mediaPlayer.isPlaying());
+                int duration = fdMediaPlayer.getDuration();
+                int currentPosition = mediaPlayer.getCurrentPosition();
+                if (currentPosition < 0) currentPosition = 0;
+
+                holder.init(duration, currentPosition, mediaPlayer.isPlaying());
             }
             playingHolder = holder;
         } else {
@@ -921,9 +949,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 },
                 v -> mCallback.onConsultAvatarClick(consultPhrase.getConsultId()),
                 v -> {
-                    if (holder.getFileDescription() != null) {
-                        fdMediaPlayer.processPlayPause(holder.getFileDescription());
-                    }
+                    onVoiceMessagePlayClick(holder);
                 },
                 (slider, value, fromUser) -> {
                     if (fromUser) {
@@ -1002,6 +1028,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
     }
 
+
     @Nullable
     private ChatItem findByFileDescription(FileDescription fileDescription) {
         for (ChatItem chatPhrase : list) {
@@ -1034,6 +1061,18 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             notifyItemRemoved(index);
             list.remove(index);
         }
+    }
+
+    private ArrayList<ChatItem> removeSurveyIfNotLatest(ArrayList<ChatItem> list)  {
+        boolean isListSizeMoreThat1Element = list != null && list.size() > 1;
+        boolean isPreviousItemSurvey = isListSizeMoreThat1Element &&
+                list.get(list.size() - 2) instanceof Survey;
+
+        if (isPreviousItemSurvey) {
+            list.remove(list.size() - 2);
+        }
+
+        return list;
     }
 
     public interface Callback {
@@ -1127,20 +1166,6 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 items.remove(sc);
                 items.add(sc);
             }
-            /*boolean hasUnread = false;
-            for (final ChatItem ci : items) {
-                if (ci instanceof ConsultPhrase) {
-                    if (!((ConsultPhrase) ci).isRead()) {
-                        hasUnread = true;
-                    }
-                }
-            }
-            if (hasUnread) {
-                final long lastUnreadStamp = getLastUnreadStamp(items);
-                final int counter = getUnreadCount(items);
-                removeUnreadMessagesTitle(items);
-                items.add(new UnreadMessages(lastUnreadStamp - 1, counter));
-            }*/
             Collections.sort(items, (lhs, rhs) -> Long.compare(lhs.getTimeStamp(), rhs.getTimeStamp()));
             boolean isWithTyping = false;
             ConsultTyping ct = null;

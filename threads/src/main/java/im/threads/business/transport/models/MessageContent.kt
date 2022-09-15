@@ -7,6 +7,7 @@ import java.util.Date
 data class MessageContent(
     val uuid: String? = null,
     val text: String? = null,
+    val speechText: String? = null,
     val formattedText: String? = null,
     val receivedDate: Date? = null,
     val threadId: Long? = null,

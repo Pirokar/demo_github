@@ -14,7 +14,7 @@ import java.util.List;
 import im.threads.R;
 import im.threads.business.config.BaseConfig;
 import im.threads.business.utils.FileUtils;
-import im.threads.internal.holders.BottomGalleryImageHolder;
+import im.threads.ui.holders.BottomGalleryImageHolder;
 import im.threads.ui.config.Config;
 import im.threads.ui.models.BottomGalleryItem;
 import im.threads.ui.utils.FileHelper;
