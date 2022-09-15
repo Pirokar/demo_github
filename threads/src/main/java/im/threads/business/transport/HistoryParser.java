@@ -45,7 +45,7 @@ public final class HistoryParser {
             List<MessageFromHistory> responseList = response.getMessages();
             if (responseList != null) {
                 list = getChatItems(responseList);
-                HistoryLoader.setupLastItemIdFromHistory(responseList);
+                HistoryLoader.INSTANCE.setupLastItemIdFromHistory(responseList);
             }
         }
         return list;
