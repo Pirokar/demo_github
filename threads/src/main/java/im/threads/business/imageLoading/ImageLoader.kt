@@ -73,8 +73,9 @@ class ImageLoader private constructor() {
      * Указывает модификации (трансформации), которые будут применены последовательно к изображению
      * @param modifications укажите через запятую необходимые модификации
      */
-    fun modifications(vararg modifications: ImageModifications): ImageLoader {
-        config.modifications = modifications
+    fun modifications(vararg modifications: ImageModifications?): ImageLoader {
+        val filteredModifications = modifications.filterNotNull().toTypedArray()
+        config.modifications = if (filteredModifications.isEmpty()) null else filteredModifications
         return this
     }
 
