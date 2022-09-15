@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import im.threads.R;
-import im.threads.internal.holders.GalleryItemHolder;
+import im.threads.ui.holders.GalleryItemHolder;
 import im.threads.internal.model.MediaPhoto;
 import im.threads.ui.config.Config;
 

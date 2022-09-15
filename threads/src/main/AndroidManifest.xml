@@ -58,7 +58,7 @@
             android:theme="@style/Transparent"/>
 
         <provider
-            android:name=".internal.utils.ThreadsFileProvider"
+            android:name=".business.utils.ThreadsFileProvider"
             android:authorities="${applicationId}.im.threads.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">

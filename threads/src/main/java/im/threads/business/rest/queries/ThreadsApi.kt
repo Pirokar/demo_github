@@ -35,7 +35,7 @@ class ThreadsApi(
                 beforeDate,
                 count,
                 version,
-                OldThreadsBackendApi.API_VERSION
+                API_VERSION
             )
         }
     }
@@ -53,6 +53,8 @@ class ThreadsApi(
     }
 
     companion object {
+        const val API_VERSION = "14"
+        const val REST_TAG = "RestQuery"
         private const val SIGNATURE_STRING = "super-duper-signature-string:"
     }
 }

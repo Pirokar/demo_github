@@ -90,14 +90,17 @@ class ThreadsGateTransport(
                 HttpLoggingInterceptor()
                     .setLevel(HttpLoggingInterceptor.Level.BODY)
             )
-            httpClientBuilder.addInterceptor(SSLCertificateInterceptor())
         }
         if (sslSocketFactoryConfig != null) {
+            if (isDebugLoggingEnabled) {
+                httpClientBuilder.addInterceptor(SSLCertificateInterceptor())
+            }
+
             httpClientBuilder.sslSocketFactory(
                 sslSocketFactoryConfig.sslSocketFactory,
                 sslSocketFactoryConfig.trustManager
             )
-            httpClientBuilder.hostnameVerifier { hostname: String, session: SSLSession -> true }
+            httpClientBuilder.hostnameVerifier { _: String, _: SSLSession -> true }
         }
         client = httpClientBuilder.build()
         request = Request.Builder()

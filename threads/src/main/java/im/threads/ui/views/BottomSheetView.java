@@ -18,9 +18,9 @@ import java.util.Arrays;
 
 import im.threads.ChatStyle;
 import im.threads.R;
-import im.threads.ui.utils.ColorsHelper;
-import im.threads.internal.utils.ViewUtils;
 import im.threads.ui.config.Config;
+import im.threads.ui.utils.ColorsHelper;
+import im.threads.ui.utils.ViewUtils;
 
 public final class BottomSheetView extends LinearLayout {
     private ButtonsListener buttonsListener;
@@ -29,6 +29,7 @@ public final class BottomSheetView extends LinearLayout {
     private Button gallery;
     private Button send;
     private ChatStyle chatStyle = Config.getInstance().getChatStyle();
+    private ViewUtils viewUtils = new ViewUtils();
 
     public BottomSheetView(Context context) {
         super(context);
@@ -68,25 +69,25 @@ public final class BottomSheetView extends LinearLayout {
     private void init() {
         ((LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.view_bottom_attachment_sheet, this, true);
         camera = findViewById(R.id.camera);
-        ViewUtils.setCompoundDrawablesWithIntrinsicBoundsCompat(camera,
+        viewUtils.setCompoundDrawablesWithIntrinsicBoundsCompat(camera,
                 chatStyle.attachmentCameraIconResId, ViewUtils.DrawablePosition.TOP);
         camera.setOnClickListener(v -> {
             if (null != buttonsListener) buttonsListener.onCameraClick();
         });
         gallery = findViewById(R.id.gallery);
-        ViewUtils.setCompoundDrawablesWithIntrinsicBoundsCompat(gallery,
+        viewUtils.setCompoundDrawablesWithIntrinsicBoundsCompat(gallery,
                 chatStyle.attachmentGalleryIconResId, ViewUtils.DrawablePosition.TOP);
         gallery.setOnClickListener(v -> {
             if (null != buttonsListener) buttonsListener.onGalleryClick();
         });
         file = findViewById(R.id.file);
-        ViewUtils.setCompoundDrawablesWithIntrinsicBoundsCompat(file,
+        viewUtils.setCompoundDrawablesWithIntrinsicBoundsCompat(file,
                 chatStyle.attachmentFileIconResId, ViewUtils.DrawablePosition.TOP);
         file.setOnClickListener(v -> {
             if (null != buttonsListener) buttonsListener.onFilePickerClick();
         });
         send = findViewById(R.id.send);
-        ViewUtils.setCompoundDrawablesWithIntrinsicBoundsCompat(send,
+        viewUtils.setCompoundDrawablesWithIntrinsicBoundsCompat(send,
                 chatStyle.attachmentSendIconResId, ViewUtils.DrawablePosition.TOP);
         send.setOnClickListener(v -> {
             if (buttonsListener != null) {

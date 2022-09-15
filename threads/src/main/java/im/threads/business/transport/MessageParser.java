@@ -167,7 +167,14 @@ public final class MessageParser {
         if (content.getText() == null && content.getAttachments() == null && content.getQuotes() == null) {
             return null;
         }
-        String phrase = content.getText() != null ? content.getText() : shortMessage;
+        String phrase;
+        if (content.getText() != null) {
+            phrase = content.getText();
+        } else if (content.getSpeechText() != null) {
+            phrase = content.getSpeechText();
+        } else {
+            phrase = shortMessage;
+        }
         Quote quote = null;
         if (content.getQuotes() != null) {
             quote = getQuote(content.getQuotes());

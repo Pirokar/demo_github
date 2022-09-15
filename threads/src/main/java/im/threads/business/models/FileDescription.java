@@ -9,6 +9,7 @@ import androidx.core.util.ObjectsCompat;
 
 import im.threads.business.models.enums.AttachmentStateEnum;
 import im.threads.business.models.enums.ErrorStateEnum;
+import io.reactivex.subjects.PublishSubject;
 
 public final class FileDescription implements Parcelable {
     public static final Parcelable.Creator<FileDescription> CREATOR = new Creator<>() {
@@ -43,6 +44,7 @@ public final class FileDescription implements Parcelable {
             return new FileDescription[size];
         }
     };
+    private static final PublishSubject<FileDescriptionUri> onCompleteSubject = PublishSubject.create();
     private long size;
     private String from;
     private Uri fileUri;
@@ -169,6 +171,10 @@ public final class FileDescription implements Parcelable {
 
     public void setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
+    }
+
+    public PublishSubject<FileDescriptionUri> getOnCompleteSubject() {
+        return onCompleteSubject;
     }
 
     @Override

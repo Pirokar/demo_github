@@ -11,6 +11,7 @@ import im.threads.android.databinding.ActivityWebviewBinding
 import im.threads.ui.activities.BaseActivity
 import im.threads.ui.config.Config
 import im.threads.ui.utils.ColorsHelper
+import java.lang.ref.WeakReference
 
 /**
  * Активность для открытия ссылок вида : webview://www.mail.ru
@@ -56,7 +57,7 @@ class WebViewActivity : BaseActivity() {
         )
 
         ColorsHelper.setStatusBarColor(
-            this,
+            WeakReference(this),
             chatStyle.chatStatusBarColorResId,
             chatStyle.windowLightStatusBarResId
         )
