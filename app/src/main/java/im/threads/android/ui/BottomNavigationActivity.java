@@ -23,6 +23,7 @@ import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.lang.ref.WeakReference;
 import java.util.concurrent.TimeUnit;
 
 import im.threads.ChatStyle;
@@ -162,7 +163,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
         bottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         ChatStyle style = ChatStyleBuilderHelper.getChatStyle(chatDesign);
-        ColorsHelper.setStatusBarColor(this, style.chatStatusBarColorResId, style.windowLightStatusBarResId);
+        ColorsHelper.setStatusBarColor(new WeakReference<>(this), style.chatStatusBarColorResId, style.windowLightStatusBarResId);
 
         int checkedColor;
         if (style.chatBodyIconsTint != 0) {
@@ -214,7 +215,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(@NonNull Menu menu) {
         getMenuInflater().inflate(R.menu.login, menu);
         return true;
     }
@@ -298,7 +299,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
         final ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             ChatStyle style = ChatStyleBuilderHelper.getChatStyle(chatDesign);
-            actionBar.setBackgroundDrawable(getResources().getDrawable(style.chatToolbarColorResId));
+            actionBar.setBackgroundDrawable(ContextCompat.getDrawable(getBaseContext(), style.chatToolbarColorResId));
             Spannable text = new SpannableString(actionBar.getTitle());
             text.setSpan(new ForegroundColorSpan(getResources().getColor(style.chatToolbarTextColorResId)), 0, text.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
             actionBar.setTitle(text);

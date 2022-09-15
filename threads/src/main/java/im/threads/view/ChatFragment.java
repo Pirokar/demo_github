@@ -62,6 +62,7 @@ import com.google.android.material.slider.Slider;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -238,7 +239,7 @@ public final class ChatFragment extends BaseFragment implements
 
         // Статус бар подкрашивается только при использовании чата в стандартном Activity.
         if (activity instanceof ChatActivity) {
-            ColorsHelper.setStatusBarColor(activity, style.chatStatusBarColorResId, style.windowLightStatusBarResId);
+            ColorsHelper.setStatusBarColor(new WeakReference<>(activity), style.chatStatusBarColorResId, style.windowLightStatusBarResId);
         }
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_chat, container, false);
@@ -296,7 +297,6 @@ public final class ChatFragment extends BaseFragment implements
     public void onDestroyView() {
         LoggerEdna.info(ChatFragment.class.getSimpleName() + " onDestroyView.");
 
-        super.onDestroyView();
         if (fdMediaPlayer != null) {
             fdMediaPlayer.release();
             fdMediaPlayer = null;
@@ -307,6 +307,8 @@ public final class ChatFragment extends BaseFragment implements
             activity.unregisterReceiver(mChatReceiver);
         }
         chatIsShown = false;
+
+        super.onDestroyView();
     }
 
     @Override
@@ -341,7 +343,7 @@ public final class ChatFragment extends BaseFragment implements
         mQuoteLayoutHolder = new QuoteLayoutHolder();
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(activity);
         binding.recycler.setLayoutManager(mLayoutManager);
-        chatAdapter = new ChatAdapter(activity, chatAdapterCallback, fdMediaPlayer, mediaMetadataRetriever);
+        chatAdapter = new ChatAdapter(chatAdapterCallback, fdMediaPlayer, mediaMetadataRetriever);
         RecyclerView.ItemAnimator itemAnimator = binding.recycler.getItemAnimator();
         if (itemAnimator != null) {
             itemAnimator.setChangeDuration(0);
@@ -1833,7 +1835,7 @@ public final class ChatFragment extends BaseFragment implements
             if (fdMediaPlayer == null) {
                 return;
             }
-            chatAdapter = new ChatAdapter(activity, chatAdapterCallback, fdMediaPlayer, mediaMetadataRetriever);
+            chatAdapter = new ChatAdapter(chatAdapterCallback, fdMediaPlayer, mediaMetadataRetriever);
             binding.recycler.setAdapter(chatAdapter);
             setTitleStateDefault();
             welcomeScreenVisibility(false);

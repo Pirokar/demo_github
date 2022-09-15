@@ -31,13 +31,13 @@ import im.threads.business.utils.FileUtils
 import im.threads.business.utils.FileUtils.isImage
 import im.threads.business.utils.UrlUtils
 import im.threads.business.utils.toFileSize
-import im.threads.ui.utils.ViewUtils
 import im.threads.ui.utils.invisible
 import im.threads.ui.utils.visible
 import im.threads.ui.views.CircularProgressButton
 import im.threads.ui.widget.textView.BubbleMessageTextView
 import im.threads.ui.widget.textView.BubbleTimeTextView
 import io.reactivex.subjects.PublishSubject
+import java.lang.ref.WeakReference
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -151,8 +151,14 @@ class ConsultPhraseHolder(parent: ViewGroup, highlightingStream: PublishSubject<
         onAvatarClickListener: View.OnClickListener
     ) {
         subscribeForHighlighting(consultPhrase, rootLayout)
-        subscribeForOpenGraphData(OGDataContent(ogDataLayout, timeStampTextView, consultPhrase.phraseText))
-        ViewUtils.setClickListener(itemView as ViewGroup, onRowLongClickListener)
+        subscribeForOpenGraphData(
+            OGDataContent(
+                WeakReference(ogDataLayout),
+                WeakReference(timeStampTextView),
+                consultPhrase.phraseText
+            )
+        )
+        viewUtils.setClickListener(itemView as ViewGroup, onRowLongClickListener)
         val timeText = timeStampSdf.format(Date(consultPhrase.timeStamp))
         timeStampTextView.text = timeText
         ogTimestamp.text = timeText
@@ -264,7 +270,7 @@ class ConsultPhraseHolder(parent: ViewGroup, highlightingStream: PublishSubject<
         rightTextDescription.text = quote.text
         rightTextFileStamp.text = itemView.context
             .getString(R.string.threads_sent_at, quoteSdf.format(Date(quote.timeStamp)))
-        ViewUtils.setClickListener(fileRow as ViewGroup, onQuoteClickListener)
+        viewUtils.setClickListener(fileRow as ViewGroup, onQuoteClickListener)
         val quoteFileDescription = quote.fileDescription
         if (quoteFileDescription != null) {
             if (FileUtils.isVoiceMessage(quoteFileDescription)) {
