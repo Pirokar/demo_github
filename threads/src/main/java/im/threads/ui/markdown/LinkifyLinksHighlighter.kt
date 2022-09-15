@@ -9,7 +9,7 @@ import android.text.util.Linkify.EMAIL_ADDRESSES
 import android.text.util.Linkify.PHONE_NUMBERS
 import android.text.util.Linkify.WEB_URLS
 import android.widget.TextView
-import im.threads.internal.utils.UrlUtils
+import im.threads.business.utils.UrlUtils
 
 class LinkifyLinksHighlighter : LinksHighlighter {
     override fun highlightAllTypeOfLinks(textView: TextView, isUnderlined: Boolean) {

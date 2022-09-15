@@ -7,7 +7,7 @@ import android.text.style.URLSpan
 import android.text.util.Linkify
 import androidx.annotation.IntDef
 import androidx.core.text.util.LinkifyCompat
-import im.threads.internal.utils.UrlUtils
+import im.threads.business.utils.UrlUtils
 import io.noties.markwon.AbstractMarkwonPlugin
 import io.noties.markwon.MarkwonPlugin
 import io.noties.markwon.MarkwonVisitor
