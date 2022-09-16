@@ -15,17 +15,22 @@ data class ConsultInfo(
 ) : Parcelable {
 
     override fun toString(): String {
-        return """ConsultInfo{name='$name', id=$id, status='$status', organizationUnit='$organizationUnit', photoUrl='$photoUrl', role='$role'}"""
+        return """ConsultInfo{" +
+                "name='$name', " +
+                "id=$id," +
+                " status='$status'," +
+                " organizationUnit='$organizationUnit'," +
+                " photoUrl='$photoUrl'," +
+                " role='$role'}"""
     }
 
     fun toJson(): JsonObject {
-        val jsonObject = JsonObject().apply {
+        return JsonObject().apply {
             addProperty("name", name)
             addProperty("status", status)
             addProperty("id", id)
             addProperty("photoUrl", photoUrl)
             addProperty("role", role)
         }
-        return jsonObject
     }
 }
