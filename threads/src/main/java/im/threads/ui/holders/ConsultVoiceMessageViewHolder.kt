@@ -8,10 +8,9 @@ import android.view.View.OnLongClickListener
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import com.google.android.material.slider.Slider
@@ -52,7 +51,7 @@ class ConsultVoiceMessageViewHolder(
 
     private val errorTextView: TextView = itemView.findViewById(R.id.errorText)
     private val loader: ImageView = itemView.findViewById(R.id.loader)
-    private val rootLayout: LinearLayout = itemView.findViewById(R.id.rootLayout)
+    private val rootLayout: ConstraintLayout = itemView.findViewById(R.id.rootLayout)
 
     private val phraseTextView =
         itemView.findViewById<QuoteMessageTextView>(R.id.voiceMessageConsultText).apply {
@@ -66,9 +65,8 @@ class ConsultVoiceMessageViewHolder(
                 PorterDuff.Mode.SRC_ATOP
             )
         }
-    private val fileSizeTextView: TextView = itemView.findViewById(R.id.file_size)
-    private val audioStatusTextView: TextView =
-        itemView.findViewById(R.id.voiceMessageConsultAudioStatus)
+    private val fileSizeTextView: TextView = itemView.findViewById(R.id.fileSize)
+    private val audioStatusTextView: TextView = itemView.findViewById(R.id.voiceMessageConsultAudioStatus)
 
     private val timeStampTextView =
         itemView.findViewById<TextView>(R.id.timeStamp).apply {
@@ -113,7 +111,7 @@ class ConsultVoiceMessageViewHolder(
                 bubbleLeftMarginDp,
                 itemView.resources.displayMetrics
             ).toInt()
-            val lp = layoutParams as RelativeLayout.LayoutParams
+            val lp = layoutParams as ConstraintLayout.LayoutParams
             lp.setMargins(bubbleLeftMarginPx, lp.topMargin, lp.rightMargin, lp.bottomMargin)
             layoutParams = lp
         }
@@ -225,7 +223,7 @@ class ConsultVoiceMessageViewHolder(
 
     private fun showLoaderLayout(fileDescription: FileDescription) {
         loader.visible()
-        buttonPlayPause.gone()
+        buttonPlayPause.invisible()
         errorTextView.gone()
         audioStatusTextView.text = fileDescription.incomingName
         initAnimation(loader, true)
@@ -234,7 +232,7 @@ class ConsultVoiceMessageViewHolder(
     private fun showErrorLayout(fileDescription: FileDescription) {
         loader.visible()
         errorTextView.visible()
-        buttonPlayPause.gone()
+        buttonPlayPause.invisible()
         loader.setImageResource(getErrorImageResByErrorCode(fileDescription.errorCode))
         audioStatusTextView.text = fileDescription.incomingName
         val errorString = getString(getErrorStringResByErrorCode(fileDescription.errorCode))
@@ -251,8 +249,9 @@ class ConsultVoiceMessageViewHolder(
             SpeechStatus.SUCCESS -> {
                 buttonPlayPause.isClickable = true
                 buttonPlayPause.alpha = 1f
-                audioStatusTextView.gone()
+                audioStatusTextView.invisible()
                 fileSizeTextView.visible()
+                timeStampTextView.visible()
                 slider.isEnabled = true
                 slider.setLabelFormatter(VoiceTimeLabelFormatter())
             }
@@ -260,7 +259,8 @@ class ConsultVoiceMessageViewHolder(
                 buttonPlayPause.isClickable = false
                 buttonPlayPause.alpha = 0.3f
                 audioStatusTextView.visible()
-                fileSizeTextView.gone()
+                fileSizeTextView.invisible()
+                timeStampTextView.invisible()
                 slider.isEnabled = false
                 audioStatusTextView.setText(R.string.threads_voice_message_is_processing)
             }
@@ -268,7 +268,8 @@ class ConsultVoiceMessageViewHolder(
                 buttonPlayPause.isClickable = false
                 buttonPlayPause.alpha = 0.3f
                 audioStatusTextView.visible()
-                fileSizeTextView.gone()
+                fileSizeTextView.invisible()
+                timeStampTextView.invisible()
                 slider.isEnabled = false
                 audioStatusTextView.setText(R.string.threads_voice_message_error)
             }
