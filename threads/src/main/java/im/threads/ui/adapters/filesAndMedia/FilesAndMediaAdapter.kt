@@ -1,5 +1,6 @@
 package im.threads.ui.adapters.filesAndMedia
 
+import android.annotation.SuppressLint
 import android.view.ViewGroup
 import androidx.core.util.ObjectsCompat
 import androidx.recyclerview.widget.DiffUtil
@@ -75,15 +76,18 @@ internal class FilesAndMediaAdapter(
     /**
      * Очищает текущий список, предварительно создавая его бэкап
      */
+    @SuppressLint("NotifyDataSetChanged")
     fun backupAndClear() {
         backup = ArrayList(list)
         list.clear()
+        notifyDataSetChanged()
     }
 
     /**
      * Фильтрует список по заданному параметру
      * @param filter строка для фильтрации
      */
+    @SuppressLint("NotifyDataSetChanged")
     fun filter(filter: String?) {
         var filter = filter
         if (filter == null) filter = ""
@@ -111,14 +115,17 @@ internal class FilesAndMediaAdapter(
         }
 
         updateWithDiffUtil { addItems(filteredItems) }
+        notifyDataSetChanged()
     }
 
     /**
      * Восстанавливает список из бэкапа
      */
+    @SuppressLint("NotifyDataSetChanged")
     fun undoClear() {
         updateWithDiffUtil { list = ArrayList(backup) }
         backup.clear()
+        notifyDataSetChanged()
     }
 
     /**
