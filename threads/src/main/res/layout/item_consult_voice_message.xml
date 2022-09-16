@@ -95,13 +95,15 @@
 
         <im.threads.ui.widget.textView.BubbleTimeTextView
             android:id="@+id/timeStamp"
-            style="@style/timestamp"
-            android:layout_marginEnd="15dp"
-            android:textSize="@dimen/text_small"
-            android:textColor="@color/threads_operator_message_timestamp"
-            app:layout_constraintTop_toTopOf="@id/fileSize"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="@id/voiceMessageConsultSlider"
-            android:layout_alignParentEnd="true"
+            app:layout_constraintTop_toBottomOf="@id/voiceMessageConsultText"
+            android:drawablePadding="@dimen/margin_half"
+            android:paddingStart="0dp"
+            android:paddingEnd="@dimen/margin_half"
+            android:paddingBottom="@dimen/margin_half"
+            android:textColor="@color/threads_user_message_timestamp"
             tools:text="10:19" />
 
         <im.threads.ui.widget.textView.QuoteMessageTextView
@@ -122,7 +124,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="@id/voiceMessageConsultButtonPlayPause"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/timeStamp"
             app:layout_constraintTop_toBottomOf="@id/voiceMessageConsultText"
             android:textColor="@color/threads_error_red_df0000"
             android:textSize="@dimen/error_text_size"
