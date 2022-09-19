@@ -1144,10 +1144,8 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             }
             sortItemsByTimeStamp(items);
             removeAllSpacings(items);
-            if (!items.isEmpty() && items.size() > 1) {
-                for (int i = 1; i < items.size(); i++) {
-                    updateConsultAvatarIfNeed(items.get(i - 1), items.get(i));
-                }
+            for (int i = 1; i < items.size(); i++) {
+                updateConsultAvatarIfNeed(items.get(i - 1), items.get(i));
             }
             insertSpacing(items);
         }
