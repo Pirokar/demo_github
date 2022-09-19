@@ -1,4 +1,4 @@
-package im.threads.view
+package im.threads.business.annotation
 
 import androidx.annotation.IntDef
 

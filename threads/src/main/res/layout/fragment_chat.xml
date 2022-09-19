@@ -10,7 +10,7 @@
             type="androidx.databinding.ObservableField&lt;String>" />
     </data>
 
-    <im.threads.view.InterceptTouchFrameLayout
+    <im.threads.ui.views.InterceptTouchFrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -478,5 +478,5 @@
             </LinearLayout>
 
         </RelativeLayout>
-    </im.threads.view.InterceptTouchFrameLayout>
+    </im.threads.ui.views.InterceptTouchFrameLayout>
 </layout>

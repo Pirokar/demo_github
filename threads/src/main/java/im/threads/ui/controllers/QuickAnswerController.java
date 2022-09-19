@@ -1,4 +1,4 @@
-package im.threads.internal.controllers;
+package im.threads.ui.controllers;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
