@@ -15,13 +15,15 @@ data class ConsultInfo(
 ) : Parcelable {
 
     override fun toString(): String {
-        return """ConsultInfo{" +
-                "name='$name', " +
-                "id=$id," +
-                " status='$status'," +
-                " organizationUnit='$organizationUnit'," +
-                " photoUrl='$photoUrl'," +
-                " role='$role'}"""
+        return """ConsultInfo{
+            name='$name',
+            id=$id,
+            status='$status',
+            organizationUnit='$organizationUnit',
+            photoUrl='$photoUrl',
+            role='$role'
+            }
+        """.trim()
     }
 
     fun toJson(): JsonObject {
