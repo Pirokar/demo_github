@@ -70,6 +70,11 @@ internal class FilesAndMediaAdapter(
         } else super.getItemViewType(position)
     }
 
+    /**
+     * Проверяет количество элементов в списке на пустоту
+     */
+    fun isNotEmpty() = itemCount > 0
+
     /** Очищает текущий список, предварительно создавая его бэкап */
     fun backupAndClear() {
         backup = ArrayList(list)
@@ -81,10 +86,9 @@ internal class FilesAndMediaAdapter(
      *
      * @param filter строка для фильтрации
      */
-    fun filter(filter: String?) {
+    inline fun filter(filter: String?, onFiltered: () -> Unit) {
         var filter = filter
         if (filter == null) filter = ""
-        updateWithDiffUtil { list.clear() }
         val filteredItems = ArrayList<FileDescription>()
         for (item in backup) {
             if (item is FileAndMediaItem) {
@@ -107,7 +111,10 @@ internal class FilesAndMediaAdapter(
             }
         }
 
-        updateWithDiffUtil { addItems(filteredItems) }
+        updateWithDiffUtil {
+            list = getMediaAndFileItems(filteredItems)
+        }
+        onFiltered()
     }
 
     /** Восстанавливает список из бэкапа */
@@ -160,27 +167,31 @@ internal class FilesAndMediaAdapter(
     }
 
     private fun addItems(fileDescriptionList: List<FileDescription?>) {
-        if (fileDescriptionList.isEmpty()) return
+        list.addAll(getMediaAndFileItems(fileDescriptionList))
+    }
+
+    private fun getMediaAndFileItems(fileDescriptionList: List<FileDescription?>): ArrayList<MediaAndFileItem> {
+        val result = ArrayList<MediaAndFileItem>()
+        if (fileDescriptionList.isEmpty()) return result
+
         val current = Calendar.getInstance()
         val prev = Calendar.getInstance()
-        if (list.isEmpty()) {
-            fileDescriptionList[0]?.let { fd ->
-                list.add(DateRow(fd.timeStamp))
-                list.add(
-                    FileAndMediaItem(
-                        fd,
-                        if (fd.fileUri != null) getFileName(
-                            fd.fileUri!!
-                        ) else ""
-                    )
+        fileDescriptionList[0]?.let { fd ->
+            result.add(DateRow(fd.timeStamp))
+            result.add(
+                FileAndMediaItem(
+                    fd,
+                    if (fd.fileUri != null) getFileName(
+                        fd.fileUri!!
+                    ) else ""
                 )
-            }
+            )
         }
         for (i in 1 until fileDescriptionList.size) {
             fileDescriptionList[i]?.let { fd ->
                 current.timeInMillis = fd.timeStamp
                 prev.timeInMillis = fileDescriptionList[i - 1]?.timeStamp ?: 0L
-                list.add(
+                result.add(
                     FileAndMediaItem(
                         fd,
                         if (fd.fileUri != null) getFileName(
@@ -189,10 +200,12 @@ internal class FilesAndMediaAdapter(
                     )
                 )
                 if (current[Calendar.DAY_OF_YEAR] != prev[Calendar.DAY_OF_YEAR]) {
-                    list.add(DateRow(fd.timeStamp))
+                    result.add(DateRow(fd.timeStamp))
                 }
             }
         }
+
+        return result
     }
 
     private inline fun updateWithDiffUtil(changeItems: () -> Unit) {
