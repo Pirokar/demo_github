@@ -1,6 +1,5 @@
 package im.threads.ui.adapters.filesAndMedia
 
-import android.annotation.SuppressLint
 import android.view.ViewGroup
 import androidx.core.util.ObjectsCompat
 import androidx.recyclerview.widget.DiffUtil
@@ -16,9 +15,7 @@ import im.threads.ui.holders.FilesDateStampHolder
 import java.util.Calendar
 import java.util.Locale
 
-/**
- * Адаптер для списка файлов, отправленных или полученных в чате
- */
+/** Адаптер для списка файлов, отправленных или полученных в чате */
 @Suppress("NAME_SHADOWING")
 internal class FilesAndMediaAdapter(
     filesList: List<FileDescription?>,
@@ -73,25 +70,21 @@ internal class FilesAndMediaAdapter(
         } else super.getItemViewType(position)
     }
 
-    /**
-     * Очищает текущий список, предварительно создавая его бэкап
-     */
-    @SuppressLint("NotifyDataSetChanged")
+    /** Очищает текущий список, предварительно создавая его бэкап */
     fun backupAndClear() {
         backup = ArrayList(list)
-        list.clear()
-        notifyDataSetChanged()
+        updateWithDiffUtil { list.clear() }
     }
 
     /**
      * Фильтрует список по заданному параметру
+     *
      * @param filter строка для фильтрации
      */
-    @SuppressLint("NotifyDataSetChanged")
     fun filter(filter: String?) {
         var filter = filter
         if (filter == null) filter = ""
-        list.clear()
+        updateWithDiffUtil { list.clear() }
         val filteredItems = ArrayList<FileDescription>()
         for (item in backup) {
             if (item is FileAndMediaItem) {
@@ -115,22 +108,19 @@ internal class FilesAndMediaAdapter(
         }
 
         updateWithDiffUtil { addItems(filteredItems) }
-        notifyDataSetChanged()
     }
 
-    /**
-     * Восстанавливает список из бэкапа
-     */
-    @SuppressLint("NotifyDataSetChanged")
+    /** Восстанавливает список из бэкапа */
     fun undoClear() {
         updateWithDiffUtil { list = ArrayList(backup) }
         backup.clear()
-        notifyDataSetChanged()
     }
 
     /**
      * Обновляет прогресс загрузки для файла
-     * @param fileDescription характеристики файла для обновление прогресса
+     *
+     * @param fileDescription характеристики файла для обновление
+     *     прогресса
      */
     fun updateProgress(fileDescription: FileDescription?) {
         for (i in list.indices) {
@@ -150,7 +140,9 @@ internal class FilesAndMediaAdapter(
 
     /**
      * Показывает ошибку загрузки для файла
-     * @param fileDescription характеристики файла для отображения ошибки
+     *
+     * @param fileDescription характеристики файла для отображения
+     *     ошибки
      */
     fun onDownloadError(fileDescription: FileDescription?) {
         for (i in list.indices) {
@@ -214,13 +206,17 @@ internal class FilesAndMediaAdapter(
     interface OnFileClick {
         /**
          * Описывает реакцию на нажатие
-         * @param fileDescription характеристики файла, на котором был произведен клик
+         *
+         * @param fileDescription характеристики файла, на котором был
+         *     произведен клик
          */
         fun onFileClick(fileDescription: FileDescription?)
 
         /**
          * Описывает реакцию на начало загрузки файла
-         * @param fileDescription характеристики файла, на котором был произведен клик
+         *
+         * @param fileDescription характеристики файла, на котором был
+         *     произведен клик
          */
         fun onDownloadFileClick(fileDescription: FileDescription?)
     }
