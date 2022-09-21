@@ -34,6 +34,9 @@ import im.threads.business.ogParser.OGDataContent
 import im.threads.business.utils.FileUtils
 import im.threads.business.utils.FileUtils.isImage
 import im.threads.business.utils.FileUtils.isVoiceMessage
+import im.threads.ui.utils.gone
+import im.threads.ui.utils.invisible
+import im.threads.ui.utils.visible
 import im.threads.ui.views.CircularProgressButton
 import im.threads.ui.views.VoiceTimeLabelFormatter
 import im.threads.ui.views.formatAsDuration
@@ -70,6 +73,7 @@ class UserPhraseViewHolder(
 
     private val rootLayout: RelativeLayout = itemView.findViewById(R.id.rootLayout)
     private val rightTextRow: TableRow = itemView.findViewById(R.id.rightTextRow)
+    private val imageContainer: FrameLayout = itemView.findViewById(R.id.imageContainer)
     private val image: ImageView = itemView.findViewById(R.id.image)
     private val rightTextDescription: TextView = itemView.findViewById(R.id.fileSpecs)
     private val quoteTextRow: TableRow = itemView.findViewById(R.id.quoteTextRow)
@@ -110,15 +114,7 @@ class UserPhraseViewHolder(
                 )
         }
 
-    private val timeStampTextView =
-        itemView.findViewById<BubbleTimeTextView>(R.id.timeStamp).apply {
-            setTextColor(getColorInt(style.outgoingMessageTimeColor))
-            if (style.outgoingMessageTimeTextSize > 0) {
-                val textSize =
-                    parentView.context.resources.getDimension(style.outgoingMessageTimeTextSize)
-                setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
-            }
-        }
+    private lateinit var timeStampTextView: BubbleTimeTextView
 
     init {
         itemView.findViewById<View>(R.id.bubble).apply {
@@ -170,6 +166,7 @@ class UserPhraseViewHolder(
         onLongClickListener: OnLongClickListener?,
         isChosen: Boolean
     ) {
+        initTimeStampView(userPhrase)
         subscribeForHighlighting(userPhrase, rootLayout)
         subscribeForOpenGraphData(
             OGDataContent(
@@ -200,15 +197,15 @@ class UserPhraseViewHolder(
         phrase?.let {
             showPhrase(it)
         } ?: run {
-            phraseTextView.isVisible = false
+            phraseTextView.gone()
         }
 
-        image.isVisible = false
-        quoteImage.isVisible = false
-        fileImageButton.isVisible = false
-        voiceMessage.isVisible = false
-        quoteTextRow.isVisible = false
-        rightTextRow.isVisible = false
+        imageContainer.gone()
+        quoteImage.gone()
+        fileImageButton.gone()
+        voiceMessage.gone()
+        quoteTextRow.gone()
+        rightTextRow.gone()
         showFiles(userPhrase, imageClickListener, fileClickListener)
         quote?.let { showQuote(it, onQuoteClickListener) }
             ?: campaignMessage?.let { showCampaign(it) }
@@ -222,7 +219,7 @@ class UserPhraseViewHolder(
     }
 
     private fun showPhrase(phrase: String) {
-        phraseTextView.isVisible = true
+        phraseTextView.visible()
         phraseTextView.bindTimestampView(timeStampTextView)
         highlightClientText(phraseTextView, phrase)
         bindOGData(phrase)
@@ -239,19 +236,19 @@ class UserPhraseViewHolder(
 
             rightTextDescription.text = getFileDescriptionText(it)
             if (it.state == AttachmentStateEnum.PENDING || userPhrase.sentState == MessageState.STATE_SENDING) {
-                rightTextRow.isVisible = true
+                rightTextRow.visible()
                 showLoaderLayout()
             } else if (it.state === AttachmentStateEnum.ERROR) {
-                rightTextRow.isVisible = true
+                rightTextRow.visible()
                 showErrorLayout(it)
             } else {
                 showCommonLayout()
                 if (isVoiceMessage(it)) {
-                    phraseTextView.isVisible = false
-                    voiceMessage.isVisible = true
+                    phraseTextView.gone()
+                    voiceMessage.visible()
                 } else {
                     if (isImage(it)) {
-                        image.isVisible = true
+                        imageContainer.visible()
                         image.setOnClickListener(imageClickListener)
                         val downloadPath: String? = if (it.fileUri == null) {
                             it.downloadPath
@@ -268,9 +265,9 @@ class UserPhraseViewHolder(
                         if (it.fileUri != null) {
                             it.downloadProgress = 100
                         }
-                        rightTextRow.isVisible = true
+                        rightTextRow.visible()
                         viewUtils.setClickListener(rightTextRow, null as View.OnClickListener?)
-                        fileImageButton.isVisible = true
+                        fileImageButton.visible()
                         rightTextHeader.text = it.from
                         val timeStampText = parentView.context.getString(
                             R.string.threads_sent_at,
@@ -288,7 +285,7 @@ class UserPhraseViewHolder(
     }
 
     private fun showQuote(quote: Quote, onQuoteClickListener: View.OnClickListener?) {
-        quoteTextRow.isVisible = true
+        quoteTextRow.visible()
         viewUtils.setClickListener(quoteTextRow, onQuoteClickListener)
         quoteTextDescription.text = quote.text
         quoteTextHeader.text = quote.phraseOwnerTitle
@@ -299,7 +296,7 @@ class UserPhraseViewHolder(
         quoteTextTimeStamp.text = timeStampText
         quote.fileDescription?.let {
             if (isImage(it)) {
-                quoteImage.isVisible = true
+                quoteImage.visible()
                 var downloadPath: String? = ""
                 if (it.fileUri != null) {
                     downloadPath = it.fileUri.toString()
@@ -324,7 +321,7 @@ class UserPhraseViewHolder(
     }
 
     private fun showCampaign(campaignMessage: CampaignMessage) {
-        quoteTextRow.isVisible = true
+        quoteTextRow.visible()
         quoteTextDescription.text = campaignMessage.text
         quoteTextHeader.text = campaignMessage.senderName
         val text = parentView.context.resources.getString(
@@ -405,17 +402,17 @@ class UserPhraseViewHolder(
     }
 
     private fun showLoaderLayout() {
-        errorText.isVisible = false
-        loader.isVisible = true
-        fileImageButton.isVisible = false
+        errorText.gone()
+        loader.visible()
+        fileImageButton.gone()
         initAnimation(loader, false)
     }
 
     private fun showErrorLayout(fileDescription: FileDescription) {
-        errorText.isVisible = true
-        loader.isVisible = true
+        errorText.visible()
+        loader.visible()
         loader.setImageResource(getErrorImageResByErrorCode(fileDescription.errorCode))
-        fileImageButton.isVisible = false
+        fileImageButton.gone()
         val errorString = getString(getErrorStringResByErrorCode(fileDescription.errorCode))
         errorText.text = errorString
         rotateAnim.cancel()
@@ -423,8 +420,8 @@ class UserPhraseViewHolder(
     }
 
     private fun showCommonLayout() {
-        errorText.isVisible = false
-        loader.isVisible = false
+        errorText.gone()
+        loader.gone()
         rotateAnim.cancel()
         rotateAnim.reset()
     }
@@ -436,5 +433,22 @@ class UserPhraseViewHolder(
             } else {
                 ""
             }
+    }
+
+    private fun initTimeStampView(userPhrase: UserPhrase) {
+        timeStampTextView = if (isVoiceMessage(userPhrase.fileDescription)) {
+            itemView.findViewById<BubbleTimeTextView>(R.id.timeStamp).invisible()
+            itemView.findViewById(R.id.voiceTimeStamp)
+        } else {
+            itemView.findViewById<BubbleTimeTextView>(R.id.voiceTimeStamp).invisible()
+            itemView.findViewById(R.id.timeStamp)
+        }
+        timeStampTextView.visible()
+        timeStampTextView.setTextColor(getColorInt(style.outgoingMessageTimeColor))
+        if (style.outgoingMessageTimeTextSize > 0) {
+            val textSize =
+                parentView.context.resources.getDimension(style.outgoingMessageTimeTextSize)
+            timeStampTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
+        }
     }
 }

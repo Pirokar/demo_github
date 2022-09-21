@@ -19,12 +19,11 @@ import im.threads.ui.utils.ViewUtils;
 public final class CircularProgressButton extends FrameLayout {
     private MyCircleProgress mcp;
     private View mImageLabel;
-    private View background;
     private Drawable completedDrawable;
     private Drawable inProgress;
     private Drawable startDownloadDrawable;
     private Drawable progressBackgroundDrawable;
-    private ViewUtils viewUtils = new ViewUtils();
+    private final ViewUtils viewUtils = new ViewUtils();
 
     public CircularProgressButton(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -47,7 +46,7 @@ public final class CircularProgressButton extends FrameLayout {
         completedDrawable = ta.getDrawable(R.styleable.CircularProgressButton_completed_drawable);
         inProgress = ta.getDrawable(R.styleable.CircularProgressButton_in_progress_label);
         startDownloadDrawable = ta.getDrawable(R.styleable.CircularProgressButton_start_download_label);
-        background = findViewById(R.id.background);
+        View background = findViewById(R.id.background);
         ta.recycle();
         mImageLabel.setVisibility(View.VISIBLE);
         mcp.setVisibility(VISIBLE);
