@@ -26,9 +26,7 @@ class FileDownloader(
 ) {
     private val outputFile: File = File(
         getDownloadDir(ctx),
-        generateFileName(
-            fileName
-        )
+        fileName
     )
 
     private var isStopped = false
@@ -148,16 +146,6 @@ class FileDownloader(
         @JvmStatic
         fun getDownloadDir(ctx: Context): File {
             return ctx.filesDir
-        }
-
-        fun generateFileName(fileName: String): String {
-            val sb = StringBuilder()
-            sb.append(getFileName(fileName))
-            val ext = getFileExtension(fileName)
-            if (ext != null) {
-                sb.append(ext)
-            }
-            return sb.toString()
         }
 
         private fun getFileExtension(path: String?): String? {
