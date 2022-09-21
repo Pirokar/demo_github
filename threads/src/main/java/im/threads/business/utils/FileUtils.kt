@@ -24,6 +24,7 @@ import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.IOException
+import java.text.DecimalFormat
 import java.util.UUID
 
 object FileUtils {
@@ -361,4 +362,40 @@ fun MediaMetadataRetriever.getDuration(uri: Uri): Long {
         }
     }
     return extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLong() ?: 0
+}
+
+fun Long.toFileSize(): String {
+    val context = BaseConfig.instance.context
+    val kb = 1024L
+    val mb = kb * kb
+    val gb = mb * kb
+    val tb = gb * kb
+
+    val dividers = longArrayOf(tb, gb, mb, kb, 1)
+    val units = arrayOf(
+        context.getString(R.string.threads_tbytes),
+        context.getString(R.string.threads_gbytes),
+        context.getString(R.string.threads_mbytes),
+        context.getString(R.string.threads_kbytes),
+        context.getString(R.string.threads_bytes)
+    )
+    require(this >= 1) { LoggerEdna.error("Invalid file size: $this") }
+    var result = ""
+    for (i in dividers.indices) {
+        val divider = dividers[i]
+        if (this >= divider) {
+            result = format(this, divider, units[i])
+            break
+        }
+    }
+    return result
+}
+
+private fun format(
+    value: Long,
+    divider: Long,
+    unit: String
+): String {
+    val result = if (divider > 1) value.toDouble() / divider.toDouble() else value.toDouble()
+    return DecimalFormat("#,##0.#").format(result).toString() + " " + unit
 }

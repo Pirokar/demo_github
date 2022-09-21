@@ -2,7 +2,6 @@ package im.threads.ui.holders
 
 import android.annotation.SuppressLint
 import android.text.TextUtils
-import android.text.format.Formatter
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -31,6 +30,7 @@ import im.threads.business.ogParser.OGDataContent
 import im.threads.business.utils.FileUtils
 import im.threads.business.utils.FileUtils.isImage
 import im.threads.business.utils.UrlUtils
+import im.threads.business.utils.toFileSize
 import im.threads.ui.utils.invisible
 import im.threads.ui.utils.visible
 import im.threads.ui.views.CircularProgressButton
@@ -212,7 +212,7 @@ class ConsultPhraseHolder(parent: ViewGroup, highlightingStream: PublishSubject<
     private fun getFileDescriptionText(fileDescription: FileDescription): String {
         return "${FileUtils.getFileName(fileDescription)} " +
             if (fileDescription.size > 0) {
-                Formatter.formatFileSize(itemView.context, fileDescription.size).trimIndent()
+                fileDescription.size.toFileSize().trimIndent()
             } else {
                 ""
             }

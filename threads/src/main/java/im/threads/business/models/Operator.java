@@ -8,6 +8,7 @@ public final class Operator {
     private Long id;
     private String name;
     private String alias;
+    private String status;
     private String role;
     private String orgUnit;
     private Long maxThreads;
@@ -77,6 +78,14 @@ public final class Operator {
 
     public void setOrgUnit(String orgUnit) {
         this.orgUnit = orgUnit;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     @Nullable

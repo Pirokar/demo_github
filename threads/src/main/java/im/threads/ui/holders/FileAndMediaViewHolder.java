@@ -20,6 +20,7 @@ import im.threads.R;
 import im.threads.business.imageLoading.ImageLoader;
 import im.threads.business.models.FileDescription;
 import im.threads.business.utils.FileUtils;
+import im.threads.business.utils.FileUtilsKt;
 import im.threads.ui.utils.ColorsHelper;
 import im.threads.ui.views.CircularProgressButton;
 
@@ -92,7 +93,7 @@ public final class FileAndMediaViewHolder extends BaseHolder {
         }
         fileHeaderTextView.setText(FileUtils.getFileName(fileDescription));
         long fileSize = fileDescription.getSize();
-        fileSizeTextView.setText(android.text.format.Formatter.formatFileSize(itemView.getContext(), fileSize));
+        fileSizeTextView.setText(FileUtilsKt.toFileSize(fileSize));
         fileSizeTextView.setVisibility(fileSize > 0 ? View.VISIBLE : View.GONE);
         timeStampTextView.setText(sdf.format(new Date(fileDescription.getTimeStamp())));
         mImageButton.setOnClickListener(fileClickListener);

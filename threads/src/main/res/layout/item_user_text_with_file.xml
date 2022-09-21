@@ -10,8 +10,7 @@
         android:id="@+id/bubble"
         style="@style/userBubble"
         android:orientation="vertical"
-        android:paddingStart="@dimen/margin_quarter"
-        android:paddingTop="@dimen/margin_quarter"
+        android:paddingStart="@dimen/margin_half"
         android:paddingEnd="19dp"
         android:paddingBottom="@dimen/margin_quarter">
 
@@ -83,6 +82,7 @@
         </TableRow>
 
         <FrameLayout
+            android:id="@+id/imageContainer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="@dimen/margin_quarter">
@@ -202,40 +202,58 @@
                 android:id="@+id/voiceMessage"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="-15dp"
                 android:paddingStart="0dp"
-                android:paddingEnd="17dp">
+                android:paddingEnd="0dp">
 
-                <ImageView
+                <ImageButton
                     android:id="@+id/voiceMessageUserButtonPlayPause"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_marginStart="@dimen/margin_half"
+                    android:layout_width="@dimen/threads_file_icon_size"
+                    android:layout_height="@dimen/threads_file_icon_size"
                     android:background="@null"
+                    android:scaleType="fitXY"
+                    android:layout_marginStart="2dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/threads_voice_message_play" />
+                    app:srcCompat="@drawable/threads_voice_message_play"
+                    android:contentDescription="@string/threads_play_button" />
 
                 <com.google.android.material.slider.Slider
                     android:id="@+id/voiceMessageUserSlider"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:theme="@style/ThemeOverlay.ChatCenter.Slider.User"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginTop="-11dp"
+                    app:thumbRadius="@dimen/thumb_size"
+                    app:haloRadius="@dimen/halo_radius"
                     app:layout_constraintStart_toEndOf="@+id/voiceMessageUserButtonPlayPause"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="@id/voiceMessageUserButtonPlayPause"
+                    app:layout_constraintEnd_toEndOf="parent" />
 
                 <im.threads.ui.widget.textView.BubbleMessageTextView
                     android:id="@+id/fileSize"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginTop="@dimen/margin_quarter"
-                    android:paddingBottom="@dimen/margin_half"
+                    android:textSize="@dimen/text_small"
+                    android:layout_marginTop="-11dp"
+                    android:layout_marginStart="@dimen/margin_half"
                     android:textColor="@color/threads_outgoing_message_text"
                     app:layout_constraintStart_toStartOf="@+id/voiceMessageUserSlider"
                     app:layout_constraintTop_toBottomOf="@+id/voiceMessageUserSlider"
                     tools:text="1:20" />
+
+                <im.threads.ui.widget.textView.BubbleTimeTextView
+                    android:id="@+id/voiceTimeStamp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="@id/fileSize"
+                    app:layout_constraintEnd_toEndOf="@id/voiceMessageUserSlider"
+                    android:drawablePadding="@dimen/margin_half"
+                    android:padding="@dimen/margin_half"
+                    android:textColor="@color/threads_user_message_timestamp"
+                    tools:text="10:19" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

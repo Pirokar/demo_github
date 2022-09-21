@@ -165,8 +165,12 @@ internal class FilesActivity : BaseActivity(), OnFileClick {
         filesViewModel.getFilesAsync()
     }
 
-    private fun search(searchString: String) {
-        filesAndMediaAdapter?.filter(searchString)
+    private fun search(searchString: String) = with(binding) {
+        filesAndMediaAdapter?.filter(searchString) {
+            if (filesAndMediaAdapter?.isNotEmpty() == true) {
+                filesRecycler.scrollToPosition(0)
+            }
+        }
     }
 
     private fun setActivityStyle(style: ChatStyle) = with(binding) {

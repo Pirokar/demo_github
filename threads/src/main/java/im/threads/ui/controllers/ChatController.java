@@ -114,7 +114,7 @@ public final class ChatController {
     @NonNull
     private final ConsultWriter consultWriter;
 
-    // TODO: вынести в отдельный класс отправку сообщений
+    private final ChatStyle chatStyle = Config.getInstance().getChatStyle();
 
     // this flag is keeping the visibility state of the request to resolve thread
     private boolean surveyCompletionInProgress = false;
@@ -136,13 +136,13 @@ public final class ChatController {
     private boolean isAllMessagesDownloaded = false;
     private boolean isDownloadingMessages;
     private String firstUnreadUuidId;
-
     // На основе этих переменных определяется возможность отправки сообщений в чат
     private ScheduleInfo currentScheduleInfo;
     // Если пользователь не ответил на вопрос (quickReply), то блокируем поле ввода
     private boolean hasQuickReplies = false;
     // Если пользователь не ответил на вопрос (quickReply), то блокируем поле ввода
     private boolean inputEnabledDuringQuickReplies;
+    private CompositeDisposable compositeDisposable;
 
     private final ChatStyle chatStyle = Config.getInstance().getChatStyle();
 
@@ -246,7 +246,7 @@ public final class ChatController {
                                         lastItems = databaseHolder.getChatItems(0, -1);
                                         lastFancySearchDate = System.currentTimeMillis();
                                     }
-                                    if (query.isEmpty() || !query.equals(lastSearchQuery)) {
+                                    if (query != null && (query.isEmpty() || !query.equals(lastSearchQuery))) {
                                         seeker = new ChatMessageSeeker();
                                     }
                                     lastSearchQuery = query;
@@ -362,7 +362,7 @@ public final class ChatController {
         } else {
             ConsultInfo info = databaseHolder.getConsultInfo(consultId);
             if (info != null) {
-                ConsultActivity.startActivity(activity, info.getPhotoUrl(), info.getName(), info.getStatus());
+                ConsultActivity.startActivity(activity, info);
             } else {
                 ConsultActivity.startActivity(activity);
             }
@@ -942,7 +942,7 @@ public final class ChatController {
     private void subscribeToQuickReplies() {
         subscribe(ChatUpdateProcessor.getInstance().getQuickRepliesProcessor()
                 .subscribe(quickReplies -> {
-                            hasQuickReplies = !quickReplies.getItems().isEmpty();
+                            hasQuickReplies = quickReplies != null && !quickReplies.getItems().isEmpty();
                             refreshUserInputState();
                         },
                         error -> LoggerEdna.error("subscribeToQuickReplies ", error)
@@ -1295,7 +1295,7 @@ public final class ChatController {
 
     @Nullable
     private ConsultPhrase getQuickReplyMessageCandidate(List<ChatItem> chatItems) {
-        if (!chatItems.isEmpty()) {
+        if (chatItems != null && !chatItems.isEmpty()) {
             ListIterator<ChatItem> listIterator = chatItems.listIterator(chatItems.size());
             while (listIterator.hasPrevious()) {
                 ChatItem chatItem = listIterator.previous();

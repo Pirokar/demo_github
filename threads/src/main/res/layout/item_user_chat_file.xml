@@ -16,19 +16,18 @@
 
         <FrameLayout
             android:id="@+id/buttonsLayout"
-            android:layout_width="42dp"
-            android:layout_height="42dp"
+            android:layout_width="@dimen/threads_file_icon_size"
+            android:layout_height="@dimen/threads_file_icon_size"
             android:layout_centerVertical="true"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="@dimen/margin_material"
+            android:layout_marginStart="@dimen/margin_half"
             android:layout_marginTop="@dimen/margin_material"
-            android:layout_marginEnd="@dimen/margin_three_fourth"
+            android:layout_marginEnd="@dimen/margin_half"
             android:layout_marginBottom="@dimen/margin_material">
 
             <im.threads.ui.views.CircularProgressButton
                 android:id="@+id/buttonDownload"
-                android:layout_width="42dp"
-                android:layout_height="42dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:background="@drawable/threads_ic_file_outline_24dp"
                 app:completed_drawable="@drawable/threads_ic_file_outline_24dp"
                 app:in_progress_label="@drawable/threads_ic_clear_36dp"
@@ -36,8 +35,9 @@
 
             <ImageView
                 android:id="@+id/loader"
-                android:layout_width="42dp"
-                android:layout_height="42dp"/>
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitXY"/>
 
         </FrameLayout>
 
