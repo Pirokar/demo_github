@@ -42,7 +42,8 @@ class ConsultVoiceMessageViewHolder(
 ) : VoiceMessageBaseHolder(
     LayoutInflater.from(parent.context).inflate(R.layout.item_consult_voice_message, parent, false),
     highlightingStream,
-    fdMediaPlayer
+    fdMediaPlayer,
+    true
 ) {
     private val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
 
@@ -65,6 +66,7 @@ class ConsultVoiceMessageViewHolder(
                 PorterDuff.Mode.SRC_ATOP
             )
         }
+    override val voiceMessage: ViewGroup = itemView.findViewById(R.id.bubble)
     private val fileSizeTextView: TextView = itemView.findViewById(R.id.fileSize)
     private val audioStatusTextView: TextView = itemView.findViewById(R.id.voiceMessageConsultAudioStatus)
 
@@ -88,7 +90,7 @@ class ConsultVoiceMessageViewHolder(
     }
 
     init {
-        itemView.findViewById<View>(R.id.bubble).apply {
+        voiceMessage.apply {
             background =
                 AppCompatResources.getDrawable(
                     itemView.context,
@@ -137,7 +139,7 @@ class ConsultVoiceMessageViewHolder(
 
         consultPhrase.fileDescription?.let {
             fileDescription = it
-            subscribeForVoiceMessageDownloaded(true)
+            subscribeForVoiceMessageDownloaded()
 
             buttonPlayPause.setOnClickListener(pausePlayClickListener)
             slider.addOnChangeListener(onChangeListener)
