@@ -27,7 +27,6 @@ class FileDownloader(
     private val outputFile: File = File(
         getDownloadDir(ctx),
         generateFileName(
-            path,
             fileName
         )
     )
@@ -151,12 +150,9 @@ class FileDownloader(
             return ctx.filesDir
         }
 
-        fun generateFileName(path: String, fileName: String): String {
+        fun generateFileName(fileName: String): String {
             val sb = StringBuilder()
             sb.append(getFileName(fileName))
-                .append("(")
-                .append(Uri.parse(path).lastPathSegment)
-                .append(")")
             val ext = getFileExtension(fileName)
             if (ext != null) {
                 sb.append(ext)
