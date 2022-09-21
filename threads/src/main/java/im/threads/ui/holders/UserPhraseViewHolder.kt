@@ -2,7 +2,6 @@ package im.threads.ui.holders
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.text.format.Formatter
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -34,6 +33,7 @@ import im.threads.business.ogParser.OGDataContent
 import im.threads.business.utils.FileUtils
 import im.threads.business.utils.FileUtils.isImage
 import im.threads.business.utils.FileUtils.isVoiceMessage
+import im.threads.business.utils.toFileSize
 import im.threads.ui.utils.gone
 import im.threads.ui.utils.invisible
 import im.threads.ui.utils.visible
@@ -429,7 +429,7 @@ class UserPhraseViewHolder(
     private fun getFileDescriptionText(fileDescription: FileDescription): String {
         return "${FileUtils.getFileName(fileDescription)} " +
             if (fileDescription.size > 0) {
-                Formatter.formatFileSize(parentView.context, fileDescription.size).trimIndent()
+                fileDescription.size.toFileSize().trimIndent()
             } else {
                 ""
             }

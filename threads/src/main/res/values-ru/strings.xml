@@ -158,5 +158,10 @@
     <string name="threads_operator_avatar">Аватар оператора</string>
     <string name="threads_play_button">Кнопка воспроизведения</string>
     <string name="threads_loading_animation">Загрузка</string>
+    <string name="threads_bytes">Б</string>
+    <string name="threads_kbytes">КБ</string>
+    <string name="threads_mbytes">МБ</string>
+    <string name="threads_gbytes">ГБ</string>
+    <string name="threads_tbytes">ТБ</string>
 
 </resources>

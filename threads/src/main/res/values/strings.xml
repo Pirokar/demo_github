@@ -150,5 +150,10 @@
     <string name="threads_operator_avatar">Operator avatar</string>
     <string name="threads_play_button">Play button</string>
     <string name="threads_loading_animation">Loading</string>
+    <string name="threads_bytes">B</string>
+    <string name="threads_kbytes">KB</string>
+    <string name="threads_mbytes">MB</string>
+    <string name="threads_gbytes">GB</string>
+    <string name="threads_tbytes">TB</string>
 
 </resources>
