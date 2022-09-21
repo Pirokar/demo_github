@@ -223,7 +223,7 @@ public final class MessageParser {
 
     private static FileDescription getFileDescription(final List<Attachment> attachments, String from, long timeStamp) {
         FileDescription fileDescription = null;
-        if (!attachments.isEmpty() && attachments.get(0) != null) {
+        if (attachments != null && !attachments.isEmpty() && attachments.get(0) != null) {
             Attachment attachment = attachments.get(0);
             fileDescription = new FileDescription(
                     from,
@@ -245,7 +245,7 @@ public final class MessageParser {
     }
 
     private static Quote getQuote(final List<im.threads.business.transport.models.Quote> quotes) {
-        if (!quotes.isEmpty() && quotes.get(0) != null) {
+        if (quotes != null && !quotes.isEmpty() && quotes.get(0) != null) {
             im.threads.business.transport.models.Quote quote = quotes.get(0);
             String authorName = quote.getOperator() != null ? quote.getOperator().getAliasOrName() : null;
             long timestamp = quote.getReceivedDate() != null ? quote.getReceivedDate().getTime() : System.currentTimeMillis();

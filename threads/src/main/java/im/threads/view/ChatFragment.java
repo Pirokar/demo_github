@@ -590,7 +590,7 @@ public final class ChatFragment extends BaseFragment implements
         subscribe(ChatUpdateProcessor.getInstance().getQuickRepliesProcessor()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(quickReplies -> {
-                            if (quickReplies.getItems().isEmpty()) {
+                            if (quickReplies == null || quickReplies.getItems().isEmpty()) {
                                 hideQuickReplies();
                             } else {
                                 showQuickReplies(quickReplies);
@@ -767,7 +767,7 @@ public final class ChatFragment extends BaseFragment implements
                         RxUtils.toObservableImmediately(inputTextObservable),
                         RxUtils.toObservableImmediately(fileDescription),
                         (s, fileDescriptionOptional) -> (TextUtils.isEmpty(s) || s.trim().isEmpty())
-                                && fileDescriptionOptional.isEmpty()
+                                && (fileDescriptionOptional == null || fileDescriptionOptional.isEmpty())
                 )
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::setRecordButtonVisibility,
@@ -826,7 +826,9 @@ public final class ChatFragment extends BaseFragment implements
         subscribe(RxUtils.toObservable(fileDescription)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(files -> {
-                            boolean isEnable = !files.isEmpty() || !TextUtils.isEmpty(binding.inputEditView.getText());
+                            boolean isFilesAvailable = files != null && !files.isEmpty();
+                            boolean isInputAvailable = !TextUtils.isEmpty(binding.inputEditView.getText());
+                            boolean isEnable = isFilesAvailable || isInputAvailable;
                             binding.sendMessage.setEnabled(isEnable);
                         }
                 )

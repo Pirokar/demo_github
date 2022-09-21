@@ -43,6 +43,8 @@ public enum FileHelper {
 
     private AttachmentSettings.Content getAttachmentSettings() {
         String settingsStr = PrefUtilsUi.getAttachmentSettings();
+        settingsStr = settingsStr == null ? "" : settingsStr;
+
         if (settingsStr.isEmpty()) {
             return getDefaultAttachmentSettings();
         } else {
