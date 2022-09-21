@@ -1,6 +1,5 @@
 package im.threads.business.imageLoading
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import android.widget.ImageView
@@ -13,6 +12,8 @@ import im.threads.business.config.BaseConfig
 import java.util.concurrent.Executors
 
 class ImageRequestBuilder {
+    private var sslImagesLoader: Picasso? = null
+    private var pureImagesLoader: Picasso? = null
 
     fun getImageRequestBuilder(
         config: ImageLoader.Config
@@ -115,8 +116,17 @@ class ImageRequestBuilder {
 
     private fun getRightAngleImage(photoPath: String): Float {
         return try {
-            val ei = ExifInterface(BaseConfig.instance.context.contentResolver.openInputStream(Uri.parse(photoPath))!!)
-            when (ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)) {
+            val ei = ExifInterface(
+                BaseConfig.instance.context.contentResolver.openInputStream(
+                    Uri.parse(photoPath)
+                )!!
+            )
+            when (
+                ei.getAttributeInt(
+                    ExifInterface.TAG_ORIENTATION,
+                    ExifInterface.ORIENTATION_NORMAL
+                )
+            ) {
                 ExifInterface.ORIENTATION_NORMAL -> 0f
                 ExifInterface.ORIENTATION_ROTATE_90 -> 90f
                 ExifInterface.ORIENTATION_ROTATE_180 -> 180f
@@ -128,13 +138,5 @@ class ImageRequestBuilder {
             e.printStackTrace()
             0f
         }
-    }
-
-    companion object {
-        @SuppressLint("StaticFieldLeak")
-        private var sslImagesLoader: Picasso? = null
-
-        @SuppressLint("StaticFieldLeak")
-        private var pureImagesLoader: Picasso? = null
     }
 }
