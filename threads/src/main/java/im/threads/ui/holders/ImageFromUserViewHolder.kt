@@ -30,7 +30,7 @@ import java.util.Locale
 
 class ImageFromUserViewHolder(
     parent: ViewGroup,
-    private val maskedTransformation: ImageModifications.MaskedModification,
+    private val maskedTransformation: ImageModifications.MaskedModification?,
     highlightingStream: PublishSubject<ChatItem>
 ) :
     BaseHolder(

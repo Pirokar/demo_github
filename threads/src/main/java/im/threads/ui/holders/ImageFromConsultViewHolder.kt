@@ -32,7 +32,7 @@ import java.util.Locale
 
 class ImageFromConsultViewHolder(
     parent: ViewGroup,
-    private val maskedTransformation: ImageModifications.MaskedModification,
+    private val maskedTransformation: ImageModifications.MaskedModification?,
     highlightingStream: PublishSubject<ChatItem>
 ) : BaseHolder(
     LayoutInflater.from(parent.context).inflate(
@@ -200,7 +200,7 @@ class ImageFromConsultViewHolder(
                 listOf(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP),
                 style.imagePlaceholder,
                 autoRotateWithExif = true,
-                modifications = listOf(maskedTransformation),
+                modifications = listOfNotNull(maskedTransformation),
                 callback = object : ImageLoader.ImageLoaderCallback {
                     override fun onImageLoaded() {
                         stopLoadImageAnimation()
