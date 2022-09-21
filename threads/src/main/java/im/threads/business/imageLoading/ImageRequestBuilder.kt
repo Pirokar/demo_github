@@ -1,5 +1,6 @@
 package im.threads.business.imageLoading
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import android.widget.ImageView
@@ -12,8 +13,6 @@ import im.threads.business.config.BaseConfig
 import java.util.concurrent.Executors
 
 class ImageRequestBuilder {
-    private var sslImagesLoader: Picasso? = null
-    private var pureImagesLoader: Picasso? = null
 
     fun getImageRequestBuilder(
         config: ImageLoader.Config
@@ -129,5 +128,13 @@ class ImageRequestBuilder {
             e.printStackTrace()
             0f
         }
+    }
+
+    companion object {
+        @SuppressLint("StaticFieldLeak")
+        private var sslImagesLoader: Picasso? = null
+
+        @SuppressLint("StaticFieldLeak")
+        private var pureImagesLoader: Picasso? = null
     }
 }
