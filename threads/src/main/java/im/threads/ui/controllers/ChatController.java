@@ -142,9 +142,6 @@ public final class ChatController {
     private boolean hasQuickReplies = false;
     // Если пользователь не ответил на вопрос (quickReply), то блокируем поле ввода
     private boolean inputEnabledDuringQuickReplies;
-    private CompositeDisposable compositeDisposable;
-
-    private final ChatStyle chatStyle = Config.getInstance().getChatStyle();
 
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
     private final Messenger messenger = new MessengerImpl(compositeDisposable);
