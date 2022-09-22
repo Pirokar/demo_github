@@ -1,4 +1,4 @@
-package im.threads.view
+package im.threads.ui.views
 
 import android.content.Context
 import android.util.AttributeSet
@@ -8,9 +8,6 @@ import im.threads.business.useractivity.UserActivityTimeProvider.getLastUserActi
 
 /**
  * Layout, перехватывающий касания для отслеживания активности пользователя.
- *
- * @author Роман Агниев
- * @since 16.02.2022
  */
 class InterceptTouchFrameLayout : FrameLayout {
 

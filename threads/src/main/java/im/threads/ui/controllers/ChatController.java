@@ -1,7 +1,4 @@
-package im.threads.internal.controllers;
-
-import static im.threads.business.utils.FilePosterKt.postFile;
-import static im.threads.internal.utils.NetworkErrorUtilsKt.getErrorStringResByCode;
+package im.threads.ui.controllers;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
@@ -9,8 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.os.Handler;
 import android.text.TextUtils;
 import android.widget.Toast;
 
@@ -23,7 +18,6 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Objects;
@@ -34,10 +28,10 @@ import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.business.broadcastReceivers.ProgressReceiver;
 import im.threads.business.config.BaseConfig;
+import im.threads.business.controllers.UnreadMessagesController;
 import im.threads.business.formatters.ChatItemType;
 import im.threads.business.logger.LoggerEdna;
 import im.threads.business.models.ChatItem;
-import im.threads.business.models.ChatItemSendErrorModel;
 import im.threads.business.models.ChatPhrase;
 import im.threads.business.models.ClientNotificationDisplayType;
 import im.threads.business.models.ConsultChatPhrase;
@@ -70,6 +64,8 @@ import im.threads.business.transport.models.Attachment;
 import im.threads.business.utils.ChatMessageSeeker;
 import im.threads.business.utils.ConsultWriter;
 import im.threads.business.utils.FileUtils;
+import im.threads.business.utils.messenger.Messenger;
+import im.threads.business.utils.messenger.MessengerImpl;
 import im.threads.business.utils.preferences.PrefUtilsBase;
 import im.threads.business.workers.FileDownloadWorker;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
@@ -106,8 +102,6 @@ public final class ChatController {
     private static final int PER_PAGE_COUNT = 100;
     private static final long UPDATE_SPEECH_STATUS_DEBOUNCE = 400L;
 
-    private static final int RESEND_MSG = 123;
-
     private static ChatController instance;
 
     private final PublishProcessor<Survey> surveyCompletionProcessor = PublishProcessor.create();
@@ -119,10 +113,9 @@ public final class ChatController {
     private final DatabaseHolder databaseHolder;
     @NonNull
     private final ConsultWriter consultWriter;
-    // TODO: вынести в отдельный класс отправку сообщений
-    private final List<UserPhrase> unsendMessages = new ArrayList<>();
-    private final List<UserPhrase> sendQueue = new ArrayList<>();
+
     private final ChatStyle chatStyle = Config.getInstance().getChatStyle();
+
     // this flag is keeping the visibility state of the request to resolve thread
     private boolean surveyCompletionInProgress = false;
     // Ссылка на фрагмент, которым управляет контроллер
@@ -142,7 +135,6 @@ public final class ChatController {
     private String lastSearchQuery = "";
     private boolean isAllMessagesDownloaded = false;
     private boolean isDownloadingMessages;
-    private Handler unsendMessageHandler;
     private String firstUnreadUuidId;
     // На основе этих переменных определяется возможность отправки сообщений в чат
     private ScheduleInfo currentScheduleInfo;
@@ -150,7 +142,9 @@ public final class ChatController {
     private boolean hasQuickReplies = false;
     // Если пользователь не ответил на вопрос (quickReply), то блокируем поле ввода
     private boolean inputEnabledDuringQuickReplies;
-    private CompositeDisposable compositeDisposable;
+
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
+    private final Messenger messenger = new MessengerImpl(compositeDisposable);
 
     private ChatController() {
         new PreferencesMigrationUi().migrateNamedPreferences(ChatController.class.getSimpleName());
@@ -160,28 +154,8 @@ public final class ChatController {
         databaseHolder = DatabaseHolder.getInstance();
 
         consultWriter = new ConsultWriter(PrefUtilsBase.getDefaultSharedPreferences());
-        ThreadRunnerKt.runOnUiThread(() -> unsendMessageHandler = new Handler(msg -> {
-            if (msg.what == RESEND_MSG) {
-                if (!unsendMessages.isEmpty()) {
-                    if (hasNoInternet(appContext)) {
-                        scheduleResend();
-                    } else {
-                        // try to send all unsent messages
-                        unsendMessageHandler.removeMessages(RESEND_MSG);
-                        synchronized (unsendMessages) {
-                            final ListIterator<UserPhrase> iterator = unsendMessages.listIterator();
-                            while (iterator.hasNext()) {
-                                final UserPhrase phrase = iterator.next();
-                                checkAndResendPhrase(phrase);
-                                iterator.remove();
-                            }
-                        }
-                    }
-                }
-            }
-            return false;
-        }));
         subscribeToChatEvents();
+        messenger.resendMessages();
     }
 
     public static ChatController getInstance() {
@@ -244,7 +218,7 @@ public final class ChatController {
         removeActiveSurvey();
         final UserPhrase um = convert(upcomingUserMessage);
         addMessage(um);
-        queueMessageSending(um);
+        messenger.queueMessageSending(um);
     }
 
     public void fancySearch(final String query, final boolean forward, final Consumer<kotlin.Pair<List<ChatItem>, ChatItem>> consumer) {
@@ -258,7 +232,7 @@ public final class ChatController {
                                         Toast.makeText(appContext, appContext.getString(R.string.threads_history_loading_message), Toast.LENGTH_LONG).show();
                                     });
                                 }
-                                return downloadMessagesTillEnd();
+                                return messenger.downloadMessagesTillEnd();
                             } else {
                                 return Single.fromCallable((Callable<Object>) ArrayList::new);
                             }
@@ -292,34 +266,6 @@ public final class ChatController {
         );
     }
 
-    public Single<List<ChatItem>> downloadMessagesTillEnd() {
-        return Single.fromCallable(
-                        () -> {
-                            synchronized (this) {
-                                if (!isDownloadingMessages) {
-                                    isDownloadingMessages = true;
-                                    LoggerEdna.debug(ThreadsApi.REST_TAG, "downloadMessagesTillEnd");
-                                    while (!isAllMessagesDownloaded) {
-                                        final HistoryResponse response = HistoryLoader.INSTANCE.getHistorySync(lastMessageTimestamp, PER_PAGE_COUNT);
-                                        final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
-                                        if (serverItems.isEmpty()) {
-                                            isAllMessagesDownloaded = true;
-                                        } else {
-                                            lastMessageTimestamp = serverItems.get(0).getTimeStamp();
-                                            isAllMessagesDownloaded = serverItems.size() < PER_PAGE_COUNT; // Backend can give us more than chunk anytime, it will give less only on history end
-                                            saveMessages(serverItems);
-                                        }
-                                    }
-                                }
-                                LoggerEdna.debug(ThreadsApi.REST_TAG, "Messages are loaded");
-                                isDownloadingMessages = false;
-                                return databaseHolder.getChatItems(0, -1);
-                            }
-                        }
-                )
-                .doOnError(throwable -> isDownloadingMessages = false);
-    }
-
     public void onFileClick(final FileDescription fileDescription) {
         LoggerEdna.info("onFileClick " + fileDescription);
         if (fragment != null && fragment.isAdded()) {
@@ -341,31 +287,6 @@ public final class ChatController {
                     }
                 }
             }
-        }
-    }
-
-    public void forceResend(final UserPhrase userPhrase) {
-        if (userPhrase.getSentState() == MessageState.STATE_NOT_SENT) {
-            synchronized (unsendMessages) {
-                Iterator<UserPhrase> iterator = unsendMessages.iterator();
-                while (iterator.hasNext()) {
-                    final UserPhrase queueItem = iterator.next();
-                    if (queueItem.isTheSameItem(userPhrase)) {
-                        iterator.remove();
-                        break;
-                    }
-                }
-                checkAndResendPhrase(userPhrase);
-            }
-        }
-    }
-
-    public void checkAndResendPhrase(final UserPhrase userPhrase) {
-        if (userPhrase.getSentState() == MessageState.STATE_NOT_SENT) {
-            if (fragment != null) {
-                fragment.setMessageState(userPhrase.getProviderId(), MessageState.STATE_SENDING);
-            }
-            queueMessageSending(userPhrase);
         }
     }
 
@@ -397,12 +318,11 @@ public final class ChatController {
         );
     }
 
-    public Observable<List<ChatItem>> requestItems() {
+    public Observable<List<ChatItem>> requestItems(int currentItemsCount) {
         return Observable
                 .fromCallable(() -> {
                     if (instance.fragment != null && !PrefUtilsBase.isClientIdEmpty()) {
                         LoggerEdna.info(ThreadsApi.REST_TAG, "Requesting history items");
-                        int currentOffset = instance.fragment.getCurrentItemsCount();
                         int count = BaseConfig.instance.historyLoadingCount;
                         try {
                             final HistoryResponse response = HistoryLoader.INSTANCE.getHistorySync(
@@ -410,11 +330,13 @@ public final class ChatController {
                                     false
                             );
                             final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
-                            saveMessages(serverItems);
-                            return setLastAvatars(databaseHolder.getChatItems(currentOffset, count));
+                            messenger.saveMessages(serverItems);
+                            clearUnreadPush();
+                            processSystemMessages(serverItems);
+                            return setLastAvatars(databaseHolder.getChatItems(currentItemsCount, count));
                         } catch (final Exception e) {
                             LoggerEdna.error(ThreadsApi.REST_TAG, "Requesting history items error", e);
-                            return setLastAvatars(databaseHolder.getChatItems(currentOffset, count));
+                            return setLastAvatars(databaseHolder.getChatItems(currentItemsCount, count));
                         }
                     }
                     return new ArrayList<ChatItem>();
@@ -487,11 +409,10 @@ public final class ChatController {
         subscribe(
                 Single.fromCallable(() -> {
                             final int historyLoadingCount = BaseConfig.instance.historyLoadingCount;
-                            final List<UserPhrase> unsendUserPhrase = databaseHolder.getUnsendUserPhrase(historyLoadingCount);
-                            if (!unsendUserPhrase.isEmpty()) {
-                                unsendMessages.clear();
-                                unsendMessages.addAll(unsendUserPhrase);
-                                scheduleResend();
+                            final List<UserPhrase> unsentUserPhrase = databaseHolder.getUnsendUserPhrase(historyLoadingCount);
+                            if (!unsentUserPhrase.isEmpty()) {
+                                messenger.recreateUnsentMessagesWith(unsentUserPhrase);
+                                messenger.scheduleResend();
                             }
                             return setLastAvatars(databaseHolder.getChatItems(0, historyLoadingCount));
                         })
@@ -585,7 +506,9 @@ public final class ChatController {
                 true
         );
         final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
-        saveMessages(serverItems);
+        messenger.saveMessages(serverItems);
+        clearUnreadPush();
+        processSystemMessages(serverItems);
         if (fragment != null) {
             final ConsultInfo info = response != null ? response.getConsultInfo() : null;
             if (info != null) {
@@ -597,11 +520,7 @@ public final class ChatController {
 
     public void sendInit() {
         BaseConfig.instance.transport.sendInit();
-        if (!PrefUtilsBase.isClientIdEmpty()) {
-            if (fragment != null) {
-                fragment.hideEmptyState();
-            }
-        }
+        hideEmptyState();
     }
 
     public void loadHistory() {
@@ -616,7 +535,9 @@ public final class ChatController {
                                         true
                                 );
                                 final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
-                                saveMessages(serverItems);
+                                messenger.saveMessages(serverItems);
+                                clearUnreadPush();
+                                processSystemMessages(serverItems);
                                 if (fragment != null && isActive) {
                                     final List<String> uuidList = databaseHolder.getUnreadMessagesUuid();
                                     if (!uuidList.isEmpty()) {
@@ -683,6 +604,14 @@ public final class ChatController {
         );
     }
 
+    public Single<List<ChatItem>> downloadMessagesTillEnd()  {
+        return messenger.downloadMessagesTillEnd();
+    }
+
+    public void forceResend(UserPhrase userPhrase) {
+        messenger.forceResend(userPhrase);
+    }
+
     private List<ChatItem> setLastAvatars(final List<ChatItem> list) {
         for (final ChatItem ci : list) {
             if (ci instanceof ConsultPhrase) {
@@ -696,59 +625,12 @@ public final class ChatController {
         return list;
     }
 
-    private void sendMessage(final UserPhrase userPhrase) {
-        LoggerEdna.info("sendMessage: " + userPhrase);
-        ConsultInfo consultInfo = null;
-        if (null != userPhrase.getQuote() && userPhrase.getQuote().isFromConsult()) {
-            final String id = userPhrase.getQuote().getQuotedPhraseConsultId();
-            consultInfo = consultWriter.getConsultInfo(id);
+    private void hideEmptyState() {
+        if (!PrefUtilsBase.isClientIdEmpty()) {
+            if (fragment != null) {
+                fragment.hideEmptyState();
+            }
         }
-        if (!userPhrase.hasFile()) {
-            sendTextMessage(userPhrase, consultInfo);
-        } else {
-            sendFileMessage(userPhrase, consultInfo);
-        }
-    }
-
-    private void sendTextMessage(final UserPhrase userPhrase, final ConsultInfo consultInfo) {
-        LoggerEdna.info("sendTextMessage: " + userPhrase + ", " + consultInfo);
-        BaseConfig.instance.transport.sendMessage(userPhrase, consultInfo, null, null);
-    }
-
-    private void sendFileMessage(final UserPhrase userPhrase, final ConsultInfo consultInfo) {
-        LoggerEdna.info("sendFileMessage: " + userPhrase + ", " + consultInfo);
-        final FileDescription fileDescription = userPhrase.getFileDescription();
-        final FileDescription quoteFileDescription = userPhrase.getQuote() != null ? userPhrase.getQuote().getFileDescription() : null;
-        subscribe(
-                Completable.fromAction(() -> {
-                            String filePath = null;
-                            String quoteFilePath = null;
-                            if (fileDescription != null) {
-                                filePath = postFile(fileDescription);
-                            }
-                            if (quoteFileDescription != null) {
-                                quoteFilePath = postFile(quoteFileDescription);
-                            }
-                            BaseConfig.instance.transport.sendMessage(userPhrase, consultInfo, filePath, quoteFilePath);
-                        })
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                () -> {
-                                },
-                                e -> {
-                                    int errorCode = getErrorStringResByCode(e.getMessage());
-                                    String message = appContext.getString(errorCode);
-                                    ChatItemSendErrorModel model = new ChatItemSendErrorModel(
-                                            null,
-                                            userPhrase.getId(),
-                                            message
-                                    );
-                                    chatUpdateProcessor.postChatItemSendError(model);
-                                    LoggerEdna.error(e);
-                                }
-                        )
-        );
     }
 
     private void subscribeToChatEvents() {
@@ -767,6 +649,7 @@ public final class ChatController {
         subscribeToAttachAudioFiles();
         subscribeToClientNotificationDisplayTypeProcessor();
         subscribeSpeechMessageUpdated();
+        subscribeForResendMessage();
     }
 
     private void subscribeToCampaignMessageReplySuccess() {
@@ -969,7 +852,7 @@ public final class ChatController {
                                         if (fragment != null) {
                                             fragment.addChatItem(userPhrase);
                                         }
-                                        proceedSendingQueue(userPhrase);
+                                        messenger.proceedSendingQueue(userPhrase);
                                     }
                                 },
                                 error -> LoggerEdna.error("subscribeToMessageSendSuccess ", error)
@@ -1002,14 +885,14 @@ public final class ChatController {
                                         if (fragment != null) {
                                             fragment.setMessageState(userPhrase.getProviderId(), userPhrase.getSentState());
                                         }
-                                        addMsgToResendQueue(userPhrase);
+                                        messenger.addMsgToResendQueue(userPhrase);
                                         if (fragment != null && isActive) {
                                             fragment.showConnectionError();
                                         }
                                         if (!isActive) {
                                             NotificationWorker.addUnsentMessage(appContext, PrefUtilsBase.getAppMarker());
                                         }
-                                        proceedSendingQueue(userPhrase);
+                                        messenger.proceedSendingQueue(userPhrase);
                                     }
                                 },
                                 error -> LoggerEdna.error("subscribeToMessageSendError ", error)
@@ -1084,6 +967,16 @@ public final class ChatController {
         );
     }
 
+    private void subscribeForResendMessage() {
+        subscribe(messenger.getResendStream()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(providerId -> {
+                    if (fragment != null) {
+                        fragment.setMessageState(providerId, MessageState.STATE_SENDING);
+                    }
+                }, LoggerEdna::error));
+    }
+
     private void removeResolveRequest() {
         LoggerEdna.info("removeResolveRequest");
         subscribe(
@@ -1116,21 +1009,6 @@ public final class ChatController {
     private void resetActiveSurvey() {
         LoggerEdna.info("resetActiveSurvey");
         activeSurvey = null;
-    }
-
-    private void addMsgToResendQueue(final UserPhrase userPhrase) {
-        if (!unsendMessages.contains(userPhrase)) {
-            unsendMessages.add(userPhrase);
-            scheduleResend();
-        }
-    }
-
-    private void scheduleResend() {
-        if (!unsendMessageHandler.hasMessages(RESEND_MSG)) {
-            int resendInterval = BaseConfig.instance.requestConfig.getSocketClientSettings()
-                    .getResendIntervalMillis();
-            unsendMessageHandler.sendEmptyMessageDelayed(RESEND_MSG, resendInterval);
-        }
     }
 
     /*
@@ -1188,36 +1066,10 @@ public final class ChatController {
         }
     }
 
-    private void queueMessageSending(UserPhrase userPhrase) {
-        LoggerEdna.info("queueMessageSending: " + userPhrase);
-        synchronized (sendQueue) {
-            sendQueue.add(userPhrase);
-        }
-        if (sendQueue.size() == 1) {
-            sendMessage(userPhrase);
-        }
-    }
-
-    private void proceedSendingQueue(UserPhrase chatItem) {
-        synchronized (sendQueue) {
-            Iterator<UserPhrase> iterator = sendQueue.iterator();
-            while (iterator.hasNext()) {
-                final UserPhrase queueItem = iterator.next();
-                if (queueItem.isTheSameItem(chatItem)) {
-                    iterator.remove();
-                    break;
-                }
-            }
-        }
-        if (sendQueue.size() > 0) {
-            sendMessage(sendQueue.get(0));
-        }
-    }
-
     public void cleanAll() {
         LoggerEdna.info("cleanAll: ");
         isAllMessagesDownloaded = false;
-        sendQueue.clear();
+        messenger.clearSendQueue();
         databaseHolder.cleanDatabase();
         if (fragment != null) {
             fragment.cleanChat();
@@ -1267,7 +1119,9 @@ public final class ChatController {
                                         true
                                 );
                                 List<ChatItem> chatItems = HistoryParser.getChatItems(response);
-                                saveMessages(chatItems);
+                                messenger.saveMessages(chatItems);
+                                clearUnreadPush();
+                                processSystemMessages(chatItems);
                                 return new Pair<>(response != null ? response.getConsultInfo() : null, setLastAvatars(chatItems));
                             })
                             .subscribeOn(Schedulers.io())
@@ -1296,16 +1150,15 @@ public final class ChatController {
         }
     }
 
-    private void saveMessages(List<ChatItem> chatItems) {
-        databaseHolder.putChatItems(chatItems);
+    private void clearUnreadPush() {
         UnreadMessagesController.INSTANCE.clearUnreadPush();
+    }
+
+    private void processSystemMessages(List<ChatItem> chatItems) {
         if (!isChatWorking()) {
             return;
         }
-        processSystemMessage(chatItems);
-    }
 
-    private void processSystemMessage(List<ChatItem> chatItems) {
         ChatItem latestSystemMessage = null;
         for (ChatItem chatItem : chatItems) {
             if (chatItem instanceof SystemMessage) {
@@ -1456,11 +1309,5 @@ public final class ChatController {
             }
         }
         return null;
-    }
-
-    private boolean hasNoInternet(final Context context) {
-        final ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        final NetworkInfo netInfo = cm.getActiveNetworkInfo();
-        return null == netInfo || !netInfo.isConnected();
     }
 }

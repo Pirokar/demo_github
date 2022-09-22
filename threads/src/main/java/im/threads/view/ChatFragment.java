@@ -75,6 +75,7 @@ import java.util.concurrent.TimeUnit;
 
 import im.threads.ChatStyle;
 import im.threads.R;
+import im.threads.business.annotation.OpenWay;
 import im.threads.business.broadcastReceivers.ProgressReceiver;
 import im.threads.business.config.BaseConfig;
 import im.threads.business.imageLoading.ImageLoader;
@@ -110,16 +111,17 @@ import im.threads.business.utils.ThreadsPermissionChecker;
 import im.threads.business.utils.preferences.PrefUtilsBase;
 import im.threads.databinding.FragmentChatBinding;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
-import im.threads.internal.controllers.ChatController;
 import im.threads.internal.helpers.MediaHelper;
 import im.threads.internal.model.ConsultRole;
 import im.threads.internal.model.InputFieldEnableModel;
 import im.threads.ui.activities.CameraActivity;
+import im.threads.ui.activities.ChatActivity;
 import im.threads.ui.activities.GalleryActivity;
 import im.threads.ui.activities.ImagesActivity;
 import im.threads.ui.activities.filesActivity.FilesActivity;
 import im.threads.ui.adapters.ChatAdapter;
 import im.threads.ui.config.Config;
+import im.threads.ui.controllers.ChatController;
 import im.threads.ui.files.FileSelectedListener;
 import im.threads.ui.fragments.AttachmentBottomSheetDialogFragment;
 import im.threads.ui.fragments.BaseFragment;
@@ -836,12 +838,10 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     private void onRefresh() {
-        //TODO: не знаю почему 500 mills так было
-        subscribe(mChatController.requestItems()
+        subscribe(mChatController.requestItems(getCurrentItemsCount())
                 .delay(500, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::afterRefresh,
-                        onError -> LoggerEdna.error("onRefresh ", onError))
+                .subscribe(this::afterRefresh, onError -> LoggerEdna.error("onRefresh ", onError))
         );
     }
 

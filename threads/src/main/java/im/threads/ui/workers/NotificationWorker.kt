@@ -33,7 +33,7 @@ import im.threads.business.logger.LoggerEdna
 import im.threads.business.utils.FileUtils.convertRelativeUrlToAbsolute
 import im.threads.business.utils.WorkerUtils
 import im.threads.business.utils.WorkerUtils.unmarshall
-import im.threads.internal.controllers.UnreadMessagesController
+import im.threads.business.controllers.UnreadMessagesController
 import im.threads.ui.activities.QuickAnswerActivity
 import im.threads.ui.config.Config
 import im.threads.view.ChatFragment

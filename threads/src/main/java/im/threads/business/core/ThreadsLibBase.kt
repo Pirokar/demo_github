@@ -11,6 +11,7 @@ import im.threads.business.audioConverter.AudioConverter
 import im.threads.business.audioConverter.callback.ILoadCallback
 import im.threads.business.config.BaseConfig
 import im.threads.business.config.BaseConfigBuilder
+import im.threads.business.controllers.UnreadMessagesController
 import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.CampaignMessage
 import im.threads.business.models.FileDescription
@@ -24,8 +25,7 @@ import im.threads.business.utils.FileUtils.getFileSize
 import im.threads.business.utils.preferences.PrefUtilsBase
 import im.threads.business.utils.preferences.PreferencesMigrationBase
 import im.threads.internal.chat_updates.ChatUpdateProcessor
-import im.threads.internal.controllers.ChatController
-import im.threads.internal.controllers.UnreadMessagesController
+import im.threads.ui.controllers.ChatController
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.exceptions.UndeliverableException
 import io.reactivex.plugins.RxJavaPlugins
