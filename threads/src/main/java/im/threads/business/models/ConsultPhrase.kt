@@ -39,6 +39,7 @@ class ConsultPhrase constructor(
     val isOnlyDoc: Boolean
         get() = (
             phraseText.isNullOrEmpty() &&
+                formattedPhrase.isNullOrEmpty() &&
                 !isImage(fileDescription) &&
                 !isVoiceMessage(fileDescription)
             )

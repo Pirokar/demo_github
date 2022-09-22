@@ -22,6 +22,8 @@ import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.utils.FileUtils
 import im.threads.business.utils.toFileSize
+import im.threads.ui.utils.gone
+import im.threads.ui.utils.visible
 import im.threads.ui.views.CircularProgressButton
 import io.reactivex.subjects.PublishSubject
 import java.text.SimpleDateFormat
@@ -138,7 +140,12 @@ class ConsultFileViewHolder(parent: ViewGroup, highlightingStream: PublishSubjec
         }
         val size = fileDescription?.size ?: 0
         mSizeTextView.text = size.toFileSize()
-        mSizeTextView.visibility = if (size > 0) View.VISIBLE else View.GONE
+        if (size > 0) {
+            mSizeTextView.visible()
+            mSizeTextView.text = size.toFileSize()
+        } else {
+            mSizeTextView.gone()
+        }
         mTimeStampTextView.text = sdf.format(Date(consultPhrase.timeStamp))
         val vg = itemView as ViewGroup
         for (i in 0 until vg.childCount) {
