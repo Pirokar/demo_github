@@ -13,7 +13,7 @@ import im.threads.business.utils.UrlUtils
 
 class LinkifyLinksHighlighter : LinksHighlighter {
     override fun highlightAllTypeOfLinks(textView: TextView, isUnderlined: Boolean) {
-        highlightUsualLinks(textView)
+        highlightAllUsualLinks(textView)
         if (!isUnderlined) {
             stripUnderlines(textView)
         }
@@ -25,16 +25,26 @@ class LinkifyLinksHighlighter : LinksHighlighter {
         isUnderlined: Boolean
     ) {
         val scheme = if (url != null) Uri.parse(url).scheme else null
-
-        highlightUsualLinks(textView)
-        Linkify.addLinks(textView, UrlUtils.WEB_URL, scheme)
+        if (scheme == null || scheme.startsWith("http")) {
+            highlightAllUsualLinks(textView)
+        } else {
+            highlightEmailAndPhonesLinks(textView)
+            Linkify.addLinks(textView, UrlUtils.WEB_URL, scheme)
+        }
 
         if (!isUnderlined) {
             stripUnderlines(textView)
         }
     }
 
-    private fun highlightUsualLinks(textView: TextView) {
+    private fun highlightEmailAndPhonesLinks(textView: TextView) {
+        Linkify.addLinks(
+            textView,
+            EMAIL_ADDRESSES or PHONE_NUMBERS
+        )
+    }
+
+    private fun highlightAllUsualLinks(textView: TextView) {
         Linkify.addLinks(
             textView,
             WEB_URLS or EMAIL_ADDRESSES or PHONE_NUMBERS
