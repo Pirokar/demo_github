@@ -116,8 +116,17 @@ class ImageRequestBuilder {
 
     private fun getRightAngleImage(photoPath: String): Float {
         return try {
-            val ei = ExifInterface(BaseConfig.instance.context.contentResolver.openInputStream(Uri.parse(photoPath))!!)
-            when (ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)) {
+            val ei = ExifInterface(
+                BaseConfig.instance.context.contentResolver.openInputStream(
+                    Uri.parse(photoPath)
+                )!!
+            )
+            when (
+                ei.getAttributeInt(
+                    ExifInterface.TAG_ORIENTATION,
+                    ExifInterface.ORIENTATION_NORMAL
+                )
+            ) {
                 ExifInterface.ORIENTATION_NORMAL -> 0f
                 ExifInterface.ORIENTATION_ROTATE_90 -> 90f
                 ExifInterface.ORIENTATION_ROTATE_180 -> 180f

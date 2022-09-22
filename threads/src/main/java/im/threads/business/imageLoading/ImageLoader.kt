@@ -11,7 +11,6 @@ import java.io.File
  */
 class ImageLoader private constructor() {
     private val config = Config()
-    private val currentImageLoader: ImageLoaderRealisation = PicassoImageLoader()
 
     /**
      * Указывает url для загрузки
@@ -203,6 +202,8 @@ class ImageLoader private constructor() {
     }
 
     companion object {
+        private val currentImageLoader: ImageLoaderRealisation = PicassoImageLoader()
+
         /**
          * Возвращает объект ImageLoader
          */
