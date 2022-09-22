@@ -25,8 +25,8 @@ import im.threads.business.ogParser.OGData
 import im.threads.business.ogParser.OGDataContent
 import im.threads.business.ogParser.OpenGraphParser
 import im.threads.business.ogParser.OpenGraphParserJsoupImpl
-import im.threads.internal.model.ExtractedLink
 import im.threads.business.utils.UrlUtils
+import im.threads.internal.model.ExtractedLink
 import im.threads.ui.config.Config
 import im.threads.ui.markdown.LinkifyLinksHighlighter
 import im.threads.ui.markdown.LinksHighlighter
