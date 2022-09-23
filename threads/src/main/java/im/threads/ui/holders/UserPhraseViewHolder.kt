@@ -58,7 +58,8 @@ class UserPhraseViewHolder(
     LayoutInflater.from(parentView.context)
         .inflate(R.layout.item_user_text_with_file, parentView, false),
     highlightingStream,
-    fdMediaPlayer
+    fdMediaPlayer,
+    false
 ) {
     private val sdf = SimpleDateFormat("HH:mm", Locale.US)
 
@@ -83,7 +84,6 @@ class UserPhraseViewHolder(
     private val quoteTextTimeStamp: TextView = itemView.findViewById(R.id.quoteSendAt)
     private val phraseFrame: FrameLayout = itemView.findViewById(R.id.phraseFrame)
     private val ogDataLayout: ViewGroup = itemView.findViewById(R.id.ogDataLayout)
-    private val voiceMessage: ViewGroup = itemView.findViewById(R.id.voiceMessage)
     private val slider: Slider = itemView.findViewById(R.id.voiceMessageUserSlider)
     private val fileSizeTextView: TextView = itemView.findViewById(R.id.fileSize)
     private val errorText: TextView = itemView.findViewById(R.id.errorText)
@@ -113,6 +113,8 @@ class UserPhraseViewHolder(
                     BlendModeCompat.SRC_ATOP
                 )
         }
+
+    override val voiceMessage: ViewGroup = itemView.findViewById(R.id.voiceMessage)
 
     private lateinit var timeStampTextView: BubbleTimeTextView
 
@@ -232,21 +234,30 @@ class UserPhraseViewHolder(
     ) {
         userPhrase.fileDescription?.let {
             fileDescription = it
-            subscribeForVoiceMessageDownloaded(false)
+            subscribeForVoiceMessageDownloaded()
 
             rightTextDescription.text = getFileDescriptionText(it)
-            if (it.state == AttachmentStateEnum.PENDING || userPhrase.sentState == MessageState.STATE_SENDING) {
+            val isLoading = it.state == AttachmentStateEnum.PENDING || userPhrase.sentState == MessageState.STATE_SENDING
+            if (isVoiceMessage(it) && isLoading) {
+                startLoader()
+            } else if (isLoading) {
+                stopLoader()
+                voiceMessage.gone()
                 rightTextRow.visible()
                 showLoaderLayout()
             } else if (it.state === AttachmentStateEnum.ERROR) {
+                stopLoader()
+                voiceMessage.gone()
                 rightTextRow.visible()
                 showErrorLayout(it)
             } else {
+                stopLoader()
                 showCommonLayout()
                 if (isVoiceMessage(it)) {
                     phraseTextView.gone()
                     voiceMessage.visible()
                 } else {
+                    voiceMessage.gone()
                     if (isImage(it)) {
                         imageContainer.visible()
                         image.setOnClickListener(imageClickListener)
