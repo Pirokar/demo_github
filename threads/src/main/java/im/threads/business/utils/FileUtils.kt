@@ -379,7 +379,10 @@ fun Long.toFileSize(): String {
         context.getString(R.string.threads_kbytes),
         context.getString(R.string.threads_bytes)
     )
-    require(this >= 1) { LoggerEdna.error("Invalid file size: $this") }
+    if (this < 0) {
+        LoggerEdna.error("Invalid file size: $this")
+        return "0 ${units[0]}"
+    }
     var result = ""
     for (i in dividers.indices) {
         val divider = dividers[i]
