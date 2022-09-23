@@ -23,6 +23,7 @@ import im.threads.business.models.FileDescription
 import im.threads.business.models.MessageState
 import im.threads.business.models.UserPhrase
 import im.threads.business.models.enums.AttachmentStateEnum
+import im.threads.business.ogParser.OpenGraphParser
 import io.reactivex.subjects.PublishSubject
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -31,12 +32,13 @@ import java.util.Locale
 class ImageFromUserViewHolder(
     parent: ViewGroup,
     private val maskedTransformation: ImageModifications.MaskedModification?,
-    highlightingStream: PublishSubject<ChatItem>
-) :
-    BaseHolder(
-        LayoutInflater.from(parent.context).inflate(R.layout.item_user_image_from, parent, false),
-        highlightingStream
-    ) {
+    highlightingStream: PublishSubject<ChatItem>,
+    openGraphParser: OpenGraphParser
+) : BaseHolder(
+    LayoutInflater.from(parent.context).inflate(R.layout.item_user_image_from, parent, false),
+    highlightingStream,
+    openGraphParser
+) {
     private val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
 
     private var loadedUri: String? = null

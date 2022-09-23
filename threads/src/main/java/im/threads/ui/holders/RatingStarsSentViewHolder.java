@@ -35,6 +35,7 @@ public final class RatingStarsSentViewHolder extends BaseHolder {
     public RatingStarsSentViewHolder(ViewGroup parent) {
         super(
                 LayoutInflater.from(parent.getContext()).inflate(R.layout.item_rate_stars_sent, parent, false),
+                null,
                 null
         );
         star = itemView.findViewById(R.id.star);

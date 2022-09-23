@@ -152,6 +152,7 @@ class ImageLoader private constructor() {
      */
     fun getBitmap(context: Context) {
         config.context = context
+
         return currentImageLoader.getBitmap(config)
     }
 
@@ -161,6 +162,7 @@ class ImageLoader private constructor() {
      */
     fun getBitmapSync(context: Context): Bitmap? {
         config.context = context
+
         return currentImageLoader.getBitmapSync(config)
     }
 
@@ -202,12 +204,17 @@ class ImageLoader private constructor() {
     }
 
     companion object {
-        private val currentImageLoader: ImageLoaderRealisation = PicassoImageLoader()
+        private var currentImageLoader = CurrentImageLoader.getImageLoader()
 
         /**
          * Возвращает объект ImageLoader
          */
         @JvmStatic
         fun get() = ImageLoader()
+
+        @JvmStatic
+        fun clearLoader() {
+            CurrentImageLoader.clearLoader()
+        }
     }
 }

@@ -44,7 +44,7 @@ public final class FileDescription implements Parcelable {
             return new FileDescription[size];
         }
     };
-    private static final PublishSubject<FileDescriptionUri> onCompleteSubject = PublishSubject.create();
+    private final PublishSubject<FileDescriptionUri> onCompleteSubject = PublishSubject.create();
     private long size;
     private String from;
     private Uri fileUri;

@@ -22,6 +22,7 @@ import im.threads.business.models.FileDescription
 import im.threads.business.models.MessageState
 import im.threads.business.models.UserPhrase
 import im.threads.business.models.enums.AttachmentStateEnum
+import im.threads.business.ogParser.OpenGraphParser
 import im.threads.business.utils.FileUtils.getFileName
 import im.threads.business.utils.toFileSize
 import im.threads.ui.views.CircularProgressButton
@@ -30,11 +31,14 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class UserFileViewHolder(parent: ViewGroup, highlightingStream: PublishSubject<ChatItem>) :
-    BaseHolder(
-        LayoutInflater.from(parent.context).inflate(R.layout.item_user_chat_file, parent, false),
-        highlightingStream
-    ) {
+class UserFileViewHolder(
+    parent: ViewGroup,
+    highlightingStream: PublishSubject<ChatItem>,
+    openGraphParser: OpenGraphParser
+) : BaseHolder(
+    LayoutInflater.from(parent.context).inflate(R.layout.item_user_chat_file, parent, false),
+    highlightingStream, openGraphParser
+) {
     private val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
 
     private val fileHeaderTextView: TextView = itemView.findViewById(R.id.header)

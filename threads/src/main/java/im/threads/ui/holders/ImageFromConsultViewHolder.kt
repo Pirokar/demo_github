@@ -22,6 +22,7 @@ import im.threads.business.models.ChatItem
 import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.FileDescription
 import im.threads.business.models.enums.AttachmentStateEnum
+import im.threads.business.ogParser.OpenGraphParser
 import im.threads.business.utils.FileUtils
 import im.threads.ui.utils.invisible
 import im.threads.ui.utils.visible
@@ -33,14 +34,16 @@ import java.util.Locale
 class ImageFromConsultViewHolder(
     parent: ViewGroup,
     private val maskedTransformation: ImageModifications.MaskedModification?,
-    highlightingStream: PublishSubject<ChatItem>
+    highlightingStream: PublishSubject<ChatItem>,
+    openGraphParser: OpenGraphParser
 ) : BaseHolder(
     LayoutInflater.from(parent.context).inflate(
         R.layout.item_image_from_consult,
         parent,
         false
     ),
-    highlightingStream
+    highlightingStream,
+    openGraphParser
 ) {
 
     private val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())

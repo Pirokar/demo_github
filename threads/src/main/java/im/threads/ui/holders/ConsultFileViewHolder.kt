@@ -20,6 +20,7 @@ import im.threads.business.imageLoading.loadImage
 import im.threads.business.models.ChatItem
 import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.enums.AttachmentStateEnum
+import im.threads.business.ogParser.OpenGraphParser
 import im.threads.business.utils.FileUtils
 import im.threads.business.utils.toFileSize
 import im.threads.ui.views.CircularProgressButton
@@ -28,9 +29,14 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class ConsultFileViewHolder(parent: ViewGroup, highlightingStream: PublishSubject<ChatItem>) : BaseHolder(
+class ConsultFileViewHolder(
+    parent: ViewGroup,
+    highlightingStream: PublishSubject<ChatItem>,
+    openGraphParser: OpenGraphParser
+) : BaseHolder(
     LayoutInflater.from(parent.context).inflate(R.layout.item_consult_chat_file, parent, false),
-    highlightingStream
+    highlightingStream,
+    openGraphParser
 ) {
     private val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
 

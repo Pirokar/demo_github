@@ -27,6 +27,7 @@ import im.threads.business.models.FileDescription
 import im.threads.business.models.Quote
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.ogParser.OGDataContent
+import im.threads.business.ogParser.OpenGraphParser
 import im.threads.business.utils.FileUtils
 import im.threads.business.utils.FileUtils.isImage
 import im.threads.business.utils.UrlUtils
@@ -43,10 +44,15 @@ import java.util.Date
 import java.util.Locale
 
 /** layout/item_consultant_text_with_file.xml */
-class ConsultPhraseHolder(parent: ViewGroup, highlightingStream: PublishSubject<ChatItem>) : BaseHolder(
+class ConsultPhraseHolder(
+    parent: ViewGroup,
+    highlightingStream: PublishSubject<ChatItem>,
+    openGraphParser: OpenGraphParser
+) : BaseHolder(
     LayoutInflater.from(parent.context)
         .inflate(R.layout.item_consultant_text_with_file, parent, false),
-    highlightingStream
+    highlightingStream,
+    openGraphParser
 ) {
     private val timeStampSdf = SimpleDateFormat("HH:mm", Locale.getDefault())
 

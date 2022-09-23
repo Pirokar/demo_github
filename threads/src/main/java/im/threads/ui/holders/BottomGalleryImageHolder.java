@@ -20,7 +20,7 @@ public final class BottomGalleryImageHolder extends BaseHolder {
 
     public BottomGalleryImageHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_gallery_bottom, parent, false), null);
+                .inflate(R.layout.item_gallery_bottom, parent, false), null, null);
         image = itemView.findViewById(R.id.image);
         chosenMark = itemView.findViewById(R.id.mark);
     }
