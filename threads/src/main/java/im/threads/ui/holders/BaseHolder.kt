@@ -24,7 +24,6 @@ import im.threads.business.models.enums.ErrorStateEnum
 import im.threads.business.ogParser.OGData
 import im.threads.business.ogParser.OGDataContent
 import im.threads.business.ogParser.OpenGraphParser
-import im.threads.business.ogParser.OpenGraphParserJsoupImpl
 import im.threads.business.utils.UrlUtils
 import im.threads.ui.config.Config
 import im.threads.ui.markdown.LinkifyLinksHighlighter
@@ -47,14 +46,14 @@ import kotlinx.coroutines.launch
 
 abstract class BaseHolder internal constructor(
     itemView: View,
-    private val highlightingStream: PublishSubject<ChatItem>? = null
+    private val highlightingStream: PublishSubject<ChatItem>? = null,
+    private val openGraphParser: OpenGraphParser? = null
 ) : RecyclerView.ViewHolder(itemView) {
     private var currentChatItem: ChatItem? = null
     private var viewsToHighlight: Array<out View>? = null
     private var isThisItemHighlighted = false
     private var compositeDisposable: CompositeDisposable = CompositeDisposable()
     private val linksHighlighter: LinksHighlighter = LinkifyLinksHighlighter()
-    private val openGraphParser: OpenGraphParser = OpenGraphParserJsoupImpl()
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
     protected val rotateAnim = RotateAnimation(
         0f,
@@ -70,15 +69,17 @@ abstract class BaseHolder internal constructor(
     protected fun subscribeForOpenGraphData(ogDataContent: OGDataContent) {
         this.ogDataContent = ogDataContent
 
-        compositeDisposable.add(
-            openGraphParsingStream
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    onOgDataReceived(it)
-                }, {
-                    LoggerEdna.error("Error when receiving OGData", it)
-                })
-        )
+        if (openGraphParser?.openGraphParsingStream != null) {
+            compositeDisposable.add(
+                openGraphParser.openGraphParsingStream
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({
+                        onOgDataReceived(it)
+                    }, {
+                        LoggerEdna.error("Error when receiving OGData", it)
+                    })
+            )
+        }
     }
 
     /**
@@ -245,16 +246,18 @@ abstract class BaseHolder internal constructor(
         if (ogDataContent?.ogDataLayout?.get()?.tag == link) {
             return
         } else {
-            openGraphParser.getCachedContents(link)?.let {
-                openGraphParsingStream.onNext(it)
+            openGraphParser?.getCachedContents(link)?.let {
+                openGraphParser.openGraphParsingStream.onNext(it)
             } ?: hideOGView()
         }
 
         coroutineScope.launch(Dispatchers.Main) {
-            val requestJob = async(Dispatchers.IO) {
-                openGraphParser.getContents(link, messageText)
+            if (openGraphParser != null) {
+                val requestJob = async(Dispatchers.IO) {
+                    openGraphParser.getContents(link, messageText)
+                }
+                openGraphParser.openGraphParsingStream.onNext(requestJob.await())
             }
-            openGraphParsingStream.onNext(requestJob.await())
         }
     }
 
@@ -399,9 +402,5 @@ abstract class BaseHolder internal constructor(
         rotateAnim.repeatCount = Animation.INFINITE
         view.animation = rotateAnim
         rotateAnim.start()
-    }
-
-    companion object {
-        val openGraphParsingStream = PublishSubject.create<OGData>()
     }
 }

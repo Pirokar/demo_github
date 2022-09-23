@@ -59,6 +59,8 @@ import im.threads.business.models.Survey;
 import im.threads.business.models.SystemMessage;
 import im.threads.business.models.UnreadMessages;
 import im.threads.business.models.UserPhrase;
+import im.threads.business.ogParser.OpenGraphParser;
+import im.threads.business.ogParser.OpenGraphParserJsoupImpl;
 import im.threads.business.utils.ChatItemListFinder;
 import im.threads.business.utils.FileUtils;
 import im.threads.business.utils.FileUtilsKt;
@@ -128,6 +130,8 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private final ChatMessagesOrderer chatMessagesOrderer;
     @NonNull
     PublishSubject<ChatItem> highlightingStream = PublishSubject.create();
+    @NonNull
+    OpenGraphParser openGraphParser = new OpenGraphParserJsoupImpl();
     private Context ctx;
     private ImageModifications.MaskedModification outgoingImageMaskTransformation;
     private ImageModifications.MaskedModification incomingImageMaskTransformation;
@@ -192,19 +196,19 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             case TYPE_SYSTEM_MESSAGE:
                 return new SystemMessageViewHolder(parent);
             case TYPE_CONSULT_PHRASE:
-                return new ConsultPhraseHolder(parent, highlightingStream);
+                return new ConsultPhraseHolder(parent, highlightingStream, openGraphParser);
             case TYPE_USER_PHRASE:
-                return new UserPhraseViewHolder(parent, highlightingStream, fdMediaPlayer);
+                return new UserPhraseViewHolder(parent, highlightingStream, openGraphParser, fdMediaPlayer);
             case TYPE_FREE_SPACE:
                 return new SpaceViewHolder(parent);
             case TYPE_IMAGE_FROM_CONSULT:
-                return new ImageFromConsultViewHolder(parent, incomingImageMaskTransformation, highlightingStream);
+                return new ImageFromConsultViewHolder(parent, incomingImageMaskTransformation, highlightingStream, openGraphParser);
             case TYPE_IMAGE_FROM_USER:
-                return new ImageFromUserViewHolder(parent, outgoingImageMaskTransformation, highlightingStream);
+                return new ImageFromUserViewHolder(parent, outgoingImageMaskTransformation, highlightingStream, openGraphParser);
             case TYPE_FILE_FROM_CONSULT:
-                return new ConsultFileViewHolder(parent, highlightingStream);
+                return new ConsultFileViewHolder(parent, highlightingStream, openGraphParser);
             case TYPE_FILE_FROM_USER:
-                return new UserFileViewHolder(parent, highlightingStream);
+                return new UserFileViewHolder(parent, highlightingStream, openGraphParser);
             case TYPE_UNREAD_MESSAGES:
                 return new UnreadMessageViewHolder(parent);
             case TYPE_SCHEDULE:
@@ -220,7 +224,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             case TYPE_REQ_RESOLVE_THREAD:
                 return new RequestResolveThreadViewHolder(parent);
             case TYPE_VOICE_MESSAGE_FROM_CONSULT:
-                return new ConsultVoiceMessageViewHolder(parent, highlightingStream, fdMediaPlayer);
+                return new ConsultVoiceMessageViewHolder(parent, highlightingStream, openGraphParser, fdMediaPlayer);
             case TYPE_QUICK_REPLIES:
                 return new QuickRepliesViewHolder(parent);
             default:

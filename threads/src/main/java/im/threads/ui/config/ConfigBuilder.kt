@@ -9,8 +9,8 @@ import im.threads.business.config.BaseConfigBuilder
 import im.threads.business.core.UnreadMessagesCountListener
 import im.threads.business.logger.LoggerConfig
 import im.threads.business.rest.config.RequestConfig
-import im.threads.ui.core.PendingIntentCreator
 import im.threads.ui.activities.ChatActivity
+import im.threads.ui.core.PendingIntentCreator
 import okhttp3.Interceptor
 
 class ConfigBuilder(context: Context) : BaseConfigBuilder(context) {

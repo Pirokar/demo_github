@@ -30,6 +30,7 @@ import im.threads.business.models.Quote
 import im.threads.business.models.UserPhrase
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.ogParser.OGDataContent
+import im.threads.business.ogParser.OpenGraphParser
 import im.threads.business.utils.FileUtils
 import im.threads.business.utils.FileUtils.isImage
 import im.threads.business.utils.FileUtils.isVoiceMessage
@@ -53,11 +54,13 @@ import kotlin.math.min
 class UserPhraseViewHolder(
     private val parentView: ViewGroup,
     highlightingStream: PublishSubject<ChatItem>,
+    openGraphParser: OpenGraphParser,
     fdMediaPlayer: FileDescriptionMediaPlayer
 ) : VoiceMessageBaseHolder(
     LayoutInflater.from(parentView.context)
         .inflate(R.layout.item_user_text_with_file, parentView, false),
     highlightingStream,
+    openGraphParser,
     fdMediaPlayer,
     false
 ) {

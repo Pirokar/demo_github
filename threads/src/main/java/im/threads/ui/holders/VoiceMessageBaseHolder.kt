@@ -10,6 +10,7 @@ import im.threads.business.media.FileDescriptionMediaPlayer
 import im.threads.business.models.ChatItem
 import im.threads.business.models.FileDescription
 import im.threads.business.models.FileDescriptionUri
+import im.threads.business.ogParser.OpenGraphParser
 import im.threads.ui.config.Config
 import im.threads.ui.utils.visible
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -19,11 +20,13 @@ import io.reactivex.subjects.PublishSubject
 abstract class VoiceMessageBaseHolder internal constructor(
     itemView: View,
     highlightStream: PublishSubject<ChatItem>?,
+    openGraphParser: OpenGraphParser,
     private val fdMediaPlayer: FileDescriptionMediaPlayer,
     private val isIncomingMessage: Boolean
 ) : BaseHolder(
     itemView,
-    highlightStream
+    highlightStream,
+    openGraphParser
 ) {
     abstract var fileDescription: FileDescription?
     abstract fun init(maxValue: Int, progress: Int, isPlaying: Boolean)

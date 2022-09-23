@@ -23,6 +23,7 @@ import im.threads.business.models.ChatItem
 import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.FileDescription
 import im.threads.business.models.enums.AttachmentStateEnum
+import im.threads.business.ogParser.OpenGraphParser
 import im.threads.business.utils.FileUtils
 import im.threads.ui.utils.gone
 import im.threads.ui.utils.invisible
@@ -38,10 +39,12 @@ import java.util.Locale
 class ConsultVoiceMessageViewHolder(
     parent: ViewGroup,
     highlightingStream: PublishSubject<ChatItem>,
+    openGraphParser: OpenGraphParser,
     fdMediaPlayer: FileDescriptionMediaPlayer
 ) : VoiceMessageBaseHolder(
     LayoutInflater.from(parent.context).inflate(R.layout.item_consult_voice_message, parent, false),
     highlightingStream,
+    openGraphParser,
     fdMediaPlayer,
     true
 ) {
