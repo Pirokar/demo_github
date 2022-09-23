@@ -4,10 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.text.SpannableString
-import android.text.style.ForegroundColorSpan
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 import android.widget.RelativeLayout
 import android.widget.TextView
@@ -20,26 +16,14 @@ import im.threads.business.imageLoading.loadImage
 import im.threads.business.models.ConsultInfo
 import im.threads.business.utils.FileUtils.convertRelativeUrlToAbsolute
 import im.threads.databinding.ActivityConsultPageBinding
-import im.threads.ui.activities.filesActivity.FilesActivity
 import im.threads.ui.config.Config
 import im.threads.ui.utils.setColorFilter
-import im.threads.view.ChatFragment
 
 internal open class ConsultActivity : BaseActivity() {
     private val binding: ActivityConsultPageBinding by lazy {
         ActivityConsultPageBinding.inflate(layoutInflater)
     }
-    private val config: Config by lazy {
-        Config.getInstance()
-    }
-    private val isFilesAndMediaEnabled: Boolean
-        get() {
-            return try {
-                Config.getInstance().filesAndMediaMenuItemEnabled
-            } catch (exc: NullPointerException) {
-                false
-            }
-        }
+    private val config: Config by lazy { Config.getInstance() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,62 +37,6 @@ internal open class ConsultActivity : BaseActivity() {
             setConsultInfo(it)
         }
         setupToolbar()
-    }
-
-    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
-        val searchMenuItem = menu.getItem(0)
-        val searchMenuSpannable = SpannableString(searchMenuItem.title)
-        searchMenuSpannable.setSpan(
-            ForegroundColorSpan(
-                ContextCompat.getColor(
-                    this,
-                    config.getChatStyle().menuItemTextColorResId
-                )
-            ),
-            0,
-            searchMenuSpannable.length,
-            0
-        )
-        searchMenuItem.title = searchMenuSpannable
-        val filesAndMedia = menu.getItem(1)
-        val filesAndMediaSpannable = SpannableString(filesAndMedia.title)
-        filesAndMediaSpannable.setSpan(
-            ForegroundColorSpan(
-                ContextCompat.getColor(
-                    this,
-                    config.getChatStyle().menuItemTextColorResId
-                )
-            ),
-            0,
-            filesAndMediaSpannable.length,
-            0
-        )
-        filesAndMedia.title = filesAndMediaSpannable
-        return super.onPrepareOptionsMenu(menu)
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.threads_menu_main, menu)
-        menu.findItem(R.id.files_and_media).isVisible = isFilesAndMediaEnabled
-
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.files_and_media -> {
-                FilesActivity.startActivity(this)
-                true
-            }
-            R.id.search -> {
-                sendBroadcast(Intent(ChatFragment.ACTION_SEARCH_CHAT_FILES))
-                finish()
-                true
-            }
-            else -> {
-                super.onOptionsItemSelected(item)
-            }
-        }
     }
 
     @Suppress("DEPRECATION")
@@ -184,9 +112,7 @@ internal open class ConsultActivity : BaseActivity() {
          * Запускает текущую активити.
          *
          * @param activity активити, из которой будет произведен запуск ConsultActivity.
-         * @param avatarPath путь к аватару
-         * @param name имя оператора
-         * @param status статус оператора.
+         * @param consultInfo контейнер с данными оператора.
          */
         @JvmStatic
         fun startActivity(
