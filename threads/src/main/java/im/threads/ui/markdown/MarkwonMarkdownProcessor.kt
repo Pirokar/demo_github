@@ -10,7 +10,6 @@ import io.noties.markwon.MarkwonConfiguration
 import io.noties.markwon.core.MarkwonTheme
 import io.noties.markwon.ext.strikethrough.StrikethroughPlugin
 import io.noties.markwon.image.ImagesPlugin
-import io.noties.markwon.linkify.LinkifyPlugin
 
 // Constructor for test purposes
 class MarkwonMarkdownProcessor(

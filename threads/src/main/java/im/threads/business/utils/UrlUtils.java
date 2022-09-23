@@ -117,15 +117,16 @@ public final class UrlUtils {
             return null;
         }
 
-        Matcher matcherWithBrackets = WEB_URL_PATTERN.matcher(text);
-        if (matcherWithBrackets.find()) {
-            String url = matcherWithBrackets.group();
-            boolean isEmailOnly = !isTextContainsNotOnlyEmail(text, url);
-            return new ExtractedLink(trimInvalidUrlCharacters(url), isEmailOnly);
-        }
         Matcher m = WEB_URL.matcher(text);
         if (m.find()) {
             String url = m.group();
+            boolean isEmailOnly = !isTextContainsNotOnlyEmail(text, url);
+            return new ExtractedLink(trimInvalidUrlCharacters(url), isEmailOnly);
+        }
+
+        Matcher matcherRegular = WEB_URL_PATTERN.matcher(text);
+        if (matcherRegular.find()) {
+            String url = matcherRegular.group();
             boolean isEmailOnly = !isTextContainsNotOnlyEmail(text, url);
             return new ExtractedLink(trimInvalidUrlCharacters(url), isEmailOnly);
         }

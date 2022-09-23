@@ -25,6 +25,7 @@ import im.threads.business.models.FileDescription
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.ogParser.OpenGraphParser
 import im.threads.business.utils.FileUtils
+import im.threads.business.utils.UrlUtils
 import im.threads.ui.utils.gone
 import im.threads.ui.utils.invisible
 import im.threads.ui.utils.visible
@@ -175,8 +176,9 @@ class ConsultVoiceMessageViewHolder(
 
     private fun checkText(consultPhrase: ConsultPhrase) {
         if (!consultPhrase.phraseText.isNullOrBlank()) {
+            val extractedLink = UrlUtils.extractLink(consultPhrase.phraseText)
             phraseTextView.visible()
-            highlightOperatorText(phraseTextView, consultPhrase)
+            highlightOperatorText(phraseTextView, consultPhrase, extractedLink?.link)
         } else {
             phraseTextView.gone()
         }

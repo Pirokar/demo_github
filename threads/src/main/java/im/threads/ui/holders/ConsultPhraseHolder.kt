@@ -259,9 +259,9 @@ class ConsultPhraseHolder(
         phrase: String
     ) {
         phraseTextView.bindTimestampView(timeStampTextView)
-        phraseTextView.visibility = View.VISIBLE
-        highlightOperatorText(phraseTextView, consultPhrase)
-        bindOGData(phrase)
+        phraseTextView.visible()
+        val extractedLink = bindOGData(phrase)
+        highlightOperatorText(phraseTextView, consultPhrase, extractedLink?.link)
     }
 
     private fun showQuote(

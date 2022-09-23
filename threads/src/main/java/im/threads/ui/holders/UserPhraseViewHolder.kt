@@ -226,8 +226,8 @@ class UserPhraseViewHolder(
     private fun showPhrase(phrase: String) {
         phraseTextView.visible()
         phraseTextView.bindTimestampView(timeStampTextView)
-        highlightClientText(phraseTextView, phrase)
         bindOGData(phrase)
+        highlightClientText(phraseTextView, phrase)
     }
 
     private fun showFiles(
