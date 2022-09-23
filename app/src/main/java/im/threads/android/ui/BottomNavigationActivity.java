@@ -140,7 +140,8 @@ public class BottomNavigationActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             flags |= PendingIntent.FLAG_IMMUTABLE;
         }
-        return PendingIntent.getActivity(context, 0, intent, flags);
+        int requestCode = (int)System.currentTimeMillis();
+        return PendingIntent.getActivity(context, requestCode, intent, flags);
     }
 
     @Override
