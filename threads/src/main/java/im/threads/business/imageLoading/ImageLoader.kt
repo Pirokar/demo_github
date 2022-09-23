@@ -143,7 +143,7 @@ class ImageLoader private constructor() {
         config.imageView = imageView
         config.context = imageView.context
 
-        currentImageLoader!!.load(config)
+        currentImageLoader.load(config)
     }
 
     /**
@@ -153,7 +153,7 @@ class ImageLoader private constructor() {
     fun getBitmap(context: Context) {
         config.context = context
 
-        return currentImageLoader!!.getBitmap(config)
+        return currentImageLoader.getBitmap(config)
     }
 
     /**
@@ -163,7 +163,7 @@ class ImageLoader private constructor() {
     fun getBitmapSync(context: Context): Bitmap? {
         config.context = context
 
-        return currentImageLoader!!.getBitmapSync(config)
+        return currentImageLoader.getBitmapSync(config)
     }
 
     /**
@@ -204,13 +204,7 @@ class ImageLoader private constructor() {
     }
 
     companion object {
-        private var currentImageLoader: ImageLoaderRealisation? = PicassoImageLoader()
-            get() {
-                if (field == null) {
-                    field = PicassoImageLoader()
-                }
-                return field
-            }
+        private var currentImageLoader = CurrentImageLoader.getImageLoader()
 
         /**
          * Возвращает объект ImageLoader
@@ -220,7 +214,7 @@ class ImageLoader private constructor() {
 
         @JvmStatic
         fun clearLoader() {
-            currentImageLoader = null
+            CurrentImageLoader.clearLoader()
         }
     }
 }
