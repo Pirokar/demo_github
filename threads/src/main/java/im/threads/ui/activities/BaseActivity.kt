@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.useractivity.UserActivityTimeProvider.getLastUserActivityTimeCounter
 
 /**
@@ -27,6 +28,11 @@ abstract class BaseActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         invalidateOptionsMenu()
+    }
+
+    override fun onStop() {
+        ImageLoader.clearLoader()
+        super.onStop()
     }
 
     @ColorInt

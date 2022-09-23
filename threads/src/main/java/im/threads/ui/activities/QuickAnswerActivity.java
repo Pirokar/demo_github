@@ -25,7 +25,7 @@ import im.threads.ui.controllers.QuickAnswerController;
 import im.threads.ui.fragments.QuickAnswerFragment;
 
 public final class QuickAnswerActivity
-        extends AppCompatActivity {
+        extends BaseActivity {
     public static final String ACTION_ANSWER = "im.threads.ACTION_ANSWER";
     public static final String ACTION_CANCEL = "im.threads.ACTION_CANCEL";
     private QuickAnswerReceiver mQuickAnswerReceiver;
