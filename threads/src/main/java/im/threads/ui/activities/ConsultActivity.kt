@@ -62,7 +62,7 @@ internal open class ConsultActivity : BaseActivity() {
             config.getChatStyle().defaultOperatorAvatar
         )
 
-        var imagePath = intent.getStringExtra(consultInfo.photoUrl)
+        var imagePath = consultInfo.photoUrl
         if (!imagePath.isNullOrEmpty()) {
             imagePath = convertRelativeUrlToAbsolute(imagePath)
             consultImage.loadImage(imagePath)
