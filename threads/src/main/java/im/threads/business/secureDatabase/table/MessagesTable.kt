@@ -2,12 +2,15 @@ package im.threads.business.secureDatabase.table
 
 import android.content.ContentValues
 import android.database.Cursor
+import android.net.Uri
+import im.threads.business.config.BaseConfig
 import im.threads.business.formatters.SpeechStatus.Companion.fromString
 import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.ChatItem
 import im.threads.business.models.ConsultConnectionMessage
 import im.threads.business.models.ConsultInfo
 import im.threads.business.models.ConsultPhrase
+import im.threads.business.models.FileDescription
 import im.threads.business.models.MessageState
 import im.threads.business.models.QuestionDTO
 import im.threads.business.models.RequestResolveThread
@@ -15,8 +18,11 @@ import im.threads.business.models.SimpleSystemMessage
 import im.threads.business.models.SpeechMessageUpdate
 import im.threads.business.models.Survey
 import im.threads.business.models.UserPhrase
+import im.threads.business.utils.FileDownloader.Companion.getDownloadDir
+import im.threads.business.utils.FileProviderHelper
 import net.zetetic.database.sqlcipher.SQLiteDatabase
 import net.zetetic.database.sqlcipher.SQLiteOpenHelper
+import java.io.File
 import java.util.Locale
 
 class MessagesTable(
@@ -159,6 +165,10 @@ class MessagesTable(
         if (chatItem is ConsultPhrase) {
             insertOrUpdateMessage(sqlHelper, getConsultPhraseCV(chatItem))
             chatItem.fileDescription?.let {
+                isFileDownloaded(it)?.let { uri ->
+                    it.downloadProgress = 100
+                    it.fileUri = uri
+                }
                 fileDescriptionTable.putFileDescription(
                     sqlHelper,
                     it,
@@ -180,6 +190,10 @@ class MessagesTable(
             chatItem.id?.let { id ->
                 insertOrUpdateMessage(sqlHelper, getUserPhraseCV(chatItem))
                 chatItem.fileDescription?.let {
+                    isFileDownloaded(it)?.let { uri ->
+                        it.downloadProgress = 100
+                        it.fileUri = uri
+                    }
                     fileDescriptionTable.putFileDescription(
                         sqlHelper,
                         it,
@@ -704,6 +718,19 @@ class MessagesTable(
                 )
         sqlHelper.writableDatabase
             .update(TABLE_MESSAGES, cv, whereClause, arrayOf(uuid))
+    }
+
+    private fun isFileDownloaded(fileDescription: FileDescription): Uri? {
+        val outputFile = File(
+            getDownloadDir(BaseConfig.instance.context),
+            fileDescription.incomingName
+        )
+        return if (outputFile.exists()) {
+            return FileProviderHelper.getUriForFile(
+                BaseConfig.instance.context,
+                outputFile
+            )
+        } else null
     }
 
     private fun stringToList(text: String?): List<String> {
