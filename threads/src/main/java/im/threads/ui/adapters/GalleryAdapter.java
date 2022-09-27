@@ -12,7 +12,7 @@ import java.util.List;
 
 import im.threads.R;
 import im.threads.ui.holders.GalleryItemHolder;
-import im.threads.internal.model.MediaPhoto;
+import im.threads.business.models.MediaPhoto;
 import im.threads.ui.config.Config;
 
 public final class GalleryAdapter extends RecyclerView.Adapter<GalleryItemHolder> {

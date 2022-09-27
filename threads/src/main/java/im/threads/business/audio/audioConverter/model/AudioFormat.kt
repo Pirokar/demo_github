@@ -1,4 +1,4 @@
-package im.threads.business.audioConverter.model
+package im.threads.business.audio.audioConverter.model
 
 import java.util.Locale
 

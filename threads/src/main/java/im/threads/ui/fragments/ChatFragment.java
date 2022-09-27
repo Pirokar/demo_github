@@ -1,9 +1,8 @@
-package im.threads.view;
+package im.threads.ui.fragments;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
-import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
@@ -15,7 +14,6 @@ import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
-import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -61,7 +59,6 @@ import com.google.android.material.slider.Slider;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
@@ -76,6 +73,7 @@ import java.util.concurrent.TimeUnit;
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.business.annotation.OpenWay;
+import im.threads.business.audio.audioRecorder.AudioRecorder;
 import im.threads.business.broadcastReceivers.ProgressReceiver;
 import im.threads.business.config.BaseConfig;
 import im.threads.business.imageLoading.ImageLoader;
@@ -103,6 +101,7 @@ import im.threads.business.models.UpcomingUserMessage;
 import im.threads.business.models.UserPhrase;
 import im.threads.business.useractivity.UserActivityTime;
 import im.threads.business.useractivity.UserActivityTimeProvider;
+import im.threads.business.utils.ClibpoardExtensionsKt;
 import im.threads.business.utils.FileProviderHelper;
 import im.threads.business.utils.FileUtils;
 import im.threads.business.utils.FileUtilsKt;
@@ -110,10 +109,10 @@ import im.threads.business.utils.RxUtils;
 import im.threads.business.utils.ThreadsPermissionChecker;
 import im.threads.business.utils.preferences.PrefUtilsBase;
 import im.threads.databinding.FragmentChatBinding;
-import im.threads.internal.chat_updates.ChatUpdateProcessor;
-import im.threads.internal.helpers.MediaHelper;
-import im.threads.internal.model.ConsultRole;
-import im.threads.internal.model.InputFieldEnableModel;
+import im.threads.business.chat_updates.ChatUpdateProcessor;
+import im.threads.business.utils.MediaHelper;
+import im.threads.business.models.ConsultRole;
+import im.threads.business.models.InputFieldEnableModel;
 import im.threads.ui.activities.CameraActivity;
 import im.threads.ui.activities.ChatActivity;
 import im.threads.ui.activities.GalleryActivity;
@@ -123,9 +122,6 @@ import im.threads.ui.adapters.ChatAdapter;
 import im.threads.ui.config.Config;
 import im.threads.ui.controllers.ChatController;
 import im.threads.ui.files.FileSelectedListener;
-import im.threads.ui.fragments.AttachmentBottomSheetDialogFragment;
-import im.threads.ui.fragments.BaseFragment;
-import im.threads.ui.fragments.PermissionDescriptionAlertDialogFragment;
 import im.threads.ui.permissions.PermissionsActivity;
 import im.threads.ui.styles.permissions.PermissionDescriptionType;
 import im.threads.ui.utils.ColorsHelper;
@@ -207,9 +203,7 @@ public final class ChatFragment extends BaseFragment implements
     private List<String> cameraPermissions;
     private List<Uri> mAttachedImages = new ArrayList<>();
     @Nullable
-    private MediaRecorder recorder = null;
-    @Nullable
-    private String voiceFilePath = null;
+    private AudioRecorder recorder = null;
     private boolean isNewMessageUpdateTimeoutOn = false;
 
     private QuickReplyItem quickReplyItem = null;
@@ -461,8 +455,8 @@ public final class ChatFragment extends BaseFragment implements
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(() -> {
-                                            if (voiceFilePath != null) {
-                                                File file = new File(voiceFilePath);
+                                            if (recorder != null) {
+                                                File file = new File(recorder.getVoiceFilePath());
                                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                                                     addVoiceMessagePreview(file);
                                                 } else {
@@ -504,25 +498,8 @@ public final class ChatFragment extends BaseFragment implements
                                         if (context == null) {
                                             return;
                                         }
-                                        recorder = new MediaRecorder();
-                                        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                                            voiceFilePath = context.getFilesDir().getAbsolutePath() + String.format("/voice%s.ogg", fileNameDateFormat.format(new Date()));
-                                            recorder.setOutputFormat(MediaRecorder.OutputFormat.OGG);
-                                            recorder.setAudioEncoder(MediaRecorder.AudioEncoder.OPUS);
-                                        } else {
-                                            voiceFilePath = context.getFilesDir().getAbsolutePath() + String.format("/voice%s.wav", fileNameDateFormat.format(new Date()));
-                                            recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-                                            recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_WB);
-                                            recorder.setAudioEncodingBitRate(128000);
-                                            recorder.setAudioSamplingRate(44100);
-                                        }
-                                        recorder.setOutputFile(voiceFilePath);
-                                        try {
-                                            recorder.prepare();
-                                        } catch (IOException e) {
-                                            LoggerEdna.error("prepare() failed");
-                                        }
+                                        recorder = new AudioRecorder(context);
+                                        recorder.prepareWithDefaultConfig(fileNameDateFormat);
                                         recorder.start();
                                     }
                                 })
@@ -539,12 +516,7 @@ public final class ChatFragment extends BaseFragment implements
                 return Completable.fromAction(() -> {
                     synchronized (this) {
                         if (recorder != null) {
-                            try {
-                                recorder.stop();
-                                recorder.release();
-                            } catch (RuntimeException runtimeException) {
-                                LoggerEdna.error("Exception occurred in releaseRecorder but it's fine", runtimeException);
-                            }
+                            recorder.stop();
                             recorder = null;
                         }
                     }
@@ -805,7 +777,7 @@ public final class ChatFragment extends BaseFragment implements
                 campaignMessage,
                 mQuote,
                 inputText.trim(),
-                isCopy(inputText)
+                ClibpoardExtensionsKt.isLastCopyText(inputText)
         );
         input.add(message);
         sendMessage(input);
@@ -980,7 +952,7 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     private boolean hasAttachments() {
-        boolean hasVoice = !TextUtils.isEmpty(voiceFilePath);
+        boolean hasVoice = recorder != null;
         boolean hasFile = getFileDescription() != null;
         boolean hasImages = !(mAttachedImages == null || mAttachedImages.isEmpty());
         return hasVoice || hasFile || hasImages;
@@ -1045,8 +1017,7 @@ public final class ChatFragment extends BaseFragment implements
                     Uri photoUri = FileProviderHelper.getUriForFile(activity, externalCameraPhotoFile);
                     LoggerEdna.debug("Image File uri resolved: " + photoUri.toString());
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
-                    // https://stackoverflow.com/a/48391446/1321401
-                    MediaHelper.grantPermissionsForUri(activity, intent, photoUri);
+                    MediaHelper.grantPermissionsForImageUri(activity, intent, photoUri);
                     startActivityForResult(intent, REQUEST_EXTERNAL_CAMERA_PHOTO);
                 } catch (IllegalArgumentException e) {
                     LoggerEdna.error("Could not start external camera", e);
@@ -1198,11 +1169,11 @@ public final class ChatFragment extends BaseFragment implements
 
     private void onCopyClick(Activity activity, ChatPhrase cp) {
         ClipboardManager cm = (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
-        if (cm == null) {
+        String whatToCopy = cp.getPhraseText();
+        if (cm == null || whatToCopy == null) {
             return;
         }
-        cm.setPrimaryClip(new ClipData("", new String[]{"text/plain"}, new ClipData.Item(cp.getPhraseText())));
-        PrefUtilsBase.setLastCopyText(cp.getPhraseText());
+        ClibpoardExtensionsKt.copyToBuffer(cm, whatToCopy);
         unChooseItem();
     }
 
@@ -1245,32 +1216,13 @@ public final class ChatFragment extends BaseFragment implements
                                     if (inputText == null) {
                                         return;
                                     }
-                                    List<UpcomingUserMessage> messages = new ArrayList<>();
-                                    Uri fileUri = filteredPhotos.get(0);
-                                    messages.add(new UpcomingUserMessage(
-                                            new FileDescription(
-                                                    requireContext().getString(R.string.threads_I),
-                                                    fileUri,
-                                                    FileUtils.getFileSize(fileUri),
-                                                    System.currentTimeMillis()),
+                                    List<UpcomingUserMessage> messages = FileUtils.getUpcomingUserMessagesFromSelection(
+                                            filteredPhotos,
+                                            inputText,
+                                            requireContext().getString(R.string.threads_I),
                                             campaignMessage,
-                                            mQuote,
-                                            inputText.trim(),
-                                            isCopy(inputText))
+                                            mQuote
                                     );
-                                    for (int i = 1; i < filteredPhotos.size(); i++) {
-                                        fileUri = filteredPhotos.get(i);
-                                        FileDescription fileDescription = new FileDescription(
-                                                requireContext().getString(R.string.threads_I),
-                                                fileUri,
-                                                FileUtils.getFileSize(fileUri),
-                                                System.currentTimeMillis()
-                                        );
-                                        UpcomingUserMessage upcomingUserMessage = new UpcomingUserMessage(
-                                                fileDescription, null, null, null, false
-                                        );
-                                        messages.add(upcomingUserMessage);
-                                    }
                                     if (isSendBlocked) {
                                         clearInput();
                                         showToast(requireContext().getString(R.string.threads_message_were_unsent));
@@ -1394,7 +1346,7 @@ public final class ChatFragment extends BaseFragment implements
                                             campaignMessage,
                                             mQuote,
                                             inputText.trim(),
-                                            isCopy(inputText)
+                                            ClibpoardExtensionsKt.isLastCopyText(inputText)
                                     );
                             if (isSendBlocked) {
                                 showToast(getString(R.string.threads_message_were_unsent));
@@ -1726,11 +1678,9 @@ public final class ChatFragment extends BaseFragment implements
 
     private void setSubtitle(@NonNull ConsultInfo info, @NonNull Context context) {
         String subtitle;
-        if (style.chatSubtitleShowOrgUnit
-                && !TextUtils.isEmpty(info.getOrganizationUnit())) {
+        if (style.chatSubtitleShowOrgUnit && !TextUtils.isEmpty(info.getOrganizationUnit())) {
             subtitle = info.getOrganizationUnit();
-        } else if (getResources().getBoolean(style.fixedChatSubtitle)
-                || TextUtils.isEmpty(info.getRole())) {
+        } else if (getResources().getBoolean(style.fixedChatSubtitle) || TextUtils.isEmpty(info.getRole())) {
             subtitle = context.getString(style.chatSubtitleTextResId);
         } else {
             ConsultRole role = ConsultRole.consultRoleFromString(info.getRole());
@@ -1774,16 +1724,6 @@ public final class ChatFragment extends BaseFragment implements
         chatAdapter.changeStateOfSurvey(uuid, sentState);
     }
 
-    private boolean isCopy(String text) {
-        if (TextUtils.isEmpty(text)) {
-            return false;
-        }
-        if (TextUtils.isEmpty(PrefUtilsBase.getLastCopyText())) {
-            return false;
-        }
-        return text.contains(PrefUtilsBase.getLastCopyText());
-    }
-
     private void hideCopyControls() {
         Activity activity = getActivity();
         if (activity == null) {
@@ -1808,8 +1748,10 @@ public final class ChatFragment extends BaseFragment implements
 
     private void setBottomStateDefault() {
         hideBottomSheet();
-        if (!isInMessageSearchMode) binding.searchLo.setVisibility(View.GONE);
-        if (!isInMessageSearchMode) binding.search.setText("");
+        if (!isInMessageSearchMode) {
+            binding.searchLo.setVisibility(View.GONE);
+            binding.search.setText("");
+        }
     }
 
     private void setTitleStateCurrentOperatorConnected() {
@@ -2116,7 +2058,7 @@ public final class ChatFragment extends BaseFragment implements
             PrefUtilsBase.setFileDescriptionDraft(fileDescription);
         }
         mChatController.setActivityIsForeground(false);
-        if (binding.swipeRefresh != null) {
+        if (isAdded()) {
             binding.swipeRefresh.setRefreshing(false);
             binding.swipeRefresh.destroyDrawingCache();
             binding.swipeRefresh.clearAnimation();
@@ -2325,7 +2267,8 @@ public final class ChatFragment extends BaseFragment implements
         startActivityForResult(
                 new Intent(Intent.ACTION_OPEN_DOCUMENT)
                         .addCategory(Intent.CATEGORY_OPENABLE)
-                        .setType("*/*"), REQUEST_CODE_FILE);
+                        .setType("*/*"), REQUEST_CODE_FILE
+        );
     }
 
     @Override
@@ -2670,7 +2613,7 @@ public final class ChatFragment extends BaseFragment implements
         }
 
         @Override
-        public void onQiuckReplyClick(QuickReply quickReply) {
+        public void onQuickReplyClick(QuickReply quickReply) {
             hideQuickReplies();
             sendMessage(Collections.singletonList(
                             new UpcomingUserMessage(
@@ -2678,7 +2621,7 @@ public final class ChatFragment extends BaseFragment implements
                                     null,
                                     null,
                                     quickReply.getText().trim(),
-                                    isCopy(quickReply.getText()))
+                                    ClibpoardExtensionsKt.isLastCopyText(quickReply.getText()))
                     ),
                     false
             );

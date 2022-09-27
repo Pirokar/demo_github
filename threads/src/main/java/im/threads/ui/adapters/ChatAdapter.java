@@ -66,7 +66,7 @@ import im.threads.business.utils.FileUtils;
 import im.threads.business.utils.FileUtilsKt;
 import im.threads.business.utils.preferences.PrefUtilsBase;
 import im.threads.business.workers.FileDownloadWorker;
-import im.threads.internal.model.NoChatItem;
+import im.threads.business.models.NoChatItem;
 import im.threads.ui.config.Config;
 import im.threads.ui.holders.BaseHolder;
 import im.threads.ui.holders.ConsultFileViewHolder;
@@ -1078,7 +1078,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
         void onResolveThreadClick(boolean approveResolve);
 
-        void onQiuckReplyClick(QuickReply quickReply);
+        void onQuickReplyClick(QuickReply quickReply);
     }
 
     private class ChatMessagesOrderer {

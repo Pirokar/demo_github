@@ -24,9 +24,9 @@ import java.util.Map;
 
 import im.threads.R;
 import im.threads.databinding.ActivityGalleryBinding;
-import im.threads.internal.helpers.MediaHelper;
-import im.threads.internal.model.MediaPhoto;
-import im.threads.internal.model.PhotoBucketItem;
+import im.threads.business.utils.MediaHelper;
+import im.threads.business.models.MediaPhoto;
+import im.threads.business.models.PhotoBucketItem;
 import im.threads.ui.adapters.GalleryAdapter;
 import im.threads.ui.adapters.PhotoBucketsGalleryAdapter;
 import im.threads.ui.utils.BucketsGalleryDecorator;

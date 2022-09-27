@@ -37,7 +37,7 @@ import im.threads.business.transport.models.SpeechMessageUpdatedContent;
 import im.threads.business.transport.models.SurveyContent;
 import im.threads.business.transport.models.SystemMessageContent;
 import im.threads.business.transport.models.TextContent;
-import im.threads.internal.chat_updates.ChatUpdateProcessor;
+import im.threads.business.chat_updates.ChatUpdateProcessor;
 
 public final class MessageParser {
     private MessageParser() {

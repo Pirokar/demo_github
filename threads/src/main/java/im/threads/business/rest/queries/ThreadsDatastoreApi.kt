@@ -1,6 +1,6 @@
 package im.threads.business.rest.queries
 
-import im.threads.internal.model.FileUploadResponse
+import im.threads.business.models.FileUploadResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Call

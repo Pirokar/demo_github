@@ -20,12 +20,12 @@ import im.threads.business.imageLoading.loadImage
 import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.ChatItem
 import im.threads.business.models.ConsultPhrase
+import im.threads.business.models.ExtractedLink
 import im.threads.business.models.enums.ErrorStateEnum
 import im.threads.business.ogParser.OGData
 import im.threads.business.ogParser.OGDataContent
 import im.threads.business.ogParser.OpenGraphParser
 import im.threads.business.utils.UrlUtils
-import im.threads.internal.model.ExtractedLink
 import im.threads.ui.config.Config
 import im.threads.ui.markdown.LinkifyLinksHighlighter
 import im.threads.ui.markdown.LinksHighlighter
