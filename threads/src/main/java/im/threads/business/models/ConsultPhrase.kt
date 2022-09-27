@@ -23,7 +23,7 @@ class ConsultPhrase constructor(
     val sex: Boolean,
     override val threadId: Long?,
     val quickReplies: List<QuickReply>?,
-    val isBlockInput: Boolean,
+    val isBlockInput: Boolean?,
     val speechStatus: SpeechStatus
 ) : ConsultChatPhrase(avatarPath, consultId), ChatPhrase {
     var ogData: OGData? = null
@@ -39,6 +39,7 @@ class ConsultPhrase constructor(
     val isOnlyDoc: Boolean
         get() = (
             phraseText.isNullOrEmpty() &&
+                formattedPhrase.isNullOrEmpty() &&
                 !isImage(fileDescription) &&
                 !isVoiceMessage(fileDescription)
             )

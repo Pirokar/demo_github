@@ -2,6 +2,7 @@ package im.threads.business.ogParser
 
 import android.net.Uri
 import im.threads.business.logger.LoggerEdna
+import io.reactivex.subjects.PublishSubject
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import java.security.KeyManagementException
@@ -23,6 +24,8 @@ private const val OG_SITE_NAME: String = "og:site_name"
  * Этот класс использует библиотеку jsoup, которая загружает url и возвращает парсинг всех данных.
  */
 class OpenGraphParserJsoupImpl : OpenGraphParser {
+    override val openGraphParsingStream = PublishSubject.create<OGData>()
+
     private fun socketFactory(): SSLSocketFactory {
         val trustAllCerts = arrayOf<TrustManager>(object : X509TrustManager {
             override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {}

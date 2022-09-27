@@ -8,7 +8,7 @@ import com.squareup.picasso.OkHttp3Downloader
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.RequestCreator
 import com.squareup.picasso.Transformation
-import im.threads.internal.Config
+import im.threads.business.config.BaseConfig
 import java.util.concurrent.Executors
 
 class ImageRequestBuilder {
@@ -116,8 +116,17 @@ class ImageRequestBuilder {
 
     private fun getRightAngleImage(photoPath: String): Float {
         return try {
-            val ei = ExifInterface(Config.instance.context.contentResolver.openInputStream(Uri.parse(photoPath))!!)
-            when (ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)) {
+            val ei = ExifInterface(
+                BaseConfig.instance.context.contentResolver.openInputStream(
+                    Uri.parse(photoPath)
+                )!!
+            )
+            when (
+                ei.getAttributeInt(
+                    ExifInterface.TAG_ORIENTATION,
+                    ExifInterface.ORIENTATION_NORMAL
+                )
+            ) {
                 ExifInterface.ORIENTATION_NORMAL -> 0f
                 ExifInterface.ORIENTATION_ROTATE_90 -> 90f
                 ExifInterface.ORIENTATION_ROTATE_180 -> 180f

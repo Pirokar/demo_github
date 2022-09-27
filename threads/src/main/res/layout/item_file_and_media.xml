@@ -14,7 +14,7 @@
         android:layout_width="64dp"
         android:layout_height="match_parent">
 
-        <im.threads.internal.views.CircularProgressButton
+        <im.threads.ui.views.CircularProgressButton
             android:id="@+id/button_download_file"
             style="@style/CircularProgressButtonStyle"
             android:visibility="visible"
@@ -38,7 +38,7 @@
             app:srcCompat="@drawable/threads_ic_file_fill_42dp"/>
     </LinearLayout>
 
-    <im.threads.internal.widget.BoldCustomFontTextView
+    <im.threads.ui.widget.BoldCustomFontTextView
         android:id="@+id/file_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -52,7 +52,7 @@
         android:textStyle="bold"
         tools:text="Название файла"/>
 
-    <im.threads.internal.widget.LightCustomFontTextView
+    <im.threads.ui.widget.LightCustomFontTextView
         android:id="@+id/file_size"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -62,7 +62,7 @@
         android:textColor="@color/threads_files_list"
         tools:text="2.3 Мб"/>
 
-    <im.threads.internal.widget.LightCustomFontTextView
+    <im.threads.ui.widget.LightCustomFontTextView
         android:id="@+id/timestamp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

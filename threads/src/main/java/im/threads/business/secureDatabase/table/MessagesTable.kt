@@ -15,9 +15,8 @@ import im.threads.business.models.SimpleSystemMessage
 import im.threads.business.models.SpeechMessageUpdate
 import im.threads.business.models.Survey
 import im.threads.business.models.UserPhrase
-import im.threads.business.secureDatabase.ThreadsDbHelper.Companion.DB_PASSWORD
-import net.sqlcipher.database.SQLiteDatabase
-import net.sqlcipher.database.SQLiteOpenHelper
+import net.zetetic.database.sqlcipher.SQLiteDatabase
+import net.zetetic.database.sqlcipher.SQLiteOpenHelper
 import java.util.Locale
 
 class MessagesTable(
@@ -87,7 +86,7 @@ class MessagesTable(
     }
 
     override fun cleanTable(sqlHelper: SQLiteOpenHelper) {
-        sqlHelper.getWritableDatabase(DB_PASSWORD).execSQL("delete from $TABLE_MESSAGES")
+        sqlHelper.writableDatabase.execSQL("delete from $TABLE_MESSAGES")
     }
 
     fun getChatItems(sqlHelper: SQLiteOpenHelper, offset: Int, limit: Int): List<ChatItem> {
@@ -101,7 +100,7 @@ class MessagesTable(
             offset,
             COLUMN_TIMESTAMP
         )
-        sqlHelper.getWritableDatabase(DB_PASSWORD).rawQuery(query, null).use { c ->
+        sqlHelper.writableDatabase.rawQuery(query, null).use { c ->
             if (c.count == 0) {
                 return items
             }
@@ -124,7 +123,7 @@ class MessagesTable(
                 " order by " + COLUMN_TIMESTAMP + " desc"
             )
         val selectionArgs = arrayOf(messageUuid)
-        sqlHelper.getWritableDatabase(DB_PASSWORD).rawQuery(sql, selectionArgs).use { c ->
+        sqlHelper.writableDatabase.rawQuery(sql, selectionArgs).use { c ->
             if (c.moveToFirst()) {
                 return getChatItem(sqlHelper, c)
             }
@@ -134,17 +133,17 @@ class MessagesTable(
 
     fun putChatItems(sqlHelper: SQLiteOpenHelper, chatItems: List<ChatItem?>?) {
         try {
-            sqlHelper.getWritableDatabase(DB_PASSWORD).beginTransaction()
+            sqlHelper.writableDatabase.beginTransaction()
             if (chatItems != null) {
                 for (item: ChatItem? in chatItems) {
                     putChatItem(sqlHelper, item)
                 }
             }
-            sqlHelper.getWritableDatabase(DB_PASSWORD).setTransactionSuccessful()
+            sqlHelper.writableDatabase.setTransactionSuccessful()
         } catch (e: Exception) {
             LoggerEdna.error("putMessagesSync", e)
         } finally {
-            sqlHelper.getWritableDatabase(DB_PASSWORD).endTransaction()
+            sqlHelper.writableDatabase.endTransaction()
         }
     }
 
@@ -221,7 +220,7 @@ class MessagesTable(
                     " order by " + COLUMN_TIMESTAMP + " desc"
                 )
         val selectionArgs = arrayOf(id)
-        sqlHelper.getWritableDatabase(DB_PASSWORD).rawQuery(sql, selectionArgs).use { c ->
+        sqlHelper.writableDatabase.rawQuery(sql, selectionArgs).use { c ->
             if (c.moveToFirst()) {
                 return ConsultInfo(
                     cursorGetString(c, COLUMN_NAME),
@@ -256,7 +255,7 @@ class MessagesTable(
     ) {
         val cv = ContentValues()
         cv.put(COLUMN_MESSAGE_SEND_STATE, messageState?.ordinal)
-        sqlHelper.getWritableDatabase(DB_PASSWORD)
+        sqlHelper.writableDatabase
             .update(TABLE_MESSAGES, cv, "$COLUMN_PROVIDER_ID = ?", arrayOf(providerId))
     }
 
@@ -266,7 +265,7 @@ class MessagesTable(
                 " where " + COLUMN_MESSAGE_TYPE + " = " + MessageType.CONSULT_PHRASE.ordinal +
                 " order by " + COLUMN_TIMESTAMP + " desc"
             )
-        sqlHelper.getWritableDatabase(DB_PASSWORD).rawQuery(sql, arrayOf()).use { c ->
+        sqlHelper.writableDatabase.rawQuery(sql, arrayOf()).use { c ->
             if (c.moveToFirst()) {
                 return getConsultPhrase(sqlHelper, c)
             }
@@ -283,7 +282,7 @@ class MessagesTable(
                 " or " + COLUMN_MESSAGE_TYPE + " = " + MessageType.REQUEST_RESOLVE_THREAD.ordinal + ")" +
                 " and " + COLUMN_IS_READ + " = 0"
             )
-        return sqlHelper.getWritableDatabase(DB_PASSWORD)
+        return sqlHelper.writableDatabase
             .update(TABLE_MESSAGES, cv, whereClause, null)
     }
 
@@ -296,7 +295,7 @@ class MessagesTable(
                 " or " + COLUMN_MESSAGE_TYPE + " = " + MessageType.REQUEST_RESOLVE_THREAD.ordinal + ")" +
                 " and " + COLUMN_IS_READ + " = 0 and $COLUMN_THREAD_ID = $threadId"
             )
-        return sqlHelper.getWritableDatabase(DB_PASSWORD)
+        return sqlHelper.writableDatabase
             .update(TABLE_MESSAGES, cv, whereClause, null)
     }
 
@@ -307,7 +306,7 @@ class MessagesTable(
             COLUMN_MESSAGE_UUID + " = ? " +
                 " and " + COLUMN_IS_READ + " = 0"
             )
-        sqlHelper.getWritableDatabase(DB_PASSWORD)
+        sqlHelper.writableDatabase
             .update(TABLE_MESSAGES, cv, whereClause, arrayOf(uuid))
     }
 
@@ -318,7 +317,7 @@ class MessagesTable(
                 " order by " + COLUMN_TIMESTAMP + " desc"
             )
         val selectionArgs = arrayOf(sendingId.toString())
-        sqlHelper.getWritableDatabase(DB_PASSWORD).rawQuery(sql, selectionArgs).use { c ->
+        sqlHelper.writableDatabase.rawQuery(sql, selectionArgs).use { c ->
             if (c.moveToFirst()) {
                 return getSurvey(sqlHelper, c)
             }
@@ -327,7 +326,7 @@ class MessagesTable(
     }
 
     fun getMessagesCount(sqlHelper: SQLiteOpenHelper): Int {
-        sqlHelper.getWritableDatabase(DB_PASSWORD).rawQuery(
+        sqlHelper.writableDatabase.rawQuery(
             String.format(
                 Locale.US,
                 "select count(%s) from %s",
@@ -356,7 +355,7 @@ class MessagesTable(
                 " and " + COLUMN_IS_READ + " = 0" +
                 " order by " + COLUMN_TIMESTAMP + " asc"
             )
-        sqlHelper.getWritableDatabase(DB_PASSWORD).rawQuery(sql, null)
+        sqlHelper.writableDatabase.rawQuery(sql, null)
             .use { c -> return c.count }
     }
 
@@ -373,7 +372,7 @@ class MessagesTable(
                 " order by " + COLUMN_TIMESTAMP + " asc"
             )
         val ids: MutableSet<String?> = HashSet()
-        sqlHelper.getWritableDatabase(DB_PASSWORD).rawQuery(sql, null).use { c ->
+        sqlHelper.writableDatabase.rawQuery(sql, null).use { c ->
             c.moveToFirst()
             while (!c.isAfterLast) {
                 ids.add(cursorGetString(c, COLUMN_MESSAGE_UUID))
@@ -390,7 +389,7 @@ class MessagesTable(
             COLUMN_MESSAGE_TYPE + " = " + MessageType.SURVEY.ordinal +
                 " and " + COLUMN_MESSAGE_SEND_STATE + " = " + MessageState.STATE_NOT_SENT.ordinal
             )
-        return sqlHelper.getWritableDatabase(DB_PASSWORD)
+        return sqlHelper.writableDatabase
             .update(TABLE_MESSAGES, cv, whereClause, null)
     }
 
@@ -398,7 +397,7 @@ class MessagesTable(
         val cv = ContentValues()
         cv.put(COLUMN_DISPLAY_MESSAGE, false)
         val whereClause = COLUMN_MESSAGE_TYPE + " = " + MessageType.REQUEST_RESOLVE_THREAD.ordinal
-        return sqlHelper.getWritableDatabase(DB_PASSWORD)
+        return sqlHelper.writableDatabase
             .update(TABLE_MESSAGES, cv, whereClause, null)
     }
 
@@ -416,7 +415,7 @@ class MessagesTable(
             false
         )
         val whereClause = "$COLUMN_MESSAGE_UUID = ?"
-        sqlHelper.getWritableDatabase(DB_PASSWORD)
+        sqlHelper.writableDatabase
             .update(TABLE_MESSAGES, cv, whereClause, arrayOf(uuid))
     }
 
@@ -625,9 +624,9 @@ class MessagesTable(
                 " where " + COLUMN_MESSAGE_UUID + " = ?"
             )
         val selectionArgs = arrayOf(cv.getAsString(COLUMN_MESSAGE_UUID))
-        sqlHelper.getWritableDatabase(DB_PASSWORD).rawQuery(sql, selectionArgs).use { c ->
+        sqlHelper.writableDatabase.rawQuery(sql, selectionArgs).use { c ->
             if (c.count > 0) {
-                sqlHelper.getWritableDatabase(DB_PASSWORD)
+                sqlHelper.writableDatabase
                     .update(
                         TABLE_MESSAGES,
                         cv,
@@ -635,7 +634,7 @@ class MessagesTable(
                         arrayOf(cv.getAsString(COLUMN_MESSAGE_UUID))
                     )
             } else {
-                sqlHelper.getWritableDatabase(DB_PASSWORD)
+                sqlHelper.writableDatabase
                     .insert(TABLE_MESSAGES, null, cv)
             }
         }
@@ -658,9 +657,9 @@ class MessagesTable(
         cv.put(COLUMN_MESSAGE_SEND_STATE, survey.sentState.ordinal)
         cv.put(COLUMN_DISPLAY_MESSAGE, survey.isDisplayMessage)
         cv.put(COLUMN_IS_READ, survey.isRead)
-        sqlHelper.getWritableDatabase(DB_PASSWORD).rawQuery(sql, selectionArgs).use { c ->
+        sqlHelper.writableDatabase.rawQuery(sql, selectionArgs).use { c ->
             if (c.count > 0) {
-                sqlHelper.getWritableDatabase(DB_PASSWORD)
+                sqlHelper.writableDatabase
                     .update(
                         TABLE_MESSAGES,
                         cv,
@@ -668,7 +667,7 @@ class MessagesTable(
                         arrayOf(survey.sendingId.toString())
                     )
             } else {
-                sqlHelper.getWritableDatabase(DB_PASSWORD)
+                sqlHelper.writableDatabase
                     .insert(TABLE_MESSAGES, null, cv)
             }
         }
@@ -688,7 +687,7 @@ class MessagesTable(
                 " and " + COLUMN_MESSAGE_SEND_STATE + " = " + MessageState.STATE_NOT_SENT.ordinal +
                 " and " + COLUMN_SURVEY_SENDING_ID + " != ?"
             )
-        sqlHelper.getWritableDatabase(DB_PASSWORD)
+        sqlHelper.writableDatabase
             .update(TABLE_MESSAGES, cv, whereClause, arrayOf(currentSurveySendingId.toString()))
     }
 
@@ -703,7 +702,7 @@ class MessagesTable(
                 COLUMN_MESSAGE_TYPE + " = " + MessageType.REQUEST_RESOLVE_THREAD.ordinal +
                     " and " + COLUMN_MESSAGE_UUID + " != ?"
                 )
-        sqlHelper.getWritableDatabase(DB_PASSWORD)
+        sqlHelper.writableDatabase
             .update(TABLE_MESSAGES, cv, whereClause, arrayOf(uuid))
     }
 

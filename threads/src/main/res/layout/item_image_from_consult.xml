@@ -45,7 +45,7 @@
                 android:layout_marginBottom="@dimen/margin_quarter"
                 android:background="@color/threads_incoming_message_text" />
 
-            <im.threads.internal.widget.textView.BubbleMessageTextView
+            <im.threads.ui.widget.textView.BubbleMessageTextView
                 android:id="@+id/fileName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -90,7 +90,7 @@
 
         </RelativeLayout>
 
-        <im.threads.internal.widget.textView.BubbleTimeTextView
+        <im.threads.ui.widget.textView.BubbleTimeTextView
             android:id="@+id/timeStamp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -105,7 +105,7 @@
 
     </FrameLayout>
 
-    <im.threads.internal.widget.textView.BubbleTimeTextView
+    <im.threads.ui.widget.textView.BubbleTimeTextView
         android:id="@+id/errorText"
         style="@style/timestamp"
         android:layout_marginStart="@dimen/consultant_margin_right"

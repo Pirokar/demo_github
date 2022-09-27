@@ -6,11 +6,11 @@
 
         <import type="android.view.View" />
 
-        <import type="im.threads.internal.activities.GalleryActivity.ScreenState" />
+        <import type="im.threads.ui.activities.GalleryActivity" />
 
         <variable
             name="viewModel"
-            type="im.threads.internal.activities.GalleryActivity" />
+            type="im.threads.ui.activities.GalleryActivity" />
 
     </data>
 
@@ -35,9 +35,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal"
-                android:visibility="@{viewModel.screenState == ScreenState.SEARCH ? View.VISIBLE : View.GONE, default = gone}">
+                android:visibility="@{viewModel.screenState == GalleryActivity.ScreenState.SEARCH ? View.VISIBLE : View.GONE, default = gone}">
 
-                <im.threads.internal.widget.CustomFontEditText
+                <im.threads.ui.widget.CustomFontEditText
                     android:id="@+id/search_edit_text"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -48,7 +48,8 @@
                     android:imeOptions="actionSearch"
                     android:inputType="text"
                     android:lines="1"
-                    android:paddingLeft="12dp"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="0dp"
                     android:textColor="@color/threads_chat_toolbar_text"
                     android:textColorHint="@color/threads_chat_toolbar_hint"
                     android:textSize="@dimen/text_big" />
@@ -73,33 +74,33 @@
             android:layout_below="@+id/toolbar"
             android:layout_margin="@dimen/margin_quarter"
             android:background="#282828"
-            android:visibility="@{viewModel.screenState == ScreenState.BUCKET_LIST ? View.VISIBLE : View.GONE, default = visible}">
+            android:visibility="@{viewModel.screenState == GalleryActivity.ScreenState.BUCKET_LIST ? View.VISIBLE : View.GONE, default = visible}">
 
             <ImageButton
                 android:id="@+id/search_photo"
                 android:layout_width="54dp"
                 android:layout_height="match_parent"
-                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
                 android:background="@android:color/transparent"
                 android:onClickListener="@{v -> viewModel.showSearch()}"
                 app:srcCompat="@drawable/ic_search_white_24dp" />
 
-            <im.threads.internal.widget.CustomFontTextView
+            <im.threads.ui.widget.CustomFontTextView
                 android:id="@+id/search_photo_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:layout_marginTop="@dimen/margin_half"
-                android:layout_toRightOf="@+id/search_photo"
+                android:layout_toEndOf="@+id/search_photo"
                 android:text="@string/threads_find_photos"
                 android:textAllCaps="true"
                 android:textColor="@android:color/white" />
 
-            <im.threads.internal.widget.CustomFontTextView
+            <im.threads.ui.widget.CustomFontTextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/search_photo_title"
-                android:layout_toRightOf="@+id/search_photo"
+                android:layout_toEndOf="@+id/search_photo"
                 android:text="@string/threads_on_your_device"
                 android:textColor="#8b8b8b"
                 android:textSize="12sp" />
@@ -113,7 +114,7 @@
             android:layout_above="@+id/bottom_buttons"
             android:layout_below="@+id/search_label_layout" />
 
-        <im.threads.internal.widget.CustomFontTextView
+        <im.threads.ui.widget.CustomFontTextView
             android:id="@+id/nothing_found_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -133,16 +134,16 @@
             android:layout_height="54dp"
             android:layout_alignParentBottom="true"
             android:background="#333333"
-            android:visibility="@{!viewModel.dataEmpty &amp;&amp; viewModel.screenState != ScreenState.BUCKET_LIST ? View.VISIBLE : View.GONE, default = gone}">
+            android:visibility="@{!viewModel.dataEmpty &amp;&amp; viewModel.screenState != GalleryActivity.ScreenState.BUCKET_LIST ? View.VISIBLE : View.GONE, default = gone}">
 
-            <im.threads.internal.widget.CustomFontButton
+            <im.threads.ui.widget.CustomFontButton
                 android:id="@+id/cancel"
                 style="@style/bottomButtonTransparent"
                 android:layout_gravity="start"
                 android:onClickListener="@{v -> viewModel.onBackPressed()}"
                 android:text="@string/threads_cancel" />
 
-            <im.threads.internal.widget.CustomFontButton
+            <im.threads.ui.widget.CustomFontButton
                 android:id="@+id/send"
                 style="@style/bottomButtonTransparent"
                 android:layout_gravity="end"

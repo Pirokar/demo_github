@@ -8,16 +8,21 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import im.threads.business.config.BaseConfig;
+import im.threads.business.formatters.ChatItemType;
 import im.threads.business.formatters.SpeechStatus;
 import im.threads.business.logger.LoggerEdna;
 import im.threads.business.models.ChatItem;
 import im.threads.business.models.ConsultConnectionMessage;
 import im.threads.business.models.ConsultPhrase;
 import im.threads.business.models.FileDescription;
+import im.threads.business.models.MessageRead;
 import im.threads.business.models.MessageState;
 import im.threads.business.models.QuestionDTO;
 import im.threads.business.models.Quote;
 import im.threads.business.models.RequestResolveThread;
+import im.threads.business.models.ScheduleInfo;
+import im.threads.business.models.SearchingConsult;
 import im.threads.business.models.SimpleSystemMessage;
 import im.threads.business.models.SpeechMessageUpdate;
 import im.threads.business.models.Survey;
@@ -32,12 +37,7 @@ import im.threads.business.transport.models.SpeechMessageUpdatedContent;
 import im.threads.business.transport.models.SurveyContent;
 import im.threads.business.transport.models.SystemMessageContent;
 import im.threads.business.transport.models.TextContent;
-import im.threads.internal.Config;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
-import im.threads.internal.formatters.ChatItemType;
-import im.threads.internal.model.MessageRead;
-import im.threads.internal.model.ScheduleInfo;
-import im.threads.internal.model.SearchingConsult;
 
 public final class MessageParser {
     private MessageParser() {
@@ -75,13 +75,13 @@ public final class MessageParser {
             case SCENARIO:
                 return null;
             case ATTACHMENT_SETTINGS:
-                AttachmentSettings attachmentSettings = Config.instance.gson.fromJson(fullMessage, AttachmentSettings.class);
+                AttachmentSettings attachmentSettings = BaseConfig.instance.gson.fromJson(fullMessage, AttachmentSettings.class);
                 if (attachmentSettings.getClientId() != null) {
                     ChatUpdateProcessor.getInstance().postAttachmentSettings(attachmentSettings);
                 }
                 return null;
             case SPEECH_MESSAGE_UPDATED:
-                SpeechMessageUpdatedContent content = Config.instance.gson.fromJson(fullMessage, SpeechMessageUpdatedContent.class);
+                SpeechMessageUpdatedContent content = BaseConfig.instance.gson.fromJson(fullMessage, SpeechMessageUpdatedContent.class);
                 if (content.getUuid() != null && content.getAttachments() != null) {
                     return new SpeechMessageUpdate(
                             content.getUuid(),
@@ -108,7 +108,7 @@ public final class MessageParser {
     }
 
     private static ConsultConnectionMessage getConsultConnection(final String messageId, final long sentAt, final String shortMessage, final JsonObject fullMessage) {
-        OperatorJoinedContent content = Config.instance.gson.fromJson(fullMessage, OperatorJoinedContent.class);
+        OperatorJoinedContent content = BaseConfig.instance.gson.fromJson(fullMessage, OperatorJoinedContent.class);
         Operator operator = content.getOperator();
         return new ConsultConnectionMessage(
                 content.getUuid(),
@@ -131,20 +131,20 @@ public final class MessageParser {
     }
 
     private static SimpleSystemMessage getSystemMessage(final long sentAt, final JsonObject fullMessage) {
-        SystemMessageContent content = Config.instance.gson.fromJson(fullMessage, SystemMessageContent.class);
+        SystemMessageContent content = BaseConfig.instance.gson.fromJson(fullMessage, SystemMessageContent.class);
         return new SimpleSystemMessage(content.getUuid(), content.getType(), sentAt, content.getText(), content.getThreadId());
     }
 
     private static ScheduleInfo getScheduleInfo(final JsonObject fullMessage) {
-        TextContent content = Config.instance.gson.fromJson(fullMessage, TextContent.class);
-        ScheduleInfo scheduleInfo = Config.instance.gson.fromJson(content.getText(), ScheduleInfo.class);
+        TextContent content = BaseConfig.instance.gson.fromJson(fullMessage, TextContent.class);
+        ScheduleInfo scheduleInfo = BaseConfig.instance.gson.fromJson(content.getText(), ScheduleInfo.class);
         scheduleInfo.setDate(new Date().getTime());
         return scheduleInfo;
     }
 
     private static Survey getSurvey(final long sentAt, final JsonObject fullMessage) {
-        SurveyContent content = Config.instance.gson.fromJson(fullMessage, SurveyContent.class);
-        Survey survey = Config.instance.gson.fromJson(content.getText(), Survey.class);
+        SurveyContent content = BaseConfig.instance.gson.fromJson(fullMessage, SurveyContent.class);
+        Survey survey = BaseConfig.instance.gson.fromJson(content.getText(), Survey.class);
         survey.setUuid(content.getUuid());
         survey.setPhraseTimeStamp(sentAt);
         survey.setSentState(MessageState.STATE_NOT_SENT);
@@ -157,13 +157,13 @@ public final class MessageParser {
     }
 
     private static RequestResolveThread getRequestResolveThread(final long sentAt, final JsonObject fullMessage) {
-        RequestResolveThreadContent content = Config.instance.gson.fromJson(fullMessage, RequestResolveThreadContent.class);
+        RequestResolveThreadContent content = BaseConfig.instance.gson.fromJson(fullMessage, RequestResolveThreadContent.class);
         return new RequestResolveThread(content.getUuid(), content.getHideAfter(), sentAt, content.getThreadId(), false);
     }
 
     @Nullable
     private static ChatItem getPhrase(final String messageId, final long sentAt, final String shortMessage, final JsonObject fullMessage) {
-        MessageContent content = Config.instance.gson.fromJson(fullMessage, MessageContent.class);
+        MessageContent content = BaseConfig.instance.gson.fromJson(fullMessage, MessageContent.class);
         if (content.getText() == null && content.getAttachments() == null && content.getQuotes() == null) {
             return null;
         }
@@ -207,7 +207,7 @@ public final class MessageParser {
                     gender,
                     content.getThreadId(),
                     content.getQuickReplies(),
-                    content.getSettings() != null ? content.getSettings().isBlockInput() : !Config.instance.getChatStyle().inputEnabledDuringQuickReplies,
+                    content.getSettings() != null ? content.getSettings().isBlockInput() : null,
                     SpeechStatus.Companion.fromString(content.getSpeechStatus())
             );
         } else {
@@ -223,7 +223,7 @@ public final class MessageParser {
 
     private static FileDescription getFileDescription(final List<Attachment> attachments, String from, long timeStamp) {
         FileDescription fileDescription = null;
-        if (!attachments.isEmpty() && attachments.get(0) != null) {
+        if (attachments != null && !attachments.isEmpty() && attachments.get(0) != null) {
             Attachment attachment = attachments.get(0);
             fileDescription = new FileDescription(
                     from,
@@ -245,7 +245,7 @@ public final class MessageParser {
     }
 
     private static Quote getQuote(final List<im.threads.business.transport.models.Quote> quotes) {
-        if (!quotes.isEmpty() && quotes.get(0) != null) {
+        if (quotes != null && !quotes.isEmpty() && quotes.get(0) != null) {
             im.threads.business.transport.models.Quote quote = quotes.get(0);
             String authorName = quote.getOperator() != null ? quote.getOperator().getAliasOrName() : null;
             long timestamp = quote.getReceivedDate() != null ? quote.getReceivedDate().getTime() : System.currentTimeMillis();

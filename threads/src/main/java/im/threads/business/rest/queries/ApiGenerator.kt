@@ -1,11 +1,11 @@
 package im.threads.business.rest.queries
 
 import im.threads.R
+import im.threads.business.config.BaseConfig
 import im.threads.business.transport.AuthInterceptor
-import im.threads.internal.Config
-import im.threads.internal.utils.AppInfoHelper
-import im.threads.internal.utils.DeviceInfoHelper
-import im.threads.internal.utils.SSLCertificateInterceptor
+import im.threads.business.utils.AppInfoHelper
+import im.threads.business.utils.DeviceInfoHelper
+import im.threads.business.utils.SSLCertificateInterceptor
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit
 import javax.net.ssl.SSLSession
 
 abstract class ApiGenerator protected constructor(
-    private val config: Config,
+    private val config: BaseConfig,
     private val isDatastoreApi: Boolean
 ) {
     protected lateinit var threadsApi: ThreadsApi
@@ -59,10 +59,13 @@ abstract class ApiGenerator protected constructor(
             httpClientBuilder.addInterceptor(
                 HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
             )
-            httpClientBuilder.addInterceptor(SSLCertificateInterceptor())
         }
         val sslSocketFactoryConfig = config.sslSocketFactoryConfig
         if (sslSocketFactoryConfig != null) {
+            if (config.isDebugLoggingEnabled) {
+                httpClientBuilder.addInterceptor(SSLCertificateInterceptor())
+            }
+
             httpClientBuilder.sslSocketFactory(
                 sslSocketFactoryConfig.sslSocketFactory,
                 sslSocketFactoryConfig.trustManager

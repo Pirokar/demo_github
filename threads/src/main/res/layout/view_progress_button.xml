@@ -17,7 +17,7 @@
         android:layout_gravity="center"
         />
 
-    <im.threads.internal.views.MyCircleProgress
+    <im.threads.ui.views.MyCircleProgress
         android:id="@+id/circular_progress"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

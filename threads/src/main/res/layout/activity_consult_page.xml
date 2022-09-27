@@ -36,14 +36,14 @@
         android:paddingRight="@dimen/margin_material"
         android:paddingBottom="@dimen/margin_material">
 
-        <im.threads.internal.widget.CustomFontTextView
+        <im.threads.ui.widget.CustomFontTextView
             android:id="@+id/consultTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/threads_chat_toolbar_text"
             android:textSize="@dimen/text_medium" />
 
-        <im.threads.internal.widget.CustomFontTextView
+        <im.threads.ui.widget.CustomFontTextView
             android:id="@+id/consult_status"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
