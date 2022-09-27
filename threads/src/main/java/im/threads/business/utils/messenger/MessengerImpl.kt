@@ -22,7 +22,7 @@ import im.threads.business.utils.internet.NetworkInteractor
 import im.threads.business.utils.internet.NetworkInteractorImpl
 import im.threads.business.utils.postFile
 import im.threads.business.utils.preferences.PrefUtilsBase
-import im.threads.internal.utils.getErrorStringResByCode
+import im.threads.business.utils.getErrorStringResByCode
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
