@@ -5,8 +5,8 @@ import android.text.Spanned
 import android.widget.TextView
 import androidx.core.text.toHtml
 import androidx.test.core.app.ApplicationProvider
-import im.threads.internal.markdown.LinkifyLinksHighlighter
-import im.threads.internal.markdown.LinksHighlighter
+import im.threads.ui.markdown.LinkifyLinksHighlighter
+import im.threads.ui.markdown.LinksHighlighter
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith

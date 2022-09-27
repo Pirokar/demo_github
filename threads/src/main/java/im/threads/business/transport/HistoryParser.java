@@ -12,6 +12,8 @@ import java.util.Date;
 import java.util.List;
 
 import im.threads.R;
+import im.threads.business.config.BaseConfig;
+import im.threads.business.formatters.ChatItemType;
 import im.threads.business.formatters.SpeechStatus;
 import im.threads.business.logger.LoggerEdna;
 import im.threads.business.models.Attachment;
@@ -31,8 +33,6 @@ import im.threads.business.models.Survey;
 import im.threads.business.models.UserPhrase;
 import im.threads.business.rest.models.HistoryResponse;
 import im.threads.business.utils.DateHelper;
-import im.threads.internal.Config;
-import im.threads.internal.formatters.ChatItemType;
 
 public final class HistoryParser {
     private HistoryParser() {
@@ -45,7 +45,7 @@ public final class HistoryParser {
             List<MessageFromHistory> responseList = response.getMessages();
             if (responseList != null) {
                 list = getChatItems(responseList);
-                HistoryLoader.setupLastItemIdFromHistory(responseList);
+                HistoryLoader.INSTANCE.setupLastItemIdFromHistory(responseList);
             }
         }
         return list;
@@ -142,17 +142,17 @@ public final class HistoryParser {
                                             operatorId,
                                             photoUrl,
                                             message.isRead(),
-                                            null,
+                                            message.getOperator().getStatus(),
                                             false,
                                             message.getThreadId(),
                                             message.getQuickReplies(),
-                                            message.getSettings() != null ? message.getSettings().isBlockInput() : !Config.instance.getChatStyle().inputEnabledDuringQuickReplies,
+                                            message.getSettings() != null ? message.getSettings().isBlockInput() : null,
                                             SpeechStatus.Companion.fromString(message.getSpeechStatus())
                                     )
                             );
                         } else {
                             if (fileDescription != null) {
-                                fileDescription.setFrom(Config.instance.context.getString(R.string.threads_I));
+                                fileDescription.setFrom(BaseConfig.instance.context.getString(R.string.threads_I));
                             }
                             MessageState sentState = message.isRead() ? MessageState.STATE_WAS_READ : MessageState.STATE_SENT;
                             out.add(new UserPhrase(uuid, providerId, providerIds, phraseText, quote, timeStamp, fileDescription, sentState, message.getThreadId()));
@@ -168,7 +168,7 @@ public final class HistoryParser {
 
     private static Survey getSurveyFromJsonString(@NonNull String text) {
         try {
-            Survey survey = Config.instance.gson.fromJson(text, Survey.class);
+            Survey survey = BaseConfig.instance.gson.fromJson(text, Survey.class);
             final long time = new Date().getTime();
             survey.setPhraseTimeStamp(time);
             survey.setSentState(MessageState.STATE_NOT_SENT);
@@ -221,7 +221,7 @@ public final class HistoryParser {
             if (quoteFromHistory.getOperator() != null) {
                 authorName = quoteFromHistory.getOperator().getAliasOrName();
             } else {
-                authorName = Config.instance.context.getString(R.string.threads_I);
+                authorName = BaseConfig.instance.context.getString(R.string.threads_I);
             }
             if (quoteString != null || quoteFileDescription != null) {
                 quote = new Quote(quoteFromHistory.getUuid(), authorName, quoteString, quoteFileDescription, timestamp);

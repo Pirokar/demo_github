@@ -25,40 +25,40 @@
         android:largeHeap="true"
         android:fullBackupContent="@xml/backup_rules">
         <activity
-            android:name="im.threads.view.ChatActivity"
+            android:name="im.threads.ui.activities.ChatActivity"
             android:launchMode="singleTop"
             android:theme="@style/ThreadsStyle"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize"/>
         <activity
-            android:name=".internal.activities.ConsultActivity"
+            android:name=".ui.activities.ConsultActivity"
             android:theme="@style/ThreadsStyleConsultPage"/>
         <activity
-            android:name=".internal.activities.filesActivity.FilesActivity"
+            android:name=".ui.activities.filesActivity.FilesActivity"
             android:theme="@style/ThreadsStyle"/>
         <activity
-            android:name=".internal.activities.GalleryActivity"
+            android:name=".ui.activities.GalleryActivity"
             android:theme="@style/ThreadsGalleryStyle"/>
         <activity
-            android:name=".internal.activities.CameraActivity"
+            android:name=".ui.activities.CameraActivity"
             android:theme="@style/ThreadsGalleryStyle"/>
         <activity
-            android:name=".internal.activities.ImagesActivity"
+            android:name=".ui.activities.ImagesActivity"
             android:theme="@style/ThreadsGalleryStyle"/>
         <activity
-            android:name=".internal.activities.QuickAnswerActivity"
+            android:name=".ui.activities.QuickAnswerActivity"
             android:label=""
             android:launchMode="singleInstance"
             android:taskAffinity=""
             android:screenOrientation="unspecified"
             android:theme="@style/Translucent"/>
         <activity
-            android:name=".internal.permissions.PermissionsActivity"
+            android:name=".ui.permissions.PermissionsActivity"
             android:label="@string/threads_permissions_help"
             android:screenOrientation="unspecified"
             android:theme="@style/Transparent"/>
 
         <provider
-            android:name=".internal.utils.ThreadsFileProvider"
+            android:name=".business.utils.ThreadsFileProvider"
             android:authorities="${applicationId}.im.threads.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">

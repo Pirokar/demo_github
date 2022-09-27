@@ -14,15 +14,17 @@ import android.provider.OpenableColumns
 import android.text.TextUtils
 import android.webkit.MimeTypeMap
 import im.threads.R
+import im.threads.business.config.BaseConfig
 import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.logger.LoggerEdna
+import im.threads.business.logger.LoggerEdna.debug
 import im.threads.business.models.FileDescription
-import im.threads.internal.Config
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.IOException
+import java.text.DecimalFormat
 import java.util.UUID
 
 object FileUtils {
@@ -47,7 +49,7 @@ object FileUtils {
     @JvmStatic
     fun getFileName(uri: Uri?): String {
         uri?.let {
-            Config.instance.context.contentResolver.query(uri, null, null, null, null)
+            BaseConfig.instance.context.contentResolver.query(uri, null, null, null, null)
                 .use { cursor ->
                     if (cursor != null && cursor.moveToFirst()) {
                         val index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
@@ -64,7 +66,7 @@ object FileUtils {
 
     @JvmStatic
     fun getFileSize(uri: Uri): Long {
-        Config.instance.context.contentResolver.query(uri, null, null, null, null).use { cursor ->
+        BaseConfig.instance.context.contentResolver.query(uri, null, null, null, null).use { cursor ->
             if (cursor != null && cursor.moveToFirst()) {
                 val index = cursor.getColumnIndex(OpenableColumns.SIZE)
                 return if (index >= 0) {
@@ -119,7 +121,7 @@ object FileUtils {
 
     @JvmStatic
     fun getMimeType(uri: Uri): String {
-        val context = Config.instance.context
+        val context = BaseConfig.instance.context
         var type = context.contentResolver.getType(uri)
         if (type == null) {
             type = MimeTypeMap.getSingleton()
@@ -138,7 +140,7 @@ object FileUtils {
     fun saveToDownloads(fileDescription: FileDescription) {
         val uri = fileDescription.fileUri
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            val resolver = Config.instance.context.contentResolver
+            val resolver = BaseConfig.instance.context.contentResolver
             val imageCV = ContentValues()
             imageCV.put(MediaStore.Images.Media.DISPLAY_NAME, fileDescription.incomingName)
             imageCV.put(MediaStore.Images.Media.MIME_TYPE, getMimeType(fileDescription))
@@ -160,10 +162,10 @@ object FileUtils {
             if (outputFile.exists() || outputFile.createNewFile()) {
                 saveImageToFile(uri, outputFile)
                 val dm =
-                    Config.instance.context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+                    BaseConfig.instance.context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
                 dm.addCompletedDownload(
                     getFileName(uri),
-                    Config.instance.context.getString(R.string.threads_media_description),
+                    BaseConfig.instance.context.getString(R.string.threads_media_description),
                     true,
                     getMimeType(uri),
                     outputFile.path,
@@ -180,7 +182,7 @@ object FileUtils {
     fun convertRelativeUrlToAbsolute(relativeUrl: String?): String? {
         return if (TextUtils.isEmpty(relativeUrl) || relativeUrl!!.startsWith("http")) {
             relativeUrl
-        } else Config.instance.datastoreUrl + "files/" + relativeUrl
+        } else BaseConfig.instance.datastoreUrl + "files/" + relativeUrl
     }
 
     @JvmStatic
@@ -192,6 +194,14 @@ object FileUtils {
             LoggerEdna.error("file can't be sent", e)
             return false
         }
+    }
+
+    @JvmStatic
+    fun createImageFile(context: Context): File? {
+        val filename = "thr" + System.currentTimeMillis() + ".jpg"
+        val output = File(context.filesDir, filename)
+        debug("File genereated into filesDir : " + output.absolutePath)
+        return output
     }
 
     private fun getExtensionFromFileDescription(fileDescription: FileDescription): Int {
@@ -264,7 +274,7 @@ object FileUtils {
         ImageLoader
             .get()
             .load(uri.toString())
-            .getBitmapSync(Config.instance.context)?.let { bitmap ->
+            .getBitmapSync(BaseConfig.instance.context)?.let { bitmap ->
                 val byteArrayOutputStream = ByteArrayOutputStream()
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
                 try {
@@ -282,11 +292,11 @@ object FileUtils {
 
     @Throws(IOException::class)
     private fun saveToUri(uri: Uri?, outputUri: Uri?) {
-        val resolver = Config.instance.context.contentResolver
+        val resolver = BaseConfig.instance.context.contentResolver
         ImageLoader
             .get()
             .load(uri.toString())
-            .getBitmapSync(Config.instance.context)?.let { bitmap ->
+            .getBitmapSync(BaseConfig.instance.context)?.let { bitmap ->
                 val byteArrayOutputStream = ByteArrayOutputStream()
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
                 try {
@@ -343,7 +353,7 @@ object FileUtils {
 
 fun MediaMetadataRetriever.getDuration(uri: Uri): Long {
     try {
-        setDataSource(Config.instance.context, uri)
+        setDataSource(BaseConfig.instance.context, uri)
     } catch (exc: Exception) {
         try {
             setDataSource(uri.toString(), mutableMapOf<String, String>())
@@ -352,4 +362,43 @@ fun MediaMetadataRetriever.getDuration(uri: Uri): Long {
         }
     }
     return extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLong() ?: 0
+}
+
+fun Long.toFileSize(): String {
+    val context = BaseConfig.instance.context
+    val kb = 1024L
+    val mb = kb * kb
+    val gb = mb * kb
+    val tb = gb * kb
+
+    val dividers = longArrayOf(tb, gb, mb, kb, 1)
+    val units = arrayOf(
+        context.getString(R.string.threads_tbytes),
+        context.getString(R.string.threads_gbytes),
+        context.getString(R.string.threads_mbytes),
+        context.getString(R.string.threads_kbytes),
+        context.getString(R.string.threads_bytes)
+    )
+    if (this < 0) {
+        LoggerEdna.error("Invalid file size: $this")
+        return "0 ${units[0]}"
+    }
+    var result = ""
+    for (i in dividers.indices) {
+        val divider = dividers[i]
+        if (this >= divider) {
+            result = format(this, divider, units[i])
+            break
+        }
+    }
+    return result
+}
+
+private fun format(
+    value: Long,
+    divider: Long,
+    unit: String
+): String {
+    val result = if (divider > 1) value.toDouble() / divider.toDouble() else value.toDouble()
+    return DecimalFormat("#,##0.#").format(result).toString() + " " + unit
 }

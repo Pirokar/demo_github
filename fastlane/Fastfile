@@ -1,0 +1,23 @@
+# Файл с конфигурацией fastlane
+# Полная документация тут https://docs.fastlane.tools
+
+default_platform(:android)
+
+# Список лэйнов (шагов пайплайна)
+platform :android do
+
+  desc "Запуск модульных тестов для SDK"
+  lane :sdkLint do
+    gradle(
+      task: "threads:lintDebug",
+  )
+  end
+
+  desc "Запуск модульных тестов для SDK"
+  lane :sdkUnitTests do
+    gradle(
+      task: "threads:testDebugUnitTest",
+  )
+  end
+
+end

@@ -3,9 +3,8 @@ package im.threads.business.secureDatabase.table
 import android.content.ContentValues
 import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.QuickReply
-import im.threads.business.secureDatabase.ThreadsDbHelper.Companion.DB_PASSWORD
-import net.sqlcipher.database.SQLiteDatabase
-import net.sqlcipher.database.SQLiteOpenHelper
+import net.zetetic.database.sqlcipher.SQLiteDatabase
+import net.zetetic.database.sqlcipher.SQLiteOpenHelper
 
 class QuickRepliesTable : Table() {
     override fun createTable(db: SQLiteDatabase) {
@@ -27,14 +26,14 @@ class QuickRepliesTable : Table() {
     }
 
     override fun cleanTable(sqlHelper: SQLiteOpenHelper) {
-        sqlHelper.getWritableDatabase(DB_PASSWORD).execSQL("delete from $TABLE_QUICK_REPLIES")
+        sqlHelper.writableDatabase.execSQL("delete from $TABLE_QUICK_REPLIES")
     }
 
     fun getQuickReplies(sqlHelper: SQLiteOpenHelper, messageUUID: String): List<QuickReply> {
         val items: MutableList<QuickReply> = ArrayList()
         val query =
             "select * from $TABLE_QUICK_REPLIES where $COLUMN_QUICK_REPLIES_MESSAGE_UUID = ?"
-        sqlHelper.getWritableDatabase(DB_PASSWORD).rawQuery(
+        sqlHelper.writableDatabase.rawQuery(
             query,
             arrayOf(messageUUID)
         ).use { c ->
@@ -62,23 +61,23 @@ class QuickRepliesTable : Table() {
         quickReplies: List<QuickReply>
     ) {
         try {
-            sqlHelper.getWritableDatabase(DB_PASSWORD).beginTransaction()
+            sqlHelper.writableDatabase.beginTransaction()
             val deleteQuickRepliesSql = (
                 "delete from " + TABLE_QUICK_REPLIES +
                     " where " + COLUMN_QUICK_REPLIES_MESSAGE_UUID + " = ? "
                 )
-            sqlHelper.getWritableDatabase(DB_PASSWORD).execSQL(
+            sqlHelper.writableDatabase.execSQL(
                 deleteQuickRepliesSql,
                 arrayOf(messageUUID)
             )
             for (item: QuickReply in quickReplies) {
                 putQuickReply(sqlHelper, messageUUID, item)
             }
-            sqlHelper.getWritableDatabase(DB_PASSWORD).setTransactionSuccessful()
+            sqlHelper.writableDatabase.setTransactionSuccessful()
         } catch (e: Exception) {
             LoggerEdna.error("putQuickReplies", e)
         } finally {
-            sqlHelper.getWritableDatabase(DB_PASSWORD).endTransaction()
+            sqlHelper.writableDatabase.endTransaction()
         }
     }
 
@@ -94,7 +93,7 @@ class QuickRepliesTable : Table() {
         quickReplyCv.put(COLUMN_QUICK_REPLIES_TEXT, quickReply.text)
         quickReplyCv.put(COLUMN_QUICK_REPLIES_IMAGE_URL, quickReply.imageUrl)
         quickReplyCv.put(COLUMN_QUICK_REPLIES_URL, quickReply.url)
-        sqlHelper.getWritableDatabase(DB_PASSWORD).insert(TABLE_QUICK_REPLIES, null, quickReplyCv)
+        sqlHelper.writableDatabase.insert(TABLE_QUICK_REPLIES, null, quickReplyCv)
     }
 }
 

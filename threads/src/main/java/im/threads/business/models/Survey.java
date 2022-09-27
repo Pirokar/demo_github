@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 
 import androidx.core.util.ObjectsCompat;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -46,7 +47,7 @@ public final class Survey implements ChatItem, Hidable {
     }
 
     public List<QuestionDTO> getQuestions() {
-        return questions;
+        return questions == null ? new ArrayList<>() : questions;
     }
 
     @SuppressLint("CheckResult")

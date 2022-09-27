@@ -21,7 +21,7 @@
         android:layout_toEndOf="@+id/consult_avatar"
         android:background="@drawable/thread_incoming_bubble">
 
-        <im.threads.internal.views.CircularProgressButton
+        <im.threads.ui.views.CircularProgressButton
             android:id="@+id/circ_button"
             style="@style/CircularProgressButtonStyle"
             android:layout_alignParentStart="true"
@@ -52,7 +52,7 @@
             android:layout_toEndOf="@+id/loader"
             android:background="@color/threads_incoming_message_text" />
 
-        <im.threads.internal.widget.textView.BubbleMessageTextView
+        <im.threads.ui.widget.textView.BubbleMessageTextView
             android:id="@+id/header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -62,7 +62,7 @@
             android:textColor="@color/threads_incoming_message_text"
             tools:text="счет на оплатуrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr.pdf" />
 
-        <im.threads.internal.widget.textView.BubbleMessageTextView
+        <im.threads.ui.widget.textView.BubbleMessageTextView
             android:id="@+id/file_size"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -75,7 +75,7 @@
             android:textColor="@color/threads_incoming_message_text"
             tools:text="1,2 mb" />
 
-        <im.threads.internal.widget.textView.BubbleTimeTextView
+        <im.threads.ui.widget.textView.BubbleTimeTextView
             android:id="@+id/timestamp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -86,7 +86,7 @@
             tools:text="10:19" />
     </RelativeLayout>
 
-    <im.threads.internal.widget.textView.BubbleTimeTextView
+    <im.threads.ui.widget.textView.BubbleTimeTextView
         android:id="@+id/errortext"
         style="@style/timestamp"
         android:layout_below="@+id/bubble"

@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <im.threads.internal.widget.textView.MessageHeaderTextView
+    <im.threads.ui.widget.textView.MessageHeaderTextView
         android:id="@+id/text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

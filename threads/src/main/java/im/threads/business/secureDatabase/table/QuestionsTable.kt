@@ -2,9 +2,8 @@ package im.threads.business.secureDatabase.table
 
 import android.content.ContentValues
 import im.threads.business.models.QuestionDTO
-import im.threads.business.secureDatabase.ThreadsDbHelper.Companion.DB_PASSWORD
-import net.sqlcipher.database.SQLiteDatabase
-import net.sqlcipher.database.SQLiteOpenHelper
+import net.zetetic.database.sqlcipher.SQLiteDatabase
+import net.zetetic.database.sqlcipher.SQLiteOpenHelper
 
 class QuestionsTable : Table() {
     override fun createTable(db: SQLiteDatabase) {
@@ -27,13 +26,13 @@ class QuestionsTable : Table() {
     }
 
     override fun cleanTable(sqlHelper: SQLiteOpenHelper) {
-        sqlHelper.getWritableDatabase(DB_PASSWORD).execSQL("delete from $TABLE_QUESTIONS")
+        sqlHelper.writableDatabase.execSQL("delete from $TABLE_QUESTIONS")
     }
 
     fun getQuestion(sqlHelper: SQLiteOpenHelper, surveySendingId: Long): QuestionDTO? {
         val query =
             "select * from $TABLE_QUESTIONS where $COLUMN_QUESTION_SURVEY_SENDING_ID_EXT = ?"
-        sqlHelper.getWritableDatabase(DB_PASSWORD)
+        sqlHelper.writableDatabase
             .rawQuery(query, arrayOf(surveySendingId.toString())).use {
                 if (!it.moveToFirst()) {
                     return null
@@ -76,10 +75,10 @@ class QuestionsTable : Table() {
         questionCv.put(COLUMN_QUESTION_TEXT, question.text)
         questionCv.put(COLUMN_QUESTION_SIMPLE, question.isSimple)
         questionCv.put(COLUMN_QUESTION_TIMESTAMP, question.phraseTimeStamp)
-        sqlHelper.getWritableDatabase(DB_PASSWORD).rawQuery(questionSql, questionSelectionArgs)
+        sqlHelper.writableDatabase.rawQuery(questionSql, questionSelectionArgs)
             .use { questionCursor ->
                 if (questionCursor.count > 0) {
-                    sqlHelper.getWritableDatabase(DB_PASSWORD)
+                    sqlHelper.writableDatabase
                         .update(
                             TABLE_QUESTIONS,
                             questionCv,
@@ -87,7 +86,7 @@ class QuestionsTable : Table() {
                             arrayOf(question.sendingId.toString())
                         )
                 } else {
-                    sqlHelper.getWritableDatabase(DB_PASSWORD)
+                    sqlHelper.writableDatabase
                         .insert(TABLE_QUESTIONS, null, questionCv)
                 }
             }

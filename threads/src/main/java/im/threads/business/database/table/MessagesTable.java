@@ -233,7 +233,8 @@ public class MessagesTable extends Table {
                         id,
                         cGetString(c, COLUMN_CONSULT_STATUS),
                         cGetString(c, COLUMN_CONSULT_ORG_UNIT),
-                        cGetString(c, COLUMN_AVATAR_PATH)
+                        cGetString(c, COLUMN_AVATAR_PATH),
+                        null
                 );
             }
         }

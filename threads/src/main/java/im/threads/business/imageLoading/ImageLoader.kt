@@ -11,7 +11,6 @@ import java.io.File
  */
 class ImageLoader private constructor() {
     private val config = Config()
-    private val currentImageLoader: ImageLoaderRealisation = PicassoImageLoader()
 
     /**
      * Указывает url для загрузки
@@ -73,8 +72,9 @@ class ImageLoader private constructor() {
      * Указывает модификации (трансформации), которые будут применены последовательно к изображению
      * @param modifications укажите через запятую необходимые модификации
      */
-    fun modifications(vararg modifications: ImageModifications): ImageLoader {
-        config.modifications = modifications
+    fun modifications(vararg modifications: ImageModifications?): ImageLoader {
+        val filteredModifications = modifications.filterNotNull().toTypedArray()
+        config.modifications = if (filteredModifications.isEmpty()) null else filteredModifications
         return this
     }
 
@@ -152,6 +152,7 @@ class ImageLoader private constructor() {
      */
     fun getBitmap(context: Context) {
         config.context = context
+
         return currentImageLoader.getBitmap(config)
     }
 
@@ -161,6 +162,7 @@ class ImageLoader private constructor() {
      */
     fun getBitmapSync(context: Context): Bitmap? {
         config.context = context
+
         return currentImageLoader.getBitmapSync(config)
     }
 
@@ -202,10 +204,17 @@ class ImageLoader private constructor() {
     }
 
     companion object {
+        private var currentImageLoader = CurrentImageLoader.getImageLoader()
+
         /**
          * Возвращает объект ImageLoader
          */
         @JvmStatic
         fun get() = ImageLoader()
+
+        @JvmStatic
+        fun clearLoader() {
+            CurrentImageLoader.clearLoader()
+        }
     }
 }
