@@ -36,7 +36,6 @@ import im.threads.business.utils.FileUtils.isImage
 import im.threads.business.utils.FileUtils.isVoiceMessage
 import im.threads.business.utils.toFileSize
 import im.threads.ui.utils.gone
-import im.threads.internal.media.FileDescriptionMediaPlayer
 import im.threads.ui.utils.invisible
 import im.threads.ui.utils.visible
 import im.threads.ui.views.CircularProgressButton

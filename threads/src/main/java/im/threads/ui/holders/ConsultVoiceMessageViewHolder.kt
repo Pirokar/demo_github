@@ -29,10 +29,6 @@ import im.threads.business.utils.UrlUtils
 import im.threads.ui.utils.gone
 import im.threads.ui.utils.invisible
 import im.threads.ui.utils.visible
-import im.threads.internal.media.FileDescriptionMediaPlayer
-import im.threads.internal.utils.gone
-import im.threads.internal.utils.invisible
-import im.threads.internal.utils.visible
 import im.threads.ui.views.VoiceTimeLabelFormatter
 import im.threads.ui.views.formatAsDuration
 import im.threads.ui.widget.textView.QuoteMessageTextView

@@ -4,11 +4,12 @@ import android.view.View
 import android.widget.ImageView
 import im.threads.R
 import im.threads.business.logger.LoggerEdna
+import im.threads.business.media.FileDescriptionMediaPlayer
 import im.threads.business.models.ChatItem
 import im.threads.business.models.FileDescription
 import im.threads.business.models.FileDescriptionUri
-import im.threads.internal.Config
-import im.threads.internal.media.FileDescriptionMediaPlayer
+import im.threads.ui.config.Config
+import im.threads.ui.holders.BaseHolder
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.subjects.PublishSubject
 
@@ -31,7 +32,7 @@ abstract class VoiceMessageBaseHolder internal constructor(
 
     fun startLoader() {
         val color = if (isIncomingMessage) {
-            Config.instance.chatStyle.incomingMessageLoaderColor
+            Config.getInstance().getChatStyle().incomingMessageLoaderColor
         } else {
             R.color.threads_white
         }

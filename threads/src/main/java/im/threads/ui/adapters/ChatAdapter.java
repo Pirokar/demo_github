@@ -94,7 +94,6 @@ import im.threads.ui.holders.VoiceMessageBaseHolder;
 import im.threads.ui.utils.ThreadRunnerKt;
 import im.threads.ui.utils.preferences.PrefUtilsUi;
 import im.threads.ui.views.VoiceTimeLabelFormatterKt;
-import im.threads.internal.workers.FileDownloadWorker;
 import io.reactivex.subjects.PublishSubject;
 
 public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {

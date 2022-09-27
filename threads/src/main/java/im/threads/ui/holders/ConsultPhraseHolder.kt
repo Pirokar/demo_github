@@ -34,8 +34,6 @@ import im.threads.business.utils.UrlUtils
 import im.threads.business.utils.toFileSize
 import im.threads.ui.utils.invisible
 import im.threads.ui.utils.visible
-import im.threads.internal.utils.invisible
-import im.threads.internal.utils.visible
 import im.threads.ui.views.CircularProgressButton
 import im.threads.ui.widget.textView.BubbleMessageTextView
 import im.threads.ui.widget.textView.BubbleTimeTextView
