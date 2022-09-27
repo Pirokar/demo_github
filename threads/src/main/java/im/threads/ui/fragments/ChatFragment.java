@@ -517,7 +517,6 @@ public final class ChatFragment extends BaseFragment implements
                     synchronized (this) {
                         if (recorder != null) {
                             recorder.stop();
-                            recorder = null;
                         }
                     }
                 });
@@ -2045,6 +2044,7 @@ public final class ChatFragment extends BaseFragment implements
         if (fdMediaPlayer != null) {
             fdMediaPlayer.clearClickedDownloadPath();
         }
+        recorder = null;
     }
 
     @Override

@@ -8,7 +8,11 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 
 class AudioRecorder(private val context: Context) {
-    var voiceFilePath = ""
+    private var currentConfig: AudioRecorderConfig? = null
+    val voiceFilePath: String
+        get() {
+            return currentConfig?.outputFilePath ?: ""
+        }
 
     private val recorder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         MediaRecorder(context)
@@ -22,6 +26,8 @@ class AudioRecorder(private val context: Context) {
     }
 
     fun prepare(config: AudioRecorderConfig) {
+        currentConfig = config
+
         config.audioSource?.let { recorder.setAudioSource(it) }
         config.outputFormat?.let { recorder.setOutputFormat(it) }
         config.audioEncoder?.let { recorder.setAudioEncoder(it) }

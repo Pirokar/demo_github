@@ -16,10 +16,10 @@ import java.util.Locale;
 
 import im.threads.ChatStyle;
 import im.threads.R;
+import im.threads.business.formatters.RussianFormatSymbols;
 import im.threads.business.imageLoading.ImageLoader;
 import im.threads.business.models.FileDescription;
 import im.threads.business.utils.FileUtils;
-import im.threads.business.formatters.RussianFormatSymbols;
 import im.threads.ui.config.Config;
 
 public final class ImageFragment extends Fragment {
