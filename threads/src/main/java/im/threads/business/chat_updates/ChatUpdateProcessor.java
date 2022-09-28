@@ -1,4 +1,4 @@
-package im.threads.internal.chat_updates;
+package im.threads.business.chat_updates;
 
 import androidx.annotation.NonNull;
 
@@ -16,7 +16,7 @@ import im.threads.business.transport.models.AttachmentSettings;
 import im.threads.business.formatters.ChatItemType;
 import im.threads.business.models.ChatItemSendErrorModel;
 import im.threads.business.models.ClientNotificationDisplayType;
-import im.threads.internal.model.InputFieldEnableModel;
+import im.threads.business.models.InputFieldEnableModel;
 import im.threads.business.models.QuickReplyItem;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;

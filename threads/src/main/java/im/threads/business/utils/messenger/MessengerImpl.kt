@@ -3,6 +3,7 @@ package im.threads.business.utils.messenger
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
+import im.threads.business.chat_updates.ChatUpdateProcessor
 import im.threads.business.config.BaseConfig
 import im.threads.business.logger.LoggerEdna.debug
 import im.threads.business.logger.LoggerEdna.error
@@ -21,8 +22,7 @@ import im.threads.business.utils.internet.NetworkInteractor
 import im.threads.business.utils.internet.NetworkInteractorImpl
 import im.threads.business.utils.postFile
 import im.threads.business.utils.preferences.PrefUtilsBase
-import im.threads.internal.chat_updates.ChatUpdateProcessor
-import im.threads.internal.utils.getErrorStringResByCode
+import im.threads.business.utils.getErrorStringResByCode
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers

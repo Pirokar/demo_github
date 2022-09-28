@@ -25,7 +25,7 @@ import java.util.List;
 
 import im.threads.ChatStyle;
 import im.threads.R;
-import im.threads.internal.helpers.MediaHelper;
+import im.threads.business.utils.MediaHelper;
 import im.threads.business.useractivity.UserActivityTime;
 import im.threads.business.useractivity.UserActivityTimeProvider;
 import im.threads.ui.utils.ColorsHelper;

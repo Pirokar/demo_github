@@ -9,6 +9,7 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import im.threads.business.chat_updates.ChatUpdateProcessor
 import im.threads.business.config.BaseConfig
 import im.threads.business.formatters.ChatItemType
 import im.threads.business.logger.LoggerEdna
@@ -42,7 +43,6 @@ import im.threads.business.utils.AppInfoHelper
 import im.threads.business.utils.DeviceInfoHelper
 import im.threads.business.utils.SSLCertificateInterceptor
 import im.threads.business.utils.preferences.PrefUtilsBase
-import im.threads.internal.chat_updates.ChatUpdateProcessor
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request

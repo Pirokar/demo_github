@@ -37,7 +37,7 @@ import im.threads.business.logger.LoggerEdna;
 import im.threads.ui.core.ThreadsLib;
 import im.threads.ui.styles.permissions.PermissionDescriptionType;
 import im.threads.ui.utils.ColorsHelper;
-import im.threads.view.ChatFragment;
+import im.threads.ui.fragments.ChatFragment;
 import io.reactivex.Completable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;

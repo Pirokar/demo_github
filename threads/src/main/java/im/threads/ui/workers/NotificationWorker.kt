@@ -36,7 +36,7 @@ import im.threads.business.utils.WorkerUtils
 import im.threads.business.utils.WorkerUtils.unmarshall
 import im.threads.ui.activities.QuickAnswerActivity
 import im.threads.ui.config.Config
-import im.threads.view.ChatFragment
+import im.threads.ui.fragments.ChatFragment
 import java.io.IOException
 import java.util.Date
 import java.util.concurrent.Executors
@@ -52,7 +52,7 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
     override fun doWork(): Result {
         LoggerEdna.info("doWork")
 
-        return (Config.getInstance())?.let { config ->
+        return (Config.getInstance()).let { config ->
             val systemService = context.getSystemService(Context.NOTIFICATION_SERVICE)
             val notificationManager: NotificationManager
             if (systemService is NotificationManager) {

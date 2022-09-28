@@ -1,4 +1,4 @@
-package im.threads.internal.utils // ktlint-disable filename
+package im.threads.business.utils // ktlint-disable filename
 
 import im.threads.R
 

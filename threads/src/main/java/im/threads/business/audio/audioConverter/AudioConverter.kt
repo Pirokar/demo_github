@@ -1,12 +1,12 @@
-package im.threads.business.audioConverter
+package im.threads.business.audio.audioConverter
 
 import android.content.Context
 import com.github.hiteshsondhi88.libffmpeg.FFmpeg
 import com.github.hiteshsondhi88.libffmpeg.FFmpegExecuteResponseHandler
 import com.github.hiteshsondhi88.libffmpeg.FFmpegLoadBinaryResponseHandler
-import im.threads.business.audioConverter.callback.IConvertCallback
-import im.threads.business.audioConverter.callback.ILoadCallback
-import im.threads.business.audioConverter.model.AudioFormat
+import im.threads.business.audio.audioConverter.callback.IConvertCallback
+import im.threads.business.audio.audioConverter.callback.ILoadCallback
+import im.threads.business.audio.audioConverter.model.AudioFormat
 import java.io.File
 import java.io.IOException
 

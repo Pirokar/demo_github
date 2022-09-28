@@ -7,8 +7,9 @@ import android.text.TextUtils
 import im.threads.BuildConfig
 import im.threads.R
 import im.threads.UserInfoBuilder
-import im.threads.business.audioConverter.AudioConverter
-import im.threads.business.audioConverter.callback.ILoadCallback
+import im.threads.business.audio.audioConverter.AudioConverter
+import im.threads.business.audio.audioConverter.callback.ILoadCallback
+import im.threads.business.chat_updates.ChatUpdateProcessor
 import im.threads.business.config.BaseConfig
 import im.threads.business.config.BaseConfigBuilder
 import im.threads.business.controllers.UnreadMessagesController
@@ -24,7 +25,6 @@ import im.threads.business.utils.FileProviderHelper
 import im.threads.business.utils.FileUtils.getFileSize
 import im.threads.business.utils.preferences.PrefUtilsBase
 import im.threads.business.utils.preferences.PreferencesMigrationBase
-import im.threads.internal.chat_updates.ChatUpdateProcessor
 import im.threads.ui.controllers.ChatController
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.exceptions.UndeliverableException

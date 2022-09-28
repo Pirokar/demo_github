@@ -14,7 +14,7 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import im.threads.internal.model.ExtractedLink;
+import im.threads.business.models.ExtractedLink;
 
 public final class UrlUtils {
 

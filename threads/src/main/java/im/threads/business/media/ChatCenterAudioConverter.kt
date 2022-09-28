@@ -1,8 +1,8 @@
 package im.threads.business.media
 
-import im.threads.business.audioConverter.AudioConverter
-import im.threads.business.audioConverter.callback.IConvertCallback
-import im.threads.business.audioConverter.model.AudioFormat
+import im.threads.business.audio.audioConverter.AudioConverter
+import im.threads.business.audio.audioConverter.callback.IConvertCallback
+import im.threads.business.audio.audioConverter.model.AudioFormat
 import im.threads.business.config.BaseConfig
 import im.threads.business.logger.LoggerEdna
 import java.io.File

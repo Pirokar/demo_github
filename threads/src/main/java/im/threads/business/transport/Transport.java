@@ -16,7 +16,7 @@ import im.threads.business.models.UserPhrase;
 import im.threads.business.rest.models.SettingsResponse;
 import im.threads.business.rest.queries.BackendApi;
 import im.threads.business.rest.queries.ThreadsApi;
-import im.threads.internal.chat_updates.ChatUpdateProcessor;
+import im.threads.business.chat_updates.ChatUpdateProcessor;
 import im.threads.ui.utils.preferences.PrefUtilsUi;
 import io.reactivex.Completable;
 import io.reactivex.Single;

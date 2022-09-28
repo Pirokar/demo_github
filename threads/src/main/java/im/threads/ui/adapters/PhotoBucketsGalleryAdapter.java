@@ -7,7 +7,7 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import im.threads.ui.holders.GalleryBucketImageHolder;
-import im.threads.internal.model.PhotoBucketItem;
+import im.threads.business.models.PhotoBucketItem;
 
 public final class PhotoBucketsGalleryAdapter extends RecyclerView.Adapter<GalleryBucketImageHolder> {
     private List<PhotoBucketItem> list;

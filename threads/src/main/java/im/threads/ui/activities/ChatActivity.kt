@@ -2,7 +2,7 @@ package im.threads.ui.activities
 
 import android.os.Bundle
 import im.threads.R
-import im.threads.view.ChatFragment
+import im.threads.ui.fragments.ChatFragment
 
 /**
  * Вся логика находится во фрагменте [ChatFragment]

@@ -18,7 +18,10 @@ import im.threads.business.config.BaseConfig
 import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.logger.LoggerEdna
 import im.threads.business.logger.LoggerEdna.debug
+import im.threads.business.models.CampaignMessage
 import im.threads.business.models.FileDescription
+import im.threads.business.models.Quote
+import im.threads.business.models.UpcomingUserMessage
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileNotFoundException
@@ -335,6 +338,51 @@ object FileUtils {
             cursor.moveToFirst()
             return cursor.getString(nameIndex)
         }
+    }
+
+    @JvmStatic
+    fun getUpcomingUserMessagesFromSelection(
+        uris: List<Uri>,
+        inputText: String?,
+        fileDescriptionText: String,
+        campaignMessage: CampaignMessage?,
+        quote: Quote?
+    ): List<UpcomingUserMessage> {
+        val messages: MutableList<UpcomingUserMessage> = ArrayList()
+        var fileUri: Uri = uris[0]
+        messages.add(
+            UpcomingUserMessage(
+                FileDescription(
+                    fileDescriptionText,
+                    fileUri,
+                    getFileSize(fileUri),
+                    System.currentTimeMillis()
+                ),
+                campaignMessage,
+                quote,
+                inputText?.trim { it <= ' ' },
+                inputText?.isLastCopyText() ?: false
+            )
+        )
+        for (i in 1 until uris.size) {
+            fileUri = uris[i]
+            val fileDescription = FileDescription(
+                fileDescriptionText,
+                fileUri,
+                getFileSize(fileUri),
+                System.currentTimeMillis()
+            )
+            val upcomingUserMessage = UpcomingUserMessage(
+                fileDescription,
+                null,
+                null,
+                null,
+                false
+            )
+            messages.add(upcomingUserMessage)
+        }
+
+        return messages
     }
 
     @JvmStatic

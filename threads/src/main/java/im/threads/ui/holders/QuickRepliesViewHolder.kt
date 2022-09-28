@@ -32,7 +32,7 @@ class QuickRepliesViewHolder(val parent: ViewGroup) : BaseHolder(
                 )
             )
             newChip.setOnClickListener {
-                callback.onQiuckReplyClick(repl)
+                callback.onQuickReplyClick(repl)
             }
             chipGroup.addView(view)
         }

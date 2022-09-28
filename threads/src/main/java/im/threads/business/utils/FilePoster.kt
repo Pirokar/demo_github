@@ -8,15 +8,15 @@ import com.google.gson.Gson
 import im.threads.business.config.BaseConfig
 import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.logger.LoggerEdna
+import im.threads.business.models.ErrorResponse
 import im.threads.business.models.FileDescription
+import im.threads.business.models.FileUploadResponse
 import im.threads.business.rest.queries.DatastoreApi
 import im.threads.business.rest.queries.ThreadsApi
 import im.threads.business.transport.InputStreamRequestBody
 import im.threads.business.utils.FileUtils.getFileName
 import im.threads.business.utils.FileUtils.getMimeType
 import im.threads.business.utils.preferences.PrefUtilsBase
-import im.threads.internal.model.ErrorResponse
-import im.threads.internal.model.FileUploadResponse
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
