@@ -70,7 +70,7 @@ import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import im.threads.ChatStyle;
+import im.threads.ui.ChatStyle;
 import im.threads.R;
 import im.threads.business.annotation.OpenWay;
 import im.threads.business.audio.audioRecorder.AudioRecorder;

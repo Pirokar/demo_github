@@ -18,7 +18,6 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.pandulapeter.beagle.Beagle
-import im.threads.UserInfoBuilder
 import im.threads.android.R
 import im.threads.android.data.Card
 import im.threads.android.databinding.ActivityMainBinding
@@ -37,6 +36,7 @@ import im.threads.android.utils.PrefUtilsApp
 import im.threads.android.utils.PrefUtilsApp.getCards
 import im.threads.android.utils.PrefUtilsApp.getTheme
 import im.threads.android.utils.PrefUtilsApp.storeCards
+import im.threads.business.UserInfoBuilder
 import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.CampaignMessage
 import im.threads.ui.activities.ChatActivity

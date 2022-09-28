@@ -7,7 +7,7 @@ import android.util.AttributeSet;
 
 import androidx.appcompat.widget.AppCompatButton;
 
-import im.threads.ChatStyle;
+import im.threads.ui.ChatStyle;
 import im.threads.ui.config.Config;
 
 public final class CustomFontButton extends AppCompatButton {

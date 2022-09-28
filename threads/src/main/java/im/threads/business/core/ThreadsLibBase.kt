@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Build
 import android.text.TextUtils
 import im.threads.BuildConfig
-import im.threads.UserInfoBuilder
+import im.threads.business.UserInfoBuilder
 import im.threads.business.audio.audioConverter.AudioConverter
 import im.threads.business.audio.audioConverter.callback.ILoadCallback
 import im.threads.business.chat_updates.ChatUpdateProcessor
@@ -18,8 +18,7 @@ import im.threads.business.rest.queries.BackendApi
 import im.threads.business.rest.queries.DatastoreApi
 import im.threads.business.useractivity.UserActivityTimeProvider.getLastUserActivityTimeCounter
 import im.threads.business.useractivity.UserActivityTimeProvider.initializeLastUserActivity
-import im.threads.business.utils.client.ClientInteractor
-import im.threads.business.utils.client.ClientInteractorImpl
+import im.threads.business.utils.ClientInteractor
 import im.threads.business.utils.preferences.PrefUtilsBase
 import im.threads.business.utils.preferences.PreferencesMigrationBase
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -83,7 +82,7 @@ open class ThreadsLibBase protected constructor() {
     companion object {
         @JvmStatic
         protected var libInstance: ThreadsLibBase? = null
-        private val clientInteractor: ClientInteractor = ClientInteractorImpl()
+        private val clientInteractor: ClientInteractor = ClientInteractor()
         private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
         @JvmStatic

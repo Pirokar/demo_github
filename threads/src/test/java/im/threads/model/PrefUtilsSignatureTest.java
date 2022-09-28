@@ -1,4 +1,4 @@
-//package im.threads.internal.model;
+package im.threads.model;//package im.threads.internal.model;
 //
 //
 //import android.content.Context;

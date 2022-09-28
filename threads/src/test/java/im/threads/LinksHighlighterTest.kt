@@ -1,12 +1,12 @@
-package im.threads.internal
+package im.threads
 
 import android.content.Context
 import android.text.Spanned
 import android.widget.TextView
 import androidx.core.text.toHtml
 import androidx.test.core.app.ApplicationProvider
-import im.threads.ui.markdown.LinkifyLinksHighlighter
-import im.threads.ui.markdown.LinksHighlighter
+import im.threads.business.markdown.LinkifyLinksHighlighter
+import im.threads.business.markdown.LinksHighlighter
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith

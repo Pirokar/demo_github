@@ -1,10 +1,10 @@
 package im.threads.ui.core
 
-import im.threads.ChatStyle
-import im.threads.UserInfoBuilder
+import im.threads.business.UserInfoBuilder
 import im.threads.business.config.BaseConfig
 import im.threads.business.core.ThreadsLibBase
 import im.threads.business.logger.LoggerEdna
+import im.threads.ui.ChatStyle
 import im.threads.ui.config.Config
 import im.threads.ui.config.ConfigBuilder
 import im.threads.ui.controllers.ChatController

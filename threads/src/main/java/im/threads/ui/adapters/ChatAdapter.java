@@ -31,7 +31,7 @@ import java.util.ListIterator;
 import java.util.Objects;
 import java.util.Set;
 
-import im.threads.ChatStyle;
+import im.threads.ui.ChatStyle;
 import im.threads.business.formatters.ChatItemType;
 import im.threads.business.imageLoading.ImageModifications;
 import im.threads.business.logger.LoggerEdna;

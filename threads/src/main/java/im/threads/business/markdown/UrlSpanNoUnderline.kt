@@ -1,4 +1,4 @@
-package im.threads.ui.markdown
+package im.threads.business.markdown
 
 import android.text.TextPaint
 import android.text.style.URLSpan

@@ -9,7 +9,7 @@ import android.view.View;
 
 import androidx.core.content.ContextCompat;
 
-import im.threads.ChatStyle;
+import im.threads.ui.ChatStyle;
 import im.threads.ui.config.Config;
 
 public final class MyCircleProgress extends View {

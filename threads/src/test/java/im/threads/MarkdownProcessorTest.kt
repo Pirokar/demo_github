@@ -1,11 +1,11 @@
-package im.threads.internal
+package im.threads
 
 import android.content.Context
 import androidx.core.text.toHtml
 import androidx.test.core.app.ApplicationProvider
-import im.threads.ui.markdown.MarkdownConfig
-import im.threads.ui.markdown.MarkdownProcessor
-import im.threads.ui.markdown.MarkwonMarkdownProcessor
+import im.threads.business.markdown.MarkdownConfig
+import im.threads.business.markdown.MarkdownProcessor
+import im.threads.business.markdown.MarkwonMarkdownProcessor
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith

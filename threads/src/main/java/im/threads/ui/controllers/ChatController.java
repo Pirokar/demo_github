@@ -23,7 +23,7 @@ import java.util.ListIterator;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
-import im.threads.ChatStyle;
+import im.threads.ui.ChatStyle;
 import im.threads.R;
 import im.threads.business.broadcastReceivers.ProgressReceiver;
 import im.threads.business.chat_updates.ChatUpdateProcessor;
@@ -65,8 +65,7 @@ import im.threads.business.transport.models.Attachment;
 import im.threads.business.utils.ChatMessageSeeker;
 import im.threads.business.utils.ConsultWriter;
 import im.threads.business.utils.FileUtils;
-import im.threads.business.utils.client.ClientInteractor;
-import im.threads.business.utils.client.ClientInteractorImpl;
+import im.threads.business.utils.ClientInteractor;
 import im.threads.business.utils.messenger.Messenger;
 import im.threads.business.utils.messenger.MessengerImpl;
 import im.threads.business.utils.preferences.PrefUtilsBase;
@@ -160,7 +159,7 @@ public final class ChatController {
     }
 
     public static ChatController getInstance() {
-        ClientInteractor clientInteractor = new ClientInteractorImpl();
+        ClientInteractor clientInteractor = new ClientInteractor();
         if (instance == null) {
             instance = new ChatController();
         }

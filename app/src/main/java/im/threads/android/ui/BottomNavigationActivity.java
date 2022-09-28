@@ -26,8 +26,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.lang.ref.WeakReference;
 import java.util.concurrent.TimeUnit;
 
-import im.threads.ChatStyle;
-import im.threads.UserInfoBuilder;
+import im.threads.ui.ChatStyle;
+import im.threads.business.UserInfoBuilder;
 import im.threads.android.R;
 import im.threads.android.utils.ChatDesign;
 import im.threads.android.utils.ChatStyleBuilderHelper;

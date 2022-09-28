@@ -1,4 +1,4 @@
-package im.threads.internal.database;
+package im.threads.database;
 
 import android.content.Context;
 

@@ -1,11 +1,11 @@
 package im.threads.ui.utils.preferences
 
 import com.google.gson.JsonSyntaxException
-import im.threads.ChatStyle
 import im.threads.business.config.BaseConfig
 import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.ClientNotificationDisplayType
 import im.threads.business.utils.preferences.PrefUtilsBase
+import im.threads.ui.ChatStyle
 import im.threads.ui.styles.permissions.PermissionDescriptionDialogStyle
 import im.threads.ui.styles.permissions.PermissionDescriptionType
 import java.io.Serializable

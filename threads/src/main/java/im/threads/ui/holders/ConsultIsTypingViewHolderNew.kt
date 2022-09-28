@@ -7,12 +7,12 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import im.threads.ChatStyle
 import im.threads.R
 import im.threads.business.imageLoading.ImageModifications
 import im.threads.business.imageLoading.loadImage
 import im.threads.business.models.ConsultTyping
 import im.threads.business.utils.FileUtils
+import im.threads.ui.ChatStyle
 import im.threads.ui.config.Config
 
 /**

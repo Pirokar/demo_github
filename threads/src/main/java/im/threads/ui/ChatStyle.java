@@ -1,4 +1,4 @@
-package im.threads;
+package im.threads.ui;
 
 import android.content.Context;
 import android.view.Gravity;
@@ -16,7 +16,8 @@ import androidx.annotation.StyleRes;
 
 import java.io.Serializable;
 
-import im.threads.ui.markdown.MarkdownConfig;
+import im.threads.R;
+import im.threads.business.markdown.MarkdownConfig;
 
 /**
  * Стиль чата.

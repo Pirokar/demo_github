@@ -5,7 +5,7 @@ import android.graphics.Typeface;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 
-import im.threads.ChatStyle;
+import im.threads.ui.ChatStyle;
 import im.threads.ui.config.Config;
 
 public final class CustomFontEditText extends androidx.appcompat.widget.AppCompatEditText {

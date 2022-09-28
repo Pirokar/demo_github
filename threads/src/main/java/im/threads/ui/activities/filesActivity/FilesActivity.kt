@@ -22,11 +22,11 @@ import androidx.annotation.ColorRes
 import androidx.annotation.DimenRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
-import im.threads.ChatStyle
 import im.threads.R
 import im.threads.business.models.FileDescription
 import im.threads.business.secureDatabase.DatabaseHolder
 import im.threads.databinding.ActivityFilesAndMediaBinding
+import im.threads.ui.ChatStyle
 import im.threads.ui.activities.BaseActivity
 import im.threads.ui.adapters.filesAndMedia.FilesAndMediaAdapter
 import im.threads.ui.adapters.filesAndMedia.FilesAndMediaAdapter.OnFileClick
