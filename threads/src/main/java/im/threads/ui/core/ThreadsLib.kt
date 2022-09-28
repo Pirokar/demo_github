@@ -1,11 +1,13 @@
 package im.threads.ui.core
 
 import im.threads.ChatStyle
+import im.threads.UserInfoBuilder
 import im.threads.business.config.BaseConfig
 import im.threads.business.core.ThreadsLibBase
 import im.threads.business.logger.LoggerEdna
 import im.threads.ui.config.Config
 import im.threads.ui.config.ConfigBuilder
+import im.threads.ui.controllers.ChatController
 import im.threads.ui.styles.permissions.PermissionDescriptionDialogStyle
 import im.threads.ui.utils.preferences.PreferencesMigrationUi
 
@@ -13,6 +15,14 @@ class ThreadsLib : ThreadsLibBase() {
     private val config by lazy {
         Config.getInstance()
     }
+
+    public override fun initUser(userInfoBuilder: UserInfoBuilder) {
+        ChatController.getInstance().cleanAll()
+        super.initUser(userInfoBuilder)
+        ChatController.getInstance().hideEmptyState()
+        ChatController.getInstance().loadHistory()
+    }
+
     fun applyChatStyle(chatStyle: ChatStyle?) {
         config.setChatStyle(chatStyle)
     }

@@ -18,11 +18,11 @@ import im.threads.business.secureDatabase.DatabaseHolder.Companion.getInstance
 import im.threads.business.transport.HistoryLoader.getHistorySync
 import im.threads.business.transport.HistoryParser
 import im.threads.business.utils.ConsultWriter
+import im.threads.business.utils.getErrorStringResByCode
 import im.threads.business.utils.internet.NetworkInteractor
 import im.threads.business.utils.internet.NetworkInteractorImpl
 import im.threads.business.utils.postFile
 import im.threads.business.utils.preferences.PrefUtilsBase
-import im.threads.business.utils.getErrorStringResByCode
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers

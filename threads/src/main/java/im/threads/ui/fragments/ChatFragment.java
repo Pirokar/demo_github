@@ -321,8 +321,8 @@ public final class ChatFragment extends BaseFragment implements
             return;
         }
         mChatController = ChatController.getInstance();
-        mChatController.bindFragment(this);
         welcomeScreenVisibility(mChatController.isNeedToShowWelcome());
+        mChatController.bindFragment(this);
         mChatReceiver = new ChatReceiver();
         IntentFilter intentFilter = new IntentFilter(ACTION_SEARCH_CHAT_FILES);
         intentFilter.addAction(ACTION_SEARCH);
@@ -2306,11 +2306,13 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     public void showProgressBar() {
+        binding.welcome.setVisibility(View.GONE);
         binding.flEmpty.setVisibility(View.VISIBLE);
         binding.tvEmptyStateHint.setText(style.loaderTextResId);
     }
 
     public void hideProgressBar() {
+        welcomeScreenVisibility(mChatController.isNeedToShowWelcome());
         binding.flEmpty.setVisibility(View.GONE);
     }
 

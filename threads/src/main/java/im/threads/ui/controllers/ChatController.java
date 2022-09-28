@@ -20,13 +20,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.business.broadcastReceivers.ProgressReceiver;
+import im.threads.business.chat_updates.ChatUpdateProcessor;
 import im.threads.business.config.BaseConfig;
 import im.threads.business.controllers.UnreadMessagesController;
 import im.threads.business.formatters.ChatItemType;
@@ -41,6 +41,7 @@ import im.threads.business.models.ConsultPhrase;
 import im.threads.business.models.ConsultTyping;
 import im.threads.business.models.FileDescription;
 import im.threads.business.models.Hidable;
+import im.threads.business.models.InputFieldEnableModel;
 import im.threads.business.models.MessageRead;
 import im.threads.business.models.MessageState;
 import im.threads.business.models.QuickReplyItem;
@@ -64,20 +65,20 @@ import im.threads.business.transport.models.Attachment;
 import im.threads.business.utils.ChatMessageSeeker;
 import im.threads.business.utils.ConsultWriter;
 import im.threads.business.utils.FileUtils;
+import im.threads.business.utils.client.ClientInteractor;
+import im.threads.business.utils.client.ClientInteractorImpl;
 import im.threads.business.utils.messenger.Messenger;
 import im.threads.business.utils.messenger.MessengerImpl;
 import im.threads.business.utils.preferences.PrefUtilsBase;
 import im.threads.business.workers.FileDownloadWorker;
-import im.threads.business.chat_updates.ChatUpdateProcessor;
-import im.threads.business.models.InputFieldEnableModel;
 import im.threads.ui.activities.ConsultActivity;
 import im.threads.ui.activities.ImagesActivity;
 import im.threads.ui.config.Config;
+import im.threads.ui.fragments.ChatFragment;
 import im.threads.ui.utils.ThreadRunnerKt;
 import im.threads.ui.utils.preferences.PrefUtilsUi;
 import im.threads.ui.utils.preferences.PreferencesMigrationUi;
 import im.threads.ui.workers.NotificationWorker;
-import im.threads.ui.fragments.ChatFragment;
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Maybe;
@@ -159,37 +160,30 @@ public final class ChatController {
     }
 
     public static ChatController getInstance() {
+        ClientInteractor clientInteractor = new ClientInteractorImpl();
         if (instance == null) {
             instance = new ChatController();
         }
-        initClientId();
+        clientInteractor.initClientId();
+        subscribeOnClientIdChange();
         return instance;
     }
 
-    private static void initClientId() {
-        String newClientId = PrefUtilsBase.getNewClientID();
-        String oldClientId = PrefUtilsBase.getClientID();
-        LoggerEdna.info("getInstance newClientId = " + newClientId + ", oldClientId = " + oldClientId);
-        if (Objects.equals(newClientId, oldClientId)) {
-            // clientId has not changed
-            PrefUtilsBase.setNewClientId("");
-        } else if (!TextUtils.isEmpty(newClientId)) {
-            PrefUtilsBase.setClientId(newClientId);
-            instance.subscribe(
-                    Single.fromCallable(() -> instance.onClientIdChanged())
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(
-                                    chatItems -> {
-                                        if (instance.fragment != null) {
-                                            instance.fragment.addChatItems(chatItems);
-                                            instance.handleQuickReplies(chatItems);
-                                        }
-                                    },
-                                    LoggerEdna::error
-                            )
-            );
-        }
+    private static void subscribeOnClientIdChange() {
+        instance.subscribe(
+                Single.fromCallable(() -> instance.onClientIdChanged())
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                chatItems -> {
+                                    if (instance.fragment != null) {
+                                        instance.fragment.addChatItems(chatItems);
+                                        instance.handleQuickReplies(chatItems);
+                                    }
+                                },
+                                LoggerEdna::error
+                        )
+        );
     }
 
     public void onRatingClick(@NonNull final Survey survey) {
@@ -367,7 +361,7 @@ public final class ChatController {
     }
 
     public boolean isNeedToShowWelcome() {
-        return databaseHolder.getMessagesCount() <= 0;
+        return databaseHolder.getMessagesCount() == 0;
     }
 
     public int getStateOfConsult() {
@@ -518,13 +512,11 @@ public final class ChatController {
         return setLastAvatars(serverItems);
     }
 
-    public void sendInit() {
-        BaseConfig.instance.transport.sendInit();
-        hideEmptyState();
-    }
-
     public void loadHistory() {
         if (!isDownloadingMessages) {
+            if (fragment != null && fragment.isAdded()) {
+                fragment.showProgressBar();
+            }
             LoggerEdna.info(ThreadsApi.REST_TAG, "Loading history from " + ChatController.class.getSimpleName());
             isDownloadingMessages = true;
             subscribe(
@@ -625,7 +617,7 @@ public final class ChatController {
         return list;
     }
 
-    private void hideEmptyState() {
+    public void hideEmptyState() {
         if (!PrefUtilsBase.isClientIdEmpty()) {
             if (fragment != null) {
                 fragment.hideEmptyState();
