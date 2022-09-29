@@ -1,12 +1,10 @@
 package im.threads.business.core
 
 import android.annotation.SuppressLint
-import android.net.Uri
 import android.os.Build
 import android.text.TextUtils
 import im.threads.BuildConfig
-import im.threads.R
-import im.threads.UserInfoBuilder
+import im.threads.business.UserInfoBuilder
 import im.threads.business.audio.audioConverter.AudioConverter
 import im.threads.business.audio.audioConverter.callback.ILoadCallback
 import im.threads.business.chat_updates.ChatUpdateProcessor
@@ -14,18 +12,15 @@ import im.threads.business.config.BaseConfig
 import im.threads.business.config.BaseConfigBuilder
 import im.threads.business.controllers.UnreadMessagesController
 import im.threads.business.logger.LoggerEdna
+import im.threads.business.logger.LoggerEdna.info
 import im.threads.business.models.CampaignMessage
-import im.threads.business.models.FileDescription
-import im.threads.business.models.UpcomingUserMessage
 import im.threads.business.rest.queries.BackendApi
 import im.threads.business.rest.queries.DatastoreApi
 import im.threads.business.useractivity.UserActivityTimeProvider.getLastUserActivityTimeCounter
 import im.threads.business.useractivity.UserActivityTimeProvider.initializeLastUserActivity
-import im.threads.business.utils.FileProviderHelper
-import im.threads.business.utils.FileUtils.getFileSize
+import im.threads.business.utils.ClientInteractor
 import im.threads.business.utils.preferences.PrefUtilsBase
 import im.threads.business.utils.preferences.PreferencesMigrationBase
-import im.threads.ui.controllers.ChatController
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.exceptions.UndeliverableException
 import io.reactivex.plugins.RxJavaPlugins
@@ -34,7 +29,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import java.io.File
 
 @Suppress("unused")
 open class ThreadsLibBase protected constructor() {
@@ -55,9 +49,7 @@ open class ThreadsLibBase protected constructor() {
     val socketResponseMapProcessor: FlowableProcessor<Map<String, Any>>
         get() = ChatUpdateProcessor.getInstance().socketResponseMapProcessor
 
-    fun initUser(userInfoBuilder: UserInfoBuilder) {
-        // it will only affect GPB, every time they try to init user we will delete user related data
-        ChatController.getInstance().cleanAll()
+    protected open fun initUser(userInfoBuilder: UserInfoBuilder) {
         PrefUtilsBase.appMarker = userInfoBuilder.appMarker
         PrefUtilsBase.setNewClientId(userInfoBuilder.clientId)
         PrefUtilsBase.authToken = userInfoBuilder.authToken
@@ -66,8 +58,7 @@ open class ThreadsLibBase protected constructor() {
         PrefUtilsBase.userName = userInfoBuilder.userName
         PrefUtilsBase.data = userInfoBuilder.clientData
         PrefUtilsBase.setClientIdEncrypted(userInfoBuilder.clientIdEncrypted)
-        ChatController.getInstance().sendInit()
-        ChatController.getInstance().loadHistory()
+        BaseConfig.instance.transport.sendInit()
     }
 
     /**
@@ -77,52 +68,7 @@ open class ThreadsLibBase protected constructor() {
         if (!TextUtils.isEmpty(clientId)) {
             BaseConfig.instance.transport.sendClientOffline(clientId)
         } else {
-            LoggerEdna.info("clientId must not be empty")
-        }
-    }
-
-    /**
-     * Used to post messages to chat as if written by client
-     *
-     * @return true, if message was successfully added to messaging queue, otherwise false
-     */
-    fun sendMessage(message: String?, file: File?): Boolean {
-        val fileUri = if (file != null) FileProviderHelper.getUriForFile(
-            BaseConfig.instance.context,
-            file
-        ) else null
-        return sendMessage(message, fileUri)
-    }
-
-    /**
-     * Used to post messages to chat as if written by client
-     *
-     * @return true, if message was successfully added to messaging queue, otherwise false
-     */
-    fun sendMessage(message: String?, fileUri: Uri?): Boolean {
-        val chatController = ChatController.getInstance()
-        return if (!PrefUtilsBase.isClientIdEmpty) {
-            var fileDescription: FileDescription? = null
-            if (fileUri != null) {
-                fileDescription = FileDescription(
-                    BaseConfig.instance.context.getString(R.string.threads_I),
-                    fileUri,
-                    getFileSize(fileUri),
-                    System.currentTimeMillis()
-                )
-            }
-            val msg = UpcomingUserMessage(
-                fileDescription,
-                null,
-                null,
-                message,
-                false
-            )
-            chatController.onUserInput(msg)
-            true
-        } else {
-            LoggerEdna.info("You might need to initialize user first with ThreadsLib.userInfo()")
-            false
+            info("clientId must not be empty")
         }
     }
 
@@ -136,6 +82,7 @@ open class ThreadsLibBase protected constructor() {
     companion object {
         @JvmStatic
         protected var libInstance: ThreadsLibBase? = null
+        private val clientInteractor: ClientInteractor = ClientInteractor()
         private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
         @JvmStatic
@@ -181,7 +128,7 @@ open class ThreadsLibBase protected constructor() {
                         BaseConfig.instance.context,
                         object : ILoadCallback {
                             override fun onSuccess() {
-                                LoggerEdna.info("AndroidAudioConverter was successfully loaded")
+                                info("AndroidAudioConverter was successfully loaded")
                             }
 
                             override fun onFailure(error: Exception) {
@@ -196,7 +143,7 @@ open class ThreadsLibBase protected constructor() {
                     )
                 }
             }
-            ChatController.getInstance()
+            clientInteractor.initClientId()
             initializeLastUserActivity()
             if (RxJavaPlugins.getErrorHandler() == null) {
                 RxJavaPlugins.setErrorHandler { throwable: Throwable? ->
@@ -217,7 +164,7 @@ open class ThreadsLibBase protected constructor() {
                 }
             }
 
-            LoggerEdna.info("Lib_init_time: ${System.currentTimeMillis() - startInitTime}ms")
+            info("Lib_init_time: ${System.currentTimeMillis() - startInitTime}ms")
         }
 
         @JvmStatic

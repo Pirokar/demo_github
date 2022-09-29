@@ -1,4 +1,4 @@
-package im.threads
+package im.threads.ui
 
 import android.content.Context
 import android.os.Bundle

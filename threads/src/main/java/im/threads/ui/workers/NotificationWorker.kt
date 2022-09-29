@@ -24,7 +24,6 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import im.threads.ChatStyle
 import im.threads.R
 import im.threads.business.controllers.UnreadMessagesController
 import im.threads.business.formatters.MessageFormatter
@@ -34,6 +33,7 @@ import im.threads.business.logger.LoggerEdna
 import im.threads.business.utils.FileUtils.convertRelativeUrlToAbsolute
 import im.threads.business.utils.WorkerUtils
 import im.threads.business.utils.WorkerUtils.unmarshall
+import im.threads.ui.ChatStyle
 import im.threads.ui.activities.QuickAnswerActivity
 import im.threads.ui.config.Config
 import im.threads.ui.fragments.ChatFragment

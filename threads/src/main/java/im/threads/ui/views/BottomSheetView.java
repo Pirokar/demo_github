@@ -16,7 +16,7 @@ import androidx.core.content.ContextCompat;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import im.threads.ChatStyle;
+import im.threads.ui.ChatStyle;
 import im.threads.R;
 import im.threads.ui.config.Config;
 import im.threads.ui.utils.ColorsHelper;

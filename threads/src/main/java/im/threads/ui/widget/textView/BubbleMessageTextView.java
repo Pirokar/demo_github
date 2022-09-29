@@ -13,10 +13,10 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
-import im.threads.ChatStyle;
+import im.threads.ui.ChatStyle;
 import im.threads.R;
-import im.threads.ui.markdown.MarkdownProcessor;
-import im.threads.ui.markdown.MarkwonMarkdownProcessor;
+import im.threads.business.markdown.MarkdownProcessor;
+import im.threads.business.markdown.MarkwonMarkdownProcessor;
 import im.threads.ui.widget.CustomFontTextView;
 import im.threads.ui.config.Config;
 
@@ -27,8 +27,13 @@ public final class BubbleMessageTextView extends CustomFontTextView {
     private boolean mHasImageInText;
     private String lastLinePadding = "";
     private float lastLineExtraPaddingSymbolsCount = 0;
+    private ChatStyle chatStyle = Config.getInstance().getChatStyle();
 
-    private MarkdownProcessor markdownProcessor = new MarkwonMarkdownProcessor();
+    private MarkdownProcessor markdownProcessor = new MarkwonMarkdownProcessor(
+            Config.getInstance().context,
+            chatStyle.getIncomingMarkdownConfiguration(),
+            chatStyle.getOutgoingMarkdownConfiguration()
+    );
 
     public BubbleMessageTextView(Context context) {
         super(context);

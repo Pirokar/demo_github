@@ -15,7 +15,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.text.util.LinkifyCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import im.threads.ChatStyle;
+import im.threads.ui.ChatStyle;
 import im.threads.R;
 import im.threads.business.models.SystemMessage;
 import im.threads.business.utils.UrlUtils;

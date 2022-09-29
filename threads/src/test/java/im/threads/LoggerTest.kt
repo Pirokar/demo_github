@@ -1,4 +1,4 @@
-package im.threads.internal.domain.logger
+package im.threads
 
 import android.content.Context
 import android.util.Log

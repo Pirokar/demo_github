@@ -18,6 +18,8 @@ import im.threads.R
 import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.imageLoading.loadImage
 import im.threads.business.logger.LoggerEdna
+import im.threads.business.markdown.LinkifyLinksHighlighter
+import im.threads.business.markdown.LinksHighlighter
 import im.threads.business.models.ChatItem
 import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.ExtractedLink
@@ -27,8 +29,6 @@ import im.threads.business.ogParser.OGDataContent
 import im.threads.business.ogParser.OpenGraphParser
 import im.threads.business.utils.UrlUtils
 import im.threads.ui.config.Config
-import im.threads.ui.markdown.LinkifyLinksHighlighter
-import im.threads.ui.markdown.LinksHighlighter
 import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.utils.NoLongClickMovementMethod
 import im.threads.ui.utils.ViewUtils

@@ -1,4 +1,4 @@
-package im.threads.internal.model;
+package im.threads.model;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -10,11 +10,11 @@ import java.util.Arrays;
 import im.threads.business.models.Client;
 
 @RunWith(Parameterized.class)
-public class ClientTest {
+public class ClientContentTest {
 
     private String name;
 
-    public ClientTest(String name) {
+    public ClientContentTest(String name) {
         this.name = name;
     }
 
@@ -24,7 +24,6 @@ public class ClientTest {
         client.setName(name);
         Assert.assertEquals(name, client.getName());
     }
-
 
     @Parameterized.Parameters(name = "name{index}")
     public static Iterable<String> dataForNameTest() {

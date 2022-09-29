@@ -1,4 +1,4 @@
-package im.threads
+package im.threads.business
 
 class UserInfoBuilder(val clientId: String) {
     var authToken: String? = null

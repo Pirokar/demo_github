@@ -12,11 +12,10 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import im.threads.ChatStyle;
+import im.threads.ui.ChatStyle;
 import im.threads.business.logger.LoggerEdna;
 import im.threads.business.models.ConsultPhrase;
 import im.threads.business.models.UpcomingUserMessage;

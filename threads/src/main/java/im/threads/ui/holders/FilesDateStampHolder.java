@@ -13,7 +13,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-import im.threads.ChatStyle;
+import im.threads.ui.ChatStyle;
 import im.threads.R;
 import im.threads.business.formatters.RussianFormatSymbols;
 import im.threads.ui.config.Config;

@@ -1,9 +1,8 @@
-package im.threads.ui.markdown
+package im.threads.business.markdown
 
 import android.content.Context
 import android.text.Spanned
 import im.threads.business.utils.UrlUtils
-import im.threads.ui.config.Config
 import io.noties.markwon.AbstractMarkwonPlugin
 import io.noties.markwon.Markwon
 import io.noties.markwon.MarkwonConfiguration
@@ -13,25 +12,16 @@ import io.noties.markwon.image.ImagesPlugin
 
 // Constructor for test purposes
 class MarkwonMarkdownProcessor(
-    nullableContext: Context? = null,
-    incomingMarkdownConfig: MarkdownConfig? = null,
-    outgoingMarkdownConfig: MarkdownConfig? = null
+    private val context: Context,
+    incomingMarkdownConfig: MarkdownConfig,
+    outgoingMarkdownConfig: MarkdownConfig
 ) : MarkdownProcessor {
-    private val config by lazy { Config.getInstance() }
-    private val context: Context by lazy { nullableContext ?: config.context }
-    private val incomingMarkdownConfiguration: MarkdownConfig by lazy {
-        incomingMarkdownConfig ?: config.getChatStyle().incomingMarkdownConfiguration
-    }
-    private val outgoingMarkdownConfiguration: MarkdownConfig by lazy {
-        outgoingMarkdownConfig ?: config.getChatStyle().outgoingMarkdownConfiguration
-    }
+    private val incomingProcessor: Markwon
+    private val outgoingProcessor: Markwon
 
-    private val incomingProcessor: Markwon by lazy {
-        configureParser(incomingMarkdownConfiguration)
-    }
-
-    private val outgoingProcessor: Markwon by lazy {
-        configureParser(outgoingMarkdownConfiguration)
+    init {
+        incomingProcessor = configureParser(incomingMarkdownConfig)
+        outgoingProcessor = configureParser(outgoingMarkdownConfig)
     }
 
     override fun parseClientMessage(text: String): Spanned {

@@ -1,11 +1,11 @@
 package im.threads.ui.config
 
 import android.content.Context
-import im.threads.ChatStyle
 import im.threads.business.config.BaseConfig
 import im.threads.business.core.UnreadMessagesCountListener
 import im.threads.business.logger.LoggerConfig
 import im.threads.business.rest.config.RequestConfig
+import im.threads.ui.ChatStyle
 import im.threads.ui.core.PendingIntentCreator
 import im.threads.ui.styles.permissions.PermissionDescriptionDialogStyle
 import im.threads.ui.styles.permissions.PermissionDescriptionDialogStyle.Companion.getDefaultDialogStyle
@@ -13,7 +13,6 @@ import im.threads.ui.styles.permissions.PermissionDescriptionType
 import im.threads.ui.utils.MetadataUi
 import im.threads.ui.utils.preferences.PrefUtilsUi
 import okhttp3.Interceptor
-import java.lang.NullPointerException
 
 class Config(
     context: Context,

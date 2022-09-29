@@ -1,4 +1,4 @@
-package im.threads.ui.markdown
+package im.threads.business.markdown
 
 import android.widget.TextView
 
