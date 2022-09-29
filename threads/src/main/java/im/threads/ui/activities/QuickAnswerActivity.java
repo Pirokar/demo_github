@@ -16,7 +16,7 @@ import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import im.threads.ui.ChatStyle;
-import im.threads.business.logger.LoggerEdna;
+import im.threads.business.logger.core.LoggerEdna;
 import im.threads.business.models.ConsultPhrase;
 import im.threads.business.models.UpcomingUserMessage;
 import im.threads.ui.config.Config;

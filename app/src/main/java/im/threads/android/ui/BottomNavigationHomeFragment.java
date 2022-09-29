@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 
 import im.threads.android.R;
 import im.threads.android.core.ThreadsDemoApplication;
-import im.threads.business.logger.LoggerEdna;
+import im.threads.business.logger.core.LoggerEdna;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
 /**

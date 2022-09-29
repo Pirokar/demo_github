@@ -28,7 +28,7 @@ import im.threads.R;
 import im.threads.business.config.BaseConfig;
 import im.threads.business.imageLoading.ImageLoader;
 import im.threads.business.imageLoading.ImageModifications;
-import im.threads.business.logger.LoggerEdna;
+import im.threads.business.logger.core.LoggerEdna;
 import im.threads.business.utils.FileUtils;
 import im.threads.ui.activities.QuickAnswerActivity;
 import im.threads.business.chat_updates.ChatUpdateProcessor;

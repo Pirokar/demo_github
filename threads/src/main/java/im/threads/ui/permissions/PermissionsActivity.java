@@ -14,7 +14,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import im.threads.R;
-import im.threads.business.logger.LoggerEdna;
+import im.threads.business.logger.core.LoggerEdna;
 
 /**
  * Активити для разрешений

@@ -7,7 +7,7 @@ import android.text.TextUtils
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import im.threads.business.config.BaseConfig
-import im.threads.business.logger.LoggerEdna
+import im.threads.business.logger.core.LoggerEdna
 import im.threads.business.models.CampaignMessage
 import im.threads.business.models.FileDescription
 import im.threads.business.transport.CloudMessagingType

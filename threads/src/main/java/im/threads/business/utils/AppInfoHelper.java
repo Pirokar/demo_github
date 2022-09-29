@@ -6,7 +6,7 @@ import android.content.pm.PackageManager;
 
 import im.threads.BuildConfig;
 import im.threads.business.config.BaseConfig;
-import im.threads.business.logger.LoggerEdna;
+import im.threads.business.logger.core.LoggerEdna;
 
 public final class AppInfoHelper {
     public static String getAppVersion() {

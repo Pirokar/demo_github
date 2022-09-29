@@ -1,4 +1,4 @@
-package im.threads.business.logger
+package im.threads.business.logger.core
 
 import java.io.BufferedWriter
 import java.io.File

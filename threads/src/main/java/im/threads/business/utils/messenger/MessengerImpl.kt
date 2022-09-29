@@ -5,9 +5,9 @@ import android.os.Looper
 import android.os.Message
 import im.threads.business.chat_updates.ChatUpdateProcessor
 import im.threads.business.config.BaseConfig
-import im.threads.business.logger.LoggerEdna.debug
-import im.threads.business.logger.LoggerEdna.error
-import im.threads.business.logger.LoggerEdna.info
+import im.threads.business.logger.core.LoggerEdna.debug
+import im.threads.business.logger.core.LoggerEdna.error
+import im.threads.business.logger.core.LoggerEdna.info
 import im.threads.business.models.ChatItem
 import im.threads.business.models.ChatItemSendErrorModel
 import im.threads.business.models.ConsultInfo

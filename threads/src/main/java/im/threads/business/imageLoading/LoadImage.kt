@@ -1,7 +1,7 @@
 package im.threads.business.imageLoading
 
 import android.widget.ImageView
-import im.threads.business.logger.LoggerEdna
+import im.threads.business.logger.core.LoggerEdna
 import java.io.File
 
 internal fun ImageView.loadImage(

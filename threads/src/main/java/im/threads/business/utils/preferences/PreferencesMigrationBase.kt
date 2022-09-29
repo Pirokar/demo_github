@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 import im.threads.business.config.BaseConfig
-import im.threads.business.logger.LoggerEdna
+import im.threads.business.logger.core.LoggerEdna
 import java.io.File
 
 open class PreferencesMigrationBase {

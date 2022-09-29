@@ -3,7 +3,7 @@ package im.threads.business.utils
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
-import im.threads.business.logger.LoggerEdna.error
+import im.threads.business.logger.core.LoggerEdna.error
 
 object MetadataBusiness {
     private const val DATASTORE_URL = "im.threads.getDatastoreUrl"

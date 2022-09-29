@@ -30,7 +30,7 @@ import im.threads.business.chat_updates.ChatUpdateProcessor;
 import im.threads.business.config.BaseConfig;
 import im.threads.business.controllers.UnreadMessagesController;
 import im.threads.business.formatters.ChatItemType;
-import im.threads.business.logger.LoggerEdna;
+import im.threads.business.logger.core.LoggerEdna;
 import im.threads.business.models.ChatItem;
 import im.threads.business.models.ChatPhrase;
 import im.threads.business.models.ClientNotificationDisplayType;

@@ -32,7 +32,7 @@ import java.util.concurrent.Executors;
 
 import im.threads.R;
 import im.threads.business.imageLoading.ImageLoader;
-import im.threads.business.logger.LoggerEdna;
+import im.threads.business.logger.core.LoggerEdna;
 import im.threads.business.utils.FileUtils;
 
 public final class CameraActivity extends BaseActivity {

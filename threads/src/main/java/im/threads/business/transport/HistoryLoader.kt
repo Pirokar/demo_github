@@ -3,8 +3,8 @@ package im.threads.business.transport
 import androidx.annotation.WorkerThread
 import com.google.gson.Gson
 import im.threads.business.config.BaseConfig
-import im.threads.business.logger.LoggerEdna.error
-import im.threads.business.logger.LoggerEdna.info
+import im.threads.business.logger.core.LoggerEdna.error
+import im.threads.business.logger.core.LoggerEdna.info
 import im.threads.business.models.MessageFromHistory
 import im.threads.business.rest.models.HistoryResponse
 import im.threads.business.rest.queries.BackendApi.Companion.get

@@ -1,4 +1,4 @@
-package im.threads.business.logger
+package im.threads.business.logger.core
 
 /**
  * Логгер, поддерживающий вывод логов в файл и текущую строку кода

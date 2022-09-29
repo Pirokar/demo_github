@@ -77,7 +77,7 @@ import im.threads.business.audio.audioRecorder.AudioRecorder;
 import im.threads.business.broadcastReceivers.ProgressReceiver;
 import im.threads.business.config.BaseConfig;
 import im.threads.business.imageLoading.ImageLoader;
-import im.threads.business.logger.LoggerEdna;
+import im.threads.business.logger.core.LoggerEdna;
 import im.threads.business.media.ChatCenterAudioConverter;
 import im.threads.business.media.ChatCenterAudioConverterCallback;
 import im.threads.business.media.FileDescriptionMediaPlayer;

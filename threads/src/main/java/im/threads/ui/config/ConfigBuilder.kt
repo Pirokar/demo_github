@@ -6,7 +6,7 @@ import android.content.Intent
 import android.os.Build
 import im.threads.business.config.BaseConfigBuilder
 import im.threads.business.core.UnreadMessagesCountListener
-import im.threads.business.logger.LoggerConfig
+import im.threads.business.logger.core.LoggerConfig
 import im.threads.business.rest.config.RequestConfig
 import im.threads.ui.ChatStyle
 import im.threads.ui.activities.ChatActivity

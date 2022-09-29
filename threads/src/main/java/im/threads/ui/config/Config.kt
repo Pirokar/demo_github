@@ -3,7 +3,7 @@ package im.threads.ui.config
 import android.content.Context
 import im.threads.business.config.BaseConfig
 import im.threads.business.core.UnreadMessagesCountListener
-import im.threads.business.logger.LoggerConfig
+import im.threads.business.logger.core.LoggerConfig
 import im.threads.business.rest.config.RequestConfig
 import im.threads.ui.ChatStyle
 import im.threads.ui.core.PendingIntentCreator

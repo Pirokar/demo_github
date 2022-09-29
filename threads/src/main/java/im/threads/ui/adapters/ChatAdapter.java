@@ -34,7 +34,7 @@ import java.util.Set;
 import im.threads.ui.ChatStyle;
 import im.threads.business.formatters.ChatItemType;
 import im.threads.business.imageLoading.ImageModifications;
-import im.threads.business.logger.LoggerEdna;
+import im.threads.business.logger.core.LoggerEdna;
 import im.threads.business.media.FileDescriptionMediaPlayer;
 import im.threads.business.models.ChatItem;
 import im.threads.business.models.ChatPhrase;

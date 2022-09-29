@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import im.threads.R
 import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.imageLoading.loadImage
-import im.threads.business.logger.LoggerEdna
+import im.threads.business.logger.core.LoggerEdna
 import im.threads.business.markdown.LinkifyLinksHighlighter
 import im.threads.business.markdown.LinksHighlighter
 import im.threads.business.models.ChatItem

@@ -3,7 +3,7 @@ package im.threads.ui
 import android.content.Context
 import android.os.Bundle
 import androidx.core.os.bundleOf
-import im.threads.business.logger.LoggerEdna
+import im.threads.business.logger.core.LoggerEdna
 import im.threads.business.models.CAMPAIGN_DATE_FORMAT_PARSE
 import im.threads.business.models.CampaignMessage
 import im.threads.business.transport.MessageAttributes

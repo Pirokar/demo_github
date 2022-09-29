@@ -11,8 +11,9 @@ import im.threads.business.chat_updates.ChatUpdateProcessor
 import im.threads.business.config.BaseConfig
 import im.threads.business.config.BaseConfigBuilder
 import im.threads.business.controllers.UnreadMessagesController
-import im.threads.business.logger.LoggerEdna
-import im.threads.business.logger.LoggerEdna.info
+import im.threads.business.logger.VersionLogger
+import im.threads.business.logger.core.LoggerEdna
+import im.threads.business.logger.core.LoggerEdna.info
 import im.threads.business.models.CampaignMessage
 import im.threads.business.rest.queries.BackendApi
 import im.threads.business.rest.queries.DatastoreApi
@@ -163,6 +164,7 @@ open class ThreadsLibBase protected constructor() {
                     }
                 }
             }
+            showVersionsLog()
 
             info("Lib_init_time: ${System.currentTimeMillis() - startInitTime}ms")
         }
@@ -181,6 +183,12 @@ open class ThreadsLibBase protected constructor() {
         private fun createLibInstance() {
             check(libInstance == null) { "ThreadsLib has already been initialized" }
             libInstance = ThreadsLibBase()
+        }
+
+        private fun showVersionsLog() {
+            coroutineScope.launch(Dispatchers.IO) {
+                VersionLogger().logVersions()
+            }
         }
     }
 }

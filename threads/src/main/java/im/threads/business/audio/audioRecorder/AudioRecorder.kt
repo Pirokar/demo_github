@@ -3,7 +3,7 @@ package im.threads.business.audio.audioRecorder
 import android.content.Context
 import android.media.MediaRecorder
 import android.os.Build
-import im.threads.business.logger.LoggerEdna.error
+import im.threads.business.logger.core.LoggerEdna.error
 import java.io.IOException
 import java.text.SimpleDateFormat
 

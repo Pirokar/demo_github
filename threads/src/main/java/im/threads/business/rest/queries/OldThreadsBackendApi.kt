@@ -2,6 +2,7 @@ package im.threads.business.rest.queries
 
 import im.threads.business.rest.models.HistoryResponse
 import im.threads.business.rest.models.SettingsResponse
+import im.threads.business.rest.models.VersionsModel
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -13,6 +14,9 @@ import retrofit2.http.Query
  * описание серверных методов
  */
 interface OldThreadsBackendApi {
+    @GET("api/versions")
+    fun versions(): Call<VersionsModel?>?
+
     @GET("history")
     fun history(
         @Header("X-Client-Token") token: String?,

@@ -3,7 +3,7 @@ package im.threads.business.broadcastReceivers
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import im.threads.business.logger.LoggerEdna
+import im.threads.business.logger.core.LoggerEdna
 import im.threads.business.models.FileDescription
 import im.threads.business.workers.FileDownloadWorker
 import java.lang.ref.SoftReference

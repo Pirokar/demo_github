@@ -33,7 +33,7 @@ import im.threads.android.utils.ChatDesign;
 import im.threads.android.utils.ChatStyleBuilderHelper;
 import im.threads.android.utils.PermissionDescriptionDialogStyleBuilderHelper;
 import im.threads.business.annotation.OpenWay;
-import im.threads.business.logger.LoggerEdna;
+import im.threads.business.logger.core.LoggerEdna;
 import im.threads.ui.core.ThreadsLib;
 import im.threads.ui.fragments.ChatFragment;
 import im.threads.ui.styles.permissions.PermissionDescriptionType;
