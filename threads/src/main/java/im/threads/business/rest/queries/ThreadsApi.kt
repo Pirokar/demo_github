@@ -4,6 +4,7 @@ import im.threads.business.config.BaseConfig
 import im.threads.business.models.FileUploadResponse
 import im.threads.business.rest.models.HistoryResponse
 import im.threads.business.rest.models.SettingsResponse
+import im.threads.business.rest.models.VersionsModel
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Call
@@ -13,6 +14,14 @@ class ThreadsApi(
     private val newThreadsApi: NewThreadsBackendApi? = null,
     private val datastoreApi: ThreadsDatastoreApi? = null
 ) {
+    fun versions(): Call<VersionsModel?>? {
+        return if (BaseConfig.instance.newChatCenterApi) {
+            newThreadsApi?.versions()
+        } else {
+            oldThreadsApi?.versions()
+        }
+    }
+
     fun settings(): Call<SettingsResponse?>? {
         return if (BaseConfig.instance.newChatCenterApi) {
             newThreadsApi?.settings()

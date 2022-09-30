@@ -2,6 +2,7 @@ package im.threads.business.rest.queries
 
 import im.threads.business.rest.models.HistoryResponse
 import im.threads.business.rest.models.SettingsResponse
+import im.threads.business.rest.models.VersionsModel
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -10,6 +11,9 @@ import retrofit2.http.POST
 import retrofit2.http.Query
 
 interface NewThreadsBackendApi {
+    @GET("api/versions")
+    fun versions(): Call<VersionsModel?>?
+
     @GET("api/chat/settings?channelType=MOBILE&auth=false")
     fun settings(): Call<SettingsResponse?>?
 
