@@ -1266,7 +1266,7 @@ public final class ChatController {
         ConsultPhrase quickReplyMessageCandidate = getQuickReplyMessageCandidate(chatItems);
         if (quickReplyMessageCandidate != null) {
             if (quickReplyMessageCandidate.isBlockInput() != null) {
-                inputEnabledDuringQuickReplies = Boolean.TRUE.equals(quickReplyMessageCandidate.isBlockInput());
+                inputEnabledDuringQuickReplies = Boolean.FALSE.equals(quickReplyMessageCandidate.isBlockInput());
             } else {
                 inputEnabledDuringQuickReplies = chatStyle.inputEnabledDuringQuickReplies;
             }
