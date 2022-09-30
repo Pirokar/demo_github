@@ -6,7 +6,7 @@ import android.content.Intent
 import com.google.android.gms.location.LocationAvailability
 import com.google.android.gms.location.LocationResult
 import im.threads.business.config.BaseConfig
-import im.threads.business.logger.core.LoggerEdna
+import im.threads.business.logger.LoggerEdna
 
 class LocationBroadcastReceiver : BroadcastReceiver() {
 

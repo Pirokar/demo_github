@@ -1,7 +1,7 @@
 package im.threads.business.ogParser
 
 import android.net.Uri
-import im.threads.business.logger.core.LoggerEdna
+import im.threads.business.logger.LoggerEdna
 import io.reactivex.subjects.PublishSubject
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document

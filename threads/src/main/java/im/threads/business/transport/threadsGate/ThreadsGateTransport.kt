@@ -12,7 +12,7 @@ import com.google.gson.JsonObject
 import im.threads.business.chat_updates.ChatUpdateProcessor
 import im.threads.business.config.BaseConfig
 import im.threads.business.formatters.ChatItemType
-import im.threads.business.logger.core.LoggerEdna
+import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.CampaignMessage
 import im.threads.business.models.ChatItemSendErrorModel
 import im.threads.business.models.ConsultInfo

@@ -3,7 +3,7 @@ package im.threads.business.utils
 import android.content.Context
 import android.net.Uri
 import im.threads.business.config.BaseConfig
-import im.threads.business.logger.core.LoggerEdna
+import im.threads.business.logger.LoggerEdna
 import im.threads.business.utils.preferences.PrefUtilsBase
 import java.io.BufferedInputStream
 import java.io.File

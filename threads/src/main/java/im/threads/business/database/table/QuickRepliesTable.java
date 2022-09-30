@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import im.threads.business.models.QuickReply;
-import im.threads.business.logger.core.LoggerEdna;
+import im.threads.business.logger.LoggerEdna;
 
 public class QuickRepliesTable extends Table {
 

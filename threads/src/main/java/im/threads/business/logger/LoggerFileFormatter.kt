@@ -1,4 +1,4 @@
-package im.threads.business.logger.core
+package im.threads.business.logger
 
 import android.os.Process
 import java.text.SimpleDateFormat

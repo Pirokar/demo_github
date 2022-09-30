@@ -6,7 +6,7 @@ import androidx.fragment.app.Fragment;
 import java.util.List;
 
 import im.threads.business.config.BaseConfig;
-import im.threads.business.logger.core.LoggerEdna;
+import im.threads.business.logger.LoggerEdna;
 import im.threads.business.models.UpcomingUserMessage;
 import im.threads.business.secureDatabase.DatabaseHolder;
 import im.threads.business.transport.HistoryLoader;

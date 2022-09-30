@@ -11,7 +11,7 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import im.threads.business.broadcastReceivers.ProgressReceiver
 import im.threads.business.config.BaseConfig
-import im.threads.business.logger.core.LoggerEdna
+import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.FileDescription
 import im.threads.business.models.FileDescriptionUri
 import im.threads.business.models.enums.AttachmentStateEnum

@@ -3,7 +3,7 @@ package im.threads.business.secureDatabase.table
 import android.content.ContentValues
 import android.database.Cursor
 import im.threads.business.formatters.SpeechStatus.Companion.fromString
-import im.threads.business.logger.core.LoggerEdna
+import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.ChatItem
 import im.threads.business.models.ConsultConnectionMessage
 import im.threads.business.models.ConsultInfo

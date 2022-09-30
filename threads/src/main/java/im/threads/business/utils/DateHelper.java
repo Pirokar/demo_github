@@ -6,7 +6,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import im.threads.business.logger.core.LoggerEdna;
+import im.threads.business.logger.LoggerEdna;
 
 public final class DateHelper {
     private static String SERVER_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";

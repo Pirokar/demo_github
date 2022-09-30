@@ -29,7 +29,7 @@ import im.threads.business.controllers.UnreadMessagesController
 import im.threads.business.formatters.MessageFormatter
 import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.imageLoading.ImageModifications
-import im.threads.business.logger.core.LoggerEdna
+import im.threads.business.logger.LoggerEdna
 import im.threads.business.utils.FileUtils.convertRelativeUrlToAbsolute
 import im.threads.business.utils.WorkerUtils
 import im.threads.business.utils.WorkerUtils.unmarshall

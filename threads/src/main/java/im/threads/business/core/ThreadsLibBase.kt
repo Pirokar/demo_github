@@ -11,10 +11,10 @@ import im.threads.business.chat_updates.ChatUpdateProcessor
 import im.threads.business.config.BaseConfig
 import im.threads.business.config.BaseConfigBuilder
 import im.threads.business.controllers.UnreadMessagesController
-import im.threads.business.logger.VersionLogger
-import im.threads.business.logger.core.LoggerEdna
-import im.threads.business.logger.core.LoggerEdna.info
+import im.threads.business.logger.LoggerEdna
+import im.threads.business.logger.LoggerEdna.info
 import im.threads.business.models.CampaignMessage
+import im.threads.business.rest.models.VersionsModel
 import im.threads.business.rest.queries.BackendApi
 import im.threads.business.rest.queries.DatastoreApi
 import im.threads.business.useractivity.UserActivityTimeProvider.getLastUserActivityTimeCounter
@@ -186,8 +186,21 @@ open class ThreadsLibBase protected constructor() {
         }
 
         private fun showVersionsLog() {
-            coroutineScope.launch(Dispatchers.IO) {
-                VersionLogger().logVersions()
+            if (BaseConfig.instance.loggerConfig != null) {
+                coroutineScope.launch(Dispatchers.IO) {
+                    info("Getting versions from \"api/versions\"...")
+                    val response = BackendApi.get().versions()?.execute()
+                    if (response?.isSuccessful == true) {
+                        response.body()?.let { info(it.toTableString()) }
+                    } else {
+                        info(
+                            "Failed to get versions from \"api/versions\", " +
+                                "error code: ${response?.code()}," +
+                                " message: ${response?.message()}"
+                        )
+                        info(VersionsModel().toTableString())
+                    }
+                }
             }
         }
     }

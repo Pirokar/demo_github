@@ -1,8 +1,8 @@
-package im.threads.business.logger.core
+package im.threads.business.logger
 
 import android.content.Context
-import im.threads.business.logger.core.LoggerEdna.debug
-import im.threads.business.logger.core.LoggerEdna.warning
+import im.threads.business.logger.LoggerEdna.debug
+import im.threads.business.logger.LoggerEdna.warning
 import java.util.concurrent.BlockingQueue
 import java.util.concurrent.LinkedBlockingDeque
 

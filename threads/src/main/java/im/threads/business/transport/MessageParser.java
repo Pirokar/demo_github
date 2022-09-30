@@ -11,7 +11,7 @@ import java.util.List;
 import im.threads.business.config.BaseConfig;
 import im.threads.business.formatters.ChatItemType;
 import im.threads.business.formatters.SpeechStatus;
-import im.threads.business.logger.core.LoggerEdna;
+import im.threads.business.logger.LoggerEdna;
 import im.threads.business.models.ChatItem;
 import im.threads.business.models.ConsultConnectionMessage;
 import im.threads.business.models.ConsultPhrase;

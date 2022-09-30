@@ -7,7 +7,7 @@ import androidx.lifecycle.Lifecycle;
 import java.util.List;
 
 import im.threads.business.chat_updates.ChatUpdateProcessor;
-import im.threads.business.logger.core.LoggerEdna;
+import im.threads.business.logger.LoggerEdna;
 import im.threads.business.models.ConsultInfo;
 import im.threads.business.models.Survey;
 import im.threads.business.models.UserPhrase;

@@ -11,7 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import im.threads.business.annotation.OpenForTesting
 import im.threads.business.broadcastReceivers.ProgressReceiver
-import im.threads.business.logger.core.LoggerEdna
+import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.FileDescription
 import im.threads.business.secureDatabase.DatabaseHolder
 import im.threads.business.utils.FileUtils.getMimeType

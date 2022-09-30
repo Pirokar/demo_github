@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.List;
 
 import im.threads.business.core.UnreadMessagesCountListener;
-import im.threads.business.logger.core.LoggerConfig;
+import im.threads.business.logger.LoggerConfig;
 import im.threads.business.rest.config.RequestConfig;
 import okhttp3.Interceptor;
 

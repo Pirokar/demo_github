@@ -16,8 +16,8 @@ import im.threads.android.utils.PrefUtilsApp.getCards
 import im.threads.android.utils.PrefUtilsApp.getTheme
 import im.threads.android.utils.PrefUtilsApp.getTransportConfig
 import im.threads.business.core.UnreadMessagesCountListener
-import im.threads.business.logger.core.LoggerConfig
-import im.threads.business.logger.core.LoggerRetentionPolicy
+import im.threads.business.logger.LoggerConfig
+import im.threads.business.logger.LoggerRetentionPolicy
 import im.threads.ui.config.ConfigBuilder
 import im.threads.ui.core.PendingIntentCreator
 import im.threads.ui.core.ThreadsLib

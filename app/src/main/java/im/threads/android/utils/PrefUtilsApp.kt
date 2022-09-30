@@ -8,7 +8,7 @@ import im.threads.android.data.Card
 import im.threads.android.data.ServerConfig
 import im.threads.android.data.TransportConfig
 import im.threads.business.config.BaseConfig
-import im.threads.business.logger.core.LoggerEdna
+import im.threads.business.logger.LoggerEdna
 import java.io.File
 
 object PrefUtilsApp {

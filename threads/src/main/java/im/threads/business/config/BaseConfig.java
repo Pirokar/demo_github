@@ -20,7 +20,7 @@ import javax.net.ssl.X509TrustManager;
 import im.threads.business.core.UnreadMessagesCountListener;
 import im.threads.business.exceptions.MetaConfigurationException;
 import im.threads.business.imageLoading.ImageLoaderOkHttpProvider;
-import im.threads.business.logger.core.LoggerConfig;
+import im.threads.business.logger.LoggerConfig;
 import im.threads.business.models.SslSocketFactoryConfig;
 import im.threads.business.rest.config.RequestConfig;
 import im.threads.business.rest.config.SocketClientSettings;

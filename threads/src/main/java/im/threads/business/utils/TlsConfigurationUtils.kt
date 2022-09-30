@@ -4,7 +4,7 @@ package im.threads.business.utils
 
 import android.content.res.Resources
 import androidx.annotation.RawRes
-import im.threads.business.logger.core.LoggerEdna
+import im.threads.business.logger.LoggerEdna
 import java.io.InputStream
 import java.security.KeyStore
 import java.security.SecureRandom

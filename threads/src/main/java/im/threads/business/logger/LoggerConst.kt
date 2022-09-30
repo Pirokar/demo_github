@@ -1,4 +1,4 @@
-package im.threads.business.logger.core
+package im.threads.business.logger
 
 /**
  * Константы для логгера

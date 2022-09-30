@@ -1,4 +1,4 @@
-package im.threads.business.logger.core
+package im.threads.business.logger
 
 /**
  * Политика хранения лог данных в файле
