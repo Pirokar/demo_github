@@ -756,11 +756,8 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     private void showUnreadMsgsCount(int unreadCount) {
-        LoggerEdna.error("???    showUnreadMsgsCount(....)    "+unreadCount);
-
         if (binding.scrollDownButtonContainer.getVisibility() == View.VISIBLE) {
             boolean hasUnreadCount = unreadCount > 0;
-            LoggerEdna.error("???    showUnreadMsgsCount(....)   bhasUnreadCount -  "+hasUnreadCount);
             binding.unreadMsgCount.setText(hasUnreadCount ? String.valueOf(unreadCount) : "");
             binding.unreadMsgCount.setVisibility(hasUnreadCount ? View.VISIBLE : View.GONE);
             binding.unreadMsgSticker.setVisibility(hasUnreadCount ? View.VISIBLE : View.GONE);
