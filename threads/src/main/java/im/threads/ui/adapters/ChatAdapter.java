@@ -166,6 +166,15 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     counter++;
                 }
             }
+            if (ci instanceof Survey) {
+                final Survey survey = (Survey) ci;
+                final QuestionDTO questionDTO = survey.getQuestions().get(0);
+                if (!questionDTO.isSimple()) {
+                    if (!survey.isRead()) {
+                        counter++;
+                    }
+                }
+            }
         }
         return counter;
     }
@@ -390,6 +399,11 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             if (item instanceof ConsultPhrase) {
                 if (!((ConsultPhrase) item).isRead()) {
                     ((ConsultPhrase) item).setRead(true);
+                }
+            }
+            if (item instanceof Survey) {
+                if (!((Survey) item).isRead()) {
+                    ((Survey) item).setRead(true);
                 }
             }
             if (item instanceof UnreadMessages) {

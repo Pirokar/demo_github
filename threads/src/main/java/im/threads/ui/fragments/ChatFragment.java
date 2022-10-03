@@ -756,8 +756,11 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     private void showUnreadMsgsCount(int unreadCount) {
+        LoggerEdna.error("???    showUnreadMsgsCount(....)    "+unreadCount);
+
         if (binding.scrollDownButtonContainer.getVisibility() == View.VISIBLE) {
             boolean hasUnreadCount = unreadCount > 0;
+            LoggerEdna.error("???    showUnreadMsgsCount(....)   bhasUnreadCount -  "+hasUnreadCount);
             binding.unreadMsgCount.setText(hasUnreadCount ? String.valueOf(unreadCount) : "");
             binding.unreadMsgCount.setVisibility(hasUnreadCount ? View.VISIBLE : View.GONE);
             binding.unreadMsgSticker.setVisibility(hasUnreadCount ? View.VISIBLE : View.GONE);
@@ -1991,7 +1994,10 @@ public final class ChatFragment extends BaseFragment implements
             ChatItem currentItem = list.get(i);
             if (currentItem instanceof UnreadMessages ||
                     currentItem instanceof ConsultPhrase
-                            && !((ConsultPhrase) currentItem).isRead()) {
+                            && !((ConsultPhrase) currentItem).isRead() ||
+                    currentItem instanceof Survey
+                            && !((Survey) currentItem).isRead()
+            ) {
                 layoutManager.scrollToPositionWithOffset(i - 1, 0);
                 break;
             }
