@@ -167,7 +167,7 @@ public final class UrlUtils {
             return url;
         }
 
-        while (url.length() > 0 && !url.substring(url.length() - 1).matches("\\w+")) {
+        while (url.length() > 0 && !url.substring(url.length() - 1).matches("[/\\w]+")) {
             url = url.substring(0, url.length() - 1);
         }
 
