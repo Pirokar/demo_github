@@ -32,16 +32,15 @@ import im.threads.ui.fragments.PermissionDescriptionAlertDialogFragment.OnAllowP
 import im.threads.ui.permissions.PermissionsActivity
 import im.threads.ui.styles.permissions.PermissionDescriptionType
 import im.threads.ui.utils.ColorsHelper.setDrawableColor
+import im.threads.ui.utils.invisible
 import im.threads.ui.utils.runOnUiThread
+import im.threads.ui.utils.visible
 import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
-class ImagesActivity :
-    BaseActivity(),
-    OnPageChangeListener,
-    OnAllowPermissionClickListener {
+class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionClickListener {
 
     private lateinit var mViewPager: ViewPager
 
@@ -61,13 +60,9 @@ class ImagesActivity :
         compositeDisposable?.add(
             DatabaseHolder.getInstance().allFileDescriptions
                 .doOnSuccess { data: List<FileDescription?>? ->
-                    data?.let { fileList ->
-                        fileList.forEach {
-                            it?.let { file ->
-                                if (isImage(file) && file.fileUri != null) {
-                                    files.add(file)
-                                }
-                            }
+                    data?.forEach {
+                        if (isImage(it) && it?.fileUri != null) {
+                            files.add(it)
                         }
                     }
                     collectionSize = files.size
@@ -78,8 +73,8 @@ class ImagesActivity :
                     {
                         mViewPager.adapter = ImagesAdapter(files, supportFragmentManager)
                         val fd = intent.getParcelableExtra<FileDescription>("FileDescription")
-                        fd?.let {
-                            val page = files.indexOf(it)
+                        if (fd != null) {
+                            val page = files.indexOf(fd)
                             if (page != -1) {
                                 mViewPager.currentItem = page
                                 onPageSelected(page)
@@ -97,8 +92,7 @@ class ImagesActivity :
         setSupportActionBar(toolbar)
         val statusBarColor = ContextCompat.getColor(this, style.chatStatusBarColorResId)
         val toolBarColor = ContextCompat.getColor(this, style.chatToolbarColorResId)
-        val isStatusBarLight =
-            resources.getBoolean(style.windowLightStatusBarResId)
+        val isStatusBarLight = resources.getBoolean(style.windowLightStatusBarResId)
         super.setStatusBarColor(isStatusBarLight, statusBarColor)
         val backButtonDrawable =
             AppCompatResources.getDrawable(this, R.drawable.ic_arrow_back_white_24dp)
@@ -109,9 +103,10 @@ class ImagesActivity :
             setHomeAsUpIndicator(style.chatToolbarBackIconResId)
             setHomeAsUpIndicator(backButtonDrawable)
         }
-        val isShadowVisible = resources.getBoolean(style.isChatTitleShadowVisible)
-        toolbarShadow.visibility = if (isShadowVisible) View.VISIBLE else View.INVISIBLE
-        if (!isShadowVisible) {
+        if (resources.getBoolean(style.isChatTitleShadowVisible)) {
+            toolbarShadow.visible()
+        } else {
+            toolbarShadow.invisible()
             toolbar.elevation = 0f
         }
     }
@@ -154,7 +149,7 @@ class ImagesActivity :
                 return true
             }
             R.id.download -> {
-                onBackPressed()
+                downloadImage()
                 return true
             }
         }
@@ -248,9 +243,7 @@ class ImagesActivity :
     override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}
     override fun onPageSelected(position: Int) {
         Runnable {
-            val title = "" + (mViewPager.currentItem + 1) + " " + getString(
-                R.string.threads_from
-            ) + " " + collectionSize
+            val title = "${mViewPager.currentItem + 1} ${getString(R.string.threads_from)} $collectionSize"
             setTitle(title)
         }.runOnUiThread()
     }
