@@ -168,7 +168,6 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             }
             if (ci instanceof Survey) {
                 final Survey survey = (Survey) ci;
-                final QuestionDTO questionDTO = survey.getQuestions().get(0);
                 if (!survey.isRead()) {
                     counter++;
                 }
