@@ -31,7 +31,6 @@ import java.util.ListIterator;
 import java.util.Objects;
 import java.util.Set;
 
-import im.threads.ui.ChatStyle;
 import im.threads.business.formatters.ChatItemType;
 import im.threads.business.imageLoading.ImageModifications;
 import im.threads.business.logger.LoggerEdna;
@@ -46,6 +45,7 @@ import im.threads.business.models.ConsultTyping;
 import im.threads.business.models.DateRow;
 import im.threads.business.models.FileDescription;
 import im.threads.business.models.MessageState;
+import im.threads.business.models.NoChatItem;
 import im.threads.business.models.QuestionDTO;
 import im.threads.business.models.QuickReply;
 import im.threads.business.models.QuickReplyItem;
@@ -66,7 +66,7 @@ import im.threads.business.utils.FileUtils;
 import im.threads.business.utils.FileUtilsKt;
 import im.threads.business.utils.preferences.PrefUtilsBase;
 import im.threads.business.workers.FileDownloadWorker;
-import im.threads.business.models.NoChatItem;
+import im.threads.ui.ChatStyle;
 import im.threads.ui.config.Config;
 import im.threads.ui.holders.BaseHolder;
 import im.threads.ui.holders.ConsultFileViewHolder;
@@ -665,7 +665,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     public void updateProgress(final FileDescription fileDescription) {
         for (int i = 0; i < list.size(); i++) {
-            if (fileDescription.getFileUri() == null
+            if (fileDescription.getFileUri() == null && fileDescription.getDownloadPath() == null
                     && (getItemViewType(i) == TYPE_IMAGE_FROM_USER
                     || getItemViewType(i) == TYPE_IMAGE_FROM_CONSULT
                     || getItemViewType(i) == TYPE_USER_PHRASE

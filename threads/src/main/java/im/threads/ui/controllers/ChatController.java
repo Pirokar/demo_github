@@ -311,7 +311,7 @@ public final class ChatController {
         );
     }
 
-    public Observable<List<ChatItem>> requestItems(int currentItemsCount) {
+    public Observable<List<ChatItem>> requestItems(int currentItemsCount, boolean fromBeginning) {
         return Observable
                 .fromCallable(() -> {
                     if (instance.fragment != null && !PrefUtilsBase.isClientIdEmpty()) {
@@ -320,13 +320,13 @@ public final class ChatController {
                         try {
                             final HistoryResponse response = HistoryLoader.INSTANCE.getHistorySync(
                                     null,
-                                    false
+                                    fromBeginning
                             );
                             final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
                             messenger.saveMessages(serverItems);
                             clearUnreadPush();
                             processSystemMessages(serverItems);
-                            return setLastAvatars(databaseHolder.getChatItems(currentItemsCount, count));
+                            return setLastAvatars(serverItems);
                         } catch (final Exception e) {
                             LoggerEdna.error(ThreadsApi.REST_TAG, "Requesting history items error", e);
                             return setLastAvatars(databaseHolder.getChatItems(currentItemsCount, count));
@@ -535,15 +535,14 @@ public final class ChatController {
                                         BaseConfig.instance.transport.markMessagesAsRead(uuidList);
                                     }
                                 }
-                                return new Pair<>(response == null ? null : response.getConsultInfo(), serverItems.size());
+                                return new Pair<>(response == null ? null : response.getConsultInfo(), serverItems);
                             })
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
                                     pair -> {
                                         isDownloadingMessages = false;
-                                        final int serverCount = pair.second == null ? 0 : pair.second;
-                                        final List<ChatItem> items = setLastAvatars(databaseHolder.getChatItems(0, serverCount));
+                                        final List<ChatItem> items = setLastAvatars(pair.second);
                                         if (fragment != null) {
                                             fragment.addChatItems(items);
                                             handleQuickReplies(items);
@@ -736,17 +735,16 @@ public final class ChatController {
                                             if (item instanceof ChatPhrase) {
                                                 ChatPhrase phrase = (ChatPhrase) item;
                                                 if (phrase.getFileDescription() != null) {
-                                                    if (phrase.getFileDescription().getSize() == attachment.getSize()) {
-                                                        boolean incomingNameEquals = phrase.getFileDescription().getIncomingName() != null
-                                                                && phrase.getFileDescription().getIncomingName().equals(attachment.getName());
-                                                        boolean isUrlHashFileName = phrase.getFileDescription().getFileUri() != null
-                                                                && phrase.getFileDescription().getFileUri().toString().contains(attachment.getName());
-                                                        if (incomingNameEquals || isUrlHashFileName) {
-                                                            phrase.getFileDescription().setState(attachment.getState());
-                                                            phrase.getFileDescription().setErrorCode(attachment.getErrorCodeState());
-                                                            phrase.getFileDescription().setDownloadPath(attachment.getResult());
-                                                            addMessage(item);
-                                                        }
+                                                    boolean incomingNameEquals = phrase.getFileDescription().getIncomingName() != null
+                                                            && phrase.getFileDescription().getIncomingName().equals(attachment.getName());
+                                                    boolean isUrlHashFileName = phrase.getFileDescription().getFileUri() != null
+                                                            && phrase.getFileDescription().getFileUri().toString().contains(attachment.getName());
+                                                    if ((incomingNameEquals || isUrlHashFileName)
+                                                            && fragment != null && fragment.isAdded()) {
+                                                        phrase.getFileDescription().setState(attachment.getState());
+                                                        phrase.getFileDescription().setErrorCode(attachment.getErrorCodeState());
+                                                        phrase.getFileDescription().setDownloadPath(attachment.getResult());
+                                                        fragment.updateProgress(phrase.getFileDescription());
                                                     }
                                                 }
                                             }
