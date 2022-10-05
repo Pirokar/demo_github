@@ -61,8 +61,8 @@ class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionCl
             DatabaseHolder.getInstance().allFileDescriptions
                 .doOnSuccess { data: List<FileDescription?>? ->
                     data?.forEach {
-                        if (isImage(it) && it?.fileUri != null) {
-                            files.add(it)
+                        if (isImage(it)) {
+                            files.add(it!!)
                         }
                     }
                     collectionSize = files.size
