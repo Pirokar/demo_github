@@ -2,8 +2,15 @@ package im.threads.ui.activities
 
 import android.annotation.SuppressLint
 import android.content.pm.ActivityInfo
+import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.AbsoluteSizeSpan
+import android.text.style.ForegroundColorSpan
+import android.text.style.MetricAffectingSpan
+import android.text.style.TypefaceSpan
 import android.view.MotionEvent
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
@@ -13,6 +20,8 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.useractivity.UserActivityTimeProvider.getLastUserActivityTimeCounter
+import im.threads.ui.utils.TypefaceSpanEdna
+import im.threads.ui.utils.typefaceSpanCompatV28
 
 /**
  * Родитель для всех Activity библиотеки
@@ -58,6 +67,45 @@ abstract class BaseActivity : AppCompatActivity() {
             ViewCompat.getWindowInsetsController(window.decorView)?.apply {
                 isAppearanceLightStatusBars = !isStatusBarLight
             }
+        }
+    }
+
+    protected fun applyToolbarTextStyle(textColor: Int, fontSize: Int, typeface: Typeface, titleText: SpannableString) {
+        val length = titleText.length
+        titleText.setSpan(
+            ForegroundColorSpan(textColor),
+            0,
+            length,
+            Spannable.SPAN_INCLUSIVE_INCLUSIVE
+        )
+        titleText.setSpan(
+            AbsoluteSizeSpan(fontSize, false),
+            0,
+            length,
+            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            titleText.setSpan(
+                TypefaceSpan(typeface),
+                0,
+                length,
+                Spannable.SPAN_INCLUSIVE_INCLUSIVE
+            )
+        } else {
+            titleText.setSpan(
+                typeface.getTypefaceSpan(),
+                0,
+                length,
+                Spannable.SPAN_INCLUSIVE_INCLUSIVE
+            )
+        }
+    }
+
+    private fun Typeface.getTypefaceSpan(): MetricAffectingSpan {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            typefaceSpanCompatV28(this)
+        } else {
+            TypefaceSpanEdna(this)
         }
     }
 }
