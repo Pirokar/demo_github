@@ -17,6 +17,8 @@ import im.threads.business.models.CampaignMessage
 import im.threads.business.rest.models.VersionsModel
 import im.threads.business.rest.queries.BackendApi
 import im.threads.business.rest.queries.DatastoreApi
+import im.threads.business.serviceLocator.core.startEdnaLocator
+import im.threads.business.serviceLocator.serviceLocatorModule
 import im.threads.business.useractivity.UserActivityTimeProvider.getLastUserActivityTimeCounter
 import im.threads.business.useractivity.UserActivityTimeProvider.initializeLastUserActivity
 import im.threads.business.utils.ClientInteractor
@@ -94,6 +96,7 @@ open class ThreadsLibBase protected constructor() {
         fun init(configBuilder: BaseConfigBuilder) {
             val startInitTime = System.currentTimeMillis()
             val isUIMode = BaseConfig.instance != null
+            startEdnaLocator { serviceLocatorModule }
 
             if (!isUIMode) {
                 BaseConfig.instance = configBuilder.build()

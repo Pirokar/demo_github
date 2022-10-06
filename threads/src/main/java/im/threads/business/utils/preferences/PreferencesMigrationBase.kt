@@ -4,10 +4,10 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 import im.threads.business.logger.LoggerEdna
-import im.threads.business.preferences.Preferences
+import im.threads.business.preferences.PreferencesImpl
 import java.io.File
 
-open class PreferencesMigrationBase(private val context: Context) : Preferences(context) {
+open class PreferencesMigrationBase(private val context: Context) : PreferencesImpl(context) {
     protected open val keys = PrefUtilsBaseKeys()
 
     fun migrateMainSharedPreferences() {
