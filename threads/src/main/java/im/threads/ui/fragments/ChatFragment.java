@@ -1990,8 +1990,9 @@ public final class ChatFragment extends BaseFragment implements
         for (int i = 1; i < list.size(); i++) {
             ChatItem currentItem = list.get(i);
             if (currentItem instanceof UnreadMessages ||
-                    currentItem instanceof ConsultPhrase
-                            && !((ConsultPhrase) currentItem).isRead()) {
+                    currentItem instanceof ConsultPhrase && !((ConsultPhrase) currentItem).isRead() ||
+                    currentItem instanceof Survey && !((Survey) currentItem).isRead()
+            ) {
                 layoutManager.scrollToPositionWithOffset(i - 1, 0);
                 break;
             }
