@@ -147,9 +147,9 @@ public final class ChatController {
     private final Messenger messenger = new MessengerImpl(compositeDisposable);
 
     private ChatController() {
-        new PreferencesMigrationUi().migrateNamedPreferences(ChatController.class.getSimpleName());
-        inputEnabledDuringQuickReplies = chatStyle.inputEnabledDuringQuickReplies;
         appContext = BaseConfig.instance.context;
+        new PreferencesMigrationUi(appContext).migrateNamedPreferences(ChatController.class.getSimpleName());
+        inputEnabledDuringQuickReplies = chatStyle.inputEnabledDuringQuickReplies;
         chatUpdateProcessor = ChatUpdateProcessor.getInstance();
         databaseHolder = DatabaseHolder.getInstance();
 

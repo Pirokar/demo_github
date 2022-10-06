@@ -55,7 +55,7 @@ class ThreadsLib : ThreadsLibBase() {
             BaseConfig.instance = Config.getInstance()
             createLibInstance()
             BaseConfig.instance.loggerConfig?.let { LoggerEdna.init(it) }
-            PreferencesMigrationUi().migrateMainSharedPreferences()
+            PreferencesMigrationUi(BaseConfig.instance.context).migrateMainSharedPreferences()
 
             ThreadsLibBase.init(configBuilder)
         }

@@ -3,15 +3,14 @@ package im.threads.business.utils.preferences
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
-import im.threads.business.config.BaseConfig
 import im.threads.business.logger.LoggerEdna
+import im.threads.business.preferences.Preferences
 import java.io.File
 
-open class PreferencesMigrationBase {
+open class PreferencesMigrationBase(private val context: Context) : Preferences(context) {
     protected open val keys = PrefUtilsBaseKeys()
 
     fun migrateMainSharedPreferences() {
-        val context = BaseConfig.instance.context
         val oldSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
         val notEncryptedPreferences = context.getSharedPreferences(
             keys.STORE_NAME,
@@ -20,13 +19,13 @@ open class PreferencesMigrationBase {
         if (oldSharedPreferences.all.isNotEmpty()) {
             moveCurrentOnlyPrefs(
                 oldSharedPreferences,
-                PrefUtilsBase.defaultSharedPreferences
+                sharedPreferences
             )
         }
         if (notEncryptedPreferences.all.isNotEmpty()) {
             movePreferences(
                 notEncryptedPreferences,
-                PrefUtilsBase.defaultSharedPreferences
+                sharedPreferences
             )
             deletePreferenceWithNameContains(keys.STORE_NAME)
         }
@@ -34,8 +33,8 @@ open class PreferencesMigrationBase {
 
     fun migrateNamedPreferences(preferenceName: String) {
         movePreferences(
-            BaseConfig.instance.context.getSharedPreferences(preferenceName, Context.MODE_PRIVATE),
-            PrefUtilsBase.defaultSharedPreferences
+            context.getSharedPreferences(preferenceName, Context.MODE_PRIVATE),
+            sharedPreferences
         )
         deletePreferenceWithNameContains(preferenceName)
     }
@@ -85,7 +84,6 @@ open class PreferencesMigrationBase {
     }
 
     private fun deletePreferenceWithNameContains(nameContains: String) {
-        val context = BaseConfig.instance.context
         try {
             context.filesDir.parent?.let { parentPath ->
                 val dir = File("$parentPath/shared_prefs/")

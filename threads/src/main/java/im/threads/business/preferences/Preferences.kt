@@ -11,11 +11,11 @@ import im.threads.business.logger.LoggerEdna
 import java.io.IOException
 import java.security.GeneralSecurityException
 
-class Preferences(private val context: Context) {
+open class Preferences(private val context: Context) {
     private val storeName = "im.threads.internal.utils.PrefStore"
     private val encryptedStoreName = "im.threads.internal.utils.EncryptedPrefStore"
 
-    private val defaultSharedPreferences: SharedPreferences by lazy {
+    protected val sharedPreferences: SharedPreferences by lazy {
         try {
             val masterKey =
                 MasterKey.Builder(BaseConfig.instance.context, MasterKey.DEFAULT_MASTER_KEY_ALIAS)
@@ -36,7 +36,7 @@ class Preferences(private val context: Context) {
     }
 
     fun save(key: String, value: Any?) {
-        val editor = defaultSharedPreferences.edit()
+        val editor = sharedPreferences.edit()
         if (value == null) {
             editor.remove(key)
         } else {
@@ -55,7 +55,7 @@ class Preferences(private val context: Context) {
 
     @Suppress("UNCHECKED_CAST")
     fun <T> get(key: String): T? {
-        val value = defaultSharedPreferences.getString(key, "") ?: ""
+        val value = sharedPreferences.getString(key, "") ?: ""
         (value as? T)?.let { return it }
 
         return if (value.isNotEmpty()) {
