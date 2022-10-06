@@ -25,12 +25,11 @@ class LinkifyLinksHighlighter : LinksHighlighter {
         isUnderlined: Boolean
     ) {
         val scheme = if (url != null) Uri.parse(url).scheme else null
-        if (scheme == null || scheme.startsWith("http")) {
-            highlightAllUsualLinks(textView)
-        } else {
-            highlightEmailAndPhonesLinks(textView)
-            Linkify.addLinks(textView, UrlUtils.WEB_URL, scheme)
+        highlightEmailAndPhonesLinks(textView)
+        if (scheme == null) {
+            Linkify.addLinks(textView, WEB_URLS)
         }
+        Linkify.addLinks(textView, UrlUtils.WEB_URL, scheme)
 
         if (!isUnderlined) {
             stripUnderlines(textView)
