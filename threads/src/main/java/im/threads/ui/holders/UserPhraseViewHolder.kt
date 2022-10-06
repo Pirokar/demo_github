@@ -34,6 +34,7 @@ import im.threads.business.ogParser.OpenGraphParser
 import im.threads.business.utils.FileUtils
 import im.threads.business.utils.FileUtils.isImage
 import im.threads.business.utils.FileUtils.isVoiceMessage
+import im.threads.business.utils.UrlUtils
 import im.threads.business.utils.toFileSize
 import im.threads.ui.utils.gone
 import im.threads.ui.utils.invisible
@@ -227,7 +228,13 @@ class UserPhraseViewHolder(
         phraseTextView.visible()
         phraseTextView.bindTimestampView(timeStampTextView)
         bindOGData(phrase)
-        highlightClientText(phraseTextView, phrase)
+        val extractedLink = UrlUtils.extractLink(phrase)
+        val urlLink = if (extractedLink == null || extractedLink.isEmail) {
+            null
+        } else {
+            extractedLink.link
+        }
+        highlightClientText(phraseTextView, phrase, urlLink)
     }
 
     private fun showFiles(

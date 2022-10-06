@@ -92,7 +92,7 @@ public final class UrlUtils {
             + ")");
     private static final Pattern WEB_URL_PATTERN = Patterns.WEB_URL;
 
-    private static final String[] imageExtensions = new String[] { ".jpg", ".png", ".gif", ".tiff", ".raw" };
+    public static final String[] imageExtensions = new String[] { ".jpg", ".png", ".gif", ".tiff", ".raw" };
 
     @Nullable
     public static ExtractedLink extractLink(@NonNull String text) {
@@ -135,9 +135,8 @@ public final class UrlUtils {
 
     @Nullable
     public static String extractImageMarkdownLink(@NonNull String text) {
-        if (!text.contains("](http")) return null;
         ExtractedLink extractedLink = extractLink(text);
-        if (extractedLink == null || extractedLink.getLink() == null) return null;
+        if (extractedLink == null || extractedLink.getLink() == null || extractedLink.isEmail()) return null;
         String link = extractedLink.getLink();
 
         link = link.toLowerCase(Locale.getDefault());
@@ -167,7 +166,7 @@ public final class UrlUtils {
             return url;
         }
 
-        while (url.length() > 0 && !url.substring(url.length() - 1).matches("\\w+")) {
+        while (url.length() > 0 && !url.substring(url.length() - 1).matches("[/\\w]+")) {
             url = url.substring(0, url.length() - 1);
         }
 
