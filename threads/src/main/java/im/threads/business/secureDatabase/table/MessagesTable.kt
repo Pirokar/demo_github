@@ -166,8 +166,7 @@ class MessagesTable(
             insertOrUpdateMessage(sqlHelper, getConsultPhraseCV(chatItem))
             chatItem.fileDescription?.let {
                 isFileDownloaded(it)?.let { uri ->
-                    it.downloadProgress = 100
-                    it.fileUri = uri
+                    setProgressAndFileUri(it, 100, uri)
                 }
                 fileDescriptionTable.putFileDescription(
                     sqlHelper,
@@ -191,8 +190,7 @@ class MessagesTable(
                 insertOrUpdateMessage(sqlHelper, getUserPhraseCV(chatItem))
                 chatItem.fileDescription?.let {
                     isFileDownloaded(it)?.let { uri ->
-                        it.downloadProgress = 100
-                        it.fileUri = uri
+                        setProgressAndFileUri(it, 100, uri)
                     }
                     fileDescriptionTable.putFileDescription(
                         sqlHelper,
@@ -726,11 +724,16 @@ class MessagesTable(
             fileDescription.incomingName
         )
         return if (outputFile.exists()) {
-            return FileProviderHelper.getUriForFile(
+            FileProviderHelper.getUriForFile(
                 BaseConfig.instance.context,
                 outputFile
             )
         } else null
+    }
+
+    private fun setProgressAndFileUri(fileDescription: FileDescription, progress: Int, uri: Uri) {
+        fileDescription.downloadProgress = progress
+        fileDescription.fileUri = uri
     }
 
     private fun stringToList(text: String?): List<String> {
