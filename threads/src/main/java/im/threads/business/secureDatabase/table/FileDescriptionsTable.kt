@@ -159,7 +159,9 @@ class FileDescriptionsTable : Table() {
                     fd.errorCode = ErrorStateEnum.errorStateEnumFromString(it)
                 }
                 fd.errorMessage = cursorGetString(c, COLUMN_FD_ERROR_MESSAGE)
-                list.add(fd)
+                if (fd.fileUri != null || fd.downloadPath != null) {
+                    list.add(fd)
+                }
                 c.moveToNext()
             }
             return list
