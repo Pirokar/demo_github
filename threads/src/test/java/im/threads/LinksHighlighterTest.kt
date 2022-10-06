@@ -27,7 +27,7 @@ class LinksHighlighterTest {
     @Test
     fun givenNoUnderline_whenMessageWithPhone_thenParsedCorrectly() {
         val sourceText = "+7 (905) 775-56-66"
-        val expectedHtmlResult = "<p dir=\"ltr\"><a href=\"tel:+79057755666\">+7 (905) 775-56-66</a></p>\n"
+        val expectedHtmlResult = "<a href=\"tel:+79057755666\">+7 (905) 775-56-66</a>"
 
         doTest(sourceText, expectedHtmlResult)
     }
@@ -35,7 +35,7 @@ class LinksHighlighterTest {
     @Test
     fun givenWithUnderline_whenMessageWithPhone_thenParsedCorrectly() {
         val sourceText = "+7.(905).775.56.66"
-        val expectedHtmlResult = "<p dir=\"ltr\"><a href=\"tel:+79057755666\">+7.(905).775.56.66</a></p>\n"
+        val expectedHtmlResult = "<a href=\"tel:+79057755666\">+7.(905).775.56.66</a>"
 
         doTest(sourceText, expectedHtmlResult)
     }
@@ -43,7 +43,7 @@ class LinksHighlighterTest {
     @Test
     fun givenNoUnderline_whenMessageWithEmail_thenParsedCorrectly() {
         val sourceText = "edna@gmail.com"
-        val expectedHtmlResult = "<p dir=\"ltr\"><a href=\"mailto:edna@gmail.com\">edna@gmail.com</a></p>\n"
+        val expectedHtmlResult = "<a href=\"mailto:edna@gmail.com\">"
 
         doTest(sourceText, expectedHtmlResult)
     }
@@ -51,7 +51,7 @@ class LinksHighlighterTest {
     @Test
     fun givenNoUnderline_whenMessageWithHttpsLink_thenParsedCorrectly() {
         val sourceText = "https://edna.ru/"
-        val expectedHtmlResult = "<p dir=\"ltr\"><a href=\"https://edna.ru/\">https://edna.ru/</a></p>\n"
+        val expectedHtmlResult = "<a href=\"https://edna.ru/\">https://edna.ru/</a>"
 
         doTest(sourceText, expectedHtmlResult)
     }
@@ -59,15 +59,15 @@ class LinksHighlighterTest {
     @Test
     fun givenNoUnderline_whenMessageWithWwwLink_thenParsedCorrectly() {
         val sourceText = "www.edna.ru"
-        val expectedHtmlResult = "<p dir=\"ltr\"><a href=\"http://www.edna.ru\">www.edna.ru</a></p>\n"
+        val expectedHtmlResult = "<a href=\"http://www.edna.ru\"><a href=\"www.edna.ru\">www.edna.ru</a></a>"
 
         doTest(sourceText, expectedHtmlResult)
     }
 
     private fun doTest(sourceText: String, expectedHtmlResult: String) {
         testTextView.text = sourceText
-        linksHighlighter.highlightAllTypeOfLinks(testTextView, false)
+        linksHighlighter.highlightAllTypeOfLinks(testTextView, null, false)
         val resultHtml = (testTextView.text as Spanned).toHtml()
-        assert(resultHtml == expectedHtmlResult)
+        assert(resultHtml.contains(expectedHtmlResult))
     }
 }
