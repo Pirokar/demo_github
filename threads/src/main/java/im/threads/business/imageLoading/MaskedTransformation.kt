@@ -24,9 +24,9 @@ class MaskedTransformation(private val maskDrawable: Drawable) : Transformation 
         o.inSampleSize = 2
         val mask = Bitmap.createBitmap(source.width, source.height, Bitmap.Config.ARGB_8888)
         val tmpCanvas = Canvas(mask)
-        val maskRaw9Patch = maskDrawable as NinePatchDrawable
-        maskRaw9Patch.setBounds(0, 0, tmpCanvas.width, tmpCanvas.height)
-        maskRaw9Patch.draw(tmpCanvas)
+        val maskRaw9Patch = maskDrawable as? NinePatchDrawable
+        maskRaw9Patch?.setBounds(0, 0, tmpCanvas.width, tmpCanvas.height)
+        maskRaw9Patch?.draw(tmpCanvas)
         val paint = Paint(Paint.ANTI_ALIAS_FLAG)
         paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_IN)
         mCanvas.drawBitmap(source, 0f, 0f, null)
