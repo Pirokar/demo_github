@@ -145,6 +145,7 @@ public final class ChatController {
 
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
     private final Messenger messenger = new MessengerImpl(compositeDisposable);
+    private final ArrayList<UserPhrase> localUserMessages = new ArrayList<>();
 
     private ChatController() {
         new PreferencesMigrationUi().migrateNamedPreferences(ChatController.class.getSimpleName());
@@ -210,6 +211,7 @@ public final class ChatController {
         // we should make invisible the survey
         removeActiveSurvey();
         final UserPhrase um = convert(upcomingUserMessage);
+        localUserMessages.add(um);
         addMessage(um);
         messenger.queueMessageSending(um);
     }
@@ -322,7 +324,8 @@ public final class ChatController {
                                     null,
                                     false
                             );
-                            final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
+                            List<ChatItem> serverItems = HistoryParser.getChatItems(response);
+                            serverItems = addLocalUserMessages(serverItems);
                             messenger.saveMessages(serverItems);
                             clearUnreadPush();
                             processSystemMessages(serverItems);
@@ -498,7 +501,8 @@ public final class ChatController {
                 null,
                 true
         );
-        final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
+        List<ChatItem> serverItems = HistoryParser.getChatItems(response);
+        serverItems = addLocalUserMessages(serverItems);
         messenger.saveMessages(serverItems);
         clearUnreadPush();
         processSystemMessages(serverItems);
@@ -525,7 +529,8 @@ public final class ChatController {
                                         count,
                                         true
                                 );
-                                final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
+                                List<ChatItem> serverItems = HistoryParser.getChatItems(response);
+                                serverItems = addLocalUserMessages(serverItems);
                                 messenger.saveMessages(serverItems);
                                 clearUnreadPush();
                                 processSystemMessages(serverItems);
@@ -601,6 +606,24 @@ public final class ChatController {
 
     public void forceResend(UserPhrase userPhrase) {
         messenger.forceResend(userPhrase);
+    }
+
+    private List<ChatItem> addLocalUserMessages(List<ChatItem> serverItems)  {
+        ArrayList<UserPhrase> localMessagesToDelete = new ArrayList<>();
+        for (UserPhrase localUserMessage : localUserMessages) {
+            for (ChatItem serverItem : serverItems) {
+                if (serverItem.isTheSameItem(localUserMessage)) {
+                    localMessagesToDelete.add(localUserMessage);
+                    break;
+                }
+            }
+        }
+        for (UserPhrase localMessageToDelete : localMessagesToDelete) {
+            localUserMessages.remove(localMessageToDelete);
+        }
+        serverItems.addAll(localUserMessages);
+
+        return serverItems;
     }
 
     private List<ChatItem> setLastAvatars(final List<ChatItem> list) {
@@ -1110,6 +1133,7 @@ public final class ChatController {
                                         true
                                 );
                                 List<ChatItem> chatItems = HistoryParser.getChatItems(response);
+                                chatItems = addLocalUserMessages(chatItems);
                                 messenger.saveMessages(chatItems);
                                 clearUnreadPush();
                                 processSystemMessages(chatItems);
