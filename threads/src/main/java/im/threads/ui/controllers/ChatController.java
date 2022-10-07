@@ -211,7 +211,9 @@ public final class ChatController {
         // we should make invisible the survey
         removeActiveSurvey();
         final UserPhrase um = convert(upcomingUserMessage);
-        localUserMessages.add(um);
+        if (um.getFileDescription() != null) {
+            localUserMessages.add(um);
+        }
         addMessage(um);
         messenger.queueMessageSending(um);
     }
