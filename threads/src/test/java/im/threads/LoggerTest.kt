@@ -102,6 +102,6 @@ class LoggerTest {
     }
 
     private companion object {
-        private const val ENDA_LOGGER_TAG = "EdnaLogger"
+        private const val ENDA_LOGGER_TAG = "ELog"
     }
 }
