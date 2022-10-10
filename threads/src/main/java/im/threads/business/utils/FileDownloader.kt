@@ -1,7 +1,6 @@
 package im.threads.business.utils
 
 import android.content.Context
-import android.net.Uri
 import im.threads.business.config.BaseConfig
 import im.threads.business.logger.LoggerEdna
 import im.threads.business.utils.preferences.PrefUtilsBase
@@ -20,16 +19,13 @@ const val DELTA_DOWNLOAD_PROGRESS = 2
 
 class FileDownloader(
     private val path: String,
-    fileName: String,
+    private val fileName: String,
     private val ctx: Context,
     private val downloadListener: DownloadListener
 ) {
     private val outputFile: File = File(
         getDownloadDir(ctx),
-        generateFileName(
-            path,
-            fileName
-        )
+        fileName
     )
 
     private var isStopped = false
@@ -38,16 +34,13 @@ class FileDownloader(
         try {
             val url = URL(path)
 
-            Uri.parse(path).lastPathSegment?.let { lastPath ->
-                val files = getDownloadDir(ctx).listFiles { _, name ->
-                    name.contains(lastPath)
-                }
-                if (!files.isNullOrEmpty()) {
-                    downloadListener.onProgress(100.0)
-                    downloadListener.onComplete(files[0])
-
-                    return
-                }
+            val files = getDownloadDir(ctx).listFiles { _, name ->
+                name == fileName
+            }
+            if (!files.isNullOrEmpty()) {
+                downloadListener.onProgress(100.0)
+                downloadListener.onComplete(files[0])
+                return
             }
 
             BaseConfig.instance.sslSocketFactoryConfig?.let {
@@ -149,31 +142,6 @@ class FileDownloader(
         @JvmStatic
         fun getDownloadDir(ctx: Context): File {
             return ctx.filesDir
-        }
-
-        fun generateFileName(path: String, fileName: String): String {
-            val sb = StringBuilder()
-            sb.append(getFileName(fileName))
-                .append("(")
-                .append(Uri.parse(path).lastPathSegment)
-                .append(")")
-            val ext = getFileExtension(fileName)
-            if (ext != null) {
-                sb.append(ext)
-            }
-            return sb.toString()
-        }
-
-        private fun getFileExtension(path: String?): String? {
-            return if (path != null && path.lastIndexOf('.') != -1) {
-                path.substring(path.lastIndexOf('.'))
-            } else null
-        }
-
-        private fun getFileName(fileName: String): String {
-            return if (fileName.lastIndexOf('.') != -1) {
-                fileName.substring(0, fileName.lastIndexOf('.'))
-            } else fileName
         }
     }
 }

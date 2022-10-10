@@ -217,7 +217,7 @@ class ImageFromUserViewHolder(
                 .into(mImage)
 
             loadedUri = uri.toString()
-        } else if (isDownloadError) {
+        } else {
             mImage.setImageResource(style.imagePlaceholder)
         }
     }
