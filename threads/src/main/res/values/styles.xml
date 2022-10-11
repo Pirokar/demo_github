@@ -130,15 +130,15 @@
         <item name="android:layout_marginBottom">@dimen/margin_quarter</item>
     </style>
 
-    <style name="ThemeOverlay.ChatCenter.Slider.User" parent="">
+    <style name="ThemeOverlay.ChatCenter.Slider.User" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="colorPrimary">@color/threads_white</item>
     </style>
 
-    <style name="ThemeOverlay.ChatCenter.Slider.Consult" parent="">
+    <style name="ThemeOverlay.ChatCenter.Slider.Consult" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="colorPrimary">@color/threads_teal_009688</item>
     </style>
 
-    <style name="ThemeOverlay.ChatCenter.Slider.Preview" parent="">
+    <style name="ThemeOverlay.ChatCenter.Slider.Preview" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="colorPrimary">@color/threads_black</item>
     </style>
 </resources>
