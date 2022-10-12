@@ -2,6 +2,7 @@ package im.threads.business.preferences
 
 internal class PrefKeysForMigration {
     val APP_MARKER_KEY = "APP_MARKER"
+    val TAG_CLIENT_ID = "TAG_CLIENT_ID"
     val TAG_NEW_CLIENT_ID = "TAG_NEW_CLIENT_ID"
     val AUTH_TOKEN = "AUTH_TOKEN"
     val AUTH_SCHEMA = "AUTH_SCHEMA"

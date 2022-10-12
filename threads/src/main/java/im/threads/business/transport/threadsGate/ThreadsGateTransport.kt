@@ -234,10 +234,9 @@ class ThreadsGateTransport(
             openWebSocket()
         }
         val ws = webSocket ?: return
-        if (sendInit &&
-            !TextUtils.isEmpty(PrefUtilsBase.clientID) &&
-            !TextUtils.isEmpty(PrefUtilsBase.deviceAddress)
-        ) {
+        val clientId = preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)?.clientId
+        val deviceAddress = preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS)
+        if (sendInit && !clientId.isNullOrBlank() && !deviceAddress.isNullOrBlank()) {
             sendInitChatMessage(false)
             sendEnvironmentMessage(false)
         }

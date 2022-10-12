@@ -1,6 +1,6 @@
 package im.threads.business
 
-class UserInfoBuilder(val clientId: String) {
+class UserInfoBuilder(var clientId: String) {
     var authToken: String? = null
         private set
     var authSchema: String? = null

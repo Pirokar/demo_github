@@ -20,8 +20,8 @@ class ImageLoaderOkHttpProvider(private val preferences: Preferences) {
         val httpClientBuilder = OkHttpClient.Builder()
             .addInterceptor { chain ->
                 val builder = chain.request().newBuilder().apply {
-                    addHeader("X-Ext-Client-ID", PrefUtilsBase.clientID)
                     val userInfo = preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)
+                    userInfo?.clientId?.let { addHeader("X-Ext-Client-ID", it) }
                     if (!userInfo?.authToken.isNullOrBlank()) {
                         addHeader("Authorization", userInfo?.authToken!!)
                     }

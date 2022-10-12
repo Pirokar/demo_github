@@ -3,6 +3,7 @@ package im.threads.business.utils.messenger
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
+import im.threads.business.UserInfoBuilder
 import im.threads.business.chat_updates.ChatUpdateProcessor
 import im.threads.business.config.BaseConfig
 import im.threads.business.logger.LoggerEdna.debug
@@ -13,8 +14,11 @@ import im.threads.business.models.ChatItemSendErrorModel
 import im.threads.business.models.ConsultInfo
 import im.threads.business.models.MessageState
 import im.threads.business.models.UserPhrase
+import im.threads.business.preferences.Preferences
+import im.threads.business.preferences.PreferencesCoreKeys
 import im.threads.business.rest.queries.ThreadsApi
 import im.threads.business.secureDatabase.DatabaseHolder.Companion.getInstance
+import im.threads.business.serviceLocator.core.inject
 import im.threads.business.transport.HistoryLoader.getHistorySync
 import im.threads.business.transport.HistoryParser
 import im.threads.business.utils.ConsultWriter
@@ -46,6 +50,7 @@ class MessengerImpl(private var compositeDisposable: CompositeDisposable?) : Mes
     private var unsentMessageHandler: Handler? = null
     private val networkInteractor: NetworkInteractor = NetworkInteractorImpl()
     private val mainCoroutineScope = CoroutineScope(Dispatchers.Main)
+    private val preferences: Preferences by inject()
 
     private val resendMessageKey = 123
     var pageItemsCount = 100
@@ -202,11 +207,12 @@ class MessengerImpl(private var compositeDisposable: CompositeDisposable?) : Mes
             Completable.fromAction {
                 var filePath: String? = null
                 var quoteFilePath: String? = null
+                val clientId = preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)?.clientId
                 if (fileDescription != null) {
-                    filePath = postFile(fileDescription)
+                    filePath = postFile(fileDescription, clientId)
                 }
                 if (quoteFileDescription != null) {
-                    quoteFilePath = postFile(quoteFileDescription)
+                    quoteFilePath = postFile(quoteFileDescription, clientId)
                 }
                 transport.sendMessage(userPhrase, consultInfo, filePath, quoteFilePath)
             }

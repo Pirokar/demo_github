@@ -61,6 +61,7 @@ import im.threads.business.models.UnreadMessages;
 import im.threads.business.models.UserPhrase;
 import im.threads.business.ogParser.OpenGraphParser;
 import im.threads.business.ogParser.OpenGraphParserJsoupImpl;
+import im.threads.business.preferences.PreferencesJava;
 import im.threads.business.utils.ChatItemListFinder;
 import im.threads.business.utils.FileUtils;
 import im.threads.business.utils.FileUtilsKt;
@@ -152,8 +153,9 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         this.fdMediaPlayer = fdMediaPlayer;
         this.mediaMetadataRetriever = mediaMetadataRetriever;
 
+        PreferencesJava preferences = new PreferencesJava();
         clientNotificationDisplayType = PrefUtilsUi.getClientNotificationDisplayType();
-        currentThreadId = PrefUtilsBase.getThreadId();
+        currentThreadId = preferences.getThreadId() == null ? 0L : preferences.getThreadId();
         chatMessagesOrderer = new ChatMessagesOrderer();
     }
 

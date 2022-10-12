@@ -58,7 +58,9 @@ class FileDownloader(
             val userInfo = preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)
             try {
                 urlConnection.requestMethod = "GET"
-                urlConnection.setRequestProperty("X-Ext-Client-ID", PrefUtilsBase.clientID)
+                if (userInfo?.clientId != null) {
+                    urlConnection.setRequestProperty("X-Ext-Client-ID", userInfo.clientId)
+                }
                 if (!userInfo?.authToken.isNullOrBlank()) {
                     urlConnection.setRequestProperty("Authorization", userInfo?.authToken)
                 }

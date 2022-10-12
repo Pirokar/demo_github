@@ -2031,7 +2031,7 @@ public final class ChatFragment extends BaseFragment implements
     public void onStart() {
         super.onStart();
         LoggerEdna.info(ChatFragment.class.getSimpleName() + " onStart.");
-        setCurrentThreadId(PrefUtilsBase.getThreadId());
+        setCurrentThreadId(mChatController.getThreadId());
         BaseConfig.instance.transport.setLifecycle(getLifecycle());
         ChatController.getInstance().getSettings();
         ChatController.getInstance().loadHistory();

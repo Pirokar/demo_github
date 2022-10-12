@@ -3,7 +3,6 @@ package im.threads.business.preferences
 object PreferencesCoreKeys {
     private val migrationKeys = PrefKeysForMigration()
 
-    val TAG_CLIENT_ID = "TAG_CLIENT_ID"
     val TAG_NEW_CLIENT_ID = "TAG_NEW_CLIENT_ID"
     val LAST_COPY_TEXT = "LAST_COPY_TEXT"
     val DEVICE_ADDRESS = "DEVICE_ADDRESS"
@@ -21,7 +20,7 @@ object PreferencesCoreKeys {
     val IS_DATABASE_PASSWORD_MIGRATED = "IS_DATABASE_PASSWORD_MIGRATED"
 
     val allPrefKeys = listOf(
-        TAG_CLIENT_ID,
+        migrationKeys.TAG_CLIENT_ID,
         migrationKeys.TAG_CLIENT_ID_ENCRYPTED,
         migrationKeys.CLIENT_ID_SIGNATURE_KEY,
         migrationKeys.TAG_NEW_CLIENT_ID,

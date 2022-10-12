@@ -42,38 +42,6 @@ internal object PrefUtilsBase {
     }
 
     @JvmStatic
-    var lastCopyText: String?
-        get() = defaultSharedPreferences.getString(PreferencesCoreKeys.LAST_COPY_TEXT, null)
-        set(text) {
-            defaultSharedPreferences
-                .edit()
-                .putString(PreferencesCoreKeys.LAST_COPY_TEXT, text)
-                .commit()
-        }
-
-    @JvmStatic
-    fun setClientId(clientId: String) {
-        defaultSharedPreferences
-            .edit()
-            .putString(PreferencesCoreKeys.TAG_CLIENT_ID, clientId)
-            .commit()
-    }
-
-    @JvmStatic
-    val clientID: String
-        get() = defaultSharedPreferences.getString(PreferencesCoreKeys.TAG_CLIENT_ID, "") ?: ""
-
-    @JvmStatic
-    var threadId: Long
-        get() = defaultSharedPreferences.getLong(PreferencesCoreKeys.THREAD_ID, -1)
-        set(threadId) {
-            defaultSharedPreferences
-                .edit()
-                .putLong(PreferencesCoreKeys.THREAD_ID, threadId)
-                .commit()
-        }
-
-    @JvmStatic
     var fileDescriptionDraft: FileDescription?
         get() {
             val value = defaultSharedPreferences.getString(PreferencesCoreKeys.FILE_DESCRIPTION_DRAFT, "")
@@ -114,10 +82,6 @@ internal object PrefUtilsBase {
                 )
                 .commit()
         }
-
-    @JvmStatic
-    val isClientIdEmpty: Boolean
-        get() = clientID.isEmpty()
 
     @JvmStatic
     var fcmToken: String?

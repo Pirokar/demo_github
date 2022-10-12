@@ -45,6 +45,7 @@ open class ThreadsLibBase protected constructor(context: Context) {
     }
 
     private val preferences: Preferences by inject()
+    private val clientInteractor: ClientInteractor by inject()
 
     /**
      * @return time in seconds since the last user activity
@@ -55,7 +56,9 @@ open class ThreadsLibBase protected constructor(context: Context) {
             return timeCounter.getSecondsSinceLastActivity()
         }
 
-    val isUserInitialized: Boolean get() = !PrefUtilsBase.isClientIdEmpty
+    val isUserInitialized: Boolean get() {
+        return clientInteractor.isClientIdNotEmpty()
+    }
 
     /**
      * @return FlowableProcessor that emits responses from WebSocket connection

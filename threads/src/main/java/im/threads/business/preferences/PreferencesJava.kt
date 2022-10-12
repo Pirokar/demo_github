@@ -6,11 +6,11 @@ import im.threads.business.serviceLocator.core.inject
 class PreferencesJava {
     private val preferences: Preferences by inject()
 
-    fun save(key: String, value: Any?) {
-        preferences.save(key, value)
-    }
+    fun getUserInfo(): UserInfoBuilder? = preferences.get(PreferencesCoreKeys.USER_INFO)
 
-    fun getUserInfo(): UserInfoBuilder? {
-        return preferences.get(PreferencesCoreKeys.USER_INFO)
+    fun getThreadId(): Long? = preferences.get(PreferencesCoreKeys.THREAD_ID)
+
+    fun setThreadId(threadId: Long?) {
+        preferences.save(PreferencesCoreKeys.THREAD_ID, threadId)
     }
 }
