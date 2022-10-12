@@ -12,6 +12,13 @@ class UserInfoBuilder(val clientId: String) {
     var userName: String? = null
         private set
     var appMarker: String? = null
+        get() {
+            return if (field.isNullOrBlank()) {
+                null
+            } else {
+                field
+            }
+        }
         private set
 
     /**

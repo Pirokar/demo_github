@@ -23,8 +23,8 @@ import java.util.ListIterator;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
-import im.threads.ui.ChatStyle;
 import im.threads.R;
+import im.threads.business.UserInfoBuilder;
 import im.threads.business.broadcastReceivers.ProgressReceiver;
 import im.threads.business.chat_updates.ChatUpdateProcessor;
 import im.threads.business.config.BaseConfig;
@@ -53,6 +53,8 @@ import im.threads.business.models.Survey;
 import im.threads.business.models.SystemMessage;
 import im.threads.business.models.UpcomingUserMessage;
 import im.threads.business.models.UserPhrase;
+import im.threads.business.preferences.Preferences;
+import im.threads.business.preferences.PreferencesJava;
 import im.threads.business.rest.models.HistoryResponse;
 import im.threads.business.rest.models.SettingsResponse;
 import im.threads.business.rest.queries.BackendApi;
@@ -63,13 +65,14 @@ import im.threads.business.transport.HistoryParser;
 import im.threads.business.transport.TransportException;
 import im.threads.business.transport.models.Attachment;
 import im.threads.business.utils.ChatMessageSeeker;
+import im.threads.business.utils.ClientInteractor;
 import im.threads.business.utils.ConsultWriter;
 import im.threads.business.utils.FileUtils;
-import im.threads.business.utils.ClientInteractor;
 import im.threads.business.utils.messenger.Messenger;
 import im.threads.business.utils.messenger.MessengerImpl;
 import im.threads.business.utils.preferences.PrefUtilsBase;
 import im.threads.business.workers.FileDownloadWorker;
+import im.threads.ui.ChatStyle;
 import im.threads.ui.activities.ConsultActivity;
 import im.threads.ui.activities.ImagesActivity;
 import im.threads.ui.config.Config;
@@ -159,7 +162,8 @@ public final class ChatController {
     }
 
     public static ChatController getInstance() {
-        ClientInteractor clientInteractor = new ClientInteractor();
+        ClientInteractor clientInteractor
+                = new ClientInteractor(new Preferences(BaseConfig.instance.context)); //TODO: rewrite it to inject with kotlin
         if (instance == null) {
             instance = new ChatController();
         }
@@ -881,7 +885,9 @@ public final class ChatController {
                                             fragment.showConnectionError();
                                         }
                                         if (!isActive) {
-                                            NotificationWorker.addUnsentMessage(appContext, PrefUtilsBase.getAppMarker());
+                                            PreferencesJava preferences = new PreferencesJava();
+                                            UserInfoBuilder userInfo = preferences.getUserInfo();
+                                            NotificationWorker.addUnsentMessage(appContext, userInfo.getAppMarker());
                                         }
                                         messenger.proceedSendingQueue(userPhrase);
                                     }

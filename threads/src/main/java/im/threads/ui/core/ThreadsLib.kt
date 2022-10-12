@@ -1,5 +1,6 @@
 package im.threads.ui.core
 
+import android.content.Context
 import im.threads.business.UserInfoBuilder
 import im.threads.business.config.BaseConfig
 import im.threads.business.core.ThreadsLibBase
@@ -11,7 +12,7 @@ import im.threads.ui.controllers.ChatController
 import im.threads.ui.styles.permissions.PermissionDescriptionDialogStyle
 import im.threads.ui.utils.preferences.PreferencesMigrationUi
 
-class ThreadsLib : ThreadsLibBase() {
+class ThreadsLib(context: Context) : ThreadsLibBase(context) {
     private val config by lazy {
         Config.getInstance()
     }
@@ -51,9 +52,9 @@ class ThreadsLib : ThreadsLibBase() {
 
         @JvmStatic
         fun init(configBuilder: ConfigBuilder) {
+            createLibInstance(configBuilder.context)
             Config.setInstance(configBuilder.build())
             BaseConfig.instance = Config.getInstance()
-            createLibInstance()
             BaseConfig.instance.loggerConfig?.let { LoggerEdna.init(it) }
             PreferencesMigrationUi(BaseConfig.instance.context).migrateMainSharedPreferences()
 
@@ -63,13 +64,13 @@ class ThreadsLib : ThreadsLibBase() {
         @JvmStatic
         fun getInstance(): ThreadsLib {
             checkNotNull(libInstance) { "ThreadsLib should be initialized first with ThreadsLib.init()" }
-            return libInstance as? ThreadsLib ?: ThreadsLib()
+            return libInstance as ThreadsLib
         }
 
         @JvmStatic
-        private fun createLibInstance() {
+        private fun createLibInstance(context: Context) {
             check(libInstance == null) { "ThreadsLib has already been initialized" }
-            setLibraryInstance(ThreadsLib())
+            setLibraryInstance(ThreadsLib(context))
         }
     }
 }

@@ -15,7 +15,9 @@ import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.FileDescription
 import im.threads.business.models.FileDescriptionUri
 import im.threads.business.models.enums.AttachmentStateEnum
+import im.threads.business.preferences.Preferences
 import im.threads.business.secureDatabase.DatabaseHolder
+import im.threads.business.serviceLocator.core.inject
 import im.threads.business.utils.FileDownloader
 import im.threads.business.utils.FileDownloader.DownloadListener
 import im.threads.business.utils.FileProviderHelper
@@ -27,6 +29,7 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
     Worker(context, workerParameters) {
 
     private var runningDownloads = HashMap<FileDescription, FileDownloader>()
+    private val preferences: Preferences by inject()
 
     override fun doWork(): Result {
         val data = inputData.getByteArray(FD_TAG)?.let { unmarshall(it) }
@@ -81,7 +84,8 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
                     DatabaseHolder.getInstance().updateFileDescription(fileDescription)
                     e?.let { sendDownloadErrorBroadcast(fileDescription, e) }
                 }
-            }
+            },
+            preferences
         )
 
         if (START_DOWNLOAD_FD_TAG == inputData.getString(START_DOWNLOAD_ACTION)) {

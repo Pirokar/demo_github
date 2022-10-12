@@ -4,16 +4,17 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 import im.threads.business.logger.LoggerEdna
-import im.threads.business.preferences.PreferencesImpl
+import im.threads.business.preferences.Preferences
+import im.threads.business.preferences.PreferencesCoreKeys
 import java.io.File
 
-open class PreferencesMigrationBase(private val context: Context) : PreferencesImpl(context) {
-    protected open val keys = PrefUtilsBaseKeys()
+open class PreferencesMigrationBase(private val context: Context) : Preferences(context) {
+    protected open val keys = PreferencesCoreKeys.allPrefKeys
 
     fun migrateMainSharedPreferences() {
         val oldSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
         val notEncryptedPreferences = context.getSharedPreferences(
-            keys.STORE_NAME,
+            PreferencesCoreKeys.STORE_NAME,
             Context.MODE_PRIVATE
         )
         if (oldSharedPreferences.all.isNotEmpty()) {
@@ -27,7 +28,7 @@ open class PreferencesMigrationBase(private val context: Context) : PreferencesI
                 notEncryptedPreferences,
                 sharedPreferences
             )
-            deletePreferenceWithNameContains(keys.STORE_NAME)
+            deletePreferenceWithNameContains(PreferencesCoreKeys.STORE_NAME)
         }
     }
 
@@ -52,7 +53,7 @@ open class PreferencesMigrationBase(private val context: Context) : PreferencesI
         val editor = toPrefs.edit()
         val keysToDelete = arrayListOf<String>()
         for ((key, prefsValue) in fromPrefs.all) {
-            if (keys.allPrefKeys.contains(key)) {
+            if (keys.contains(key)) {
                 addPrefToEditor(key, prefsValue, editor)
                 keysToDelete.add(key)
             }

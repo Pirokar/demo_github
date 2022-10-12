@@ -22,8 +22,10 @@ import im.threads.business.exceptions.MetaConfigurationException;
 import im.threads.business.imageLoading.ImageLoaderOkHttpProvider;
 import im.threads.business.logger.LoggerConfig;
 import im.threads.business.models.SslSocketFactoryConfig;
+import im.threads.business.preferences.Preferences;
 import im.threads.business.rest.config.RequestConfig;
 import im.threads.business.rest.config.SocketClientSettings;
+import im.threads.business.serviceLocator.core.ServiceLocatorApiKt;
 import im.threads.business.transport.Transport;
 import im.threads.business.transport.threadsGate.ThreadsGateTransport;
 import im.threads.business.utils.MetadataBusiness;
@@ -101,7 +103,7 @@ public class BaseConfig {
         this.serverBaseUrl = getServerBaseUrl(serverBaseUrl);
         this.datastoreUrl = getDatastoreUrl(datastoreUrl);
         this.requestConfig = requestConfig;
-        ImageLoaderOkHttpProvider.INSTANCE.createOkHttpClient(
+        new ImageLoaderOkHttpProvider(new Preferences(context)).createOkHttpClient( //TODO: rewrite with SL and Kotlin
                 requestConfig.getPicassoHttpClientSettings(),
                 sslSocketFactoryConfig
         );

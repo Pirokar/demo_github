@@ -2,8 +2,11 @@ package im.threads.business.utils
 
 import android.content.Context
 import android.net.Uri
+import im.threads.business.UserInfoBuilder
 import im.threads.business.config.BaseConfig
 import im.threads.business.logger.LoggerEdna
+import im.threads.business.preferences.Preferences
+import im.threads.business.preferences.PreferencesCoreKeys
 import im.threads.business.utils.preferences.PrefUtilsBase
 import java.io.BufferedInputStream
 import java.io.File
@@ -22,7 +25,8 @@ class FileDownloader(
     private val path: String,
     fileName: String,
     private val ctx: Context,
-    private val downloadListener: DownloadListener
+    private val downloadListener: DownloadListener,
+    private val preferences: Preferences
 ) {
     private val outputFile: File = File(
         getDownloadDir(ctx),
@@ -58,14 +62,15 @@ class FileDownloader(
             } else {
                 url.openConnection() as HttpURLConnection
             }
+            val userInfo = preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)
             try {
                 urlConnection.requestMethod = "GET"
                 urlConnection.setRequestProperty("X-Ext-Client-ID", PrefUtilsBase.clientID)
-                if (!PrefUtilsBase.authToken.isNullOrBlank()) {
-                    urlConnection.setRequestProperty("Authorization", PrefUtilsBase.authToken)
+                if (!userInfo?.authToken.isNullOrBlank()) {
+                    urlConnection.setRequestProperty("Authorization", userInfo?.authToken)
                 }
-                if (!PrefUtilsBase.authSchema.isNullOrBlank()) {
-                    urlConnection.setRequestProperty("X-Auth-Schema", PrefUtilsBase.authSchema)
+                if (!userInfo?.authToken.isNullOrBlank()) {
+                    urlConnection.setRequestProperty("X-Auth-Schema", userInfo?.authToken)
                 }
                 urlConnection.doOutput = false
                 urlConnection.useCaches = false

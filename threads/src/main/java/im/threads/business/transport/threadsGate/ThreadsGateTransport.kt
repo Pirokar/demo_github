@@ -9,6 +9,7 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import im.threads.business.UserInfoBuilder
 import im.threads.business.chat_updates.ChatUpdateProcessor
 import im.threads.business.config.BaseConfig
 import im.threads.business.formatters.ChatItemType
@@ -20,7 +21,10 @@ import im.threads.business.models.SpeechMessageUpdate
 import im.threads.business.models.SslSocketFactoryConfig
 import im.threads.business.models.Survey
 import im.threads.business.models.UserPhrase
+import im.threads.business.preferences.Preferences
+import im.threads.business.preferences.PreferencesCoreKeys
 import im.threads.business.rest.config.SocketClientSettings
+import im.threads.business.serviceLocator.core.inject
 import im.threads.business.transport.ApplicationConfig
 import im.threads.business.transport.AuthInterceptor
 import im.threads.business.transport.ChatItemProviderData
@@ -76,10 +80,13 @@ class ThreadsGateTransport(
     private val campaignsInProcess: MutableMap<String?, CampaignMessage> = HashMap()
     private var webSocket: WebSocket? = null
     private var lifecycle: Lifecycle? = null
+    private val outgoingMessageCreator: OutgoingMessageCreator by inject()
+    private val preferences: Preferences by inject()
+    private val authInterceptor: AuthInterceptor by inject()
 
     init {
         val httpClientBuilder = OkHttpClient.Builder()
-            .addInterceptor(AuthInterceptor())
+            .addInterceptor(authInterceptor)
             .apply { networkInterceptor?.let { addInterceptor(it) } }
             .pingInterval(socketSettings.resendPingIntervalMillis.toLong(), TimeUnit.MILLISECONDS)
             .connectTimeout(socketSettings.connectTimeoutMillis.toLong(), TimeUnit.MILLISECONDS)
@@ -112,11 +119,7 @@ class ThreadsGateTransport(
 
     override fun init() {}
     override fun sendRatingDone(survey: Survey) {
-        val content = OutgoingMessageCreator.createRatingDoneMessage(
-            survey,
-            PrefUtilsBase.clientID,
-            PrefUtilsBase.appMarker
-        )
+        val content = outgoingMessageCreator.createRatingDoneMessage(survey)
         surveysInProcess[survey.sendingId] = survey
         sendMessage(
             content,
@@ -126,14 +129,13 @@ class ThreadsGateTransport(
     }
 
     override fun sendResolveThread(approveResolve: Boolean) {
-        val clientID = PrefUtilsBase.clientID
         val content: JsonObject
         var correlationId: String
         if (approveResolve) {
-            content = OutgoingMessageCreator.createResolveThreadMessage(clientID)
+            content = outgoingMessageCreator.createResolveThreadMessage()
             correlationId = ChatItemType.CLOSE_THREAD.name
         } else {
-            content = OutgoingMessageCreator.createReopenThreadMessage(clientID)
+            content = outgoingMessageCreator.createReopenThreadMessage()
             correlationId = ChatItemType.REOPEN_THREAD.name
         }
         correlationId += CORRELATION_ID_DIVIDER + UUID.randomUUID().toString()
@@ -141,7 +143,7 @@ class ThreadsGateTransport(
     }
 
     override fun sendUserTying(input: String) {
-        sendMessage(OutgoingMessageCreator.createMessageTyping(PrefUtilsBase.clientID, input))
+        sendMessage(outgoingMessageCreator.createMessageTyping(input))
     }
 
     override fun sendInit() {
@@ -165,12 +167,11 @@ class ThreadsGateTransport(
         userPhrase.campaignMessage?.let {
             campaignsInProcess[userPhrase.id] = it
         }
-        val content = OutgoingMessageCreator.createUserPhraseMessage(
+        val content = outgoingMessageCreator.createUserPhraseMessage(
             userPhrase,
             consultInfo,
             quoteFilePath,
-            filePath,
-            PrefUtilsBase.clientID
+            filePath
         )
         sendMessage(
             content,
@@ -183,29 +184,25 @@ class ThreadsGateTransport(
         if (TextUtils.isEmpty(PrefUtilsBase.deviceAddress)) {
             return
         }
-        val content = OutgoingMessageCreator.createMessageClientOffline(
-            clientId
-        )
+        val content = outgoingMessageCreator.createMessageClientOffline(clientId)
         sendMessage(content, sendInit = false)
     }
 
     override fun updateLocation(latitude: Double, longitude: Double) {
-        val content = OutgoingMessageCreator.createMessageUpdateLocation(
+        val content = outgoingMessageCreator.createMessageUpdateLocation(
             latitude,
             longitude,
-            PrefUtilsBase.userName,
-            PrefUtilsBase.clientID,
-            PrefUtilsBase.clientIDEncrypted,
-            BaseConfig.instance.context
+            DeviceInfoHelper.getLocale(BaseConfig.instance.context)
         )
         sendMessage(content, sendInit = false)
     }
 
     override fun getToken(): String {
-        val clientIdSignature = PrefUtilsBase.clientIdSignature
+        val userInfo = preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)
+        val deviceAddress = preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS)
         return (
-            (if (TextUtils.isEmpty(clientIdSignature)) PrefUtilsBase.deviceAddress else clientIdSignature) +
-                ":" + PrefUtilsBase.clientID
+            (if (userInfo?.clientIdSignature.isNullOrEmpty()) deviceAddress else userInfo?.clientIdSignature) +
+                ":" + userInfo?.clientId
             )
     }
 
@@ -291,10 +288,7 @@ class ThreadsGateTransport(
 
     private fun sendInitChatMessage(tryOpeningWebSocket: Boolean) {
         sendMessage(
-            content = OutgoingMessageCreator.createInitChatMessage(
-                PrefUtilsBase.clientID,
-                PrefUtilsBase.data
-            ),
+            content = outgoingMessageCreator.createInitChatMessage(),
             tryOpeningWebSocket = tryOpeningWebSocket,
             sendInit = false
         )
@@ -302,12 +296,8 @@ class ThreadsGateTransport(
 
     private fun sendEnvironmentMessage(tryOpeningWebSocket: Boolean) {
         sendMessage(
-            OutgoingMessageCreator.createEnvironmentMessage(
-                PrefUtilsBase.userName,
-                PrefUtilsBase.clientID,
-                PrefUtilsBase.clientIDEncrypted,
-                PrefUtilsBase.data,
-                BaseConfig.instance.context
+            outgoingMessageCreator.createEnvironmentMessage(
+                DeviceInfoHelper.getLocale(BaseConfig.instance.context)
             ),
             tryOpeningWebSocket = tryOpeningWebSocket,
             sendInit = false

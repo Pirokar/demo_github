@@ -6,38 +6,37 @@ import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.ClientNotificationDisplayType
 import im.threads.business.utils.preferences.PrefUtilsBase
 import im.threads.ui.ChatStyle
+import im.threads.ui.preferences.PreferencesUiKeys
 import im.threads.ui.styles.permissions.PermissionDescriptionDialogStyle
 import im.threads.ui.styles.permissions.PermissionDescriptionType
 import java.io.Serializable
 
 internal object PrefUtilsUi {
-    private val keys = PrefUtilsKeys()
-
     @JvmStatic
     var clientNotificationDisplayType: ClientNotificationDisplayType
         get() = ClientNotificationDisplayType.fromString(
-            PrefUtilsBase.defaultSharedPreferences.getString(keys.CLIENT_NOTIFICATION_DISPLAY_TYPE, "")
+            PrefUtilsBase.defaultSharedPreferences.getString(PreferencesUiKeys.CLIENT_NOTIFICATION_DISPLAY_TYPE, "")
         )
         set(type) {
             PrefUtilsBase.defaultSharedPreferences
                 .edit()
-                .putString(keys.CLIENT_NOTIFICATION_DISPLAY_TYPE, type.name)
+                .putString(PreferencesUiKeys.CLIENT_NOTIFICATION_DISPLAY_TYPE, type.name)
                 .commit()
         }
 
     @JvmStatic
     var attachmentSettings: String?
-        get() = PrefUtilsBase.defaultSharedPreferences.getString(keys.PREF_ATTACHMENT_SETTINGS, "")
+        get() = PrefUtilsBase.defaultSharedPreferences.getString(PreferencesUiKeys.PREF_ATTACHMENT_SETTINGS, "")
         set(settings) {
             PrefUtilsBase.defaultSharedPreferences
                 .edit()
-                .putString(keys.PREF_ATTACHMENT_SETTINGS, settings)
+                .putString(PreferencesUiKeys.PREF_ATTACHMENT_SETTINGS, settings)
                 .commit()
         }
 
     @JvmStatic
     val incomingStyle: ChatStyle?
-        get() = getIncomingStyle(keys.APP_STYLE, ChatStyle::class.java)
+        get() = getIncomingStyle(PreferencesUiKeys.APP_STYLE, ChatStyle::class.java)
 
     @JvmStatic
     fun getIncomingStyle(
@@ -45,15 +44,15 @@ internal object PrefUtilsUi {
     ): PermissionDescriptionDialogStyle? {
         return when (type) {
             PermissionDescriptionType.STORAGE -> getIncomingStyle(
-                keys.STORAGE_PERMISSION_DESCRIPTION_DIALOG_STYLE,
+                PreferencesUiKeys.STORAGE_PERMISSION_DESCRIPTION_DIALOG_STYLE,
                 PermissionDescriptionDialogStyle::class.java
             )
             PermissionDescriptionType.RECORD_AUDIO -> getIncomingStyle(
-                keys.RECORD_AUDIO_PERMISSION_DESCRIPTION_DIALOG_STYLE,
+                PreferencesUiKeys.RECORD_AUDIO_PERMISSION_DESCRIPTION_DIALOG_STYLE,
                 PermissionDescriptionDialogStyle::class.java
             )
             PermissionDescriptionType.CAMERA -> getIncomingStyle(
-                keys.CAMERA_PERMISSION_DESCRIPTION_DIALOG_STYLE,
+                PreferencesUiKeys.CAMERA_PERMISSION_DESCRIPTION_DIALOG_STYLE,
                 PermissionDescriptionDialogStyle::class.java
             )
         }
@@ -61,7 +60,7 @@ internal object PrefUtilsUi {
 
     @JvmStatic
     fun setIncomingStyle(style: ChatStyle) {
-        setIncomingStyle(keys.APP_STYLE, style)
+        setIncomingStyle(PreferencesUiKeys.APP_STYLE, style)
     }
 
     @JvmStatic
@@ -71,15 +70,15 @@ internal object PrefUtilsUi {
     ) {
         when (type) {
             PermissionDescriptionType.STORAGE -> setIncomingStyle(
-                keys.STORAGE_PERMISSION_DESCRIPTION_DIALOG_STYLE,
+                PreferencesUiKeys.STORAGE_PERMISSION_DESCRIPTION_DIALOG_STYLE,
                 style
             )
             PermissionDescriptionType.RECORD_AUDIO -> setIncomingStyle(
-                keys.RECORD_AUDIO_PERMISSION_DESCRIPTION_DIALOG_STYLE,
+                PreferencesUiKeys.RECORD_AUDIO_PERMISSION_DESCRIPTION_DIALOG_STYLE,
                 style
             )
             PermissionDescriptionType.CAMERA -> setIncomingStyle(
-                keys.CAMERA_PERMISSION_DESCRIPTION_DIALOG_STYLE,
+                PreferencesUiKeys.CAMERA_PERMISSION_DESCRIPTION_DIALOG_STYLE,
                 style
             )
         }

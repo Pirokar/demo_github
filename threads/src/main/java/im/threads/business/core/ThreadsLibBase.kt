@@ -1,6 +1,7 @@
 package im.threads.business.core
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Build
 import android.text.TextUtils
 import im.threads.BuildConfig
@@ -14,11 +15,15 @@ import im.threads.business.controllers.UnreadMessagesController
 import im.threads.business.logger.LoggerEdna
 import im.threads.business.logger.LoggerEdna.info
 import im.threads.business.models.CampaignMessage
+import im.threads.business.preferences.Preferences
+import im.threads.business.preferences.PreferencesCoreKeys
 import im.threads.business.rest.models.VersionsModel
 import im.threads.business.rest.queries.BackendApi
 import im.threads.business.rest.queries.DatastoreApi
+import im.threads.business.serviceLocator.core.inject
 import im.threads.business.serviceLocator.core.startEdnaLocator
-import im.threads.business.serviceLocator.serviceLocatorModule
+import im.threads.business.serviceLocator.mainSLModule
+import im.threads.business.serviceLocator.supplementarySLModule
 import im.threads.business.useractivity.UserActivityTimeProvider.getLastUserActivityTimeCounter
 import im.threads.business.useractivity.UserActivityTimeProvider.initializeLastUserActivity
 import im.threads.business.utils.ClientInteractor
@@ -34,7 +39,13 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 @Suppress("unused")
-open class ThreadsLibBase protected constructor() {
+open class ThreadsLibBase protected constructor(context: Context) {
+    init {
+        startEdnaLocator(context) { modules(mainSLModule, supplementarySLModule) }
+    }
+
+    private val preferences: Preferences by inject()
+
     /**
      * @return time in seconds since the last user activity
      */
@@ -53,14 +64,8 @@ open class ThreadsLibBase protected constructor() {
         get() = ChatUpdateProcessor.getInstance().socketResponseMapProcessor
 
     protected open fun initUser(userInfoBuilder: UserInfoBuilder) {
-        PrefUtilsBase.appMarker = userInfoBuilder.appMarker
-        PrefUtilsBase.setNewClientId(userInfoBuilder.clientId)
-        PrefUtilsBase.authToken = userInfoBuilder.authToken
-        PrefUtilsBase.authSchema = userInfoBuilder.authSchema
-        PrefUtilsBase.clientIdSignature = userInfoBuilder.clientIdSignature
-        PrefUtilsBase.userName = userInfoBuilder.userName
-        PrefUtilsBase.data = userInfoBuilder.clientData
-        PrefUtilsBase.setClientIdEncrypted(userInfoBuilder.clientIdEncrypted)
+        preferences.save(PreferencesCoreKeys.USER_INFO, userInfoBuilder)
+        preferences.save(PreferencesCoreKeys.TAG_NEW_CLIENT_ID, userInfoBuilder.clientId)
         BaseConfig.instance.transport.sendInit()
     }
 
@@ -85,7 +90,7 @@ open class ThreadsLibBase protected constructor() {
     companion object {
         @JvmStatic
         protected var libInstance: ThreadsLibBase? = null
-        private val clientInteractor: ClientInteractor = ClientInteractor()
+        private val clientInteractor: ClientInteractor by inject()
         private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
         @JvmStatic
@@ -96,11 +101,10 @@ open class ThreadsLibBase protected constructor() {
         fun init(configBuilder: BaseConfigBuilder) {
             val startInitTime = System.currentTimeMillis()
             val isUIMode = BaseConfig.instance != null
-            startEdnaLocator { serviceLocatorModule }
 
             if (!isUIMode) {
+                createLibInstance(configBuilder.context)
                 BaseConfig.instance = configBuilder.build()
-                createLibInstance()
                 BaseConfig.instance.loggerConfig?.let { LoggerEdna.init(it) }
                 PreferencesMigrationBase(BaseConfig.instance.context).migrateMainSharedPreferences()
             }
@@ -175,7 +179,7 @@ open class ThreadsLibBase protected constructor() {
         @JvmStatic
         fun getInstance(): ThreadsLibBase {
             checkNotNull(libInstance) { "ThreadsLib should be initialized first with ThreadsLib.init()" }
-            return libInstance ?: ThreadsLibBase()
+            return libInstance!!
         }
 
         @JvmStatic
@@ -183,9 +187,10 @@ open class ThreadsLibBase protected constructor() {
             libInstance = instance
         }
 
-        private fun createLibInstance() {
-            check(libInstance == null) { "ThreadsLib has already been initialized" }
-            libInstance = ThreadsLibBase()
+        protected fun createLibInstance(context: Context) {
+            if (libInstance == null) {
+                libInstance = ThreadsLibBase(context)
+            }
         }
 
         private fun showVersionsLog() {
