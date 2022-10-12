@@ -52,7 +52,7 @@ class ThreadsDemoApplication : MultiDexApplication() {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({}) {}
 
-        PushController.getInstance(this).init()
+        // PushController.getInstance(this).init() - only for mailing
 
         val loggerConfig = LoggerConfig.Builder(this)
             .logToFile()
