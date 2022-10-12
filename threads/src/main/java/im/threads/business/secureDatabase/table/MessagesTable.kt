@@ -719,6 +719,9 @@ class MessagesTable(
     }
 
     private fun isFileDownloaded(fileDescription: FileDescription): Uri? {
+        if (fileDescription.incomingName.isNullOrEmpty()) {
+            return null
+        }
         val outputFile = File(
             getDownloadDir(BaseConfig.instance.context),
             fileDescription.incomingName
