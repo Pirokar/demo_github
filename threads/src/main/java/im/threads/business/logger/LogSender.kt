@@ -119,9 +119,9 @@ internal class LogSender(private val loggerConfig: LoggerConfig?) {
     private fun getCurrentTag(tag: String?, level: LoggerLevel): String {
         val currentTag = tag ?: ""
         return if (currentTag.isBlank()) {
-            "EdnaLogger ${getLineName(level)}"
+            "ELog ${getLineName(level)}"
         } else {
-            "${currentTag.trim()} EdnaLogger ${getLineName(level)}"
+            "${currentTag.trim()} ELog ${getLineName(level)}"
         }
     }
 

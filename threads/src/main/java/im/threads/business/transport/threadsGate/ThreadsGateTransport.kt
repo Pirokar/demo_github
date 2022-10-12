@@ -459,18 +459,19 @@ class ThreadsGateTransport(
                         response.data.toString(),
                         GetMessagesData::class.java
                     )
+                    val gson = BaseConfig.instance.gson
                     for (message in data.messages) {
                         if (message.content.has(MessageAttributes.TYPE)) {
                             val type =
                                 ChatItemType.fromString(ThreadsGateMessageParser.getType(message))
                             if (ChatItemType.TYPING == type) {
-                                val content = BaseConfig.instance.gson.fromJson(
+                                val content = gson.fromJson(
                                     message.content,
                                     TypingContent::class.java
                                 )
                                 ChatUpdateProcessor.getInstance().postTyping(content.clientId)
                             } else if (ChatItemType.ATTACHMENT_SETTINGS == type) {
-                                val attachmentSettings = BaseConfig.instance.gson.fromJson(
+                                val attachmentSettings = gson.fromJson(
                                     message.content,
                                     AttachmentSettings::class.java
                                 )
@@ -478,15 +479,8 @@ class ThreadsGateTransport(
                                     .postAttachmentSettings(attachmentSettings)
                             } else if (ChatItemType.ATTACHMENT_UPDATED == type) {
                                 val attachments: ArrayList<Attachment> = ArrayList()
-                                (message.content.get(ATTACHMENTS) as JsonArray).let {
-                                    for (i in 0 until it.size()) {
-                                        attachments.add(
-                                            BaseConfig.instance.gson.fromJson(
-                                                it[i],
-                                                Attachment::class.java
-                                            )
-                                        )
-                                    }
+                                (message.content.get(ATTACHMENTS) as JsonArray).forEach {
+                                    attachments.add(gson.fromJson(it, Attachment::class.java))
                                 }
                                 if (attachments.isNotEmpty()) {
                                     ChatUpdateProcessor.getInstance().updateAttachments(attachments)

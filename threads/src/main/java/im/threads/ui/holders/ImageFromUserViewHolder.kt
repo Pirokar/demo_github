@@ -166,6 +166,11 @@ class ImageFromUserViewHolder(
             res.getDimensionPixelSize(style.bubbleOutgoingPaddingRight),
             res.getDimensionPixelSize(style.bubbleOutgoingPaddingBottom)
         )
+        layout.background.colorFilter =
+            BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
+                getColorInt(style.outgoingMessageBubbleColor),
+                BlendModeCompat.SRC_ATOP
+            )
     }
 
     private fun applyImageParams(imageView: ImageView) {
@@ -217,7 +222,7 @@ class ImageFromUserViewHolder(
                 .into(mImage)
 
             loadedUri = uri.toString()
-        } else if (isDownloadError) {
+        } else {
             mImage.setImageResource(style.imagePlaceholder)
         }
     }

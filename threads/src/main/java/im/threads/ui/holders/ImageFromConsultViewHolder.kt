@@ -214,7 +214,7 @@ class ImageFromConsultViewHolder(
                     }
                 }
             )
-        } else if (fileDescription.isDownloadError) {
+        } else {
             stopLoadImageAnimation()
             image.setImageResource(style.imagePlaceholder)
         }

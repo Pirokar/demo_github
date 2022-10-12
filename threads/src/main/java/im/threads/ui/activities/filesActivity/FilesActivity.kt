@@ -8,6 +8,7 @@ import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
+import android.text.SpannableString
 import android.text.TextUtils
 import android.text.TextWatcher
 import android.util.TypedValue
@@ -64,11 +65,24 @@ internal class FilesActivity : BaseActivity(), OnFileClick {
         requestFiles()
     }
 
+    private fun setTitle(text: String) {
+        val style = config.getChatStyle()
+        val font = Typeface.createFromAsset(assets, style.defaultFontRegular)
+        val typeface = Typeface.create(font, Typeface.NORMAL)
+        val textColor = ContextCompat.getColor(this, style.chatToolbarTextColorResId)
+        val fontSize = resources.getDimensionPixelSize(R.dimen.text_big)
+        supportActionBar?.apply {
+            val titleText = SpannableString(text)
+            applyToolbarTextStyle(textColor, fontSize, typeface, titleText)
+            title = titleText
+        }
+    }
+
     override fun onBackPressed() {
         if (binding.searchEditText.visibility == View.VISIBLE) {
             binding.searchEditText.setText("")
             binding.searchEditText.visibility = View.GONE
-            binding.toolbar.title = getString(R.string.threads_files_and_media)
+            setTitle(getString(R.string.threads_files_and_media))
             filesAndMediaAdapter?.undoClear()
         } else {
             super.onBackPressed()
@@ -110,7 +124,6 @@ internal class FilesActivity : BaseActivity(), OnFileClick {
     private fun setStatusBarColor() {
         val statusBarColor = ContextCompat.getColor(baseContext, config.getChatStyle().mediaAndFilesStatusBarColorResId)
         val isStatusBarLight = resources.getBoolean(config.getChatStyle().mediaAndFilesWindowLightStatusBarResId)
-
         super.setStatusBarColor(isStatusBarLight, statusBarColor)
     }
 
@@ -123,6 +136,7 @@ internal class FilesActivity : BaseActivity(), OnFileClick {
             val noElevation = 0f
             toolbar.elevation = noElevation
         }
+        setTitle(getString(R.string.threads_files_and_media))
     }
 
     private fun setOnSearchClickAction() = with(binding) {
@@ -130,12 +144,12 @@ internal class FilesActivity : BaseActivity(), OnFileClick {
             if (searchEditText.visibility == View.VISIBLE) {
                 searchEditText.setText("")
                 searchEditText.visibility = View.GONE
-                toolbar.title = getString(R.string.threads_files_and_media)
+                setTitle(getString(R.string.threads_files_and_media))
                 filesAndMediaAdapter?.undoClear()
             } else {
                 searchEditText.visibility = View.VISIBLE
                 searchEditText.requestFocus()
-                toolbar.title = ""
+                setTitle("")
                 filesAndMediaAdapter?.backupAndClear()
                 searchEditText.setText("")
                 Keyboard.show(baseContext, searchEditText, 100)

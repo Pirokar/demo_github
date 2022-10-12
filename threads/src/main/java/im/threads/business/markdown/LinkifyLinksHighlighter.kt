@@ -12,25 +12,18 @@ import android.widget.TextView
 import im.threads.business.utils.UrlUtils
 
 class LinkifyLinksHighlighter : LinksHighlighter {
-    override fun highlightAllTypeOfLinks(textView: TextView, isUnderlined: Boolean) {
-        highlightAllUsualLinks(textView)
-        if (!isUnderlined) {
-            stripUnderlines(textView)
-        }
-    }
-
     override fun highlightAllTypeOfLinks(
         textView: TextView,
         url: String?,
         isUnderlined: Boolean
     ) {
         val scheme = if (url != null) Uri.parse(url).scheme else null
-        if (scheme == null || scheme.startsWith("http")) {
-            highlightAllUsualLinks(textView)
+        if (scheme == null) {
+            Linkify.addLinks(textView, WEB_URLS or EMAIL_ADDRESSES or PHONE_NUMBERS)
         } else {
             highlightEmailAndPhonesLinks(textView)
-            Linkify.addLinks(textView, UrlUtils.WEB_URL, scheme)
         }
+        Linkify.addLinks(textView, UrlUtils.WEB_URL, scheme)
 
         if (!isUnderlined) {
             stripUnderlines(textView)
@@ -41,13 +34,6 @@ class LinkifyLinksHighlighter : LinksHighlighter {
         Linkify.addLinks(
             textView,
             EMAIL_ADDRESSES or PHONE_NUMBERS
-        )
-    }
-
-    private fun highlightAllUsualLinks(textView: TextView) {
-        Linkify.addLinks(
-            textView,
-            WEB_URLS or EMAIL_ADDRESSES or PHONE_NUMBERS
         )
     }
 

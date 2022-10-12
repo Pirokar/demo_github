@@ -168,18 +168,19 @@ class GalleryActivity : BaseActivity(), OnItemClick, OnGalleryItemClick {
         MediaHelper.getAllPhotos(this).use { cursor ->
             cursor?.let {
                 if (it.count > 0) {
-                    val id = it.getColumnIndex(MediaStore.Images.Media._ID)
-                    val displayName = it.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME)
-                    val bucketDisplayName =
+                    val idKey = it.getColumnIndex(MediaStore.Images.Media._ID)
+                    val displayNameKey = it.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME)
+                    val bucketDisplayNameKey =
                         it.getColumnIndex(MediaStore.Images.Media.BUCKET_DISPLAY_NAME)
                     photosMap = HashMap()
                     it.moveToFirst()
                     while (!it.isAfterLast) {
                         val imageUri = ContentUris.withAppendedId(
                             MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                            it.getLong(id)
+                            it.getLong(idKey)
                         )
-                        val bucketName = it.getString(bucketDisplayName)
+                        val bucketName = it.getString(bucketDisplayNameKey)
+                        val displayName = it.getString(displayNameKey)
                         var mediaPhotos: MutableList<MediaPhoto>?
                         if (photosMap.containsKey(bucketName)) {
                             mediaPhotos = photosMap[bucketName]
@@ -189,13 +190,15 @@ class GalleryActivity : BaseActivity(), OnItemClick, OnGalleryItemClick {
                         } else {
                             mediaPhotos = ArrayList()
                         }
-                        mediaPhotos.add(
-                            MediaPhoto(
-                                imageUri,
-                                it.getString(displayName),
-                                bucketName
+                        if (!displayName.isNullOrEmpty() && !bucketName.isNullOrEmpty()) {
+                            mediaPhotos.add(
+                                MediaPhoto(
+                                    imageUri,
+                                    displayName,
+                                    bucketName
+                                )
                             )
-                        )
+                        }
                         photosMap[bucketName] = mediaPhotos
                         it.moveToNext()
                     }

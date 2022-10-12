@@ -77,15 +77,8 @@ class MarkwonMarkdownProcessor(
 
     private fun configureLinks(builder: MarkwonConfiguration.Builder) {
         builder.linkResolver { view, link ->
-            val deepLink = UrlUtils.extractDeepLink(link)
-            val url = UrlUtils.extractLink(link)?.link
-            when {
-                url != null -> {
-                    UrlUtils.openUrl(view.context, url)
-                }
-                deepLink != null -> {
-                    UrlUtils.openUrl(view.context, deepLink)
-                }
+            (UrlUtils.extractLink(link)?.link ?: UrlUtils.extractDeepLink(link))?.let {
+                UrlUtils.openUrl(view.context, it)
             }
         }
     }

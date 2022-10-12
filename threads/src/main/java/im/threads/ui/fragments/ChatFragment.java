@@ -127,6 +127,7 @@ import im.threads.ui.styles.permissions.PermissionDescriptionType;
 import im.threads.ui.utils.ColorsHelper;
 import im.threads.ui.utils.FileHelper;
 import im.threads.ui.utils.Keyboard;
+import im.threads.ui.utils.ThreadRunnerKt;
 import im.threads.ui.views.VoiceTimeLabelFormatter;
 import im.threads.ui.views.VoiceTimeLabelFormatterKt;
 import io.reactivex.Completable;
@@ -209,6 +210,7 @@ public final class ChatFragment extends BaseFragment implements
     private QuickReplyItem quickReplyItem = null;
     private int previousChatItemsCount = 0;
     private Config config = Config.getInstance();
+    private boolean isFirstHistoryLoading = true;
 
     public static ChatFragment newInstance() {
         return newInstance(OpenWay.DEFAULT);
@@ -809,7 +811,7 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     private void onRefresh() {
-        subscribe(mChatController.requestItems(getCurrentItemsCount())
+        subscribe(mChatController.requestItems(getCurrentItemsCount(), true)
                 .delay(500, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::afterRefresh, onError -> LoggerEdna.error("onRefresh ", onError))
@@ -820,14 +822,15 @@ public final class ChatFragment extends BaseFragment implements
         int itemsBefore = chatAdapter.getItemCount();
         chatAdapter.addItems(result);
         scrollToPosition(chatAdapter.getItemCount() - itemsBefore, true);
-        for (int i = 1; i < 5; i++) {//for solving bug with refresh layout doesn't stop refresh animation
-            handler.postDelayed(() -> {
+        ThreadRunnerKt.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
                 binding.swipeRefresh.setRefreshing(false);
                 binding.swipeRefresh.clearAnimation();
                 binding.swipeRefresh.destroyDrawingCache();
                 binding.swipeRefresh.invalidate();
-            }, i * 500);
-        }
+            }
+        });
     }
 
     private void setFragmentStyle() {
@@ -1990,8 +1993,9 @@ public final class ChatFragment extends BaseFragment implements
         for (int i = 1; i < list.size(); i++) {
             ChatItem currentItem = list.get(i);
             if (currentItem instanceof UnreadMessages ||
-                    currentItem instanceof ConsultPhrase
-                            && !((ConsultPhrase) currentItem).isRead()) {
+                    currentItem instanceof ConsultPhrase && !((ConsultPhrase) currentItem).isRead() ||
+                    currentItem instanceof Survey && !((Survey) currentItem).isRead()
+            ) {
                 layoutManager.scrollToPositionWithOffset(i - 1, 0);
                 break;
             }
@@ -2031,6 +2035,7 @@ public final class ChatFragment extends BaseFragment implements
         BaseConfig.instance.transport.setLifecycle(getLifecycle());
         ChatController.getInstance().getSettings();
         ChatController.getInstance().loadHistory();
+        isFirstHistoryLoading = false;
     }
 
     @Override

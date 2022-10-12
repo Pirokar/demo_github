@@ -377,11 +377,7 @@ abstract class BaseHolder internal constructor(
         url: String? = null
     ) {
         setMovementMethod(textView)
-        if (url != null) {
-            linksHighlighter.highlightAllTypeOfLinks(textView, url, isUnderlined)
-        } else {
-            linksHighlighter.highlightAllTypeOfLinks(textView, isUnderlined)
-        }
+        linksHighlighter.highlightAllTypeOfLinks(textView, url, isUnderlined)
     }
 
     private fun setMovementMethod(textView: TextView) {
