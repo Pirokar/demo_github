@@ -474,6 +474,14 @@ public final class ChatController {
         preferences.setThreadId(threadId);
     }
 
+    public FileDescription getFileDescriptionDraft() {
+        return preferences.getFileDescriptionDraft();
+    }
+
+    public void setFileDescriptionDraft(FileDescription fileDescription) {
+        preferences.setFileDescriptionDraft(fileDescription);
+    }
+
     private boolean subscribe(final Disposable event) {
         if (compositeDisposable == null || compositeDisposable.isDisposed()) {
             compositeDisposable = new CompositeDisposable();

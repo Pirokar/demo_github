@@ -210,11 +210,6 @@ public final class ChatFragment extends BaseFragment implements
     private QuickReplyItem quickReplyItem = null;
     private int previousChatItemsCount = 0;
     private Config config = Config.getInstance();
-    private boolean isFirstHistoryLoading = true;
-
-    public static ChatFragment newInstance() {
-        return newInstance(OpenWay.DEFAULT);
-    }
 
     public static ChatFragment newInstance(@OpenWay int from) {
         Bundle arguments = new Bundle();
@@ -266,7 +261,7 @@ public final class ChatFragment extends BaseFragment implements
         LoggerEdna.info(ChatFragment.class.getSimpleName() + " onViewCreated.");
 
         super.onViewCreated(view, savedInstanceState);
-        FileDescription fileDescriptionDraft = PrefUtilsBase.getFileDescriptionDraft();
+        FileDescription fileDescriptionDraft = mChatController.getFileDescriptionDraft();
         if (FileUtils.isVoiceMessage(fileDescriptionDraft)) {
             setFileDescription(fileDescriptionDraft);
             mQuoteLayoutHolder.setVoice();
@@ -2035,7 +2030,6 @@ public final class ChatFragment extends BaseFragment implements
         BaseConfig.instance.transport.setLifecycle(getLifecycle());
         ChatController.getInstance().getSettings();
         ChatController.getInstance().loadHistory();
-        isFirstHistoryLoading = false;
     }
 
     @Override
@@ -2060,7 +2054,7 @@ public final class ChatFragment extends BaseFragment implements
         stopRecording();
         FileDescription fileDescription = getFileDescription();
         if (fileDescription == null || FileUtils.isVoiceMessage(fileDescription)) {
-            PrefUtilsBase.setFileDescriptionDraft(fileDescription);
+            mChatController.setFileDescriptionDraft(fileDescription);
         }
         mChatController.setActivityIsForeground(false);
         if (isAdded()) {

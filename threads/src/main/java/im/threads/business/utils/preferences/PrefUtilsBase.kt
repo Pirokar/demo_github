@@ -9,7 +9,6 @@ import androidx.security.crypto.MasterKey
 import im.threads.business.config.BaseConfig
 import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.CampaignMessage
-import im.threads.business.models.FileDescription
 import im.threads.business.preferences.PreferencesCoreKeys
 import im.threads.business.transport.CloudMessagingType
 import java.io.IOException
@@ -40,27 +39,6 @@ internal object PrefUtilsBase {
             BaseConfig.instance.context.getSharedPreferences(PreferencesCoreKeys.STORE_NAME, Context.MODE_PRIVATE)
         }
     }
-
-    @JvmStatic
-    var fileDescriptionDraft: FileDescription?
-        get() {
-            val value = defaultSharedPreferences.getString(PreferencesCoreKeys.FILE_DESCRIPTION_DRAFT, "")
-            return if (TextUtils.isEmpty(value)) {
-                null
-            } else BaseConfig.instance.gson.fromJson(
-                value,
-                FileDescription::class.java
-            )
-        }
-        set(fileDescriptionDraft) {
-            val value = if (fileDescriptionDraft != null) BaseConfig.instance.gson.toJson(
-                fileDescriptionDraft
-            ) else ""
-            defaultSharedPreferences
-                .edit()
-                .putString(PreferencesCoreKeys.FILE_DESCRIPTION_DRAFT, value)
-                .commit()
-        }
 
     @JvmStatic
     var campaignMessage: CampaignMessage?

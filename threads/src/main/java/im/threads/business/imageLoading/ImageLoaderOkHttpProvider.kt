@@ -6,7 +6,6 @@ import im.threads.business.preferences.Preferences
 import im.threads.business.preferences.PreferencesCoreKeys
 import im.threads.business.rest.config.HttpClientSettings
 import im.threads.business.serviceLocator.core.get
-import im.threads.business.utils.preferences.PrefUtilsBase
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.util.concurrent.TimeUnit

@@ -6,7 +6,6 @@ import im.threads.business.config.BaseConfig
 import im.threads.business.logger.LoggerEdna
 import im.threads.business.preferences.Preferences
 import im.threads.business.preferences.PreferencesCoreKeys
-import im.threads.business.utils.preferences.PrefUtilsBase
 import java.io.BufferedInputStream
 import java.io.File
 import java.io.FileOutputStream

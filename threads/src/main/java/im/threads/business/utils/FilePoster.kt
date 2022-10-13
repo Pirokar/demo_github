@@ -16,7 +16,6 @@ import im.threads.business.rest.queries.ThreadsApi
 import im.threads.business.transport.InputStreamRequestBody
 import im.threads.business.utils.FileUtils.getFileName
 import im.threads.business.utils.FileUtils.getMimeType
-import im.threads.business.utils.preferences.PrefUtilsBase
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
