@@ -269,7 +269,7 @@ public final class ChatFragment extends BaseFragment implements
             setFileDescription(fileDescriptionDraft);
             mQuoteLayoutHolder.setVoice();
         }
-        CampaignMessage campaignMessage = PrefUtilsBase.getCampaignMessage();
+        CampaignMessage campaignMessage = mChatController.getCampaignMessage();
         Bundle arguments = getArguments();
         if (arguments != null && campaignMessage != null) {
             @OpenWay int from = arguments.getInt(ARG_OPEN_WAY);
@@ -285,7 +285,7 @@ public final class ChatFragment extends BaseFragment implements
                     null,
                     false
             );
-            PrefUtilsBase.setCampaignMessage(null);
+            mChatController.setCampaignMessage(null);
         }
     }
 

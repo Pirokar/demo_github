@@ -8,7 +8,6 @@ import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import im.threads.business.config.BaseConfig
 import im.threads.business.logger.LoggerEdna
-import im.threads.business.models.CampaignMessage
 import im.threads.business.preferences.PreferencesCoreKeys
 import im.threads.business.transport.CloudMessagingType
 import java.io.IOException
@@ -39,27 +38,6 @@ internal object PrefUtilsBase {
             BaseConfig.instance.context.getSharedPreferences(PreferencesCoreKeys.STORE_NAME, Context.MODE_PRIVATE)
         }
     }
-
-    @JvmStatic
-    var campaignMessage: CampaignMessage?
-        get() {
-            val value = defaultSharedPreferences.getString(PreferencesCoreKeys.CAMPAIGN_MESSAGE, "")
-            return if (TextUtils.isEmpty(value)) {
-                null
-            } else BaseConfig.instance.gson.fromJson(
-                value,
-                CampaignMessage::class.java
-            )
-        }
-        set(campaignMessage) {
-            defaultSharedPreferences
-                .edit()
-                .putString(
-                    PreferencesCoreKeys.CAMPAIGN_MESSAGE,
-                    if (campaignMessage != null) BaseConfig.instance.gson.toJson(campaignMessage) else null
-                )
-                .commit()
-        }
 
     @JvmStatic
     var fcmToken: String?

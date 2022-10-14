@@ -9,6 +9,7 @@ import im.threads.business.transport.AuthInterceptor
 import im.threads.business.transport.OutgoingMessageCreator
 import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.ConsultWriter
+import im.threads.ui.ChatCenterPushMessageHelper
 
 val mainSLModule = module {
     factory { ContextHolder.context }
@@ -21,4 +22,5 @@ val supplementarySLModule = module {
     factory { AuthInterceptor(get()) }
     factory { ConsultWriter(get()) }
     factory { ChatUpdateProcessor() }
+    factory { ChatCenterPushMessageHelper() }
 }

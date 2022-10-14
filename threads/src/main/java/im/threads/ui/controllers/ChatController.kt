@@ -23,6 +23,7 @@ import im.threads.business.logger.LoggerEdna.debug
 import im.threads.business.logger.LoggerEdna.error
 import im.threads.business.logger.LoggerEdna.info
 import im.threads.business.logger.LoggerEdna.warning
+import im.threads.business.models.CampaignMessage
 import im.threads.business.models.ChatItem
 import im.threads.business.models.ChatItemSendErrorModel
 import im.threads.business.models.ChatPhrase
@@ -408,12 +409,13 @@ class ChatController private constructor() {
         )
     }
 
-    val threadId: Long?
+    var threadId: Long?
         get() = preferences.get(PreferencesCoreKeys.THREAD_ID)
+        set(value) = preferences.save(PreferencesCoreKeys.THREAD_ID, value)
 
-    private fun setThreadId(threadId: Long) {
-        preferences.save(PreferencesCoreKeys.THREAD_ID, threadId)
-    }
+    var campaignMessage: CampaignMessage?
+        get() = preferences.get(PreferencesCoreKeys.CAMPAIGN_MESSAGE)
+        set(value) = preferences.save(PreferencesCoreKeys.CAMPAIGN_MESSAGE, value)
 
     var fileDescriptionDraft: FileDescription?
         get() = preferences.get(PreferencesCoreKeys.FILE_DESCRIPTION_DRAFT)
@@ -1023,7 +1025,7 @@ class ChatController private constructor() {
         messenger.clearSendQueue()
         database.cleanDatabase()
         fragment?.cleanChat()
-        setThreadId(-1L)
+        threadId = -1L
         consultWriter.setCurrentConsultLeft()
         consultWriter.isSearchingConsult = false
         removePushNotification()
@@ -1140,7 +1142,7 @@ class ChatController private constructor() {
     private fun processConsultConnectionMessage(ccm: ConsultConnectionMessage) {
         if (ccm.type.equals(ChatItemType.OPERATOR_JOINED.name, ignoreCase = true)) {
             if (ccm.threadId != null) {
-                setThreadId(ccm.threadId ?: 0L)
+                threadId = ccm.threadId ?: 0L
                 fragment?.setCurrentThreadId(ccm.threadId ?: 0L)
             }
             consultWriter.isSearchingConsult = false
@@ -1162,7 +1164,7 @@ class ChatController private constructor() {
     private fun processSimpleSystemMessage(systemMessage: SimpleSystemMessage) {
         val type = systemMessage.type
         if (ChatItemType.THREAD_CLOSED.name.equals(type, ignoreCase = true)) {
-            setThreadId(-1L)
+            threadId = -1L
             removeResolveRequest()
             consultWriter.setCurrentConsultLeft()
             if (!consultWriter.isSearchingConsult) {
@@ -1170,7 +1172,7 @@ class ChatController private constructor() {
             }
         } else {
             if (systemMessage.threadId != null) {
-                setThreadId(systemMessage.threadId ?: 0L)
+                threadId = systemMessage.threadId ?: 0L
                 fragment?.setCurrentThreadId(systemMessage.threadId ?: 0L)
             }
             if (ChatItemType.THREAD_ENQUEUED.name.equals(type, ignoreCase = true) ||

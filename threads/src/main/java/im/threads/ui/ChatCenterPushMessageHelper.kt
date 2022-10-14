@@ -6,6 +6,9 @@ import androidx.core.os.bundleOf
 import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.CAMPAIGN_DATE_FORMAT_PARSE
 import im.threads.business.models.CampaignMessage
+import im.threads.business.preferences.Preferences
+import im.threads.business.preferences.PreferencesCoreKeys
+import im.threads.business.serviceLocator.core.inject
 import im.threads.business.transport.MessageAttributes
 import im.threads.business.transport.PushMessageAttributes
 import im.threads.business.utils.preferences.PrefUtilsBase
@@ -14,24 +17,21 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-object ChatCenterPushMessageHelper {
+class ChatCenterPushMessageHelper() {
+    private val preferences: Preferences by inject()
 
-    @JvmStatic
     fun setFcmToken(fcmToken: String?) {
         PrefUtilsBase.fcmToken = fcmToken
     }
 
-    @JvmStatic
     fun setHcmToken(hcmToken: String?) {
         PrefUtilsBase.hcmToken = hcmToken
     }
 
-    @JvmStatic
     fun process(context: Context, data: Map<String, String>) {
         process(context, bundleOf(*data.toList().toTypedArray()))
     }
 
-    @JvmStatic
     fun process(context: Context, bundle: Bundle) {
         val sdf = SimpleDateFormat(CAMPAIGN_DATE_FORMAT_PARSE, Locale.getDefault())
         if (PushMessageAttributes.THREADS.equals(
@@ -61,7 +61,7 @@ object ChatCenterPushMessageHelper {
                         campaign,
                         bundle.getString(MessageAttributes.PRIORITY)?.toInt() ?: 0
                     )
-                    PrefUtilsBase.campaignMessage = campaignMessage
+                    preferences.save(PreferencesCoreKeys.CAMPAIGN_MESSAGE, campaignMessage)
                     NotificationWorker.addCampaignMessage(context, alertStr)
                     LoggerEdna.info("campaign message handled: $campaignMessage")
                 }

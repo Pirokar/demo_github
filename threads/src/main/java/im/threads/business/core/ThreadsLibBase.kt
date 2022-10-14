@@ -89,7 +89,7 @@ open class ThreadsLibBase protected constructor(context: Context) {
      * Устанавливает [CampaignMessage], который необходим для цитирования сообщений
      */
     fun setCampaignMessage(campaignMessage: CampaignMessage) {
-        PrefUtilsBase.campaignMessage = campaignMessage
+        preferences.save(PreferencesCoreKeys.CAMPAIGN_MESSAGE, campaignMessage)
     }
 
     companion object {
