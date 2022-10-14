@@ -115,7 +115,11 @@ class ThreadsGateTransport(
             .url(threadsGateUrl)
             .build()
         listener = WebSocketListener()
-        applicationConfig = ApplicationConfig(threadsGateProviderUid, threadsGateHuaweiProviderUid)
+        applicationConfig = ApplicationConfig(
+            threadsGateProviderUid,
+            threadsGateHuaweiProviderUid,
+            preferences
+        )
     }
 
     override fun init() {}

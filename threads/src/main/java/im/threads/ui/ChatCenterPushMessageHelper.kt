@@ -9,9 +9,9 @@ import im.threads.business.models.CampaignMessage
 import im.threads.business.preferences.Preferences
 import im.threads.business.preferences.PreferencesCoreKeys
 import im.threads.business.serviceLocator.core.inject
+import im.threads.business.transport.CloudMessagingType
 import im.threads.business.transport.MessageAttributes
 import im.threads.business.transport.PushMessageAttributes
-import im.threads.business.utils.preferences.PrefUtilsBase
 import im.threads.ui.workers.NotificationWorker
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -21,11 +21,19 @@ class ChatCenterPushMessageHelper() {
     private val preferences: Preferences by inject()
 
     fun setFcmToken(fcmToken: String?) {
-        PrefUtilsBase.fcmToken = fcmToken
+        val cloudMessagingType = preferences.get<String>(PreferencesCoreKeys.CLOUD_MESSAGING_TYPE)
+        if (cloudMessagingType == null) {
+            preferences.save(PreferencesCoreKeys.CLOUD_MESSAGING_TYPE, CloudMessagingType.FCM.toString())
+        }
+        preferences.save(PreferencesCoreKeys.FCM_TOKEN, fcmToken)
     }
 
     fun setHcmToken(hcmToken: String?) {
-        PrefUtilsBase.hcmToken = hcmToken
+        val cloudMessagingType = preferences.get<String>(PreferencesCoreKeys.CLOUD_MESSAGING_TYPE)
+        if (cloudMessagingType == null) {
+            preferences.save(PreferencesCoreKeys.CLOUD_MESSAGING_TYPE, CloudMessagingType.HCM.toString())
+        }
+        preferences.save(PreferencesCoreKeys.HCM_TOKEN, hcmToken)
     }
 
     fun process(context: Context, data: Map<String, String>) {

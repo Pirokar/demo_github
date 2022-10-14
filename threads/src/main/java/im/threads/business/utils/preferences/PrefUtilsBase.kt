@@ -9,7 +9,6 @@ import androidx.security.crypto.MasterKey
 import im.threads.business.config.BaseConfig
 import im.threads.business.logger.LoggerEdna
 import im.threads.business.preferences.PreferencesCoreKeys
-import im.threads.business.transport.CloudMessagingType
 import java.io.IOException
 import java.security.GeneralSecurityException
 import java.util.UUID
@@ -38,38 +37,6 @@ internal object PrefUtilsBase {
             BaseConfig.instance.context.getSharedPreferences(PreferencesCoreKeys.STORE_NAME, Context.MODE_PRIVATE)
         }
     }
-
-    @JvmStatic
-    var fcmToken: String?
-        get() {
-            val fcmToken = defaultSharedPreferences.getString(PreferencesCoreKeys.FCM_TOKEN, "") ?: ""
-            return fcmToken.ifEmpty { null }
-        }
-        set(fcmToken) {
-            if (cloudMessagingType == null) {
-                cloudMessagingType = CloudMessagingType.FCM.toString()
-            }
-            defaultSharedPreferences
-                .edit()
-                .putString(PreferencesCoreKeys.FCM_TOKEN, fcmToken)
-                .commit()
-        }
-
-    @JvmStatic
-    var hcmToken: String?
-        get() {
-            val hcmToken = defaultSharedPreferences.getString(PreferencesCoreKeys.HCM_TOKEN, "") ?: ""
-            return hcmToken.ifEmpty { null }
-        }
-        set(hcmToken) {
-            if (cloudMessagingType == null) {
-                cloudMessagingType = CloudMessagingType.HCM.toString()
-            }
-            defaultSharedPreferences
-                .edit()
-                .putString(PreferencesCoreKeys.HCM_TOKEN, hcmToken)
-                .commit()
-        }
 
     @JvmStatic
     var cloudMessagingType: String?
