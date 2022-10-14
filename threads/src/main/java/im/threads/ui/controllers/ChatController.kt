@@ -423,6 +423,10 @@ class ChatController private constructor() {
             preferences.save(PreferencesCoreKeys.FILE_DESCRIPTION_DRAFT, fileDescription)
         }
 
+    fun clearUnreadPushCount() {
+        preferences.save(PreferencesCoreKeys.UNREAD_PUSH_COUNT, 0)
+    }
+
     private fun subscribe(event: Disposable): Boolean {
         if (compositeDisposable == null || compositeDisposable?.isDisposed == true) {
             compositeDisposable = CompositeDisposable()

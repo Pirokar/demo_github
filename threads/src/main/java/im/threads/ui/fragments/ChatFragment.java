@@ -708,7 +708,7 @@ public final class ChatFragment extends BaseFragment implements
     private void setMessagesAsReadForStorages() {
         if (previousChatItemsCount == 0 || chatAdapter.getItemCount() != previousChatItemsCount) {
             mChatController.setMessagesInCurrentThreadAsReadInDB();
-            PrefUtilsBase.setUnreadPushCount(0);
+            mChatController.clearUnreadPushCount();
             previousChatItemsCount = chatAdapter.getItemCount();
         }
     }

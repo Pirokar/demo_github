@@ -46,7 +46,6 @@ import im.threads.business.transport.threadsGate.responses.SendMessageData
 import im.threads.business.utils.AppInfoHelper
 import im.threads.business.utils.DeviceInfoHelper
 import im.threads.business.utils.SSLCertificateInterceptor
-import im.threads.business.utils.preferences.PrefUtilsBase
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -152,7 +151,8 @@ class ThreadsGateTransport(
     }
 
     override fun sendInit() {
-        if (!TextUtils.isEmpty(PrefUtilsBase.deviceAddress)) {
+        val deviceAddress = preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS)
+        if (!TextUtils.isEmpty(deviceAddress)) {
             sendInitChatMessage(true)
             sendEnvironmentMessage(true)
         } else {
@@ -186,7 +186,7 @@ class ThreadsGateTransport(
     }
 
     override fun sendClientOffline(clientId: String) {
-        if (TextUtils.isEmpty(PrefUtilsBase.deviceAddress)) {
+        if (preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS).isNullOrBlank()) {
             return
         }
         val content = outgoingMessageCreator.createMessageClientOffline(clientId)
@@ -248,7 +248,7 @@ class ThreadsGateTransport(
         val text = BaseConfig.instance.gson.toJson(
             SendMessageRequest(
                 correlationId,
-                SendMessageRequest.Data(PrefUtilsBase.deviceAddress, content, important)
+                SendMessageRequest.Data(deviceAddress, content, important)
             )
         )
         LoggerEdna.info("Sending : $text")
@@ -268,26 +268,38 @@ class ThreadsGateTransport(
         val ws = webSocket ?: return
         val deviceModel = getSimpleDeviceName()
         val deviceName = getDeviceName()
+        val deviceAddress = preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS)
         val cloudPair = applicationConfig.getCloudPair()
         val data = RegisterDeviceRequest.Data(
             AppInfoHelper.getAppId(),
             AppInfoHelper.getAppVersion(),
             cloudPair.providerUid,
             cloudPair.token,
-            PrefUtilsBase.deviceUid,
+            getDeviceUid(),
             "Android",
             DeviceInfoHelper.getOsVersion(),
             DeviceInfoHelper.getLocale(BaseConfig.instance.context),
             Calendar.getInstance().timeZone.displayName,
             if (!TextUtils.isEmpty(deviceName)) deviceName else deviceModel,
             deviceModel,
-            PrefUtilsBase.deviceAddress
+            deviceAddress
         )
         val text = BaseConfig.instance.gson.toJson(
             RegisterDeviceRequest(UUID.randomUUID().toString(), data)
         )
         LoggerEdna.info("Sending : $text")
         ws.send(text)
+    }
+
+    @Synchronized
+    private fun getDeviceUid(): String {
+        var deviceUid = preferences.get<String>(PreferencesCoreKeys.DEVICE_UID)
+        if (deviceUid.isNullOrBlank()) {
+            deviceUid = UUID.randomUUID().toString()
+            preferences.save(PreferencesCoreKeys.DEVICE_UID, deviceUid)
+        }
+
+        return deviceUid
     }
 
     private fun sendInitChatMessage(tryOpeningWebSocket: Boolean) {
@@ -398,8 +410,9 @@ class ThreadsGateTransport(
                         response.data.toString(),
                         RegisterDeviceData::class.java
                     )
-                    val initialRegistration = TextUtils.isEmpty(PrefUtilsBase.deviceAddress)
-                    PrefUtilsBase.deviceAddress = data.deviceAddress
+                    val initialRegistration = preferences
+                        .get<String>(PreferencesCoreKeys.DEVICE_ADDRESS).isNullOrBlank()
+                    preferences.save(PreferencesCoreKeys.DEVICE_ADDRESS, data.deviceAddress)
                     if (initialRegistration) {
                         sendInitChatMessage(false)
                         sendEnvironmentMessage(false)
