@@ -10,6 +10,7 @@ import im.threads.business.transport.OutgoingMessageCreator
 import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.ConsultWriter
 import im.threads.ui.ChatCenterPushMessageHelper
+import im.threads.ui.styles.StyleUseCase
 
 val mainSLModule = module {
     factory { ContextHolder.context }
@@ -23,4 +24,5 @@ val supplementarySLModule = module {
     factory { ConsultWriter(get()) }
     factory { ChatUpdateProcessor() }
     factory { ChatCenterPushMessageHelper() }
+    factory { StyleUseCase(get()) }
 }

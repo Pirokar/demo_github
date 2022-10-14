@@ -27,7 +27,6 @@ import im.threads.business.serviceLocator.supplementarySLModule
 import im.threads.business.useractivity.UserActivityTimeProvider.getLastUserActivityTimeCounter
 import im.threads.business.useractivity.UserActivityTimeProvider.initializeLastUserActivity
 import im.threads.business.utils.ClientUseCase
-import im.threads.business.utils.preferences.PrefUtilsBase
 import im.threads.business.utils.preferences.PreferencesMigrationBase
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.exceptions.UndeliverableException

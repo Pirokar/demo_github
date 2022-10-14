@@ -4,21 +4,24 @@ import android.annotation.SuppressLint
 import im.threads.business.chat_updates.ChatUpdateProcessor
 import im.threads.business.config.BaseConfig
 import im.threads.business.logger.LoggerEdna
+import im.threads.business.preferences.Preferences
 import im.threads.business.serviceLocator.core.inject
 import im.threads.business.transport.models.AttachmentSettings
-import im.threads.ui.utils.preferences.PrefUtilsUi
-import im.threads.ui.utils.preferences.PrefUtilsUi.attachmentSettings
+import im.threads.ui.preferences.PreferencesUiKeys
 
 @SuppressLint("CheckResult")
 enum class FileHelper {
     INSTANCE;
 
     private val chatUpdateProcessor: ChatUpdateProcessor by inject()
+    private val preferences: Preferences by inject()
 
     init {
         chatUpdateProcessor.attachmentSettingsProcessor
             .subscribe(
-                { attachmentSettings -> saveAttachmentSettings(attachmentSettings.content) },
+                { receivedAttachmentSettings ->
+                    attachmentSettings = receivedAttachmentSettings.content
+                },
                 LoggerEdna::error
             )
     }
@@ -40,14 +43,10 @@ enum class FileHelper {
     val maxAllowedFileSize: Long
         get() = attachmentSettings.maxSize.toLong()
 
-    private fun saveAttachmentSettings(attachmentSettingsContent: AttachmentSettings.Content) {
-        PrefUtilsUi.attachmentSettings = BaseConfig.instance.gson.toJson(attachmentSettingsContent)
-    }
-
-    private val attachmentSettings: AttachmentSettings.Content
+    private var attachmentSettings: AttachmentSettings.Content
         get() {
-            var settingsStr = PrefUtilsUi.attachmentSettings
-            settingsStr = settingsStr ?: ""
+            val settingsStr = preferences.get(PreferencesUiKeys.PREF_ATTACHMENT_SETTINGS) ?: ""
+
             return if (settingsStr.isEmpty()) {
                 defaultAttachmentSettings
             } else {
@@ -56,6 +55,11 @@ enum class FileHelper {
                 attachmentSettingsContent ?: defaultAttachmentSettings
             }
         }
+        set(value) = preferences.save(
+            PreferencesUiKeys.PREF_ATTACHMENT_SETTINGS,
+            BaseConfig.instance.gson.toJson(value)
+        )
+
     private val defaultAttachmentSettings: AttachmentSettings.Content
         get() = AttachmentSettings.Content(30, arrayOf("jpeg", "jpg", "png", "pdf", "doc", "docx", "rtf"))
 

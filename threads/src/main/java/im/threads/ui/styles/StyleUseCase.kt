@@ -1,47 +1,21 @@
-package im.threads.ui.utils.preferences
+package im.threads.ui.styles
 
 import com.google.gson.JsonSyntaxException
 import im.threads.business.config.BaseConfig
 import im.threads.business.logger.LoggerEdna
-import im.threads.business.models.ClientNotificationDisplayType
-import im.threads.business.utils.preferences.PrefUtilsBase
+import im.threads.business.preferences.Preferences
 import im.threads.ui.ChatStyle
 import im.threads.ui.preferences.PreferencesUiKeys
 import im.threads.ui.styles.permissions.PermissionDescriptionDialogStyle
 import im.threads.ui.styles.permissions.PermissionDescriptionType
 import java.io.Serializable
 
-internal object PrefUtilsUi {
-    @JvmStatic
-    var clientNotificationDisplayType: ClientNotificationDisplayType
-        get() = ClientNotificationDisplayType.fromString(
-            PrefUtilsBase.defaultSharedPreferences.getString(PreferencesUiKeys.CLIENT_NOTIFICATION_DISPLAY_TYPE, "")
-        )
-        set(type) {
-            PrefUtilsBase.defaultSharedPreferences
-                .edit()
-                .putString(PreferencesUiKeys.CLIENT_NOTIFICATION_DISPLAY_TYPE, type.name)
-                .commit()
-        }
+internal class StyleUseCase(private val preferences: Preferences) {
 
-    @JvmStatic
-    var attachmentSettings: String?
-        get() = PrefUtilsBase.defaultSharedPreferences.getString(PreferencesUiKeys.PREF_ATTACHMENT_SETTINGS, "")
-        set(settings) {
-            PrefUtilsBase.defaultSharedPreferences
-                .edit()
-                .putString(PreferencesUiKeys.PREF_ATTACHMENT_SETTINGS, settings)
-                .commit()
-        }
-
-    @JvmStatic
     val incomingStyle: ChatStyle?
         get() = getIncomingStyle(PreferencesUiKeys.APP_STYLE, ChatStyle::class.java)
 
-    @JvmStatic
-    fun getIncomingStyle(
-        type: PermissionDescriptionType
-    ): PermissionDescriptionDialogStyle? {
+    fun getIncomingStyle(type: PermissionDescriptionType): PermissionDescriptionDialogStyle? {
         return when (type) {
             PermissionDescriptionType.STORAGE -> getIncomingStyle(
                 PreferencesUiKeys.STORAGE_PERMISSION_DESCRIPTION_DIALOG_STYLE,
@@ -58,12 +32,10 @@ internal object PrefUtilsUi {
         }
     }
 
-    @JvmStatic
     fun setIncomingStyle(style: ChatStyle) {
         setIncomingStyle(PreferencesUiKeys.APP_STYLE, style)
     }
 
-    @JvmStatic
     fun setIncomingStyle(
         type: PermissionDescriptionType,
         style: PermissionDescriptionDialogStyle
@@ -90,9 +62,8 @@ internal object PrefUtilsUi {
     ): T? {
         var style: T? = null
         try {
-            val sharedPreferences = PrefUtilsBase.defaultSharedPreferences
-            if (sharedPreferences.getString(key, null) != null) {
-                val sharedPreferencesString = sharedPreferences.getString(key, null)
+            val sharedPreferencesString = preferences.get<String>(key)
+            if (sharedPreferencesString != null) {
                 style = BaseConfig.instance.gson.fromJson(sharedPreferencesString, styleClass)
             }
         } catch (ex: IllegalStateException) {
@@ -103,13 +74,7 @@ internal object PrefUtilsUi {
         return style
     }
 
-    private fun <T : Serializable?> setIncomingStyle(
-        key: String,
-        style: T
-    ) {
-        PrefUtilsBase.defaultSharedPreferences
-            .edit()
-            .putString(key, BaseConfig.instance.gson.toJson(style))
-            .commit()
+    private fun <T : Serializable?> setIncomingStyle(key: String, style: T) {
+        preferences.save(key, BaseConfig.instance.gson.toJson(style))
     }
 }

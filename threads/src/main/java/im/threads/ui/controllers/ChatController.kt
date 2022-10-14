@@ -74,7 +74,7 @@ import im.threads.ui.activities.ConsultActivity.Companion.startActivity
 import im.threads.ui.activities.ImagesActivity.Companion.getStartIntent
 import im.threads.ui.config.Config
 import im.threads.ui.fragments.ChatFragment
-import im.threads.ui.utils.preferences.PrefUtilsUi.clientNotificationDisplayType
+import im.threads.ui.preferences.PreferencesUiKeys
 import im.threads.ui.utils.preferences.PreferencesMigrationUi
 import im.threads.ui.utils.runOnUiThread
 import im.threads.ui.workers.NotificationWorker.Companion.addUnsentMessage
@@ -551,7 +551,7 @@ class ChatController private constructor() {
                                 val clientNotificationType = responseBody.clientNotificationDisplayType
                                 if (clientNotificationType != null && clientNotificationType.isNotEmpty()) {
                                     val type = ClientNotificationDisplayType.fromString(clientNotificationType)
-                                    clientNotificationDisplayType = type
+                                    preferences.save(PreferencesUiKeys.CLIENT_NOTIFICATION_DISPLAY_TYPE, type.name)
                                     chatUpdateProcessor.postClientNotificationDisplayType(type)
                                 }
                             }

@@ -61,11 +61,9 @@ import im.threads.business.models.UnreadMessages;
 import im.threads.business.models.UserPhrase;
 import im.threads.business.ogParser.OpenGraphParser;
 import im.threads.business.ogParser.OpenGraphParserJsoupImpl;
-import im.threads.business.preferences.PreferencesJava;
 import im.threads.business.utils.ChatItemListFinder;
 import im.threads.business.utils.FileUtils;
 import im.threads.business.utils.FileUtilsKt;
-import im.threads.business.utils.preferences.PrefUtilsBase;
 import im.threads.business.workers.FileDownloadWorker;
 import im.threads.ui.ChatStyle;
 import im.threads.ui.config.Config;
@@ -92,8 +90,8 @@ import im.threads.ui.holders.UnreadMessageViewHolder;
 import im.threads.ui.holders.UserFileViewHolder;
 import im.threads.ui.holders.UserPhraseViewHolder;
 import im.threads.ui.holders.VoiceMessageBaseHolder;
+import im.threads.ui.preferences.PreferencesJavaUI;
 import im.threads.ui.utils.ThreadRunnerKt;
-import im.threads.ui.utils.preferences.PrefUtilsUi;
 import im.threads.ui.views.VoiceTimeLabelFormatterKt;
 import io.reactivex.subjects.PublishSubject;
 
@@ -153,8 +151,8 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         this.fdMediaPlayer = fdMediaPlayer;
         this.mediaMetadataRetriever = mediaMetadataRetriever;
 
-        PreferencesJava preferences = new PreferencesJava();
-        clientNotificationDisplayType = PrefUtilsUi.getClientNotificationDisplayType();
+        PreferencesJavaUI preferences = new PreferencesJavaUI();
+        clientNotificationDisplayType = preferences.getClientNotificationDisplayType();
         currentThreadId = preferences.getThreadId() == null ? 0L : preferences.getThreadId();
         chatMessagesOrderer = new ChatMessagesOrderer();
     }

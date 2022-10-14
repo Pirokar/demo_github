@@ -1,18 +1,19 @@
-package im.threads.business.models;
+package im.threads.business.models
 
-import androidx.annotation.NonNull;
+enum class ClientNotificationDisplayType {
+    ALL, CURRENT_THREAD_ONLY, CURRENT_THREAD_WITH_GROUPING;
 
-public enum ClientNotificationDisplayType {
-    ALL,
-    CURRENT_THREAD_ONLY,
-    CURRENT_THREAD_WITH_GROUPING;
-
-    @NonNull
-    public static ClientNotificationDisplayType fromString(String name) {
-        try {
-            return valueOf(name);
-        } catch (IllegalArgumentException ex) {
-            return ClientNotificationDisplayType.CURRENT_THREAD_ONLY;
+    companion object {
+        fun fromString(name: String?): ClientNotificationDisplayType {
+            return try {
+                if (name != null) {
+                    valueOf(name)
+                } else {
+                    CURRENT_THREAD_ONLY
+                }
+            } catch (ex: IllegalArgumentException) {
+                CURRENT_THREAD_ONLY
+            }
         }
     }
 }
