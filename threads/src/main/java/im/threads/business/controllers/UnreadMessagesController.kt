@@ -1,6 +1,7 @@
 package im.threads.business.controllers
 
-import im.threads.business.secureDatabase.DatabaseHolder.Companion.getInstance
+import im.threads.business.secureDatabase.DatabaseHolder
+import im.threads.business.serviceLocator.core.inject
 import im.threads.business.utils.preferences.PrefUtilsBase.unreadPushCount
 import io.reactivex.processors.BehaviorProcessor
 
@@ -8,6 +9,7 @@ enum class UnreadMessagesController {
     INSTANCE;
 
     val unreadMessagesPublishProcessor = BehaviorProcessor.create<Int>()
+    private val database: DatabaseHolder by inject()
 
     fun incrementUnreadPush() {
         unreadPushCount++
@@ -32,5 +34,5 @@ enum class UnreadMessagesController {
     }
 
     val unreadMessages: Int
-        get() = getInstance().getUnreadMessagesCount() + unreadPushCount
+        get() = database.getUnreadMessagesCount() + unreadPushCount
 }

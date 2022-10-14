@@ -9,12 +9,13 @@ import im.threads.business.models.MessageState
 import im.threads.business.models.SpeechMessageUpdate
 import im.threads.business.models.Survey
 import im.threads.business.models.UserPhrase
+import im.threads.business.preferences.Preferences
+import im.threads.business.preferences.PreferencesCoreKeys
 import im.threads.business.secureDatabase.table.FileDescriptionsTable
 import im.threads.business.secureDatabase.table.MessagesTable
 import im.threads.business.secureDatabase.table.QuestionsTable
 import im.threads.business.secureDatabase.table.QuickRepliesTable
 import im.threads.business.secureDatabase.table.QuotesTable
-import im.threads.business.utils.preferences.PrefUtilsBase
 import net.zetetic.database.sqlcipher.SQLiteDatabase
 import net.zetetic.database.sqlcipher.SQLiteOpenHelper
 
@@ -160,11 +161,12 @@ class ThreadsDbHelper private constructor(val context: Context, password: String
         }
 
         private fun migratePassword(context: Context) {
-            if (!PrefUtilsBase.isDatabasePasswordMigrated) {
+            val preferences = Preferences(context)
+            if (preferences.get<Boolean>(PreferencesCoreKeys.IS_DATABASE_PASSWORD_MIGRATED) != true) {
                 val oldDatabase = ThreadsDbHelper(context, oldPassword)
                 oldDatabase.writableDatabase.rawQuery("PRAGMA rekey = '$DB_PASSWORD'")
                 oldDatabase.close()
-                PrefUtilsBase.isDatabasePasswordMigrated = true
+                preferences.save(PreferencesCoreKeys.IS_DATABASE_PASSWORD_MIGRATED, true)
             }
         }
 

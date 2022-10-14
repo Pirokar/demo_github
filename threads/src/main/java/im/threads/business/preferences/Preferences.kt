@@ -6,7 +6,6 @@ import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import im.threads.business.config.BaseConfig
 import im.threads.business.logger.LoggerEdna
 import java.io.IOException
 import java.lang.reflect.Type
@@ -19,7 +18,7 @@ open class Preferences(private val context: Context) {
     val sharedPreferences: SharedPreferences by lazy {
         try {
             val masterKey =
-                MasterKey.Builder(BaseConfig.instance.context, MasterKey.DEFAULT_MASTER_KEY_ALIAS)
+                MasterKey.Builder(context, MasterKey.DEFAULT_MASTER_KEY_ALIAS)
                     .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
                     .build()
             EncryptedSharedPreferences.create(

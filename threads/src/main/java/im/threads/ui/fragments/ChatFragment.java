@@ -70,6 +70,7 @@ import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import im.threads.business.chat_updates.ChatUpdateProcessorJavaGetter;
 import im.threads.ui.ChatStyle;
 import im.threads.R;
 import im.threads.business.annotation.OpenWay;
@@ -210,6 +211,8 @@ public final class ChatFragment extends BaseFragment implements
     private QuickReplyItem quickReplyItem = null;
     private int previousChatItemsCount = 0;
     private Config config = Config.getInstance();
+    private final ChatUpdateProcessorJavaGetter chatUpdateProcessor
+            = new ChatUpdateProcessorJavaGetter();
 
     public static ChatFragment newInstance(@OpenWay int from) {
         Bundle arguments = new Bundle();
@@ -549,7 +552,7 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     private void initUserInputState() {
-        subscribe(ChatUpdateProcessor.getInstance().getUserInputEnableProcessor()
+        subscribe(chatUpdateProcessor.getProcessor().getUserInputEnableProcessor()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::updateInputEnable,
                         error -> LoggerEdna.error("initUserInputState ", error)
@@ -557,7 +560,7 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     private void initQuickReplies() {
-        subscribe(ChatUpdateProcessor.getInstance().getQuickRepliesProcessor()
+        subscribe(chatUpdateProcessor.getProcessor().getQuickRepliesProcessor()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(quickReplies -> {
                             if (quickReplies == null || quickReplies.getItems().isEmpty()) {
@@ -2421,7 +2424,7 @@ public final class ChatFragment extends BaseFragment implements
                 fdMediaPlayer.reset();
             }
             unChooseItem();
-            ChatUpdateProcessor.getInstance().postAttachAudioFile(false);
+            chatUpdateProcessor.getProcessor().postAttachAudioFile(false);
         }
 
         private void setContent(String header, String text, Uri imagePath, boolean isFromFilePicker) {
@@ -2471,7 +2474,7 @@ public final class ChatFragment extends BaseFragment implements
             binding.quotePast.setVisibility(View.GONE);
             formattedDuration = getFormattedDuration(getFileDescription());
             binding.quoteDuration.setText(formattedDuration);
-            ChatUpdateProcessor.getInstance().postAttachAudioFile(true);
+            chatUpdateProcessor.getProcessor().postAttachAudioFile(true);
         }
 
         private void init(int maxValue, int progress, boolean isPlaying) {

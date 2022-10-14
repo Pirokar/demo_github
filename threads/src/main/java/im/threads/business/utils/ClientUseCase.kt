@@ -5,7 +5,7 @@ import im.threads.business.logger.LoggerEdna
 import im.threads.business.preferences.Preferences
 import im.threads.business.preferences.PreferencesCoreKeys
 
-class ClientInteractor(private val preferences: Preferences) {
+class ClientUseCase(private val preferences: Preferences) {
     fun initClientId() {
         val userInfo = preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)
         val newClientId = preferences.get<String>(PreferencesCoreKeys.TAG_NEW_CLIENT_ID)

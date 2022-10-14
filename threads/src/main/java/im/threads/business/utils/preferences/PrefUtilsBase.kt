@@ -142,12 +142,4 @@ internal object PrefUtilsBase {
             defaultSharedPreferences.edit().putInt(PreferencesCoreKeys.UNREAD_PUSH_COUNT, unreadPushCount)
                 .commit()
         }
-
-    @JvmStatic
-    var isDatabasePasswordMigrated: Boolean
-        get() = defaultSharedPreferences.getBoolean(PreferencesCoreKeys.IS_DATABASE_PASSWORD_MIGRATED, false)
-        set(isMigrated) {
-            defaultSharedPreferences.edit().putBoolean(PreferencesCoreKeys.IS_DATABASE_PASSWORD_MIGRATED, isMigrated)
-                .commit()
-        }
 }

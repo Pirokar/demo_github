@@ -26,7 +26,7 @@ import im.threads.business.serviceLocator.mainSLModule
 import im.threads.business.serviceLocator.supplementarySLModule
 import im.threads.business.useractivity.UserActivityTimeProvider.getLastUserActivityTimeCounter
 import im.threads.business.useractivity.UserActivityTimeProvider.initializeLastUserActivity
-import im.threads.business.utils.ClientInteractor
+import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.preferences.PrefUtilsBase
 import im.threads.business.utils.preferences.PreferencesMigrationBase
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -41,11 +41,13 @@ import kotlinx.coroutines.launch
 @Suppress("unused")
 open class ThreadsLibBase protected constructor(context: Context) {
     init {
-        startEdnaLocator(context) { modules(mainSLModule, supplementarySLModule) }
+        ContextHolder.context = context
+        startEdnaLocator { modules(mainSLModule, supplementarySLModule) }
     }
 
     private val preferences: Preferences by inject()
-    private val clientInteractor: ClientInteractor by inject()
+    private val clientInteractor: ClientUseCase by inject()
+    private val chatUpdateProcessor: ChatUpdateProcessor by inject()
 
     /**
      * @return time in seconds since the last user activity
@@ -64,7 +66,7 @@ open class ThreadsLibBase protected constructor(context: Context) {
      * @return FlowableProcessor that emits responses from WebSocket connection
      */
     val socketResponseMapProcessor: FlowableProcessor<Map<String, Any>>
-        get() = ChatUpdateProcessor.getInstance().socketResponseMapProcessor
+        get() = chatUpdateProcessor.socketResponseMapProcessor
 
     protected open fun initUser(userInfoBuilder: UserInfoBuilder) {
         preferences.save(PreferencesCoreKeys.USER_INFO, userInfoBuilder)
@@ -92,8 +94,9 @@ open class ThreadsLibBase protected constructor(context: Context) {
 
     companion object {
         @JvmStatic
+        @SuppressLint("StaticFieldLeak")
         protected var libInstance: ThreadsLibBase? = null
-        private val clientInteractor: ClientInteractor by inject()
+        private val clientInteractor: ClientUseCase by inject()
         private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
         @JvmStatic

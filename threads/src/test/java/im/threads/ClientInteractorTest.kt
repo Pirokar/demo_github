@@ -3,7 +3,7 @@ package im.threads
 import androidx.test.core.app.ApplicationProvider
 import im.threads.business.config.BaseConfig
 import im.threads.business.rest.config.RequestConfig
-import im.threads.business.utils.ClientInteractor
+import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.preferences.PrefUtilsBase
 import org.junit.Before
 import org.junit.Test
@@ -12,7 +12,7 @@ import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class ClientInteractorTest {
-    private val clientInteractor = ClientInteractor()
+    private val clientInteractor = ClientUseCase()
 
     @Before
     fun before() {

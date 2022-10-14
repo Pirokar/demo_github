@@ -12,10 +12,10 @@ class ChatMessageSeeker {
     fun searchMessages(
         target: List<ChatItem>,
         forward: Boolean,
-        query: String
+        query: String?
     ): Pair<List<ChatItem>, ChatItem?> {
         if (target.isEmpty()) return Pair(target, null)
-        if (query.isEmpty()) {
+        if (query.isNullOrBlank()) {
             lastQuery = ""
             lastHighlightedItem = null
             return Pair(target, null)
