@@ -38,12 +38,34 @@ open class Preferences(private val context: Context) {
     inline fun <reified T : Any> get(key: String, default: T? = null): T? {
         val ret: String? = sharedPreferences.getString(key, null)
         val returnType: Type = object : TypeToken<T>() {}.type
-        return Gson().fromJson(ret, returnType) ?: default
+        return try {
+            Gson().fromJson(ret, returnType) ?: default
+        } catch (exc: Exception) {
+            if (sharedPreferences.all.keys.contains(key)) {
+                val value = sharedPreferences.all.getValue(key)
+                if (value is T) {
+                    sharedPreferences.edit().remove(key)
+                    save(key, value, true)
+                    return value
+                } else {
+                    return null
+                }
+            } else {
+                return null
+            }
+        }
     }
 
-    inline fun <reified T : Any> save(key: String, obj: T?) {
+    inline fun <reified T : Any> save(key: String, obj: T?, saveAsync: Boolean = false) {
         val json = Gson().toJson(obj).toString()
-        sharedPreferences.edit().putString(key, json).commit()
+        val editor = sharedPreferences.edit()
+        editor.putString(key, json)
+
+        if (saveAsync) {
+            editor.apply()
+        } else {
+            editor.commit()
+        }
     }
 
     private fun onGetEncryptedPreferencesException(context: Context, exc: Exception): SharedPreferences {
