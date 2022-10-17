@@ -36,11 +36,11 @@ open class Preferences(private val context: Context) {
     }
 
     inline fun <reified T : Any> get(key: String, default: T? = null): T? {
-        val ret: String? = sharedPreferences.getString(key, null)
         val returnType: Type = object : TypeToken<T>() {}.type
 
         @Suppress("UNREACHABLE_CODE", "CommitPrefEdits")
         return try {
+            val ret: String? = sharedPreferences.getString(key, null)
             Gson().fromJson(ret, returnType) ?: default ?: throw NullPointerException()
         } catch (exc: Exception) {
             if (sharedPreferences.all.keys.contains(key)) {

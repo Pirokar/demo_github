@@ -1,6 +1,11 @@
 package im.threads.business
 
 class UserInfoBuilder(var clientId: String) {
+
+    init {
+        require(clientId.isNotBlank()) { "clientId must not be empty" }
+    }
+
     var authToken: String? = null
         private set
     var authSchema: String? = null
@@ -68,7 +73,33 @@ class UserInfoBuilder(var clientId: String) {
         return this
     }
 
-    init {
-        require(clientId.isNotBlank()) { "clientId must not be empty" }
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as UserInfoBuilder
+
+        if (clientId != other.clientId) return false
+        if (authToken != other.authToken) return false
+        if (authSchema != other.authSchema) return false
+        if (clientData != other.clientData) return false
+        if (clientIdSignature != other.clientIdSignature) return false
+        if (userName != other.userName) return false
+        if (appMarker != other.appMarker) return false
+        if (clientIdEncrypted != other.clientIdEncrypted) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = clientId.hashCode()
+        result = 31 * result + (authToken?.hashCode() ?: 0)
+        result = 31 * result + (authSchema?.hashCode() ?: 0)
+        result = 31 * result + (clientData?.hashCode() ?: 0)
+        result = 31 * result + (clientIdSignature?.hashCode() ?: 0)
+        result = 31 * result + (userName?.hashCode() ?: 0)
+        result = 31 * result + (appMarker?.hashCode() ?: 0)
+        result = 31 * result + clientIdEncrypted.hashCode()
+        return result
     }
 }

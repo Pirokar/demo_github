@@ -32,7 +32,6 @@ open class PreferencesMigrationBase(private val context: Context) : Preferences(
             )
             deletePreferenceWithNameContains(PreferencesCoreKeys.STORE_NAME)
         }
-        migrateUserInfo()
     }
 
     fun migrateNamedPreferences(preferenceName: String) {
@@ -43,7 +42,7 @@ open class PreferencesMigrationBase(private val context: Context) : Preferences(
         deletePreferenceWithNameContains(preferenceName)
     }
 
-    private fun migrateUserInfo() {
+    fun migrateUserInfo() {
         var userInfo: UserInfoBuilder? = null
         val keysForMigration = PrefKeysForMigration()
         val editor = sharedPreferences.edit()

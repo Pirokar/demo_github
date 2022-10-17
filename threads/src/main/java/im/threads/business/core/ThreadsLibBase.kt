@@ -111,7 +111,10 @@ open class ThreadsLibBase protected constructor(context: Context) {
                 createLibInstance(configBuilder.context)
                 BaseConfig.instance = configBuilder.build()
                 BaseConfig.instance.loggerConfig?.let { LoggerEdna.init(it) }
-                PreferencesMigrationBase(BaseConfig.instance.context).migrateMainSharedPreferences()
+                PreferencesMigrationBase(BaseConfig.instance.context).apply {
+                    migrateMainSharedPreferences()
+                    migrateUserInfo()
+                }
             }
 
             BackendApi.init(BaseConfig.instance)
