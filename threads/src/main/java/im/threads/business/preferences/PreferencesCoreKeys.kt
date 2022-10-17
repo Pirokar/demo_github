@@ -19,22 +19,13 @@ object PreferencesCoreKeys {
     val ENCRYPTED_STORE_NAME = "im.threads.internal.utils.EncryptedPrefStore"
     val IS_DATABASE_PASSWORD_MIGRATED = "IS_DATABASE_PASSWORD_MIGRATED"
 
-    val allPrefKeys = listOf(
-        migrationKeys.TAG_CLIENT_ID,
-        migrationKeys.TAG_CLIENT_ID_ENCRYPTED,
-        migrationKeys.CLIENT_ID_SIGNATURE_KEY,
-        migrationKeys.TAG_NEW_CLIENT_ID,
-        migrationKeys.CLIENT_NAME,
-        migrationKeys.EXTRA_DATA,
+    val allPrefKeys = mutableListOf(
         LAST_COPY_TEXT,
-        migrationKeys.APP_MARKER_KEY,
         DEVICE_ADDRESS,
         FCM_TOKEN,
         HCM_TOKEN,
         CLOUD_MESSAGING_TYPE,
         DEVICE_UID,
-        migrationKeys.AUTH_TOKEN,
-        migrationKeys.AUTH_SCHEMA,
         THREAD_ID,
         FILE_DESCRIPTION_DRAFT,
         CAMPAIGN_MESSAGE,
@@ -42,5 +33,5 @@ object PreferencesCoreKeys {
         STORE_NAME,
         ENCRYPTED_STORE_NAME,
         IS_DATABASE_PASSWORD_MIGRATED
-    )
+    ).apply { addAll(migrationKeys.list) }
 }

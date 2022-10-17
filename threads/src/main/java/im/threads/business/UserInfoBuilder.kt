@@ -25,7 +25,7 @@ class UserInfoBuilder(var clientId: String) {
      * true if client id is encrypted
      */
     var clientIdEncrypted = false
-    fun setAuthData(authToken: String, authSchema: String): UserInfoBuilder {
+    fun setAuthData(authToken: String?, authSchema: String?): UserInfoBuilder {
         this.authToken = authToken
         this.authSchema = authSchema
         return this

@@ -3,7 +3,9 @@ package im.threads.business.utils.preferences
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
+import im.threads.business.UserInfoBuilder
 import im.threads.business.logger.LoggerEdna
+import im.threads.business.preferences.PrefKeysForMigration
 import im.threads.business.preferences.Preferences
 import im.threads.business.preferences.PreferencesCoreKeys
 import java.io.File
@@ -30,6 +32,7 @@ open class PreferencesMigrationBase(private val context: Context) : Preferences(
             )
             deletePreferenceWithNameContains(PreferencesCoreKeys.STORE_NAME)
         }
+        migrateUserInfo()
     }
 
     fun migrateNamedPreferences(preferenceName: String) {
@@ -38,6 +41,63 @@ open class PreferencesMigrationBase(private val context: Context) : Preferences(
             sharedPreferences
         )
         deletePreferenceWithNameContains(preferenceName)
+    }
+
+    private fun migrateUserInfo() {
+        var userInfo: UserInfoBuilder? = null
+        val keysForMigration = PrefKeysForMigration()
+        val editor = sharedPreferences.edit()
+        val stubClientId = "stub"
+
+        keysForMigration.list.forEach { key ->
+            if (sharedPreferences.all.keys.contains(key)) {
+                if (userInfo == null) userInfo = UserInfoBuilder(stubClientId)
+                val value = sharedPreferences.all[key]
+                when (key) {
+                    keysForMigration.APP_MARKER -> {
+                        (value as? String)?.let { userInfo?.setAppMarker(it) }
+                    }
+                    keysForMigration.TAG_CLIENT_ID -> {
+                        (value as? String)?.let { userInfo?.clientId = it }
+                    }
+                    keysForMigration.AUTH_TOKEN -> {
+                        (value as? String)?.let {
+                            userInfo?.setAuthData(it, userInfo?.authSchema)
+                        }
+                    }
+                    keysForMigration.AUTH_SCHEMA -> {
+                        (value as? String)?.let {
+                            userInfo?.setAuthData(userInfo?.authToken, it)
+                        }
+                    }
+                    keysForMigration.CLIENT_ID_SIGNATURE -> {
+                        (value as? String)?.let {
+                            userInfo?.setClientIdSignature(it)
+                        }
+                    }
+                    keysForMigration.DEFAULT_CLIENT_NAMETITLE_TAG -> {
+                        (value as? String)?.let {
+                            userInfo?.setUserName(it)
+                        }
+                    }
+                    keysForMigration.EXTRA_DATE -> {
+                        (value as? String)?.let {
+                            userInfo?.setClientData(it)
+                        }
+                    }
+                    keysForMigration.TAG_CLIENT_ID_ENCRYPTED -> {
+                        (value as? Boolean)?.let {
+                            userInfo?.clientIdEncrypted = it
+                        }
+                    }
+                }
+                editor.remove(key)
+            }
+        }
+        if (userInfo != null && userInfo?.clientId != stubClientId) {
+            editor.apply()
+            save(PreferencesCoreKeys.USER_INFO, userInfo)
+        }
     }
 
     private fun movePreferences(fromPrefs: SharedPreferences, toPrefs: SharedPreferences) {
