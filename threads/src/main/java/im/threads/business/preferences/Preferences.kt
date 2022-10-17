@@ -41,8 +41,7 @@ open class Preferences(private val context: Context) {
 
         @Suppress("UNREACHABLE_CODE", "CommitPrefEdits")
         return try {
-            return Gson().fromJson(ret, returnType) ?: default
-                ?: throw NullPointerException()
+            Gson().fromJson(ret, returnType) ?: default ?: throw NullPointerException()
         } catch (exc: Exception) {
             if (sharedPreferences.all.keys.contains(key)) {
                 val value = sharedPreferences.all.getValue(key)
