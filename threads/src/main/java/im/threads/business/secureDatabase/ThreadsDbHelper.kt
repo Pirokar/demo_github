@@ -1,6 +1,7 @@
 package im.threads.business.secureDatabase
 
 import android.content.Context
+import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.ChatItem
 import im.threads.business.models.ConsultInfo
 import im.threads.business.models.ConsultPhrase
@@ -17,6 +18,7 @@ import im.threads.business.secureDatabase.table.QuestionsTable
 import im.threads.business.secureDatabase.table.QuickRepliesTable
 import im.threads.business.secureDatabase.table.QuotesTable
 import net.zetetic.database.sqlcipher.SQLiteDatabase
+import net.zetetic.database.sqlcipher.SQLiteDatabaseCorruptException
 import net.zetetic.database.sqlcipher.SQLiteOpenHelper
 
 class ThreadsDbHelper private constructor(val context: Context, password: String) :
@@ -163,10 +165,15 @@ class ThreadsDbHelper private constructor(val context: Context, password: String
         private fun migratePassword(context: Context) {
             val preferences = Preferences(context)
             if (preferences.get<Boolean>(PreferencesCoreKeys.IS_DATABASE_PASSWORD_MIGRATED) != true) {
-                val oldDatabase = ThreadsDbHelper(context, oldPassword)
-                oldDatabase.writableDatabase.rawQuery("PRAGMA rekey = '$DB_PASSWORD'")
-                oldDatabase.close()
-                preferences.save(PreferencesCoreKeys.IS_DATABASE_PASSWORD_MIGRATED, true)
+                try {
+                    val oldDatabase = ThreadsDbHelper(context, oldPassword)
+                    oldDatabase.writableDatabase.rawQuery("PRAGMA rekey = '$DB_PASSWORD'")
+                    oldDatabase.close()
+                } catch (exc: SQLiteDatabaseCorruptException) {
+                    LoggerEdna.error(exc)
+                } finally {
+                    preferences.save(PreferencesCoreKeys.IS_DATABASE_PASSWORD_MIGRATED, true)
+                }
             }
         }
 
