@@ -22,12 +22,12 @@ import im.threads.business.rest.queries.BackendApi
 import im.threads.business.rest.queries.DatastoreApi
 import im.threads.business.serviceLocator.core.inject
 import im.threads.business.serviceLocator.core.startEdnaLocator
-import im.threads.business.serviceLocator.mainSLModule
-import im.threads.business.serviceLocator.supplementarySLModule
+import im.threads.business.serviceLocator.coreSLModule
 import im.threads.business.useractivity.UserActivityTimeProvider.getLastUserActivityTimeCounter
 import im.threads.business.useractivity.UserActivityTimeProvider.initializeLastUserActivity
 import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.preferences.PreferencesMigrationBase
+import im.threads.ui.serviceLocator.uiSLModule
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.exceptions.UndeliverableException
 import io.reactivex.plugins.RxJavaPlugins
@@ -41,11 +41,11 @@ import kotlinx.coroutines.launch
 open class ThreadsLibBase protected constructor(context: Context) {
     init {
         ContextHolder.context = context
-        startEdnaLocator { modules(mainSLModule, supplementarySLModule) }
+        startEdnaLocator { modules(coreSLModule, uiSLModule) }
     }
 
     private val preferences: Preferences by inject()
-    private val clientInteractor: ClientUseCase by inject()
+    private val clientUseCase: ClientUseCase by inject()
     private val chatUpdateProcessor: ChatUpdateProcessor by inject()
 
     /**
@@ -58,7 +58,7 @@ open class ThreadsLibBase protected constructor(context: Context) {
         }
 
     val isUserInitialized: Boolean get() {
-        return clientInteractor.isClientIdNotEmpty()
+        return clientUseCase.isClientIdNotEmpty()
     }
 
     /**

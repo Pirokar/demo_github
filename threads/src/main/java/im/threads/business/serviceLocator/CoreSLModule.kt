@@ -9,20 +9,14 @@ import im.threads.business.transport.AuthInterceptor
 import im.threads.business.transport.OutgoingMessageCreator
 import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.ConsultWriter
-import im.threads.ui.ChatCenterPushMessageHelper
-import im.threads.ui.styles.StyleUseCase
 
-val mainSLModule = module {
+val coreSLModule = module {
     factory { ContextHolder.context }
     factory { Preferences(get()) }
     factory { DatabaseHolder(get()) }
-}
-val supplementarySLModule = module {
     factory { OutgoingMessageCreator(get()) }
     factory { ClientUseCase(get()) }
     factory { AuthInterceptor(get()) }
     factory { ConsultWriter(get()) }
     factory { ChatUpdateProcessor() }
-    factory { ChatCenterPushMessageHelper() }
-    factory { StyleUseCase(get()) }
 }
