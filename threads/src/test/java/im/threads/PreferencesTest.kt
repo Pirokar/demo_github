@@ -1,4 +1,4 @@
-package im.threads.preferences
+package im.threads
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
