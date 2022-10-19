@@ -9,12 +9,15 @@ import im.threads.business.serviceLocator.core.inject
 import im.threads.business.transport.models.AttachmentSettings
 import im.threads.ui.preferences.PreferencesUiKeys
 
+/**
+ * Вспомогательный класс для работы с файлами
+ */
 @SuppressLint("CheckResult")
-enum class FileHelper {
-    INSTANCE;
-
+object FileHelper {
     private val chatUpdateProcessor: ChatUpdateProcessor by inject()
     private val preferences: Preferences by inject()
+
+    private const val MEGABYTE = (1024 * 1024).toDouble()
 
     init {
         chatUpdateProcessor.attachmentSettingsProcessor
@@ -62,8 +65,4 @@ enum class FileHelper {
 
     private val defaultAttachmentSettings: AttachmentSettings.Content
         get() = AttachmentSettings.Content(30, arrayOf("jpeg", "jpg", "png", "pdf", "doc", "docx", "rtf"))
-
-    companion object {
-        private const val MEGABYTE = (1024 * 1024).toDouble()
-    }
 }

@@ -1,5 +1,8 @@
 package im.threads.business.models
 
+/**
+ * Определяет, для каких тредов следует показывать уведомления
+ */
 enum class ClientNotificationDisplayType {
     ALL, CURRENT_THREAD_ONLY, CURRENT_THREAD_WITH_GROUPING;
 

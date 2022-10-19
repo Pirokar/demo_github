@@ -14,6 +14,9 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 
+/**
+ * Предоставляет базовые методы для получения и отправки данных через веб-сокет
+ */
 abstract class Transport {
     private val chatUpdateProcessor: ChatUpdateProcessor by inject()
     private var compositeDisposable: CompositeDisposable? = null
@@ -21,7 +24,7 @@ abstract class Transport {
     fun markMessagesAsRead(uuidList: List<String?>) {
         info(ThreadsApi.REST_TAG, "markMessagesAsRead : $uuidList")
         subscribe(
-            Completable.fromAction { get().markMessageAsRead(uuidList)!!.execute() }
+            Completable.fromAction { get().markMessageAsRead(uuidList)?.execute() }
                 .subscribeOn(Schedulers.io())
                 .subscribe(
                     {
@@ -30,7 +33,9 @@ abstract class Transport {
                             "messagesAreRead : $uuidList"
                         )
                         for (messageId in uuidList) {
-                            chatUpdateProcessor.postIncomingMessageWasRead(messageId!!)
+                            if (messageId != null) {
+                                chatUpdateProcessor.postIncomingMessageWasRead(messageId)
+                            }
                         }
                     }
                 ) { e: Throwable ->

@@ -17,6 +17,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
+/**
+ * Контроллер для диалога с быстрыми ответами
+ */
 class QuickAnswerController : Fragment() {
     private var compositeDisposable: CompositeDisposable? = CompositeDisposable()
     private val database: DatabaseHolder by inject()
