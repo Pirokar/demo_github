@@ -1,5 +1,8 @@
 package im.threads.business.preferences
 
+/**
+ * Ключи для Preferences уровня Core
+ */
 object PreferencesCoreKeys {
     private val migrationKeys = PrefKeysForMigration()
 

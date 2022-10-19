@@ -15,6 +15,9 @@ open class Preferences(private val context: Context) {
     private val storeName = "im.threads.internal.utils.PrefStore"
     private val encryptedStoreName = "im.threads.internal.utils.EncryptedPrefStore"
 
+    /**
+     * Шифрованный контейнер для хранения настроек
+     */
     val sharedPreferences: SharedPreferences by lazy {
         try {
             val masterKey =
@@ -35,6 +38,13 @@ open class Preferences(private val context: Context) {
         }
     }
 
+    /**
+     * Предоставляет настройку в соответствии с переданным ключом и типом.
+     * При необходимости производит миграцию, если такой ключ присутствует в списке,
+     * но его тип отличается от хранимого.
+     * @param key ключ для получения данных
+     * @param default значение по умолчанию, если не удалось получить значение
+     */
     inline fun <reified T : Any> get(key: String, default: T? = null): T? {
         val returnType: Type = object : TypeToken<T>() {}.type
 
@@ -58,6 +68,12 @@ open class Preferences(private val context: Context) {
         }
     }
 
+    /**
+     * Сохраняет настройку в map по ключу. Возможно синхронное и асинхронное сохранение.
+     * @param key ключ для сохранения данных
+     * @param obj сохраняемый объект
+     * @param saveAsync указывает, следует ли сохранить объект асинхронно. По умолчанию значение = false
+     */
     inline fun <reified T : Any> save(key: String, obj: T?, saveAsync: Boolean = false) {
         val json = Gson().toJson(obj).toString()
         val editor = sharedPreferences.edit()

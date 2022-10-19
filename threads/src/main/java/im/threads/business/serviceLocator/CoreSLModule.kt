@@ -10,6 +10,9 @@ import im.threads.business.transport.OutgoingMessageCreator
 import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.ConsultWriter
 
+/**
+ * Модуль зависимостей сервис локатора уровня core (business logic)
+ */
 val coreSLModule = module {
     factory { ContextHolder.context }
     factory { Preferences(get()) }

@@ -1,5 +1,8 @@
 package im.threads.ui.preferences
 
+/**
+ * Ключи для Preferences уровня UI
+ */
 object PreferencesUiKeys {
     val APP_STYLE = "APP_STYLE"
     val STORAGE_PERMISSION_DESCRIPTION_DIALOG_STYLE =

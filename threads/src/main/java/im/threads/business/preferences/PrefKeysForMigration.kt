@@ -1,5 +1,8 @@
 package im.threads.business.preferences
 
+/**
+ * Ключи, подлежашие миграции на Preferences
+ */
 internal class PrefKeysForMigration {
     val APP_MARKER = "APP_MARKER"
     val TAG_CLIENT_ID = "TAG_CLIENT_ID"
