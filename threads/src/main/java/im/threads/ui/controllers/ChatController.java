@@ -219,10 +219,12 @@ public final class ChatController {
     }
 
     public void fancySearch(final String query, final boolean forward, final Consumer<kotlin.Pair<List<ChatItem>, ChatItem>> consumer) {
+        LoggerEdna.info("Trying to start search");
         subscribe(
                 Single.just(isAllMessagesDownloaded)
                         .flatMap(isAllMessagesDownloaded -> {
                             if (!isAllMessagesDownloaded) {
+                                LoggerEdna.info("Not all messages has been downloaded before the search.");
                                 if (query.length() == 1) {
                                     ThreadRunnerKt.runOnUiThread(() -> {
                                         fragment.showProgressBar();
@@ -241,6 +243,7 @@ public final class ChatController {
                                         lastFancySearchDate = System.currentTimeMillis();
                                     }
                                     if (query != null && (query.isEmpty() || !query.equals(lastSearchQuery))) {
+                                        LoggerEdna.info("Search starting");
                                         seeker = new ChatMessageSeeker();
                                     }
                                     lastSearchQuery = query;
