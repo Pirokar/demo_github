@@ -39,8 +39,10 @@ class ChatMessageSeeker {
         }
         return if (forward) {
             if (lastHighlightedIndex == 0) { // if it is last
-                info("Search finished. Target size: ${target.size}." +
-                    " Highlighted item timeStamp: ${lastHighlightedItem?.timeStamp}")
+                info(
+                    "Search finished. Target size: ${target.size}." +
+                        " Highlighted item timeStamp: ${lastHighlightedItem?.timeStamp}"
+                )
                 Pair(target, lastHighlightedItem)
             } else {
                 val initial = if (lastHighlightedIndex == -1) target.size - 1 else lastHighlightedIndex - 1
@@ -69,8 +71,10 @@ class ChatMessageSeeker {
                             ?.contains(query.lowercase()) == true
                     ) {
                         lastHighlightedItem = (target[i] as ChatPhrase)
-                        info("Search finished. Target size: ${target.size}." +
-                            " Highlighted item timeStamp: ${lastHighlightedItem?.timeStamp}")
+                        info(
+                            "Search finished. Target size: ${target.size}." +
+                                " Highlighted item timeStamp: ${lastHighlightedItem?.timeStamp}"
+                        )
                         return Pair(target, lastHighlightedItem)
                     }
                 }
@@ -84,13 +88,17 @@ class ChatMessageSeeker {
                         ?.contains(query.lowercase()) == true
                 ) {
                     lastHighlightedItem = (target[i] as ChatPhrase)
-                    info("Search finished. Target size: ${target.size}." +
-                        " Highlighted item timeStamp: ${lastHighlightedItem?.timeStamp}")
+                    info(
+                        "Search finished. Target size: ${target.size}." +
+                            " Highlighted item timeStamp: ${lastHighlightedItem?.timeStamp}"
+                    )
                     return Pair(target, lastHighlightedItem)
                 }
             }
-            info("Search finished. Target size: ${target.size}." +
-                " Highlighted item timeStamp: ${lastHighlightedItem?.timeStamp}")
+            info(
+                "Search finished. Target size: ${target.size}." +
+                    " Highlighted item timeStamp: ${lastHighlightedItem?.timeStamp}"
+            )
             return Pair(target, lastHighlightedItem)
         }
     }

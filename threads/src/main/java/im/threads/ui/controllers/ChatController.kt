@@ -182,10 +182,13 @@ class ChatController private constructor() {
     }
 
     fun fancySearch(query: String?, forward: Boolean, consumer: Consumer<Pair<List<ChatItem?>?, ChatItem?>?>) {
+        info("Trying to start search")
         subscribe(
             Single.just(isAllMessagesDownloaded)
                 .flatMap { isAllMessagesDownloaded: Boolean ->
                     if (!isAllMessagesDownloaded) {
+                        info("Not all messages has been downloaded before the search.")
+
                         if (query?.length == 1) {
                             Runnable {
                                 fragment?.showProgressBar()
@@ -208,6 +211,7 @@ class ChatController private constructor() {
                             lastFancySearchDate = System.currentTimeMillis()
                         }
                         if (query != null && (query.isEmpty() || query != lastSearchQuery)) {
+                            info("Search starting")
                             seeker = ChatMessageSeeker()
                         }
                         lastSearchQuery = query
