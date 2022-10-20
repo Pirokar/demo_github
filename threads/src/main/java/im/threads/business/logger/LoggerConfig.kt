@@ -27,8 +27,10 @@ class LoggerConfig(val builder: Builder) {
          * @return [Builder]
          */
         fun dir(dir: File?): Builder {
-            if (dir != null) {
-                dirPath = dir.absolutePath
+            dirPath = if (dir == null || dir.name.isEmpty()) {
+                File(context.filesDir, "logs").absolutePath
+            } else {
+                dir.absolutePath
             }
             return this
         }
@@ -126,5 +128,9 @@ class LoggerConfig(val builder: Builder) {
 
             return LoggerConfig(this)
         }
+    }
+
+    companion object {
+        var config: LoggerConfig? = null
     }
 }
