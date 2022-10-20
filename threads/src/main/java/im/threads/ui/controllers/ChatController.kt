@@ -1297,7 +1297,9 @@ class ChatController private constructor() {
                     val newClientId = preferences.get<String>(PreferencesCoreKeys.TAG_NEW_CLIENT_ID)
                     val oldClientId = userInfo?.clientId
                     if (!newClientId.isNullOrEmpty() && newClientId != oldClientId) {
-                        instance!!.onClientIdChanged()
+                        instance?.onClientIdChanged() ?: run {
+                            ArrayList()
+                        }
                     } else {
                         ArrayList()
                     }
