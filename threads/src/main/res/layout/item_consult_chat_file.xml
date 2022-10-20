@@ -10,10 +10,9 @@
         android:id="@+id/consult_avatar"
         android:layout_width="@dimen/threads_operator_photo_size"
         android:layout_height="@dimen/threads_operator_photo_size"
-        android:layout_below="@+id/bubble"
+        android:layout_alignBottom="@id/bubble"
         tools:src="@drawable/threads_operator_avatar_placeholder"
-        android:layout_marginStart="@dimen/margin_half"
-        android:layout_marginTop="@dimen/consultant_photo_offset_size"/>
+        android:layout_marginStart="@dimen/margin_half"/>
 
     <RelativeLayout
         android:id="@+id/bubble"

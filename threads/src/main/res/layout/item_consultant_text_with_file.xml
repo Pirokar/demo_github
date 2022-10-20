@@ -10,9 +10,8 @@
         android:id="@+id/consultAvatar"
         android:layout_width="@dimen/threads_operator_photo_size"
         android:layout_height="@dimen/threads_operator_photo_size"
-        android:layout_below="@+id/bubble"
-        android:layout_marginStart="@dimen/margin_half"
-        android:layout_marginTop="@dimen/consultant_photo_offset_size" />
+        android:layout_alignBottom="@id/bubble"
+        android:layout_marginStart="@dimen/margin_half" />
 
     <im.threads.ui.widget.textView.BubbleTimeTextView
         android:id="@+id/errorText"
