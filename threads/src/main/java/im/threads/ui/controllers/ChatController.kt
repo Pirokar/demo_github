@@ -851,12 +851,12 @@ class ChatController private constructor() {
                             messenger.addMsgToResendQueue(chatItem)
                             if (isActive) {
                                 fragment?.showConnectionError()
+                                messenger.proceedSendingQueue(chatItem)
                             } else {
-                                preferences.get(PreferencesCoreKeys.USER_INFO, UserInfoBuilder(""))?.let {
+                                preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)?.let {
                                     addUnsentMessage(appContext, it.appMarker)
                                 }
                             }
-                            messenger.proceedSendingQueue(chatItem)
                         }
                     }
                 ) { error: Throwable? -> error("subscribeToMessageSendError ", error) }
