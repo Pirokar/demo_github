@@ -15,7 +15,7 @@ import okhttp3.Interceptor;
 
 public class BaseConfigBuilder {
     @NonNull
-    protected Context context;
+    public Context context;
 
     @Nullable
     protected UnreadMessagesCountListener unreadMessagesCountListener = null;

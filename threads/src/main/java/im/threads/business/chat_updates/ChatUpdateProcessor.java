@@ -51,13 +51,6 @@ public class ChatUpdateProcessor {
     private final FlowableProcessor<Map<String, Object>> socketResponseMapProcessor =
             PublishProcessor.create();
 
-    public static ChatUpdateProcessor getInstance() {
-        if (instance == null) {
-            instance = new ChatUpdateProcessor();
-        }
-        return instance;
-    }
-
     public void postTyping(@NonNull String clientId) {
         typingProcessor.onNext(clientId);
     }

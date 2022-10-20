@@ -26,6 +26,7 @@ import androidx.core.content.ContextCompat
 import im.threads.R
 import im.threads.business.models.FileDescription
 import im.threads.business.secureDatabase.DatabaseHolder
+import im.threads.business.serviceLocator.core.inject
 import im.threads.databinding.ActivityFilesAndMediaBinding
 import im.threads.ui.ChatStyle
 import im.threads.ui.activities.BaseActivity
@@ -45,8 +46,9 @@ internal class FilesActivity : BaseActivity(), OnFileClick {
     private val config: Config by lazy {
         Config.getInstance()
     }
+    private val database: DatabaseHolder by inject()
     private val filesViewModel: FilesViewModel by viewModels {
-        FilesViewModel.Factory(config.context, DatabaseHolder.getInstance())
+        FilesViewModel.Factory(config.context, database)
     }
     private var filesAndMediaAdapter: FilesAndMediaAdapter? = null
 

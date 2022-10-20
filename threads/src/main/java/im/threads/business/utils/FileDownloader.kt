@@ -1,9 +1,11 @@
 package im.threads.business.utils
 
 import android.content.Context
+import im.threads.business.UserInfoBuilder
 import im.threads.business.config.BaseConfig
 import im.threads.business.logger.LoggerEdna
-import im.threads.business.utils.preferences.PrefUtilsBase
+import im.threads.business.preferences.Preferences
+import im.threads.business.preferences.PreferencesCoreKeys
 import java.io.BufferedInputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -21,7 +23,8 @@ class FileDownloader(
     private val path: String,
     private val fileName: String,
     private val ctx: Context,
-    private val downloadListener: DownloadListener
+    private val downloadListener: DownloadListener,
+    private val preferences: Preferences
 ) {
     private val outputFile: File = File(
         getDownloadDir(ctx),
@@ -51,14 +54,17 @@ class FileDownloader(
             } else {
                 url.openConnection() as HttpURLConnection
             }
+            val userInfo = preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)
             try {
                 urlConnection.requestMethod = "GET"
-                urlConnection.setRequestProperty("X-Ext-Client-ID", PrefUtilsBase.clientID)
-                if (!PrefUtilsBase.authToken.isNullOrBlank()) {
-                    urlConnection.setRequestProperty("Authorization", PrefUtilsBase.authToken)
+                if (userInfo?.clientId != null) {
+                    urlConnection.setRequestProperty("X-Ext-Client-ID", userInfo.clientId)
                 }
-                if (!PrefUtilsBase.authSchema.isNullOrBlank()) {
-                    urlConnection.setRequestProperty("X-Auth-Schema", PrefUtilsBase.authSchema)
+                if (!userInfo?.authToken.isNullOrBlank()) {
+                    urlConnection.setRequestProperty("Authorization", userInfo?.authToken)
+                }
+                if (!userInfo?.authToken.isNullOrBlank()) {
+                    urlConnection.setRequestProperty("X-Auth-Schema", userInfo?.authToken)
                 }
                 urlConnection.doOutput = false
                 urlConnection.useCaches = false

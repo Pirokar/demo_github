@@ -21,6 +21,7 @@ import im.threads.R
 import im.threads.business.logger.LoggerEdna.error
 import im.threads.business.models.FileDescription
 import im.threads.business.secureDatabase.DatabaseHolder
+import im.threads.business.serviceLocator.core.inject
 import im.threads.business.utils.FileUtils.isImage
 import im.threads.business.utils.FileUtils.saveToDownloads
 import im.threads.business.utils.ThreadsPermissionChecker
@@ -41,15 +42,13 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
 class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionClickListener {
-
     private lateinit var mViewPager: ViewPager
-
     private var style = Config.getInstance().getChatStyle()
     private var collectionSize = 0
-
     private var files: ArrayList<FileDescription> = ArrayList()
     private var compositeDisposable: CompositeDisposable? = CompositeDisposable()
     private var permissionDescriptionAlertDialogFragment: PermissionDescriptionAlertDialogFragment? = null
+    private val database: DatabaseHolder by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,7 +57,7 @@ class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionCl
         mViewPager.addOnPageChangeListener(this)
         initToolbar(findViewById(R.id.toolbar), findViewById(R.id.toolbar_shadow))
         compositeDisposable?.add(
-            DatabaseHolder.getInstance().allFileDescriptions
+            database.allFileDescriptions
                 .doOnSuccess { data: List<FileDescription?>? ->
                     data?.forEach {
                         if (isImage(it)) {
