@@ -1640,6 +1640,7 @@ public final class ChatFragment extends BaseFragment implements
             handler.postDelayed(() -> scrollToPosition(chatAdapter.getItemCount() - 1, false), 100);
             afterResume = false;
         }
+        checkSearch();
     }
 
     public void setStateConsultConnected(ConsultInfo info) {
@@ -1741,6 +1742,12 @@ public final class ChatFragment extends BaseFragment implements
         boolean isVisibleSubtitle = getResources().getBoolean(style.isChatSubtitleVisible);
         if (mChatController != null && mChatController.isConsultFound() && !isInMessageSearchMode && !isFixedChatTitle && isVisibleSubtitle) {
             binding.subtitle.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void checkSearch() {
+        if (!TextUtils.isEmpty(binding.search.getText())) {
+            doFancySearch(binding.search.getText().toString(), false);
         }
     }
 
