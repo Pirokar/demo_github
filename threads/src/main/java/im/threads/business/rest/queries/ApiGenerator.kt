@@ -2,6 +2,7 @@ package im.threads.business.rest.queries
 
 import im.threads.R
 import im.threads.business.config.BaseConfig
+import im.threads.business.serviceLocator.core.inject
 import im.threads.business.transport.AuthInterceptor
 import im.threads.business.utils.AppInfoHelper
 import im.threads.business.utils.DeviceInfoHelper
@@ -20,6 +21,7 @@ abstract class ApiGenerator protected constructor(
 ) {
     protected lateinit var threadsApi: ThreadsApi
     protected lateinit var apiBuild: Retrofit
+    private val authInterceptor: AuthInterceptor by inject()
 
     private val userAgent: String
         get() = String.format(
@@ -50,7 +52,7 @@ abstract class ApiGenerator protected constructor(
                     )
                 }
             )
-            .addInterceptor(AuthInterceptor())
+            .addInterceptor(authInterceptor)
             .apply { config.networkInterceptor?.let { addInterceptor(it) } }
             .connectTimeout(connectTimeoutMillis.toLong(), TimeUnit.MILLISECONDS)
             .readTimeout(readTimeoutMillis.toLong(), TimeUnit.MILLISECONDS)

@@ -15,7 +15,9 @@ import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.FileDescription
 import im.threads.business.models.FileDescriptionUri
 import im.threads.business.models.enums.AttachmentStateEnum
+import im.threads.business.preferences.Preferences
 import im.threads.business.secureDatabase.DatabaseHolder
+import im.threads.business.serviceLocator.core.inject
 import im.threads.business.utils.FileDownloader
 import im.threads.business.utils.FileDownloader.DownloadListener
 import im.threads.business.utils.FileProviderHelper
@@ -27,6 +29,8 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
     Worker(context, workerParameters) {
 
     private var runningDownloads = HashMap<FileDescription, FileDownloader>()
+    private val preferences: Preferences by inject()
+    private val database: DatabaseHolder by inject()
 
     override fun doWork(): Result {
         val data = inputData.getByteArray(FD_TAG)?.let { unmarshall(it) }
@@ -56,7 +60,7 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
                     var downloadProgress = progress
                     if (downloadProgress < 1) downloadProgress = 1.0
                     fileDescription.downloadProgress = downloadProgress.toInt()
-                    DatabaseHolder.getInstance().updateFileDescription(fileDescription)
+                    database.updateFileDescription(fileDescription)
                     sendDownloadProgressBroadcast(fileDescription)
                 }
 
@@ -67,7 +71,7 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
                         file
                     )
                     fileDescription.fileUri = fileUri
-                    DatabaseHolder.getInstance().updateFileDescription(fileDescription)
+                    database.updateFileDescription(fileDescription)
                     runningDownloads.remove(fileDescription)
                     sendFinishBroadcast(fileDescription)
                     fileDescription.onCompleteSubject.onNext(
@@ -78,10 +82,11 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
                 override fun onFileDownloadError(e: Exception?) {
                     LoggerEdna.error("error while downloading file ", e)
                     fileDescription.downloadProgress = 0
-                    DatabaseHolder.getInstance().updateFileDescription(fileDescription)
+                    database.updateFileDescription(fileDescription)
                     e?.let { sendDownloadErrorBroadcast(fileDescription, e) }
                 }
-            }
+            },
+            preferences
         )
 
         if (START_DOWNLOAD_FD_TAG == inputData.getString(START_DOWNLOAD_ACTION)) {
@@ -91,7 +96,7 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
                 downloader?.stop()
                 fileDescription.downloadProgress = 0
                 sendDownloadProgressBroadcast(fileDescription)
-                DatabaseHolder.getInstance().updateFileDescription(fileDescription)
+                database.updateFileDescription(fileDescription)
             } else {
                 runningDownloads[fileDescription] = fileDownloader
                 fileDescription.downloadProgress = 1

@@ -3,6 +3,7 @@ package im.threads.business.utils.messenger
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
+import im.threads.business.UserInfoBuilder
 import im.threads.business.chat_updates.ChatUpdateProcessor
 import im.threads.business.config.BaseConfig
 import im.threads.business.logger.LoggerEdna.debug
@@ -13,8 +14,11 @@ import im.threads.business.models.ChatItemSendErrorModel
 import im.threads.business.models.ConsultInfo
 import im.threads.business.models.MessageState
 import im.threads.business.models.UserPhrase
+import im.threads.business.preferences.Preferences
+import im.threads.business.preferences.PreferencesCoreKeys
 import im.threads.business.rest.queries.ThreadsApi
-import im.threads.business.secureDatabase.DatabaseHolder.Companion.getInstance
+import im.threads.business.secureDatabase.DatabaseHolder
+import im.threads.business.serviceLocator.core.inject
 import im.threads.business.transport.HistoryLoader.getHistorySync
 import im.threads.business.transport.HistoryParser
 import im.threads.business.utils.ConsultWriter
@@ -22,7 +26,6 @@ import im.threads.business.utils.getErrorStringResByCode
 import im.threads.business.utils.internet.NetworkInteractor
 import im.threads.business.utils.internet.NetworkInteractorImpl
 import im.threads.business.utils.postFile
-import im.threads.business.utils.preferences.PrefUtilsBase
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -37,7 +40,7 @@ import kotlinx.coroutines.launch
 class MessengerImpl(private var compositeDisposable: CompositeDisposable?) : Messenger {
     private val context = BaseConfig.instance.context
     private val transport = BaseConfig.instance.transport
-    private val chatUpdateProcessor = ChatUpdateProcessor.getInstance()
+    private val chatUpdateProcessor: ChatUpdateProcessor by inject()
     private var isDownloadingMessages = false
     private var isAllMessagesDownloaded = false
     private var lastMessageTimestamp = 0L
@@ -46,6 +49,8 @@ class MessengerImpl(private var compositeDisposable: CompositeDisposable?) : Mes
     private var unsentMessageHandler: Handler? = null
     private val networkInteractor: NetworkInteractor = NetworkInteractorImpl()
     private val mainCoroutineScope = CoroutineScope(Dispatchers.Main)
+    private val preferences: Preferences by inject()
+    private val database: DatabaseHolder by inject()
 
     private val resendMessageKey = 123
     var pageItemsCount = 100
@@ -54,12 +59,13 @@ class MessengerImpl(private var compositeDisposable: CompositeDisposable?) : Mes
 
     override fun sendMessage(userPhrase: UserPhrase) {
         info("sendMessage: $userPhrase")
-        val consultWriter = ConsultWriter(PrefUtilsBase.defaultSharedPreferences)
+        val consultWriter = ConsultWriter(preferences)
         var consultInfo: ConsultInfo? = null
 
         if (null != userPhrase.quote && userPhrase.quote.isFromConsult) {
-            val id = userPhrase.quote.quotedPhraseConsultId
-            consultInfo = consultWriter.getConsultInfo(id)
+            userPhrase.quote.quotedPhraseConsultId?.let { id ->
+                consultInfo = consultWriter.getConsultInfo(id)
+            }
         }
         if (!userPhrase.hasFile()) {
             sendTextMessage(userPhrase, consultInfo)
@@ -89,14 +95,14 @@ class MessengerImpl(private var compositeDisposable: CompositeDisposable?) : Mes
                 }
                 debug(ThreadsApi.REST_TAG, "Messages are loaded")
                 isDownloadingMessages = false
-                return@fromCallable getInstance().getChatItems(0, -1)
+                return@fromCallable database.getChatItems(0, -1)
             }
         }
             .doOnError { throwable: Throwable? -> isDownloadingMessages = false }
     }
 
     override fun saveMessages(chatItems: List<ChatItem>) {
-        getInstance().putChatItems(chatItems)
+        database.putChatItems(chatItems)
     }
 
     override fun clearSendQueue() {
@@ -202,11 +208,12 @@ class MessengerImpl(private var compositeDisposable: CompositeDisposable?) : Mes
             Completable.fromAction {
                 var filePath: String? = null
                 var quoteFilePath: String? = null
+                val clientId = preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)?.clientId
                 if (fileDescription != null) {
-                    filePath = postFile(fileDescription)
+                    filePath = postFile(fileDescription, clientId)
                 }
                 if (quoteFileDescription != null) {
-                    quoteFilePath = postFile(quoteFileDescription)
+                    quoteFilePath = postFile(quoteFileDescription, clientId)
                 }
                 transport.sendMessage(userPhrase, consultInfo, filePath, quoteFilePath)
             }

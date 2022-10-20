@@ -29,7 +29,7 @@ object HistoryLoader {
     @Throws(Exception::class)
     fun getHistorySync(beforeTimestamp: Long?, count: Int?): HistoryResponse? {
         var count = count
-        val token = BaseConfig.instance.transport.token
+        val token = BaseConfig.instance.transport.getToken()
         if (count == null) {
             count = BaseConfig.instance.historyLoadingCount
         }

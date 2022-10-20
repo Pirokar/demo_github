@@ -1,45 +1,34 @@
-package im.threads.business.utils.preferences
+package im.threads.business.preferences
 
-open class PrefUtilsBaseKeys {
-    val TAG_CLIENT_ID = "TAG_CLIENT_ID"
-    val TAG_CLIENT_ID_ENCRYPTED = "TAG_CLIENT_ID_ENCRYPTED"
-    val CLIENT_ID_SIGNATURE_KEY = "CLIENT_ID_SIGNATURE"
+/**
+ * Ключи для Preferences уровня Core
+ */
+object PreferencesCoreKeys {
+    private val migrationKeys = PrefKeysForMigration()
+
     val TAG_NEW_CLIENT_ID = "TAG_NEW_CLIENT_ID"
-    val CLIENT_NAME = "DEFAULT_CLIENT_NAMETITLE_TAG"
-    val EXTRA_DATA = "EXTRA_DATE"
     val LAST_COPY_TEXT = "LAST_COPY_TEXT"
-    val APP_MARKER_KEY = "APP_MARKER"
     val DEVICE_ADDRESS = "DEVICE_ADDRESS"
     val FCM_TOKEN = "FCM_TOKEN"
     val HCM_TOKEN = "HCM_TOKEN"
     val CLOUD_MESSAGING_TYPE = "CLOUD_MESSAGING_TYPE"
     val DEVICE_UID = "DEVICE_UID"
-    val AUTH_TOKEN = "AUTH_TOKEN"
-    val AUTH_SCHEMA = "AUTH_SCHEMA"
     val THREAD_ID = "THREAD_ID"
     val FILE_DESCRIPTION_DRAFT = "FILE_DESCRIPTION_DRAFT"
     val CAMPAIGN_MESSAGE = "CAMPAIGN_MESSAGE"
     val UNREAD_PUSH_COUNT = "UNREAD_PUSH_COUNT"
+    val USER_INFO = "USER_INFO"
     val STORE_NAME = "im.threads.internal.utils.PrefStore"
     val ENCRYPTED_STORE_NAME = "im.threads.internal.utils.EncryptedPrefStore"
     val IS_DATABASE_PASSWORD_MIGRATED = "IS_DATABASE_PASSWORD_MIGRATED"
 
-    open val allPrefKeys = arrayListOf(
-        TAG_CLIENT_ID,
-        TAG_CLIENT_ID_ENCRYPTED,
-        CLIENT_ID_SIGNATURE_KEY,
-        TAG_NEW_CLIENT_ID,
-        CLIENT_NAME,
-        EXTRA_DATA,
+    val allPrefKeys = mutableListOf(
         LAST_COPY_TEXT,
-        APP_MARKER_KEY,
         DEVICE_ADDRESS,
         FCM_TOKEN,
         HCM_TOKEN,
         CLOUD_MESSAGING_TYPE,
         DEVICE_UID,
-        AUTH_TOKEN,
-        AUTH_SCHEMA,
         THREAD_ID,
         FILE_DESCRIPTION_DRAFT,
         CAMPAIGN_MESSAGE,
@@ -47,5 +36,5 @@ open class PrefUtilsBaseKeys {
         STORE_NAME,
         ENCRYPTED_STORE_NAME,
         IS_DATABASE_PASSWORD_MIGRATED
-    )
+    ).apply { addAll(migrationKeys.list) }
 }
