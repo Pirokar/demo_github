@@ -2323,6 +2323,10 @@ public final class ChatFragment extends BaseFragment implements
         binding.flEmpty.setVisibility(View.GONE);
     }
 
+    public int getChatImtesCount() {
+        return chatAdapter.getItemCount();
+    }
+
     @Override
     public void acceptConvertedFile(@NonNull File convertedFile) {
         addVoiceMessagePreview(convertedFile);

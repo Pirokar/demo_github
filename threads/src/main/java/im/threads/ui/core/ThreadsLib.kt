@@ -5,6 +5,9 @@ import im.threads.business.UserInfoBuilder
 import im.threads.business.config.BaseConfig
 import im.threads.business.core.ThreadsLibBase
 import im.threads.business.logger.LoggerEdna
+import im.threads.business.preferences.Preferences
+import im.threads.business.preferences.PreferencesCoreKeys
+import im.threads.business.serviceLocator.core.inject
 import im.threads.ui.ChatStyle
 import im.threads.ui.config.Config
 import im.threads.ui.config.ConfigBuilder
@@ -17,8 +20,15 @@ class ThreadsLib(context: Context) : ThreadsLibBase(context) {
         Config.getInstance()
     }
 
+    private val preferences: Preferences by inject()
+
     public override fun initUser(userInfoBuilder: UserInfoBuilder) {
-        ChatController.getInstance().cleanAll()
+        val userInfo = preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)
+        val newClientId = preferences.get<String>(PreferencesCoreKeys.TAG_NEW_CLIENT_ID)
+        val oldClientId = userInfo?.clientId
+        if (!newClientId.isNullOrEmpty() && newClientId != oldClientId) {
+            ChatController.getInstance().cleanAll()
+        }
         super.initUser(userInfoBuilder)
         ChatController.getInstance().hideEmptyState()
         ChatController.getInstance().loadHistory()

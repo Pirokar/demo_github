@@ -351,6 +351,7 @@ class ChatController private constructor() {
         fragment = chatFragment
 
         chatFragment.showProgressBar()
+        loadItemsFromDB()
         if (consultWriter.isSearchingConsult) {
             chatFragment.setStateSearchingConsult()
         }
@@ -403,6 +404,14 @@ class ChatController private constructor() {
         }
         fragment = null
     }
+
+    fun loadItemsFromDB() {
+        fragment?.let {
+            it.addChatItems(database.getChatItems(0, -1))
+            it.hideProgressBar()
+        }
+    }
+
 
     fun setMessagesInCurrentThreadAsReadInDB() {
         subscribe(
@@ -487,7 +496,7 @@ class ChatController private constructor() {
 
     fun loadHistory() {
         if (!isDownloadingMessages) {
-            if (fragment?.isAdded == true) {
+            if (fragment?.isAdded == true && fragment?.chatImtesCount == 0) {
                 fragment?.showProgressBar()
             }
             info(ThreadsApi.REST_TAG, "Loading history from " + ChatController::class.java.simpleName)
@@ -1282,7 +1291,17 @@ class ChatController private constructor() {
 
         private fun subscribeOnClientIdChange() {
             instance?.subscribe(
-                Single.fromCallable { instance!!.onClientIdChanged() }
+                Single.fromCallable {
+                    val preferences = Preferences(ContextHolder.context)
+                    val userInfo = preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)
+                    val newClientId = preferences.get<String>(PreferencesCoreKeys.TAG_NEW_CLIENT_ID)
+                    val oldClientId = userInfo?.clientId
+                    if (!newClientId.isNullOrEmpty() && newClientId != oldClientId) {
+                        instance!!.onClientIdChanged()
+                    } else {
+                        ArrayList()
+                    }
+                }
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
