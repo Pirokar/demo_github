@@ -3,11 +3,9 @@ package im.threads.ui.activities
 import android.Manifest
 import android.content.Context
 import android.content.Intent
-import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
-import android.text.SpannableString
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
