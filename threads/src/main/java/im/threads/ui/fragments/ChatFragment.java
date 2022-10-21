@@ -1073,6 +1073,8 @@ public final class ChatFragment extends BaseFragment implements
             SpannableString s = new SpannableString(searchMenuItem.getTitle());
             s.setSpan(new ForegroundColorSpan(ContextCompat.getColor(activity, style.menuItemTextColorResId)), 0, s.length(), 0);
             searchMenuItem.setTitle(s);
+            boolean searchEnabled = getResources().getBoolean(config.getChatStyle().searchEnabled);
+            searchMenuItem.setVisible(searchEnabled);
         }
         MenuItem filesAndMedia = menu.findItem(R.id.files_and_media);
         if (filesAndMedia != null) {

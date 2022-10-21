@@ -208,6 +208,7 @@ public class ChatStyleBuilderHelper {
 
                 .setOutgoingTimeTextSize(R.dimen.text_small)
                 .setIncomingTimeTextSize(R.dimen.text_big)
+                .setSearchEnabled(R.bool.alt_threads_chat_search_enabled)
                 .setFixedChatTitle(R.bool.alt_threads_chat_fixed_chat_title)
                 .setVisibleChatSubtitle(R.bool.alt_threads_chat_subtitle_is_visible)
                 .setMaxGalleryImagesCount(R.integer.alt_max_count_attached_images)
