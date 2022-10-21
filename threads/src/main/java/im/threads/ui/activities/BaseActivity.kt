@@ -23,9 +23,7 @@ import im.threads.business.useractivity.UserActivityTimeProvider.getLastUserActi
 import im.threads.ui.utils.TypefaceSpanEdna
 import im.threads.ui.utils.typefaceSpanCompatV28
 
-/**
- * Родитель для всех Activity библиотеки
- */
+/** Родитель для всех Activity библиотеки */
 abstract class BaseActivity : AppCompatActivity() {
 
     @SuppressLint("SourceLockedOrientationActivity")
@@ -70,7 +68,12 @@ abstract class BaseActivity : AppCompatActivity() {
         }
     }
 
-    protected fun applyToolbarTextStyle(textColor: Int, fontSize: Int, typeface: Typeface, titleText: SpannableString) {
+    protected fun applyToolbarTextStyle(
+        textColor: Int,
+        fontSize: Int,
+        typeface: Typeface?,
+        titleText: SpannableString
+    ) {
         val length = titleText.length
         titleText.setSpan(
             ForegroundColorSpan(textColor),
@@ -84,20 +87,22 @@ abstract class BaseActivity : AppCompatActivity() {
             length,
             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
         )
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            titleText.setSpan(
-                TypefaceSpan(typeface),
-                0,
-                length,
-                Spannable.SPAN_INCLUSIVE_INCLUSIVE
-            )
-        } else {
-            titleText.setSpan(
-                typeface.getTypefaceSpan(),
-                0,
-                length,
-                Spannable.SPAN_INCLUSIVE_INCLUSIVE
-            )
+        typeface?.let {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                titleText.setSpan(
+                    TypefaceSpan(it),
+                    0,
+                    length,
+                    Spannable.SPAN_INCLUSIVE_INCLUSIVE
+                )
+            } else {
+                titleText.setSpan(
+                    it.getTypefaceSpan(),
+                    0,
+                    length,
+                    Spannable.SPAN_INCLUSIVE_INCLUSIVE
+                )
+            }
         }
     }
 

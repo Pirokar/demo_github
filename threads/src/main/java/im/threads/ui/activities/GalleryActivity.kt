@@ -82,10 +82,12 @@ class GalleryActivity : BaseActivity(), OnItemClick, OnGalleryItemClick {
 
     private fun setTitle(text: String) {
         val style = getInstance().getChatStyle()
-        val font = Typeface.createFromAsset(assets, style.defaultFontRegular)
-        val typeface = Typeface.create(font, Typeface.NORMAL)
         val textColor = ContextCompat.getColor(this, style.chatToolbarTextColorResId)
         val fontSize = resources.getDimensionPixelSize(R.dimen.text_big)
+        var typeface: Typeface? = null
+        Typeface.createFromAsset(assets, style.defaultFontRegular)?.let {
+            typeface = Typeface.create(it, Typeface.NORMAL)
+        }
         supportActionBar?.apply {
             val titleText = SpannableString(text)
             applyToolbarTextStyle(textColor, fontSize, typeface, titleText)
