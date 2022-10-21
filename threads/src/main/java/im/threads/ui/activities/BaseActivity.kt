@@ -18,8 +18,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import im.threads.R
 import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.useractivity.UserActivityTimeProvider.getLastUserActivityTimeCounter
+import im.threads.ui.config.Config
 import im.threads.ui.utils.TypefaceSpanEdna
 import im.threads.ui.utils.typefaceSpanCompatV28
 
@@ -65,6 +67,21 @@ abstract class BaseActivity : AppCompatActivity() {
             ViewCompat.getWindowInsetsController(window.decorView)?.apply {
                 isAppearanceLightStatusBars = !isStatusBarLight
             }
+        }
+    }
+
+    protected fun setTitle(text: String) {
+        val style = Config.getInstance().getChatStyle()
+        val textColor = ContextCompat.getColor(this, style.chatToolbarTextColorResId)
+        val fontSize = resources.getDimensionPixelSize(R.dimen.text_big)
+        var typeface: Typeface? = null
+        Typeface.createFromAsset(assets, style.defaultFontRegular)?.let {
+            typeface = Typeface.create(it, Typeface.NORMAL)
+        }
+        supportActionBar?.apply {
+            val titleText = SpannableString(text)
+            applyToolbarTextStyle(textColor, fontSize, typeface, titleText)
+            title = titleText
         }
     }
 
