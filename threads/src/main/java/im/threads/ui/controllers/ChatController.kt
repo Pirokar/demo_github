@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.annotation.MainThread
 import androidx.core.util.Consumer
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.google.gson.JsonObject
 import im.threads.R
 import im.threads.business.UserInfoBuilder
 import im.threads.business.broadcastReceivers.ProgressReceiver
@@ -50,6 +51,7 @@ import im.threads.business.models.UpcomingUserMessage
 import im.threads.business.models.UserPhrase
 import im.threads.business.preferences.Preferences
 import im.threads.business.preferences.PreferencesCoreKeys
+import im.threads.business.rest.models.ConfigResponse
 import im.threads.business.rest.models.SettingsResponse
 import im.threads.business.rest.queries.BackendApi.Companion.get
 import im.threads.business.rest.queries.ThreadsApi
@@ -90,7 +92,9 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.processors.PublishProcessor
 import io.reactivex.schedulers.Schedulers
 import retrofit2.Response
+import java.util.Date
 import java.util.concurrent.TimeUnit
+
 
 /**
  * controller for chat Fragment. all bells and whistles in fragment,
@@ -510,6 +514,7 @@ class ChatController private constructor() {
                             BaseConfig.instance.transport.markMessagesAsRead(uuidList)
                         }
                     }
+                    config
                     androidx.core.util.Pair(response?.consultInfo, serverItems)
                 }
                     .subscribeOn(Schedulers.io())
@@ -531,6 +536,7 @@ class ChatController private constructor() {
                     ) { e: Throwable? ->
                         isDownloadingMessages = false
                         fragment?.hideProgressBar()
+                        config
                         error(e)
                     }
             )
@@ -566,6 +572,39 @@ class ChatController private constructor() {
                     }
             )
         }
+
+    val config: Unit
+        get() {
+            subscribe(
+                Single.fromCallable {
+                    get().config()?.execute()
+                }
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                        { response: Response<ConfigResponse?>? ->
+                            val responseBody = response?.body()
+                            responseBody?.let {
+                                val info: ScheduleInfo? = getScheduleInfo(it.schedule?.content)
+                                if (fragment != null) {
+                                    fragment?.addChatItem(info)
+                                }
+                            }
+                        }
+                    ) { e: Throwable ->
+                        info("error on getting config : " + e.message)
+                        chatUpdateProcessor.postError(TransportException(e.message))
+                    }
+            )
+        }
+
+    private fun getScheduleInfo(fullMessage: JsonObject?): ScheduleInfo? {
+        return fullMessage?.get("content")?.let {
+            val scheduleInfo = BaseConfig.instance.gson.fromJson(it, ScheduleInfo::class.java)
+            scheduleInfo.date = Date().time
+            scheduleInfo
+        }
+    }
 
     fun downloadMessagesTillEnd(): Single<List<ChatItem>> {
         return messenger.downloadMessagesTillEnd()
