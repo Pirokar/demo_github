@@ -405,7 +405,7 @@ class ChatController private constructor() {
         fragment = null
     }
 
-    fun loadItemsFromDB() {
+    private fun loadItemsFromDB() {
         fragment?.let {
             it.addChatItems(database.getChatItems(0, -1))
             it.hideProgressBar()
