@@ -77,7 +77,6 @@ import im.threads.ui.fragments.ChatFragment
 import im.threads.ui.preferences.PreferencesUiKeys
 import im.threads.ui.utils.preferences.PreferencesMigrationUi
 import im.threads.ui.utils.runOnUiThread
-import im.threads.ui.workers.NotificationWorker.Companion.addUnsentMessage
 import im.threads.ui.workers.NotificationWorker.Companion.removeNotification
 import io.reactivex.Completable
 import io.reactivex.Flowable
@@ -851,12 +850,8 @@ class ChatController private constructor() {
                             messenger.addMsgToResendQueue(chatItem)
                             if (isActive) {
                                 fragment?.showConnectionError()
-                                messenger.proceedSendingQueue(chatItem)
-                            } else {
-                                preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)?.let {
-                                    addUnsentMessage(appContext, it.appMarker)
-                                }
                             }
+                            messenger.proceedSendingQueue(chatItem)
                         }
                     }
                 ) { error: Throwable? -> error("subscribeToMessageSendError ", error) }
