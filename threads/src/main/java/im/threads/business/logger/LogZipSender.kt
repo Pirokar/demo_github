@@ -2,8 +2,8 @@ package im.threads.business.logger
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.widget.Toast
+import im.threads.business.utils.FileProviderHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -29,12 +29,8 @@ class LogZipSender(private val context: Context) {
         val dirPath = LoggerConfig.config?.builder?.dirPath
         if (dirPath != null) {
             coroutineScope.launch {
-                val destPath = File(context.filesDir, "logsZip")
-                if (!destPath.exists()) {
-                    destPath.mkdir()
-                }
-                val destinationFile = "${destPath.absolutePath}/zippedLogs.zip"
-                zipFolder(dirPath, destinationFile)
+                val destinationFile = File(context.filesDir, "zippedLogs.zip")
+                zipFolder(dirPath, destinationFile.absolutePath)
 
                 withContext(Dispatchers.Main) {
                     shareLogs(destinationFile)
@@ -83,18 +79,23 @@ class LogZipSender(private val context: Context) {
                 origin.close()
             }
             out.close()
+            LoggerEdna.info("Logs zipped")
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
-    private fun shareLogs(path: String) {
+    private fun shareLogs(file: File) {
         val sharingIntent = Intent(Intent.ACTION_SEND)
-        val sharingUri = Uri.parse(path)
 
-        sharingIntent.type = "application/zip"
-        sharingIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        sharingIntent.putExtra(Intent.EXTRA_STREAM, sharingUri)
-        context.startActivity(Intent.createChooser(sharingIntent, "Share file"))
+        LoggerEdna.info("Sharing zipped logs with path: ${file.absolutePath}")
+
+        if (file.exists()) {
+            sharingIntent.type = "application/zip"
+            sharingIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            sharingIntent.action = Intent.ACTION_SEND
+            sharingIntent.putExtra(Intent.EXTRA_STREAM, FileProviderHelper.getUriForFile(context, file))
+            context.startActivity(Intent.createChooser(sharingIntent, "Share file"))
+        }
     }
 }
