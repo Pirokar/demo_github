@@ -412,7 +412,6 @@ class ChatController private constructor() {
         }
     }
 
-
     fun setMessagesInCurrentThreadAsReadInDB() {
         subscribe(
             database.setAllConsultMessagesWereReadInThread(threadId)
@@ -496,7 +495,7 @@ class ChatController private constructor() {
 
     fun loadHistory() {
         if (!isDownloadingMessages) {
-            if (fragment?.isAdded == true && fragment?.chatImtesCount == 0) {
+            if (fragment?.isAdded == true && fragment?.chatItemsCount == 0) {
                 fragment?.showProgressBar()
             }
             info(ThreadsApi.REST_TAG, "Loading history from " + ChatController::class.java.simpleName)
@@ -1269,6 +1268,31 @@ class ChatController private constructor() {
         return null
     }
 
+    private fun subscribeOnClientIdChange() {
+        instance?.subscribe(
+            Single.fromCallable {
+                val userInfo = preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)
+                val newClientId = preferences.get<String>(PreferencesCoreKeys.TAG_NEW_CLIENT_ID)
+                val oldClientId = userInfo?.clientId
+                if (!newClientId.isNullOrEmpty() && newClientId != oldClientId) {
+                    instance?.onClientIdChanged() ?: ArrayList()
+                } else {
+                    ArrayList()
+                }
+            }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { chatItems: List<ChatItem> ->
+                        if (instance?.fragment != null) {
+                            instance?.fragment?.addChatItems(chatItems)
+                            instance?.handleQuickReplies(chatItems)
+                        }
+                    }
+                ) { obj: Throwable -> obj.message }
+        )
+    }
+
     companion object {
         // Состояния консультанта
         const val CONSULT_STATE_FOUND = 1
@@ -1285,36 +1309,8 @@ class ChatController private constructor() {
                 instance = ChatController()
             }
             clientUseCase.initClientId()
-            subscribeOnClientIdChange()
+            instance?.subscribeOnClientIdChange()
             return instance ?: ChatController()
-        }
-
-        private fun subscribeOnClientIdChange() {
-            instance?.subscribe(
-                Single.fromCallable {
-                    val preferences = Preferences(ContextHolder.context)
-                    val userInfo = preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)
-                    val newClientId = preferences.get<String>(PreferencesCoreKeys.TAG_NEW_CLIENT_ID)
-                    val oldClientId = userInfo?.clientId
-                    if (!newClientId.isNullOrEmpty() && newClientId != oldClientId) {
-                        instance?.onClientIdChanged() ?: run {
-                            ArrayList()
-                        }
-                    } else {
-                        ArrayList()
-                    }
-                }
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                        { chatItems: List<ChatItem> ->
-                            if (instance?.fragment != null) {
-                                instance?.fragment?.addChatItems(chatItems)
-                                instance?.handleQuickReplies(chatItems)
-                            }
-                        }
-                    ) { obj: Throwable -> obj.message }
-            )
         }
     }
 }

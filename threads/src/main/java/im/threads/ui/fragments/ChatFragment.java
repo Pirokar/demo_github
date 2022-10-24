@@ -2323,7 +2323,7 @@ public final class ChatFragment extends BaseFragment implements
         binding.flEmpty.setVisibility(View.GONE);
     }
 
-    public int getChatImtesCount() {
+    public int getChatItemsCount() {
         return chatAdapter.getItemCount();
     }
 
