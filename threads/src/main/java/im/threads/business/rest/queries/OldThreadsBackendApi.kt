@@ -1,5 +1,6 @@
 package im.threads.business.rest.queries
 
+import im.threads.business.rest.models.ConfigResponse
 import im.threads.business.rest.models.HistoryResponse
 import im.threads.business.rest.models.SettingsResponse
 import im.threads.business.rest.models.VersionsModel
@@ -31,4 +32,7 @@ interface OldThreadsBackendApi {
 
     @GET("v${ThreadsApi.API_VERSION}/chat/settings?channelType=MOBILE&auth=false")
     fun settings(): Call<SettingsResponse?>?
+
+    @GET("/api/chat/config?channelType=MOBILE&auth=true")
+    fun config(@Query("chatApiVersion") chatApiVersion: String?): Call<ConfigResponse?>?
 }

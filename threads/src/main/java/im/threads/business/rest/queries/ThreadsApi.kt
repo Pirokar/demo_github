@@ -2,6 +2,7 @@ package im.threads.business.rest.queries
 
 import im.threads.business.config.BaseConfig
 import im.threads.business.models.FileUploadResponse
+import im.threads.business.rest.models.ConfigResponse
 import im.threads.business.rest.models.HistoryResponse
 import im.threads.business.rest.models.SettingsResponse
 import im.threads.business.rest.models.VersionsModel
@@ -27,6 +28,14 @@ class ThreadsApi(
             newThreadsApi?.settings()
         } else {
             oldThreadsApi?.settings()
+        }
+    }
+
+    fun config(): Call<ConfigResponse?>? {
+        return if (BaseConfig.instance.newChatCenterApi) {
+            newThreadsApi?.config(API_VERSION)
+        } else {
+            oldThreadsApi?.config(API_VERSION)
         }
     }
 

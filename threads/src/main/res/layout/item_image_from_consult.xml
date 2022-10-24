@@ -65,7 +65,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/threads_operator_photo_size"
-            android:layout_marginBottom="@dimen/margin_big"
             android:visibility="visible">
 
             <ImageView

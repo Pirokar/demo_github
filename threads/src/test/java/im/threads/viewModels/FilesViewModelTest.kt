@@ -1,12 +1,9 @@
 package im.threads.viewModels
 
 import android.content.Context
-import android.content.Intent
 import android.net.Uri
 import androidx.test.core.app.ApplicationProvider
-import im.threads.business.config.BaseConfig
 import im.threads.business.models.FileDescription
-import im.threads.business.rest.config.RequestConfig
 import im.threads.business.secureDatabase.DatabaseHolder
 import im.threads.ui.activities.filesActivity.FilesFlow
 import im.threads.ui.activities.filesActivity.FilesViewModel
@@ -48,26 +45,6 @@ class FilesViewModelTest {
 
         viewModel = FilesViewModel(context, database)
         viewModelSpy = spy(viewModel)
-
-        val testUrl = "https://testurl.ru"
-
-        BaseConfig.instance = BaseConfig(
-            ApplicationProvider.getApplicationContext(),
-            testUrl,
-            testUrl,
-            testUrl,
-            "provider",
-            null,
-            true,
-            null,
-            null,
-            null,
-            false,
-            0,
-            0,
-            RequestConfig(),
-            arrayListOf()
-        )
     }
 
     @Test
@@ -96,12 +73,6 @@ class FilesViewModelTest {
     fun givenFileDescriptionIsNull_whenOnFileClick_thenReturn() {
         viewModelSpy.onFileClick(null)
         verify(viewModelSpy, never()).localIntentLiveData
-    }
-
-    @Test
-    fun givenFileDescriptionNonNull_whenOnFileClick_thenLiveDataHasIntent() {
-        viewModel.onFileClick(fileDescriptionWithData)
-        assert(viewModel.localIntentLiveData.value is Intent)
     }
 
     @Test

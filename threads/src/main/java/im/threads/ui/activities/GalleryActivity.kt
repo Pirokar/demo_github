@@ -3,13 +3,11 @@ package im.threads.ui.activities
 import android.content.ContentUris
 import android.content.Context
 import android.content.Intent
-import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.text.Editable
-import android.text.SpannableString
 import android.text.TextWatcher
 import android.view.MenuItem
 import android.view.inputmethod.EditorInfo
@@ -78,19 +76,6 @@ class GalleryActivity : BaseActivity(), OnItemClick, OnGalleryItemClick {
         binding.searchEditText.setHintTextColor(hintTextColor)
         binding.clearSearchButton.setImageResource(R.drawable.ic_clear_gray_30dp)
         ColorsHelper.setTint(this, binding.clearSearchButton, style.chatToolbarTextColorResId)
-    }
-
-    private fun setTitle(text: String) {
-        val style = getInstance().getChatStyle()
-        val font = Typeface.createFromAsset(assets, style.defaultFontRegular)
-        val typeface = Typeface.create(font, Typeface.NORMAL)
-        val textColor = ContextCompat.getColor(this, style.chatToolbarTextColorResId)
-        val fontSize = resources.getDimensionPixelSize(R.dimen.text_big)
-        supportActionBar?.apply {
-            val titleText = SpannableString(text)
-            applyToolbarTextStyle(textColor, fontSize, typeface, titleText)
-            title = titleText
-        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

@@ -8,7 +8,6 @@ import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
-import android.text.SpannableString
 import android.text.TextUtils
 import android.text.TextWatcher
 import android.util.TypedValue
@@ -26,6 +25,7 @@ import androidx.core.content.ContextCompat
 import im.threads.R
 import im.threads.business.models.FileDescription
 import im.threads.business.secureDatabase.DatabaseHolder
+import im.threads.business.serviceLocator.core.inject
 import im.threads.databinding.ActivityFilesAndMediaBinding
 import im.threads.ui.ChatStyle
 import im.threads.ui.activities.BaseActivity
@@ -45,8 +45,9 @@ internal class FilesActivity : BaseActivity(), OnFileClick {
     private val config: Config by lazy {
         Config.getInstance()
     }
+    private val database: DatabaseHolder by inject()
     private val filesViewModel: FilesViewModel by viewModels {
-        FilesViewModel.Factory(config.context, DatabaseHolder.getInstance())
+        FilesViewModel.Factory(config.context, database)
     }
     private var filesAndMediaAdapter: FilesAndMediaAdapter? = null
 
@@ -63,19 +64,6 @@ internal class FilesActivity : BaseActivity(), OnFileClick {
         subscribeForNewIntents()
         subscribeForDownloadProgress()
         requestFiles()
-    }
-
-    private fun setTitle(text: String) {
-        val style = config.getChatStyle()
-        val font = Typeface.createFromAsset(assets, style.defaultFontRegular)
-        val typeface = Typeface.create(font, Typeface.NORMAL)
-        val textColor = ContextCompat.getColor(this, style.chatToolbarTextColorResId)
-        val fontSize = resources.getDimensionPixelSize(R.dimen.text_big)
-        supportActionBar?.apply {
-            val titleText = SpannableString(text)
-            applyToolbarTextStyle(textColor, fontSize, typeface, titleText)
-            title = titleText
-        }
     }
 
     override fun onBackPressed() {

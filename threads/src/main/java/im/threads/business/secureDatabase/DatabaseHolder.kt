@@ -1,27 +1,24 @@
 package im.threads.business.secureDatabase
 
+import android.content.Context
 import im.threads.business.annotation.OpenForTesting
-import im.threads.business.config.BaseConfig
 import im.threads.business.models.ChatItem
 import im.threads.business.models.ConsultInfo
 import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.FileDescription
 import im.threads.business.models.MessageState
 import im.threads.business.models.SpeechMessageUpdate
-import im.threads.business.models.Survey
 import im.threads.business.models.UserPhrase
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 
 @OpenForTesting
-class DatabaseHolder {
-    /**
-     * For Autotests purposes
-     *
-     * @return MyOpenHelper instance
-     */
-    val myOpenHelper = ThreadsDbHelper.getInstance(BaseConfig.instance.context)
+class DatabaseHolder(private val context: Context) {
+
+    init { checkAndUpdate() }
+
+    private val myOpenHelper = ThreadsDbHelper.getInstance(context)
 
     fun cleanDatabase() {
         myOpenHelper.cleanDatabase()
@@ -79,10 +76,6 @@ class DatabaseHolder {
         myOpenHelper.speechMessageUpdated(speechMessageUpdate)
     }
 
-    fun getSurvey(sendingId: Long): Survey? {
-        return myOpenHelper.getSurvey(sendingId)
-    }
-
     fun setNotSentSurveyDisplayMessageToFalse(): Completable {
         return Completable.fromCallable { myOpenHelper.setNotSentSurveyDisplayMessageToFalse() }
             .subscribeOn(Schedulers.io())
@@ -99,36 +92,16 @@ class DatabaseHolder {
 
     fun getUnreadMessagesUuid(): List<String?> = myOpenHelper.getUnreadMessagesUuid()
 
-    fun checkAndUpdate() {
-        val oldHelper =
-            im.threads.business.database.ThreadsDbHelper(BaseConfig.instance.context)
+    private fun checkAndUpdate() {
+        val oldHelper = im.threads.business.database.ThreadsDbHelper(context)
         if (needMigrateToNewDB(oldHelper)) {
             putChatItems(oldHelper.getChatItems(0, -1))
-            myOpenHelper.putFileDescriptions(oldHelper.getAllFileDescriptions())
+            myOpenHelper.putFileDescriptions(oldHelper.allFileDescriptions)
             oldHelper.cleanDatabase()
         }
     }
 
-    fun needMigrateToNewDB(helper: im.threads.business.database.ThreadsDbHelper): Boolean {
-        return helper.getChatItems(0, -1).size > 0 || helper.getAllFileDescriptions().size > 0
-    }
-
-    companion object {
-
-        private var instance: DatabaseHolder? = null
-
-        @JvmStatic
-        fun getInstance(): DatabaseHolder {
-            if (instance == null) {
-                instance = DatabaseHolder()
-                instance?.checkAndUpdate()
-            }
-            return instance!!
-        }
-        // ChatItems
-        /** Nullify instance. For Autotests purposes */
-        fun eraseInstance() {
-            instance = null
-        }
+    private fun needMigrateToNewDB(helper: im.threads.business.database.ThreadsDbHelper): Boolean {
+        return helper.getChatItems(0, -1).size > 0 || helper.allFileDescriptions.size > 0
     }
 }

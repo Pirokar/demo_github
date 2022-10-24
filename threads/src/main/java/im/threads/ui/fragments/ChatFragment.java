@@ -70,11 +70,11 @@ import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import im.threads.ui.ChatStyle;
 import im.threads.R;
 import im.threads.business.annotation.OpenWay;
 import im.threads.business.audio.audioRecorder.AudioRecorder;
 import im.threads.business.broadcastReceivers.ProgressReceiver;
+import im.threads.business.chat_updates.ChatUpdateProcessorJavaGetter;
 import im.threads.business.config.BaseConfig;
 import im.threads.business.imageLoading.ImageLoader;
 import im.threads.business.logger.LoggerEdna;
@@ -87,8 +87,10 @@ import im.threads.business.models.ChatPhrase;
 import im.threads.business.models.ClientNotificationDisplayType;
 import im.threads.business.models.ConsultInfo;
 import im.threads.business.models.ConsultPhrase;
+import im.threads.business.models.ConsultRole;
 import im.threads.business.models.ConsultTyping;
 import im.threads.business.models.FileDescription;
+import im.threads.business.models.InputFieldEnableModel;
 import im.threads.business.models.MessageState;
 import im.threads.business.models.QuickReply;
 import im.threads.business.models.QuickReplyItem;
@@ -105,14 +107,11 @@ import im.threads.business.utils.ClibpoardExtensionsKt;
 import im.threads.business.utils.FileProviderHelper;
 import im.threads.business.utils.FileUtils;
 import im.threads.business.utils.FileUtilsKt;
+import im.threads.business.utils.MediaHelper;
 import im.threads.business.utils.RxUtils;
 import im.threads.business.utils.ThreadsPermissionChecker;
-import im.threads.business.utils.preferences.PrefUtilsBase;
 import im.threads.databinding.FragmentChatBinding;
-import im.threads.business.chat_updates.ChatUpdateProcessor;
-import im.threads.business.utils.MediaHelper;
-import im.threads.business.models.ConsultRole;
-import im.threads.business.models.InputFieldEnableModel;
+import im.threads.ui.ChatStyle;
 import im.threads.ui.activities.CameraActivity;
 import im.threads.ui.activities.ChatActivity;
 import im.threads.ui.activities.GalleryActivity;
@@ -210,11 +209,8 @@ public final class ChatFragment extends BaseFragment implements
     private QuickReplyItem quickReplyItem = null;
     private int previousChatItemsCount = 0;
     private Config config = Config.getInstance();
-    private boolean isFirstHistoryLoading = true;
-
-    public static ChatFragment newInstance() {
-        return newInstance(OpenWay.DEFAULT);
-    }
+    private final ChatUpdateProcessorJavaGetter chatUpdateProcessor
+            = new ChatUpdateProcessorJavaGetter();
 
     public static ChatFragment newInstance(@OpenWay int from) {
         Bundle arguments = new Bundle();
@@ -266,12 +262,12 @@ public final class ChatFragment extends BaseFragment implements
         LoggerEdna.info(ChatFragment.class.getSimpleName() + " onViewCreated.");
 
         super.onViewCreated(view, savedInstanceState);
-        FileDescription fileDescriptionDraft = PrefUtilsBase.getFileDescriptionDraft();
+        FileDescription fileDescriptionDraft = mChatController.getFileDescriptionDraft();
         if (FileUtils.isVoiceMessage(fileDescriptionDraft)) {
             setFileDescription(fileDescriptionDraft);
             mQuoteLayoutHolder.setVoice();
         }
-        CampaignMessage campaignMessage = PrefUtilsBase.getCampaignMessage();
+        CampaignMessage campaignMessage = mChatController.getCampaignMessage();
         Bundle arguments = getArguments();
         if (arguments != null && campaignMessage != null) {
             @OpenWay int from = arguments.getInt(ARG_OPEN_WAY);
@@ -287,7 +283,7 @@ public final class ChatFragment extends BaseFragment implements
                     null,
                     false
             );
-            PrefUtilsBase.setCampaignMessage(null);
+            mChatController.setCampaignMessage(null);
         }
     }
 
@@ -554,7 +550,7 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     private void initUserInputState() {
-        subscribe(ChatUpdateProcessor.getInstance().getUserInputEnableProcessor()
+        subscribe(chatUpdateProcessor.getProcessor().getUserInputEnableProcessor()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::updateInputEnable,
                         error -> LoggerEdna.error("initUserInputState ", error)
@@ -562,7 +558,7 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     private void initQuickReplies() {
-        subscribe(ChatUpdateProcessor.getInstance().getQuickRepliesProcessor()
+        subscribe(chatUpdateProcessor.getProcessor().getQuickRepliesProcessor()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(quickReplies -> {
                             if (quickReplies == null || quickReplies.getItems().isEmpty()) {
@@ -710,7 +706,7 @@ public final class ChatFragment extends BaseFragment implements
     private void setMessagesAsReadForStorages() {
         if (previousChatItemsCount == 0 || chatAdapter.getItemCount() != previousChatItemsCount) {
             mChatController.setMessagesInCurrentThreadAsReadInDB();
-            PrefUtilsBase.setUnreadPushCount(0);
+            mChatController.clearUnreadPushCount();
             previousChatItemsCount = chatAdapter.getItemCount();
         }
     }
@@ -1528,6 +1524,9 @@ public final class ChatFragment extends BaseFragment implements
         if (layoutManager == null) {
             return;
         }
+        if(item == null) {
+            return;
+        }
 
         boolean isLastMessageVisible =
                 (chatAdapter.getItemCount() - 1 - layoutManager.findLastVisibleItemPosition())
@@ -1644,6 +1643,7 @@ public final class ChatFragment extends BaseFragment implements
             handler.postDelayed(() -> scrollToPosition(chatAdapter.getItemCount() - 1, false), 100);
             afterResume = false;
         }
+        checkSearch();
     }
 
     public void setStateConsultConnected(ConsultInfo info) {
@@ -1745,6 +1745,12 @@ public final class ChatFragment extends BaseFragment implements
         boolean isVisibleSubtitle = getResources().getBoolean(style.isChatSubtitleVisible);
         if (mChatController != null && mChatController.isConsultFound() && !isInMessageSearchMode && !isFixedChatTitle && isVisibleSubtitle) {
             binding.subtitle.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void checkSearch() {
+        if (!TextUtils.isEmpty(binding.search.getText())) {
+            doFancySearch(binding.search.getText().toString(), false);
         }
     }
 
@@ -2031,11 +2037,10 @@ public final class ChatFragment extends BaseFragment implements
     public void onStart() {
         super.onStart();
         LoggerEdna.info(ChatFragment.class.getSimpleName() + " onStart.");
-        setCurrentThreadId(PrefUtilsBase.getThreadId());
+        setCurrentThreadId(mChatController.getThreadId());
         BaseConfig.instance.transport.setLifecycle(getLifecycle());
         ChatController.getInstance().getSettings();
         ChatController.getInstance().loadHistory();
-        isFirstHistoryLoading = false;
     }
 
     @Override
@@ -2060,7 +2065,7 @@ public final class ChatFragment extends BaseFragment implements
         stopRecording();
         FileDescription fileDescription = getFileDescription();
         if (fileDescription == null || FileUtils.isVoiceMessage(fileDescription)) {
-            PrefUtilsBase.setFileDescriptionDraft(fileDescription);
+            mChatController.setFileDescriptionDraft(fileDescription);
         }
         mChatController.setActivityIsForeground(false);
         if (isAdded()) {
@@ -2427,7 +2432,7 @@ public final class ChatFragment extends BaseFragment implements
                 fdMediaPlayer.reset();
             }
             unChooseItem();
-            ChatUpdateProcessor.getInstance().postAttachAudioFile(false);
+            chatUpdateProcessor.getProcessor().postAttachAudioFile(false);
         }
 
         private void setContent(String header, String text, Uri imagePath, boolean isFromFilePicker) {
@@ -2477,7 +2482,7 @@ public final class ChatFragment extends BaseFragment implements
             binding.quotePast.setVisibility(View.GONE);
             formattedDuration = getFormattedDuration(getFileDescription());
             binding.quoteDuration.setText(formattedDuration);
-            ChatUpdateProcessor.getInstance().postAttachAudioFile(true);
+            chatUpdateProcessor.getProcessor().postAttachAudioFile(true);
         }
 
         private void init(int maxValue, int progress, boolean isPlaying) {

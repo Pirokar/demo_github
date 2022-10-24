@@ -16,7 +16,6 @@ import im.threads.business.rest.queries.ThreadsApi
 import im.threads.business.transport.InputStreamRequestBody
 import im.threads.business.utils.FileUtils.getFileName
 import im.threads.business.utils.FileUtils.getMimeType
-import im.threads.business.utils.preferences.PrefUtilsBase
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -31,16 +30,15 @@ import java.io.InputStream
 
 private const val PHOTO_RESIZE_MAX_SIDE = 1600
 
-fun postFile(fileDescription: FileDescription): String? {
-    val token = PrefUtilsBase.clientID
-    LoggerEdna.info(ThreadsApi.REST_TAG, "Posting file with token = $token")
-    if (token.isNotEmpty()) {
+fun postFile(fileDescription: FileDescription, clientId: String?): String? {
+    LoggerEdna.info(ThreadsApi.REST_TAG, "Posting file with token = $clientId")
+    if (!clientId.isNullOrBlank()) {
         fileDescription.fileUri?.let {
             if (it.toString().isNotEmpty()) {
                 return sendFile(
                     it,
                     getMimeType(it),
-                    token
+                    clientId
                 )
             }
         }

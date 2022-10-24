@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import im.threads.business.chat_updates.ChatUpdateProcessorJavaGetter;
 import im.threads.business.config.BaseConfig;
 import im.threads.business.formatters.ChatItemType;
 import im.threads.business.formatters.SpeechStatus;
@@ -37,7 +38,6 @@ import im.threads.business.transport.models.SpeechMessageUpdatedContent;
 import im.threads.business.transport.models.SurveyContent;
 import im.threads.business.transport.models.SystemMessageContent;
 import im.threads.business.transport.models.TextContent;
-import im.threads.business.chat_updates.ChatUpdateProcessor;
 
 public final class MessageParser {
     private MessageParser() {
@@ -77,7 +77,7 @@ public final class MessageParser {
             case ATTACHMENT_SETTINGS:
                 AttachmentSettings attachmentSettings = BaseConfig.instance.gson.fromJson(fullMessage, AttachmentSettings.class);
                 if (attachmentSettings.getClientId() != null) {
-                    ChatUpdateProcessor.getInstance().postAttachmentSettings(attachmentSettings);
+                    new ChatUpdateProcessorJavaGetter().getProcessor().postAttachmentSettings(attachmentSettings);
                 }
                 return null;
             case SPEECH_MESSAGE_UPDATED:

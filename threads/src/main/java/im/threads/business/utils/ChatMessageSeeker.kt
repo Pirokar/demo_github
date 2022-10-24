@@ -1,5 +1,6 @@
 package im.threads.business.utils
 
+import im.threads.business.logger.LoggerEdna.info
 import im.threads.business.models.ChatItem
 import im.threads.business.models.ChatPhrase
 import im.threads.business.utils.ChatItemListFinder.lastIndexOf
@@ -12,10 +13,11 @@ class ChatMessageSeeker {
     fun searchMessages(
         target: List<ChatItem>,
         forward: Boolean,
-        query: String
+        query: String?
     ): Pair<List<ChatItem>, ChatItem?> {
+        info("Searching: \"$query\"")
         if (target.isEmpty()) return Pair(target, null)
-        if (query.isEmpty()) {
+        if (query.isNullOrBlank()) {
             lastQuery = ""
             lastHighlightedItem = null
             return Pair(target, null)
@@ -37,6 +39,10 @@ class ChatMessageSeeker {
         }
         return if (forward) {
             if (lastHighlightedIndex == 0) { // if it is last
+                info(
+                    "Search finished. Target size: ${target.size}." +
+                        " Highlighted item timeStamp: ${lastHighlightedItem?.timeStamp}"
+                )
                 Pair(target, lastHighlightedItem)
             } else {
                 val initial = if (lastHighlightedIndex == -1) target.size - 1 else lastHighlightedIndex - 1
@@ -51,6 +57,7 @@ class ChatMessageSeeker {
                 }
                 if (lastHighlightedIndex == -1) {
                     lastHighlightedItem = null
+                    info("Search finished. Target size: ${target.size}. Highlighted item is null")
                     Pair(target, null)
                 } else {
                     Pair(target, lastHighlightedItem)
@@ -64,10 +71,15 @@ class ChatMessageSeeker {
                             ?.contains(query.lowercase()) == true
                     ) {
                         lastHighlightedItem = (target[i] as ChatPhrase)
+                        info(
+                            "Search finished. Target size: ${target.size}." +
+                                " Highlighted item timeStamp: ${lastHighlightedItem?.timeStamp}"
+                        )
                         return Pair(target, lastHighlightedItem)
                     }
                 }
                 lastHighlightedItem = null
+                info("Search finished. Target size: ${target.size}. Highlighted item is null")
                 return Pair(target, null)
             }
             for (i in lastHighlightedIndex + 1 until target.size) {
@@ -76,9 +88,17 @@ class ChatMessageSeeker {
                         ?.contains(query.lowercase()) == true
                 ) {
                     lastHighlightedItem = (target[i] as ChatPhrase)
+                    info(
+                        "Search finished. Target size: ${target.size}." +
+                            " Highlighted item timeStamp: ${lastHighlightedItem?.timeStamp}"
+                    )
                     return Pair(target, lastHighlightedItem)
                 }
             }
+            info(
+                "Search finished. Target size: ${target.size}." +
+                    " Highlighted item timeStamp: ${lastHighlightedItem?.timeStamp}"
+            )
             return Pair(target, lastHighlightedItem)
         }
     }
