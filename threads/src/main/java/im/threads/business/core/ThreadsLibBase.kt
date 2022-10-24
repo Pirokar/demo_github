@@ -205,7 +205,11 @@ open class ThreadsLibBase protected constructor(context: Context) {
             if (BaseConfig.instance.loggerConfig != null) {
                 coroutineScope.launch(Dispatchers.IO) {
                     info("Getting versions from \"api/versions\"...")
-                    val response = BackendApi.get().versions()?.execute()
+                    val response = try {
+                        BackendApi.get().versions()?.execute()
+                    } catch (exc: Exception) {
+                        null
+                    }
                     if (response?.isSuccessful == true) {
                         response.body()?.let { info(it.toTableString()) }
                     } else {
