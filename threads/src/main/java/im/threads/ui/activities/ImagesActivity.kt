@@ -3,11 +3,9 @@ package im.threads.ui.activities
 import android.Manifest
 import android.content.Context
 import android.content.Intent
-import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
-import android.text.SpannableString
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -107,18 +105,6 @@ class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionCl
         } else {
             toolbarShadow.invisible()
             toolbar.elevation = 0f
-        }
-    }
-
-    private fun setTitle(text: String) {
-        val font = Typeface.createFromAsset(assets, style.defaultFontRegular)
-        val typeface = Typeface.create(font, Typeface.NORMAL)
-        val textColor = ContextCompat.getColor(this, style.chatToolbarTextColorResId)
-        val fontSize = resources.getDimensionPixelSize(R.dimen.text_big)
-        supportActionBar?.apply {
-            val titleText = SpannableString(text)
-            applyToolbarTextStyle(textColor, fontSize, typeface, titleText)
-            title = titleText
         }
     }
 

@@ -18,14 +18,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import im.threads.R
 import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.useractivity.UserActivityTimeProvider.getLastUserActivityTimeCounter
+import im.threads.ui.config.Config
 import im.threads.ui.utils.TypefaceSpanEdna
 import im.threads.ui.utils.typefaceSpanCompatV28
 
-/**
- * Родитель для всех Activity библиотеки
- */
+/** Родитель для всех Activity библиотеки */
 abstract class BaseActivity : AppCompatActivity() {
 
     @SuppressLint("SourceLockedOrientationActivity")
@@ -70,7 +70,27 @@ abstract class BaseActivity : AppCompatActivity() {
         }
     }
 
-    protected fun applyToolbarTextStyle(textColor: Int, fontSize: Int, typeface: Typeface, titleText: SpannableString) {
+    protected fun setTitle(text: String) {
+        val style = Config.getInstance().getChatStyle()
+        val textColor = ContextCompat.getColor(this, style.chatToolbarTextColorResId)
+        val fontSize = resources.getDimensionPixelSize(R.dimen.text_big)
+        var typeface: Typeface? = null
+        Typeface.createFromAsset(assets, style.defaultFontRegular)?.let {
+            typeface = Typeface.create(it, Typeface.NORMAL)
+        }
+        supportActionBar?.apply {
+            val titleText = SpannableString(text)
+            applyToolbarTextStyle(textColor, fontSize, typeface, titleText)
+            title = titleText
+        }
+    }
+
+    protected fun applyToolbarTextStyle(
+        textColor: Int,
+        fontSize: Int,
+        typeface: Typeface?,
+        titleText: SpannableString
+    ) {
         val length = titleText.length
         titleText.setSpan(
             ForegroundColorSpan(textColor),
@@ -84,20 +104,22 @@ abstract class BaseActivity : AppCompatActivity() {
             length,
             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
         )
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            titleText.setSpan(
-                TypefaceSpan(typeface),
-                0,
-                length,
-                Spannable.SPAN_INCLUSIVE_INCLUSIVE
-            )
-        } else {
-            titleText.setSpan(
-                typeface.getTypefaceSpan(),
-                0,
-                length,
-                Spannable.SPAN_INCLUSIVE_INCLUSIVE
-            )
+        typeface?.let {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                titleText.setSpan(
+                    TypefaceSpan(it),
+                    0,
+                    length,
+                    Spannable.SPAN_INCLUSIVE_INCLUSIVE
+                )
+            } else {
+                titleText.setSpan(
+                    it.getTypefaceSpan(),
+                    0,
+                    length,
+                    Spannable.SPAN_INCLUSIVE_INCLUSIVE
+                )
+            }
         }
     }
 

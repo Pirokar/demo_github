@@ -8,7 +8,6 @@ import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
-import android.text.SpannableString
 import android.text.TextUtils
 import android.text.TextWatcher
 import android.util.TypedValue
@@ -65,19 +64,6 @@ internal class FilesActivity : BaseActivity(), OnFileClick {
         subscribeForNewIntents()
         subscribeForDownloadProgress()
         requestFiles()
-    }
-
-    private fun setTitle(text: String) {
-        val style = config.getChatStyle()
-        val font = Typeface.createFromAsset(assets, style.defaultFontRegular)
-        val typeface = Typeface.create(font, Typeface.NORMAL)
-        val textColor = ContextCompat.getColor(this, style.chatToolbarTextColorResId)
-        val fontSize = resources.getDimensionPixelSize(R.dimen.text_big)
-        supportActionBar?.apply {
-            val titleText = SpannableString(text)
-            applyToolbarTextStyle(textColor, fontSize, typeface, titleText)
-            title = titleText
-        }
     }
 
     override fun onBackPressed() {
