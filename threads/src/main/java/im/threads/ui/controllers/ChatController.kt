@@ -422,7 +422,7 @@ class ChatController private constructor() {
     }
 
     var threadId: Long?
-        get() = preferences.get(PreferencesCoreKeys.THREAD_ID)
+        get() = preferences.get(PreferencesCoreKeys.THREAD_ID, 0L)
         set(value) = preferences.save(PreferencesCoreKeys.THREAD_ID, value)
 
     var campaignMessage: CampaignMessage?
