@@ -454,11 +454,13 @@ public final class ChatFragment extends BaseFragment implements
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(() -> {
                                             if (recorder != null) {
-                                                File file = new File(recorder.getVoiceFilePath());
-                                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                                                    addVoiceMessagePreview(file);
-                                                } else {
-                                                    audioConverter.convertToWav(file, ChatFragment.this);
+                                                if (isResumed) {
+                                                    File file = new File(recorder.getVoiceFilePath());
+                                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                                                        addVoiceMessagePreview(file);
+                                                    } else {
+                                                        audioConverter.convertToWav(file, ChatFragment.this);
+                                                    }
                                                 }
                                             } else {
                                                 LoggerEdna.error("error finishing voice message recording");
@@ -2048,7 +2050,6 @@ public final class ChatFragment extends BaseFragment implements
         LoggerEdna.info(ChatFragment.class.getSimpleName() + " onStop.");
 
         super.onStop();
-        isResumed = false;
         chatIsShown = false;
         isInMessageSearchMode = false;
         if (fdMediaPlayer != null) {
@@ -2061,6 +2062,7 @@ public final class ChatFragment extends BaseFragment implements
     public void onPause() {
         super.onPause();
         LoggerEdna.info(ChatFragment.class.getSimpleName() + " onPause.");
+        isResumed = false;
 
         stopRecording();
         FileDescription fileDescription = getFileDescription();
@@ -2324,6 +2326,10 @@ public final class ChatFragment extends BaseFragment implements
     public void hideProgressBar() {
         welcomeScreenVisibility(mChatController.isNeedToShowWelcome());
         binding.flEmpty.setVisibility(View.GONE);
+    }
+
+    public int getChatItemsCount() {
+        return chatAdapter.getItemCount();
     }
 
     @Override

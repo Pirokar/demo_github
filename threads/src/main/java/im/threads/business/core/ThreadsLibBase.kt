@@ -44,7 +44,7 @@ open class ThreadsLibBase protected constructor(context: Context) {
         startEdnaLocator { modules(coreSLModule, uiSLModule) }
     }
 
-    private val preferences: Preferences by inject()
+    val preferences: Preferences by inject()
     private val clientUseCase: ClientUseCase by inject()
     private val chatUpdateProcessor: ChatUpdateProcessor by inject()
 
