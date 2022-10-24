@@ -139,10 +139,8 @@
         android:layout_width="@dimen/threads_operator_photo_size"
         android:layout_height="@dimen/threads_operator_photo_size"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/bubble"
-        android:layout_below="@+id/bubble"
+        app:layout_constraintBottom_toBottomOf="@id/bubble"
         android:layout_marginStart="@dimen/margin_half"
-        android:layout_marginTop="@dimen/consultant_photo_offset_size"
         android:contentDescription="@string/threads_operator_avatar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

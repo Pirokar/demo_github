@@ -385,8 +385,10 @@ class ConsultPhraseHolder(
             consultAvatar.visible()
             consultPhrase.avatarPath?.let {
                 consultAvatar.loadImage(
-                    FileUtils.convertRelativeUrlToAbsolute(it),
-                    listOf(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_INSIDE),
+                    FileUtils.convertRelativeUrlToAbsolute(consultPhrase.avatarPath),
+                    listOf(ImageView.ScaleType.FIT_XY),
+                    errorDrawableResId = R.drawable.threads_operator_avatar_placeholder,
+                    autoRotateWithExif = true,
                     modifications = listOf(ImageModifications.CircleCropModification)
                 )
             } ?: run {

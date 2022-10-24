@@ -1532,6 +1532,9 @@ public final class ChatFragment extends BaseFragment implements
         if (layoutManager == null) {
             return;
         }
+        if(item == null) {
+            return;
+        }
 
         boolean isLastMessageVisible =
                 (chatAdapter.getItemCount() - 1 - layoutManager.findLastVisibleItemPosition())
