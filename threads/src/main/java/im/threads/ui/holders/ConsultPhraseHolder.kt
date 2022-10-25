@@ -123,15 +123,14 @@ class ConsultPhraseHolder(
                     getColorInt(style.incomingMessageBubbleColor),
                     BlendModeCompat.SRC_ATOP
                 )
-            val bubbleLeftMarginDp = itemView.context.resources.getDimension(R.dimen.margin_quarter)
-            val bubbleLeftMarginPx = TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP,
-                bubbleLeftMarginDp,
-                itemView.resources.displayMetrics
-            ).toInt()
-            val lp = layoutParams as RelativeLayout.LayoutParams
-            lp.setMargins(bubbleLeftMarginPx, lp.topMargin, lp.rightMargin, lp.bottomMargin)
-            layoutParams = lp
+            val layoutParams = this.layoutParams as RelativeLayout.LayoutParams
+            layoutParams.setMargins(
+                context.resources.getDimensionPixelSize(style.bubbleIncomingMarginLeft),
+                context.resources.getDimensionPixelSize(style.bubbleIncomingMarginTop),
+                context.resources.getDimensionPixelSize(style.bubbleIncomingMarginRight),
+                context.resources.getDimensionPixelSize(style.bubbleIncomingMarginBottom)
+            )
+            this.layoutParams = layoutParams
         }
         itemView.findViewById<View>(R.id.delimiter)
             .setBackgroundColor(getColorInt(style.chatToolbarColorResId))

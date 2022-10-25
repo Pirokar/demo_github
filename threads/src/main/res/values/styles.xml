@@ -119,6 +119,7 @@
         <item name="android:layout_marginStart">@dimen/user_margin_left</item>
         <item name="android:layout_marginEnd">@dimen/user_margin_right</item>
         <item name="android:layout_marginTop">@dimen/margin_quarter</item>
+        <item name="android:layout_marginBottom">@dimen/margin_quarter</item>
     </style>
 
     <style name="consultBubble">
