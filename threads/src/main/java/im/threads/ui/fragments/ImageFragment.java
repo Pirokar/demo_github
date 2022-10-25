@@ -63,13 +63,17 @@ public final class ImageFragment extends Fragment {
             date.setText("");
         }
         if (FileUtils.isImage(fd)) {
-            ImageLoader
-                    .get()
-                    .load(fd.getFileUri().toString())
-                    .autoRotateWithExif(true)
-                    .scales(ImageView.ScaleType.FIT_CENTER, ImageView.ScaleType.CENTER_INSIDE)
-                    .errorDrawableResourceId(style.imagePlaceholder)
-                    .into(imageView);
+            if(fd.getFileUri() != null) {
+                ImageLoader
+                        .get()
+                        .load(fd.getFileUri().toString())
+                        .autoRotateWithExif(true)
+                        .scales(ImageView.ScaleType.FIT_CENTER, ImageView.ScaleType.CENTER_INSIDE)
+                        .errorDrawableResourceId(style.imagePlaceholder)
+                        .into(imageView);
+            } else {
+                imageView.setImageResource(style.imagePlaceholder);
+            }
         }
         v.setBackgroundColor(ContextCompat.getColor(getActivity(), style.imagesScreenBackgroundColor));
         from.setTextColor(ContextCompat.getColor(getActivity(), style.imagesScreenAuthorTextColor));
