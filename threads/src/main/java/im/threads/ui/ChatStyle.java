@@ -141,6 +141,25 @@ public final class ChatStyle implements Serializable {
     public int bubbleIncomingPaddingBottom = R.dimen.bubbleIncomingPaddingBottom;
 
     @DimenRes
+    public int bubbleOutgoingMarginLeft = R.dimen.user_margin_left;
+    @DimenRes
+    public int bubbleOutgoingMarginTop = R.dimen.margin_quarter;
+    @DimenRes
+    public int bubbleOutgoingMarginRight = R.dimen.user_margin_right;
+    @DimenRes
+    public int bubbleOutgoingMarginBottom = R.dimen.margin_quarter;
+
+    @DimenRes
+    public int bubbleIncomingMarginLeft = R.dimen.margin_quarter;
+    @DimenRes
+    public int bubbleIncomingMarginTop = R.dimen.margin_quarter;
+    @DimenRes
+    public int bubbleIncomingMarginRight = R.dimen.consultant_margin_right;
+    @DimenRes
+    public int bubbleIncomingMarginBottom = R.dimen.margin_quarter;
+
+
+    @DimenRes
     public int inputFieldPaddingLeft = R.dimen.margin_three_fourth;
     @DimenRes
     public int inputFieldPaddingTop = R.dimen.margin_quarter;
@@ -1538,6 +1557,32 @@ public final class ChatStyle implements Serializable {
         this.bubbleIncomingPaddingTop = top;
         this.bubbleIncomingPaddingRight = right;
         this.bubbleIncomingPaddingBottom = bottom;
+        return this;
+    }
+
+    public ChatStyle setOutgoingMargin(
+            @DimenRes int left,
+            @DimenRes int top,
+            @DimenRes int right,
+            @DimenRes int bottom
+    ) {
+        this.bubbleOutgoingMarginLeft = left;
+        this.bubbleOutgoingMarginTop = top;
+        this.bubbleOutgoingMarginRight = right;
+        this.bubbleOutgoingMarginBottom = bottom;
+        return this;
+    }
+
+    public ChatStyle setIngoingMargin(
+            @DimenRes int left,
+            @DimenRes int top,
+            @DimenRes int right,
+            @DimenRes int bottom
+    ) {
+        this.bubbleIncomingMarginLeft = left;
+        this.bubbleIncomingMarginTop = top;
+        this.bubbleIncomingMarginRight = right;
+        this.bubbleIncomingMarginBottom = bottom;
         return this;
     }
 

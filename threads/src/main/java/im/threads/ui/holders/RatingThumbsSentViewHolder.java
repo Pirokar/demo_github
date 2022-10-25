@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
@@ -46,6 +47,16 @@ public final class RatingThumbsSentViewHolder extends BaseHolder {
                 itemView.getContext().getResources().getDimensionPixelSize(getStyle().bubbleOutgoingPaddingRight),
                 itemView.getContext().getResources().getDimensionPixelSize(getStyle().bubbleOutgoingPaddingBottom)
         );
+
+        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) mBubble.getLayoutParams();
+        layoutParams.setMargins(
+                parent.getContext().getResources().getDimensionPixelSize(getStyle().bubbleOutgoingMarginLeft),
+                parent.getContext().getResources().getDimensionPixelSize(getStyle().bubbleOutgoingMarginTop),
+                parent.getContext().getResources().getDimensionPixelSize(getStyle().bubbleOutgoingMarginRight),
+                parent.getContext().getResources().getDimensionPixelSize(getStyle().bubbleOutgoingMarginBottom)
+        );
+        mBubble.setLayoutParams(layoutParams);
+
         mBubble.getBackground().setColorFilter(getColorInt(getStyle().outgoingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
         setTextColorToViews(new TextView[]{mHeader}, getStyle().outgoingMessageTextColor);
         mTimeStampTextView.setTextColor(getColorInt(getStyle().outgoingMessageTimeColor));

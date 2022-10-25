@@ -11,6 +11,7 @@
     <RelativeLayout
         android:id="@+id/bubble"
         style="@style/userBubble"
+        android:layout_width="wrap_content"
         android:paddingStart="0dp"
         android:paddingEnd="17dp">
 
@@ -37,7 +38,7 @@
                 android:id="@+id/loader"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scaleType="fitXY"/>
+                android:scaleType="fitXY" />
 
         </FrameLayout>
 
@@ -65,8 +66,8 @@
             android:id="@+id/fileSize"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
             android:layout_below="@id/header"
+            android:layout_alignParentBottom="true"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="@dimen/margin_half"
             android:layout_marginBottom="@dimen/margin_half"
@@ -79,9 +80,9 @@
             android:id="@+id/timeStamp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@id/header"
             android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
-            android:layout_below="@id/header"
             android:layout_marginEnd="@dimen/margin_quarter"
             android:layout_marginBottom="@dimen/margin_half"
             android:background="@drawable/timestamp_outgoing_underlayer"

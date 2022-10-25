@@ -135,6 +135,14 @@ class UserPhraseViewHolder(
                 parentView.context.resources.getDimensionPixelSize(style.bubbleOutgoingPaddingRight),
                 parentView.context.resources.getDimensionPixelSize(style.bubbleOutgoingPaddingBottom)
             )
+            val layoutParams = this.layoutParams as RelativeLayout.LayoutParams
+            layoutParams.setMargins(
+                parentView.context.resources.getDimensionPixelSize(style.bubbleOutgoingMarginLeft),
+                parentView.context.resources.getDimensionPixelSize(style.bubbleOutgoingMarginTop),
+                parentView.context.resources.getDimensionPixelSize(style.bubbleOutgoingMarginRight),
+                parentView.context.resources.getDimensionPixelSize(style.bubbleOutgoingMarginBottom)
+            )
+            this.layoutParams = layoutParams
             background.colorFilter =
                 BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
                     getColorInt(style.outgoingMessageBubbleColor),

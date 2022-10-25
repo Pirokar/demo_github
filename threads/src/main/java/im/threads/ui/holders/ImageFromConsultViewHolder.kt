@@ -136,6 +136,15 @@ class ImageFromConsultViewHolder(
             res.getDimensionPixelSize(style.bubbleIncomingPaddingRight),
             res.getDimensionPixelSize(style.bubbleIncomingPaddingBottom)
         )
+        val layoutParams = loaderLayout.layoutParams as RelativeLayout.LayoutParams
+        layoutParams.setMargins(
+            res.getDimensionPixelSize(style.bubbleIncomingMarginLeft),
+            res.getDimensionPixelSize(style.bubbleIncomingMarginTop),
+            res.getDimensionPixelSize(style.bubbleIncomingMarginRight),
+            res.getDimensionPixelSize(style.bubbleIncomingMarginBottom)
+        )
+        loaderLayout.layoutParams = layoutParams
+
         loaderLayout.background.colorFilter =
             BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
                 getColorInt(style.incomingMessageBubbleColor),

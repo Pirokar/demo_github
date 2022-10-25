@@ -166,6 +166,14 @@ class ImageFromUserViewHolder(
             res.getDimensionPixelSize(style.bubbleOutgoingPaddingRight),
             res.getDimensionPixelSize(style.bubbleOutgoingPaddingBottom)
         )
+        val layoutParams = layout.layoutParams as FrameLayout.LayoutParams
+        layoutParams.setMargins(
+            res.getDimensionPixelSize(style.bubbleOutgoingMarginLeft),
+            res.getDimensionPixelSize(style.bubbleOutgoingMarginTop),
+            res.getDimensionPixelSize(style.bubbleOutgoingMarginRight),
+            res.getDimensionPixelSize(style.bubbleOutgoingMarginBottom)
+        )
+        layout.layoutParams = layoutParams
         layout.background.colorFilter =
             BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
                 getColorInt(style.outgoingMessageBubbleColor),

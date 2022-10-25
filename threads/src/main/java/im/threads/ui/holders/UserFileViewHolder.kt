@@ -37,7 +37,8 @@ class UserFileViewHolder(
     openGraphParser: OpenGraphParser
 ) : BaseHolder(
     LayoutInflater.from(parent.context).inflate(R.layout.item_user_chat_file, parent, false),
-    highlightingStream, openGraphParser
+    highlightingStream,
+    openGraphParser
 ) {
     private val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
 
@@ -83,6 +84,14 @@ class UserFileViewHolder(
                 getColorInt(style.outgoingMessageBubbleColor),
                 BlendModeCompat.SRC_ATOP
             )
+            val layoutParams = this.layoutParams as RelativeLayout.LayoutParams
+            layoutParams.setMargins(
+                context.resources.getDimensionPixelSize(style.bubbleOutgoingMarginLeft),
+                context.resources.getDimensionPixelSize(style.bubbleOutgoingMarginTop),
+                context.resources.getDimensionPixelSize(style.bubbleOutgoingMarginRight),
+                context.resources.getDimensionPixelSize(style.bubbleOutgoingMarginBottom)
+            )
+            this.layoutParams = layoutParams
         }
         setTextColorToViews(
             arrayOf(fileHeaderTextView, fileSizeTextView),
