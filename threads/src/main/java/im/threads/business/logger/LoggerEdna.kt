@@ -6,7 +6,6 @@ package im.threads.business.logger
 object LoggerEdna {
     @Volatile
     @JvmStatic
-    private var loggerConfig: LoggerConfig? = null
     private var logSender: LogSender? = null
 
     /**
@@ -15,8 +14,8 @@ object LoggerEdna {
      */
     @JvmStatic
     fun init(config: LoggerConfig) {
-        loggerConfig = config
-        logSender = LogSender(loggerConfig)
+        LoggerConfig.config = config
+        logSender = LogSender(config)
     }
 
     /**

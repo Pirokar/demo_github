@@ -77,6 +77,7 @@ import im.threads.business.broadcastReceivers.ProgressReceiver;
 import im.threads.business.chat_updates.ChatUpdateProcessorJavaGetter;
 import im.threads.business.config.BaseConfig;
 import im.threads.business.imageLoading.ImageLoader;
+import im.threads.business.logger.LogZipSender;
 import im.threads.business.logger.LoggerEdna;
 import im.threads.business.media.ChatCenterAudioConverter;
 import im.threads.business.media.ChatCenterAudioConverterCallback;
@@ -248,11 +249,11 @@ public final class ChatFragment extends BaseFragment implements
         setHasOptionsMenu(true);
         initController();
         setFragmentStyle();
-
         initUserInputState();
         initQuickReplies();
         initMediaPlayer();
         subscribeToFileDescription();
+
         chatIsShown = true;
         return binding.getRoot();
     }
@@ -612,6 +613,13 @@ public final class ChatFragment extends BaseFragment implements
             if (mChatController.isConsultFound()) {
                 chatAdapterCallback.onConsultAvatarClick(mChatController.getCurrentConsultInfo().getId());
             }
+        });
+        binding.consultName.setOnLongClickListener(view -> {
+            Context context = getContext();
+            if (context != null) {
+                new LogZipSender(context).shareLogs();
+            }
+            return true;
         });
         binding.subtitle.setOnClickListener(v -> {
             if (mChatController.isConsultFound()) {
