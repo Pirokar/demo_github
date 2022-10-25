@@ -169,10 +169,23 @@ class ThreadsDbHelper private constructor(val context: Context, password: String
                     val oldDatabase = ThreadsDbHelper(context, oldPassword)
                     oldDatabase.writableDatabase.rawQuery("PRAGMA rekey = '$DB_PASSWORD'")
                     oldDatabase.close()
+
+                    LoggerEdna.info("Database password migrated successfully")
                 } catch (exc: SQLiteDatabaseCorruptException) {
-                    LoggerEdna.error(exc)
+                    LoggerEdna.error("Password migrating error", exc)
                 } finally {
                     preferences.save(PreferencesCoreKeys.IS_DATABASE_PASSWORD_MIGRATED, true)
+                }
+
+                try {
+                    val newDatabase = ThreadsDbHelper(context, DB_PASSWORD)
+                    newDatabase.readableDatabase.rawQuery("SELECT * FROM ${QuotesTable.TABLE_QUOTE}")
+                } catch (exc: Exception) {
+                    LoggerEdna.error(
+                        "Cannot read database after password migrating. Database will be deleted",
+                        exc
+                    )
+                    context.deleteDatabase(DATABASE_NAME)
                 }
             }
         }

@@ -124,11 +124,13 @@ class QuotesTable(private val fileDescriptionsTable: FileDescriptionsTable) : Ta
             return list
         }
     }
-}
 
-private const val TABLE_QUOTE = "TABLE_QUOTE"
-private const val COLUMN_QUOTE_UUID = "COLUMN_QUOTE_UUID"
-private const val COLUMN_QUOTE_FROM = "COLUMN_QUOTE_HEADER"
-private const val COLUMN_QUOTE_BODY = "COLUMN_QUOTE_BODY"
-private const val COLUMN_QUOTE_TIMESTAMP = "COLUMN_QUOTE_TIMESTAMP"
-private const val COLUMN_QUOTED_BY_MESSAGE_UUID_EXT = "COLUMN_QUOTED_BY_MESSAGE_UUID_EXT"
+    companion object {
+        const val TABLE_QUOTE = "TABLE_QUOTE"
+        private const val COLUMN_QUOTE_UUID = "COLUMN_QUOTE_UUID"
+        private const val COLUMN_QUOTE_FROM = "COLUMN_QUOTE_HEADER"
+        private const val COLUMN_QUOTE_BODY = "COLUMN_QUOTE_BODY"
+        private const val COLUMN_QUOTE_TIMESTAMP = "COLUMN_QUOTE_TIMESTAMP"
+        private const val COLUMN_QUOTED_BY_MESSAGE_UUID_EXT = "COLUMN_QUOTED_BY_MESSAGE_UUID_EXT"
+    }
+}
