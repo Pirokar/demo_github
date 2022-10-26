@@ -75,8 +75,10 @@ abstract class BaseActivity : AppCompatActivity() {
         val textColor = ContextCompat.getColor(this, style.chatToolbarTextColorResId)
         val fontSize = resources.getDimensionPixelSize(R.dimen.text_big)
         var typeface: Typeface? = null
-        Typeface.createFromAsset(assets, style.defaultFontRegular)?.let {
-            typeface = Typeface.create(it, Typeface.NORMAL)
+        style.defaultFontRegular?.let { typefaceUri ->
+            Typeface.createFromAsset(assets, typefaceUri)?.let {
+                typeface = Typeface.create(it, Typeface.NORMAL)
+            }
         }
         supportActionBar?.apply {
             val titleText = SpannableString(text)
