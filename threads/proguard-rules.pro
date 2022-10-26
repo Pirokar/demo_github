@@ -29,7 +29,7 @@
 
 # Application classes that will be serialized/deserialized over Gson
 -keep class com.edna.android.push_lite.** { *; }
--keep class net.sqlcipher.** { *; }
+-keep class net.zetetic.** { *; }
 -keep class im.threads.** { *; }
 
 # Prevent proguard from stripping interface information from TypeAdapter, TypeAdapterFactory,
