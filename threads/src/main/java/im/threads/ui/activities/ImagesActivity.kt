@@ -38,6 +38,7 @@ import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import java.util.Collections
 
 class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionClickListener {
     private lateinit var mViewPager: ViewPager
@@ -62,6 +63,7 @@ class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionCl
                             files.add(it!!)
                         }
                     }
+                    sortByTimeStamp(files)
                     collectionSize = files.size
                 }
                 .subscribeOn(Schedulers.io())
@@ -83,6 +85,18 @@ class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionCl
                     error("getAllFileDescriptions error: ", e)
                 }
         )
+    }
+
+    private fun sortByTimeStamp(items: List<FileDescription>) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            Collections.sort(items, Comparator.comparingLong(FileDescription::getTimeStamp))
+        } else {
+            Collections.sort(
+                items
+            ) { lhs: FileDescription, rhs: FileDescription ->
+                lhs.timeStamp.compareTo(rhs.timeStamp)
+            }
+        }
     }
 
     private fun initToolbar(toolbar: Toolbar, toolbarShadow: View) {
