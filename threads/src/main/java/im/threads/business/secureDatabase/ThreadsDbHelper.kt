@@ -180,6 +180,7 @@ class ThreadsDbHelper private constructor(val context: Context, password: String
                 try {
                     val newDatabase = ThreadsDbHelper(context, DB_PASSWORD)
                     newDatabase.readableDatabase.rawQuery("SELECT * FROM ${QuotesTable.TABLE_QUOTE}")
+                    newDatabase.close()
                 } catch (exc: Exception) {
                     LoggerEdna.error(
                         "Cannot read database after password migrating. Database will be deleted",
