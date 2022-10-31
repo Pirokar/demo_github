@@ -4,6 +4,7 @@ import android.util.TypedValue
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
@@ -24,7 +25,6 @@ open class BaseImageHolder(
     openGraphParser
 ) {
     protected val image: ImageView = itemView.findViewById<ImageView>(R.id.image)
-    protected val imageBackground: FrameLayout = itemView.findViewById(R.id.imageBackground)
     protected val commonLayout: FrameLayout = itemView.findViewById<FrameLayout>(R.id.commonLayout).also {
         applyCommonLayoutParams(it)
     }
@@ -66,34 +66,34 @@ open class BaseImageHolder(
     }
 
     /**
-     * Добавляет padding со всех сторон для входящей вью
-     * @param view вью, для которой необходимо добавить padding
+     * Перемещает временную ветку поверх изображения с учетом крувого padding
      */
-    protected fun addPadding(view: View) {
+    protected fun moveTimeToCommonLayout() {
+        val tag = "moved_to_picture"
+        if (timeStampTextView.tag != tag) {
+            val layoutParams = timeStampTextView.layoutParams as RelativeLayout.LayoutParams
+
+            layoutParams.marginEnd += bordersSize
+            layoutParams.bottomMargin += bordersSize
+
+            timeStampTextView.layoutParams = layoutParams
+            timeStampTextView.tag = "moved_to_picture"
+        }
+    }
+
+    private fun addPadding(view: View) {
         view.setPadding(bordersSize, bordersSize, bordersSize, bordersSize)
     }
 
     /**
-     * Перемещает временную ветку поверх изображения с учетом крувого padding
+     * Устанавливает сторону квадрата баббла как 2/3 от ширины экрана
      */
-    protected fun moveTimeToCommonLayout() {
-        val layoutParams = timeStampTextView.layoutParams as FrameLayout.LayoutParams
-
-        layoutParams.marginEnd += bordersSize
-        layoutParams.bottomMargin += bordersSize
-
-        timeStampTextView.layoutParams = layoutParams
-    }
-
     private fun applyCommonLayoutParams(layout: FrameLayout) {
-        val bubbleLeftMarginDp = itemView.context.resources.getDimension(R.dimen.margin_quarter)
-        val bubbleLeftMarginPx = TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP,
-            bubbleLeftMarginDp,
-            itemView.resources.displayMetrics
-        ).toInt()
-        val lp = layout.layoutParams as FrameLayout.LayoutParams
-        lp.setMargins(bubbleLeftMarginPx, lp.topMargin, lp.rightMargin, lp.bottomMargin)
+        val sideSize = (Config.getInstance().screenSize.width / 3) * 2
+        val lp = layout.layoutParams as RelativeLayout.LayoutParams
+        lp.width = sideSize
+        lp.height = sideSize
+
         layout.layoutParams = lp
     }
 }

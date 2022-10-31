@@ -22,6 +22,7 @@ import im.threads.R
 import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.useractivity.UserActivityTimeProvider.getLastUserActivityTimeCounter
 import im.threads.ui.config.Config
+import im.threads.ui.utils.ScreenSizeGetter
 import im.threads.ui.utils.TypefaceSpanEdna
 import im.threads.ui.utils.typefaceSpanCompatV28
 
@@ -32,6 +33,8 @@ abstract class BaseActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         super.onCreate(savedInstanceState)
+
+        calculateSizeOfScreen()
     }
 
     override fun onStart() {
@@ -131,5 +134,10 @@ abstract class BaseActivity : AppCompatActivity() {
         } else {
             TypefaceSpanEdna(this)
         }
+    }
+
+    private fun calculateSizeOfScreen() {
+        val screenSizeGetter = ScreenSizeGetter()
+        Config.getInstance().screenSize = screenSizeGetter.getScreenSize(this)
     }
 }

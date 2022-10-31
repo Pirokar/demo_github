@@ -4,9 +4,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.View.OnLongClickListener
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
@@ -120,7 +120,7 @@ class ImageFromConsultViewHolder(
             res.getDimensionPixelSize(style.bubbleIncomingPaddingRight),
             res.getDimensionPixelSize(style.bubbleIncomingPaddingBottom)
         )
-        val layoutParams = loaderLayout.layoutParams as FrameLayout.LayoutParams
+        val layoutParams = loaderLayout.layoutParams as RelativeLayout.LayoutParams
         layoutParams.setMargins(
             res.getDimensionPixelSize(style.bubbleIncomingMarginLeft),
             res.getDimensionPixelSize(style.bubbleIncomingMarginTop),

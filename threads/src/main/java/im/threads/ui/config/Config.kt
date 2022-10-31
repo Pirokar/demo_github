@@ -1,6 +1,7 @@
 package im.threads.ui.config
 
 import android.content.Context
+import android.util.Size
 import im.threads.business.config.BaseConfig
 import im.threads.business.core.UnreadMessagesCountListener
 import im.threads.business.logger.LoggerConfig
@@ -54,6 +55,11 @@ class Config(
 
     var attachmentEnabled = false
     var filesAndMediaMenuItemEnabled = false
+
+    /**
+     * Представляет ширину и высоту экрана в пикселях
+     */
+    internal var screenSize = Size(0, 0)
 
     init {
         attachmentEnabled = MetadataUi.getAttachmentEnabled(this.context)

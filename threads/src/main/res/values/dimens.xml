@@ -75,5 +75,6 @@
     <dimen name="last_line_extra_padding_symbols">2</dimen>
     <dimen name="halo_radius">13dp</dimen>
     <dimen name="thumb_size">8dp</dimen>
+    <dimen name="message_image_size">300dp</dimen>
 
 </resources>

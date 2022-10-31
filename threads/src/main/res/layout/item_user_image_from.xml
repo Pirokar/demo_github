@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <FrameLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -15,7 +15,7 @@
             style="@style/userBubble"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="end"
+            android:layout_alignParentEnd="true"
             android:orientation="horizontal"
             android:paddingStart="0dp"
             android:paddingEnd="17dp">
@@ -53,12 +53,12 @@
 
         <FrameLayout
             android:id="@+id/commonLayout"
-            android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:layout_marginStart="@dimen/user_margin_left"
+            android:layout_width="@dimen/message_image_size"
+            android:layout_height="@dimen/message_image_size"
             android:layout_marginTop="@dimen/margin_quarter"
-            android:layout_marginEnd="@dimen/user_margin_right"
+            android:layout_marginEnd="@dimen/threads_operator_photo_size"
             android:layout_marginBottom="@dimen/margin_quarter"
+            android:layout_alignParentEnd="true"
             android:visibility="gone">
 
             <FrameLayout
@@ -78,17 +78,19 @@
             android:id="@+id/timeStamp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="end|bottom"
-            android:layout_marginEnd="@dimen/consultant_margin_right"
+            android:layout_alignBottom="@id/commonLayout"
+            android:layout_alignEnd="@id/commonLayout"
+            android:layout_marginEnd="@dimen/margin_half"
             android:layout_marginBottom="@dimen/margin_half"
             android:background="@drawable/timestamp_outgoing_underlayer"
             android:drawablePadding="@dimen/margin_half"
             android:paddingLeft="2dp"
             android:paddingRight="2dp"
             android:textColor="@color/threads_outgoing_message_time"
-            tools:text="10:19" />
+            tools:text="10:19"
+            tools:ignore="RelativeOverlap" />
 
-    </FrameLayout>
+    </RelativeLayout>
 
     <im.threads.ui.widget.textView.BubbleTimeTextView
         android:id="@+id/errorText"

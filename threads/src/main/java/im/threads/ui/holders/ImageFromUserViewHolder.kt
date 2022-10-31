@@ -3,9 +3,9 @@ package im.threads.ui.holders
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
@@ -152,7 +152,7 @@ class ImageFromUserViewHolder(
             res.getDimensionPixelSize(style.bubbleOutgoingPaddingRight),
             res.getDimensionPixelSize(style.bubbleOutgoingPaddingBottom)
         )
-        val layoutParams = layout.layoutParams as FrameLayout.LayoutParams
+        val layoutParams = layout.layoutParams as RelativeLayout.LayoutParams
         layoutParams.setMargins(
             res.getDimensionPixelSize(style.bubbleOutgoingMarginLeft),
             res.getDimensionPixelSize(style.bubbleOutgoingMarginTop),
