@@ -1,7 +1,6 @@
 package im.threads.ui.holders
 
 import android.graphics.drawable.Drawable
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -34,10 +33,11 @@ class ImageFromUserViewHolder(
     private val maskedTransformation: ImageModifications.MaskedModification?,
     highlightingStream: PublishSubject<ChatItem>,
     openGraphParser: OpenGraphParser
-) : BaseHolder(
+) : BaseImageHolder(
     LayoutInflater.from(parent.context).inflate(R.layout.item_user_image_from, parent, false),
     highlightingStream,
-    openGraphParser
+    openGraphParser,
+    false
 ) {
     private val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
 
@@ -45,23 +45,8 @@ class ImageFromUserViewHolder(
 
     private val loaderLayout: LinearLayout =
         itemView.findViewById<LinearLayout>(R.id.loaderLayout).also { applyBubbleLayoutStyle(it) }
-    private val mImage: ImageView =
-        itemView.findViewById<ImageView>(R.id.image).also { applyImageParams(it) }
-    private val mTimeStampTextView = itemView.findViewById<TextView>(R.id.timeStamp).apply {
-        setTextColor(getColorInt(style.outgoingImageTimeColor))
-        val timeColorBg = getColorInt(style.outgoingImageTimeBackgroundColor)
-        background.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
-            timeColorBg,
-            BlendModeCompat.SRC_ATOP
-        )
-        if (style.outgoingMessageTimeTextSize > 0) {
-            val textSize = context.resources.getDimension(style.outgoingMessageTimeTextSize)
-            setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
-        }
-    }
 
     private val errorText: TextView = itemView.findViewById(R.id.errorText)
-    private val commonLayout: FrameLayout = itemView.findViewById(R.id.commonLayout)
     private val fileName: TextView = itemView.findViewById(R.id.fileName)
     private val loader: ImageView = itemView.findViewById(R.id.loader)
     private val rootLayout: LinearLayout = itemView.findViewById(R.id.rootLayout)
@@ -80,8 +65,8 @@ class ImageFromUserViewHolder(
         longClickRunnable: Runnable
     ) {
         subscribeForHighlighting(userPhrase, rootLayout)
-        mImage.setOnClickListener { clickRunnable.run() }
-        mImage.setOnLongClickListener {
+        image.setOnClickListener { clickRunnable.run() }
+        image.setOnLongClickListener {
             longClickRunnable.run()
             true
         }
@@ -109,6 +94,7 @@ class ImageFromUserViewHolder(
                 showErrorLayout(it)
             } else {
                 showCommonLayout(it)
+                moveTimeToCommonLayout()
             }
         }
     }
@@ -118,11 +104,11 @@ class ImageFromUserViewHolder(
         timestamp: Long,
         longClickRunnable: Runnable
     ) {
-        mTimeStampTextView.setOnLongClickListener {
+        timeStampTextView.setOnLongClickListener {
             longClickRunnable.run()
             true
         }
-        mTimeStampTextView.text = sdf.format(Date(timestamp))
+        timeStampTextView.text = sdf.format(Date(timestamp))
         val rightDrawable: Drawable? =
             when (messageState) {
                 MessageState.STATE_WAS_READ -> getColoredDrawable(
@@ -142,7 +128,7 @@ class ImageFromUserViewHolder(
                     R.drawable.empty_space_24dp
                 )
             }
-        mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, rightDrawable, null)
+        timeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, rightDrawable, null)
     }
 
     private fun getColoredDrawable(@DrawableRes res: Int, @ColorRes color: Int): Drawable? {
@@ -181,18 +167,6 @@ class ImageFromUserViewHolder(
             )
     }
 
-    private fun applyImageParams(imageView: ImageView) {
-        val bubbleLeftMarginDp = itemView.context.resources.getDimension(R.dimen.margin_quarter)
-        val bubbleLeftMarginPx = TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP,
-            bubbleLeftMarginDp,
-            itemView.resources.displayMetrics
-        ).toInt()
-        val lp = imageView.layoutParams as FrameLayout.LayoutParams
-        lp.setMargins(bubbleLeftMarginPx, lp.topMargin, lp.rightMargin, lp.bottomMargin)
-        imageView.layoutParams = lp
-    }
-
     private fun showLoaderLayout(fileDescription: FileDescription) {
         loaderLayout.isVisible = true
         commonLayout.isVisible = false
@@ -227,11 +201,11 @@ class ImageFromUserViewHolder(
                 .scales(ImageView.ScaleType.FIT_END, ImageView.ScaleType.CENTER_CROP)
                 .modifications(maskedTransformation)
                 .errorDrawableResourceId(style.imagePlaceholder)
-                .into(mImage)
+                .into(image)
 
             loadedUri = uri.toString()
         } else {
-            mImage.setImageResource(style.imagePlaceholder)
+            image.setImageResource(style.imagePlaceholder)
         }
     }
 }

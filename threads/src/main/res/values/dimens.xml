@@ -64,11 +64,13 @@
     <dimen name="bubbleOutgoingPaddingTop">8dp</dimen>
     <dimen name="bubbleOutgoingPaddingRight">24dp</dimen>
     <dimen name="bubbleOutgoingPaddingBottom">8dp</dimen>
+    <dimen name="outgoingImageBorderSize">12dp</dimen>
 
     <dimen name="bubbleIncomingPaddingLeft">8dp</dimen>
     <dimen name="bubbleIncomingPaddingTop">8dp</dimen>
     <dimen name="bubbleIncomingPaddingRight">8dp</dimen>
     <dimen name="bubbleIncomingPaddingBottom">8dp</dimen>
+    <dimen name="incomingImageBorderSize">12dp</dimen>
 
     <dimen name="last_line_extra_padding_symbols">2</dimen>
     <dimen name="halo_radius">13dp</dimen>

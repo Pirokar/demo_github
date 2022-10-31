@@ -60,34 +60,33 @@
 
         </LinearLayout>
 
-        <RelativeLayout
+        <FrameLayout
             android:id="@+id/commonLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="300dp"
             android:layout_marginStart="@dimen/threads_operator_photo_size"
             android:visibility="visible">
+
+            <FrameLayout
+                android:id="@+id/imageBackground"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/thread_incoming_bubble"/>
 
             <ImageView
                 android:id="@+id/image"
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:layout_marginTop="@dimen/margin_quarter"
-                android:minHeight="240dp" />
+                android:layout_height="match_parent"/>
 
             <ImageView
                 android:id="@+id/loaderImage"
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:layout_alignStart="@id/image"
-                android:layout_alignTop="@id/image"
-                android:layout_alignEnd="@id/image"
-                android:layout_alignBottom="@id/image"
-                android:minHeight="240dp"
+                android:layout_height="match_parent"
                 android:padding="75dp"
                 android:scaleType="fitCenter"
                 android:visibility="gone" />
 
-        </RelativeLayout>
+        </FrameLayout>
 
         <im.threads.ui.widget.textView.BubbleTimeTextView
             android:id="@+id/timeStamp"
