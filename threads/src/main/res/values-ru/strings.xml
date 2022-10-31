@@ -131,7 +131,7 @@
     <string name="threads_welcome_screen_subtitle_text">Отправьте ваш вопрос</string>
     <string name="threads_input_hint">Ваше сообщение…</string>
 
-    <string name="threads_message_text_copied">Текст сообщения скопирован</string>
+    <string name="threads_message_text_copied">Текст скопирован в буфер обмена</string>
 
     <string name="threads_not_allowed_file_extension">Недопустимый формат файла</string>
     <string name="threads_not_allowed_file_size">Файл превышает максимально допустимый размер %1$d МБ</string>
