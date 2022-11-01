@@ -198,7 +198,6 @@ class ImageFromUserViewHolder(
             ImageLoader.get()
                 .autoRotateWithExif(true)
                 .load(uri.toString())
-                .scales(ImageView.ScaleType.FIT_END, ImageView.ScaleType.CENTER_CROP)
                 .modifications(maskedTransformation)
                 .errorDrawableResourceId(style.imagePlaceholder)
                 .into(image)

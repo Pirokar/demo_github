@@ -179,13 +179,12 @@ class ImageFromConsultViewHolder(
         val isStateReady = fileDescription.state == AttachmentStateEnum.READY
         if (isStateReady && fileUri != null && !fileDescription.isDownloadError) {
             showLoadImageAnimation()
-            image.loadImage(
-                fileUri,
-                listOf(ImageView.ScaleType.FIT_END, ImageView.ScaleType.CENTER_CROP),
-                style.imagePlaceholder,
-                autoRotateWithExif = true,
-                modifications = listOfNotNull(maskedTransformation),
-                callback = object : ImageLoader.ImageLoaderCallback {
+            ImageLoader.get()
+                .load(fileUri)
+                .autoRotateWithExif(true)
+                .errorDrawableResourceId(style.imagePlaceholder)
+                .modifications(maskedTransformation)
+                .callback(object : ImageLoader.ImageLoaderCallback {
                     override fun onImageLoaded() {
                         stopLoadImageAnimation()
                     }
@@ -193,8 +192,8 @@ class ImageFromConsultViewHolder(
                     override fun onImageLoadError() {
                         stopLoadImageAnimation()
                     }
-                }
-            )
+                })
+                .into(image)
         } else {
             stopLoadImageAnimation()
             image.setImageResource(style.imagePlaceholder)

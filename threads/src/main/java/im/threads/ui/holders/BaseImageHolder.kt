@@ -16,14 +16,17 @@ import io.reactivex.subjects.PublishSubject
 
 open class BaseImageHolder(
     itemView: View,
-    private val highlightingStream: PublishSubject<ChatItem>?,
-    private val openGraphParser: OpenGraphParser?,
+    highlightingStream: PublishSubject<ChatItem>?,
+    openGraphParser: OpenGraphParser?,
     private val isIncomingMessage: Boolean
 ) : BaseHolder(
     itemView,
     highlightingStream,
     openGraphParser
 ) {
+    private val sideSize: Int by lazy {
+        (Config.getInstance().screenSize.width / 3) * 2
+    }
     protected val image: ImageView = itemView.findViewById<ImageView>(R.id.image)
     protected val commonLayout: FrameLayout = itemView.findViewById<FrameLayout>(R.id.commonLayout).also {
         applyCommonLayoutParams(it)
@@ -51,14 +54,25 @@ open class BaseImageHolder(
         )
     }
 
-    private val bordersSize: Int
+    private val bordersSize: BordersSize
         get() {
-            val bordersSizeDimen = if (isIncomingMessage) {
-                Config.getInstance().getChatStyle().incomingImageBorderSize
+            val res = itemView.context.resources
+            val bordersSize = if (isIncomingMessage) {
+                BordersSize(
+                    res.getDimensionPixelSize(Config.getInstance().getChatStyle().incomingImageLeftBorderSize),
+                    res.getDimensionPixelSize(Config.getInstance().getChatStyle().incomingImageTopBorderSize),
+                    res.getDimensionPixelSize(Config.getInstance().getChatStyle().incomingImageRightBorderSize),
+                    res.getDimensionPixelSize(Config.getInstance().getChatStyle().incomingImageBottomBorderSize)
+                )
             } else {
-                Config.getInstance().getChatStyle().outgoingImageBorderSize
+                BordersSize(
+                    res.getDimensionPixelSize(Config.getInstance().getChatStyle().outgoingImageLeftBorderSize),
+                    res.getDimensionPixelSize(Config.getInstance().getChatStyle().outgoingImageTopBorderSize),
+                    res.getDimensionPixelSize(Config.getInstance().getChatStyle().outgoingImageRightBorderSize),
+                    res.getDimensionPixelSize(Config.getInstance().getChatStyle().outgoingImageBottomBorderSize)
+                )
             }
-            return itemView.context.resources.getDimensionPixelSize(bordersSizeDimen)
+            return bordersSize
         }
 
     init {
@@ -78,8 +92,8 @@ open class BaseImageHolder(
                 itemView.context.resources.getDimensionPixelSize(R.dimen.timeLabelOutgoingExtraMarginRight)
             }
 
-            layoutParams.marginEnd += bordersSize + additionalMarginRight
-            layoutParams.bottomMargin += bordersSize
+            layoutParams.marginEnd += bordersSize.right
+            layoutParams.bottomMargin += bordersSize.bottom
 
             timeStampTextView.layoutParams = layoutParams
             timeStampTextView.tag = "moved_to_picture"
@@ -87,18 +101,21 @@ open class BaseImageHolder(
     }
 
     private fun addPadding(view: View) {
-        view.setPadding(bordersSize, bordersSize, bordersSize, bordersSize)
+        val layoutParams = view.layoutParams as FrameLayout.LayoutParams
+        layoutParams.setMargins(bordersSize.left, bordersSize.top, bordersSize.right, bordersSize.bottom)
+        view.layoutParams = layoutParams
     }
 
     /**
      * Устанавливает сторону квадрата баббла как 2/3 от ширины экрана
      */
     private fun applyCommonLayoutParams(layout: FrameLayout) {
-        val sideSize = (Config.getInstance().screenSize.width / 3) * 2
         val lp = layout.layoutParams as RelativeLayout.LayoutParams
         lp.width = sideSize
         lp.height = sideSize
 
         layout.layoutParams = lp
     }
+
+    private data class BordersSize(val left: Int, val top: Int, val right: Int, val bottom: Int)
 }
