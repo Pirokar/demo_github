@@ -1564,6 +1564,21 @@ public final class ChatStyle implements Serializable {
         return this;
     }
 
+    /**
+     * Устанавливает размеры бордера для изображений в баббле (если сообщение сообщение состоит только из изображения)
+     * @param incomingImageBorderSize ссылка на dimen ресурс для размера бордера входящего сообщения
+     * @param outgoingImageBorderSize ссылка на dimen ресурс для размера бордера исходящего сообщения
+     */
+    public ChatStyle setBordersSize(
+            @DimenRes int incomingImageBorderSize,
+            @DimenRes int outgoingImageBorderSize
+    ) {
+        this.incomingImageBorderSize = incomingImageBorderSize;
+        this.outgoingImageBorderSize = outgoingImageBorderSize;
+
+        return this;
+    }
+
     public ChatStyle setOutgoingMargin(
             @DimenRes int left,
             @DimenRes int top,

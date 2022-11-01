@@ -65,6 +65,8 @@
     <dimen name="bubbleOutgoingPaddingRight">24dp</dimen>
     <dimen name="bubbleOutgoingPaddingBottom">8dp</dimen>
     <dimen name="outgoingImageBorderSize">12dp</dimen>
+    <dimen name="timeLabelMarginRight">8dp</dimen>
+    <dimen name="timeLabelMarginBottom">8dp</dimen>
 
     <dimen name="bubbleIncomingPaddingLeft">8dp</dimen>
     <dimen name="bubbleIncomingPaddingTop">8dp</dimen>
