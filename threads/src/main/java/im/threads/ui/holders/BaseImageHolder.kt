@@ -72,8 +72,13 @@ open class BaseImageHolder(
         val tag = "moved_to_picture"
         if (timeStampTextView.tag != tag) {
             val layoutParams = timeStampTextView.layoutParams as RelativeLayout.LayoutParams
+            val additionalMarginRight = if (isIncomingMessage) {
+                0
+            } else {
+                itemView.context.resources.getDimensionPixelSize(R.dimen.timeLabelOutgoingExtraMarginRight)
+            }
 
-            layoutParams.marginEnd += bordersSize
+            layoutParams.marginEnd += bordersSize + additionalMarginRight
             layoutParams.bottomMargin += bordersSize
 
             timeStampTextView.layoutParams = layoutParams

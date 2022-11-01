@@ -142,7 +142,7 @@ public final class ChatStyle implements Serializable {
     @DimenRes
     public int bubbleIncomingPaddingBottom = R.dimen.bubbleIncomingPaddingBottom;
     @DimenRes
-    public int incomingImageBorderSize = R.dimen.outgoingImageBorderSize;
+    public int incomingImageBorderSize = R.dimen.incomingImageBorderSize;
 
     @DimenRes
     public int bubbleOutgoingMarginLeft = R.dimen.user_margin_left;
