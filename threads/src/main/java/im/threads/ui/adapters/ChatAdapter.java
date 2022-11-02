@@ -202,7 +202,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             case TYPE_SYSTEM_MESSAGE:
                 return new SystemMessageViewHolder(parent);
             case TYPE_CONSULT_PHRASE:
-                return new ConsultPhraseHolder(parent, highlightingStream, openGraphParser);
+                return new ConsultPhraseHolder(parent, incomingImageMaskTransformation, highlightingStream, openGraphParser);
             case TYPE_USER_PHRASE:
                 return new UserPhraseViewHolder(parent, highlightingStream, openGraphParser, fdMediaPlayer);
             case TYPE_FREE_SPACE:

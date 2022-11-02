@@ -94,7 +94,7 @@ class ImageFromUserViewHolder(
                 showErrorLayout(it)
             } else {
                 showCommonLayout(it)
-                moveTimeToCommonLayout()
+                moveTimeToImageLayout()
             }
         }
     }
@@ -169,7 +169,7 @@ class ImageFromUserViewHolder(
 
     private fun showLoaderLayout(fileDescription: FileDescription) {
         loaderLayout.isVisible = true
-        commonLayout.isVisible = false
+        imageLayout.isVisible = false
         errorText.isVisible = false
         fileName.text = fileDescription.incomingName
         initAnimation(loader, false)
@@ -178,7 +178,7 @@ class ImageFromUserViewHolder(
     private fun showErrorLayout(fileDescription: FileDescription) {
         errorText.isVisible = true
         loaderLayout.isVisible = true
-        commonLayout.isVisible = false
+        imageLayout.isVisible = false
         loader.setImageResource(getErrorImageResByErrorCode(fileDescription.errorCode))
         fileName.text = fileDescription.incomingName
         val errorString = getString(getErrorStringResByErrorCode(fileDescription.errorCode))
@@ -187,7 +187,7 @@ class ImageFromUserViewHolder(
     }
 
     private fun showCommonLayout(fileDescription: FileDescription) {
-        commonLayout.isVisible = true
+        imageLayout.isVisible = true
         errorText.isVisible = false
         loaderLayout.isVisible = false
         rotateAnim.cancel()

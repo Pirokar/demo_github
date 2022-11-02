@@ -82,6 +82,11 @@ object FileUtils {
         return 0
     }
 
+    /**
+     * Проверяет, содержит ли fileDescription изображение
+     * @param fileDescription объект для проверки
+     * @return возвращает резултат `true` в случае, если контейнер содержит изображение
+     */
     @JvmStatic
     fun isImage(fileDescription: FileDescription?): Boolean {
         return (

@@ -83,9 +83,10 @@ class ImageLoader private constructor() {
      * Указывает модификации (трансформации), которые будут применены последовательно к изображению
      * @param modifications список модификаций
      */
-    fun modifications(modifications: List<ImageModifications>?): ImageLoader {
-        modifications?.let {
-            config.modifications = it.toTypedArray()
+    fun modifications(modifications: List<ImageModifications?>?): ImageLoader {
+        if (modifications != null) {
+            val filteredModifications = modifications.filterNotNull().toTypedArray()
+            config.modifications = if (filteredModifications.isEmpty()) null else filteredModifications
         }
         return this
     }

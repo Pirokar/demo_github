@@ -52,7 +52,7 @@
         </LinearLayout>
 
         <FrameLayout
-            android:id="@+id/commonLayout"
+            android:id="@+id/imageLayout"
             android:layout_width="@dimen/message_image_size"
             android:layout_height="@dimen/message_image_size"
             android:layout_marginTop="@dimen/margin_quarter"
@@ -80,8 +80,8 @@
             android:id="@+id/timeStamp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@id/commonLayout"
-            android:layout_alignEnd="@id/commonLayout"
+            android:layout_alignBottom="@id/imageLayout"
+            android:layout_alignEnd="@id/imageLayout"
             android:layout_marginEnd="@dimen/timeLabelMarginRight"
             android:layout_marginBottom="@dimen/timeLabelMarginBottom"
             android:background="@drawable/timestamp_outgoing_underlayer"

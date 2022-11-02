@@ -43,10 +43,15 @@
     <dimen name="alt_bubbleOutgoingPaddingRight">25dp</dimen>
     <dimen name="alt_bubbleOutgoingPaddingBottom">15dp</dimen>
 
-    <dimen name="alt_bubbleIncomingPaddingLeft">25dp</dimen>
+    <dimen name="alt_bubbleIncomingPaddingLeft">35dp</dimen>
     <dimen name="alt_bubbleIncomingPaddingTop">15dp</dimen>
     <dimen name="alt_bubbleIncomingPaddingRight">25dp</dimen>
     <dimen name="alt_bubbleIncomingPaddingBottom">15dp</dimen>
+
+    <dimen name="alt_greenBubbleIncomingPaddingLeft">23dp</dimen>
+    <dimen name="alt_greenBubbleIncomingPaddingTop">8dp</dimen>
+    <dimen name="alt_greenBubbleIncomingPaddingRight">8dp</dimen>
+    <dimen name="alt_greenBubbleIncomingPaddingBottom">8dp</dimen>
 
     <dimen name="alt_bubbleOutgoingMarginLeft">5dp</dimen>
     <dimen name="alt_bubbleOutgoingMarginTop">5dp</dimen>

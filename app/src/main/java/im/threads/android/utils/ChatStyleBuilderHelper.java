@@ -36,7 +36,13 @@ public class ChatStyleBuilderHelper {
         chatStyle.setChatSubtitleShowConsultOrgUnit(true)
                 .setVisibleChatTitleShadow(R.bool.alt_threads_chat_title_shadow_is_visible)
                 .setShowConsultSearching(true)
-                .setVoiceMessageEnabled(true);
+                .setVoiceMessageEnabled(true)
+                .setIngoingPadding(
+                    R.dimen.alt_greenBubbleIncomingPaddingLeft,
+                    R.dimen.alt_greenBubbleIncomingPaddingTop,
+                    R.dimen.alt_greenBubbleIncomingPaddingRight,
+                    R.dimen.alt_greenBubbleIncomingPaddingBottom
+                );
         //Do nothing, using default threads design
     }
 

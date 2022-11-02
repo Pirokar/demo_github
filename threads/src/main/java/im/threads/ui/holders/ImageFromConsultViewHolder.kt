@@ -92,7 +92,7 @@ class ImageFromConsultViewHolder(
                 }
                 else -> {
                     showCommonLayout(it)
-                    moveTimeToCommonLayout()
+                    moveTimeToImageLayout()
                 }
             }
         } ?: run {
@@ -149,7 +149,7 @@ class ImageFromConsultViewHolder(
 
     private fun showLoaderLayout(fileDescription: FileDescription) {
         loaderLayout.isVisible = true
-        commonLayout.isVisible = false
+        imageLayout.isVisible = false
         errorTextView.isVisible = false
         fileNameTextView.text = fileDescription.incomingName
         initAnimation(loader, true)
@@ -158,7 +158,7 @@ class ImageFromConsultViewHolder(
     private fun showErrorLayout(fileDescription: FileDescription) {
         loaderLayout.isVisible = true
         errorTextView.isVisible = true
-        commonLayout.isVisible = false
+        imageLayout.isVisible = false
         loader.setImageResource(getErrorImageResByErrorCode(fileDescription.errorCode))
         fileNameTextView.text = fileDescription.incomingName
         val errorString = getString(getErrorStringResByErrorCode(fileDescription.errorCode))
@@ -167,7 +167,7 @@ class ImageFromConsultViewHolder(
     }
 
     private fun showCommonLayout(fileDescription: FileDescription) {
-        commonLayout.isVisible = true
+        imageLayout.isVisible = true
         loaderLayout.isVisible = false
         errorTextView.isVisible = false
         rotateAnim.cancel()

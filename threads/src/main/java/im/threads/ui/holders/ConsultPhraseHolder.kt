@@ -32,6 +32,8 @@ import im.threads.business.utils.FileUtils
 import im.threads.business.utils.FileUtils.isImage
 import im.threads.business.utils.UrlUtils
 import im.threads.business.utils.toFileSize
+import im.threads.ui.config.Config
+import im.threads.ui.holders.helper.BordersCreator
 import im.threads.ui.utils.invisible
 import im.threads.ui.utils.visible
 import im.threads.ui.views.CircularProgressButton
@@ -46,6 +48,7 @@ import java.util.Locale
 /** layout/item_consultant_text_with_file.xml */
 class ConsultPhraseHolder(
     parent: ViewGroup,
+    private val maskedTransformation: ImageModifications.MaskedModification?,
     highlightingStream: PublishSubject<ChatItem>,
     openGraphParser: OpenGraphParser
 ) : BaseHolder(
@@ -104,34 +107,31 @@ class ConsultPhraseHolder(
     private val ogTimestamp = itemView.findViewById<TextView>(R.id.ogTimeStamp).apply {
         setTextColor(getColorInt(style.incomingMessageTimeColor))
     }
+    private val bubbleLayout = itemView.findViewById<ViewGroup>(R.id.bubble).apply {
+        background =
+            AppCompatResources.getDrawable(
+                itemView.context,
+                style.incomingMessageBubbleBackground
+            )
+
+        background.colorFilter =
+            BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
+                getColorInt(style.incomingMessageBubbleColor),
+                BlendModeCompat.SRC_ATOP
+            )
+        val layoutParams = this.layoutParams as RelativeLayout.LayoutParams
+        layoutParams.setMargins(
+            context.resources.getDimensionPixelSize(style.bubbleIncomingMarginLeft),
+            context.resources.getDimensionPixelSize(style.bubbleIncomingMarginTop),
+            context.resources.getDimensionPixelSize(style.bubbleIncomingMarginRight),
+            context.resources.getDimensionPixelSize(style.bubbleIncomingMarginBottom)
+        )
+        this.layoutParams = layoutParams
+    }
+
+    private val bordersCreator = BordersCreator(itemView.context, true)
 
     init {
-        itemView.findViewById<View>(R.id.bubble).apply {
-            background =
-                AppCompatResources.getDrawable(
-                    itemView.context,
-                    style.incomingMessageBubbleBackground
-                )
-            setPadding(
-                context.resources.getDimensionPixelSize(style.bubbleIncomingPaddingLeft),
-                context.resources.getDimensionPixelSize(style.bubbleIncomingPaddingTop),
-                context.resources.getDimensionPixelSize(style.bubbleIncomingPaddingRight),
-                context.resources.getDimensionPixelSize(style.bubbleIncomingPaddingBottom)
-            )
-            background.colorFilter =
-                BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
-                    getColorInt(style.incomingMessageBubbleColor),
-                    BlendModeCompat.SRC_ATOP
-                )
-            val layoutParams = this.layoutParams as RelativeLayout.LayoutParams
-            layoutParams.setMargins(
-                context.resources.getDimensionPixelSize(style.bubbleIncomingMarginLeft),
-                context.resources.getDimensionPixelSize(style.bubbleIncomingMarginTop),
-                context.resources.getDimensionPixelSize(style.bubbleIncomingMarginRight),
-                context.resources.getDimensionPixelSize(style.bubbleIncomingMarginBottom)
-            )
-            this.layoutParams = layoutParams
-        }
         itemView.findViewById<View>(R.id.delimiter)
             .setBackgroundColor(getColorInt(style.chatToolbarColorResId))
         setTextColorToViews(
@@ -155,6 +155,7 @@ class ConsultPhraseHolder(
         onRowLongClickListener: OnLongClickListener,
         onAvatarClickListener: View.OnClickListener
     ) {
+        setupPaddingsAndBorders(consultPhrase.fileDescription)
         subscribeForHighlighting(consultPhrase, rootLayout)
         subscribeForOpenGraphData(
             OGDataContent(
@@ -214,6 +215,29 @@ class ConsultPhraseHolder(
         }
     }
 
+    private fun setupPaddingsAndBorders(fileDescription: FileDescription?) = with(bubbleLayout) {
+        val chatStyle = Config.getInstance().getChatStyle()
+        val resources = context.resources
+        val borderLeft = resources.getDimensionPixelSize(chatStyle.incomingImageLeftBorderSize)
+        val borderTop = resources.getDimensionPixelSize(chatStyle.incomingImageTopBorderSize)
+        val borderRight = resources.getDimensionPixelSize(chatStyle.incomingImageRightBorderSize)
+        val borderBottom = resources.getDimensionPixelSize(chatStyle.incomingImageBottomBorderSize)
+        val isBordersNotSet = borderLeft == 0 && borderTop == 0 && borderRight == 0 && borderBottom == 0
+        val isImage = isImage(fileDescription)
+
+        if (isBordersNotSet || !isImage) {
+            setPadding(
+                context.resources.getDimensionPixelSize(style.bubbleIncomingPaddingLeft),
+                context.resources.getDimensionPixelSize(style.bubbleIncomingPaddingTop),
+                context.resources.getDimensionPixelSize(style.bubbleIncomingPaddingRight),
+                context.resources.getDimensionPixelSize(style.bubbleIncomingPaddingBottom)
+            )
+        } else if (isImage(fileDescription)) {
+            bordersCreator.applyViewSize(this, true)
+            setPadding(borderLeft, borderTop, borderRight, borderBottom)
+        }
+    }
+
     private fun getFileDescriptionText(fileDescription: FileDescription): String {
         return "${FileUtils.getFileName(fileDescription)} " +
             if (fileDescription.size > 0) {
@@ -235,10 +259,11 @@ class ConsultPhraseHolder(
         image.setOnClickListener(imageClickListener)
 
         startLoaderAnimation()
+
         image.loadImage(
             imagePath,
-            scales = listOf(ImageView.ScaleType.FIT_CENTER, ImageView.ScaleType.CENTER_CROP),
             errorDrawableResId = style.imagePlaceholder,
+            modifications = listOf(maskedTransformation),
             autoRotateWithExif = true,
             isExternalImage = isExternalImage,
             callback = object : ImageLoader.ImageLoaderCallback {
