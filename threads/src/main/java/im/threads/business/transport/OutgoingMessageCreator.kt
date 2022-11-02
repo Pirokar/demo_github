@@ -53,6 +53,11 @@ class OutgoingMessageCreator(private val preferences: Preferences) {
             addProperty("libVersion", AppInfoHelper.getLibVersion())
             addProperty("clientLocale", locale)
             addProperty("chatApiVersion", ThreadsApi.API_VERSION)
+            val data = JsonObject().apply {
+                addProperty(PreferencesCoreKeys.FCM_TOKEN, preferences.get(PreferencesCoreKeys.FCM_TOKEN, ""))
+                addProperty(PreferencesCoreKeys.HCM_TOKEN, preferences.get(PreferencesCoreKeys.HCM_TOKEN, ""))
+            }
+            add("data", data)
             addProperty(MessageAttributes.TYPE, ChatItemType.CLIENT_INFO.name)
         }
         return jsonObject

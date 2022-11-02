@@ -160,6 +160,10 @@ class ThreadsGateTransport(
         }
     }
 
+    override fun resendUserInfo() {
+        sendEnvironmentMessage(true)
+    }
+
     override fun sendMessage(
         userPhrase: UserPhrase,
         consultInfo: ConsultInfo?,
