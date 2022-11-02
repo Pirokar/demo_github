@@ -23,6 +23,7 @@ import im.threads.business.models.MessageState
 import im.threads.business.models.UserPhrase
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.ogParser.OpenGraphParser
+import im.threads.ui.widget.textView.BubbleTimeTextView
 import io.reactivex.subjects.PublishSubject
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -45,11 +46,13 @@ class ImageFromUserViewHolder(
 
     private val loaderLayout: LinearLayout =
         itemView.findViewById<LinearLayout>(R.id.loaderLayout).also { applyBubbleLayoutStyle(it) }
+    private val loaderLayoutRoot: RelativeLayout = itemView.findViewById(R.id.loaderLayoutRoot)
 
     private val errorText: TextView = itemView.findViewById(R.id.errorText)
     private val fileName: TextView = itemView.findViewById(R.id.fileName)
     private val loader: ImageView = itemView.findViewById(R.id.loader)
     private val rootLayout: LinearLayout = itemView.findViewById(R.id.rootLayout)
+    private val timeStampLoading: BubbleTimeTextView = itemView.findViewById(R.id.timeStampLoading)
 
     init {
         setTextColorToViews(
@@ -108,7 +111,10 @@ class ImageFromUserViewHolder(
             longClickRunnable.run()
             true
         }
-        timeStampTextView.text = sdf.format(Date(timestamp))
+        val timeStampText = sdf.format(Date(timestamp))
+        timeStampTextView.text = timeStampText
+        timeStampLoading.text = timeStampText
+
         val rightDrawable: Drawable? =
             when (messageState) {
                 MessageState.STATE_WAS_READ -> getColoredDrawable(
@@ -129,6 +135,7 @@ class ImageFromUserViewHolder(
                 )
             }
         timeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, rightDrawable, null)
+        timeStampLoading.setCompoundDrawablesWithIntrinsicBounds(null, null, rightDrawable, null)
     }
 
     private fun getColoredDrawable(@DrawableRes res: Int, @ColorRes color: Int): Drawable? {
@@ -140,7 +147,7 @@ class ImageFromUserViewHolder(
         return drawable
     }
 
-    private fun applyBubbleLayoutStyle(layout: LinearLayout) {
+    private fun applyBubbleLayoutStyle(layout: ViewGroup) {
         val res = itemView.context.resources
         layout.background = AppCompatResources.getDrawable(
             itemView.context,
@@ -168,7 +175,7 @@ class ImageFromUserViewHolder(
     }
 
     private fun showLoaderLayout(fileDescription: FileDescription) {
-        loaderLayout.isVisible = true
+        loaderLayoutRoot.isVisible = true
         imageLayout.isVisible = false
         errorText.isVisible = false
         fileName.text = fileDescription.incomingName
@@ -177,7 +184,7 @@ class ImageFromUserViewHolder(
 
     private fun showErrorLayout(fileDescription: FileDescription) {
         errorText.isVisible = true
-        loaderLayout.isVisible = true
+        loaderLayoutRoot.isVisible = true
         imageLayout.isVisible = false
         loader.setImageResource(getErrorImageResByErrorCode(fileDescription.errorCode))
         fileName.text = fileDescription.incomingName
@@ -189,7 +196,7 @@ class ImageFromUserViewHolder(
     private fun showCommonLayout(fileDescription: FileDescription) {
         imageLayout.isVisible = true
         errorText.isVisible = false
-        loaderLayout.isVisible = false
+        loaderLayoutRoot.isVisible = false
         rotateAnim.cancel()
         val isDownloadError = fileDescription.isDownloadError
         val uri = fileDescription.fileUri

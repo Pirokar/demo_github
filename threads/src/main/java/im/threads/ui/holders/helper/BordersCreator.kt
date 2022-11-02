@@ -45,7 +45,8 @@ class BordersCreator(
     fun moveTimeToImageLayout(timeLabel: BubbleTimeTextView) {
         val tag = "moved_to_picture"
         if (timeLabel.tag != tag) {
-            val layoutParams = timeLabel.layoutParams as RelativeLayout.LayoutParams
+            val layoutParams = (timeLabel.layoutParams as? RelativeLayout.LayoutParams)
+                ?: timeLabel.layoutParams as FrameLayout.LayoutParams
             val additionalMarginRight = if (isIncomingMessage) {
                 0
             } else {

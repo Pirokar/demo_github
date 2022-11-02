@@ -34,6 +34,7 @@ import im.threads.business.utils.UrlUtils
 import im.threads.business.utils.toFileSize
 import im.threads.ui.config.Config
 import im.threads.ui.holders.helper.BordersCreator
+import im.threads.ui.utils.gone
 import im.threads.ui.utils.invisible
 import im.threads.ui.utils.visible
 import im.threads.ui.views.CircularProgressButton
@@ -74,8 +75,9 @@ class ConsultPhraseHolder(
     private val errorTextView: TextView = itemView.findViewById(R.id.errorText)
     private val fileImage = itemView.findViewById<ImageView>(R.id.fileImage)
     private val rightTextHeader: TextView = itemView.findViewById(R.id.to)
-    private val imageLayout: FrameLayout = itemView.findViewById(R.id.imageLayout)
     private val image: ImageView = itemView.findViewById(R.id.image)
+    private val imageLayout: FrameLayout = itemView.findViewById(R.id.imageLayout)
+    private val errorImage: ImageView = itemView.findViewById(R.id.errorImage)
     private val loaderImage: ImageView = itemView.findViewById(R.id.loaderImage)
     private val rightTextDescription: TextView = itemView.findViewById(R.id.fileSpecs)
     private val rightTextFileStamp: TextView = itemView.findViewById(R.id.sendAt)
@@ -252,10 +254,10 @@ class ConsultPhraseHolder(
         imageClickListener: View.OnClickListener,
         isExternalImage: Boolean = false
     ) {
-        fileRow.visibility = View.GONE
-        circularProgressButton.visibility = View.GONE
-        imageLayout.visibility = View.VISIBLE
-        image.visibility = View.VISIBLE
+        hideErrorImage(imageLayout, errorImage)
+        fileRow.gone()
+        circularProgressButton.gone()
+        image.visible()
         image.setOnClickListener(imageClickListener)
 
         startLoaderAnimation()
@@ -272,6 +274,7 @@ class ConsultPhraseHolder(
                 }
 
                 override fun onImageLoadError() {
+                    showErrorImage(imageLayout, errorImage)
                     stopLoaderAnimation()
                 }
             }

@@ -3,6 +3,7 @@ package im.threads.ui.holders
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.view.View
+import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.RotateAnimation
 import android.widget.ImageView
@@ -33,6 +34,7 @@ import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.utils.NoLongClickMovementMethod
 import im.threads.ui.utils.ViewUtils
 import im.threads.ui.utils.gone
+import im.threads.ui.utils.invisible
 import im.threads.ui.utils.visible
 import im.threads.ui.views.CircularProgressButton
 import im.threads.ui.widget.textView.BubbleMessageTextView
@@ -233,6 +235,27 @@ abstract class BaseHolder internal constructor(
         ErrorStateEnum.TIMEOUT -> R.string.threads_timeout_error_during_load_file
         ErrorStateEnum.UNEXPECTED -> R.string.threads_some_error_during_load_file
         ErrorStateEnum.ANY -> R.string.threads_some_error_during_load_file
+    }
+
+    /**
+     * Прячет лэйаут изображения, отображает картинку с ошибкой и присваивает ей ресурс ошибки из стилей
+     * @param imageLayout - контейнер с изображением
+     * @param errorImage - картинка с ошибкой
+     */
+    protected fun showErrorImage(imageLayout: ViewGroup, errorImage: ImageView) {
+        imageLayout.invisible()
+        errorImage.visible()
+        errorImage.setImageResource(style.imagePlaceholder)
+    }
+
+    /**
+     * Прячет изображение с ошибкой, отображает картинку
+     * @param imageLayout - контейнер с изображением
+     * @param errorImage - картинка с ошибкой
+     */
+    protected fun hideErrorImage(imageLayout: ViewGroup, errorImage: ImageView) {
+        errorImage.gone()
+        imageLayout.visible()
     }
 
     protected fun bindOGData(messageText: String?): ExtractedLink? {

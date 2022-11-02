@@ -92,7 +92,6 @@ class ImageFromConsultViewHolder(
                 }
                 else -> {
                     showCommonLayout(it)
-                    moveTimeToImageLayout()
                 }
             }
         } ?: run {
@@ -187,6 +186,7 @@ class ImageFromConsultViewHolder(
                 .callback(object : ImageLoader.ImageLoaderCallback {
                     override fun onImageLoaded() {
                         stopLoadImageAnimation()
+                        moveTimeToImageLayout()
                     }
 
                     override fun onImageLoadError() {

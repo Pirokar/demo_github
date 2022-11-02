@@ -23,7 +23,6 @@ open class BaseImageHolder(
     highlightingStream,
     openGraphParser
 ) {
-
     protected val image: ImageView = itemView.findViewById<ImageView>(R.id.image)
     protected val imageLayout: FrameLayout = itemView.findViewById(R.id.imageLayout)
     protected val timeStampTextView: BubbleTimeTextView = itemView.findViewById<BubbleTimeTextView>(R.id.timeStamp).apply {
