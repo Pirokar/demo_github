@@ -42,6 +42,18 @@ public class ChatStyleBuilderHelper {
                     R.dimen.alt_greenBubbleIncomingPaddingTop,
                     R.dimen.alt_greenBubbleIncomingPaddingRight,
                     R.dimen.alt_greenBubbleIncomingPaddingBottom
+                )
+                .setIncomingImageBordersSize(
+                        R.dimen.alt_incomingImageLeftBorderSize,
+                        R.dimen.alt_incomingImageTopBorderSize,
+                        R.dimen.alt_incomingImageRightBorderSize,
+                        R.dimen.alt_incomingImageBottomBorderSize
+                )
+                .setOutgoingImageBordersSize(
+                        R.dimen.alt_outgoingImageLeftBorderSize,
+                        R.dimen.alt_outgoingImageTopBorderSize,
+                        R.dimen.alt_outgoingImageRightBorderSize,
+                        R.dimen.alt_outgoingImageBottomBorderSize
                 );
         //Do nothing, using default threads design
     }

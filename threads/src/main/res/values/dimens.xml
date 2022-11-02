@@ -73,14 +73,14 @@
     <dimen name="bubbleIncomingPaddingRight">8dp</dimen>
     <dimen name="bubbleIncomingPaddingBottom">8dp</dimen>
 
-    <dimen name="incomingImageLeftBorderSize">24dp</dimen>
-    <dimen name="incomingImageTopBorderSize">12dp</dimen>
-    <dimen name="incomingImageRightBorderSize">12dp</dimen>
-    <dimen name="incomingImageBottomBorderSize">12dp</dimen>
-    <dimen name="outgoingImageLeftBorderSize">12dp</dimen>
-    <dimen name="outgoingImageTopBorderSize">12dp</dimen>
-    <dimen name="outgoingImageRightBorderSize">24dp</dimen>
-    <dimen name="outgoingImageBottomBorderSize">12dp</dimen>
+    <dimen name="incomingImageLeftBorderSize">0dp</dimen>
+    <dimen name="incomingImageTopBorderSize">0dp</dimen>
+    <dimen name="incomingImageRightBorderSize">0dp</dimen>
+    <dimen name="incomingImageBottomBorderSize">0dp</dimen>
+    <dimen name="outgoingImageLeftBorderSize">0dp</dimen>
+    <dimen name="outgoingImageTopBorderSize">0dp</dimen>
+    <dimen name="outgoingImageRightBorderSize">0dp</dimen>
+    <dimen name="outgoingImageBottomBorderSize">0dp</dimen>
 
     <dimen name="last_line_extra_padding_symbols">2</dimen>
     <dimen name="halo_radius">13dp</dimen>
