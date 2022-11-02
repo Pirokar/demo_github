@@ -72,7 +72,8 @@ class ConsultVoiceMessageViewHolder(
         }
     override val voiceMessage: ViewGroup = itemView.findViewById(R.id.bubble)
     private val fileSizeTextView: TextView = itemView.findViewById(R.id.fileSize)
-    private val audioStatusTextView: TextView = itemView.findViewById(R.id.voiceMessageConsultAudioStatus)
+    private val audioStatusTextView: TextView =
+        itemView.findViewById(R.id.voiceMessageConsultAudioStatus)
 
     private val timeStampTextView =
         itemView.findViewById<TextView>(R.id.timeStamp).apply {
@@ -253,7 +254,9 @@ class ConsultVoiceMessageViewHolder(
         errorTextView.gone()
         rotateAnim.cancel()
         when (consultPhrase.speechStatus) {
-            SpeechStatus.SUCCESS -> {
+            SpeechStatus.NO_SPEECH_STATUS,
+            SpeechStatus.SUCCESS
+            -> {
                 buttonPlayPause.isClickable = true
                 buttonPlayPause.alpha = 1f
                 audioStatusTextView.invisible()
