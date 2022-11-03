@@ -94,7 +94,6 @@ import retrofit2.Response
 import java.util.Date
 import java.util.concurrent.TimeUnit
 
-
 /**
  * controller for chat Fragment. all bells and whistles in fragment,
  * all work here

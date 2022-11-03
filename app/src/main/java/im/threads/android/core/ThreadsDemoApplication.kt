@@ -82,7 +82,6 @@ class ThreadsDemoApplication : MultiDexApplication() {
                 .datastoreUrl(transportConfig.datastoreUrl)
                 .threadsGateUrl(transportConfig.threadsGateUrl)
                 .threadsGateProviderUid(transportConfig.threadsGateProviderUid)
-                .threadsGateHCMProviderUid(transportConfig.threadsGateHCMProviderUid)
 
             if (transportConfig.isNewChatCenterApi) {
                 configBuilder.setNewChatCenterApi()

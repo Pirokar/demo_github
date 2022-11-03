@@ -25,7 +25,6 @@ import im.threads.business.models.SslSocketFactoryConfig;
 import im.threads.business.preferences.Preferences;
 import im.threads.business.rest.config.RequestConfig;
 import im.threads.business.rest.config.SocketClientSettings;
-import im.threads.business.serviceLocator.core.ServiceLocatorApiKt;
 import im.threads.business.transport.Transport;
 import im.threads.business.transport.threadsGate.ThreadsGateTransport;
 import im.threads.business.utils.MetadataBusiness;
@@ -35,8 +34,6 @@ import im.threads.business.utils.gson.UriSerializer;
 import okhttp3.Interceptor;
 
 public class BaseConfig {
-
-    private static final String TAG = BaseConfig.class.getSimpleName();
     public static BaseConfig instance;
 
     @NonNull
@@ -79,7 +76,6 @@ public class BaseConfig {
                       @Nullable String datastoreUrl,
                       @Nullable String threadsGateUrl,
                       @Nullable String threadsGateProviderUid,
-                      @Nullable String threadsGateHCMProviderUid,
                       @Nullable Boolean isNewChatCenterApi,
                       @Nullable LoggerConfig loggerConfig,
                       @Nullable UnreadMessagesCountListener unreadMessagesCountListener,
@@ -98,8 +94,7 @@ public class BaseConfig {
         this.historyLoadingCount = historyLoadingCount;
         this.surveyCompletionDelay = surveyCompletionDelay;
         this.sslSocketFactoryConfig = getSslSocketFactoryConfig(certificateRawResIds);
-        this.transport = getTransport(threadsGateUrl, threadsGateProviderUid,
-                threadsGateHCMProviderUid, requestConfig.getSocketClientSettings());
+        this.transport = getTransport(threadsGateUrl, threadsGateProviderUid, requestConfig.getSocketClientSettings());
         this.serverBaseUrl = getServerBaseUrl(serverBaseUrl);
         this.datastoreUrl = getDatastoreUrl(datastoreUrl);
         this.requestConfig = requestConfig;
@@ -126,14 +121,10 @@ public class BaseConfig {
 
     private Transport getTransport(@Nullable String providedThreadsGateUrl,
                                    @Nullable String providedThreadsGateProviderUid,
-                                   @Nullable String providedThreadsGateHCMProviderUid,
                                    SocketClientSettings socketClientSettings) {
         String threadsGateProviderUid = !TextUtils.isEmpty(providedThreadsGateProviderUid)
                 ? providedThreadsGateProviderUid
                 : MetadataBusiness.getThreadsGateProviderUid(this.context);
-        String threadsGateHCMProviderUid = !TextUtils.isEmpty(providedThreadsGateHCMProviderUid)
-                ? providedThreadsGateHCMProviderUid
-                : MetadataBusiness.getThreadsGateHCMProviderUid(this.context);
         String threadsGateUrl = !TextUtils.isEmpty(providedThreadsGateUrl)
                 ? providedThreadsGateUrl
                 : MetadataBusiness.getThreadsGateUrl(this.context);
@@ -146,7 +137,6 @@ public class BaseConfig {
         return new ThreadsGateTransport(
                 threadsGateUrl,
                 threadsGateProviderUid,
-                threadsGateHCMProviderUid,
                 isDebugLoggingEnabled,
                 socketClientSettings,
                 sslSocketFactoryConfig,

@@ -64,7 +64,6 @@ import javax.net.ssl.SSLSession
 class ThreadsGateTransport(
     threadsGateUrl: String,
     threadsGateProviderUid: String,
-    threadsGateHuaweiProviderUid: String?,
     isDebugLoggingEnabled: Boolean,
     socketSettings: SocketClientSettings,
     sslSocketFactoryConfig: SslSocketFactoryConfig? = null,
@@ -116,7 +115,6 @@ class ThreadsGateTransport(
         listener = WebSocketListener()
         applicationConfig = ApplicationConfig(
             threadsGateProviderUid,
-            threadsGateHuaweiProviderUid,
             preferences
         )
     }

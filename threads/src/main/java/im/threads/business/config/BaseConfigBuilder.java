@@ -35,8 +35,6 @@ public class BaseConfigBuilder {
     @Nullable
     protected String threadsGateProviderUid = null;
     @Nullable
-    protected String threadsGateHCMProviderUid = null;
-    @Nullable
     protected Interceptor networkInterceptor = null;
     @Nullable
     protected Boolean isNewChatCenterApi = false;
@@ -67,11 +65,6 @@ public class BaseConfigBuilder {
 
     public BaseConfigBuilder threadsGateProviderUid(String threadsGateProviderUid) {
         this.threadsGateProviderUid = threadsGateProviderUid;
-        return this;
-    }
-
-    public BaseConfigBuilder threadsGateHCMProviderUid(@Nullable String threadsGateHCMProviderUid) {
-        this.threadsGateHCMProviderUid = threadsGateHCMProviderUid;
         return this;
     }
 
@@ -127,7 +120,6 @@ public class BaseConfigBuilder {
                 datastoreUrl,
                 threadsGateUrl,
                 threadsGateProviderUid,
-                threadsGateHCMProviderUid,
                 isNewChatCenterApi,
                 loggerConfig,
                 unreadMessagesCountListener,
