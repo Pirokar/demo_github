@@ -1184,6 +1184,7 @@ public final class ChatFragment extends BaseFragment implements
             return;
         }
         ClibpoardExtensionsKt.copyToBuffer(cm, whatToCopy);
+        showToast(getString(R.string.threads_message_text_copied));
         unChooseItem();
     }
 
