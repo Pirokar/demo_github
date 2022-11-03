@@ -160,8 +160,11 @@ class ThreadsGateTransport(
         }
     }
 
-    override fun resendUserInfo() {
-        sendEnvironmentMessage(true)
+    /**
+     *  Публичный метод для переотправки параметров устройства после их изменения. Например пуш токенов
+     */
+    override fun resendRegisterDeviceRequest() {
+        sendRegisterDevice()
     }
 
     override fun sendMessage(
