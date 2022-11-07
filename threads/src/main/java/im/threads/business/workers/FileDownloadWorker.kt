@@ -21,6 +21,7 @@ import im.threads.business.serviceLocator.core.inject
 import im.threads.business.utils.FileDownloader
 import im.threads.business.utils.FileDownloader.DownloadListener
 import im.threads.business.utils.FileProviderHelper
+import im.threads.business.utils.FileUtils.generateFileName
 import im.threads.business.utils.WorkerUtils.marshall
 import im.threads.business.utils.WorkerUtils.unmarshall
 import java.io.File
@@ -53,7 +54,7 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
 
         val fileDownloader = FileDownloader(
             fileDescription.downloadPath!!,
-            fileDescription.incomingName,
+            generateFileName(fileDescription),
             context,
             object : DownloadListener {
                 override fun onProgress(progress: Double) {

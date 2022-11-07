@@ -20,6 +20,7 @@ import im.threads.business.models.Survey
 import im.threads.business.models.UserPhrase
 import im.threads.business.utils.FileDownloader.Companion.getDownloadDir
 import im.threads.business.utils.FileProviderHelper
+import im.threads.business.utils.FileUtils.generateFileName
 import net.zetetic.database.sqlcipher.SQLiteDatabase
 import net.zetetic.database.sqlcipher.SQLiteOpenHelper
 import java.io.File
@@ -724,7 +725,7 @@ class MessagesTable(
         }
         val outputFile = File(
             getDownloadDir(BaseConfig.instance.context),
-            fileDescription.incomingName
+            generateFileName(fileDescription)
         )
         return if (outputFile.exists()) {
             FileProviderHelper.getUriForFile(
