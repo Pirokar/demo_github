@@ -1,174 +1,172 @@
-package im.threads.business.config;
+package im.threads.business.config
 
-import android.content.Context;
-import android.net.Uri;
-import android.text.TextUtils;
+import android.annotation.SuppressLint
+import android.content.Context
+import android.net.Uri
+import com.google.gson.GsonBuilder
+import im.threads.business.core.UnreadMessagesCountListener
+import im.threads.business.exceptions.MetaConfigurationException
+import im.threads.business.imageLoading.ImageLoaderOkHttpProvider
+import im.threads.business.logger.LoggerConfig
+import im.threads.business.models.SslSocketFactoryConfig
+import im.threads.business.preferences.Preferences
+import im.threads.business.rest.config.RequestConfig
+import im.threads.business.rest.config.SocketClientSettings
+import im.threads.business.serviceLocator.core.inject
+import im.threads.business.transport.Transport
+import im.threads.business.transport.threadsGate.ThreadsGateTransport
+import im.threads.business.utils.MetadataBusiness.getDatastoreUrl
+import im.threads.business.utils.MetadataBusiness.getNewChatCenterApi
+import im.threads.business.utils.MetadataBusiness.getServerBaseUrl
+import im.threads.business.utils.MetadataBusiness.getThreadsGateProviderUid
+import im.threads.business.utils.MetadataBusiness.getThreadsGateUrl
+import im.threads.business.utils.createTlsPinningKeyStore
+import im.threads.business.utils.createTlsPinningSocketFactory
+import im.threads.business.utils.getTrustManagers
+import im.threads.business.utils.getX509TrustManager
+import im.threads.business.utils.gson.UriDeserializer
+import im.threads.business.utils.gson.UriSerializer
+import okhttp3.Interceptor
+import java.security.cert.X509Certificate
+import javax.net.ssl.TrustManager
+import javax.net.ssl.X509TrustManager
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+open class BaseConfig(
+    context: Context,
+    serverBaseUrl: String?,
+    datastoreUrl: String?,
+    threadsGateUrl: String?,
+    threadsGateProviderUid: String?,
+    isNewChatCenterApi: Boolean?,
+    val loggerConfig: LoggerConfig?,
+    val unreadMessagesCountListener: UnreadMessagesCountListener?,
+    val networkInterceptor: Interceptor?,
+    val isDebugLoggingEnabled: Boolean,
+    val historyLoadingCount: Int,
+    val surveyCompletionDelay: Int,
+    val requestConfig: RequestConfig,
+    val isSSLPinningDisabled: Boolean,
+    certificateRawResIds: List<Int>?
+) {
+    @JvmField val context: Context
+    val sslSocketFactoryConfig: SslSocketFactoryConfig?
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+    @JvmField
+    val transport: Transport
+    val serverBaseUrl: String
+    val datastoreUrl: String
 
-import java.security.KeyStore;
-import java.util.List;
-
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-
-import im.threads.business.core.UnreadMessagesCountListener;
-import im.threads.business.exceptions.MetaConfigurationException;
-import im.threads.business.imageLoading.ImageLoaderOkHttpProvider;
-import im.threads.business.logger.LoggerConfig;
-import im.threads.business.models.SslSocketFactoryConfig;
-import im.threads.business.preferences.Preferences;
-import im.threads.business.rest.config.RequestConfig;
-import im.threads.business.rest.config.SocketClientSettings;
-import im.threads.business.transport.Transport;
-import im.threads.business.transport.threadsGate.ThreadsGateTransport;
-import im.threads.business.utils.MetadataBusiness;
-import im.threads.business.utils.TlsConfigurationUtils;
-import im.threads.business.utils.gson.UriDeserializer;
-import im.threads.business.utils.gson.UriSerializer;
-import okhttp3.Interceptor;
-
-public class BaseConfig {
-    public static BaseConfig instance;
-
-    @NonNull
-    public final Context context;
-
-    public final RequestConfig requestConfig;
-    public final SslSocketFactoryConfig sslSocketFactoryConfig;
-
-    @Nullable
-    public final Interceptor networkInterceptor;
-    @Nullable
-    public final UnreadMessagesCountListener unreadMessagesCountListener;
-    @NonNull
-    public final Transport transport;
-    @NonNull
-    public final String serverBaseUrl;
-    @NonNull
-    public final String datastoreUrl;
-
-    public final boolean isDebugLoggingEnabled;
     /**
      * set history loading count
      */
-    public final int historyLoadingCount;
+    val newChatCenterApi: Boolean
 
-    public final int surveyCompletionDelay;
+    @JvmField
+    val gson = GsonBuilder()
+        .registerTypeAdapter(Uri::class.java, UriSerializer())
+        .registerTypeAdapter(Uri::class.java, UriDeserializer())
+        .create()
 
-    public final boolean newChatCenterApi;
+    private val preferences: Preferences by inject()
 
-    @Nullable
-    public final LoggerConfig loggerConfig;
-
-    public final Gson gson = new GsonBuilder()
-            .registerTypeAdapter(Uri.class, new UriSerializer())
-            .registerTypeAdapter(Uri.class, new UriDeserializer())
-            .create();
-
-    public BaseConfig(@NonNull Context context,
-                      @Nullable String serverBaseUrl,
-                      @Nullable String datastoreUrl,
-                      @Nullable String threadsGateUrl,
-                      @Nullable String threadsGateProviderUid,
-                      @Nullable Boolean isNewChatCenterApi,
-                      @Nullable LoggerConfig loggerConfig,
-                      @Nullable UnreadMessagesCountListener unreadMessagesCountListener,
-                      @Nullable Interceptor networkInterceptor,
-                      boolean isDebugLoggingEnabled,
-                      int historyLoadingCount,
-                      int surveyCompletionDelay,
-                      @NonNull RequestConfig requestConfig,
-                      List<Integer> certificateRawResIds) {
-        this.context = context.getApplicationContext();
-        this.unreadMessagesCountListener = unreadMessagesCountListener;
-        this.networkInterceptor = networkInterceptor;
-        this.isDebugLoggingEnabled = isDebugLoggingEnabled;
-        this.newChatCenterApi = getIsNewChatCenterApi(isNewChatCenterApi);
-        this.loggerConfig = loggerConfig;
-        this.historyLoadingCount = historyLoadingCount;
-        this.surveyCompletionDelay = surveyCompletionDelay;
-        this.sslSocketFactoryConfig = getSslSocketFactoryConfig(certificateRawResIds);
-        this.transport = getTransport(threadsGateUrl, threadsGateProviderUid, requestConfig.getSocketClientSettings());
-        this.serverBaseUrl = getServerBaseUrl(serverBaseUrl);
-        this.datastoreUrl = getDatastoreUrl(datastoreUrl);
-        this.requestConfig = requestConfig;
-        new ImageLoaderOkHttpProvider(new Preferences(context)).createOkHttpClient( //TODO: rewrite with SL and Kotlin
-                requestConfig.getPicassoHttpClientSettings(),
-                sslSocketFactoryConfig
-        );
+    init {
+        this.context = context.applicationContext
+        newChatCenterApi = getIsNewChatCenterApi(isNewChatCenterApi)
+        sslSocketFactoryConfig = getSslSocketFactoryConfig(certificateRawResIds)
+        transport = getTransport(threadsGateUrl, threadsGateProviderUid, requestConfig.socketClientSettings)
+        this.serverBaseUrl = getServerBaseUrl(serverBaseUrl)
+        this.datastoreUrl = getDatastoreUrl(datastoreUrl)
+        ImageLoaderOkHttpProvider(Preferences(context)).createOkHttpClient( // TODO: rewrite with SL and Kotlin
+            requestConfig.picassoHttpClientSettings,
+            sslSocketFactoryConfig
+        )
     }
 
-    private SslSocketFactoryConfig getSslSocketFactoryConfig(List<Integer> certificateRawResIds) {
-        if (certificateRawResIds == null || certificateRawResIds.isEmpty())
-            return null;
+    private fun getSslSocketFactoryConfig(certificateRawResIds: List<Int>?): SslSocketFactoryConfig? {
+        if (certificateRawResIds == null || certificateRawResIds.isEmpty()) return null
+        val keyStore = createTlsPinningKeyStore(
+            context.resources,
+            certificateRawResIds
+        )
 
-        KeyStore keyStore = TlsConfigurationUtils.createTlsPinningKeyStore(
-                context.getResources(),
-                certificateRawResIds
-        );
-        TrustManager[] trustManagers = TlsConfigurationUtils.getTrustManagers(keyStore);
-        X509TrustManager trustManager = TlsConfigurationUtils.getX509TrustManager(trustManagers);
-        SSLSocketFactory sslSocketFactory =
-                TlsConfigurationUtils.createTlsPinningSocketFactory(trustManagers);
-        return new SslSocketFactoryConfig(sslSocketFactory, trustManager);
+        @SuppressLint("CustomX509TrustManager", "TrustAllX509TrustManager")
+        val trustManagers = if (isSSLPinningDisabled) {
+            arrayOf<TrustManager>(object : X509TrustManager {
+                @SuppressLint("TrustAllX509TrustManager")
+                override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {}
+
+                @SuppressLint("TrustAllX509TrustManager")
+                override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {}
+
+                override fun getAcceptedIssuers(): Array<X509Certificate> {
+                    return arrayOf()
+                }
+            })
+        } else {
+            getTrustManagers(keyStore)
+        }
+
+        val trustManager = getX509TrustManager(trustManagers)
+        val sslSocketFactory = createTlsPinningSocketFactory(trustManagers)
+        return SslSocketFactoryConfig(sslSocketFactory, trustManager)
     }
 
-    private Transport getTransport(@Nullable String providedThreadsGateUrl,
-                                   @Nullable String providedThreadsGateProviderUid,
-                                   SocketClientSettings socketClientSettings) {
-        String threadsGateProviderUid = !TextUtils.isEmpty(providedThreadsGateProviderUid)
-                ? providedThreadsGateProviderUid
-                : MetadataBusiness.getThreadsGateProviderUid(this.context);
-        String threadsGateUrl = !TextUtils.isEmpty(providedThreadsGateUrl)
-                ? providedThreadsGateUrl
-                : MetadataBusiness.getThreadsGateUrl(this.context);
-        if (TextUtils.isEmpty(threadsGateUrl)) {
-            throw new MetaConfigurationException("Threads gate url is not set");
+    private fun getTransport(
+        providedThreadsGateUrl: String?,
+        providedThreadsGateProviderUid: String?,
+        socketClientSettings: SocketClientSettings
+    ): Transport {
+        val threadsGateProviderUid = if (!providedThreadsGateProviderUid.isNullOrBlank()) {
+            providedThreadsGateProviderUid
+        } else {
+            getThreadsGateProviderUid(context)
         }
-        if (TextUtils.isEmpty(threadsGateProviderUid)) {
-            throw new MetaConfigurationException("Threads gate provider uid is not set");
+
+        val threadsGateUrl = if (!providedThreadsGateUrl.isNullOrBlank()) {
+            providedThreadsGateUrl
+        } else {
+            getThreadsGateUrl(context)
         }
-        return new ThreadsGateTransport(
-                threadsGateUrl,
-                threadsGateProviderUid,
-                isDebugLoggingEnabled,
-                socketClientSettings,
-                sslSocketFactoryConfig,
-                networkInterceptor
-        );
+        if (threadsGateUrl.isNullOrBlank()) {
+            throw MetaConfigurationException("Threads gate url is not set")
+        }
+        if (threadsGateProviderUid.isNullOrBlank()) {
+            throw MetaConfigurationException("Threads gate provider uid is not set")
+        }
+        return ThreadsGateTransport(
+            threadsGateUrl,
+            threadsGateProviderUid,
+            isDebugLoggingEnabled,
+            socketClientSettings,
+            sslSocketFactoryConfig,
+            networkInterceptor
+        )
     }
 
-    @NonNull
-    private String getServerBaseUrl(@Nullable String serverBaseUrl) {
-        String baseUrl = TextUtils.isEmpty(serverBaseUrl) ? MetadataBusiness.getServerBaseUrl(this.context) : serverBaseUrl;
-        if (baseUrl == null) {
-            throw new MetaConfigurationException("Neither im.threads.getServerUrl meta variable, nor serverBaseUrl were provided");
-        }
+    private fun getServerBaseUrl(serverBaseUrl: String?): String {
+        var baseUrl = (if (serverBaseUrl.isNullOrBlank()) getServerBaseUrl(context) else serverBaseUrl)
+            ?: throw MetaConfigurationException("Neither im.threads.getServerUrl meta variable, nor serverBaseUrl were provided")
         if (!baseUrl.endsWith("/")) {
-            baseUrl = baseUrl + "/";
+            baseUrl = "$baseUrl/"
         }
-        return baseUrl;
+        return baseUrl
     }
 
-    @NonNull
-    private String getDatastoreUrl(@Nullable String dataStoreUrl) {
-        String datastoreUrl = TextUtils.isEmpty(dataStoreUrl) ? MetadataBusiness.getDatastoreUrl(this.context) : dataStoreUrl;
-        if (datastoreUrl == null) {
-            throw new MetaConfigurationException("Neither im.threads.getDatastoreUrl meta variable, nor datastoreUrl were provided");
-        }
+    private fun getDatastoreUrl(dataStoreUrl: String?): String {
+        var datastoreUrl = (if (dataStoreUrl.isNullOrBlank()) getDatastoreUrl(context) else dataStoreUrl)
+            ?: throw MetaConfigurationException("Neither im.threads.getDatastoreUrl meta variable, nor datastoreUrl were provided")
         if (!datastoreUrl.endsWith("/")) {
-            datastoreUrl = datastoreUrl + "/";
+            datastoreUrl = "$datastoreUrl/"
         }
-        return datastoreUrl;
+        return datastoreUrl
     }
 
-    private boolean getIsNewChatCenterApi(@Nullable Boolean isNewChatCenterApi) {
-        return isNewChatCenterApi == null ? MetadataBusiness.getNewChatCenterApi(this.context) : isNewChatCenterApi;
+    private fun getIsNewChatCenterApi(isNewChatCenterApi: Boolean?): Boolean {
+        return isNewChatCenterApi ?: getNewChatCenterApi(context)
+    }
+
+    companion object {
+        @SuppressLint("StaticFieldLeak")
+        lateinit var instance: BaseConfig
     }
 }

@@ -31,11 +31,12 @@ class Config(
     historyLoadingCount: Int,
     surveyCompletionDelay: Int,
     requestConfig: RequestConfig,
+    isSSLPinningDisabled: Boolean,
     certificateRawResIds: List<Int>?
 ) : BaseConfig(
     context, serverBaseUrl, datastoreUrl, threadsGateUrl, threadsGateProviderUid,
-    isNewChatCenterApi, loggerConfig, unreadMessagesCountListener, networkInterceptor,
-    isDebugLoggingEnabled, historyLoadingCount, surveyCompletionDelay, requestConfig, certificateRawResIds
+    isNewChatCenterApi, loggerConfig, unreadMessagesCountListener, networkInterceptor, isDebugLoggingEnabled,
+    historyLoadingCount, surveyCompletionDelay, requestConfig, isSSLPinningDisabled, certificateRawResIds
 ) {
     @Volatile
     private var chatStyle: ChatStyle? = null
