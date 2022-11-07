@@ -497,10 +497,7 @@ class ChatController private constructor() {
 
     fun loadHistory() {
         if (!isDownloadingMessages) {
-            if (fragment?.isAdded == true && fragment?.chatItemsCount == 0) {
-                fragment?.showProgressBar()
-            }
-            info(ThreadsApi.REST_TAG, "Loading history from " + ChatController::class.java.simpleName)
+            info(ThreadsApi.REST_TAG, "Loading history from ${ChatController::class.java.simpleName}")
             isDownloadingMessages = true
             subscribe(
                 Single.fromCallable {
@@ -509,26 +506,26 @@ class ChatController private constructor() {
                         count,
                         true
                     )
-                    var serverItems = HistoryParser.getChatItems(response)
-                    serverItems = addLocalUserMessages(serverItems)
+                    val serverItems = HistoryParser.getChatItems(response)
                     messenger.saveMessages(serverItems)
                     clearUnreadPush()
                     processSystemMessages(serverItems)
                     if (fragment != null && isActive) {
-                        val uuidList = database.getUnreadMessagesUuid()
+                        val uuidList: List<String?> = database.getUnreadMessagesUuid()
                         if (uuidList.isNotEmpty()) {
                             BaseConfig.instance.transport.markMessagesAsRead(uuidList)
                         }
                     }
                     config
-                    androidx.core.util.Pair(response?.consultInfo, serverItems)
+                    Pair(response?.consultInfo, serverItems.size)
                 }
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                        { pair: androidx.core.util.Pair<ConsultInfo?, MutableList<ChatItem>> ->
+                        { pair: Pair<ConsultInfo?, Int?> ->
                             isDownloadingMessages = false
-                            val items = setLastAvatars(pair.second)
+                            val serverCount = if (pair.second == null) 0 else pair.second!!
+                            val items = setLastAvatars(database.getChatItems(0, serverCount))
                             if (fragment != null) {
                                 fragment?.addChatItems(items)
                                 handleQuickReplies(items)
@@ -541,7 +538,9 @@ class ChatController private constructor() {
                         }
                     ) { e: Throwable? ->
                         isDownloadingMessages = false
-                        fragment?.hideProgressBar()
+                        if (fragment != null) {
+                            fragment?.hideProgressBar()
+                        }
                         config
                         error(e)
                     }
