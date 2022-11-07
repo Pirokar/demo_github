@@ -21,7 +21,6 @@ class Config(
     datastoreUrl: String?,
     threadsGateUrl: String?,
     threadsGateProviderUid: String?,
-    threadsGateHCMProviderUid: String?,
     isNewChatCenterApi: Boolean?,
     loggerConfig: LoggerConfig?,
     val pendingIntentCreator: PendingIntentCreator,
@@ -34,7 +33,7 @@ class Config(
     requestConfig: RequestConfig,
     certificateRawResIds: List<Int>?
 ) : BaseConfig(
-    context, serverBaseUrl, datastoreUrl, threadsGateUrl, threadsGateProviderUid, threadsGateHCMProviderUid,
+    context, serverBaseUrl, datastoreUrl, threadsGateUrl, threadsGateProviderUid,
     isNewChatCenterApi, loggerConfig, unreadMessagesCountListener, networkInterceptor,
     isDebugLoggingEnabled, historyLoadingCount, surveyCompletionDelay, requestConfig, certificateRawResIds
 ) {

@@ -57,11 +57,6 @@ class ConfigBuilder(context: Context) : BaseConfigBuilder(context) {
         return this
     }
 
-    override fun threadsGateHCMProviderUid(threadsGateHCMProviderUid: String?): ConfigBuilder {
-        super.threadsGateHCMProviderUid(threadsGateHCMProviderUid)
-        return this
-    }
-
     override fun unreadMessagesCountListener(unreadMessagesCountListener: UnreadMessagesCountListener?): ConfigBuilder {
         super.unreadMessagesCountListener(unreadMessagesCountListener)
         return this
@@ -119,7 +114,6 @@ class ConfigBuilder(context: Context) : BaseConfigBuilder(context) {
             datastoreUrl,
             threadsGateUrl,
             threadsGateProviderUid,
-            threadsGateHCMProviderUid,
             isNewChatCenterApi,
             loggerConfig,
             pendingIntentCreator,

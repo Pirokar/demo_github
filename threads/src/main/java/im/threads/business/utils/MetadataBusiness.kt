@@ -10,7 +10,6 @@ object MetadataBusiness {
     private const val SERVER_BASE_URL = "im.threads.getServerUrl"
     private const val THREADS_GATE_URL = "im.threads.threadsGateUrl"
     private const val THREADS_GATE_PROVIDER_UID = "im.threads.threadsGateProviderUid"
-    private const val THREADS_GATE_HCM_PROVIDER_UID = "im.threads.threadsGateHCMProviderUid"
     private const val NEW_CHAT_CENTER_API = "im.threads.newChatCenterApi"
 
     @JvmStatic
@@ -42,14 +41,6 @@ object MetadataBusiness {
         val metaData = getMetaData(context)
         return if (metaData != null && metaData.containsKey(THREADS_GATE_PROVIDER_UID)) {
             metaData.getString(THREADS_GATE_PROVIDER_UID)
-        } else null
-    }
-
-    @JvmStatic
-    fun getThreadsGateHCMProviderUid(context: Context): String? {
-        val metaData = getMetaData(context)
-        return if (metaData != null && metaData.containsKey(THREADS_GATE_HCM_PROVIDER_UID)) {
-            metaData.getString(THREADS_GATE_HCM_PROVIDER_UID)
         } else null
     }
 
