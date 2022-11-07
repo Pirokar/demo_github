@@ -43,6 +43,7 @@ public class BaseConfigBuilder {
 
     protected RequestConfig requestConfig = new RequestConfig();
     protected List<Integer> certificateRawResIds = Collections.emptyList();
+    protected Boolean isSslPinningDisabled = false;
 
     public BaseConfigBuilder(@NonNull Context context) {
         this.context = context;
@@ -98,6 +99,14 @@ public class BaseConfigBuilder {
         return this;
     }
 
+    /**
+     * Выключает SSL pinning, даже если передан сертификат
+     */
+    public BaseConfigBuilder disableSSLPinning() {
+        this.isSslPinningDisabled = true;
+        return this;
+    }
+
     public BaseConfigBuilder networkInterceptor(Interceptor interceptor) {
         this.networkInterceptor = interceptor;
         return this;
@@ -128,6 +137,7 @@ public class BaseConfigBuilder {
                 historyLoadingCount,
                 surveyCompletionDelay,
                 requestConfig,
+                isSslPinningDisabled,
                 certificateRawResIds
         );
     }

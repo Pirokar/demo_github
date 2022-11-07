@@ -124,6 +124,7 @@ class ConfigBuilder(context: Context) : BaseConfigBuilder(context) {
             historyLoadingCount,
             surveyCompletionDelay,
             requestConfig,
+            isSslPinningDisabled,
             certificateRawResIds
         )
     }
