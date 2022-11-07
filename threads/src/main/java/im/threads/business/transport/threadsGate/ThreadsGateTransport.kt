@@ -161,9 +161,9 @@ class ThreadsGateTransport(
     }
 
     /**
-     *  Публичный метод для переотправки параметров устройства после их изменения. Например пуш токенов
+     *  Внутренний, библиотечный, метод для переотправки параметров устройства после изменения пуш токена
      */
-    override fun resendRegisterDeviceRequest() {
+    override fun updatePushToken() {
         sendRegisterDevice()
     }
 

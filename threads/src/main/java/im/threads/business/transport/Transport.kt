@@ -60,7 +60,7 @@ abstract class Transport {
     abstract fun sendResolveThread(approveResolve: Boolean)
     abstract fun sendUserTying(input: String)
     abstract fun sendInit()
-    abstract fun resendRegisterDeviceRequest()
+    internal abstract fun updatePushToken()
 
     /**
      * TODO THREADS-6292: this method can potentially lead to messages stuck in STATE_SENDING

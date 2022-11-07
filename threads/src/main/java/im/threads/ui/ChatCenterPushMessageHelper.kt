@@ -27,7 +27,7 @@ class ChatCenterPushMessageHelper() {
             preferences.save(PreferencesCoreKeys.CLOUD_MESSAGING_TYPE, CloudMessagingType.FCM.toString())
         }
         preferences.save(PreferencesCoreKeys.FCM_TOKEN, fcmToken)
-        BaseConfig.instance.transport.resendRegisterDeviceRequest()
+        BaseConfig.instance.transport.updatePushToken()
     }
 
     fun setHcmToken(hcmToken: String?) {
@@ -36,7 +36,7 @@ class ChatCenterPushMessageHelper() {
             preferences.save(PreferencesCoreKeys.CLOUD_MESSAGING_TYPE, CloudMessagingType.HCM.toString())
         }
         preferences.save(PreferencesCoreKeys.HCM_TOKEN, hcmToken)
-        BaseConfig.instance.transport.resendRegisterDeviceRequest()
+        BaseConfig.instance.transport.updatePushToken()
     }
 
     fun process(context: Context, data: Map<String, String>) {
