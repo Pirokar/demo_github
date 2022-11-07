@@ -26,8 +26,10 @@ class ChatCenterPushMessageHelper() {
         if (cloudMessagingType == null) {
             preferences.save(PreferencesCoreKeys.CLOUD_MESSAGING_TYPE, CloudMessagingType.FCM.toString())
         }
-        preferences.save(PreferencesCoreKeys.FCM_TOKEN, fcmToken)
-        BaseConfig.instance.transport.updatePushToken()
+        if (fcmToken != preferences.get(PreferencesCoreKeys.FCM_TOKEN, "")) {
+            preferences.save(PreferencesCoreKeys.FCM_TOKEN, fcmToken)
+            BaseConfig.instance.transport.updatePushToken()
+        }
     }
 
     fun setHcmToken(hcmToken: String?) {
@@ -35,8 +37,10 @@ class ChatCenterPushMessageHelper() {
         if (cloudMessagingType == null) {
             preferences.save(PreferencesCoreKeys.CLOUD_MESSAGING_TYPE, CloudMessagingType.HCM.toString())
         }
-        preferences.save(PreferencesCoreKeys.HCM_TOKEN, hcmToken)
-        BaseConfig.instance.transport.updatePushToken()
+        if (hcmToken != preferences.get(PreferencesCoreKeys.HCM_TOKEN, "")) {
+            preferences.save(PreferencesCoreKeys.HCM_TOKEN, hcmToken)
+            BaseConfig.instance.transport.updatePushToken()
+        }
     }
 
     fun process(context: Context, data: Map<String, String>) {
