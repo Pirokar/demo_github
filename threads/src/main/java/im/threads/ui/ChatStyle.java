@@ -175,6 +175,8 @@ public final class ChatStyle implements Serializable {
     @DimenRes
     public int outgoingImageBottomBorderSize = R.dimen.outgoingImageBottomBorderSize;
 
+    public float imageBubbleSize = 1.0f;
+
     @DimenRes
     public int inputFieldPaddingLeft = R.dimen.margin_three_fourth;
     @DimenRes
@@ -1617,6 +1619,16 @@ public final class ChatStyle implements Serializable {
         this.outgoingImageRightBorderSize = outgoingImageRightBorderSize;
         this.outgoingImageBottomBorderSize = outgoingImageBottomBorderSize;
 
+        return this;
+    }
+
+    /**
+     * Устанавливает размер баббла для сообщений, содержащих изображение
+     * @param size размер изображения в процентах от ширины экрана, где 0.0 - баббла нет, 1.0 - весь экран.
+     * По умолчанию 0.75.
+     */
+    public ChatStyle setImageBubbleSize(float size) {
+        this.imageBubbleSize = size;
         return this;
     }
 

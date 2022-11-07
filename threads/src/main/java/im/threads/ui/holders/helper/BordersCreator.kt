@@ -3,8 +3,7 @@ package im.threads.ui.holders.helper
 import android.content.Context
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
-import android.widget.RelativeLayout
+import androidx.core.content.res.ResourcesCompat
 import im.threads.R
 import im.threads.ui.config.Config
 import im.threads.ui.widget.textView.BubbleTimeTextView
@@ -14,7 +13,8 @@ class BordersCreator(
     private val isIncomingMessage: Boolean
 ) {
     private val sideSize: Int by lazy {
-        (Config.getInstance().screenSize.width / 4) * 3
+        val percentage = ResourcesCompat.getFloat(context.resources, R.dimen.imageBubbleSize)
+        (Config.getInstance().screenSize.width * percentage).toInt()
     }
 
     private val bordersSize: BordersSize
@@ -45,13 +45,7 @@ class BordersCreator(
     fun moveTimeToImageLayout(timeLabel: BubbleTimeTextView) {
         val tag = "moved_to_picture"
         if (timeLabel.tag != tag) {
-            val layoutParams = (timeLabel.layoutParams as? RelativeLayout.LayoutParams)
-                ?: timeLabel.layoutParams as FrameLayout.LayoutParams
-            val additionalMarginRight = if (isIncomingMessage) {
-                0
-            } else {
-                context.resources.getDimensionPixelSize(R.dimen.timeLabelOutgoingExtraMarginRight)
-            }
+            val layoutParams = timeLabel.layoutParams as ViewGroup.MarginLayoutParams
 
             layoutParams.marginEnd += bordersSize.right
             layoutParams.bottomMargin += bordersSize.bottom
@@ -65,10 +59,14 @@ class BordersCreator(
      * Устанавливает отступы в соответствии с шириной бордера для заданной вью
      * @param view вью, для которой нужно установить отступы
      */
-    fun addMargins(view: View) {
-        val layoutParams = view.layoutParams as FrameLayout.LayoutParams
-        layoutParams.setMargins(bordersSize.left, bordersSize.top, bordersSize.right, bordersSize.bottom)
-        view.layoutParams = layoutParams
+    fun addMargins(view: View, parentView: View) {
+        val viewLayoutParams = view.layoutParams as ViewGroup.MarginLayoutParams
+        viewLayoutParams.setMargins(bordersSize.left, bordersSize.top, bordersSize.right, bordersSize.bottom)
+        view.layoutParams = viewLayoutParams
+
+        val parentViewLayoutParams = parentView.layoutParams as ViewGroup.MarginLayoutParams
+        parentViewLayoutParams.setMargins(0, bordersSize.top, 0, 0)
+        parentView.layoutParams = parentViewLayoutParams
     }
 
     /**

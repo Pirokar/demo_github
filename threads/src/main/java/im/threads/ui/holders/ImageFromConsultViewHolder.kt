@@ -23,6 +23,7 @@ import im.threads.business.models.FileDescription
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.ogParser.OpenGraphParser
 import im.threads.business.utils.FileUtils
+import im.threads.ui.utils.gone
 import im.threads.ui.utils.invisible
 import im.threads.ui.utils.visible
 import io.reactivex.subjects.PublishSubject
@@ -92,6 +93,7 @@ class ImageFromConsultViewHolder(
                 }
                 else -> {
                     showCommonLayout(it)
+                    moveTimeToImageLayout()
                 }
             }
         } ?: run {
@@ -147,9 +149,9 @@ class ImageFromConsultViewHolder(
     }
 
     private fun showLoaderLayout(fileDescription: FileDescription) {
-        loaderLayout.isVisible = true
-        imageLayout.isVisible = false
-        errorTextView.isVisible = false
+        loaderLayout.visible()
+        imageLayout.invisible()
+        errorTextView.gone()
         fileNameTextView.text = fileDescription.incomingName
         initAnimation(loader, true)
     }
@@ -157,7 +159,7 @@ class ImageFromConsultViewHolder(
     private fun showErrorLayout(fileDescription: FileDescription) {
         loaderLayout.isVisible = true
         errorTextView.isVisible = true
-        imageLayout.isVisible = false
+        imageLayout.invisible()
         loader.setImageResource(getErrorImageResByErrorCode(fileDescription.errorCode))
         fileNameTextView.text = fileDescription.incomingName
         val errorString = getString(getErrorStringResByErrorCode(fileDescription.errorCode))
@@ -166,9 +168,9 @@ class ImageFromConsultViewHolder(
     }
 
     private fun showCommonLayout(fileDescription: FileDescription) {
-        imageLayout.isVisible = true
-        loaderLayout.isVisible = false
-        errorTextView.isVisible = false
+        imageLayout.visible()
+        loaderLayout.gone()
+        errorTextView.gone()
         rotateAnim.cancel()
         val fileUri = if (fileDescription.fileUri?.toString()?.isNotBlank() == true) {
             fileDescription.fileUri.toString()
@@ -186,7 +188,6 @@ class ImageFromConsultViewHolder(
                 .callback(object : ImageLoader.ImageLoaderCallback {
                     override fun onImageLoaded() {
                         stopLoadImageAnimation()
-                        moveTimeToImageLayout()
                     }
 
                     override fun onImageLoadError() {

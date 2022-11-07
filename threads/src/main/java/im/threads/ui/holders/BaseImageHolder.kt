@@ -23,7 +23,7 @@ open class BaseImageHolder(
     highlightingStream,
     openGraphParser
 ) {
-    protected val image: ImageView = itemView.findViewById<ImageView>(R.id.image)
+    protected val image: ImageView = itemView.findViewById(R.id.image)
     protected val imageLayout: FrameLayout = itemView.findViewById(R.id.imageLayout)
     protected val timeStampTextView: BubbleTimeTextView = itemView.findViewById<BubbleTimeTextView>(R.id.timeStamp).apply {
         val color = if (isIncomingMessage) style.incomingImageTimeColor else style.outgoingImageTimeColor
@@ -53,7 +53,7 @@ open class BaseImageHolder(
 
     init {
         bordersCreator.applyViewSize(imageLayout)
-        bordersCreator.addMargins(image)
+        bordersCreator.addMargins(image, imageLayout)
     }
 
     fun moveTimeToImageLayout() {
