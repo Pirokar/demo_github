@@ -158,6 +158,13 @@ class ThreadsGateTransport(
         }
     }
 
+    /**
+     *  Внутренний, библиотечный, метод для переотправки параметров устройства после изменения пуш токена
+     */
+    override fun updatePushToken() {
+        sendRegisterDevice()
+    }
+
     override fun sendMessage(
         userPhrase: UserPhrase,
         consultInfo: ConsultInfo?,

@@ -3,6 +3,7 @@ package im.threads.ui
 import android.content.Context
 import android.os.Bundle
 import androidx.core.os.bundleOf
+import im.threads.business.config.BaseConfig
 import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.CAMPAIGN_DATE_FORMAT_PARSE
 import im.threads.business.models.CampaignMessage
@@ -25,7 +26,10 @@ class ChatCenterPushMessageHelper() {
         if (cloudMessagingType == null) {
             preferences.save(PreferencesCoreKeys.CLOUD_MESSAGING_TYPE, CloudMessagingType.FCM.toString())
         }
-        preferences.save(PreferencesCoreKeys.FCM_TOKEN, fcmToken)
+        if (fcmToken != preferences.get(PreferencesCoreKeys.FCM_TOKEN, "")) {
+            preferences.save(PreferencesCoreKeys.FCM_TOKEN, fcmToken)
+            BaseConfig.instance.transport.updatePushToken()
+        }
     }
 
     fun setHcmToken(hcmToken: String?) {
@@ -33,7 +37,10 @@ class ChatCenterPushMessageHelper() {
         if (cloudMessagingType == null) {
             preferences.save(PreferencesCoreKeys.CLOUD_MESSAGING_TYPE, CloudMessagingType.HCM.toString())
         }
-        preferences.save(PreferencesCoreKeys.HCM_TOKEN, hcmToken)
+        if (hcmToken != preferences.get(PreferencesCoreKeys.HCM_TOKEN, "")) {
+            preferences.save(PreferencesCoreKeys.HCM_TOKEN, hcmToken)
+            BaseConfig.instance.transport.updatePushToken()
+        }
     }
 
     fun process(context: Context, data: Map<String, String>) {
