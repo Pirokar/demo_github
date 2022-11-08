@@ -50,8 +50,8 @@ class DatabaseHolder(private val context: Context) {
     fun getUnsendUserPhrase(count: Int): List<UserPhrase> = myOpenHelper.getUnsendUserPhrase(count)
 
     // ConsultPhrase
-    fun setStateOfUserPhraseByProviderId(providerId: String?, messageState: MessageState?) {
-        myOpenHelper.setUserPhraseStateByProviderId(providerId, messageState)
+    fun setStateOfUserPhraseByMessageId(uuid: String?, messageState: MessageState?) {
+        myOpenHelper.setUserPhraseStateByMessageId(uuid, messageState)
     }
 
     val lastConsultPhrase: Single<ConsultPhrase?> =

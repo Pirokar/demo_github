@@ -418,4 +418,8 @@ abstract class BaseHolder internal constructor(
         view.animation = rotateAnim
         rotateAnim.start()
     }
+
+    protected fun cancelAnimation() {
+        rotateAnim.cancel()
+    }
 }

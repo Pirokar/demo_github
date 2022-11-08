@@ -1731,8 +1731,8 @@ public final class ChatFragment extends BaseFragment implements
         Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
     }
 
-    public void setMessageState(String providerId, MessageState state) {
-        chatAdapter.changeStateOfMessageByProviderId(providerId, state);
+    public void setMessageState(String messageId, MessageState state) {
+        chatAdapter.changeStateOfMessageByMessageId(messageId, state);
     }
 
     public void setSurveySentStatus(long uuid, MessageState sentState) {

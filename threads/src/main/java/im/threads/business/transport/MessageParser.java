@@ -95,7 +95,7 @@ public final class MessageParser {
             case MESSAGE:
             case ON_HOLD:
             default:
-                return getPhrase(messageId, sentAt, shortMessage, fullMessage);
+                return getPhrase(sentAt, shortMessage, fullMessage);
         }
     }
 
@@ -112,8 +112,7 @@ public final class MessageParser {
         Operator operator = content.getOperator();
         return new ConsultConnectionMessage(
                 content.getUuid(),
-                messageId,
-                content.getProviderIds(),
+//                messageId,
                 String.valueOf(operator.getId()),
                 content.getType(),
                 operator.getAliasOrName(),
@@ -162,7 +161,7 @@ public final class MessageParser {
     }
 
     @Nullable
-    private static ChatItem getPhrase(final String messageId, final long sentAt, final String shortMessage, final JsonObject fullMessage) {
+    private static ChatItem getPhrase(final long sentAt, final String shortMessage, final JsonObject fullMessage) {
         MessageContent content = BaseConfig.instance.gson.fromJson(fullMessage, MessageContent.class);
         if (content.getText() == null && content.getAttachments() == null && content.getQuotes() == null) {
             return null;
@@ -192,8 +191,6 @@ public final class MessageParser {
             }
             return new ConsultPhrase(
                     content.getUuid(),
-                    messageId,
-                    content.getProviderIds(),
                     fileDescription,
                     quote,
                     name,
@@ -215,7 +212,7 @@ public final class MessageParser {
             if (content.getAttachments() != null) {
                 fileDescription = getFileDescription(content.getAttachments(), null, sentAt);
             }
-            final UserPhrase userPhrase = new UserPhrase(content.getUuid(), messageId, phrase, quote, sentAt, fileDescription, content.getThreadId());
+            final UserPhrase userPhrase = new UserPhrase(content.getUuid(), phrase, quote, sentAt, fileDescription, content.getThreadId());
             userPhrase.setSentState(MessageState.STATE_SENT);
             return userPhrase;
         }

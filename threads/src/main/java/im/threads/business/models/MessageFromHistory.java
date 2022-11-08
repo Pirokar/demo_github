@@ -8,9 +8,7 @@ import java.util.List;
 import im.threads.business.utils.DateHelper;
 
 public final class MessageFromHistory implements ChatItem {
-    private String uuid;
-    private String providerId; //This this a mfms messageId required for read status updates
-    private List<String> providerIds;
+    private String uuid;  //This this a mfms messageId required for read status updates
     private String clientId;
     private Long threadId;
     private Operator operator;
@@ -46,14 +44,6 @@ public final class MessageFromHistory implements ChatItem {
 
     public void setUuid(String id) {
         this.uuid = id;
-    }
-
-    public String getProviderId() {
-        return providerId;
-    }
-
-    public List<String> getProviderIds() {
-        return providerIds;
     }
 
     public String getClientId() {
@@ -251,8 +241,6 @@ public final class MessageFromHistory implements ChatItem {
                 display == that.display &&
                 simple == that.simple &&
                 ObjectsCompat.equals(uuid, that.uuid) &&
-                ObjectsCompat.equals(providerId, that.providerId) &&
-                ObjectsCompat.equals(providerIds, that.providerIds) &&
                 ObjectsCompat.equals(clientId, that.clientId) &&
                 ObjectsCompat.equals(threadId, that.threadId) &&
                 ObjectsCompat.equals(operator, that.operator) &&
@@ -274,6 +262,6 @@ public final class MessageFromHistory implements ChatItem {
 
     @Override
     public int hashCode() {
-        return ObjectsCompat.hash(uuid, providerId, providerIds, clientId, threadId, operator, client, receivedDate, channel, read, formattedText, text, attachments, quickReplies, quotes, type, display, hideAfter, sendingId, questionId, rate, scale, simple);
+        return ObjectsCompat.hash(uuid, clientId, threadId, operator, client, receivedDate, channel, read, formattedText, text, attachments, quickReplies, quotes, type, display, hideAfter, sendingId, questionId, rate, scale, simple);
     }
 }

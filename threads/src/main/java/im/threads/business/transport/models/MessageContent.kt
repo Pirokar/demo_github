@@ -12,7 +12,6 @@ data class MessageContent(
     val receivedDate: Date? = null,
     val threadId: Long? = null,
     val operator: Operator? = null,
-    val providerIds: List<String>? = null,
     val attachments: List<Attachment>? = null,
     val quotes: List<Quote>? = null,
     val quickReplies: List<QuickReply>? = null,

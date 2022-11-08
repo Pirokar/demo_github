@@ -4,8 +4,6 @@ import androidx.core.util.ObjectsCompat;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.List;
-
 public final class ConsultConnectionMessage extends ConsultChatPhrase implements ChatItem, SystemMessage {
 
     private final String type;
@@ -13,9 +11,7 @@ public final class ConsultConnectionMessage extends ConsultChatPhrase implements
     private final boolean sex;
     private final long date;
     private final String status;
-    private final String uuid;
-    private String providerId; //This this a mfms messageId required for read status updates
-    private final List<String> providerIds;
+    private final String uuid; //This this a mfms messageId required for read status updates
     private final String title;
     private final String orgUnit;
     private final String role;
@@ -24,12 +20,12 @@ public final class ConsultConnectionMessage extends ConsultChatPhrase implements
     private final String text;
     private final Long threadId;
 
-    /** Используется в старой БД. */
+    /**
+     * Используется в старой БД.
+     */
     @Deprecated
     public ConsultConnectionMessage(
             String uuid,
-            String providerId,
-            List<String> providerIds,
             String consultId,
             String type,
             String name,
@@ -45,8 +41,6 @@ public final class ConsultConnectionMessage extends ConsultChatPhrase implements
     ) {
         super(avatarPath, consultId);
         this.uuid = uuid;
-        this.providerId = providerId;
-        this.providerIds = providerIds;
         this.type = type;
         this.name = name;
         this.sex = sex;
@@ -62,8 +56,6 @@ public final class ConsultConnectionMessage extends ConsultChatPhrase implements
 
     public ConsultConnectionMessage(
             String uuid,
-            String providerId,
-            List<String> providerIds,
             String consultId,
             String type,
             String name,
@@ -80,8 +72,6 @@ public final class ConsultConnectionMessage extends ConsultChatPhrase implements
     ) {
         super(avatarPath, consultId);
         this.uuid = uuid;
-        this.providerId = providerId;
-        this.providerIds = providerIds;
         this.type = type;
         this.name = name;
         this.sex = sex;
@@ -97,14 +87,6 @@ public final class ConsultConnectionMessage extends ConsultChatPhrase implements
 
     public String getUuid() {
         return uuid;
-    }
-
-    public String getProviderId() {
-        return providerId;
-    }
-
-    public void setProviderId(String providerId) {
-        this.providerId = providerId;
     }
 
     public String getName() {
@@ -182,8 +164,6 @@ public final class ConsultConnectionMessage extends ConsultChatPhrase implements
                 date == that.date &&
                 displayMessage == that.displayMessage &&
                 ObjectsCompat.equals(uuid, that.uuid) &&
-                ObjectsCompat.equals(providerId, that.providerId) &&
-                ObjectsCompat.equals(providerIds, that.providerIds) &&
                 ObjectsCompat.equals(type, that.type) &&
                 ObjectsCompat.equals(name, that.name) &&
                 ObjectsCompat.equals(status, that.status) &&
@@ -195,7 +175,7 @@ public final class ConsultConnectionMessage extends ConsultChatPhrase implements
 
     @Override
     public int hashCode() {
-        return ObjectsCompat.hash(uuid, providerId, providerIds, type, name, sex, date, status,
+        return ObjectsCompat.hash(uuid, type, name, sex, date, status,
                 title, orgUnit, role, displayMessage, text);
     }
 }
