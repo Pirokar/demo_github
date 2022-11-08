@@ -1,6 +1,5 @@
 package im.threads.business.database.table;
 
-import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -9,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import im.threads.business.models.QuickReply;
-import im.threads.business.logger.LoggerEdna;
 
 public class QuickRepliesTable extends Table {
 
@@ -64,33 +62,4 @@ public class QuickRepliesTable extends Table {
             return items;
         }
     }
-
-    public void putQuickReplies(SQLiteOpenHelper sqlHelper, String messageUUID, List<QuickReply> quickReplies) {
-        try {
-            sqlHelper.getWritableDatabase().beginTransaction();
-            String deleteQuickRepliesSql = "delete from " + TABLE_QUICK_REPLIES
-                    + " where " + COLUMN_QUICK_REPLIES_MESSAGE_UUID + " = ? ";
-            sqlHelper.getWritableDatabase().execSQL(deleteQuickRepliesSql, new String[]{String.valueOf(messageUUID)});
-            for (QuickReply item : quickReplies) {
-                putQuickReply(sqlHelper, messageUUID, item);
-            }
-            sqlHelper.getWritableDatabase().setTransactionSuccessful();
-        } catch (Exception e) {
-            LoggerEdna.error("putQuickReplies", e);
-        } finally {
-            sqlHelper.getWritableDatabase().endTransaction();
-        }
-    }
-
-    private void putQuickReply(SQLiteOpenHelper sqlHelper, String messageUUID, QuickReply quickReply) {
-        ContentValues quickReplyCv = new ContentValues();
-        quickReplyCv.put(COLUMN_QUICK_REPLIES_SERVER_ID, quickReply.getId());
-        quickReplyCv.put(COLUMN_QUICK_REPLIES_MESSAGE_UUID, messageUUID);
-        quickReplyCv.put(COLUMN_QUICK_REPLIES_TYPE, quickReply.getType());
-        quickReplyCv.put(COLUMN_QUICK_REPLIES_TEXT, quickReply.getText());
-        quickReplyCv.put(COLUMN_QUICK_REPLIES_IMAGE_URL, quickReply.getImageUrl());
-        quickReplyCv.put(COLUMN_QUICK_REPLIES_URL, quickReply.getUrl());
-        sqlHelper.getWritableDatabase().insert(TABLE_QUICK_REPLIES, null, quickReplyCv);
-    }
-
 }
