@@ -10,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -380,8 +379,6 @@ public class MessagesTable extends Table {
         if (type == MessageType.CONSULT_CONNECTED.ordinal()) {
             return new ConsultConnectionMessage(
                     cGetString(c, COLUMN_MESSAGE_UUID),
-                    cGetString(c, COLUMN_PROVIDER_ID),
-                    stringToList(cGetString(c, COLUMN_PROVIDER_IDS)),
                     cGetString(c, COLUMN_CONSULT_ID),
                     cGetString(c, COLUMN_CONNECTION_TYPE),
                     cGetString(c, COLUMN_NAME),
@@ -418,8 +415,6 @@ public class MessagesTable extends Table {
     private ConsultPhrase getConsultPhrase(SQLiteOpenHelper sqlHelper, Cursor c) {
         return new ConsultPhrase(
                 cGetString(c, COLUMN_MESSAGE_UUID),
-                cGetString(c, COLUMN_PROVIDER_ID),
-                stringToList(cGetString(c, COLUMN_PROVIDER_IDS)),
                 fileDescriptionTable.getFileDescription(sqlHelper, cGetString(c, COLUMN_MESSAGE_UUID)),
                 quotesTable.getQuote(sqlHelper, cGetString(c, COLUMN_MESSAGE_UUID)),
                 cGetString(c, COLUMN_NAME),
@@ -441,8 +436,6 @@ public class MessagesTable extends Table {
     private UserPhrase getUserPhrase(SQLiteOpenHelper sqlHelper, Cursor c) {
         return new UserPhrase(
                 cGetString(c, COLUMN_MESSAGE_UUID),
-                cGetString(c, COLUMN_PROVIDER_ID),
-                stringToList(cGetString(c, COLUMN_PROVIDER_IDS)),
                 cGetString(c, COLUMN_PHRASE),
                 quotesTable.getQuote(sqlHelper, cGetString(c, COLUMN_MESSAGE_UUID)),
                 cGetLong(c, COLUMN_TIMESTAMP),
@@ -493,8 +486,6 @@ public class MessagesTable extends Table {
         cv.put(COLUMN_IS_READ, phrase.isRead());
         cv.put(COLUMN_CONSULT_STATUS, phrase.getStatus());
         cv.put(COLUMN_NAME, phrase.getConsultName());
-        cv.put(COLUMN_PROVIDER_ID, phrase.getProviderId());
-        cv.put(COLUMN_PROVIDER_IDS, listToString(phrase.getProviderIds()));
         cv.put(COLUMN_SEX, phrase.getSex());
         cv.put(COLUMN_THREAD_ID, phrase.getThreadId());
         cv.put(COLUMN_BLOCK_INPUT, phrase.isBlockInput());
@@ -505,8 +496,6 @@ public class MessagesTable extends Table {
     private ContentValues getUserPhraseCV(UserPhrase phrase) {
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_MESSAGE_UUID, phrase.getId());
-        cv.put(COLUMN_PROVIDER_ID, phrase.getProviderId());
-        cv.put(COLUMN_PROVIDER_IDS, listToString(phrase.getProviderIds()));
         cv.put(COLUMN_PHRASE, phrase.getPhraseText());
         cv.put(COLUMN_TIMESTAMP, phrase.getTimeStamp());
         cv.put(COLUMN_MESSAGE_TYPE, MessageType.USER_PHRASE.ordinal());
@@ -622,26 +611,6 @@ public class MessagesTable extends Table {
         String whereClause = COLUMN_MESSAGE_TYPE + " = " + MessageType.REQUEST_RESOLVE_THREAD.ordinal() +
                 " and " + COLUMN_MESSAGE_UUID + " != ?";
         sqlHelper.getWritableDatabase().update(TABLE_MESSAGES, cv, whereClause, new String[]{uuid});
-    }
-
-    private List<String> stringToList(String text) {
-        if (text == null) {
-            return Collections.emptyList();
-        }
-        return Arrays.asList(text.split(";"));
-    }
-
-    private String listToString(List<String> list) {
-        if (list == null) {
-            return null;
-        }
-        StringBuilder stringBuilder = new StringBuilder();
-        String divider = "";
-        for (String item : list) {
-            stringBuilder.append(divider).append(item);
-            divider = ";";
-        }
-        return stringBuilder.toString();
     }
 
     private enum MessageType {

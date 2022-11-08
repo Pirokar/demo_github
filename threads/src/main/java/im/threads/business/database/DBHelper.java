@@ -39,7 +39,7 @@ public interface DBHelper {
 
     int setAllConsultMessagesWereRead();
 
-    void setMessageWasRead(String providerId);
+    void setMessageWasRead(String uuid);
 
     Survey getSurvey(long sendingId);
 

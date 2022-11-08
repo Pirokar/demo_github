@@ -183,7 +183,11 @@ class ChatController private constructor() {
         messenger.queueMessageSending(um)
     }
 
-    fun fancySearch(query: String?, forward: Boolean, consumer: Consumer<Pair<List<ChatItem?>?, ChatItem?>?>) {
+    fun fancySearch(
+        query: String?,
+        forward: Boolean,
+        consumer: Consumer<Pair<List<ChatItem?>?, ChatItem?>?>
+    ) {
         info("Trying to start search")
         subscribe(
             Single.just(isAllMessagesDownloaded)
@@ -243,11 +247,16 @@ class ChatController private constructor() {
                 } else {
                     val target = Intent(Intent.ACTION_VIEW)
                     target.setDataAndType(fileDescription.fileUri, getMimeType(fileDescription))
-                    target.flags = Intent.FLAG_ACTIVITY_NO_HISTORY or Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    target.flags =
+                        Intent.FLAG_ACTIVITY_NO_HISTORY or Intent.FLAG_GRANT_READ_URI_PERMISSION
                     try {
                         activity.startActivity(target)
                     } catch (e: ActivityNotFoundException) {
-                        Toast.makeText(activity, "No application support this type of file", Toast.LENGTH_SHORT)
+                        Toast.makeText(
+                            activity,
+                            "No application support this type of file",
+                            Toast.LENGTH_SHORT
+                        )
                             .show()
                     }
                 }
@@ -259,7 +268,8 @@ class ChatController private constructor() {
         info("setActivityIsForeground")
         isActive = isForeground
         if (isForeground && fragment?.isAdded == true) {
-            val cm = appContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val cm =
+                appContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
             if (cm.activeNetworkInfo != null && cm.activeNetworkInfo!!.isConnectedOrConnecting) {
                 val uuidList = database.getUnreadMessagesUuid()
                 firstUnreadUuidId = if (uuidList.isNotEmpty()) {
@@ -297,7 +307,12 @@ class ChatController private constructor() {
                         return@fromCallable setLastAvatars(serverItems)
                     } catch (e: Exception) {
                         error(ThreadsApi.REST_TAG, "Requesting history items error", e)
-                        return@fromCallable setLastAvatars(database.getChatItems(currentItemsCount, count))
+                        return@fromCallable setLastAvatars(
+                            database.getChatItems(
+                                currentItemsCount,
+                                count
+                            )
+                        )
                     }
                 }
                 java.util.ArrayList()
@@ -451,7 +466,10 @@ class ChatController private constructor() {
     private fun subscribeToSurveyCompletion() {
         subscribe(
             Flowable.fromPublisher(surveyCompletionProcessor)
-                .throttleLast(BaseConfig.instance.surveyCompletionDelay.toLong(), TimeUnit.MILLISECONDS)
+                .throttleLast(
+                    BaseConfig.instance.surveyCompletionDelay.toLong(),
+                    TimeUnit.MILLISECONDS
+                )
                 .firstElement()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -563,10 +581,16 @@ class ChatController private constructor() {
                             val responseBody = response?.body()
                             if (responseBody != null) {
                                 info("getting settings : $responseBody")
-                                val clientNotificationType = responseBody.clientNotificationDisplayType
+                                val clientNotificationType =
+                                    responseBody.clientNotificationDisplayType
                                 if (clientNotificationType != null && clientNotificationType.isNotEmpty()) {
-                                    val type = ClientNotificationDisplayType.fromString(clientNotificationType)
-                                    preferences.save(PreferencesUiKeys.CLIENT_NOTIFICATION_DISPLAY_TYPE, type.name)
+                                    val type = ClientNotificationDisplayType.fromString(
+                                        clientNotificationType
+                                    )
+                                    preferences.save(
+                                        PreferencesUiKeys.CLIENT_NOTIFICATION_DISPLAY_TYPE,
+                                        type.name
+                                    )
                                     chatUpdateProcessor.postClientNotificationDisplayType(type)
                                 }
                             }
@@ -709,16 +733,16 @@ class ChatController private constructor() {
         subscribe(
             Flowable.fromPublisher(chatUpdateProcessor.outgoingMessageReadProcessor)
                 .observeOn(Schedulers.io())
-                .doOnNext { providerId: String? ->
-                    database.setStateOfUserPhraseByProviderId(
-                        providerId,
+                .doOnNext { messageId: String? ->
+                    database.setStateOfUserPhraseByMessageId(
+                        messageId,
                         MessageState.STATE_WAS_READ
                     )
                 }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                    { providerId: String? ->
-                        fragment?.setMessageState(providerId, MessageState.STATE_WAS_READ)
+                    { messageId: String? ->
+                        fragment?.setMessageState(messageId, MessageState.STATE_WAS_READ)
                     }
                 ) { error: Throwable? -> error("subscribeToOutgoingMessageRead ", error) }
         )
@@ -729,8 +753,8 @@ class ChatController private constructor() {
             Flowable.fromPublisher(chatUpdateProcessor.incomingMessageReadProcessor)
                 .observeOn(Schedulers.io())
                 .subscribe(
-                    { id: String? ->
-                        database.setMessageWasRead(id)
+                    { uuid: String? ->
+                        database.setMessageWasRead(uuid)
                         UnreadMessagesController.INSTANCE.refreshUnreadMessagesCount()
                     }
                 ) { error: Throwable? -> error("subscribeToIncomingMessageRead ", error) }
@@ -771,11 +795,17 @@ class ChatController private constructor() {
                                 if (item is ChatPhrase) {
                                     if (item.fileDescription != null) {
                                         val attachmentName = attachment.name ?: ""
-                                        val incomingNameEquals = (item.fileDescription?.incomingName == attachmentName)
-                                        val isUrlHashFileName = (item.fileDescription?.fileUri.toString().contains(attachmentName))
+                                        val incomingNameEquals =
+                                            (item.fileDescription?.incomingName == attachmentName)
+                                        val isUrlHashFileName =
+                                            (
+                                                item.fileDescription?.fileUri.toString()
+                                                    .contains(attachmentName)
+                                                )
                                         if ((incomingNameEquals || isUrlHashFileName) && fragment?.isAdded == true) {
                                             item.fileDescription?.state = attachment.state
-                                            item.fileDescription?.errorCode = attachment.getErrorCodeState()
+                                            item.fileDescription?.errorCode =
+                                                attachment.getErrorCodeState()
                                             item.fileDescription?.downloadPath = attachment.result
                                             fragment?.updateProgress(item.fileDescription)
                                         }
@@ -797,7 +827,9 @@ class ChatController private constructor() {
                         val readMessagesIds = chatItem.messageId
                         for (readId in readMessagesIds) {
                             (database.getChatItem(readId) as UserPhrase?)?.let { userPhrase ->
-                                userPhrase.providerId?.let { chatUpdateProcessor.postOutgoingMessageWasRead(it) }
+                                userPhrase.id?.let {
+                                    chatUpdateProcessor.postOutgoingMessageWasRead(it)
+                                }
                             }
                         }
                         return@doOnNext
@@ -847,7 +879,6 @@ class ChatController private constructor() {
                     val chatItem = database.getChatItem(chatItemSent.uuid)
                     if (chatItem is UserPhrase) {
                         debug("server answer on phrase sent with id " + chatItemSent.messageId)
-                        chatItem.providerId = chatItemSent.messageId
                         if (chatItemSent.sentAt > 0) {
                             chatItem.timeStamp = chatItemSent.sentAt
                         }
@@ -891,7 +922,7 @@ class ChatController private constructor() {
                 .subscribe(
                     { chatItem: ChatItem? ->
                         if (chatItem is UserPhrase) {
-                            fragment?.setMessageState(chatItem.providerId, chatItem.sentState)
+                            fragment?.setMessageState(chatItem.id, chatItem.sentState)
                             messenger.addMsgToResendQueue(chatItem)
                             if (isActive) {
                                 fragment?.showConnectionError()
@@ -976,8 +1007,8 @@ class ChatController private constructor() {
         subscribe(
             messenger.resendStream
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ providerId: String? ->
-                    fragment?.setMessageState(providerId, MessageState.STATE_SENDING)
+                .subscribe({ messageId: String? ->
+                    fragment?.setMessageState(messageId, MessageState.STATE_SENDING)
                 }) { obj: Throwable -> obj.message }
         )
     }
@@ -1163,7 +1194,8 @@ class ChatController private constructor() {
                     val type = (chatItem as SystemMessage).type
                     if (ChatItemType.OPERATOR_JOINED.toString().equals(type, ignoreCase = true) ||
                         ChatItemType.THREAD_ENQUEUED.toString().equals(type, ignoreCase = true) ||
-                        ChatItemType.THREAD_WILL_BE_REASSIGNED.toString().equals(type, ignoreCase = true) ||
+                        ChatItemType.THREAD_WILL_BE_REASSIGNED.toString()
+                            .equals(type, ignoreCase = true) ||
                         ChatItemType.AVERAGE_WAIT_TIME.toString().equals(type, ignoreCase = true) ||
                         ChatItemType.THREAD_CLOSED.toString().equals(type, ignoreCase = true)
                     ) {
@@ -1234,7 +1266,12 @@ class ChatController private constructor() {
     }
 
     private fun refreshUserInputState() {
-        chatUpdateProcessor.postUserInputEnableChanged(InputFieldEnableModel(isInputFieldEnabled, isSendButtonEnabled))
+        chatUpdateProcessor.postUserInputEnableChanged(
+            InputFieldEnableModel(
+                isInputFieldEnabled,
+                isSendButtonEnabled
+            )
+        )
     }
 
     private val isInputFieldEnabled: Boolean
