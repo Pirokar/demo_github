@@ -74,10 +74,11 @@ open class ThreadsLibBase protected constructor(context: Context) {
     }
 
     /**
-     * Used to stop receiving messages for user with provided clientId
+     * Used to stop receiving messages for user
      */
-    fun logoutClient(clientId: String) {
-        if (!TextUtils.isEmpty(clientId)) {
+    fun logoutClient() {
+        val clientId = preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)?.clientId
+        if (!clientId.isNullOrBlank()) {
             BaseConfig.instance.transport.sendClientOffline(clientId)
         } else {
             info("clientId must not be empty")
