@@ -369,7 +369,7 @@ class MainActivity : AppCompatActivity(), EditCardDialogActionsListener, YesNoDi
                 cards.remove(it)
                 showCards(cards)
                 storeCards(this, cards)
-                ThreadsLib.getInstance().logoutClient(it.userId)
+                ThreadsLib.getInstance().logoutClient()
             }
         }
         cardForDelete = null
