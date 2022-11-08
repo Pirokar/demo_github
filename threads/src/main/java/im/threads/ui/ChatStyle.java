@@ -63,6 +63,7 @@ public final class ChatStyle implements Serializable {
     public int searchEnabled = R.bool.threads_chat_search_enabled;
 
     public boolean showBackButton = false;
+    public boolean isToolbarTextCentered = false;
     public boolean chatSubtitleShowOrgUnit = false;
 
     @ColorRes
@@ -532,6 +533,14 @@ public final class ChatStyle implements Serializable {
     // <editor-fold defaultState="collapsed" desc="chat title style">
     public ChatStyle showChatBackButton(final boolean showBackButton) {
         this.showBackButton = showBackButton;
+        return this;
+    }
+
+    /**
+     * Центрирует текст в тулбаре
+     */
+    public ChatStyle centerToolbarText() {
+        this.isToolbarTextCentered = true;
         return this;
     }
 

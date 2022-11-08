@@ -25,6 +25,7 @@ import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
+import android.view.Gravity;
 import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -2116,6 +2117,7 @@ public final class ChatFragment extends BaseFragment implements
         if (getResources().getBoolean(style.fixedChatTitle)) {
             setTitleStateDefault();
         }
+        initToolbarTextPosition();
     }
 
     private void initToolbarShadow() {
@@ -2124,6 +2126,14 @@ public final class ChatFragment extends BaseFragment implements
         if (!isShadowVisible) {
             binding.toolbar.setElevation(0);
         }
+    }
+
+    private void initToolbarTextPosition() {
+        boolean isToolbarTextCentered = Config.getInstance().getChatStyle().isToolbarTextCentered;
+        int gravity = isToolbarTextCentered ? Gravity.CENTER : Gravity.CENTER_VERTICAL;
+
+        binding.consultName.setGravity(gravity);
+        binding.subtitle.setGravity(gravity);
     }
 
     private void showOverflowMenu() {
