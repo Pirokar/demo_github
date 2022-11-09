@@ -127,7 +127,7 @@ import im.threads.ui.permissions.PermissionsActivity;
 import im.threads.ui.styles.permissions.PermissionDescriptionType;
 import im.threads.ui.utils.ColorsHelper;
 import im.threads.ui.utils.FileHelper;
-import im.threads.ui.utils.Keyboard;
+import im.threads.ui.utils.KeyboardKt;
 import im.threads.ui.utils.ThreadRunnerKt;
 import im.threads.ui.views.VoiceTimeLabelFormatter;
 import im.threads.ui.views.VoiceTimeLabelFormatterKt;
@@ -1939,7 +1939,7 @@ public final class ChatFragment extends BaseFragment implements
         binding.inputEditView.setEnabled(enableModel.isEnabledInputField());
         binding.addAttachment.setEnabled(enableModel.isEnabledInputField());
         if (!enableModel.isEnabledInputField()) {
-            Keyboard.hide(requireContext(), binding.inputEditView, 100);
+            KeyboardKt.hideKeyboard(binding.inputEditView, 100);
         }
     }
 
@@ -2173,7 +2173,7 @@ public final class ChatFragment extends BaseFragment implements
                 && binding.searchLo.getVisibility() == View.VISIBLE) {
             unChooseItem();
             binding.search.requestFocus();
-            Keyboard.show(activity, binding.search, 100);
+            KeyboardKt.showKeyboard(binding.search, 100);
             return false;
         }
         if (binding.copyControls.getVisibility() == View.VISIBLE) {
@@ -2204,7 +2204,7 @@ public final class ChatFragment extends BaseFragment implements
         setMenuVisibility(true);
         isInMessageSearchMode = false;
         binding.search.setText("");
-        Keyboard.hide(activity, binding.search, 100);
+        KeyboardKt.hideKeyboard(binding.search, 100);
         binding.searchMore.setVisibility(View.GONE);
         binding.swipeRefresh.setEnabled(true);
         int state = mChatController.getStateOfConsult();
@@ -2243,7 +2243,7 @@ public final class ChatFragment extends BaseFragment implements
         binding.search.requestFocus();
         hideOverflowMenu();
         setMenuVisibility(false);
-        Keyboard.show(activity, binding.search, 100);
+        KeyboardKt.showKeyboard(binding.search, 100);
         binding.swipeRefresh.setEnabled(false);
         binding.searchMore.setVisibility(View.GONE);
     }
