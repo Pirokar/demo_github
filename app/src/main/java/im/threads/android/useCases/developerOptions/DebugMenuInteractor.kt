@@ -31,6 +31,7 @@ import com.pandulapeter.beagle.modules.NetworkLogListModule
 import com.pandulapeter.beagle.modules.PaddingModule
 import com.pandulapeter.beagle.modules.ScreenCaptureToolboxModule
 import com.pandulapeter.beagle.modules.SingleSelectionListModule
+import com.pandulapeter.beagle.modules.SwitchModule
 import com.pandulapeter.beagle.modules.TextModule
 import im.threads.android.BuildConfig
 import im.threads.android.R
@@ -219,6 +220,9 @@ class DebugMenuInteractor(private val context: Context) : DebugMenuUseCase {
             TextModule("Debug", TextModule.Type.SECTION_HEADER),
             AnimationDurationSwitchModule(),
             KeylineOverlaySwitchModule(),
+            SwitchModule("Center chat title", PrefUtilsApp.getIsTitleCentered(context), onValueChanged = {
+                PrefUtilsApp.setIsTitleCentered(context, it)
+            }),
             DeviceInfoModule(),
             DeveloperOptionsButtonModule(),
             PaddingModule(size = PaddingModule.Size.LARGE),
