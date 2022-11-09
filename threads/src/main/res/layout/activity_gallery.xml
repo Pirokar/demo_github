@@ -24,44 +24,68 @@
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/toolbar_height"
             android:background="@color/threads_chat_toolbar"
-            app:navigationIcon="@drawable/ic_arrow_back_white_24dp"
-            app:title="@string/threads_photos"
-            app:titleTextColor="@android:color/white">
+            app:contentInsetStart="0dp">
 
             <LinearLayout
-                android:id="@+id/search_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:visibility="@{viewModel.screenState == GalleryActivity.ScreenState.SEARCH ? View.VISIBLE : View.GONE, default = gone}">
-
-                <im.threads.ui.widget.CustomFontEditText
-                    android:id="@+id/search_edit_text"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="0.85"
-                    android:background="@null"
-                    android:ellipsize="end"
-                    android:hint="@string/threads_search_photos"
-                    android:imeOptions="actionSearch"
-                    android:inputType="text"
-                    android:lines="1"
-                    android:paddingStart="12dp"
-                    android:paddingEnd="0dp"
-                    android:textColor="@color/threads_chat_toolbar_text"
-                    android:textColorHint="@color/threads_chat_toolbar_hint"
-                    android:textSize="@dimen/text_big" />
+                android:orientation="horizontal">
 
                 <ImageButton
-                    android:id="@+id/clear_search_button"
-                    android:layout_width="0dp"
+                    android:id="@+id/back_button"
+                    android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_weight="0.15"
-                    android:background="@null"
-                    android:onClickListener="@{v -> viewModel.clearSearch()}"
-                    app:srcCompat="@drawable/ic_clear_gray_30dp" />
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:background="?android:attr/selectableItemBackground"
+                    app:srcCompat="@drawable/threads_ic_arrow_back_24dp" />
+
+                <TextView
+                    android:id="@+id/title"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="@dimen/toolbar_height"
+                    android:text="@string/threads_photos"
+                    android:gravity="center_vertical"
+                    android:textColor="@android:color/white"
+                    android:textSize="@dimen/text_big"/>
+
+                <LinearLayout
+                    android:id="@+id/search_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:visibility="@{viewModel.screenState == GalleryActivity.ScreenState.SEARCH ? View.VISIBLE : View.GONE, default = gone}">
+
+                    <im.threads.ui.widget.CustomFontEditText
+                        android:id="@+id/search_edit_text"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.85"
+                        android:background="@null"
+                        android:ellipsize="end"
+                        android:hint="@string/threads_search_photos"
+                        android:imeOptions="actionSearch"
+                        android:inputType="text"
+                        android:lines="1"
+                        android:paddingStart="12dp"
+                        android:paddingEnd="0dp"
+                        android:textColor="@color/threads_chat_toolbar_text"
+                        android:textColorHint="@color/threads_chat_toolbar_hint"
+                        android:textSize="@dimen/text_big" />
+
+                    <ImageButton
+                        android:id="@+id/clear_search_button"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.15"
+                        android:background="@null"
+                        android:onClickListener="@{v -> viewModel.clearSearch()}"
+                        app:srcCompat="@drawable/ic_clear_gray_30dp" />
+
+                </LinearLayout>
 
             </LinearLayout>
 
