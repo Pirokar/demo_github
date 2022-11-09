@@ -1026,7 +1026,8 @@ public final class ChatStyle implements Serializable {
             @BoolRes final int windowLightStatusBarResId,
             @ColorRes final int menuItemTextColorResId,
             @ColorRes final int chatToolbarHintTextColor,
-            final boolean showBackButton) {
+            final boolean showBackButton
+    ) {
         this.chatTitleTextResId = chatTitleTextResId;
         this.chatSubtitleTextResId = chatSubtitleTextResId;
         this.chatToolbarColorResId = chatToolbarColorResId;
