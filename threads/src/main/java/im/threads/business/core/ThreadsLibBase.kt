@@ -3,7 +3,6 @@ package im.threads.business.core
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
-import android.text.TextUtils
 import im.threads.BuildConfig
 import im.threads.business.UserInfoBuilder
 import im.threads.business.audio.audioConverter.AudioConverter

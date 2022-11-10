@@ -1,5 +1,6 @@
 package im.threads.business.logger
 
+import android.util.Log
 import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
@@ -22,6 +23,7 @@ internal class LoggerFileThread(private val queue: BlockingQueue<LogData>) : Thr
     private val queueBuffer = ArrayList<LogData>()
     private val delayBetweenCheckMs = 3000L
     private val maxQueueListSize = 50
+    private val tag = LoggerFileThread::class.simpleName
 
     private val fileComparator = java.util.Comparator<File> { object1, object2 ->
         val lm1 = object1.lastModified()
@@ -47,7 +49,9 @@ internal class LoggerFileThread(private val queue: BlockingQueue<LogData>) : Thr
     }
 
     override fun run() {
+        Log.d(tag, "started")
         super.run()
+        Log.d(tag, "super call passed")
         currentThread().uncaughtExceptionHandler = UncaughtExceptionHandler { _, throwable ->
             throwable.printStackTrace()
             isRunning = false
@@ -79,8 +83,15 @@ internal class LoggerFileThread(private val queue: BlockingQueue<LogData>) : Thr
         val isFlush = queueBuffer[queueBuffer.lastIndex].flush
 
         if (maxSizeReached || maxTimeReached || isFlush) {
+            Log.d(tag, "writing logs to file")
             queueBuffer.sortWith(logComparator)
-            queueBuffer.forEach { logLine(it) }
+            queueBuffer.indices.forEach {
+                val value = queueBuffer[it]
+                if (it == queueBuffer.lastIndex) {
+                    value.flush = true
+                }
+                logLine(value)
+            }
             queueBuffer.clear()
         }
     }
@@ -110,6 +121,7 @@ internal class LoggerFileThread(private val queue: BlockingQueue<LogData>) : Thr
             bufferedWriter.write(log.line)
             bufferedWriter.write("\n")
             if (log.flush) {
+                Log.d(tag, "flushing to file")
                 bufferedWriter.flush()
             }
         } catch (e: IOException) {
