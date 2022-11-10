@@ -58,10 +58,12 @@ internal class LoggerFileThread(private val queue: BlockingQueue<LogData>) : Thr
         }
         try {
             while (true) {
+                Log.d(tag, "getting log from queue")
                 var log = queue.take()
                 queueBuffer.add(log)
                 collectParams(log)
                 while (queue.poll(2, TimeUnit.SECONDS).also { log = it } != null) {
+                    Log.d(tag, "getting log from queue with 2 seconds")
                     queueBuffer.add(log)
                     checkQueueList()
                     collectParams(log)
@@ -97,27 +99,34 @@ internal class LoggerFileThread(private val queue: BlockingQueue<LogData>) : Thr
     }
 
     private fun collectParams(log: LogData) {
+        Log.d(tag, "collecting params")
+
         retentionPolicy = log.retentionPolicy
         fileMaxCount = log.maxFileCount
         fileMaxSize = log.maxTotalSize
     }
 
     private fun logLine(log: LogData) {
+        Log.d(tag, "logging line")
+
         check(!log.fileName.isNullOrBlank()) { "invalid file name: [${log.fileName}]" }
         check(!log.dirPath.isNullOrBlank()) { "invalid directory path: [${log.dirPath}]" }
 
         if (log.line.isNullOrBlank()) {
+            Log.d(tag, "line is empty")
             return
         }
 
         val dir = File(log.dirPath)
         if (!ensureDirIsCorrect(dir)) {
+            Log.d(tag, "dir is incorrect")
             return
         }
 
         val file = File(log.dirPath, log.fileName)
         val bufferedWriter = getWriter(file)
         try {
+            Log.d(tag, "adding line to file")
             bufferedWriter.write(log.line)
             bufferedWriter.write("\n")
             if (log.flush) {
@@ -131,6 +140,7 @@ internal class LoggerFileThread(private val queue: BlockingQueue<LogData>) : Thr
 
     private fun getWriter(file: File): BufferedWriter {
         return if (writer == null || file.absolutePath != filePath) {
+            Log.d(tag, "creating writer")
             closeWriter()
             ensureFileIsCorrect(file)
             writer = createWriter(file)
@@ -141,11 +151,13 @@ internal class LoggerFileThread(private val queue: BlockingQueue<LogData>) : Thr
     }
 
     private fun createWriter(file: File): BufferedWriter {
+        Log.d(tag, "closing writer")
         return BufferedWriter(FileWriter(file, true))
     }
 
     private fun startFilesStoring() {
         if (filePath.isNullOrBlank()) {
+            Log.d(tag, "filePath is null")
             return
         }
         if (retentionPolicy == LoggerRetentionPolicy.FILE_COUNT) {
@@ -157,6 +169,7 @@ internal class LoggerFileThread(private val queue: BlockingQueue<LogData>) : Thr
 
     @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
     private fun storeFilesByCount(maxCount: Int) {
+        Log.d(tag, "storeFilesByCount")
         check(maxCount > 0) { "invalid max file count: $maxCount" }
 
         val file = File(filePath)
@@ -176,6 +189,7 @@ internal class LoggerFileThread(private val queue: BlockingQueue<LogData>) : Thr
                 successCount++
             }
         }
+        Log.d(tag, "storeFilesByCount, $successCount deleted files")
 
         LoggerEdna.debug(
             LoggerConst.TAG,
@@ -185,6 +199,7 @@ internal class LoggerFileThread(private val queue: BlockingQueue<LogData>) : Thr
 
     @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
     private fun storeFilesBySize(maxSize: Long) {
+        Log.d(tag, "storeFilesBySize")
         check(maxSize > 0) { "invalid max total size: $maxSize" }
 
         val file = File(filePath)
@@ -206,6 +221,7 @@ internal class LoggerFileThread(private val queue: BlockingQueue<LogData>) : Thr
         for (f in files) {
             val size = f.length()
             if (f.delete()) {
+                Log.d(tag, "storeFilesBySize, file is deleted")
                 newSize -= size
                 if (newSize <= maxSize) {
                     break
@@ -218,7 +234,9 @@ internal class LoggerFileThread(private val queue: BlockingQueue<LogData>) : Thr
 
     private fun ensureDirIsCorrect(dir: File): Boolean {
         if (dir.exists()) {
+            Log.d(tag, "dir exists")
             if (dir.isDirectory) {
+                Log.d(tag, "dir is directory")
                 return true
             }
             if (!dir.delete()) {
@@ -240,6 +258,7 @@ internal class LoggerFileThread(private val queue: BlockingQueue<LogData>) : Thr
     }
 
     private fun closeWriter() {
+        Log.d(tag, "closing writer")
         try {
             writer?.close()
         } catch (e: IOException) {
