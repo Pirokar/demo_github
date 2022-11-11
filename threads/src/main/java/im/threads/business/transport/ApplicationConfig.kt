@@ -5,16 +5,15 @@ import im.threads.business.preferences.PreferencesCoreKeys
 
 class ApplicationConfig(
     private val threadsGateProviderUid: String,
+    private val threadsGateHuaweiProviderUid: String?,
     private val preferences: Preferences
 ) {
 
-    fun getCloudPair(): CloudPair {
+    fun getCloudPair(): String? {
         val fcmToken = preferences.get<String>(PreferencesCoreKeys.FCM_TOKEN)
+        val hcmToken = preferences.get<String>(PreferencesCoreKeys.HCM_TOKEN)
 
-        return when {
-            fcmToken != null -> CloudPair(threadsGateProviderUid, fcmToken)
-            else -> CloudPair(threadsGateProviderUid, null)
-        }
+        return fcmToken ?: hcmToken
     }
 }
 
