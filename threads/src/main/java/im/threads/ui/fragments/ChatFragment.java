@@ -2261,8 +2261,7 @@ public final class ChatFragment extends BaseFragment implements
         ColorsHelper.setTint(activity, binding.popupMenuButton, toolbarInverseIconTint);
         ColorsHelper.setTint(activity, binding.chatBackButton, toolbarInverseIconTint);
 
-        ColorsHelper.setBackgroundColor(activity, binding.toolbar,
-                style.chatToolbarContextMenuColorResId);
+        ColorsHelper.setBackgroundColor(activity, binding.toolbar, style.chatToolbarColorResId);
         binding.toolbar.setElevation(0);
 
         binding.copyControls.setVisibility(View.VISIBLE);
