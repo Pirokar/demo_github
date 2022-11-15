@@ -81,7 +81,7 @@ public class MessagesTable extends Table {
                         "%s text"//COLUMN_CONSULT_TITLE
                         + ", " + COLUMN_CONSULT_ORG_UNIT + " text," +//COLUMN_CONSULT_ORG_UNIT
                         "%s text," +//connection type
-                        "%s integer," //isRead
+                        "%s integer " //isRead
                         + ", " + COLUMN_DISPLAY_MESSAGE + " integer"
                         + ", " + COLUMN_SURVEY_SENDING_ID + " integer"
                         + ", " + COLUMN_SURVEY_HIDE_AFTER + " integer"
