@@ -18,7 +18,7 @@ import im.threads.business.models.ExtractedLink;
 
 public final class UrlUtils {
 
-    public static final Pattern DEEPLINK_URL = Pattern.compile("[a-z0-9+.-]+://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|*]*");
+    public static final Pattern DEEPLINK_URL = Pattern.compile("[a-z0-9+.-]+(?<!http)(?<!https)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|*]*");
     /**
      * Valid UCS characters defined in RFC 3987. Excludes space characters.
      */

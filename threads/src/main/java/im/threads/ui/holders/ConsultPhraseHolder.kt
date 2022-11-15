@@ -259,8 +259,9 @@ class ConsultPhraseHolder(
     ) {
         phraseTextView.bindTimestampView(timeStampTextView)
         phraseTextView.visible()
+        val deeplink = UrlUtils.extractDeepLink(phrase)
         val extractedLink = bindOGData(phrase)
-        highlightOperatorText(phraseTextView, consultPhrase, extractedLink?.link)
+        highlightOperatorText(phraseTextView, consultPhrase, deeplink ?: extractedLink?.link)
     }
 
     private fun showQuote(
