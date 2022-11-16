@@ -2,6 +2,7 @@ package im.threads.android.utils;
 
 import android.view.Gravity;
 
+import im.threads.android.core.ThreadsDemoApplication;
 import im.threads.ui.ChatStyle;
 import im.threads.android.R;
 
@@ -37,7 +38,10 @@ public class ChatStyleBuilderHelper {
                 .setVisibleChatTitleShadow(R.bool.alt_threads_chat_title_shadow_is_visible)
                 .setShowConsultSearching(true)
                 .setVoiceMessageEnabled(true);
-        //Do nothing, using default threads design
+
+        if (PrefUtilsApp.getIsTitleCentered(ThreadsDemoApplication.getAppContext())) {
+            chatStyle.centerToolbarText();
+        }
     }
 
     private static void configureBlueDesign(ChatStyle chatStyle) {
@@ -104,7 +108,6 @@ public class ChatStyleBuilderHelper {
                 .setChatTitleStyle(R.string.demo_alt_threads_contact_center,
                         R.string.demo_alt_threads_operator_subtitle,
                         R.color.alt_threads_chat_toolbar,
-                        R.color.alt_threads_chat_context_menu,
                         R.color.alt_threads_chat_toolbar_text,
                         R.color.alt_threads_chat_status_bar,
                         R.bool.alt_threads_chat_is_light_status_bar,
@@ -244,5 +247,9 @@ public class ChatStyleBuilderHelper {
                         R.color.threads_icon_and_separators_color,
                         R.color.alt_threads_chat_icons_tint,
                         R.color.threads_input_text);
+
+        if (PrefUtilsApp.getIsTitleCentered(ThreadsDemoApplication.getAppContext())) {
+            chatStyle.centerToolbarText();
+        }
     }
 }

@@ -83,7 +83,7 @@ internal open class ConsultActivity : BaseActivity() {
         toolbar.overflowIcon?.setColorFilter(
             ContextCompat.getColor(
                 baseContext,
-                android.R.color.white
+                config.getChatStyle().chatToolbarTextColorResId
             )
         )
 
