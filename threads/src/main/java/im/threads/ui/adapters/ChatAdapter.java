@@ -94,6 +94,7 @@ import im.threads.ui.preferences.PreferencesJavaUI;
 import im.threads.ui.utils.ThreadRunnerKt;
 import im.threads.ui.views.VoiceTimeLabelFormatterKt;
 import io.reactivex.subjects.PublishSubject;
+import kotlin.jvm.Synchronized;
 
 public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_UNDEFINED = 0;
@@ -119,6 +120,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private static final int TYPE_QUICK_REPLIES = 20;
 
     private final Handler viewHandler = new Handler(Looper.getMainLooper());
+
     private final ArrayList<ChatItem> list = new ArrayList<>();
     @NonNull
     private final Callback mCallback;
@@ -174,6 +176,11 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             }
         }
         return counter;
+    }
+
+    @Synchronized
+    public ArrayList<ChatItem> getList() {
+        return list;
     }
 
     private void setupMaskTransformations() {
@@ -243,68 +250,68 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         setupMaskTransformations();
 
         if (holder instanceof SystemMessageViewHolder) {
-            bindSystemMessageVH((SystemMessageViewHolder) holder, (SystemMessage) list.get(position));
+            bindSystemMessageVH((SystemMessageViewHolder) holder, (SystemMessage) getList().get(position));
         }
         if (holder instanceof ConsultPhraseHolder) {
-            bindConsultPhraseVH((ConsultPhraseHolder) holder, (ConsultPhrase) list.get(position));
+            bindConsultPhraseVH((ConsultPhraseHolder) holder, (ConsultPhrase) getList().get(position));
         }
         if (holder instanceof UserPhraseViewHolder) {
-            bindUserPhraseVH((UserPhraseViewHolder) holder, (UserPhrase) list.get(position));
+            bindUserPhraseVH((UserPhraseViewHolder) holder, (UserPhrase) getList().get(position));
         }
         if (holder instanceof DateViewHolder) {
-            ((DateViewHolder) holder).onBind(list.get(position).getTimeStamp());
+            ((DateViewHolder) holder).onBind(getList().get(position).getTimeStamp());
         }
         if (holder instanceof ConsultIsTypingViewHolderNew) {
             bindConsultIsTypingVH((ConsultIsTypingViewHolderNew) holder);
         }
         if (holder instanceof SpaceViewHolder) {
-            final Space space = (Space) list.get(position);
+            final Space space = (Space) getList().get(position);
             ((SpaceViewHolder) holder).onBind((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, space.getHeight(), ctx.getResources().getDisplayMetrics()));
         }
         if (holder instanceof ImageFromConsultViewHolder) {
-            bindImageFromConsultVH((ImageFromConsultViewHolder) holder, (ConsultPhrase) list.get(position));
+            bindImageFromConsultVH((ImageFromConsultViewHolder) holder, (ConsultPhrase) getList().get(position));
         }
         if (holder instanceof ImageFromUserViewHolder) {
-            bindImageFromUserVH((ImageFromUserViewHolder) holder, (UserPhrase) list.get(position));
+            bindImageFromUserVH((ImageFromUserViewHolder) holder, (UserPhrase) getList().get(position));
         }
         if (holder instanceof UserFileViewHolder) {
-            bindFileFromUserVH((UserFileViewHolder) holder, (UserPhrase) list.get(position));
+            bindFileFromUserVH((UserFileViewHolder) holder, (UserPhrase) getList().get(position));
         }
         if (holder instanceof ConsultFileViewHolder) {
-            bindFileFromConsultVH((ConsultFileViewHolder) holder, (ConsultPhrase) list.get(position));
+            bindFileFromConsultVH((ConsultFileViewHolder) holder, (ConsultPhrase) getList().get(position));
         }
         if (holder instanceof UnreadMessageViewHolder) {
-            ((UnreadMessageViewHolder) holder).onBind((UnreadMessages) list.get(holder.getAdapterPosition()));
+            ((UnreadMessageViewHolder) holder).onBind((UnreadMessages) getList().get(holder.getAdapterPosition()));
         }
         if (holder instanceof ScheduleInfoViewHolder) {
-            ((ScheduleInfoViewHolder) holder).bind((ScheduleInfo) list.get(holder.getAdapterPosition()));
+            ((ScheduleInfoViewHolder) holder).bind((ScheduleInfo) getList().get(holder.getAdapterPosition()));
         }
         if (holder instanceof RatingThumbsViewHolder) {
-            final Survey survey = (Survey) list.get(holder.getAdapterPosition());
+            final Survey survey = (Survey) getList().get(holder.getAdapterPosition());
             ((RatingThumbsViewHolder) holder).bind(survey, mCallback);
         }
         if (holder instanceof RatingThumbsSentViewHolder) {
-            final Survey survey = (Survey) list.get(holder.getAdapterPosition());
+            final Survey survey = (Survey) getList().get(holder.getAdapterPosition());
             ((RatingThumbsSentViewHolder) holder).bind(survey);
         }
         if (holder instanceof RatingStarsViewHolder) {
-            final Survey survey = (Survey) list.get(holder.getAdapterPosition());
+            final Survey survey = (Survey) getList().get(holder.getAdapterPosition());
             ((RatingStarsViewHolder) holder).bind(
                     survey,
                     ratingCount -> mCallback.onRatingClick(survey, ratingCount)
             );
         }
         if (holder instanceof RatingStarsSentViewHolder) {
-            ((RatingStarsSentViewHolder) holder).bind((Survey) list.get(holder.getAdapterPosition()));
+            ((RatingStarsSentViewHolder) holder).bind((Survey) getList().get(holder.getAdapterPosition()));
         }
         if (holder instanceof RequestResolveThreadViewHolder) {
             ((RequestResolveThreadViewHolder) holder).bind(mCallback);
         }
         if (holder instanceof ConsultVoiceMessageViewHolder) {
-            bindVoiceMessageFromConsultVH((ConsultVoiceMessageViewHolder) holder, (ConsultPhrase) list.get(position));
+            bindVoiceMessageFromConsultVH((ConsultVoiceMessageViewHolder) holder, (ConsultPhrase) getList().get(position));
         }
         if (holder instanceof QuickRepliesViewHolder) {
-            ((QuickRepliesViewHolder) holder).bind((QuickReplyItem) list.get(position), mCallback);
+            ((QuickRepliesViewHolder) holder).bind((QuickReplyItem) getList().get(position), mCallback);
         }
     }
 
@@ -312,7 +319,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public int getItemViewType(final int position) {
         Object o;
         try {
-            o = list.get(position);
+            o = getList().get(position);
         } catch (final IndexOutOfBoundsException e) {
             LoggerEdna.error("getItemViewType", e);
             return 0;
@@ -379,7 +386,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     @Override
     public int getItemCount() {
-        return list.size();
+        return getList().size();
     }
 
     @Override
@@ -391,7 +398,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     public void setAllMessagesRead() {
-        for (final Iterator<ChatItem> iter = list.iterator(); iter.hasNext(); ) {
+        for (final Iterator<ChatItem> iter = getList().iterator(); iter.hasNext(); ) {
             final ChatItem item = iter.next();
             if (item instanceof ConsultPhrase) {
                 if (!((ConsultPhrase) item).isRead()) {
@@ -405,7 +412,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             }
             if (item instanceof UnreadMessages) {
                 try {
-                    notifyItemRemoved(ChatItemListFinder.lastIndexOf(list, item));
+                    notifyItemRemoved(ChatItemListFinder.lastIndexOf(getList(), item));
                 } catch (final Exception e) {
                     LoggerEdna.error("setAllMessagesRead", e);
                 }
@@ -418,8 +425,8 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         if (TextUtils.isEmpty(consultId)) {
             return;
         }
-        for (int i = 0; i < list.size(); i++) {
-            final ChatItem item = list.get(i);
+        for (int i = 0; i < getList().size(); i++) {
+            final ChatItem item = getList().get(i);
             if (item instanceof ConsultChatPhrase) {
                 final ConsultChatPhrase p = (ConsultChatPhrase) item;
                 if (Objects.equals(p.getConsultId(), consultId) && !ObjectsCompat.equals(p.getAvatarPath(), newAvatarImageUrl)) {
@@ -439,9 +446,9 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         int index = -1;
         highlightingStream.onNext(chatItem);
 
-        for (int i = 0; i < list.size(); i++) {
-            if (list.get(i).isTheSameItem(chatItem)) {
-                highlightedItem = list.get(i);
+        for (int i = 0; i < getList().size(); i++) {
+            if (getList().get(i).isTheSameItem(chatItem)) {
+                highlightedItem = getList().get(i);
                 index = i;
             }
         }
@@ -450,21 +457,21 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     public int setItemHighlighted(final String uuid) {
-        for (ChatItem chatItem : list) {
+        for (ChatItem chatItem : getList()) {
             if (chatItem instanceof ChatPhrase && Objects.equals(((ChatPhrase) chatItem).getId(), uuid)) {
                 setItemHighlighted(chatItem);
-                return ChatItemListFinder.lastIndexOf(list, chatItem);
+                return ChatItemListFinder.lastIndexOf(getList(), chatItem);
             }
         }
         return -1;
     }
 
     private void removeConsultIsTyping() {
-        for (final ListIterator<ChatItem> iter = list.listIterator(); iter.hasNext(); ) {
+        for (final ListIterator<ChatItem> iter = getList().listIterator(); iter.hasNext(); ) {
             final ChatItem cm = iter.next();
             if (cm instanceof ConsultTyping) {
                 try {
-                    notifyItemRemoved(ChatItemListFinder.lastIndexOf(list, cm));
+                    notifyItemRemoved(ChatItemListFinder.lastIndexOf(getList(), cm));
                 } catch (final Exception e) {
                     LoggerEdna.error("removeConsultIsTyping", e);
                 }
@@ -480,11 +487,11 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
      */
     public boolean removeResolveRequest() {
         boolean removed = false;
-        for (final ListIterator<ChatItem> iter = list.listIterator(); iter.hasNext(); ) {
+        for (final ListIterator<ChatItem> iter = getList().listIterator(); iter.hasNext(); ) {
             final ChatItem cm = iter.next();
             if (cm instanceof RequestResolveThread) {
                 try {
-                    notifyItemRemoved(ChatItemListFinder.lastIndexOf(list, cm));
+                    notifyItemRemoved(ChatItemListFinder.lastIndexOf(getList(), cm));
                 } catch (final Exception e) {
                     LoggerEdna.error("removeResolveRequest", e);
                 }
@@ -502,13 +509,13 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
      */
     public boolean removeSurvey(final long sendingId) {
         boolean removed = false;
-        for (final ListIterator<ChatItem> iter = list.listIterator(); iter.hasNext(); ) {
+        for (final ListIterator<ChatItem> iter = getList().listIterator(); iter.hasNext(); ) {
             final ChatItem cm = iter.next();
             if (cm instanceof Survey) {
                 final Survey survey = (Survey) cm;
                 if (sendingId == survey.getSendingId()) {
                     try {
-                        notifyItemRemoved(ChatItemListFinder.lastIndexOf(list, cm));
+                        notifyItemRemoved(ChatItemListFinder.lastIndexOf(getList(), cm));
                     } catch (final Exception e) {
                         LoggerEdna.error("removeSurvey", e);
                     }
@@ -521,23 +528,23 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     public void setSearchingConsult() {
-        for (final ChatItem ci : list) {
+        for (final ChatItem ci : getList()) {
             if (ci instanceof SearchingConsult) {
                 return;
             }
         }
         final SearchingConsult sc = new SearchingConsult();
-        list.add(sc);
-        notifyItemInserted(ChatItemListFinder.lastIndexOf(list, sc));
+        getList().add(sc);
+        notifyItemInserted(ChatItemListFinder.lastIndexOf(getList(), sc));
     }
 
     public void removeConsultSearching() {
-        for (final Iterator<ChatItem> iter = list.iterator();
+        for (final Iterator<ChatItem> iter = getList().iterator();
              iter.hasNext(); ) {
             final ChatItem ch = iter.next();
             if (ch instanceof SearchingConsult) {
                 try {
-                    notifyItemRemoved(ChatItemListFinder.lastIndexOf(list, ch));
+                    notifyItemRemoved(ChatItemListFinder.lastIndexOf(getList(), ch));
                 } catch (final Exception e) {
                     LoggerEdna.error("removeConsultSearching", e);
                 }
@@ -548,7 +555,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     public int getCurrentItemCount() {
         int count = 0;
-        for (final ChatItem item : list) {
+        for (final ChatItem item : getList()) {
             if (item instanceof UserPhrase || item instanceof ConsultPhrase || item instanceof SystemMessage || item instanceof Survey) {
                 count++;
             }
@@ -580,19 +587,19 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         if (withRequestResolveThread) {
             removeResolveRequest();
         }
-        ArrayList<ChatItem> newList = new ArrayList<>(list);
+        ArrayList<ChatItem> newList = new ArrayList<>(getList());
         chatMessagesOrderer.addAndOrder(newList, items, clientNotificationDisplayType, currentThreadId);
         removeSurveyIfNotLatest(newList);
-        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new ChatDiffCallback(list, newList));
-        list.clear();
-        list.addAll(newList);
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new ChatDiffCallback(getList(), newList));
+        getList().clear();
+        getList().addAll(newList);
         diffResult.dispatchUpdatesTo(this);
     }
 
     public void modifyImageInItem(FileDescription newFileDescription) {
-        for (int i = 0; i < list.size(); i++) {
-            if (list.get(i) instanceof ChatPhrase) {
-                ChatPhrase chatPhrase = (ChatPhrase) list.get(i);
+        for (int i = 0; i < getList().size(); i++) {
+            if (getList().get(i) instanceof ChatPhrase) {
+                ChatPhrase chatPhrase = (ChatPhrase) getList().get(i);
                 FileDescription file = chatPhrase.getFileDescription();
                 String originalUrl = newFileDescription.getOriginalPath();
                 boolean isFileNotNull = file != null;
@@ -610,7 +617,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     currentFD.setMimeType(newFileDescription.getMimeType());
                     currentFD.setSize(newFileDescription.getSize());
 
-                    list.set(i, chatPhrase);
+                    getList().set(i, chatPhrase);
                     notifyItemChanged(i);
                     break;
                 }
@@ -619,12 +626,12 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     public int getUnreadCount() {
-        return getUnreadCount(list);
+        return getUnreadCount(getList());
     }
 
     public boolean hasSchedule() {
-        for (int i = 0; i < list.size(); i++) {
-            if (list.get(i) instanceof ScheduleInfo) {
+        for (int i = 0; i < getList().size(); i++) {
+            if (getList().get(i) instanceof ScheduleInfo) {
                 return true;
             }
         }
@@ -632,13 +639,13 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     public void removeSchedule(final boolean checkSchedule) {
-        for (final Iterator<ChatItem> iter = list.iterator(); iter.hasNext(); ) {
+        for (final Iterator<ChatItem> iter = getList().iterator(); iter.hasNext(); ) {
             final ChatItem item = iter.next();
             if (item instanceof ScheduleInfo) {
                 final ScheduleInfo scheduleInfo = (ScheduleInfo) item;
                 if (!checkSchedule || scheduleInfo.isChatWorking()) {
                     try {
-                        notifyItemRemoved(ChatItemListFinder.lastIndexOf(list, scheduleInfo));
+                        notifyItemRemoved(ChatItemListFinder.lastIndexOf(getList(), scheduleInfo));
                     } catch (final Exception e) {
                         LoggerEdna.error("removeSchedule", e);
                     }
@@ -649,7 +656,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     public void changeStateOfSurvey(long sendingId, MessageState sentState) {
-        for (final ChatItem cm : list) {
+        for (final ChatItem cm : getList()) {
             if (cm instanceof Survey) {
                 final Survey survey = (Survey) cm;
                 if (sendingId == survey.getSendingId()) {
@@ -662,7 +669,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     public void changeStateOfMessageByProviderId(final String providerId, final MessageState state) {
-        for (final ChatItem cm : list) {
+        for (final ChatItem cm : getList()) {
             if (cm instanceof UserPhrase) {
                 final UserPhrase up = (UserPhrase) cm;
                 if (ObjectsCompat.equals(providerId, up.getProviderId())) {
@@ -675,39 +682,39 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     public void updateProgress(final FileDescription fileDescription) {
-        for (int i = 0; i < list.size(); i++) {
+        for (int i = 0; i < getList().size(); i++) {
             if (fileDescription.getFileUri() == null && fileDescription.getDownloadPath() == null
                     && (getItemViewType(i) == TYPE_IMAGE_FROM_USER
                     || getItemViewType(i) == TYPE_IMAGE_FROM_CONSULT
                     || getItemViewType(i) == TYPE_USER_PHRASE
                     || getItemViewType(i) == TYPE_VOICE_MESSAGE_FROM_CONSULT))
                 continue;
-            if (list.get(i) instanceof ConsultPhrase) {
-                final ConsultPhrase cp = (ConsultPhrase) list.get(i);
+            if (getList().get(i) instanceof ConsultPhrase) {
+                final ConsultPhrase cp = (ConsultPhrase) getList().get(i);
                 if (ObjectsCompat.equals(cp.getFileDescription(), fileDescription)) {
                     cp.setFileDescription(fileDescription);
-                    notifyItemChanged(ChatItemListFinder.indexOf(list, cp));
+                    notifyItemChanged(ChatItemListFinder.indexOf(getList(), cp));
                 } else if (cp.getQuote() != null && ObjectsCompat.equals(cp.getQuote().getFileDescription(), fileDescription)) {
                     cp.getQuote().setFileDescription(fileDescription);
-                    notifyItemChanged(ChatItemListFinder.indexOf(list, cp));
+                    notifyItemChanged(ChatItemListFinder.indexOf(getList(), cp));
                 }
-            } else if (list.get(i) instanceof UserPhrase) {
-                final UserPhrase up = (UserPhrase) list.get(i);
+            } else if (getList().get(i) instanceof UserPhrase) {
+                final UserPhrase up = (UserPhrase) getList().get(i);
                 if (ObjectsCompat.equals(up.getFileDescription(), fileDescription)) {
                     up.setFileDescription(fileDescription);
-                    notifyItemChanged(ChatItemListFinder.indexOf(list, up));
+                    notifyItemChanged(ChatItemListFinder.indexOf(getList(), up));
                 } else if (up.getQuote() != null && ObjectsCompat.equals(up.getQuote().getFileDescription(), fileDescription)) {
                     up.getQuote().setFileDescription(fileDescription);
-                    notifyItemChanged(ChatItemListFinder.indexOf(list, up));
+                    notifyItemChanged(ChatItemListFinder.indexOf(getList(), up));
                 }
             }
         }
     }
 
     public void onDownloadError(final FileDescription fileDescription) {
-        for (int i = 0; i < list.size(); i++) {
-            if (list.get(i) instanceof ChatPhrase) {
-                final ChatPhrase cp = (ChatPhrase) list.get(i);
+        for (int i = 0; i < getList().size(); i++) {
+            if (getList().get(i) instanceof ChatPhrase) {
+                final ChatPhrase cp = (ChatPhrase) getList().get(i);
                 int itemViewType = getItemViewType(i);
                 if (ObjectsCompat.equals(cp.getFileDescription(), fileDescription)
                         && (itemViewType == TYPE_IMAGE_FROM_USER
@@ -727,26 +734,22 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         if (newUrl == null || consultId == null) {
             return;
         }
-        for (final ChatItem ci : list) {
+        for (final ChatItem ci : getList()) {
             if (ci instanceof ConsultPhrase) {
                 final ConsultPhrase cp = (ConsultPhrase) ci;
                 if (!Objects.equals(cp.getConsultId(), consultId)) continue;
                 final String oldUrl = cp.getAvatarPath();
                 if (oldUrl == null || !oldUrl.equals(newUrl)) {
                     cp.setAvatarPath(newUrl);
-                    notifyItemChanged(ChatItemListFinder.lastIndexOf(list, cp));
+                    notifyItemChanged(ChatItemListFinder.lastIndexOf(getList(), cp));
                 }
             }
         }
     }
 
-    public ArrayList<ChatItem> getList() {
-        return list;
-    }
-
     private void notifyItemChangedOnUi(final ChatItem chatItem) {
         ThreadRunnerKt.runOnUiThread(() -> {
-            int position = ChatItemListFinder.indexOf(list, chatItem);
+            int position = ChatItemListFinder.indexOf(getList(), chatItem);
             notifyItemChanged(position);
         });
     }
@@ -770,7 +773,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         holder.onBind(
                 sm,
                 v -> {
-                    final SystemMessage cc1 = (SystemMessage) list.get(holder.getAdapterPosition());
+                    final SystemMessage cc1 = (SystemMessage) getList().get(holder.getAdapterPosition());
                     mCallback.onSystemMessageClick(cc1);
                 }
         );
@@ -859,7 +862,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     private void bindConsultIsTypingVH(@NonNull final ConsultIsTypingViewHolderNew holder) {
-        final ConsultTyping consultTyping = (ConsultTyping) list.get(holder.getAdapterPosition());
+        final ConsultTyping consultTyping = (ConsultTyping) getList().get(holder.getAdapterPosition());
         holder.onBind(
                 consultTyping,
                 v -> mCallback.onConsultAvatarClick(consultTyping.getConsultId())
@@ -1007,7 +1010,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 resetPlayingHolder();
                 ChatItem chatItem = findByFileDescription(fileDescription);
                 if (chatItem != null) {
-                    notifyItemChanged(ChatItemListFinder.lastIndexOf(list, chatItem));
+                    notifyItemChanged(ChatItemListFinder.lastIndexOf(getList(), chatItem));
                 }
             }
         } else {
@@ -1026,7 +1029,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     @Nullable
     private ChatItem findByFileDescription(FileDescription fileDescription) {
-        for (ChatItem chatPhrase : list) {
+        for (ChatItem chatPhrase : getList()) {
             if (chatPhrase instanceof ConsultPhrase) {
                 final ConsultPhrase cp = (ConsultPhrase) chatPhrase;
                 if (ObjectsCompat.equals(cp.getFileDescription(), fileDescription)) {
@@ -1051,10 +1054,10 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     public void removeItem(ChatItem chatItem) {
-        final int index = ChatItemListFinder.lastIndexOf(list, chatItem);
+        final int index = ChatItemListFinder.lastIndexOf(getList(), chatItem);
         if (index != -1) {
             notifyItemRemoved(index);
-            list.remove(index);
+            getList().remove(index);
         }
     }
 
