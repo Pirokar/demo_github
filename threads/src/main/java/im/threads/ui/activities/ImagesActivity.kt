@@ -3,14 +3,14 @@ package im.threads.ui.activities
 import android.Manifest
 import android.content.Context
 import android.content.Intent
-import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.ImageButton
+import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.viewpager.widget.ViewPager
@@ -30,6 +30,7 @@ import im.threads.ui.fragments.PermissionDescriptionAlertDialogFragment.Companio
 import im.threads.ui.fragments.PermissionDescriptionAlertDialogFragment.OnAllowPermissionClickListener
 import im.threads.ui.permissions.PermissionsActivity
 import im.threads.ui.styles.permissions.PermissionDescriptionType
+import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.utils.ColorsHelper.setDrawableColor
 import im.threads.ui.utils.invisible
 import im.threads.ui.utils.runOnUiThread
@@ -47,14 +48,16 @@ class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionCl
     private var files: ArrayList<FileDescription> = ArrayList()
     private var compositeDisposable: CompositeDisposable? = CompositeDisposable()
     private var permissionDescriptionAlertDialogFragment: PermissionDescriptionAlertDialogFragment? = null
+    private val config: Config by lazy { Config.getInstance() }
+    private lateinit var titleTextView: TextView
     private val database: DatabaseHolder by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_images)
+        initToolbar(findViewById(R.id.toolbar), findViewById(R.id.toolbar_shadow))
         mViewPager = findViewById(R.id.pager)
         mViewPager.addOnPageChangeListener(this)
-        initToolbar(findViewById(R.id.toolbar), findViewById(R.id.toolbar_shadow))
         compositeDisposable?.add(
             database.allFileDescriptions
                 .doOnSuccess { data: List<FileDescription?>? ->
@@ -104,22 +107,20 @@ class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionCl
         val statusBarColor = ContextCompat.getColor(this, style.chatStatusBarColorResId)
         val toolBarColor = ContextCompat.getColor(this, style.chatToolbarColorResId)
         val isStatusBarLight = resources.getBoolean(style.windowLightStatusBarResId)
+        val backBtn = toolbar.findViewById<ImageButton>(R.id.back_button)
+        titleTextView = toolbar.findViewById<TextView>(R.id.title)
+
         super.setStatusBarColor(isStatusBarLight, statusBarColor)
-        val backButtonDrawable =
-            AppCompatResources.getDrawable(this, R.drawable.ic_arrow_back_white_24dp)
-        setDrawableColor(this, backButtonDrawable, style.chatToolbarTextColorResId)
-        supportActionBar?.apply {
-            setDisplayHomeAsUpEnabled(true)
-            setBackgroundDrawable(ColorDrawable(toolBarColor))
-            setHomeAsUpIndicator(style.chatToolbarBackIconResId)
-            setHomeAsUpIndicator(backButtonDrawable)
-        }
+        toolbar.setBackgroundColor(toolBarColor)
+        ColorsHelper.setTint(this, backBtn, config.getChatStyle().chatToolbarTextColorResId)
         if (resources.getBoolean(style.isChatTitleShadowVisible)) {
             toolbarShadow.visible()
         } else {
             toolbarShadow.invisible()
             toolbar.elevation = 0f
         }
+        initToolbarTextPosition()
+        setClickForBackBtn(backBtn)
     }
 
     override fun onDestroy() {
@@ -159,6 +160,18 @@ class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionCl
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == CODE_REQUEST_DOWNLOAD && resultCode == PermissionsActivity.RESPONSE_GRANTED) {
             downloadImage()
+        }
+    }
+
+    private fun initToolbarTextPosition() {
+        val isToolbarTextCentered = im.threads.ui.config.Config.getInstance().getChatStyle().isToolbarTextCentered
+        val gravity = if (isToolbarTextCentered) android.view.Gravity.CENTER else android.view.Gravity.CENTER_VERTICAL
+        titleTextView.gravity = gravity
+    }
+
+    private fun setClickForBackBtn(backButton: ImageButton) {
+        backButton.setOnClickListener {
+            onBackPressed()
         }
     }
 
@@ -243,7 +256,7 @@ class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionCl
     override fun onPageSelected(position: Int) {
         Runnable {
             val title = "${mViewPager.currentItem + 1} ${getString(R.string.threads_from)} $collectionSize"
-            setTitle(title)
+            setTitle(title, titleTextView)
         }.runOnUiThread()
     }
 

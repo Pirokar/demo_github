@@ -12,6 +12,7 @@ import android.text.style.ForegroundColorSpan
 import android.text.style.MetricAffectingSpan
 import android.text.style.TypefaceSpan
 import android.view.MotionEvent
+import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.appcompat.app.AppCompatActivity
@@ -70,7 +71,7 @@ abstract class BaseActivity : AppCompatActivity() {
         }
     }
 
-    protected fun setTitle(text: String) {
+    protected fun setTitle(text: String, titleTextView: TextView? = null) {
         val style = Config.getInstance().getChatStyle()
         val textColor = ContextCompat.getColor(this, style.chatToolbarTextColorResId)
         val fontSize = resources.getDimensionPixelSize(R.dimen.text_big)
@@ -83,7 +84,11 @@ abstract class BaseActivity : AppCompatActivity() {
         supportActionBar?.apply {
             val titleText = SpannableString(text)
             applyToolbarTextStyle(textColor, fontSize, typeface, titleText)
-            title = titleText
+            if (titleTextView != null) {
+                titleTextView.text = titleText
+            } else {
+                title = titleText
+            }
         }
     }
 

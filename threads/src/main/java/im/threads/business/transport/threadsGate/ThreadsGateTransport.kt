@@ -25,7 +25,6 @@ import im.threads.business.preferences.Preferences
 import im.threads.business.preferences.PreferencesCoreKeys
 import im.threads.business.rest.config.SocketClientSettings
 import im.threads.business.serviceLocator.core.inject
-import im.threads.business.transport.ApplicationConfig
 import im.threads.business.transport.AuthInterceptor
 import im.threads.business.transport.ChatItemProviderData
 import im.threads.business.transport.MessageAttributes
@@ -63,7 +62,7 @@ import javax.net.ssl.SSLSession
 
 class ThreadsGateTransport(
     threadsGateUrl: String,
-    threadsGateProviderUid: String,
+    private val threadsGateProviderUid: String,
     isDebugLoggingEnabled: Boolean,
     socketSettings: SocketClientSettings,
     sslSocketFactoryConfig: SslSocketFactoryConfig? = null,
@@ -72,7 +71,6 @@ class ThreadsGateTransport(
     private val client: OkHttpClient
     private val request: Request
     private val listener: WebSocketListener
-    private val applicationConfig: ApplicationConfig
     private val messageInProcessIds: MutableList<String> = ArrayList()
     private val surveysInProcess: MutableMap<Long, Survey> = HashMap()
     private val campaignsInProcess: MutableMap<String?, CampaignMessage> = HashMap()
@@ -113,10 +111,6 @@ class ThreadsGateTransport(
             .url(threadsGateUrl)
             .build()
         listener = WebSocketListener()
-        applicationConfig = ApplicationConfig(
-            threadsGateProviderUid,
-            preferences
-        )
     }
 
     override fun init() {}
@@ -156,6 +150,13 @@ class ThreadsGateTransport(
         } else {
             openWebSocket()
         }
+    }
+
+    /**
+     *  Метод для переотправки параметров устройства после изменения пуш токена
+     */
+    override fun updatePushToken() {
+        sendRegisterDevice()
     }
 
     override fun sendMessage(
@@ -267,12 +268,11 @@ class ThreadsGateTransport(
         val deviceModel = getSimpleDeviceName()
         val deviceName = getDeviceName()
         val deviceAddress = preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS)
-        val cloudPair = applicationConfig.getCloudPair()
         val data = RegisterDeviceRequest.Data(
             AppInfoHelper.getAppId(),
             AppInfoHelper.getAppVersion(),
-            cloudPair.providerUid,
-            cloudPair.token,
+            threadsGateProviderUid,
+            getCloudToken(),
             getDeviceUid(),
             "Android",
             DeviceInfoHelper.getOsVersion(),
@@ -287,6 +287,13 @@ class ThreadsGateTransport(
         )
         LoggerEdna.info("Sending : $text")
         ws.send(text)
+    }
+
+    private fun getCloudToken(): String? {
+        val fcmToken = preferences.get<String>(PreferencesCoreKeys.FCM_TOKEN)
+        val hcmToken = preferences.get<String>(PreferencesCoreKeys.HCM_TOKEN)
+
+        return fcmToken ?: hcmToken
     }
 
     @Synchronized

@@ -660,7 +660,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             if (cm instanceof Survey) {
                 final Survey survey = (Survey) cm;
                 if (sendingId == survey.getSendingId()) {
-                    LoggerEdna.info("changeStateOfMessageByProviderId: changing read state");
+                    LoggerEdna.info("changeStateOfMessageById: changing read state");
                     ((Survey) cm).setSentState(sentState);
                     notifyItemChangedOnUi(survey);
                 }
@@ -668,12 +668,12 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
     }
 
-    public void changeStateOfMessageByProviderId(final String providerId, final MessageState state) {
+    public void changeStateOfMessageByMessageId(final String messageId, final MessageState state) {
         for (final ChatItem cm : getList()) {
             if (cm instanceof UserPhrase) {
                 final UserPhrase up = (UserPhrase) cm;
-                if (ObjectsCompat.equals(providerId, up.getProviderId())) {
-                    LoggerEdna.info("changeStateOfMessageByProviderId: changing read state");
+                if (ObjectsCompat.equals(messageId, up.getId())) {
+                    LoggerEdna.info("changeStateOfMessageById: changing read state");
                     ((UserPhrase) cm).setSentState(state);
                     notifyItemChangedOnUi(cm);
                 }

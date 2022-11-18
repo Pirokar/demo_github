@@ -8,8 +8,6 @@ import im.threads.business.utils.FileUtils.isVoiceMessage
 
 class ConsultPhrase constructor(
     override var id: String?, // This this a mfms messageId required for read status updates
-    val providerId: String?,
-    val providerIds: List<String>,
     override var fileDescription: FileDescription?,
     override val quote: Quote?,
     val consultName: String?,
@@ -45,7 +43,7 @@ class ConsultPhrase constructor(
             )
 
     val isVoiceMessage: Boolean
-        get() = (speechStatus !== SpeechStatus.UNKNOWN || isVoiceMessage(fileDescription))
+        get() = (speechStatus != SpeechStatus.NO_SPEECH_STATUS || isVoiceMessage(fileDescription))
 
     override val timeStamp
         get() = date
@@ -62,8 +60,6 @@ class ConsultPhrase constructor(
         val that = other as ConsultPhrase
         return sex == that.sex && date == that.date && isAvatarVisible == that.isAvatarVisible && isRead == that.isRead && found == that.found &&
             ObjectsCompat.equals(id, that.id) &&
-            ObjectsCompat.equals(providerId, that.providerId) &&
-            ObjectsCompat.equals(providerIds, that.providerIds) &&
             ObjectsCompat.equals(phraseText, that.phraseText) &&
             ObjectsCompat.equals(formattedPhrase, that.formattedPhrase) &&
             ObjectsCompat.equals(consultName, that.consultName) &&
@@ -80,8 +76,6 @@ class ConsultPhrase constructor(
     override fun hashCode(): Int {
         return ObjectsCompat.hash(
             id,
-            providerId,
-            providerIds,
             sex,
             date,
             phraseText,

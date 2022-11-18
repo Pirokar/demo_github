@@ -76,6 +76,10 @@ class ThreadsDemoApplication : MultiDexApplication() {
             .networkInterceptor((BeagleOkHttpLogger.logger as? Interceptor?))
             .enableLogging(loggerConfig)
 
+        if (developerOptions.getCurrentServer().isSSLPinningDisabled) {
+            configBuilder.disableSSLPinning()
+        }
+
         val transportConfig = getTransportConfig(this)
         if (transportConfig != null) {
             configBuilder.serverBaseUrl(transportConfig.baseUrl)

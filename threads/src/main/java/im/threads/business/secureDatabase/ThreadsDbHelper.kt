@@ -112,8 +112,8 @@ class ThreadsDbHelper private constructor(val context: Context, password: String
     override fun getUnsendUserPhrase(count: Int): List<UserPhrase> =
         messagesTable.getUnsendUserPhrase(this, count)
 
-    override fun setUserPhraseStateByProviderId(providerId: String?, messageState: MessageState?) {
-        messagesTable.setUserPhraseStateByProviderId(this, providerId, messageState)
+    override fun setUserPhraseStateByMessageId(uuid: String?, messageState: MessageState?) {
+        messagesTable.setUserPhraseStateByMessageId(this, uuid, messageState)
     }
 
     override fun getLastConsultPhrase(): ConsultPhrase? = messagesTable.getLastConsultPhrase(this)
@@ -128,8 +128,8 @@ class ThreadsDbHelper private constructor(val context: Context, password: String
         } ?: 0
     }
 
-    override fun setMessageWasRead(providerId: String) {
-        messagesTable.setMessageWasRead(this, providerId)
+    override fun setMessageWasRead(uuid: String) {
+        messagesTable.setMessageWasRead(this, uuid)
     }
 
     override fun getSurvey(sendingId: Long): Survey? = messagesTable.getSurvey(this, sendingId)
@@ -152,7 +152,7 @@ class ThreadsDbHelper private constructor(val context: Context, password: String
 
     companion object {
         private const val DATABASE_NAME = "messages_secure.db"
-        private const val VERSION = 2
+        private const val VERSION = 3
         private var isLibraryLoaded = false
         private const val oldPassword = "password"
         const val DB_PASSWORD = "CdgF9rEjzaes8G"

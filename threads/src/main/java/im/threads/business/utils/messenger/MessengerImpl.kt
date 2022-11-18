@@ -190,7 +190,7 @@ class MessengerImpl(private var compositeDisposable: CompositeDisposable?) : Mes
 
     private fun checkAndResendPhrase(userPhrase: UserPhrase) {
         if (userPhrase.sentState == MessageState.STATE_NOT_SENT) {
-            userPhrase.providerId?.run { resendStream.onNext(this) }
+            userPhrase.id?.run { resendStream.onNext(this) }
             queueMessageSending(userPhrase)
         }
     }
