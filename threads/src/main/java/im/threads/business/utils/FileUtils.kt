@@ -40,6 +40,15 @@ object FileUtils {
     private const val UNKNOWN_MIME_TYPE = "*/*"
 
     @JvmStatic
+    fun generateFileName(fd: FileDescription): String {
+        val prefix = if (fd.downloadPath != null) {
+            UUID.nameUUIDFromBytes(fd.downloadPath?.toByteArray())
+        } else ""
+        val name = getFileName(fd)
+        return "${prefix}_$name"
+    }
+
+    @JvmStatic
     fun getFileName(fd: FileDescription): String {
         if (fd.incomingName != null) {
             return fd.incomingName
@@ -69,16 +78,17 @@ object FileUtils {
 
     @JvmStatic
     fun getFileSize(uri: Uri): Long {
-        BaseConfig.instance.context.contentResolver.query(uri, null, null, null, null).use { cursor ->
-            if (cursor != null && cursor.moveToFirst()) {
-                val index = cursor.getColumnIndex(OpenableColumns.SIZE)
-                return if (index >= 0) {
-                    cursor.getLong(index)
-                } else {
-                    0L
+        BaseConfig.instance.context.contentResolver.query(uri, null, null, null, null)
+            .use { cursor ->
+                if (cursor != null && cursor.moveToFirst()) {
+                    val index = cursor.getColumnIndex(OpenableColumns.SIZE)
+                    return if (index >= 0) {
+                        cursor.getLong(index)
+                    } else {
+                        0L
+                    }
                 }
             }
-        }
         return 0
     }
 

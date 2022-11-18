@@ -22,12 +22,12 @@ interface DBHelper {
 
     fun getLastConsultInfo(id: String): ConsultInfo?
     fun getUnsendUserPhrase(count: Int): List<UserPhrase?>?
-    fun setUserPhraseStateByProviderId(providerId: String?, messageState: MessageState?)
+    fun setUserPhraseStateByMessageId(uuid: String?, messageState: MessageState?)
     fun getLastConsultPhrase(): ConsultPhrase?
 
     fun setAllConsultMessagesWereRead(): Int
     fun setAllConsultMessagesWereReadWithThreadId(threadId: Long?): Int
-    fun setMessageWasRead(providerId: String)
+    fun setMessageWasRead(uuid: String)
     fun getSurvey(sendingId: Long): Survey?
     fun setNotSentSurveyDisplayMessageToFalse(): Int
     fun setOldRequestResolveThreadDisplayMessageToFalse(): Int

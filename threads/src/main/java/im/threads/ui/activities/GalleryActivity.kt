@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.Gravity
 import android.view.MenuItem
 import android.view.inputmethod.EditorInfo
 import androidx.appcompat.content.res.AppCompatResources
@@ -72,10 +73,28 @@ class GalleryActivity : BaseActivity(), OnItemClick, OnGalleryItemClick {
         }
         val textColor = ContextCompat.getColor(this, style.chatToolbarTextColorResId)
         val hintTextColor = ContextCompat.getColor(this, style.chatToolbarHintTextColor)
+        binding.toolbar.title
         binding.searchEditText.setTextColor(textColor)
         binding.searchEditText.setHintTextColor(hintTextColor)
         binding.clearSearchButton.setImageResource(R.drawable.ic_clear_gray_30dp)
+        binding.title.setTextColor(textColor)
         ColorsHelper.setTint(this, binding.clearSearchButton, style.chatToolbarTextColorResId)
+        ColorsHelper.setTint(this, binding.backButton, style.chatToolbarTextColorResId)
+
+        initToolbarTextPosition()
+        setClickForBackBtn()
+    }
+
+    private fun initToolbarTextPosition() {
+        val isToolbarTextCentered = getInstance().getChatStyle().isToolbarTextCentered
+        val gravity = if (isToolbarTextCentered) Gravity.CENTER else Gravity.CENTER_VERTICAL
+        binding.title.gravity = gravity
+    }
+
+    private fun setClickForBackBtn() {
+        binding.backButton.setOnClickListener {
+            onBackPressed()
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

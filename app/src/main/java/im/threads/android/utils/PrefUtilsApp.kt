@@ -17,7 +17,6 @@ object PrefUtilsApp {
     private const val PREF_DATASTORE_URL = "PREF_DATASTORE_URL"
     private const val PREF_THREADS_GATE_URL = "PREF_THREADS_GATE_URL"
     private const val PREF_THREADS_GATE_PROVIDER_UID = "PREF_THREADS_GATE_PROVIDER_UID"
-    private const val PREF_THREADS_GATE_HCM_PROVIDER_UID = "PREF_THREADS_GATE_HCM_PROVIDER_UID"
     private const val PREF_IS_NEW_CHAT_CENTER_API = "PREF_IS_NEW_CHAT_CENTER_API"
     private const val PREF_THEME = "PREF_THEME"
     private const val PREF_SERVERS_LIST = "SERVERS_LIST_PREFS"
@@ -25,6 +24,8 @@ object PrefUtilsApp {
     private const val PREF_IMPORTED_FILE_SERVERS_NAME = "servers_config"
     private const val PREF_CURRENT_SERVER = "PREF_CURRENT_SERVER"
     private const val PREF_IS_SERVER_CHANGED = "PREF_IS_SERVER_CHANGED"
+    private const val PREF_DEBUG_NAME = "DEBUG_EDNA_PREFERENCES"
+    private const val PREF_IS_TITLE_CENTERED = "EDNA_PREF_IS_TITLE_CENTERED"
 
     @JvmStatic
     fun storeCards(ctx: Context?, cards: List<Card?>?) {
@@ -57,10 +58,6 @@ object PrefUtilsApp {
         editor.putString(PREF_DATASTORE_URL, transportConfig.datastoreUrl)
         editor.putString(PREF_THREADS_GATE_URL, transportConfig.threadsGateUrl)
         editor.putString(PREF_THREADS_GATE_PROVIDER_UID, transportConfig.threadsGateProviderUid)
-        editor.putString(
-            PREF_THREADS_GATE_HCM_PROVIDER_UID,
-            transportConfig.threadsGateHCMProviderUid
-        )
         editor.putBoolean(PREF_IS_NEW_CHAT_CENTER_API, transportConfig.isNewChatCenterApi)
         editor.commit()
     }
@@ -77,15 +74,12 @@ object PrefUtilsApp {
         val threadsGateProviderUid =
             sharedPreferences.getString(PREF_THREADS_GATE_PROVIDER_UID, null)
                 ?: return null
-        val threadsGateHCMProviderUid =
-            sharedPreferences.getString(PREF_THREADS_GATE_HCM_PROVIDER_UID, null)
         val isNewChatCenterApi = sharedPreferences.getBoolean(PREF_IS_NEW_CHAT_CENTER_API, false)
         return TransportConfig(
             baseUrl = baseUrl,
             datastoreUrl = datastoreUrl,
             threadsGateUrl = threadsGateUrl,
             threadsGateProviderUid = threadsGateProviderUid,
-            threadsGateHCMProviderUid = threadsGateHCMProviderUid,
             isNewChatCenterApi
         )
     }
@@ -156,6 +150,20 @@ object PrefUtilsApp {
         val serversToSave = servers.associate { it.name to it.toJson() }
         addServers(context, serversToSave, true)
         deletePreferenceWithNameContains(context, PREF_IMPORTED_FILE_SERVERS_NAME)
+    }
+
+    @JvmStatic
+    fun setIsTitleCentered(context: Context, isCentered: Boolean) {
+        context.getSharedPreferences(PREF_DEBUG_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putBoolean(PREF_IS_TITLE_CENTERED, isCentered)
+            .apply()
+    }
+
+    @JvmStatic
+    fun getIsTitleCentered(context: Context): Boolean {
+        return context.getSharedPreferences(PREF_DEBUG_NAME, Context.MODE_PRIVATE)
+            .getBoolean(PREF_IS_TITLE_CENTERED, false)
     }
 
     @Suppress("UNCHECKED_CAST")

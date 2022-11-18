@@ -22,7 +22,6 @@ class Config(
     datastoreUrl: String?,
     threadsGateUrl: String?,
     threadsGateProviderUid: String?,
-    threadsGateHCMProviderUid: String?,
     isNewChatCenterApi: Boolean?,
     loggerConfig: LoggerConfig?,
     val pendingIntentCreator: PendingIntentCreator,
@@ -33,11 +32,12 @@ class Config(
     historyLoadingCount: Int,
     surveyCompletionDelay: Int,
     requestConfig: RequestConfig,
+    isSSLPinningDisabled: Boolean,
     certificateRawResIds: List<Int>?
 ) : BaseConfig(
-    context, serverBaseUrl, datastoreUrl, threadsGateUrl, threadsGateProviderUid, threadsGateHCMProviderUid,
-    isNewChatCenterApi, loggerConfig, unreadMessagesCountListener, networkInterceptor,
-    isDebugLoggingEnabled, historyLoadingCount, surveyCompletionDelay, requestConfig, certificateRawResIds
+    context, serverBaseUrl, datastoreUrl, threadsGateUrl, threadsGateProviderUid,
+    isNewChatCenterApi, loggerConfig, unreadMessagesCountListener, networkInterceptor, isDebugLoggingEnabled,
+    historyLoadingCount, surveyCompletionDelay, requestConfig, isSSLPinningDisabled, certificateRawResIds
 ) {
     @Volatile
     private var chatStyle: ChatStyle? = null

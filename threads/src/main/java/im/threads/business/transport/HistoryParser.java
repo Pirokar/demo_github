@@ -59,8 +59,6 @@ public final class HistoryParser {
                     continue;
                 }
                 final String uuid = message.getUuid();
-                final String providerId = message.getProviderId();
-                final List<String> providerIds = message.getProviderIds();
                 final long timeStamp = message.getTimeStamp();
                 final Operator operator = message.getOperator();
                 String name = null;
@@ -90,8 +88,8 @@ public final class HistoryParser {
                         break;
                     case OPERATOR_JOINED:
                     case OPERATOR_LEFT:
-                        out.add(new ConsultConnectionMessage(uuid, providerId, providerIds,
-                                operatorId, message.getType(), name, sex, timeStamp, photoUrl,
+                        out.add(new ConsultConnectionMessage(uuid, operatorId,
+                                message.getType(), name, sex, timeStamp, photoUrl,
                                 null, null, orgUnit, role, message.isDisplay(),
                                 message.getText(), message.getThreadId()));
                         break;
@@ -131,8 +129,6 @@ public final class HistoryParser {
                             out.add(
                                     new ConsultPhrase(
                                             uuid,
-                                            providerId,
-                                            providerIds,
                                             fileDescription,
                                             quote,
                                             name,
@@ -155,7 +151,7 @@ public final class HistoryParser {
                                 fileDescription.setFrom(BaseConfig.instance.context.getString(R.string.threads_I));
                             }
                             MessageState sentState = message.isRead() ? MessageState.STATE_WAS_READ : MessageState.STATE_SENT;
-                            out.add(new UserPhrase(uuid, providerId, providerIds, phraseText, quote, timeStamp, fileDescription, sentState, message.getThreadId()));
+                            out.add(new UserPhrase(uuid, phraseText, quote, timeStamp, fileDescription, sentState, message.getThreadId()));
                         }
                 }
             }

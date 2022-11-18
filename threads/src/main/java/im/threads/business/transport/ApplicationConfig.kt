@@ -9,18 +9,11 @@ class ApplicationConfig(
     private val preferences: Preferences
 ) {
 
-    fun getCloudPair(): CloudPair {
+    fun getCloudPair(): String? {
         val fcmToken = preferences.get<String>(PreferencesCoreKeys.FCM_TOKEN)
         val hcmToken = preferences.get<String>(PreferencesCoreKeys.HCM_TOKEN)
 
-        return when {
-            fcmToken != null -> CloudPair(threadsGateProviderUid, fcmToken)
-            threadsGateHuaweiProviderUid != null && hcmToken != null -> CloudPair(
-                threadsGateHuaweiProviderUid,
-                hcmToken
-            )
-            else -> CloudPair(threadsGateProviderUid, null)
-        }
+        return fcmToken ?: hcmToken
     }
 }
 

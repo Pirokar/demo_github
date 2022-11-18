@@ -3,7 +3,6 @@ package im.threads.business.core
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
-import android.text.TextUtils
 import im.threads.BuildConfig
 import im.threads.business.UserInfoBuilder
 import im.threads.business.audio.audioConverter.AudioConverter
@@ -74,10 +73,11 @@ open class ThreadsLibBase protected constructor(context: Context) {
     }
 
     /**
-     * Used to stop receiving messages for user with provided clientId
+     * Used to stop receiving messages for user
      */
-    fun logoutClient(clientId: String) {
-        if (!TextUtils.isEmpty(clientId)) {
+    fun logoutClient() {
+        val clientId = preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)?.clientId
+        if (!clientId.isNullOrBlank()) {
             BaseConfig.instance.transport.sendClientOffline(clientId)
         } else {
             info("clientId must not be empty")

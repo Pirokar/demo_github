@@ -35,8 +35,6 @@ public class BaseConfigBuilder {
     @Nullable
     protected String threadsGateProviderUid = null;
     @Nullable
-    protected String threadsGateHCMProviderUid = null;
-    @Nullable
     protected Interceptor networkInterceptor = null;
     @Nullable
     protected Boolean isNewChatCenterApi = false;
@@ -45,6 +43,7 @@ public class BaseConfigBuilder {
 
     protected RequestConfig requestConfig = new RequestConfig();
     protected List<Integer> certificateRawResIds = Collections.emptyList();
+    protected Boolean isSslPinningDisabled = false;
 
     public BaseConfigBuilder(@NonNull Context context) {
         this.context = context;
@@ -67,11 +66,6 @@ public class BaseConfigBuilder {
 
     public BaseConfigBuilder threadsGateProviderUid(String threadsGateProviderUid) {
         this.threadsGateProviderUid = threadsGateProviderUid;
-        return this;
-    }
-
-    public BaseConfigBuilder threadsGateHCMProviderUid(@Nullable String threadsGateHCMProviderUid) {
-        this.threadsGateHCMProviderUid = threadsGateHCMProviderUid;
         return this;
     }
 
@@ -105,6 +99,14 @@ public class BaseConfigBuilder {
         return this;
     }
 
+    /**
+     * Выключает SSL pinning, даже если передан сертификат
+     */
+    public BaseConfigBuilder disableSSLPinning() {
+        this.isSslPinningDisabled = true;
+        return this;
+    }
+
     public BaseConfigBuilder networkInterceptor(Interceptor interceptor) {
         this.networkInterceptor = interceptor;
         return this;
@@ -127,7 +129,6 @@ public class BaseConfigBuilder {
                 datastoreUrl,
                 threadsGateUrl,
                 threadsGateProviderUid,
-                threadsGateHCMProviderUid,
                 isNewChatCenterApi,
                 loggerConfig,
                 unreadMessagesCountListener,
@@ -136,6 +137,7 @@ public class BaseConfigBuilder {
                 historyLoadingCount,
                 surveyCompletionDelay,
                 requestConfig,
+                isSslPinningDisabled,
                 certificateRawResIds
         );
     }

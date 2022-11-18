@@ -1,6 +1,5 @@
 package im.threads.business.database.table;
 
-import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -66,37 +65,4 @@ public class QuestionsTable extends Table {
             return question;
         }
     }
-
-    public void putQuestion(SQLiteOpenHelper sqlHelper, QuestionDTO question, long surveySendingId) {
-        String questionSql = "select " + COLUMN_QUESTION_SENDING_ID
-                + " from " + TABLE_QUESTIONS
-                + " where " + COLUMN_QUESTION_SENDING_ID + " = ? ";
-        String[] questionSelectionArgs = new String[]{String.valueOf(question.getSendingId())};
-        ContentValues questionCv = new ContentValues();
-        questionCv.put(COLUMN_QUESTION_SURVEY_SENDING_ID_EXT, surveySendingId);
-        questionCv.put(COLUMN_QUESTION_ID, question.getId());
-        questionCv.put(COLUMN_QUESTION_SENDING_ID, question.getSendingId());
-        questionCv.put(COLUMN_QUESTION_SCALE, question.getScale());
-        //TODO THREADS-3625. This is a workaround on rate = 0 is a negative answer in simple (binary) survey
-        //Null is unanswered survey
-        if (question.hasRate()) {
-            questionCv.put(COLUMN_QUESTION_RATE, question.getRate());
-        }
-        questionCv.put(COLUMN_QUESTION_TEXT, question.getText());
-        questionCv.put(COLUMN_QUESTION_SIMPLE, question.isSimple());
-        questionCv.put(COLUMN_QUESTION_TIMESTAMP, question.getPhraseTimeStamp());
-        try (Cursor questionCursor = sqlHelper.getWritableDatabase().rawQuery(questionSql, questionSelectionArgs)) {
-            if (questionCursor.getCount() > 0) {
-                sqlHelper.getWritableDatabase().update(
-                        TABLE_QUESTIONS,
-                        questionCv,
-                        COLUMN_QUESTION_SENDING_ID + " = ? ",
-                        new String[]{String.valueOf(question.getSendingId())}
-                );
-            } else {
-                sqlHelper.getWritableDatabase().insert(TABLE_QUESTIONS, null, questionCv);
-            }
-        }
-    }
-
 }

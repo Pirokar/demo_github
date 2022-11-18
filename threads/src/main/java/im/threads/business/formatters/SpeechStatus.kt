@@ -1,7 +1,7 @@
 package im.threads.business.formatters
 
 enum class SpeechStatus {
-    PROCESSING, SUCCESS, MAXSPEECH, UNKNOWN;
+    PROCESSING, SUCCESS, MAXSPEECH, UNKNOWN, NO_SPEECH_STATUS;
 
     companion object {
         fun fromString(name: String?): SpeechStatus {
@@ -12,7 +12,7 @@ enum class SpeechStatus {
                     UNKNOWN
                 }
             }
-            return UNKNOWN
+            return NO_SPEECH_STATUS
         }
     }
 }

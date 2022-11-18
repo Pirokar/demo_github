@@ -20,6 +20,7 @@ import im.threads.business.models.Survey
 import im.threads.business.models.UserPhrase
 import im.threads.business.utils.FileDownloader.Companion.getDownloadDir
 import im.threads.business.utils.FileProviderHelper
+import im.threads.business.utils.FileUtils.generateFileName
 import net.zetetic.database.sqlcipher.SQLiteDatabase
 import net.zetetic.database.sqlcipher.SQLiteOpenHelper
 import java.io.File
@@ -53,9 +54,7 @@ class MessagesTable(
                     ", " + COLUMN_CONSULT_ORG_UNIT + " text" + // COLUMN_CONSULT_ORG_UNIT
                     ", " + COLUMN_CONSULT_ROLE + " text" + // COLUMN_CONSULT_ROLE
                     ", " + "%s text," + // connection type
-                    "%s integer," + // isRead
-                    "%s text, " + // COLUMN_PROVIDER_ID
-                    "%s text " + // COLUMN_PROVIDER_IDS
+                    "%s integer" + // isRead
                     ", " + COLUMN_DISPLAY_MESSAGE + " integer" +
                     ", " + COLUMN_SURVEY_SENDING_ID + " integer" +
                     ", " + COLUMN_SURVEY_HIDE_AFTER + " integer" +
@@ -78,9 +77,7 @@ class MessagesTable(
                 COLUMN_CONSULT_STATUS,
                 COLUMN_CONSULT_TITLE,
                 COLUMN_CONNECTION_TYPE,
-                COLUMN_IS_READ,
-                COLUMN_PROVIDER_ID,
-                COLUMN_PROVIDER_IDS
+                COLUMN_IS_READ
             )
         )
     }
@@ -260,15 +257,15 @@ class MessagesTable(
         return userPhrases
     }
 
-    fun setUserPhraseStateByProviderId(
+    fun setUserPhraseStateByMessageId(
         sqlHelper: SQLiteOpenHelper,
-        providerId: String?,
+        uuid: String?,
         messageState: MessageState?
     ) {
         val cv = ContentValues()
         cv.put(COLUMN_MESSAGE_SEND_STATE, messageState?.ordinal)
         sqlHelper.writableDatabase
-            .update(TABLE_MESSAGES, cv, "$COLUMN_PROVIDER_ID = ?", arrayOf(providerId))
+            .update(TABLE_MESSAGES, cv, "$COLUMN_MESSAGE_UUID = ?", arrayOf(uuid))
     }
 
     fun getLastConsultPhrase(sqlHelper: SQLiteOpenHelper): ConsultPhrase? {
@@ -357,7 +354,7 @@ class MessagesTable(
 
     fun getUnreadMessagesCount(sqlHelper: SQLiteOpenHelper): Int {
         val sql = (
-            "select " + COLUMN_PROVIDER_ID + " , " + COLUMN_PROVIDER_IDS +
+            "select " + COLUMN_MESSAGE_UUID +
                 " from " + TABLE_MESSAGES +
                 " where (" +
                 COLUMN_MESSAGE_TYPE + " = " + MessageType.CONSULT_PHRASE.ordinal + " or " +
@@ -436,8 +433,6 @@ class MessagesTable(
             MessageType.CONSULT_CONNECTED.ordinal -> {
                 return ConsultConnectionMessage(
                     cursorGetString(c, COLUMN_MESSAGE_UUID),
-                    cursorGetString(c, COLUMN_PROVIDER_ID),
-                    stringToList(cursorGetString(c, COLUMN_PROVIDER_IDS)),
                     cursorGetString(c, COLUMN_CONSULT_ID),
                     cursorGetString(c, COLUMN_CONNECTION_TYPE),
                     cursorGetString(c, COLUMN_NAME),
@@ -481,8 +476,6 @@ class MessagesTable(
     private fun getConsultPhrase(sqlHelper: SQLiteOpenHelper, c: Cursor): ConsultPhrase {
         return ConsultPhrase(
             cursorGetString(c, COLUMN_MESSAGE_UUID),
-            cursorGetString(c, COLUMN_PROVIDER_ID),
-            stringToList(cursorGetString(c, COLUMN_PROVIDER_IDS)),
             fileDescriptionTable.getFileDescription(
                 sqlHelper,
                 cursorGetString(c, COLUMN_MESSAGE_UUID)
@@ -509,8 +502,6 @@ class MessagesTable(
     private fun getUserPhrase(sqlHelper: SQLiteOpenHelper, c: Cursor): UserPhrase {
         return UserPhrase(
             cursorGetString(c, COLUMN_MESSAGE_UUID),
-            cursorGetString(c, COLUMN_PROVIDER_ID),
-            stringToList(cursorGetString(c, COLUMN_PROVIDER_IDS)),
             cursorGetString(c, COLUMN_PHRASE),
             quotesTable.getQuote(sqlHelper, cursorGetString(c, COLUMN_MESSAGE_UUID)),
             cursorGetLong(c, COLUMN_TIMESTAMP),
@@ -564,8 +555,6 @@ class MessagesTable(
         cv.put(COLUMN_IS_READ, phrase.isRead)
         cv.put(COLUMN_CONSULT_STATUS, phrase.status)
         cv.put(COLUMN_NAME, phrase.consultName)
-        cv.put(COLUMN_PROVIDER_ID, phrase.providerId)
-        cv.put(COLUMN_PROVIDER_IDS, listToString(phrase.providerIds))
         cv.put(COLUMN_SEX, phrase.sex)
         cv.put(COLUMN_THREAD_ID, phrase.threadId)
         cv.put(COLUMN_BLOCK_INPUT, phrase.isBlockInput)
@@ -576,8 +565,6 @@ class MessagesTable(
     private fun getUserPhraseCV(phrase: UserPhrase): ContentValues {
         val cv = ContentValues()
         cv.put(COLUMN_MESSAGE_UUID, phrase.id)
-        cv.put(COLUMN_PROVIDER_ID, phrase.providerId)
-        cv.put(COLUMN_PROVIDER_IDS, listToString(phrase.providerIds))
         cv.put(COLUMN_PHRASE, phrase.phraseText)
         cv.put(COLUMN_TIMESTAMP, phrase.timeStamp)
         cv.put(COLUMN_MESSAGE_TYPE, MessageType.USER_PHRASE.ordinal)
@@ -724,7 +711,7 @@ class MessagesTable(
         }
         val outputFile = File(
             getDownloadDir(BaseConfig.instance.context),
-            fileDescription.incomingName
+            generateFileName(fileDescription)
         )
         return if (outputFile.exists()) {
             FileProviderHelper.getUriForFile(
@@ -766,8 +753,6 @@ class MessagesTable(
 private const val TABLE_MESSAGES = "TABLE_MESSAGES"
 private const val COLUMN_TABLE_ID = "TABLE_ID"
 private const val COLUMN_MESSAGE_UUID = "COLUMN_MESSAGE_UUID"
-private const val COLUMN_PROVIDER_ID = "COLUMN_PROVIDER_ID"
-private const val COLUMN_PROVIDER_IDS = "COLUMN_PROVIDER_IDS"
 private const val COLUMN_TIMESTAMP = "COLUMN_TIMESTAMP"
 private const val COLUMN_PHRASE = "COLUMN_PHRASE"
 private const val COLUMN_FORMATTED_PHRASE = "COLUMN_FORMATTED_PHRASE"

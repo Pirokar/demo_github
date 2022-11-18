@@ -46,11 +46,14 @@ abstract class VoiceMessageBaseHolder internal constructor(
         } else {
             R.color.threads_white
         }
+        buttonPlayPause.tag = loadingStateTag
         initAnimation(buttonPlayPause, color)
     }
 
     fun stopLoader() {
+        cancelAnimation()
         buttonPlayPause.setImageResource(R.drawable.threads_voice_message_play)
+        buttonPlayPause.tag = ""
     }
 
     fun subscribeForVoiceMessageDownloaded() {
@@ -86,5 +89,9 @@ abstract class VoiceMessageBaseHolder internal constructor(
                     )
             )
         }
+    }
+
+    companion object {
+        var loadingStateTag = "loading"
     }
 }

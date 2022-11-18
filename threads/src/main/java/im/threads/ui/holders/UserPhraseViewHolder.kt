@@ -406,14 +406,19 @@ class UserPhraseViewHolder(
     }
 
     override fun updateIsPlaying(isPlaying: Boolean) {
-        buttonPlayPause.setImageResource(if (isPlaying) style.voiceMessagePauseButton else style.voiceMessagePlayButton)
+        if (buttonPlayPause.tag != loadingStateTag) {
+            val imageResource = if (isPlaying) style.voiceMessagePauseButton else style.voiceMessagePlayButton
+            buttonPlayPause.setImageResource(imageResource)
+        }
     }
 
     override fun resetProgress() {
         fileSizeTextView.text = formattedDuration
         slider.isEnabled = false
         slider.value = 0f
-        buttonPlayPause.setImageResource(style.voiceMessagePlayButton)
+        if (buttonPlayPause.tag != loadingStateTag) {
+            buttonPlayPause.setImageResource(style.voiceMessagePlayButton)
+        }
     }
 
     private fun setTimestamp(timeStamp: Long) {
