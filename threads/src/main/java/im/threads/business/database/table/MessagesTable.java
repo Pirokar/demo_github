@@ -1,32 +1,24 @@
 package im.threads.business.database.table;
 
-import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 import im.threads.business.formatters.SpeechStatus;
-import im.threads.business.logger.LoggerEdna;
 import im.threads.business.models.ChatItem;
 import im.threads.business.models.ConsultConnectionMessage;
-import im.threads.business.models.ConsultInfo;
 import im.threads.business.models.ConsultPhrase;
 import im.threads.business.models.MessageState;
-import im.threads.business.models.QuestionDTO;
 import im.threads.business.models.RequestResolveThread;
 import im.threads.business.models.SimpleSystemMessage;
-import im.threads.business.models.SpeechMessageUpdate;
 import im.threads.business.models.Survey;
 import im.threads.business.models.UserPhrase;
 
@@ -34,8 +26,6 @@ public class MessagesTable extends Table {
     private static final String TABLE_MESSAGES = "TABLE_MESSAGES";
     private static final String COLUMN_TABLE_ID = "TABLE_ID";
     private static final String COLUMN_MESSAGE_UUID = "COLUMN_MESSAGE_UUID";
-    private static final String COLUMN_PROVIDER_ID = "COLUMN_PROVIDER_ID";
-    private static final String COLUMN_PROVIDER_IDS = "COLUMN_PROVIDER_IDS";
     private static final String COLUMN_TIMESTAMP = "COLUMN_TIMESTAMP";
     private static final String COLUMN_PHRASE = "COLUMN_PHRASE";
     private static final String COLUMN_FORMATTED_PHRASE = "COLUMN_FORMATTED_PHRASE";
@@ -91,9 +81,7 @@ public class MessagesTable extends Table {
                         "%s text"//COLUMN_CONSULT_TITLE
                         + ", " + COLUMN_CONSULT_ORG_UNIT + " text," +//COLUMN_CONSULT_ORG_UNIT
                         "%s text," +//connection type
-                        "%s integer," + //isRead
-                        "%s text, " + //COLUMN_PROVIDER_ID
-                        "%s text " //COLUMN_PROVIDER_IDS
+                        "%s integer " //isRead
                         + ", " + COLUMN_DISPLAY_MESSAGE + " integer"
                         + ", " + COLUMN_SURVEY_SENDING_ID + " integer"
                         + ", " + COLUMN_SURVEY_HIDE_AFTER + " integer"
@@ -105,7 +93,7 @@ public class MessagesTable extends Table {
                 , COLUMN_PHRASE, COLUMN_FORMATTED_PHRASE, COLUMN_MESSAGE_TYPE, COLUMN_NAME, COLUMN_AVATAR_PATH,
                 COLUMN_MESSAGE_UUID, COLUMN_SEX, COLUMN_MESSAGE_SEND_STATE, COLUMN_CONSULT_ID,
                 COLUMN_CONSULT_STATUS, COLUMN_CONSULT_TITLE, COLUMN_CONNECTION_TYPE,
-                COLUMN_IS_READ, COLUMN_PROVIDER_ID, COLUMN_PROVIDER_IDS));
+                COLUMN_IS_READ));
     }
 
     @Override
@@ -140,237 +128,6 @@ public class MessagesTable extends Table {
             }
         }
         return items;
-    }
-
-    @Nullable
-    public ChatItem getChatItem(SQLiteOpenHelper sqlHelper, String messageUuid) {
-        String sql = "select * from " + TABLE_MESSAGES
-                + " where " + COLUMN_MESSAGE_UUID + " = ?"
-                + " order by " + COLUMN_TIMESTAMP + " desc";
-        String[] selectionArgs = new String[]{messageUuid};
-        try (Cursor c = sqlHelper.getWritableDatabase().rawQuery(sql, selectionArgs)) {
-            if (c.moveToFirst()) {
-                return getChatItem(sqlHelper, c);
-            }
-        }
-        return null;
-    }
-
-    public void putChatItems(SQLiteOpenHelper sqlHelper, List<ChatItem> chatItems) {
-        try {
-            sqlHelper.getWritableDatabase().beginTransaction();
-            for (ChatItem item : chatItems) {
-                putChatItem(sqlHelper, item);
-            }
-            sqlHelper.getWritableDatabase().setTransactionSuccessful();
-        } catch (Exception e) {
-            LoggerEdna.error("putMessagesSync", e);
-        } finally {
-            sqlHelper.getWritableDatabase().endTransaction();
-        }
-    }
-
-    public boolean putChatItem(SQLiteOpenHelper sqlHelper, ChatItem chatItem) {
-        if (chatItem instanceof ConsultConnectionMessage) {
-            insertOrUpdateMessage(sqlHelper, getConsultConnectionMessageCV((ConsultConnectionMessage) chatItem));
-            return true;
-        }
-        if (chatItem instanceof SimpleSystemMessage && !TextUtils.isEmpty(((SimpleSystemMessage) chatItem).getUuid())) {
-            insertOrUpdateMessage(sqlHelper, getSimpleSystemMessageCV((SimpleSystemMessage) chatItem));
-            return true;
-        }
-        if (chatItem instanceof ConsultPhrase) {
-            final ConsultPhrase phrase = (ConsultPhrase) chatItem;
-            insertOrUpdateMessage(sqlHelper, getConsultPhraseCV(phrase));
-            if (phrase.getFileDescription() != null) {
-                fileDescriptionTable.putFileDescription(sqlHelper, phrase.getFileDescription(), phrase.getId(), false);
-            }
-            if (phrase.getQuote() != null) {
-                quotesTable.putQuote(sqlHelper, phrase.getId(), phrase.getQuote());
-            }
-            if (phrase.getQuickReplies() != null) {
-                quickRepliesTable.putQuickReplies(sqlHelper, phrase.getId(), phrase.getQuickReplies());
-            }
-            return true;
-        }
-        if (chatItem instanceof UserPhrase) {
-            final UserPhrase phrase = (UserPhrase) chatItem;
-            insertOrUpdateMessage(sqlHelper, getUserPhraseCV(phrase));
-            if (phrase.getFileDescription() != null) {
-                fileDescriptionTable.putFileDescription(sqlHelper, phrase.getFileDescription(), phrase.getId(), false);
-            }
-            if (phrase.getQuote() != null) {
-                quotesTable.putQuote(sqlHelper, phrase.getId(), phrase.getQuote());
-            }
-            return true;
-        }
-        if (chatItem instanceof Survey) {
-            final Survey survey = (Survey) chatItem;
-            setNotSentSurveyDisplayMessageToFalse(sqlHelper, survey.getSendingId());
-            insertOrUpdateSurvey(sqlHelper, survey);
-        }
-        if (chatItem instanceof RequestResolveThread) {
-            RequestResolveThread requestResolveThread = (RequestResolveThread) chatItem;
-            setOldRequestResolveThreadDisplayMessageToFalse(sqlHelper, requestResolveThread.getUuid());
-            insertOrUpdateMessage(sqlHelper, getRequestResolveThreadCV(requestResolveThread));
-            return true;
-        }
-        return false;
-    }
-
-    @Nullable
-    public ConsultInfo getLastConsultInfo(SQLiteOpenHelper sqlHelper, @NonNull String id) {
-        String sql = "select " + COLUMN_AVATAR_PATH + ", " + COLUMN_NAME + ", " + COLUMN_CONSULT_STATUS
-                + " from " + TABLE_MESSAGES
-                + " where " + COLUMN_CONSULT_ID + " =  ? "
-                + " order by " + COLUMN_TIMESTAMP + " desc";
-        String[] selectionArgs = new String[]{id};
-        try (Cursor c = sqlHelper.getWritableDatabase().rawQuery(sql, selectionArgs)) {
-            if (c.moveToFirst()) {
-                return new ConsultInfo(
-                        cGetString(c, COLUMN_NAME),
-                        id,
-                        cGetString(c, COLUMN_CONSULT_STATUS),
-                        cGetString(c, COLUMN_CONSULT_ORG_UNIT),
-                        cGetString(c, COLUMN_AVATAR_PATH),
-                        null
-                );
-            }
-        }
-        return null;
-    }
-
-    public List<UserPhrase> getUnsendUserPhrase(SQLiteOpenHelper sqlHelper, int count) {
-        List<UserPhrase> userPhrases = new ArrayList<>();
-        List<ChatItem> chatItems = getChatItems(sqlHelper, 0, count);
-        for (ChatItem chatItem : chatItems) {
-            if (chatItem instanceof UserPhrase) {
-                if (((UserPhrase) chatItem).getSentState() == MessageState.STATE_NOT_SENT) {
-                    userPhrases.add((UserPhrase) chatItem);
-                }
-            }
-        }
-        return userPhrases;
-    }
-
-    public void setUserPhraseStateByProviderId(SQLiteOpenHelper sqlHelper, String providerId, MessageState messageState) {
-        final ContentValues cv = new ContentValues();
-        cv.put(COLUMN_MESSAGE_SEND_STATE, messageState.ordinal());
-        sqlHelper.getWritableDatabase().update(TABLE_MESSAGES, cv, COLUMN_PROVIDER_ID + " = ?", new String[]{providerId});
-    }
-
-    @Nullable
-    public ConsultPhrase getLastConsultPhrase(SQLiteOpenHelper sqlHelper) {
-        String sql = "select * from " + TABLE_MESSAGES
-                + " where " + COLUMN_MESSAGE_TYPE + " = " + MessageType.CONSULT_PHRASE.ordinal()
-                + " order by " + COLUMN_TIMESTAMP + " desc";
-        try (Cursor c = sqlHelper.getWritableDatabase().rawQuery(sql, new String[]{})) {
-            if (c.moveToFirst()) {
-                return getConsultPhrase(sqlHelper, c);
-            }
-        }
-        return null;
-    }
-
-    public int setAllMessagesWereRead(SQLiteOpenHelper sqlHelper) {
-        ContentValues cv = new ContentValues();
-        cv.put(COLUMN_IS_READ, true);
-        String whereClause = "(" + COLUMN_MESSAGE_TYPE + " = " + MessageType.CONSULT_PHRASE.ordinal() +
-                " or (" + COLUMN_MESSAGE_TYPE + " = " + MessageType.SURVEY.ordinal() + " and " + COLUMN_MESSAGE_SEND_STATE + " = " + MessageState.STATE_NOT_SENT.ordinal() + ")" +
-                " or " + COLUMN_MESSAGE_TYPE + " = " + MessageType.REQUEST_RESOLVE_THREAD.ordinal() + ")" +
-                " and " + COLUMN_IS_READ + " = 0";
-        return sqlHelper.getWritableDatabase().update(TABLE_MESSAGES, cv, whereClause, null);
-    }
-
-    public void setMessageWasRead(SQLiteOpenHelper sqlHelper, String uuid) {
-        ContentValues cv = new ContentValues();
-        cv.put(COLUMN_IS_READ, true);
-        String whereClause = COLUMN_MESSAGE_UUID + " = ? " +
-                " and " + COLUMN_IS_READ + " = 0";
-        sqlHelper.getWritableDatabase().update(TABLE_MESSAGES, cv, whereClause, new String[]{uuid});
-    }
-
-    @Nullable
-    public Survey getSurvey(SQLiteOpenHelper sqlHelper, long sendingId) {
-        String sql = "select * from " + TABLE_MESSAGES
-                + " where " + COLUMN_SURVEY_SENDING_ID + " = ?"
-                + " order by " + COLUMN_TIMESTAMP + " desc";
-        String[] selectionArgs = new String[]{String.valueOf(sendingId)};
-        try (Cursor c = sqlHelper.getWritableDatabase().rawQuery(sql, selectionArgs)) {
-            if (c.moveToFirst()) {
-                return getSurvey(sqlHelper, c);
-            }
-        }
-        return null;
-    }
-
-    public int getMessagesCount(SQLiteOpenHelper sqlHelper) {
-        try (Cursor c = sqlHelper.getWritableDatabase().rawQuery(String.format(Locale.US, "select count(%s) from %s", COLUMN_TABLE_ID, TABLE_MESSAGES), null)) {
-            if (c.getCount() == 0) {
-                return 0;
-            }
-            c.moveToFirst();
-            return c.getInt(0);
-        }
-    }
-
-    public int getUnreadMessagesCount(SQLiteOpenHelper sqlHelper) {
-        String sql = "select " + COLUMN_PROVIDER_ID + " , " + COLUMN_PROVIDER_IDS +
-                " from " + TABLE_MESSAGES +
-                " where (" +
-                COLUMN_MESSAGE_TYPE + " = " + MessageType.CONSULT_PHRASE.ordinal() + " or " +
-                "(" + COLUMN_MESSAGE_TYPE + " = " + MessageType.SURVEY.ordinal() + " and " + COLUMN_MESSAGE_SEND_STATE + " = " + MessageState.STATE_NOT_SENT.ordinal() + ") or " +
-                COLUMN_MESSAGE_TYPE + " = " + MessageType.REQUEST_RESOLVE_THREAD.ordinal() +
-                ")" +
-                " and " + COLUMN_IS_READ + " = 0" +
-                " order by " + COLUMN_TIMESTAMP + " asc";
-        try (Cursor c = sqlHelper.getWritableDatabase().rawQuery(sql, null)) {
-            return c.getCount();
-        }
-    }
-
-    @NonNull
-    public List<String> getUnreadMessagesUuid(SQLiteOpenHelper sqlHelper) {
-        String sql = "select " + COLUMN_MESSAGE_UUID +
-                " from " + TABLE_MESSAGES +
-                " where (" +
-                COLUMN_MESSAGE_TYPE + " = " + MessageType.CONSULT_PHRASE.ordinal() + " or " +
-                "(" + COLUMN_MESSAGE_TYPE + " = " + MessageType.SURVEY.ordinal() + " and " + COLUMN_MESSAGE_SEND_STATE + " = " + MessageState.STATE_NOT_SENT.ordinal() + ") or " +
-                COLUMN_MESSAGE_TYPE + " = " + MessageType.REQUEST_RESOLVE_THREAD.ordinal() +
-                ")" +
-                " and " + COLUMN_IS_READ + " = 0" +
-                " order by " + COLUMN_TIMESTAMP + " asc";
-        Set<String> ids = new HashSet<>();
-        try (Cursor c = sqlHelper.getWritableDatabase().rawQuery(sql, null)) {
-            for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
-                ids.add(cGetString(c, COLUMN_MESSAGE_UUID));
-            }
-        }
-        return new ArrayList<>(ids);
-    }
-
-    public int setNotSentSurveyDisplayMessageToFalse(SQLiteOpenHelper sqlHelper) {
-        ContentValues cv = new ContentValues();
-        cv.put(COLUMN_DISPLAY_MESSAGE, false);
-        String whereClause = COLUMN_MESSAGE_TYPE + " = " + MessageType.SURVEY.ordinal() +
-                " and " + COLUMN_MESSAGE_SEND_STATE + " = " + MessageState.STATE_NOT_SENT.ordinal();
-        return sqlHelper.getWritableDatabase().update(TABLE_MESSAGES, cv, whereClause, null);
-    }
-
-    public int setOldRequestResolveThreadDisplayMessageToFalse(SQLiteOpenHelper sqlHelper) {
-        ContentValues cv = new ContentValues();
-        cv.put(COLUMN_DISPLAY_MESSAGE, false);
-        String whereClause = COLUMN_MESSAGE_TYPE + " = " + MessageType.REQUEST_RESOLVE_THREAD.ordinal();
-        return sqlHelper.getWritableDatabase().update(TABLE_MESSAGES, cv, whereClause, null);
-    }
-
-    public void speechMessageUpdated(SQLiteOpenHelper sqlHelper, @NonNull SpeechMessageUpdate speechMessageUpdate) {
-        ContentValues cv = new ContentValues();
-        String uuid = speechMessageUpdate.getUuid();
-        cv.put(COLUMN_SPEECH_STATUS, speechMessageUpdate.getSpeechStatus().toString());
-        fileDescriptionTable.putFileDescription(sqlHelper, speechMessageUpdate.getFileDescription(), speechMessageUpdate.getUuid(), false);
-        String whereClause = COLUMN_MESSAGE_UUID + " = ?";
-        sqlHelper.getWritableDatabase().update(TABLE_MESSAGES, cv, whereClause, new String[]{uuid});
     }
 
     @Nullable
@@ -472,145 +229,6 @@ public class MessagesTable extends Table {
             return null;
         }
         return requestResolveThread;
-    }
-
-    private ContentValues getConsultPhraseCV(ConsultPhrase phrase) {
-        ContentValues cv = new ContentValues();
-        cv.put(COLUMN_MESSAGE_UUID, phrase.getId());
-        cv.put(COLUMN_PHRASE, phrase.getPhraseText());
-        cv.put(COLUMN_FORMATTED_PHRASE, phrase.getFormattedPhrase());
-        cv.put(COLUMN_TIMESTAMP, phrase.getTimeStamp());
-        cv.put(COLUMN_MESSAGE_TYPE, MessageType.CONSULT_PHRASE.ordinal());
-        cv.put(COLUMN_AVATAR_PATH, phrase.getAvatarPath());
-        cv.put(COLUMN_CONSULT_ID, phrase.getConsultId());
-        cv.put(COLUMN_IS_READ, phrase.isRead());
-        cv.put(COLUMN_CONSULT_STATUS, phrase.getStatus());
-        cv.put(COLUMN_NAME, phrase.getConsultName());
-        cv.put(COLUMN_SEX, phrase.getSex());
-        cv.put(COLUMN_THREAD_ID, phrase.getThreadId());
-        cv.put(COLUMN_BLOCK_INPUT, phrase.isBlockInput());
-        cv.put(COLUMN_SPEECH_STATUS, phrase.getSpeechStatus().toString());
-        return cv;
-    }
-
-    private ContentValues getUserPhraseCV(UserPhrase phrase) {
-        ContentValues cv = new ContentValues();
-        cv.put(COLUMN_MESSAGE_UUID, phrase.getId());
-        cv.put(COLUMN_PHRASE, phrase.getPhraseText());
-        cv.put(COLUMN_TIMESTAMP, phrase.getTimeStamp());
-        cv.put(COLUMN_MESSAGE_TYPE, MessageType.USER_PHRASE.ordinal());
-        cv.put(COLUMN_MESSAGE_SEND_STATE, phrase.getSentState().ordinal());
-        cv.put(COLUMN_THREAD_ID, phrase.getThreadId());
-        return cv;
-    }
-
-    private ContentValues getConsultConnectionMessageCV(ConsultConnectionMessage consultConnectionMessage) {
-        ContentValues cv = new ContentValues();
-        cv.put(COLUMN_NAME, consultConnectionMessage.getName());
-        cv.put(COLUMN_TIMESTAMP, consultConnectionMessage.getTimeStamp());
-        cv.put(COLUMN_AVATAR_PATH, consultConnectionMessage.getAvatarPath());
-        cv.put(COLUMN_MESSAGE_TYPE, MessageType.CONSULT_CONNECTED.ordinal());
-        cv.put(COLUMN_SEX, consultConnectionMessage.getSex());
-        cv.put(COLUMN_CONNECTION_TYPE, consultConnectionMessage.getConnectionType());
-        cv.put(COLUMN_CONSULT_ID, consultConnectionMessage.getConsultId());
-        cv.put(COLUMN_CONSULT_STATUS, consultConnectionMessage.getStatus());
-        cv.put(COLUMN_CONSULT_TITLE, consultConnectionMessage.getTitle());
-        cv.put(COLUMN_CONSULT_ORG_UNIT, consultConnectionMessage.getOrgUnit());
-        cv.put(COLUMN_MESSAGE_UUID, consultConnectionMessage.getUuid());
-        cv.put(COLUMN_DISPLAY_MESSAGE, consultConnectionMessage.isDisplayMessage());
-        cv.put(COLUMN_PHRASE, consultConnectionMessage.getText());
-        cv.put(COLUMN_THREAD_ID, consultConnectionMessage.getThreadId());
-        return cv;
-    }
-
-    private ContentValues getSimpleSystemMessageCV(SimpleSystemMessage simpleSystemMessage) {
-        ContentValues cv = new ContentValues();
-        cv.put(COLUMN_MESSAGE_UUID, simpleSystemMessage.getUuid());
-        cv.put(COLUMN_MESSAGE_TYPE, MessageType.SYSTEM_MESSAGE.ordinal());
-        cv.put(COLUMN_CONNECTION_TYPE, simpleSystemMessage.getType());
-        cv.put(COLUMN_TIMESTAMP, simpleSystemMessage.getTimeStamp());
-        cv.put(COLUMN_PHRASE, simpleSystemMessage.getText());
-        cv.put(COLUMN_THREAD_ID, simpleSystemMessage.getThreadId());
-        return cv;
-    }
-
-    private ContentValues getRequestResolveThreadCV(RequestResolveThread requestResolveThread) {
-        ContentValues cv = new ContentValues();
-        cv.put(COLUMN_MESSAGE_UUID, requestResolveThread.getUuid());
-        cv.put(COLUMN_MESSAGE_TYPE, MessageType.REQUEST_RESOLVE_THREAD.ordinal());
-        cv.put(COLUMN_SURVEY_HIDE_AFTER, requestResolveThread.getHideAfter());
-        cv.put(COLUMN_TIMESTAMP, requestResolveThread.getTimeStamp());
-        cv.put(COLUMN_THREAD_ID, requestResolveThread.getThreadId());
-        cv.put(COLUMN_DISPLAY_MESSAGE, true);
-        cv.put(COLUMN_IS_READ, requestResolveThread.isRead());
-        return cv;
-    }
-
-    private void insertOrUpdateMessage(SQLiteOpenHelper sqlHelper, ContentValues cv) {
-        String sql = "select " + COLUMN_MESSAGE_UUID +
-                " from " + TABLE_MESSAGES
-                + " where " + COLUMN_MESSAGE_UUID + " = ?";
-        String[] selectionArgs = new String[]{cv.getAsString(COLUMN_MESSAGE_UUID)};
-        try (Cursor c = sqlHelper.getWritableDatabase().rawQuery(sql, selectionArgs)) {
-            if (c.getCount() > 0) {
-                sqlHelper.getWritableDatabase().update(
-                        TABLE_MESSAGES,
-                        cv,
-                        COLUMN_MESSAGE_UUID + " = ? ",
-                        new String[]{cv.getAsString(COLUMN_MESSAGE_UUID)}
-                );
-            } else {
-                sqlHelper.getWritableDatabase().insert(TABLE_MESSAGES, null, cv);
-            }
-        }
-    }
-
-    private void insertOrUpdateSurvey(SQLiteOpenHelper sqlHelper, Survey survey) {
-        String sql = "select " + COLUMN_SURVEY_SENDING_ID
-                + " from " + TABLE_MESSAGES
-                + " where " + COLUMN_SURVEY_SENDING_ID + " = ? and " + COLUMN_MESSAGE_TYPE + " = ? ";
-        String[] selectionArgs = new String[]{String.valueOf(survey.getSendingId()), String.valueOf(MessageType.SURVEY.ordinal())};
-        ContentValues cv = new ContentValues();
-        cv.put(COLUMN_MESSAGE_TYPE, MessageType.SURVEY.ordinal());
-        cv.put(COLUMN_MESSAGE_UUID, survey.getUuid());
-        cv.put(COLUMN_SURVEY_SENDING_ID, survey.getSendingId());
-        cv.put(COLUMN_SURVEY_HIDE_AFTER, survey.getHideAfter());
-        cv.put(COLUMN_TIMESTAMP, survey.getTimeStamp());
-        cv.put(COLUMN_MESSAGE_SEND_STATE, survey.getSentState().ordinal());
-        cv.put(COLUMN_DISPLAY_MESSAGE, survey.isDisplayMessage());
-        cv.put(COLUMN_IS_READ, survey.isRead());
-        try (Cursor c = sqlHelper.getWritableDatabase().rawQuery(sql, selectionArgs)) {
-            if (c.getCount() > 0) {
-                sqlHelper.getWritableDatabase().update(
-                        TABLE_MESSAGES,
-                        cv,
-                        COLUMN_SURVEY_SENDING_ID + " = ? ",
-                        new String[]{String.valueOf(survey.getSendingId())}
-                );
-            } else {
-                sqlHelper.getWritableDatabase().insert(TABLE_MESSAGES, null, cv);
-            }
-        }
-        for (QuestionDTO question : survey.getQuestions()) {
-            questionsTable.putQuestion(sqlHelper, question, survey.getSendingId());
-        }
-    }
-
-    private void setNotSentSurveyDisplayMessageToFalse(SQLiteOpenHelper sqlHelper, long currentSurveySendingId) {
-        ContentValues cv = new ContentValues();
-        cv.put(COLUMN_DISPLAY_MESSAGE, false);
-        String whereClause = COLUMN_MESSAGE_TYPE + " = " + MessageType.SURVEY.ordinal() +
-                " and " + COLUMN_MESSAGE_SEND_STATE + " = " + MessageState.STATE_NOT_SENT.ordinal() +
-                " and " + COLUMN_SURVEY_SENDING_ID + " != ?";
-        sqlHelper.getWritableDatabase().update(TABLE_MESSAGES, cv, whereClause, new String[]{String.valueOf(currentSurveySendingId)});
-    }
-
-    private void setOldRequestResolveThreadDisplayMessageToFalse(SQLiteOpenHelper sqlHelper, String uuid) {
-        ContentValues cv = new ContentValues();
-        cv.put(COLUMN_DISPLAY_MESSAGE, false);
-        String whereClause = COLUMN_MESSAGE_TYPE + " = " + MessageType.REQUEST_RESOLVE_THREAD.ordinal() +
-                " and " + COLUMN_MESSAGE_UUID + " != ?";
-        sqlHelper.getWritableDatabase().update(TABLE_MESSAGES, cv, whereClause, new String[]{uuid});
     }
 
     private enum MessageType {
