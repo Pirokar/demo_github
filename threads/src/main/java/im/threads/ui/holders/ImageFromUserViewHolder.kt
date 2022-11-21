@@ -153,19 +153,13 @@ class ImageFromUserViewHolder(
             itemView.context,
             style.outgoingMessageBubbleBackground
         )
-        layout.setPadding(
-            res.getDimensionPixelSize(style.bubbleOutgoingPaddingLeft),
-            res.getDimensionPixelSize(style.bubbleOutgoingPaddingTop),
-            res.getDimensionPixelSize(style.bubbleOutgoingPaddingRight),
-            res.getDimensionPixelSize(style.bubbleOutgoingPaddingBottom)
-        )
+        val borderLeft = res.getDimensionPixelSize(style.outgoingImageLeftBorderSize)
+        val borderTop = res.getDimensionPixelSize(style.outgoingImageTopBorderSize)
+        val borderRight = res.getDimensionPixelSize(style.outgoingImageRightBorderSize)
+        val borderBottom = res.getDimensionPixelSize(style.outgoingImageBottomBorderSize)
+
         val layoutParams = layout.layoutParams as RelativeLayout.LayoutParams
-        layoutParams.setMargins(
-            res.getDimensionPixelSize(style.bubbleOutgoingMarginLeft),
-            res.getDimensionPixelSize(style.bubbleOutgoingMarginTop),
-            res.getDimensionPixelSize(style.bubbleOutgoingMarginRight),
-            res.getDimensionPixelSize(style.bubbleOutgoingMarginBottom)
-        )
+        layoutParams.setMargins(borderLeft, borderTop, borderRight, borderBottom)
         layout.layoutParams = layoutParams
         layout.background.colorFilter =
             BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
@@ -205,6 +199,7 @@ class ImageFromUserViewHolder(
             ImageLoader.get()
                 .autoRotateWithExif(true)
                 .load(uri.toString())
+                .scales(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP)
                 .modifications(maskedTransformation)
                 .errorDrawableResourceId(style.imagePlaceholder)
                 .into(image)

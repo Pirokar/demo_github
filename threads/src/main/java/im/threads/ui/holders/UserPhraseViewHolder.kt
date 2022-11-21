@@ -1,6 +1,7 @@
 package im.threads.ui.holders
 
 import android.annotation.SuppressLint
+import android.app.ActionBar.LayoutParams
 import android.content.Context
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -8,6 +9,7 @@ import android.view.View
 import android.view.View.OnLongClickListener
 import android.view.View.VISIBLE
 import android.view.ViewGroup
+import android.view.ViewGroup.MarginLayoutParams
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.RelativeLayout
@@ -23,6 +25,7 @@ import im.threads.R
 import im.threads.business.formatters.RussianFormatSymbols
 import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.imageLoading.ImageLoader.Companion.get
+import im.threads.business.imageLoading.ImageModifications
 import im.threads.business.media.FileDescriptionMediaPlayer
 import im.threads.business.models.CampaignMessage
 import im.threads.business.models.ChatItem
@@ -41,7 +44,6 @@ import im.threads.business.utils.toFileSize
 import im.threads.ui.config.Config
 import im.threads.ui.holders.helper.BordersCreator
 import im.threads.ui.utils.gone
-import im.threads.ui.utils.invisible
 import im.threads.ui.utils.visible
 import im.threads.ui.views.CircularProgressButton
 import im.threads.ui.views.VoiceTimeLabelFormatter
@@ -58,6 +60,7 @@ import kotlin.math.min
 /** layout/item_user_text_with_file.xml */
 class UserPhraseViewHolder(
     private val parentView: ViewGroup,
+    private val maskedTransformation: ImageModifications.MaskedModification?,
     highlightingStream: PublishSubject<ChatItem>,
     openGraphParser: OpenGraphParser,
     fdMediaPlayer: FileDescriptionMediaPlayer
@@ -83,6 +86,7 @@ class UserPhraseViewHolder(
     private val rootLayout: RelativeLayout = itemView.findViewById(R.id.rootLayout)
     private val rightTextRow: TableRow = itemView.findViewById(R.id.rightTextRow)
     private val image: ImageView = itemView.findViewById(R.id.image)
+    private val imageRoot: FrameLayout = itemView.findViewById(R.id.imageRoot)
     private val imageLayout: FrameLayout = itemView.findViewById(R.id.imageLayout)
     private val errorImage: ImageView = itemView.findViewById(R.id.errorImage)
     private val rightTextDescription: TextView = itemView.findViewById(R.id.fileSpecs)
@@ -121,14 +125,6 @@ class UserPhraseViewHolder(
                 style.outgoingMessageBubbleBackground
             )
 
-        val layoutParams = this.layoutParams as RelativeLayout.LayoutParams
-        layoutParams.setMargins(
-            parentView.context.resources.getDimensionPixelSize(style.bubbleOutgoingMarginLeft),
-            parentView.context.resources.getDimensionPixelSize(style.bubbleOutgoingMarginTop),
-            parentView.context.resources.getDimensionPixelSize(style.bubbleOutgoingMarginRight),
-            parentView.context.resources.getDimensionPixelSize(style.bubbleOutgoingMarginBottom)
-        )
-        this.layoutParams = layoutParams
         background.colorFilter =
             BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
                 getColorInt(style.outgoingMessageBubbleColor),
@@ -183,8 +179,9 @@ class UserPhraseViewHolder(
         onLongClickListener: OnLongClickListener?,
         isChosen: Boolean
     ) {
-        setupPaddingsAndBorders(userPhrase.fileDescription)
         initTimeStampView(userPhrase)
+        hideAll()
+        setupPaddingsAndBorders(userPhrase.fileDescription)
         subscribeForHighlighting(userPhrase, rootLayout)
         subscribeForOpenGraphData(
             OGDataContent(
@@ -218,12 +215,6 @@ class UserPhraseViewHolder(
             phraseTextView.gone()
         }
 
-        imageLayout.gone()
-        quoteImage.gone()
-        fileImageButton.gone()
-        voiceMessage.gone()
-        quoteTextRow.gone()
-        rightTextRow.gone()
         showFiles(userPhrase, imageClickListener, fileClickListener)
         quote?.let { showQuote(it, onQuoteClickListener) }
             ?: campaignMessage?.let { showCampaign(it) }
@@ -234,6 +225,15 @@ class UserPhraseViewHolder(
         }
         rightTextHeader.isVisible =
             !(rightTextHeader.text == null || rightTextHeader.text.toString() == "null")
+    }
+
+    private fun hideAll() {
+        imageLayout.gone()
+        quoteImage.gone()
+        fileImageButton.gone()
+        voiceMessage.gone()
+        quoteTextRow.gone()
+        rightTextRow.gone()
     }
 
     private fun setupPaddingsAndBorders(fileDescription: FileDescription?) = with(bubbleLayout) {
@@ -247,15 +247,42 @@ class UserPhraseViewHolder(
         val isImage = isImage(fileDescription)
 
         if (isBordersNotSet || !isImage) {
+            bubbleLayout.layoutParams.width = LayoutParams.WRAP_CONTENT
+            bubbleLayout.layoutParams.height = LayoutParams.WRAP_CONTENT
+            bubbleLayout.invalidate()
+            bubbleLayout.requestLayout()
+
+            imageRoot.gone()
+
+            phraseFrame.setPadding(0, 0, 0, 0)
             setPadding(
-                context.resources.getDimensionPixelSize(style.bubbleOutgoingPaddingLeft),
-                context.resources.getDimensionPixelSize(style.bubbleOutgoingPaddingTop),
-                context.resources.getDimensionPixelSize(style.bubbleOutgoingPaddingRight),
-                context.resources.getDimensionPixelSize(style.bubbleOutgoingPaddingBottom)
+                resources.getDimensionPixelSize(style.bubbleOutgoingPaddingLeft),
+                resources.getDimensionPixelSize(style.bubbleOutgoingPaddingTop),
+                resources.getDimensionPixelSize(style.bubbleOutgoingPaddingRight),
+                resources.getDimensionPixelSize(style.bubbleOutgoingPaddingBottom)
             )
-        } else if (isImage(fileDescription)) {
-            bordersCreator.applyViewSize(this, true)
-            setPadding(borderLeft, borderTop, borderRight, borderBottom)
+        } else {
+            imageRoot.visible()
+            val size = bordersCreator.applyViewSize(bubbleLayout, true)
+
+            (bubbleLayout.layoutParams as MarginLayoutParams).let {
+                it.marginStart = 0
+                bubbleLayout.layoutParams = it
+            }
+            bubbleLayout.invalidate()
+            bubbleLayout.requestLayout()
+
+            setPadding(0, 0, 0, 0)
+            (image.layoutParams as FrameLayout.LayoutParams).apply {
+                width = size.first - borderLeft - borderRight
+                height = size.first - borderTop - borderBottom
+                setMargins(borderLeft, borderTop, borderRight, borderBottom)
+                image.layoutParams = this
+            }
+            image.invalidate()
+            image.requestLayout()
+
+            phraseFrame.setPadding(borderLeft, 0, borderRight, 0)
         }
     }
 
@@ -315,6 +342,7 @@ class UserPhraseViewHolder(
                             .load(downloadPath)
                             .autoRotateWithExif(true)
                             .scales(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP)
+                            .modifications(maskedTransformation)
                             .callback(object : ImageLoader.ImageLoaderCallback {
                                 override fun onImageLoadError() {
                                     showErrorImage(imageLayout, errorImage)
@@ -502,10 +530,10 @@ class UserPhraseViewHolder(
 
     private fun initTimeStampView(userPhrase: UserPhrase) {
         timeStampTextView = if (isVoiceMessage(userPhrase.fileDescription)) {
-            itemView.findViewById<BubbleTimeTextView>(R.id.timeStamp).invisible()
+            itemView.findViewById<BubbleTimeTextView>(R.id.timeStamp).gone()
             itemView.findViewById(R.id.voiceTimeStamp)
         } else {
-            itemView.findViewById<BubbleTimeTextView>(R.id.voiceTimeStamp).invisible()
+            itemView.findViewById<BubbleTimeTextView>(R.id.voiceTimeStamp).gone()
             itemView.findViewById(R.id.timeStamp)
         }
         timeStampTextView.visible()

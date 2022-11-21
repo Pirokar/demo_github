@@ -184,6 +184,7 @@ class ImageFromConsultViewHolder(
                 .load(fileUri)
                 .autoRotateWithExif(true)
                 .errorDrawableResourceId(style.imagePlaceholder)
+                .scales(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP)
                 .modifications(maskedTransformation)
                 .callback(object : ImageLoader.ImageLoaderCallback {
                     override fun onImageLoaded() {

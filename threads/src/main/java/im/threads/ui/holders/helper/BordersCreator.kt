@@ -72,13 +72,20 @@ class BordersCreator(
     /**
      * Устанавливает сторону квадрата баббла как 3/4 от ширины экрана
      * @param layout viewGroup, для которого будут установлены новые параметры
+     * @return возвращает пару - длина и ширина
      */
-    fun <T : ViewGroup> applyViewSize(layout: T, keepHeight: Boolean = false) {
+    fun <T : ViewGroup> applyViewSize(layout: T, keepHeight: Boolean = false): Pair<Int, Int> {
         val lp = layout.layoutParams
-        lp.width = sideSize
-        lp.height = if (keepHeight) lp.height else sideSize
+        val width = sideSize
+        val height = if (keepHeight) lp.height else sideSize
 
+        lp.width = width
+        lp.height = height
         layout.layoutParams = lp
+        layout.invalidate()
+        layout.requestLayout()
+
+        return Pair(width, height)
     }
 
     private data class BordersSize(val left: Int, val top: Int, val right: Int, val bottom: Int)
