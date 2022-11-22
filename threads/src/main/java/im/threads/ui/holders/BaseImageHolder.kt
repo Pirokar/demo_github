@@ -2,8 +2,10 @@ package im.threads.ui.holders
 
 import android.util.TypedValue
 import android.view.View
+import android.view.ViewGroup.MarginLayoutParams
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.LinearLayout
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import im.threads.R
@@ -23,6 +25,7 @@ open class BaseImageHolder(
     highlightingStream,
     openGraphParser
 ) {
+    protected val rootLayout: LinearLayout = itemView.findViewById(R.id.rootLayout)
     protected val image: ImageView = itemView.findViewById(R.id.image)
     protected val imageLayout: FrameLayout = itemView.findViewById(R.id.imageLayout)
     protected val timeStampTextView: BubbleTimeTextView = itemView.findViewById<BubbleTimeTextView>(R.id.timeStamp).apply {
@@ -54,6 +57,17 @@ open class BaseImageHolder(
     init {
         bordersCreator.applyViewSize(imageLayout)
         bordersCreator.addMargins(image, imageLayout)
+        (rootLayout.layoutParams as MarginLayoutParams).let {
+            val resources = itemView.context.resources
+            if (isIncomingMessage) {
+                it.marginStart = resources.getDimensionPixelSize(R.dimen.user_margin_left)
+            } else {
+                it.marginEnd = resources.getDimensionPixelSize(R.dimen.user_margin_right)
+            }
+            rootLayout.layoutParams = it
+        }
+        rootLayout.invalidate()
+        rootLayout.requestLayout()
     }
 
     fun moveTimeToImageLayout() {

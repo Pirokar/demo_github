@@ -51,7 +51,6 @@ class ImageFromUserViewHolder(
     private val errorText: TextView = itemView.findViewById(R.id.errorText)
     private val fileName: TextView = itemView.findViewById(R.id.fileName)
     private val loader: ImageView = itemView.findViewById(R.id.loader)
-    private val rootLayout: LinearLayout = itemView.findViewById(R.id.rootLayout)
     private val timeStampLoading: BubbleTimeTextView = itemView.findViewById(R.id.timeStampLoading)
 
     init {

@@ -54,7 +54,6 @@ class ImageFromConsultViewHolder(
     private val fileNameTextView: TextView = itemView.findViewById(R.id.fileName)
     private val loader: ImageView = itemView.findViewById(R.id.loader)
     private val loaderImage: ImageView = itemView.findViewById(R.id.loaderImage)
-    private val rootLayout: LinearLayout = itemView.findViewById(R.id.rootLayout)
 
     private val consultAvatar = itemView.findViewById<ImageView>(R.id.consultAvatar).apply {
         layoutParams.height =

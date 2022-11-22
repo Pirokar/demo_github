@@ -1,6 +1,7 @@
 package im.threads.ui.holders
 
 import android.annotation.SuppressLint
+import android.app.ActionBar
 import android.text.TextUtils
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -76,6 +77,7 @@ class ConsultPhraseHolder(
     private val fileImage = itemView.findViewById<ImageView>(R.id.fileImage)
     private val rightTextHeader: TextView = itemView.findViewById(R.id.to)
     private val image: ImageView = itemView.findViewById(R.id.image)
+    private val imageRoot: FrameLayout = itemView.findViewById(R.id.imageRoot)
     private val imageLayout: FrameLayout = itemView.findViewById(R.id.imageLayout)
     private val errorImage: ImageView = itemView.findViewById(R.id.errorImage)
     private val loaderImage: ImageView = itemView.findViewById(R.id.loaderImage)
@@ -121,14 +123,6 @@ class ConsultPhraseHolder(
                 getColorInt(style.incomingMessageBubbleColor),
                 BlendModeCompat.SRC_ATOP
             )
-        val layoutParams = this.layoutParams as RelativeLayout.LayoutParams
-        layoutParams.setMargins(
-            context.resources.getDimensionPixelSize(style.bubbleIncomingMarginLeft),
-            context.resources.getDimensionPixelSize(style.bubbleIncomingMarginTop),
-            context.resources.getDimensionPixelSize(style.bubbleIncomingMarginRight),
-            context.resources.getDimensionPixelSize(style.bubbleIncomingMarginBottom)
-        )
-        this.layoutParams = layoutParams
     }
 
     private val bordersCreator = BordersCreator(itemView.context, true)
@@ -228,15 +222,48 @@ class ConsultPhraseHolder(
         val isImage = isImage(fileDescription)
 
         if (isBordersNotSet || !isImage) {
+            bubbleLayout.layoutParams.width = ActionBar.LayoutParams.WRAP_CONTENT
+            bubbleLayout.layoutParams.height = ActionBar.LayoutParams.WRAP_CONTENT
+            bubbleLayout.invalidate()
+            bubbleLayout.requestLayout()
+
+            imageRoot.gone()
+
+            phraseFrame.setPadding(0, 0, 0, 0)
+
             setPadding(
-                context.resources.getDimensionPixelSize(style.bubbleIncomingPaddingLeft),
-                context.resources.getDimensionPixelSize(style.bubbleIncomingPaddingTop),
-                context.resources.getDimensionPixelSize(style.bubbleIncomingPaddingRight),
-                context.resources.getDimensionPixelSize(style.bubbleIncomingPaddingBottom)
+                resources.getDimensionPixelSize(style.bubbleIncomingPaddingLeft),
+                resources.getDimensionPixelSize(style.bubbleIncomingPaddingTop),
+                resources.getDimensionPixelSize(style.bubbleIncomingPaddingRight),
+                resources.getDimensionPixelSize(style.bubbleIncomingPaddingBottom)
             )
-        } else if (isImage(fileDescription)) {
-            bordersCreator.applyViewSize(this, true)
-            setPadding(borderLeft, borderTop, borderRight, borderBottom)
+        } else {
+            imageRoot.visible()
+            val size = bordersCreator.applyViewSize(bubbleLayout, true)
+
+            (bubbleLayout.layoutParams as ViewGroup.MarginLayoutParams).let {
+                it.marginEnd = 0
+                bubbleLayout.layoutParams = it
+            }
+            bubbleLayout.invalidate()
+            bubbleLayout.requestLayout()
+
+            setPadding(0, 0, 0, 0)
+            (image.layoutParams as FrameLayout.LayoutParams).apply {
+                width = size.first - borderLeft - borderRight
+                height = size.first - borderTop - borderBottom
+                setMargins(borderLeft, borderTop, borderRight, borderBottom)
+                image.layoutParams = this
+            }
+            image.invalidate()
+            image.requestLayout()
+
+            phraseFrame.setPadding(
+                borderLeft,
+                0,
+                borderRight,
+                resources.getDimensionPixelSize(style.bubbleIncomingPaddingBottom)
+            )
         }
     }
 
@@ -262,13 +289,13 @@ class ConsultPhraseHolder(
 
         startLoaderAnimation()
 
-        image.loadImage(
-            imagePath,
-            errorDrawableResId = style.imagePlaceholder,
-            modifications = listOf(maskedTransformation),
-            autoRotateWithExif = true,
-            isExternalImage = isExternalImage,
-            callback = object : ImageLoader.ImageLoaderCallback {
+        val loadConfig = ImageLoader
+            .get()
+            .load(imagePath)
+            .autoRotateWithExif(true)
+            .scales(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP)
+            .modifications(maskedTransformation)
+            .callback(object : ImageLoader.ImageLoaderCallback {
                 override fun onImageLoaded() {
                     stopLoaderAnimation()
                 }
@@ -277,8 +304,11 @@ class ConsultPhraseHolder(
                     showErrorImage(imageLayout, errorImage)
                     stopLoaderAnimation()
                 }
-            }
-        )
+            })
+        if (isExternalImage) {
+            loadConfig.disableEdnaSsl()
+        }
+        loadConfig.into(image)
     }
 
     private fun showPhrase(
