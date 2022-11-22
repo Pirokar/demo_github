@@ -185,25 +185,27 @@ class GalleryActivity : BaseActivity(), OnItemClick, OnGalleryItemClick {
                         )
                         val bucketName = it.getString(bucketDisplayNameKey)
                         val displayName = it.getString(displayNameKey)
-                        var mediaPhotos: MutableList<MediaPhoto>?
-                        if (photosMap.containsKey(bucketName)) {
-                            mediaPhotos = photosMap[bucketName]
-                            if (mediaPhotos == null) {
+                        if (!bucketName.isNullOrEmpty()) {
+                            var mediaPhotos: MutableList<MediaPhoto>?
+                            if (photosMap.containsKey(bucketName)) {
+                                mediaPhotos = photosMap[bucketName]
+                                if (mediaPhotos == null) {
+                                    mediaPhotos = ArrayList()
+                                }
+                            } else {
                                 mediaPhotos = ArrayList()
                             }
-                        } else {
-                            mediaPhotos = ArrayList()
-                        }
-                        if (!displayName.isNullOrEmpty() && !bucketName.isNullOrEmpty()) {
-                            mediaPhotos.add(
-                                MediaPhoto(
-                                    imageUri,
-                                    displayName,
-                                    bucketName
+                            if (!displayName.isNullOrEmpty()) {
+                                mediaPhotos.add(
+                                    MediaPhoto(
+                                        imageUri,
+                                        displayName,
+                                        bucketName
+                                    )
                                 )
-                            )
+                            }
+                            photosMap[bucketName] = mediaPhotos
                         }
-                        photosMap[bucketName] = mediaPhotos
                         it.moveToNext()
                     }
                 }
