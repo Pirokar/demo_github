@@ -59,9 +59,7 @@ open class BaseImageHolder(
         bordersCreator.addMargins(image, imageLayout)
         (rootLayout.layoutParams as MarginLayoutParams).let {
             val resources = itemView.context.resources
-            if (isIncomingMessage) {
-                it.marginStart = resources.getDimensionPixelSize(R.dimen.user_margin_left)
-            } else {
+            if (!isIncomingMessage) {
                 it.marginEnd = resources.getDimensionPixelSize(R.dimen.user_margin_right)
             }
             rootLayout.layoutParams = it
