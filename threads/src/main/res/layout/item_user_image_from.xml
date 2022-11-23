@@ -78,7 +78,6 @@
             android:layout_width="@dimen/message_image_size"
             android:layout_height="@dimen/message_image_size"
             android:layout_marginTop="@dimen/margin_quarter"
-            android:layout_marginEnd="@dimen/threads_operator_photo_size"
             android:layout_marginBottom="@dimen/margin_quarter"
             android:layout_alignParentEnd="true"
             android:visibility="gone">
