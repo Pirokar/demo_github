@@ -79,7 +79,7 @@
     <dimen name="alt_incomingImageBottomBorderSize">12dp</dimen>
     <dimen name="alt_outgoingImageLeftBorderSize">12dp</dimen>
     <dimen name="alt_outgoingImageTopBorderSize">12dp</dimen>
-    <dimen name="alt_outgoingImageRightBorderSize">24dp</dimen>
+    <dimen name="alt_outgoingImageRightBorderSize">18dp</dimen>
     <dimen name="alt_outgoingImageBottomBorderSize">12dp</dimen>
 
 </resources>
