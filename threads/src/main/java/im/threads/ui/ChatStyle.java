@@ -1626,6 +1626,42 @@ public final class ChatStyle implements Serializable {
     }
 
     /**
+     * Устанавливает маску для входящего изобрадения
+     * @param mask ссылка на ресурс изображения маски
+     */
+    public ChatStyle setIncomingImageMask(@DrawableRes int mask) {
+        this.incomingImageBubbleMask = mask;
+        return this;
+    }
+
+    /**
+     * Устанавливает маску для входящего баббла сообщения
+     * @param mask ссылка на ресурс изображения маски
+     */
+    public ChatStyle setIncomingBubbleMask(@DrawableRes int mask) {
+        this.incomingMessageBubbleBackground = mask;
+        return this;
+    }
+
+    /**
+     * Устанавливает маску для исходящего изображения
+     * @param mask ссылка на ресурс изображения маски
+     */
+    public ChatStyle setOutgoingImageMask(@DrawableRes int mask) {
+        this.outgoingImageBubbleMask = mask;
+        return this;
+    }
+
+    /**
+     * Устанавливает маску для исходящего баббла сообщения
+     * @param mask ссылка на ресурс изображения маски
+     */
+    public ChatStyle setOutgoingBubbleMask(@DrawableRes int mask) {
+        this.outgoingMessageBubbleBackground = mask;
+        return this;
+    }
+
+    /**
      * Устанавливает размер баббла для сообщений, содержащих изображение
      * @param size размер изображения в процентах от ширины экрана, где 0.0 - баббла нет, 1.0 - весь экран.
      * По умолчанию 0.75.
