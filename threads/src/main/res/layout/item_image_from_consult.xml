@@ -9,8 +9,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/margin_half"
-        android:layout_marginEnd="@dimen/consultant_margin_right">
+        android:layout_marginStart="@dimen/margin_half">
 
         <ImageView
             android:id="@+id/consultAvatar"
@@ -59,42 +58,54 @@
 
         </LinearLayout>
 
-        <FrameLayout
-            android:id="@+id/imageLayout"
-            android:layout_width="@dimen/message_image_size"
-            android:layout_height="@dimen/message_image_size"
-            android:layout_marginStart="@dimen/threads_operator_photo_size"
-            android:visibility="visible">
+        <LinearLayout
+            android:id="@+id/imageLayoutWithSpace"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <View
+                android:layout_width="@dimen/threads_operator_photo_size"
+                android:layout_height="1dp"
+                android:background="@color/threads_transparent"/>
 
             <FrameLayout
-                android:id="@+id/imageBackground"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/thread_incoming_bubble"/>
+                android:id="@+id/imageLayout"
+                android:layout_width="@dimen/message_image_size"
+                android:layout_height="@dimen/message_image_size"
+                android:visibility="visible">
 
-            <ImageView
-                android:id="@+id/image"
-                android:scaleType="centerCrop"
-                android:adjustViewBounds="true"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                <FrameLayout
+                    android:id="@+id/imageBackground"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/thread_incoming_bubble"/>
 
-            <ImageView
-                android:id="@+id/loaderImage"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="75dp"
-                android:scaleType="fitCenter"
-                android:visibility="gone" />
+                <ImageView
+                    android:id="@+id/loaderImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="75dp"
+                    android:scaleType="fitCenter"
+                    android:visibility="gone" />
 
-        </FrameLayout>
+                <ImageView
+                    android:id="@+id/image"
+                    android:scaleType="centerCrop"
+                    android:adjustViewBounds="true"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+
+            </FrameLayout>
+
+        </LinearLayout>
 
         <im.threads.ui.widget.textView.BubbleTimeTextView
             android:id="@+id/timeStamp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@id/imageLayout"
-            android:layout_alignEnd="@id/imageLayout"
+            android:layout_alignBottom="@id/imageLayoutWithSpace"
+            android:layout_alignEnd="@id/imageLayoutWithSpace"
             android:layout_marginEnd="@dimen/timeLabelMarginRight"
             android:layout_marginBottom="@dimen/timeLabelMarginBottom"
             android:background="@drawable/timestamp_incoming_underlayer"

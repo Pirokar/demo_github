@@ -56,12 +56,8 @@ class ImageFromConsultViewHolder(
     private val loaderImage: ImageView = itemView.findViewById(R.id.loaderImage)
 
     private val consultAvatar = itemView.findViewById<ImageView>(R.id.consultAvatar).apply {
-        layoutParams.height =
-            itemView.context.resources.getDimension(style.operatorAvatarSize)
-                .toInt()
-        layoutParams.width =
-            itemView.context.resources.getDimension(style.operatorAvatarSize)
-                .toInt()
+        layoutParams.height = itemView.context.resources.getDimension(style.operatorAvatarSize).toInt()
+        layoutParams.width = itemView.context.resources.getDimension(style.operatorAvatarSize).toInt()
     }
 
     fun onBind(
@@ -143,7 +139,7 @@ class ImageFromConsultViewHolder(
     }
 
     private fun stopLoadImageAnimation() {
-        loaderImage.isVisible = false
+        loaderImage.gone()
         rotateAnim.cancel()
     }
 

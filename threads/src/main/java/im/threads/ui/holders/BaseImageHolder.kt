@@ -57,15 +57,16 @@ open class BaseImageHolder(
     init {
         bordersCreator.applyViewSize(imageLayout)
         bordersCreator.addMargins(image, imageLayout)
-        (rootLayout.layoutParams as MarginLayoutParams).let {
+
+        if (!isIncomingMessage) {
             val resources = itemView.context.resources
-            if (!isIncomingMessage) {
+            (rootLayout.layoutParams as MarginLayoutParams).let {
                 it.marginEnd = resources.getDimensionPixelSize(R.dimen.user_margin_right)
+                rootLayout.layoutParams = it
             }
-            rootLayout.layoutParams = it
+            rootLayout.invalidate()
+            rootLayout.requestLayout()
         }
-        rootLayout.invalidate()
-        rootLayout.requestLayout()
     }
 
     fun moveTimeToImageLayout() {
