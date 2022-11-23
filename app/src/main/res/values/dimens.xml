@@ -73,7 +73,7 @@
     <dimen name="alt_input_field_margin_right">20dp</dimen>
     <dimen name="alt_input_field_margin_bottom">0dp</dimen>
 
-    <dimen name="alt_incomingImageLeftBorderSize">24dp</dimen>
+    <dimen name="alt_incomingImageLeftBorderSize">22dp</dimen>
     <dimen name="alt_incomingImageTopBorderSize">12dp</dimen>
     <dimen name="alt_incomingImageRightBorderSize">12dp</dimen>
     <dimen name="alt_incomingImageBottomBorderSize">12dp</dimen>
