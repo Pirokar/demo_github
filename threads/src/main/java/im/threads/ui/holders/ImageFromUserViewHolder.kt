@@ -1,5 +1,6 @@
 package im.threads.ui.holders
 
+import android.app.ActionBar.LayoutParams
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -23,6 +24,7 @@ import im.threads.business.models.MessageState
 import im.threads.business.models.UserPhrase
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.ogParser.OpenGraphParser
+import im.threads.ui.holders.helper.BordersCreator
 import im.threads.ui.widget.textView.BubbleTimeTextView
 import io.reactivex.subjects.PublishSubject
 import java.text.SimpleDateFormat
@@ -152,12 +154,17 @@ class ImageFromUserViewHolder(
             itemView.context,
             style.outgoingMessageBubbleBackground
         )
+
         val borderLeft = res.getDimensionPixelSize(style.outgoingImageLeftBorderSize)
         val borderTop = res.getDimensionPixelSize(style.outgoingImageTopBorderSize)
         val borderRight = res.getDimensionPixelSize(style.outgoingImageRightBorderSize)
         val borderBottom = res.getDimensionPixelSize(style.outgoingImageBottomBorderSize)
 
         val layoutParams = layout.layoutParams as RelativeLayout.LayoutParams
+        val bordersCreator = BordersCreator(itemView.context, false)
+
+        layoutParams.width = bordersCreator.sideSize
+        layoutParams.height = LayoutParams.WRAP_CONTENT
         layoutParams.setMargins(borderLeft, borderTop, borderRight, borderBottom)
         layout.layoutParams = layoutParams
         layout.background.colorFilter =
@@ -165,6 +172,8 @@ class ImageFromUserViewHolder(
                 getColorInt(style.outgoingMessageBubbleColor),
                 BlendModeCompat.SRC_ATOP
             )
+        layout.invalidate()
+        layout.requestLayout()
     }
 
     private fun showLoaderLayout(fileDescription: FileDescription) {

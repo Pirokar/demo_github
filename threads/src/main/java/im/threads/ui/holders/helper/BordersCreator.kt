@@ -3,6 +3,8 @@ package im.threads.ui.holders.helper
 import android.content.Context
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.MarginLayoutParams
+import im.threads.R
 import im.threads.ui.config.Config
 import im.threads.ui.widget.textView.BubbleTimeTextView
 
@@ -10,12 +12,12 @@ class BordersCreator(
     private val context: Context,
     private val isIncomingMessage: Boolean
 ) {
-    private val sideSize: Int by lazy {
+    val sideSize: Int by lazy {
         val percentage = Config.getInstance().getChatStyle().imageBubbleSize
         (Config.getInstance().screenSize.width * percentage).toInt()
     }
 
-    private val bordersSize: BordersSize
+    private val borders: BordersSize
         get() {
             val res = context.resources
             val bordersSize = if (isIncomingMessage) {
@@ -43,10 +45,10 @@ class BordersCreator(
     fun moveTimeToImageLayout(timeLabel: BubbleTimeTextView) {
         val tag = "moved_to_picture"
         if (timeLabel.tag != tag) {
-            val layoutParams = timeLabel.layoutParams as ViewGroup.MarginLayoutParams
+            val layoutParams = timeLabel.layoutParams as MarginLayoutParams
 
-            layoutParams.marginEnd += bordersSize.right
-            layoutParams.bottomMargin += bordersSize.bottom
+            layoutParams.marginEnd += borders.right
+            layoutParams.bottomMargin += borders.bottom
 
             timeLabel.layoutParams = layoutParams
             timeLabel.tag = "moved_to_picture"
@@ -56,15 +58,43 @@ class BordersCreator(
     /**
      * Устанавливает отступы в соответствии с шириной бордера для заданной вью
      * @param view вью, для которой нужно установить отступы
+     * @param parentView родительское вью для равномерного установления отступов
+     * @param rootView используется для проверки минимального отступа между сообщениями
      */
-    fun addMargins(view: View, parentView: View) {
-        val viewLayoutParams = view.layoutParams as ViewGroup.MarginLayoutParams
-        viewLayoutParams.setMargins(bordersSize.left, bordersSize.top, bordersSize.right, bordersSize.bottom)
-        view.layoutParams = viewLayoutParams
+    fun addMargins(view: View, parentView: View, rootView: View) {
+        val resources = context.resources
+        val chatStyle = Config.getInstance().getChatStyle()
 
-        val parentViewLayoutParams = parentView.layoutParams as ViewGroup.MarginLayoutParams
-        parentViewLayoutParams.setMargins(0, bordersSize.top, 0, 0)
+        val viewLayoutParams = view.layoutParams as MarginLayoutParams
+        viewLayoutParams.setMargins(borders.left, borders.top, borders.right, borders.bottom)
+        view.layoutParams = viewLayoutParams
+        view.invalidate()
+        view.requestLayout()
+
+        val parentViewLayoutParams = parentView.layoutParams as MarginLayoutParams
+        val defaultLeft = if (isIncomingMessage) {
+            resources.getDimensionPixelSize(R.dimen.margin_eight)
+        } else {
+            0
+        }
+        parentViewLayoutParams.setMargins(
+            if (borders.left > 0) 0 else defaultLeft,
+            borders.top,
+            0,
+            0
+        )
         parentView.layoutParams = parentViewLayoutParams
+        parentView.invalidate()
+        parentView.requestLayout()
+
+        val minimumVerticalMargin = resources.getDimensionPixelSize(R.dimen.margin_quarter)
+        val rootViewLayoutParams = rootView.layoutParams as MarginLayoutParams
+        if (borders.top < minimumVerticalMargin) {
+            rootViewLayoutParams.topMargin = minimumVerticalMargin - borders.top
+        }
+        if (borders.bottom < minimumVerticalMargin) {
+            rootViewLayoutParams.bottomMargin = minimumVerticalMargin - borders.bottom
+        }
     }
 
     /**
@@ -86,5 +116,5 @@ class BordersCreator(
         return Pair(width, height)
     }
 
-    private data class BordersSize(val left: Int, val top: Int, val right: Int, val bottom: Int)
+    data class BordersSize(val left: Int, val top: Int, val right: Int, val bottom: Int)
 }

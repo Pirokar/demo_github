@@ -290,6 +290,7 @@ class UserPhraseViewHolder(
                 it.width = ActionBar.LayoutParams.WRAP_CONTENT
                 it.height = ActionBar.LayoutParams.WRAP_CONTENT
                 it.marginEnd = resources.getDimensionPixelSize(R.dimen.user_margin_right)
+                it.marginStart = resources.getDimensionPixelSize(R.dimen.user_margin_left)
             }
             bubbleLayout.invalidate()
             bubbleLayout.requestLayout()
