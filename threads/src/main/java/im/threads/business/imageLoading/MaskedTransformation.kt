@@ -9,13 +9,14 @@ import android.graphics.PorterDuffXfermode
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.NinePatchDrawable
 import com.squareup.picasso.Transformation
+import kotlin.random.Random
 
 /**
  * Преобразует изображение согласно переданной на вход маске
  * @param maskDrawable маска типа NinePatchDrawable
  */
 class MaskedTransformation(private val maskDrawable: Drawable) : Transformation {
-    override fun key(): String = maskDrawable.hashCode().toString()
+    override fun key(): String = Random(999999999).nextLong().toString()
 
     override fun transform(source: Bitmap): Bitmap? {
         val result = Bitmap.createBitmap(source.width, source.height, Bitmap.Config.ARGB_8888)
