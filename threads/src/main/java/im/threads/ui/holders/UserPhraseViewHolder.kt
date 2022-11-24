@@ -1,6 +1,7 @@
 package im.threads.ui.holders
 
 import android.annotation.SuppressLint
+import android.app.ActionBar
 import android.app.ActionBar.LayoutParams
 import android.content.Context
 import android.util.TypedValue
@@ -246,9 +247,50 @@ class UserPhraseViewHolder(
         val isBordersNotSet = borderLeft == 0 && borderTop == 0 && borderRight == 0 && borderBottom == 0
         val isImage = isImage(fileDescription)
 
-        if (isBordersNotSet || !isImage) {
-            bubbleLayout.layoutParams.width = LayoutParams.WRAP_CONTENT
-            bubbleLayout.layoutParams.height = LayoutParams.WRAP_CONTENT
+        if (isImage) {
+            imageRoot.visible()
+            val size = bordersCreator.applyViewSize(bubbleLayout, true)
+
+            (bubbleLayout.layoutParams as MarginLayoutParams).let {
+                it.marginStart = 0
+                bubbleLayout.layoutParams = it
+            }
+            bubbleLayout.invalidate()
+            bubbleLayout.requestLayout()
+
+            if (isBordersNotSet) {
+                phraseFrame.setPadding(borderLeft, 0, borderRight, 0)
+                setPadding(
+                    resources.getDimensionPixelSize(style.bubbleOutgoingPaddingLeft),
+                    resources.getDimensionPixelSize(style.bubbleOutgoingPaddingTop),
+                    resources.getDimensionPixelSize(style.bubbleOutgoingPaddingRight),
+                    resources.getDimensionPixelSize(style.bubbleOutgoingPaddingBottom)
+                )
+                image.layoutParams.width = size.first
+                image.layoutParams.height = size.first
+            } else {
+                setPadding(0, 0, 0, 0)
+                (image.layoutParams as FrameLayout.LayoutParams).apply {
+                    width = size.first - borderLeft - borderRight
+                    height = size.first - borderTop - borderBottom
+                    setMargins(borderLeft, borderTop, borderRight, borderBottom)
+                    image.layoutParams = this
+                }
+                phraseFrame.setPadding(
+                    borderLeft,
+                    0,
+                    borderRight,
+                    resources.getDimensionPixelSize(style.bubbleIncomingPaddingBottom)
+                )
+            }
+            image.invalidate()
+            image.requestLayout()
+        } else {
+            (bubbleLayout.layoutParams as MarginLayoutParams).let {
+                it.width = ActionBar.LayoutParams.WRAP_CONTENT
+                it.height = ActionBar.LayoutParams.WRAP_CONTENT
+                it.marginEnd = resources.getDimensionPixelSize(R.dimen.user_margin_right)
+            }
             bubbleLayout.invalidate()
             bubbleLayout.requestLayout()
 
@@ -261,28 +303,6 @@ class UserPhraseViewHolder(
                 resources.getDimensionPixelSize(style.bubbleOutgoingPaddingRight),
                 resources.getDimensionPixelSize(style.bubbleOutgoingPaddingBottom)
             )
-        } else {
-            imageRoot.visible()
-            val size = bordersCreator.applyViewSize(bubbleLayout, true)
-
-            (bubbleLayout.layoutParams as MarginLayoutParams).let {
-                it.marginStart = 0
-                bubbleLayout.layoutParams = it
-            }
-            bubbleLayout.invalidate()
-            bubbleLayout.requestLayout()
-
-            setPadding(0, 0, 0, 0)
-            (image.layoutParams as FrameLayout.LayoutParams).apply {
-                width = size.first - borderLeft - borderRight
-                height = size.first - borderTop - borderBottom
-                setMargins(borderLeft, borderTop, borderRight, borderBottom)
-                image.layoutParams = this
-            }
-            image.invalidate()
-            image.requestLayout()
-
-            phraseFrame.setPadding(borderLeft, 0, borderRight, 0)
         }
     }
 
