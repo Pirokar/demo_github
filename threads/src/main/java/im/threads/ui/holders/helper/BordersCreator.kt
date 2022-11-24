@@ -3,8 +3,6 @@ package im.threads.ui.holders.helper
 import android.content.Context
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.res.ResourcesCompat
-import im.threads.R
 import im.threads.ui.config.Config
 import im.threads.ui.widget.textView.BubbleTimeTextView
 
@@ -13,7 +11,7 @@ class BordersCreator(
     private val isIncomingMessage: Boolean
 ) {
     private val sideSize: Int by lazy {
-        val percentage = ResourcesCompat.getFloat(context.resources, R.dimen.imageBubbleSize)
+        val percentage = Config.getInstance().getChatStyle().imageBubbleSize
         (Config.getInstance().screenSize.width * percentage).toInt()
     }
 
