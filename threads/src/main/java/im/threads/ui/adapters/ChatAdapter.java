@@ -892,7 +892,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     private void downloadImageIfNeeded(@Nullable FileDescription fileDescription) {
-        if(fileDescription != null) {
+        if (fileDescription != null) {
             if (FileUtils.isImage(fileDescription) && fileDescription.getFileUri() == null) {
                 mCallback.onFileDownloadRequest(fileDescription);
             }
@@ -900,7 +900,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     private void downloadVoiceIfNeeded(@Nullable FileDescription fileDescription) {
-        if(fileDescription != null) {
+        if (fileDescription != null) {
             if (FileUtils.isVoiceMessage(fileDescription) && fileDescription.getFileUri() == null) {
                 mCallback.onFileDownloadRequest(fileDescription);
             }
@@ -1066,6 +1066,14 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         if (isPreviousItemSurvey) {
             list.remove(list.size() - 2);
         }
+    }
+
+    public int getPositionByTimeStamp(long timeStamp) {
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i).getTimeStamp() == timeStamp)
+                return i;
+        }
+        return -1;
     }
 
     public interface Callback {

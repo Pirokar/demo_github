@@ -91,6 +91,7 @@ import im.threads.business.models.ConsultInfo;
 import im.threads.business.models.ConsultPhrase;
 import im.threads.business.models.ConsultRole;
 import im.threads.business.models.ConsultTyping;
+import im.threads.business.models.DateRow;
 import im.threads.business.models.FileDescription;
 import im.threads.business.models.InputFieldEnableModel;
 import im.threads.business.models.MessageState;
@@ -606,6 +607,7 @@ public final class ChatFragment extends BaseFragment implements
         );
     }
 
+
     private void bindViews() {
         binding.swipeRefresh.setSwipeListener(() -> {
         });
@@ -680,6 +682,7 @@ public final class ChatFragment extends BaseFragment implements
                 LinearLayoutManager layoutManager = (LinearLayoutManager) binding.recycler.getLayoutManager();
                 if (layoutManager != null) {
                     int lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition();
+                    int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
                     int itemCount = chatAdapter.getItemCount();
                     if (itemCount - 1 - lastVisibleItemPosition > INVISIBLE_MSGS_COUNT) {
                         if (binding.scrollDownButtonContainer.getVisibility() != View.VISIBLE) {
@@ -689,6 +692,9 @@ public final class ChatFragment extends BaseFragment implements
                     } else {
                         binding.scrollDownButtonContainer.setVisibility(View.GONE);
                         recyclerView.post(() -> setMessagesAsRead());
+                    }
+                    if(firstVisibleItemPosition == 0) {
+                        mChatController.loadHistory(false);
                     }
                 }
             }
@@ -1632,6 +1638,21 @@ public final class ChatFragment extends BaseFragment implements
         } catch (Exception exception) {
             return false;
         }
+    }
+
+    public void addHistoryChatItems(final List<ChatItem> list) {
+        if (list.size() == 0) {
+            return;
+        }
+        LinearLayoutManager layoutManager = (LinearLayoutManager) binding.recycler.getLayoutManager();
+        int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
+        if (chatAdapter.getList().get(firstVisibleItemPosition) instanceof DateRow) {
+            firstVisibleItemPosition += 1;
+        }
+        long timeStamp = chatAdapter.getList().get(firstVisibleItemPosition).getTimeStamp();
+        chatAdapter.addItems(list);
+        int newPosition = chatAdapter.getPositionByTimeStamp(timeStamp);
+        scrollToPosition(newPosition, false);
     }
 
     public void addChatItems(final List<ChatItem> list) {
