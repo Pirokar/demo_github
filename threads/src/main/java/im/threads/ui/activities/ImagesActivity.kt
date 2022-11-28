@@ -48,8 +48,7 @@ class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionCl
     private var collectionSize = 0
     private var files: ArrayList<FileDescription> = ArrayList()
     private var compositeDisposable: CompositeDisposable? = CompositeDisposable()
-    private var permissionDescriptionAlertDialogFragment: PermissionDescriptionAlertDialogFragment? =
-        null
+    private var permissionDescriptionAlertDialogFragment: PermissionDescriptionAlertDialogFragment? = null
     private val database: DatabaseHolder by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -246,8 +245,7 @@ class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionCl
     override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}
     override fun onPageSelected(position: Int) {
         Runnable {
-            val title =
-                "${mViewPager.currentItem + 1} ${getString(R.string.threads_from)} $collectionSize"
+            val title = "${mViewPager.currentItem + 1} ${getString(R.string.threads_from)} $collectionSize"
             setTitle(title)
         }.runOnUiThread()
     }
