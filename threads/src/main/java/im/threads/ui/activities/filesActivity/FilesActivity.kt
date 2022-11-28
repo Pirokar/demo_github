@@ -33,6 +33,7 @@ import im.threads.ui.adapters.filesAndMedia.FilesAndMediaAdapter
 import im.threads.ui.adapters.filesAndMedia.FilesAndMediaAdapter.OnFileClick
 import im.threads.ui.config.Config
 import im.threads.ui.utils.Keyboard
+import im.threads.ui.utils.ToastUtils
 import im.threads.ui.utils.setColorFilter
 
 /**
@@ -96,6 +97,14 @@ internal class FilesActivity : BaseActivity(), OnFileClick {
                 this@FilesActivity
             )
             filesRecycler.adapter = filesAndMediaAdapter
+        }
+    }
+
+    private fun showToast(message: String) {
+        if (Config.getInstance().getChatStyle().isToastStylable) {
+            ToastUtils.showSnackbar(this, binding.activityRoot, message)
+        } else {
+            ToastUtils.showToast(this, message!!)
         }
     }
 
@@ -243,11 +252,7 @@ internal class FilesActivity : BaseActivity(), OnFileClick {
         try {
             startActivity(intent)
         } catch (e: ActivityNotFoundException) {
-            Toast.makeText(
-                baseContext,
-                getString(R.string.threads_file_not_supported),
-                Toast.LENGTH_SHORT
-            ).show()
+            showToast(getString(R.string.threads_file_not_supported))
         }
     }
 

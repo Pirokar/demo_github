@@ -517,7 +517,12 @@ public final class ChatStyle implements Serializable {
     public String scheduleAlertFont;
     @Nullable
     public String systemMessageFont;
-
+    @DimenRes
+    public int toastTextSize = 0;
+    @ColorRes
+    public int toastTextColor = 0;
+    @ColorRes
+    public int toastBackgroundColor = 0;
     // Конфигурации markdown в сообщениях
     private MarkdownConfig incomingMarkdownConfiguration, outgoingMarkdownConfiguration;
 
@@ -576,6 +581,7 @@ public final class ChatStyle implements Serializable {
         this.chatToolbarBackIconResId = chatToolbarBackIconResId;
         return this;
     }
+    // </editor-fold>
 
     public ChatStyle setChatToolbarPopUpMenuIconResId(
             @DrawableRes int chatToolbarPopUpMenuIconResId) {
@@ -594,7 +600,6 @@ public final class ChatStyle implements Serializable {
         this.chatToolbarReplyIconResId = chatToolbarReplyIconResId;
         return this;
     }
-    // </editor-fold>
 
     public ChatStyle setShowConsultSearching(final boolean show) {
         this.showConsultSearching = show;
@@ -731,6 +736,7 @@ public final class ChatStyle implements Serializable {
         this.loaderTextResId = loaderTextResId;
         return this;
     }
+    // </editor-fold>
 
     public ChatStyle setInputEnabledDuringQuickReplies(final boolean inputEnabledDuringQuickReplies) {
         this.inputEnabledDuringQuickReplies = inputEnabledDuringQuickReplies;
@@ -747,7 +753,6 @@ public final class ChatStyle implements Serializable {
         this.quoteClearIconResId = quoteClearIconResId;
         return this;
     }
-    // </editor-fold>
 
     // <editor-fold defaultState="collapsed" desc="attachment bottom sheet style">
     public ChatStyle setAttachmentBottomSheetButtonTintResId(@ColorRes final int attachmentBottomSheetButtonTintResId) {
@@ -764,6 +769,7 @@ public final class ChatStyle implements Serializable {
         this.attachmentCameraIconResId = attachmentCameraIconResId;
         return this;
     }
+    // </editor-fold>
 
     public ChatStyle setAttachmentGalleryIconResId(@DrawableRes final int attachmentGalleryIconResId) {
         this.attachmentGalleryIconResId = attachmentGalleryIconResId;
@@ -779,7 +785,6 @@ public final class ChatStyle implements Serializable {
         this.attachmentSendIconResId = attachmentSendIconResId;
         return this;
     }
-    // </editor-fold>
 
     // <editor-fold defaultState="collapsed" desc="MediaAndFiles Screen">
     public ChatStyle setMediaAndFilesWindowLightStatusBarResId(@BoolRes final int mediaAndFilesWindowLightStatusBarResId) {
@@ -855,6 +860,7 @@ public final class ChatStyle implements Serializable {
         this.emptyMediaAndFilesDescriptionText = descriptionTextResId;
         return this;
     }
+    // </editor-fold>
 
     /**
      * @param descriptionFontPath path like "fonts/lato-regular.ttf"
@@ -874,7 +880,6 @@ public final class ChatStyle implements Serializable {
         this.emptyMediaAndFilesDescriptionTextColor = descriptionTextColorResId;
         return this;
     }
-    // </editor-fold>
 
     public ChatStyle setChatBodyIconsTint(@ColorRes final int chatBodyIconsTint) {
         this.chatBodyIconsTint = chatBodyIconsTint;
@@ -937,6 +942,8 @@ public final class ChatStyle implements Serializable {
         return this;
     }
 
+    // deprecated setters
+
     public ChatStyle setInProgressIconResId(@DrawableRes final int inProgressIconResId) {
         this.inProgressIconResId = inProgressIconResId;
         return this;
@@ -954,8 +961,6 @@ public final class ChatStyle implements Serializable {
         this.systemMessageTextGravity = systemMessageTextGravity;
         return this;
     }
-
-    // deprecated setters
 
     /**
      * Default values:
@@ -1030,6 +1035,8 @@ public final class ChatStyle implements Serializable {
         this.showBackButton = showBackButton;
         return this;
     }
+
+    //images history screen
 
     /**
      * Default values:
@@ -1144,7 +1151,6 @@ public final class ChatStyle implements Serializable {
         return this;
     }
 
-
     /**
      * Default values:
      *
@@ -1206,9 +1212,6 @@ public final class ChatStyle implements Serializable {
         this.notificationQuickReplyMessageTextColor = notificationQuickReplyMessageTextColor;
         return this;
     }
-
-    //images history screen
-
 
     /**
      * Default values:
@@ -1284,7 +1287,6 @@ public final class ChatStyle implements Serializable {
         this.surveyChoicesTextColorResId = surveyChoicesTextColorResId;
         return this;
     }
-
 
     /**
      * Default values:
@@ -1634,5 +1636,32 @@ public final class ChatStyle implements Serializable {
         if (count <= maxCount && count > 0)
             return count;
         return maxCount;
+    }
+
+    /**
+     * Устанавливает стиль(цвет текста, размер текста и цвет фона Toast уведомлений)
+     *
+     * @param toastTextSize
+     * @param toastTextColor
+     * @param toastBackgroundColor
+     * @return объект ChatStyle
+     */
+    public ChatStyle setToastStyle(@DimenRes int toastTextSize,
+                                   @ColorRes int toastTextColor,
+                                   @ColorRes int toastBackgroundColor
+    ) {
+        this.toastTextSize = toastTextSize;
+        this.toastTextColor = toastTextColor;
+        this.toastBackgroundColor = toastBackgroundColor;
+        return this;
+    }
+
+    /**
+     * Определяет стилизован ли Toast
+     *
+     * @return возвращает true или false в зависимости от того, стилизован ли Toast
+     */
+    public boolean isToastStylable() {
+        return  toastTextSize != 0 || toastTextColor != 0 || toastBackgroundColor != 0;
     }
 }

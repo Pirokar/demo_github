@@ -243,6 +243,11 @@ public class ChatStyleBuilderHelper {
                 .setChatBodyIconsColorStateTint(
                         R.color.threads_icon_and_separators_color,
                         R.color.alt_threads_chat_icons_tint,
-                        R.color.threads_input_text);
+                        R.color.threads_input_text)
+                .setToastStyle(
+                        R.dimen.text_big,
+                        R.color.threads_record_button_small_mic,
+                        R.color.threads_chat_toolbar_hint
+                );
     }
 }

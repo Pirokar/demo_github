@@ -9,7 +9,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.Toast
+import android.widget.RelativeLayout
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
@@ -31,6 +31,7 @@ import im.threads.ui.fragments.PermissionDescriptionAlertDialogFragment.OnAllowP
 import im.threads.ui.permissions.PermissionsActivity
 import im.threads.ui.styles.permissions.PermissionDescriptionType
 import im.threads.ui.utils.ColorsHelper.setDrawableColor
+import im.threads.ui.utils.ToastUtils
 import im.threads.ui.utils.invisible
 import im.threads.ui.utils.runOnUiThread
 import im.threads.ui.utils.visible
@@ -42,17 +43,20 @@ import java.util.Collections
 
 class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionClickListener {
     private lateinit var mViewPager: ViewPager
+    private lateinit var rootView: RelativeLayout
     private var style = Config.getInstance().getChatStyle()
     private var collectionSize = 0
     private var files: ArrayList<FileDescription> = ArrayList()
     private var compositeDisposable: CompositeDisposable? = CompositeDisposable()
-    private var permissionDescriptionAlertDialogFragment: PermissionDescriptionAlertDialogFragment? = null
+    private var permissionDescriptionAlertDialogFragment: PermissionDescriptionAlertDialogFragment? =
+        null
     private val database: DatabaseHolder by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_images)
         mViewPager = findViewById(R.id.pager)
+        rootView = findViewById(R.id.activity_root)
         mViewPager.addOnPageChangeListener(this)
         initToolbar(findViewById(R.id.toolbar), findViewById(R.id.toolbar_shadow))
         compositeDisposable?.add(
@@ -122,6 +126,14 @@ class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionCl
         }
     }
 
+    private fun showToast(message: String) {
+        if (Config.getInstance().getChatStyle().isToastStylable) {
+            ToastUtils.showSnackbar(this, rootView, message)
+        } else {
+            ToastUtils.showToast(this, message!!)
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         compositeDisposable?.dispose()
@@ -179,19 +191,11 @@ class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionCl
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
                         {
-                            Toast.makeText(
-                                this@ImagesActivity,
-                                getString(R.string.threads_saved_to_downloads),
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            showToast(getString(R.string.threads_saved_to_downloads))
                         }
                     ) { throwable: Throwable? ->
                         error("downloadImage", throwable)
-                        Toast.makeText(
-                            this@ImagesActivity,
-                            R.string.threads_unable_to_save,
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        showToast(getString(R.string.threads_unable_to_save))
                     }
             )
         }
@@ -242,7 +246,8 @@ class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionCl
     override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}
     override fun onPageSelected(position: Int) {
         Runnable {
-            val title = "${mViewPager.currentItem + 1} ${getString(R.string.threads_from)} $collectionSize"
+            val title =
+                "${mViewPager.currentItem + 1} ${getString(R.string.threads_from)} $collectionSize"
             setTitle(title)
         }.runOnUiThread()
     }

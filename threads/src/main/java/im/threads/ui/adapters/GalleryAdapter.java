@@ -1,8 +1,8 @@
 package im.threads.ui.adapters;
 
 import android.content.Context;
+import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -11,9 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import im.threads.R;
-import im.threads.ui.holders.GalleryItemHolder;
 import im.threads.business.models.MediaPhoto;
 import im.threads.ui.config.Config;
+import im.threads.ui.holders.GalleryItemHolder;
+import im.threads.ui.utils.ToastUtils;
 
 public final class GalleryAdapter extends RecyclerView.Adapter<GalleryItemHolder> {
     private final List<MediaPhoto> list;
@@ -43,8 +44,7 @@ public final class GalleryAdapter extends RecyclerView.Adapter<GalleryItemHolder
                     } else {
                         Context context = config.context;
                         if (chosenList.size() >= config.getChatStyle().getMaxGalleryImagesCount(context)) {
-                            Toast.makeText(context, context.getString(R.string.threads_achieve_images_count_limit_message), Toast.LENGTH_SHORT)
-                                    .show();
+                            showToast(context, v, context.getString(R.string.threads_achieve_images_count_limit_message));
                         } else {
                             photo.setChecked(true);
                         }
@@ -67,6 +67,14 @@ public final class GalleryAdapter extends RecyclerView.Adapter<GalleryItemHolder
     @Override
     public int getItemCount() {
         return list.size();
+    }
+
+    public void showToast(Context context, View view, final String message) {
+        if (Config.getInstance().getChatStyle().isToastStylable())
+            ToastUtils.showSnackbar(context, view, message);
+        else {
+            ToastUtils.showToast(context, message);
+        }
     }
 
     public interface OnGalleryItemClick {
