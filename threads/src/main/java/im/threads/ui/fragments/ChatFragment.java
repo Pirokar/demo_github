@@ -2,7 +2,6 @@ package im.threads.ui.fragments;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.BroadcastReceiver;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -26,7 +25,6 @@ import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
-import android.util.TypedValue;
 import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -38,8 +36,6 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -59,7 +55,6 @@ import com.devlomi.record_view.OnRecordListener;
 import com.devlomi.record_view.RecordButton;
 import com.devlomi.record_view.RecordView;
 import com.google.android.material.slider.Slider;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -186,6 +181,8 @@ public final class ChatFragment extends BaseFragment implements
     @NonNull
     private final MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
     private final ChatCenterAudioConverter audioConverter = new ChatCenterAudioConverter();
+    private final ChatUpdateProcessorJavaGetter chatUpdateProcessor
+            = new ChatUpdateProcessorJavaGetter();
     @Nullable
     private FileDescriptionMediaPlayer fdMediaPlayer;
     private ChatController mChatController;
@@ -210,12 +207,9 @@ public final class ChatFragment extends BaseFragment implements
     @Nullable
     private AudioRecorder recorder = null;
     private boolean isNewMessageUpdateTimeoutOn = false;
-
     private QuickReplyItem quickReplyItem = null;
     private int previousChatItemsCount = 0;
     private Config config = Config.getInstance();
-    private final ChatUpdateProcessorJavaGetter chatUpdateProcessor
-            = new ChatUpdateProcessorJavaGetter();
 
     public static ChatFragment newInstance(@OpenWay int from) {
         Bundle arguments = new Bundle();
@@ -487,7 +481,8 @@ public final class ChatFragment extends BaseFragment implements
                 subscribe(
                         releaseRecorder()
                                 .subscribeOn(Schedulers.io())
-                                .subscribe(() -> {},
+                                .subscribe(() -> {
+                                        },
                                         error -> LoggerEdna.error("initRecording -> onLessThanSecond ", error))
                 );
                 showToast(getString(R.string.threads_hold_button_to_record_audio));
@@ -509,7 +504,8 @@ public final class ChatFragment extends BaseFragment implements
                                     }
                                 })
                                 .subscribeOn(Schedulers.io())
-                                .subscribe(() -> {},
+                                .subscribe(() -> {
+                                        },
                                         error -> LoggerEdna.error("initRecording -> startRecorder ", error))
                 );
             }
@@ -1541,7 +1537,7 @@ public final class ChatFragment extends BaseFragment implements
         if (layoutManager == null) {
             return;
         }
-        if(item == null) {
+        if (item == null) {
             return;
         }
 
