@@ -25,6 +25,7 @@ import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
+import android.view.Gravity;
 import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -89,6 +90,7 @@ import im.threads.business.models.ConsultInfo;
 import im.threads.business.models.ConsultPhrase;
 import im.threads.business.models.ConsultRole;
 import im.threads.business.models.ConsultTyping;
+import im.threads.business.models.DateRow;
 import im.threads.business.models.FileDescription;
 import im.threads.business.models.InputFieldEnableModel;
 import im.threads.business.models.MessageState;
@@ -125,7 +127,7 @@ import im.threads.ui.permissions.PermissionsActivity;
 import im.threads.ui.styles.permissions.PermissionDescriptionType;
 import im.threads.ui.utils.ColorsHelper;
 import im.threads.ui.utils.FileHelper;
-import im.threads.ui.utils.Keyboard;
+import im.threads.ui.utils.KeyboardKt;
 import im.threads.ui.utils.ThreadRunnerKt;
 import im.threads.ui.views.VoiceTimeLabelFormatter;
 import im.threads.ui.views.VoiceTimeLabelFormatterKt;
@@ -605,6 +607,7 @@ public final class ChatFragment extends BaseFragment implements
         );
     }
 
+
     private void bindViews() {
         binding.swipeRefresh.setSwipeListener(() -> {
         });
@@ -679,6 +682,7 @@ public final class ChatFragment extends BaseFragment implements
                 LinearLayoutManager layoutManager = (LinearLayoutManager) binding.recycler.getLayoutManager();
                 if (layoutManager != null) {
                     int lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition();
+                    int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
                     int itemCount = chatAdapter.getItemCount();
                     if (itemCount - 1 - lastVisibleItemPosition > INVISIBLE_MSGS_COUNT) {
                         if (binding.scrollDownButtonContainer.getVisibility() != View.VISIBLE) {
@@ -688,6 +692,9 @@ public final class ChatFragment extends BaseFragment implements
                     } else {
                         binding.scrollDownButtonContainer.setVisibility(View.GONE);
                         recyclerView.post(() -> setMessagesAsRead());
+                    }
+                    if(firstVisibleItemPosition == 0) {
+                        mChatController.loadHistory(false);
                     }
                 }
             }
@@ -1633,6 +1640,21 @@ public final class ChatFragment extends BaseFragment implements
         }
     }
 
+    public void addHistoryChatItems(final List<ChatItem> list) {
+        if (list.size() == 0) {
+            return;
+        }
+        LinearLayoutManager layoutManager = (LinearLayoutManager) binding.recycler.getLayoutManager();
+        int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
+        if (chatAdapter.getList().get(firstVisibleItemPosition) instanceof DateRow) {
+            firstVisibleItemPosition += 1;
+        }
+        long timeStamp = chatAdapter.getList().get(firstVisibleItemPosition).getTimeStamp();
+        chatAdapter.addItems(list);
+        int newPosition = chatAdapter.getPositionByTimeStamp(timeStamp);
+        scrollToPosition(newPosition, false);
+    }
+
     public void addChatItems(final List<ChatItem> list) {
         if (list.size() == 0) {
             return;
@@ -1934,7 +1956,7 @@ public final class ChatFragment extends BaseFragment implements
         binding.inputEditView.setEnabled(enableModel.isEnabledInputField());
         binding.addAttachment.setEnabled(enableModel.isEnabledInputField());
         if (!enableModel.isEnabledInputField()) {
-            Keyboard.hide(requireContext(), binding.inputEditView, 100);
+            KeyboardKt.hideKeyboard(binding.inputEditView, 100);
         }
     }
 
@@ -2112,6 +2134,7 @@ public final class ChatFragment extends BaseFragment implements
         if (getResources().getBoolean(style.fixedChatTitle)) {
             setTitleStateDefault();
         }
+        initToolbarTextPosition();
     }
 
     private void initToolbarShadow() {
@@ -2120,6 +2143,14 @@ public final class ChatFragment extends BaseFragment implements
         if (!isShadowVisible) {
             binding.toolbar.setElevation(0);
         }
+    }
+
+    private void initToolbarTextPosition() {
+        boolean isToolbarTextCentered = Config.getInstance().getChatStyle().isToolbarTextCentered;
+        int gravity = isToolbarTextCentered ? Gravity.CENTER : Gravity.CENTER_VERTICAL;
+
+        binding.consultName.setGravity(gravity);
+        binding.subtitle.setGravity(gravity);
     }
 
     private void showOverflowMenu() {
@@ -2159,7 +2190,7 @@ public final class ChatFragment extends BaseFragment implements
                 && binding.searchLo.getVisibility() == View.VISIBLE) {
             unChooseItem();
             binding.search.requestFocus();
-            Keyboard.show(activity, binding.search, 100);
+            KeyboardKt.showKeyboard(binding.search, 100);
             return false;
         }
         if (binding.copyControls.getVisibility() == View.VISIBLE) {
@@ -2190,7 +2221,7 @@ public final class ChatFragment extends BaseFragment implements
         setMenuVisibility(true);
         isInMessageSearchMode = false;
         binding.search.setText("");
-        Keyboard.hide(activity, binding.search, 100);
+        KeyboardKt.hideKeyboard(binding.search, 100);
         binding.searchMore.setVisibility(View.GONE);
         binding.swipeRefresh.setEnabled(true);
         int state = mChatController.getStateOfConsult();
@@ -2229,7 +2260,7 @@ public final class ChatFragment extends BaseFragment implements
         binding.search.requestFocus();
         hideOverflowMenu();
         setMenuVisibility(false);
-        Keyboard.show(activity, binding.search, 100);
+        KeyboardKt.showKeyboard(binding.search, 100);
         binding.swipeRefresh.setEnabled(false);
         binding.searchMore.setVisibility(View.GONE);
     }
@@ -2247,8 +2278,7 @@ public final class ChatFragment extends BaseFragment implements
         ColorsHelper.setTint(activity, binding.popupMenuButton, toolbarInverseIconTint);
         ColorsHelper.setTint(activity, binding.chatBackButton, toolbarInverseIconTint);
 
-        ColorsHelper.setBackgroundColor(activity, binding.toolbar,
-                style.chatToolbarContextMenuColorResId);
+        ColorsHelper.setBackgroundColor(activity, binding.toolbar, style.chatToolbarColorResId);
         binding.toolbar.setElevation(0);
 
         binding.copyControls.setVisibility(View.VISIBLE);

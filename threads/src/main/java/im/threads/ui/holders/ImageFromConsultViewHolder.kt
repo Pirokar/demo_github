@@ -1,11 +1,9 @@
 package im.threads.ui.holders
 
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.OnLongClickListener
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
@@ -25,6 +23,7 @@ import im.threads.business.models.FileDescription
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.ogParser.OpenGraphParser
 import im.threads.business.utils.FileUtils
+import im.threads.ui.utils.gone
 import im.threads.ui.utils.invisible
 import im.threads.ui.utils.visible
 import io.reactivex.subjects.PublishSubject
@@ -37,49 +36,28 @@ class ImageFromConsultViewHolder(
     private val maskedTransformation: ImageModifications.MaskedModification?,
     highlightingStream: PublishSubject<ChatItem>,
     openGraphParser: OpenGraphParser
-) : BaseHolder(
+) : BaseImageHolder(
     LayoutInflater.from(parent.context).inflate(
         R.layout.item_image_from_consult,
         parent,
         false
     ),
     highlightingStream,
-    openGraphParser
+    openGraphParser,
+    true
 ) {
 
     private val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
 
-    private val timeStampTextView = itemView.findViewById<TextView>(R.id.timeStamp).apply {
-        setTextColor(getColorInt(style.incomingImageTimeColor))
-        if (style.incomingMessageTimeTextSize > 0) {
-            setTextSize(
-                TypedValue.COMPLEX_UNIT_PX,
-                itemView.context.resources.getDimension(style.incomingMessageTimeTextSize)
-            )
-        }
-        background.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
-            getColorInt(style.incomingImageTimeBackgroundColor),
-            BlendModeCompat.SRC_ATOP
-        )
-    }
-
-    private val image: ImageView =
-        itemView.findViewById<ImageView>(R.id.image).also { applyParams(it) }
     private val errorTextView: TextView = itemView.findViewById(R.id.errorText)
     private val loaderLayout: LinearLayout = itemView.findViewById(R.id.loaderLayout)
-    private val commonLayout: RelativeLayout = itemView.findViewById(R.id.commonLayout)
     private val fileNameTextView: TextView = itemView.findViewById(R.id.fileName)
     private val loader: ImageView = itemView.findViewById(R.id.loader)
     private val loaderImage: ImageView = itemView.findViewById(R.id.loaderImage)
-    private val rootLayout: LinearLayout = itemView.findViewById(R.id.rootLayout)
 
     private val consultAvatar = itemView.findViewById<ImageView>(R.id.consultAvatar).apply {
-        layoutParams.height =
-            itemView.context.resources.getDimension(style.operatorAvatarSize)
-                .toInt()
-        layoutParams.width =
-            itemView.context.resources.getDimension(style.operatorAvatarSize)
-                .toInt()
+        layoutParams.height = itemView.context.resources.getDimension(style.operatorAvatarSize).toInt()
+        layoutParams.width = itemView.context.resources.getDimension(style.operatorAvatarSize).toInt()
     }
 
     fun onBind(
@@ -110,6 +88,7 @@ class ImageFromConsultViewHolder(
                 }
                 else -> {
                     showCommonLayout(it)
+                    moveTimeToImageLayout()
                 }
             }
         } ?: run {
@@ -137,7 +116,7 @@ class ImageFromConsultViewHolder(
             res.getDimensionPixelSize(style.bubbleIncomingPaddingRight),
             res.getDimensionPixelSize(style.bubbleIncomingPaddingBottom)
         )
-        val layoutParams = loaderLayout.layoutParams as FrameLayout.LayoutParams
+        val layoutParams = loaderLayout.layoutParams as RelativeLayout.LayoutParams
         layoutParams.setMargins(
             res.getDimensionPixelSize(style.bubbleIncomingMarginLeft),
             res.getDimensionPixelSize(style.bubbleIncomingMarginTop),
@@ -153,18 +132,6 @@ class ImageFromConsultViewHolder(
             )
     }
 
-    private fun applyParams(imageView: ImageView) {
-        val bubbleLeftMarginDp = itemView.context.resources.getDimension(R.dimen.margin_quarter)
-        val bubbleLeftMarginPx = TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP,
-            bubbleLeftMarginDp,
-            itemView.resources.displayMetrics
-        ).toInt()
-        val lp = imageView.layoutParams as RelativeLayout.LayoutParams
-        lp.setMargins(bubbleLeftMarginPx, lp.topMargin, lp.rightMargin, lp.bottomMargin)
-        imageView.layoutParams = lp
-    }
-
     private fun showLoadImageAnimation() {
         loaderImage.isVisible = true
         initAnimation(loaderImage, true)
@@ -172,14 +139,14 @@ class ImageFromConsultViewHolder(
     }
 
     private fun stopLoadImageAnimation() {
-        loaderImage.isVisible = false
+        loaderImage.gone()
         rotateAnim.cancel()
     }
 
     private fun showLoaderLayout(fileDescription: FileDescription) {
-        loaderLayout.isVisible = true
-        commonLayout.isVisible = false
-        errorTextView.isVisible = false
+        loaderLayout.visible()
+        imageLayout.invisible()
+        errorTextView.gone()
         fileNameTextView.text = fileDescription.incomingName
         initAnimation(loader, true)
     }
@@ -187,7 +154,7 @@ class ImageFromConsultViewHolder(
     private fun showErrorLayout(fileDescription: FileDescription) {
         loaderLayout.isVisible = true
         errorTextView.isVisible = true
-        commonLayout.isVisible = false
+        imageLayout.invisible()
         loader.setImageResource(getErrorImageResByErrorCode(fileDescription.errorCode))
         fileNameTextView.text = fileDescription.incomingName
         val errorString = getString(getErrorStringResByErrorCode(fileDescription.errorCode))
@@ -196,9 +163,9 @@ class ImageFromConsultViewHolder(
     }
 
     private fun showCommonLayout(fileDescription: FileDescription) {
-        commonLayout.isVisible = true
-        loaderLayout.isVisible = false
-        errorTextView.isVisible = false
+        imageLayout.visible()
+        loaderLayout.gone()
+        errorTextView.gone()
         rotateAnim.cancel()
         val fileUri = if (fileDescription.fileUri?.toString()?.isNotBlank() == true) {
             fileDescription.fileUri.toString()
@@ -208,13 +175,13 @@ class ImageFromConsultViewHolder(
         val isStateReady = fileDescription.state == AttachmentStateEnum.READY
         if (isStateReady && fileUri != null && !fileDescription.isDownloadError) {
             showLoadImageAnimation()
-            image.loadImage(
-                fileUri,
-                listOf(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP),
-                style.imagePlaceholder,
-                autoRotateWithExif = true,
-                modifications = listOfNotNull(maskedTransformation),
-                callback = object : ImageLoader.ImageLoaderCallback {
+            ImageLoader.get()
+                .load(fileUri)
+                .autoRotateWithExif(true)
+                .errorDrawableResourceId(style.imagePlaceholder)
+                .scales(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP)
+                .modifications(maskedTransformation)
+                .callback(object : ImageLoader.ImageLoaderCallback {
                     override fun onImageLoaded() {
                         stopLoadImageAnimation()
                     }
@@ -222,8 +189,8 @@ class ImageFromConsultViewHolder(
                     override fun onImageLoadError() {
                         stopLoadImageAnimation()
                     }
-                }
-            )
+                })
+                .into(image)
         } else {
             stopLoadImageAnimation()
             image.setImageResource(style.imagePlaceholder)

@@ -6,87 +6,111 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <FrameLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <LinearLayout
-            android:id="@+id/loaderLayout"
-            style="@style/userBubble"
+        <RelativeLayout
+            android:id="@+id/loaderLayoutRoot"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:orientation="horizontal"
-            android:paddingStart="0dp"
-            android:paddingEnd="17dp">
+            android:layout_height="wrap_content">
 
-            <ImageView
-                android:id="@+id/loader"
-                android:layout_width="@dimen/threads_operator_photo_size"
-                android:layout_height="@dimen/threads_operator_photo_size"
-                android:layout_gravity="center_vertical"
-                android:layout_marginStart="@dimen/margin_material"
-                android:layout_marginTop="@dimen/margin_material"
-                android:layout_marginEnd="@dimen/margin_three_fourth"
-                android:layout_marginBottom="@dimen/margin_material"/>
+            <LinearLayout
+                android:id="@+id/loaderLayout"
+                style="@style/userBubble"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:orientation="horizontal"
+                android:paddingStart="0dp"
+                android:paddingEnd="17dp">
 
-            <View
-                android:id="@+id/delimiter"
-                android:layout_width="1dp"
-                android:layout_height="match_parent"
-                android:layout_marginTop="@dimen/margin_quarter"
-                android:background="@color/threads_outgoing_message_text" />
+                <ImageView
+                    android:id="@+id/loader"
+                    android:layout_width="@dimen/threads_operator_photo_size"
+                    android:layout_height="@dimen/threads_operator_photo_size"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="@dimen/margin_material"
+                    android:layout_marginTop="@dimen/margin_material"
+                    android:layout_marginEnd="@dimen/margin_three_fourth"
+                    android:layout_marginBottom="@dimen/margin_material"/>
 
-            <im.threads.ui.widget.textView.BubbleMessageTextView
-                android:id="@+id/fileName"
+                <View
+                    android:id="@+id/delimiter"
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="@dimen/margin_quarter"
+                    android:background="@color/threads_outgoing_message_text" />
+
+                <im.threads.ui.widget.textView.BubbleMessageTextView
+                    android:id="@+id/fileName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_half"
+                    android:layout_marginTop="@dimen/margin_half"
+                    android:layout_marginBottom="@dimen/margin_big"
+                    android:ellipsize="end"
+                    android:maxLines="5"
+                    android:textColor="@color/threads_outgoing_message_text"
+                    tools:text="ddddddddddddddd.pdf" />
+
+            </LinearLayout>
+
+            <im.threads.ui.widget.textView.BubbleTimeTextView
+                android:id="@+id/timeStampLoading"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/margin_half"
-                android:layout_marginTop="@dimen/margin_half"
-                android:layout_marginBottom="@dimen/margin_big"
-                android:ellipsize="end"
-                android:maxLines="5"
-                android:textColor="@color/threads_outgoing_message_text"
-                tools:text="ddddddddddddddd.pdf" />
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginEnd="24dp"
+                android:drawablePadding="@dimen/margin_half"
+                android:paddingLeft="2dp"
+                android:paddingRight="2dp"
+                android:paddingBottom="12dp"
+                android:textColor="@color/threads_outgoing_message_time"
+                tools:text="10:19"
+                tools:ignore="RelativeOverlap" />
 
-        </LinearLayout>
+        </RelativeLayout>
 
         <FrameLayout
-            android:id="@+id/commonLayout"
-            android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:layout_marginStart="@dimen/user_margin_left"
+            android:id="@+id/imageLayout"
+            android:layout_width="@dimen/message_image_size"
+            android:layout_height="@dimen/message_image_size"
             android:layout_marginTop="@dimen/margin_quarter"
-            android:layout_marginEnd="@dimen/user_margin_right"
             android:layout_marginBottom="@dimen/margin_quarter"
-            android:minWidth="240dp"
-            android:minHeight="240dp"
+            android:layout_alignParentEnd="true"
             android:visibility="gone">
+
+            <FrameLayout
+                android:id="@+id/imageBackground"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
 
             <ImageView
                 android:id="@+id/image"
+                android:adjustViewBounds="true"
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:minWidth="240dp"
-                android:minHeight="240dp" />
+                android:layout_height="match_parent" />
+
+            <im.threads.ui.widget.textView.BubbleTimeTextView
+                android:id="@+id/timeStamp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|bottom"
+                android:layout_marginEnd="@dimen/timeLabelMarginRight"
+                android:layout_marginBottom="@dimen/timeLabelMarginBottom"
+                android:background="@drawable/timestamp_outgoing_underlayer"
+                android:drawablePadding="@dimen/margin_half"
+                android:paddingLeft="2dp"
+                android:paddingRight="2dp"
+                android:textColor="@color/threads_outgoing_message_time"
+                tools:text="10:19"
+                tools:ignore="RelativeOverlap" />
 
         </FrameLayout>
 
-        <im.threads.ui.widget.textView.BubbleTimeTextView
-            android:id="@+id/timeStamp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|bottom"
-            android:layout_marginEnd="@dimen/consultant_margin_right"
-            android:layout_marginBottom="@dimen/margin_half"
-            android:background="@drawable/timestamp_outgoing_underlayer"
-            android:drawablePadding="@dimen/margin_half"
-            android:paddingLeft="2dp"
-            android:paddingRight="2dp"
-            android:textColor="@color/threads_outgoing_message_time"
-            tools:text="10:19" />
-
-    </FrameLayout>
+    </RelativeLayout>
 
     <im.threads.ui.widget.textView.BubbleTimeTextView
         android:id="@+id/errorText"

@@ -24,6 +24,7 @@ class LinkifyLinksHighlighter : LinksHighlighter {
             highlightEmailAndPhonesLinks(textView)
         }
         Linkify.addLinks(textView, UrlUtils.WEB_URL, scheme)
+        Linkify.addLinks(textView, UrlUtils.DEEPLINK_URL, scheme)
 
         if (!isUnderlined) {
             stripUnderlines(textView)

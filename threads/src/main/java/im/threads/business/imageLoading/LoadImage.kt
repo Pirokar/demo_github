@@ -8,7 +8,7 @@ internal fun ImageView.loadImage(
     data: Any? = null,
     scales: List<ImageView.ScaleType>? = null,
     errorDrawableResId: Int? = null,
-    modifications: List<ImageModifications>? = null,
+    modifications: List<ImageModifications?>? = null,
     callback: ImageLoader.ImageLoaderCallback? = null,
     autoRotateWithExif: Boolean = false,
     isExternalImage: Boolean = false

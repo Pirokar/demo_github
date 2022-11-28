@@ -24,11 +24,28 @@
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/toolbar_height"
             android:background="@color/threads_chat_toolbar"
-            app:navigationIcon="@drawable/ic_arrow_back_white_24dp"
-            app:title="@string/threads_photos"
-            app:titleTextColor="@android:color/white">
+            app:contentInsetStart="0dp">
+
+            <ImageButton
+                android:id="@+id/back_button"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:background="?android:attr/selectableItemBackground"
+                app:srcCompat="@drawable/threads_ic_arrow_back_24dp" />
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="@dimen/toolbar_height"
+                android:text="@string/threads_photos"
+                android:gravity="center_vertical"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/text_big"/>
 
             <LinearLayout
                 android:id="@+id/search_layout"

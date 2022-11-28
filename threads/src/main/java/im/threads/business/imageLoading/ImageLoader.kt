@@ -2,6 +2,7 @@ package im.threads.business.imageLoading
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.util.Size
 import android.widget.ImageView
 import java.io.File
 
@@ -82,9 +83,10 @@ class ImageLoader private constructor() {
      * Указывает модификации (трансформации), которые будут применены последовательно к изображению
      * @param modifications список модификаций
      */
-    fun modifications(modifications: List<ImageModifications>?): ImageLoader {
-        modifications?.let {
-            config.modifications = it.toTypedArray()
+    fun modifications(modifications: List<ImageModifications?>?): ImageLoader {
+        if (modifications != null) {
+            val filteredModifications = modifications.filterNotNull().toTypedArray()
+            config.modifications = if (filteredModifications.isEmpty()) null else filteredModifications
         }
         return this
     }
@@ -123,7 +125,17 @@ class ImageLoader private constructor() {
      * @param targetHeight высота в пикселях
      */
     fun resize(targetWidth: Int, targetHeight: Int): ImageLoader {
-        config.resizePair = Pair(targetWidth, targetHeight)
+        config.resizePair = Size(targetWidth, targetHeight)
+        return this
+    }
+
+    /**
+     * Меняет размеры изображения в соответствии с переданными параметрами
+     * @param targetWidth ширина - ссылка на dimen ресурс
+     * @param targetHeight высота - ссылка на dimen ресурс
+     */
+    fun resizeDimen(targetWidth: Int, targetHeight: Int): ImageLoader {
+        config.resizePair = Size(targetWidth, targetHeight)
         return this
     }
 
@@ -179,7 +191,8 @@ class ImageLoader private constructor() {
         var modifications: Array<out ImageModifications>? = null
         var imageView: ImageView? = null
         var callback: ImageLoaderCallback? = null
-        var resizePair: Pair<Int, Int>? = null
+        var resizePair: Size? = null
+        var resizeDimen: Size? = null
         var isOnlyScaleDown = false
         var isAutoRotateWithExif = false
         var isImageUnderSsl = true

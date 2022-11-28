@@ -1,12 +1,10 @@
 package im.threads.business.database.table;
 
-import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
@@ -92,43 +90,6 @@ public class FileDescriptionsTable extends Table {
         }
     }
 
-    public void putFileDescription(SQLiteOpenHelper sqlHelper, FileDescription fileDescription, String fdMessageUuid, boolean isFromQuote) {
-        ContentValues cv = new ContentValues();
-        cv.put(COLUMN_FD_MESSAGE_UUID_EXT, fdMessageUuid);
-        cv.put(COLUMN_FD_FROM, fileDescription.getFrom());
-        if (fileDescription.getFileUri() != null) {
-            cv.put(COLUMN_FD_PATH, fileDescription.getFileUri().toString());
-        }
-        cv.put(COLUMN_FD_URL, fileDescription.getDownloadPath());
-        cv.put(COLUMN_FD_TIMESTAMP, fileDescription.getTimeStamp());
-        cv.put(COLUMN_FD_SIZE, fileDescription.getSize());
-        cv.put(COLUMN_FD_IS_FROM_QUOTE, isFromQuote);
-        cv.put(COLUMN_FD_FILENAME, fileDescription.getIncomingName());
-        cv.put(COLUMN_FD_MIME_TYPE, fileDescription.getMimeType());
-        cv.put(COLUMN_FD_ATTACHMENT_STATE, fileDescription.getState().getState());
-        cv.put(COLUMN_FD_ERROR_CODE, fileDescription.getErrorCode().getState());
-        cv.put(COLUMN_FD_ERROR_MESSAGE, fileDescription.getErrorMessage());
-        String sql = "select " + COLUMN_FD_MESSAGE_UUID_EXT + " and " + COLUMN_FD_PATH +
-                " from " + TABLE_FILE_DESCRIPTION
-                + " where " + COLUMN_FD_MESSAGE_UUID_EXT + " = ?";
-        String[] selectionArgs = new String[]{fdMessageUuid};
-        try (Cursor c = sqlHelper.getWritableDatabase().rawQuery(sql, selectionArgs)) {
-            boolean existsInDb = c.getCount() > 0;
-            if (existsInDb) {
-                c.moveToFirst();
-                String localPath = cGetString(c, COLUMN_FD_PATH);
-                if (TextUtils.isEmpty(localPath)) {
-                    cv.put(COLUMN_FD_DOWNLOAD_PROGRESS, fileDescription.getDownloadProgress());
-                }
-                sqlHelper.getWritableDatabase().update(TABLE_FILE_DESCRIPTION, cv,
-                        COLUMN_FD_MESSAGE_UUID_EXT + " = ? ", new String[]{fdMessageUuid});
-            } else {
-                cv.put(COLUMN_FD_DOWNLOAD_PROGRESS, fileDescription.getDownloadProgress());
-                sqlHelper.getWritableDatabase().insert(TABLE_FILE_DESCRIPTION, null, cv);
-            }
-        }
-    }
-
     public List<FileDescription> getAllFileDescriptions(SQLiteOpenHelper sqlHelper) {
         String query = String.format(Locale.US, "select * from %s order by %s desc", TABLE_FILE_DESCRIPTION, COLUMN_FD_TIMESTAMP);
         List<FileDescription> list = new ArrayList<>();
@@ -155,25 +116,4 @@ public class FileDescriptionsTable extends Table {
             return list;
         }
     }
-
-    public void updateFileDescription(SQLiteOpenHelper sqlHelper, @NonNull FileDescription fileDescription) {
-        ContentValues cv = new ContentValues();
-        cv.put(COLUMN_FD_FROM, fileDescription.getFrom());
-        cv.put(COLUMN_FD_PATH, fileDescription.getFileUri() != null ? fileDescription.getFileUri().toString() : null);
-        cv.put(COLUMN_FD_URL, fileDescription.getDownloadPath());
-        cv.put(COLUMN_FD_TIMESTAMP, fileDescription.getTimeStamp());
-        cv.put(COLUMN_FD_SIZE, fileDescription.getSize());
-        cv.put(COLUMN_FD_DOWNLOAD_PROGRESS, fileDescription.getDownloadProgress());
-        cv.put(COLUMN_FD_FILENAME, fileDescription.getIncomingName());
-        cv.put(COLUMN_FD_MIME_TYPE, fileDescription.getMimeType());
-        cv.put(COLUMN_FD_ATTACHMENT_STATE, fileDescription.getState().getState());
-        cv.put(COLUMN_FD_ERROR_CODE, fileDescription.getErrorCode().getState());
-        cv.put(COLUMN_FD_ERROR_MESSAGE, fileDescription.getErrorMessage());
-
-        sqlHelper.getWritableDatabase().update(TABLE_FILE_DESCRIPTION, cv,
-                "" + COLUMN_FD_FILENAME
-                        + " like ? and " + COLUMN_FD_URL + " like ?",
-                new String[]{fileDescription.getIncomingName(), fileDescription.getDownloadPath()});
-    }
-
 }
