@@ -63,6 +63,7 @@ public final class ChatStyle implements Serializable {
     public int searchEnabled = R.bool.threads_chat_search_enabled;
 
     public boolean showBackButton = false;
+    public boolean isToolbarTextCentered = false;
     public boolean chatSubtitleShowOrgUnit = false;
 
     @ColorRes

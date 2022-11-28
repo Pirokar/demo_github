@@ -11,6 +11,7 @@ import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
 import android.util.TypedValue
+import android.view.Gravity
 import android.view.KeyEvent
 import android.view.View
 import android.view.WindowManager
@@ -31,9 +32,13 @@ import im.threads.ui.activities.BaseActivity
 import im.threads.ui.adapters.filesAndMedia.FilesAndMediaAdapter
 import im.threads.ui.adapters.filesAndMedia.FilesAndMediaAdapter.OnFileClick
 import im.threads.ui.config.Config
-import im.threads.ui.utils.Keyboard
+import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.utils.ToastUtils
+import im.threads.ui.utils.gone
+import im.threads.ui.utils.hideKeyboard
 import im.threads.ui.utils.setColorFilter
+import im.threads.ui.utils.showKeyboard
+import im.threads.ui.utils.visible
 
 /**
  * Показывает список файлов, которые присутствовали в диалоге с оператором с обоих сторон
@@ -68,10 +73,7 @@ internal class FilesActivity : BaseActivity(), OnFileClick {
 
     override fun onBackPressed() {
         if (binding.searchEditText.visibility == View.VISIBLE) {
-            binding.searchEditText.setText("")
-            binding.searchEditText.visibility = View.GONE
-            setTitle(getString(R.string.threads_files_and_media))
-            filesAndMediaAdapter?.undoClear()
+            closeSearch()
         } else {
             super.onBackPressed()
         }
@@ -96,14 +98,6 @@ internal class FilesActivity : BaseActivity(), OnFileClick {
                 this@FilesActivity
             )
             filesRecycler.adapter = filesAndMediaAdapter
-        }
-    }
-
-    private fun showToast(message: String) {
-        if (Config.getInstance().getChatStyle().isToastStylable) {
-            ToastUtils.showSnackbar(this, binding.activityRoot, message)
-        } else {
-            ToastUtils.showToast(this, message!!)
         }
     }
 
@@ -132,25 +126,49 @@ internal class FilesActivity : BaseActivity(), OnFileClick {
             val noElevation = 0f
             toolbar.elevation = noElevation
         }
-        setTitle(getString(R.string.threads_files_and_media))
+        ColorsHelper.setTint(this@FilesActivity, backButton, config.getChatStyle().chatToolbarTextColorResId)
+        title.setTextColor(ContextCompat.getColor(this@FilesActivity, config.getChatStyle().chatToolbarTextColorResId))
+        initToolbarTextPosition()
+        setClickForBackBtn()
+    }
+
+    private fun initToolbarTextPosition() = with(binding) {
+        val isToolbarTextCentered = Config.getInstance().getChatStyle().isToolbarTextCentered
+        val gravity = if (isToolbarTextCentered) Gravity.CENTER else Gravity.CENTER_VERTICAL
+        title.gravity = gravity
+    }
+
+    private fun setClickForBackBtn() {
+        binding.backButton.setOnClickListener {
+            onBackPressed()
+        }
     }
 
     private fun setOnSearchClickAction() = with(binding) {
         searchButton.setOnClickListener {
             if (searchEditText.visibility == View.VISIBLE) {
-                searchEditText.setText("")
-                searchEditText.visibility = View.GONE
-                setTitle(getString(R.string.threads_files_and_media))
-                filesAndMediaAdapter?.undoClear()
+                closeSearch()
             } else {
-                searchEditText.visibility = View.VISIBLE
-                searchEditText.requestFocus()
-                setTitle("")
-                filesAndMediaAdapter?.backupAndClear()
-                searchEditText.setText("")
-                Keyboard.show(baseContext, searchEditText, 100)
+                showSearch()
             }
         }
+    }
+
+    private fun closeSearch() = with(binding) {
+        searchEditText.setText("")
+        searchEditText.hideKeyboard()
+        searchEditText.gone()
+        title.visible()
+        filesAndMediaAdapter?.undoClear()
+    }
+
+    private fun showSearch() = with(binding) {
+        searchEditText.visible()
+        searchEditText.requestFocus()
+        title.gone()
+        filesAndMediaAdapter?.backupAndClear()
+        searchEditText.setText("")
+        searchEditText.showKeyboard(100)
     }
 
     private fun setOnSearchTextChanged() = with(binding) {
@@ -252,6 +270,14 @@ internal class FilesActivity : BaseActivity(), OnFileClick {
             startActivity(intent)
         } catch (e: ActivityNotFoundException) {
             showToast(getString(R.string.threads_file_not_supported))
+        }
+    }
+
+    private fun showToast(message: String) {
+        if (Config.getInstance().getChatStyle().isToastStylable) {
+            ToastUtils.showSnackbar(this, binding.activityRoot, message)
+        } else {
+            ToastUtils.showToast(this, message)
         }
     }
 

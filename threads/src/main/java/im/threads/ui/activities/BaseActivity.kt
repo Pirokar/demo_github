@@ -12,6 +12,7 @@ import android.text.style.ForegroundColorSpan
 import android.text.style.MetricAffectingSpan
 import android.text.style.TypefaceSpan
 import android.view.MotionEvent
+import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.appcompat.app.AppCompatActivity
@@ -22,6 +23,7 @@ import im.threads.R
 import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.useractivity.UserActivityTimeProvider.getLastUserActivityTimeCounter
 import im.threads.ui.config.Config
+import im.threads.ui.utils.ScreenSizeGetter
 import im.threads.ui.utils.TypefaceSpanEdna
 import im.threads.ui.utils.typefaceSpanCompatV28
 
@@ -32,6 +34,8 @@ abstract class BaseActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         super.onCreate(savedInstanceState)
+
+        calculateSizeOfScreen()
     }
 
     override fun onStart() {
@@ -70,7 +74,7 @@ abstract class BaseActivity : AppCompatActivity() {
         }
     }
 
-    protected fun setTitle(text: String) {
+    protected fun setTitle(text: String, titleTextView: TextView? = null) {
         val style = Config.getInstance().getChatStyle()
         val textColor = ContextCompat.getColor(this, style.chatToolbarTextColorResId)
         val fontSize = resources.getDimensionPixelSize(R.dimen.text_big)
@@ -83,7 +87,11 @@ abstract class BaseActivity : AppCompatActivity() {
         supportActionBar?.apply {
             val titleText = SpannableString(text)
             applyToolbarTextStyle(textColor, fontSize, typeface, titleText)
-            title = titleText
+            if (titleTextView != null) {
+                titleTextView.text = titleText
+            } else {
+                title = titleText
+            }
         }
     }
 
@@ -131,5 +139,10 @@ abstract class BaseActivity : AppCompatActivity() {
         } else {
             TypefaceSpanEdna(this)
         }
+    }
+
+    private fun calculateSizeOfScreen() {
+        val screenSizeGetter = ScreenSizeGetter()
+        Config.getInstance().screenSize = screenSizeGetter.getScreenSize(this)
     }
 }
