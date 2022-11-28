@@ -312,12 +312,13 @@ class UserPhraseViewHolder(
         phraseTextView.bindTimestampView(timeStampTextView)
         bindOGData(phrase)
         val extractedLink = UrlUtils.extractLink(phrase)
+        val deeplink = UrlUtils.extractDeepLink(phrase)
         val urlLink = if (extractedLink == null || extractedLink.isEmail) {
             null
         } else {
             extractedLink.link
         }
-        highlightClientText(phraseTextView, phrase, urlLink)
+        highlightClientText(phraseTextView, phrase, deeplink ?: urlLink)
     }
 
     private fun showFiles(
