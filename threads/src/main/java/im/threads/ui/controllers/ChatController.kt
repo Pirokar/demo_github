@@ -513,18 +513,85 @@ class ChatController private constructor() {
         return setLastAvatars(serverItems)
     }
 
+    fun loadHistory(fromBeginning: Boolean) {
+        if (isAllMessagesDownloaded) {
+            return
+        }
+        synchronized(this) {
+            if (!isDownloadingMessages) {
+                info(
+                    ThreadsApi.REST_TAG,
+                    "Loading history from ${ChatController::class.java.simpleName}"
+                )
+                isDownloadingMessages = true
+                subscribe(
+                    Single.fromCallable {
+                        val count = BaseConfig.instance.historyLoadingCount
+                        val response = getHistorySync(
+                            count,
+                            fromBeginning
+                        )
+                        val serverItems = HistoryParser.getChatItems(response)
+                        if (serverItems.size == 0) {
+                            isAllMessagesDownloaded = true
+                        }
+                        messenger.saveMessages(serverItems)
+                        processSystemMessages(serverItems)
+                        if (fragment != null && isActive) {
+                            val uuidList: List<String?> = database.getUnreadMessagesUuid()
+                            if (uuidList.isNotEmpty()) {
+                                BaseConfig.instance.transport.markMessagesAsRead(uuidList)
+                            }
+                        }
+                        Pair(response?.consultInfo, serverItems.size)
+                    }
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                            { _: Pair<ConsultInfo?, Int?> ->
+                                if (fragment != null) {
+                                    val items = database.getChatItems(0, -1)
+                                    fragment?.addHistoryChatItems(items)
+                                    fragment?.hideProgressBar()
+                                }
+                                isDownloadingMessages = false
+                            }
+                        ) { e: Throwable? ->
+                            if (fragment != null) {
+                                fragment?.hideProgressBar()
+                            }
+                            error(e)
+                            isDownloadingMessages = false
+                        }
+                )
+            } else {
+                info(ThreadsApi.REST_TAG, "Loading history cancelled. isDownloadingMessages = true")
+            }
+        }
+    }
+
     fun loadHistory() {
+        if (isAllMessagesDownloaded) {
+            return
+        }
+
         if (!isDownloadingMessages) {
             info(ThreadsApi.REST_TAG, "Loading history from ${ChatController::class.java.simpleName}")
             isDownloadingMessages = true
             subscribe(
                 Single.fromCallable {
-                    val count = BaseConfig.instance.historyLoadingCount
+                    var count = BaseConfig.instance.historyLoadingCount
+                    if (count < database.getMessagesCount()) {
+                        count = database.getMessagesCount()
+                    }
                     val response = getHistorySync(
                         count,
                         true
                     )
                     val serverItems = HistoryParser.getChatItems(response)
+                    if (serverItems.size == 0) {
+                        isAllMessagesDownloaded = true
+                    }
                     messenger.saveMessages(serverItems)
                     clearUnreadPush()
                     processSystemMessages(serverItems)
