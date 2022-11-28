@@ -37,7 +37,29 @@ public class ChatStyleBuilderHelper {
         chatStyle.setChatSubtitleShowConsultOrgUnit(true)
                 .setVisibleChatTitleShadow(R.bool.alt_threads_chat_title_shadow_is_visible)
                 .setShowConsultSearching(true)
-                .setVoiceMessageEnabled(true);
+                .setVoiceMessageEnabled(true)
+                .setIngoingPadding(
+                    R.dimen.alt_greenBubbleIncomingPaddingLeft,
+                    R.dimen.alt_greenBubbleIncomingPaddingTop,
+                    R.dimen.alt_greenBubbleIncomingPaddingRight,
+                    R.dimen.alt_greenBubbleIncomingPaddingBottom
+                )
+                .setIncomingImageBordersSize(
+                        R.dimen.alt_incomingImageLeftBorderSize,
+                        R.dimen.alt_incomingImageTopBorderSize,
+                        R.dimen.alt_incomingImageRightBorderSize,
+                        R.dimen.alt_incomingImageBottomBorderSize
+                )
+                .setOutgoingImageBordersSize(
+                        R.dimen.alt_outgoingImageLeftBorderSize,
+                        R.dimen.alt_outgoingImageTopBorderSize,
+                        R.dimen.alt_outgoingImageRightBorderSize,
+                        R.dimen.alt_outgoingImageBottomBorderSize
+                )
+                .setIncomingImageMask(R.drawable.alt_thread_incoming_image_mask)
+                .setOutgoingImageMask(R.drawable.alt_thread_outgoing_image_mask)
+                .setOutgoingBubbleMask(R.drawable.alt_thread_outgoing_bubble)
+                .setIncomingBubbleMask(R.drawable.alt_thread_incoming_bubble);
 
         if (PrefUtilsApp.getIsTitleCentered(ThreadsDemoApplication.getAppContext())) {
             chatStyle.centerToolbarText();

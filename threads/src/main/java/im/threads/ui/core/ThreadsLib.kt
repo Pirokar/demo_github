@@ -20,8 +20,8 @@ class ThreadsLib(context: Context) : ThreadsLibBase(context) {
 
     public override fun initUser(userInfoBuilder: UserInfoBuilder) {
         val userInfo = preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)
-        val newClientId = preferences.get<String>(PreferencesCoreKeys.TAG_NEW_CLIENT_ID)
         val oldClientId = userInfo?.clientId
+        val newClientId = userInfoBuilder.clientId
         if (!newClientId.isNullOrEmpty() && newClientId != oldClientId) {
             ChatController.getInstance().cleanAll()
         }

@@ -1,12 +1,14 @@
 package im.threads.ui.holders
 
 import android.annotation.SuppressLint
+import android.app.ActionBar
 import android.text.TextUtils
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.OnLongClickListener
 import android.view.ViewGroup
+import android.view.ViewGroup.MarginLayoutParams
 import android.view.animation.Animation
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -32,6 +34,9 @@ import im.threads.business.utils.FileUtils
 import im.threads.business.utils.FileUtils.isImage
 import im.threads.business.utils.UrlUtils
 import im.threads.business.utils.toFileSize
+import im.threads.ui.config.Config
+import im.threads.ui.holders.helper.BordersCreator
+import im.threads.ui.utils.gone
 import im.threads.ui.utils.invisible
 import im.threads.ui.utils.visible
 import im.threads.ui.views.CircularProgressButton
@@ -46,6 +51,7 @@ import java.util.Locale
 /** layout/item_consultant_text_with_file.xml */
 class ConsultPhraseHolder(
     parent: ViewGroup,
+    private val maskedTransformation: ImageModifications.MaskedModification?,
     highlightingStream: PublishSubject<ChatItem>,
     openGraphParser: OpenGraphParser
 ) : BaseHolder(
@@ -71,8 +77,10 @@ class ConsultPhraseHolder(
     private val errorTextView: TextView = itemView.findViewById(R.id.errorText)
     private val fileImage = itemView.findViewById<ImageView>(R.id.fileImage)
     private val rightTextHeader: TextView = itemView.findViewById(R.id.to)
-    private val imageLayout: FrameLayout = itemView.findViewById(R.id.imageLayout)
     private val image: ImageView = itemView.findViewById(R.id.image)
+    private val imageRoot: FrameLayout = itemView.findViewById(R.id.imageRoot)
+    private val imageLayout: FrameLayout = itemView.findViewById(R.id.imageLayout)
+    private val errorImage: ImageView = itemView.findViewById(R.id.errorImage)
     private val loaderImage: ImageView = itemView.findViewById(R.id.loaderImage)
     private val rightTextDescription: TextView = itemView.findViewById(R.id.fileSpecs)
     private val rightTextFileStamp: TextView = itemView.findViewById(R.id.sendAt)
@@ -104,34 +112,23 @@ class ConsultPhraseHolder(
     private val ogTimestamp = itemView.findViewById<TextView>(R.id.ogTimeStamp).apply {
         setTextColor(getColorInt(style.incomingMessageTimeColor))
     }
+    private val bubbleLayout = itemView.findViewById<ViewGroup>(R.id.bubble).apply {
+        background =
+            AppCompatResources.getDrawable(
+                itemView.context,
+                style.incomingMessageBubbleBackground
+            )
+
+        background.colorFilter =
+            BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
+                getColorInt(style.incomingMessageBubbleColor),
+                BlendModeCompat.SRC_ATOP
+            )
+    }
+
+    private val bordersCreator = BordersCreator(itemView.context, true)
 
     init {
-        itemView.findViewById<View>(R.id.bubble).apply {
-            background =
-                AppCompatResources.getDrawable(
-                    itemView.context,
-                    style.incomingMessageBubbleBackground
-                )
-            setPadding(
-                context.resources.getDimensionPixelSize(style.bubbleIncomingPaddingLeft),
-                context.resources.getDimensionPixelSize(style.bubbleIncomingPaddingTop),
-                context.resources.getDimensionPixelSize(style.bubbleIncomingPaddingRight),
-                context.resources.getDimensionPixelSize(style.bubbleIncomingPaddingBottom)
-            )
-            background.colorFilter =
-                BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
-                    getColorInt(style.incomingMessageBubbleColor),
-                    BlendModeCompat.SRC_ATOP
-                )
-            val layoutParams = this.layoutParams as RelativeLayout.LayoutParams
-            layoutParams.setMargins(
-                context.resources.getDimensionPixelSize(style.bubbleIncomingMarginLeft),
-                context.resources.getDimensionPixelSize(style.bubbleIncomingMarginTop),
-                context.resources.getDimensionPixelSize(style.bubbleIncomingMarginRight),
-                context.resources.getDimensionPixelSize(style.bubbleIncomingMarginBottom)
-            )
-            this.layoutParams = layoutParams
-        }
         itemView.findViewById<View>(R.id.delimiter)
             .setBackgroundColor(getColorInt(style.chatToolbarColorResId))
         setTextColorToViews(
@@ -155,6 +152,7 @@ class ConsultPhraseHolder(
         onRowLongClickListener: OnLongClickListener,
         onAvatarClickListener: View.OnClickListener
     ) {
+        setupPaddingsAndBorders(consultPhrase.fileDescription)
         subscribeForHighlighting(consultPhrase, rootLayout)
         subscribeForOpenGraphData(
             OGDataContent(
@@ -214,6 +212,76 @@ class ConsultPhraseHolder(
         }
     }
 
+    private fun setupPaddingsAndBorders(fileDescription: FileDescription?) = with(bubbleLayout) {
+        val chatStyle = Config.getInstance().getChatStyle()
+        val resources = context.resources
+        val borderLeft = resources.getDimensionPixelSize(chatStyle.incomingImageLeftBorderSize)
+        val borderTop = resources.getDimensionPixelSize(chatStyle.incomingImageTopBorderSize)
+        val borderRight = resources.getDimensionPixelSize(chatStyle.incomingImageRightBorderSize)
+        val borderBottom = resources.getDimensionPixelSize(chatStyle.incomingImageBottomBorderSize)
+        val isBordersNotSet = borderLeft == 0 && borderTop == 0 && borderRight == 0 && borderBottom == 0
+        val isImage = isImage(fileDescription)
+
+        if (isImage) {
+            imageRoot.visible()
+            val size = bordersCreator.applyViewSize(bubbleLayout, true)
+
+            (bubbleLayout.layoutParams as ViewGroup.MarginLayoutParams).let {
+                it.marginEnd = 0
+                bubbleLayout.layoutParams = it
+            }
+            bubbleLayout.invalidate()
+            bubbleLayout.requestLayout()
+
+            if (isBordersNotSet) {
+                phraseFrame.setPadding(0, 0, 0, 0)
+                setPadding(
+                    resources.getDimensionPixelSize(style.bubbleIncomingPaddingLeft),
+                    resources.getDimensionPixelSize(style.bubbleIncomingPaddingTop),
+                    resources.getDimensionPixelSize(style.bubbleIncomingPaddingRight),
+                    resources.getDimensionPixelSize(style.bubbleIncomingPaddingBottom)
+                )
+                image.layoutParams.width = size.first
+                image.layoutParams.height = size.first
+            } else {
+                setPadding(0, 0, 0, 0)
+                (image.layoutParams as FrameLayout.LayoutParams).apply {
+                    width = size.first - borderLeft - borderRight
+                    height = size.first - borderTop - borderBottom
+                    setMargins(borderLeft, borderTop, borderRight, borderBottom)
+                    image.layoutParams = this
+                }
+                phraseFrame.setPadding(
+                    borderLeft,
+                    0,
+                    borderRight,
+                    resources.getDimensionPixelSize(style.bubbleIncomingPaddingBottom)
+                )
+            }
+            image.invalidate()
+            image.requestLayout()
+        } else {
+            (bubbleLayout.layoutParams as MarginLayoutParams).let {
+                it.width = ActionBar.LayoutParams.WRAP_CONTENT
+                it.height = ActionBar.LayoutParams.WRAP_CONTENT
+                it.marginEnd = resources.getDimensionPixelSize(R.dimen.user_margin_right)
+            }
+            bubbleLayout.invalidate()
+            bubbleLayout.requestLayout()
+
+            imageRoot.gone()
+
+            phraseFrame.setPadding(0, 0, 0, 0)
+
+            setPadding(
+                resources.getDimensionPixelSize(style.bubbleIncomingPaddingLeft),
+                resources.getDimensionPixelSize(style.bubbleIncomingPaddingTop),
+                resources.getDimensionPixelSize(style.bubbleIncomingPaddingRight),
+                resources.getDimensionPixelSize(style.bubbleIncomingPaddingBottom)
+            )
+        }
+    }
+
     private fun getFileDescriptionText(fileDescription: FileDescription): String {
         return "${FileUtils.getFileName(fileDescription)} " +
             if (fileDescription.size > 0) {
@@ -228,29 +296,34 @@ class ConsultPhraseHolder(
         imageClickListener: View.OnClickListener,
         isExternalImage: Boolean = false
     ) {
-        fileRow.visibility = View.GONE
-        circularProgressButton.visibility = View.GONE
-        imageLayout.visibility = View.VISIBLE
-        image.visibility = View.VISIBLE
+        hideErrorImage(imageLayout, errorImage)
+        fileRow.gone()
+        circularProgressButton.gone()
+        image.visible()
         image.setOnClickListener(imageClickListener)
 
         startLoaderAnimation()
-        image.loadImage(
-            imagePath,
-            scales = listOf(ImageView.ScaleType.FIT_CENTER, ImageView.ScaleType.CENTER_CROP),
-            errorDrawableResId = style.imagePlaceholder,
-            autoRotateWithExif = true,
-            isExternalImage = isExternalImage,
-            callback = object : ImageLoader.ImageLoaderCallback {
+
+        val loadConfig = ImageLoader
+            .get()
+            .load(imagePath)
+            .autoRotateWithExif(true)
+            .scales(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP)
+            .modifications(maskedTransformation)
+            .callback(object : ImageLoader.ImageLoaderCallback {
                 override fun onImageLoaded() {
                     stopLoaderAnimation()
                 }
 
                 override fun onImageLoadError() {
+                    showErrorImage(imageLayout, errorImage)
                     stopLoaderAnimation()
                 }
-            }
-        )
+            })
+        if (isExternalImage) {
+            loadConfig.disableEdnaSsl()
+        }
+        loadConfig.into(image)
     }
 
     private fun showPhrase(

@@ -157,6 +157,24 @@ public final class ChatStyle implements Serializable {
     @DimenRes
     public int bubbleIncomingMarginBottom = R.dimen.margin_quarter;
 
+    @DimenRes
+    public int incomingImageLeftBorderSize = R.dimen.incomingImageLeftBorderSize;
+    @DimenRes
+    public int incomingImageTopBorderSize = R.dimen.incomingImageTopBorderSize;
+    @DimenRes
+    public int incomingImageRightBorderSize = R.dimen.incomingImageRightBorderSize;
+    @DimenRes
+    public int incomingImageBottomBorderSize = R.dimen.incomingImageBottomBorderSize;
+    @DimenRes
+    public int outgoingImageLeftBorderSize = R.dimen.outgoingImageLeftBorderSize;
+    @DimenRes
+    public int outgoingImageTopBorderSize = R.dimen.outgoingImageTopBorderSize;
+    @DimenRes
+    public int outgoingImageRightBorderSize = R.dimen.outgoingImageRightBorderSize;
+    @DimenRes
+    public int outgoingImageBottomBorderSize = R.dimen.outgoingImageBottomBorderSize;
+
+    public float imageBubbleSize = 0.66f;
 
     @DimenRes
     public int inputFieldPaddingLeft = R.dimen.margin_three_fourth;
@@ -1560,6 +1578,96 @@ public final class ChatStyle implements Serializable {
         this.bubbleIncomingPaddingTop = top;
         this.bubbleIncomingPaddingRight = right;
         this.bubbleIncomingPaddingBottom = bottom;
+        return this;
+    }
+
+    /**
+     * Устанавливает размеры бордера для входящих изображений в баббле
+     * (если сообщение сообщение состоит только из изображения)
+     * @param incomingImageLeftBorderSize ссылка на dimen ресурс для размера бордера входящего сообщения слева
+     * @param incomingImageTopBorderSize ссылка на dimen ресурс для размера бордера входящего сообщения сверху
+     * @param incomingImageRightBorderSize ссылка на dimen ресурс для размера бордера входящего сообщения справа
+     * @param incomingImageBottomBorderSize ссылка на dimen ресурс для размера бордера входящего сообщения снизу
+     */
+    public ChatStyle setIncomingImageBordersSize(
+            @DimenRes int incomingImageLeftBorderSize,
+            @DimenRes int incomingImageTopBorderSize,
+            @DimenRes int incomingImageRightBorderSize,
+            @DimenRes int incomingImageBottomBorderSize
+    ) {
+        this.incomingImageLeftBorderSize = incomingImageLeftBorderSize;
+        this.incomingImageTopBorderSize = incomingImageTopBorderSize;
+        this.incomingImageRightBorderSize = incomingImageRightBorderSize;
+        this.incomingImageBottomBorderSize = incomingImageBottomBorderSize;
+
+        return this;
+    }
+
+    /**
+     * Устанавливает размеры бордера для исходящих изображений в баббле
+     * (если сообщение сообщение состоит только из изображения)
+     * @param outgoingImageLeftBorderSize ссылка на dimen ресурс для размера бордера исходящего сообщения слева
+     * @param outgoingImageTopBorderSize ссылка на dimen ресурс для размера бордера исходящего сообщения сверху
+     * @param outgoingImageRightBorderSize ссылка на dimen ресурс для размера бордера исходящего сообщения справа
+     * @param outgoingImageBottomBorderSize ссылка на dimen ресурс для размера бордера исходящего сообщения снизу
+     */
+    public ChatStyle setOutgoingImageBordersSize(
+            @DimenRes int outgoingImageLeftBorderSize,
+            @DimenRes int outgoingImageTopBorderSize,
+            @DimenRes int outgoingImageRightBorderSize,
+            @DimenRes int outgoingImageBottomBorderSize
+    ) {
+        this.outgoingImageLeftBorderSize = outgoingImageLeftBorderSize;
+        this.outgoingImageTopBorderSize = outgoingImageTopBorderSize;
+        this.outgoingImageRightBorderSize = outgoingImageRightBorderSize;
+        this.outgoingImageBottomBorderSize = outgoingImageBottomBorderSize;
+
+        return this;
+    }
+
+    /**
+     * Устанавливает маску для входящего изобрадения
+     * @param mask ссылка на ресурс изображения маски
+     */
+    public ChatStyle setIncomingImageMask(@DrawableRes int mask) {
+        this.incomingImageBubbleMask = mask;
+        return this;
+    }
+
+    /**
+     * Устанавливает маску для входящего баббла сообщения
+     * @param mask ссылка на ресурс изображения маски
+     */
+    public ChatStyle setIncomingBubbleMask(@DrawableRes int mask) {
+        this.incomingMessageBubbleBackground = mask;
+        return this;
+    }
+
+    /**
+     * Устанавливает маску для исходящего изображения
+     * @param mask ссылка на ресурс изображения маски
+     */
+    public ChatStyle setOutgoingImageMask(@DrawableRes int mask) {
+        this.outgoingImageBubbleMask = mask;
+        return this;
+    }
+
+    /**
+     * Устанавливает маску для исходящего баббла сообщения
+     * @param mask ссылка на ресурс изображения маски
+     */
+    public ChatStyle setOutgoingBubbleMask(@DrawableRes int mask) {
+        this.outgoingMessageBubbleBackground = mask;
+        return this;
+    }
+
+    /**
+     * Устанавливает размер баббла для сообщений, содержащих изображение
+     * @param size размер изображения в процентах от ширины экрана, где 0.0 - баббла нет, 1.0 - весь экран.
+     * По умолчанию 0.66.
+     */
+    public ChatStyle setImageBubbleSize(float size) {
+        this.imageBubbleSize = size;
         return this;
     }
 

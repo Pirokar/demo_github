@@ -1,12 +1,12 @@
 package im.threads.ui.holders
 
+import android.app.ActionBar.LayoutParams
 import android.graphics.drawable.Drawable
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
@@ -24,6 +24,8 @@ import im.threads.business.models.MessageState
 import im.threads.business.models.UserPhrase
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.ogParser.OpenGraphParser
+import im.threads.ui.holders.helper.BordersCreator
+import im.threads.ui.widget.textView.BubbleTimeTextView
 import io.reactivex.subjects.PublishSubject
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -34,10 +36,11 @@ class ImageFromUserViewHolder(
     private val maskedTransformation: ImageModifications.MaskedModification?,
     highlightingStream: PublishSubject<ChatItem>,
     openGraphParser: OpenGraphParser
-) : BaseHolder(
+) : BaseImageHolder(
     LayoutInflater.from(parent.context).inflate(R.layout.item_user_image_from, parent, false),
     highlightingStream,
-    openGraphParser
+    openGraphParser,
+    false
 ) {
     private val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
 
@@ -45,26 +48,12 @@ class ImageFromUserViewHolder(
 
     private val loaderLayout: LinearLayout =
         itemView.findViewById<LinearLayout>(R.id.loaderLayout).also { applyBubbleLayoutStyle(it) }
-    private val mImage: ImageView =
-        itemView.findViewById<ImageView>(R.id.image).also { applyImageParams(it) }
-    private val mTimeStampTextView = itemView.findViewById<TextView>(R.id.timeStamp).apply {
-        setTextColor(getColorInt(style.outgoingImageTimeColor))
-        val timeColorBg = getColorInt(style.outgoingImageTimeBackgroundColor)
-        background.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
-            timeColorBg,
-            BlendModeCompat.SRC_ATOP
-        )
-        if (style.outgoingMessageTimeTextSize > 0) {
-            val textSize = context.resources.getDimension(style.outgoingMessageTimeTextSize)
-            setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
-        }
-    }
+    private val loaderLayoutRoot: RelativeLayout = itemView.findViewById(R.id.loaderLayoutRoot)
 
     private val errorText: TextView = itemView.findViewById(R.id.errorText)
-    private val commonLayout: FrameLayout = itemView.findViewById(R.id.commonLayout)
     private val fileName: TextView = itemView.findViewById(R.id.fileName)
     private val loader: ImageView = itemView.findViewById(R.id.loader)
-    private val rootLayout: LinearLayout = itemView.findViewById(R.id.rootLayout)
+    private val timeStampLoading: BubbleTimeTextView = itemView.findViewById(R.id.timeStampLoading)
 
     init {
         setTextColorToViews(
@@ -80,8 +69,8 @@ class ImageFromUserViewHolder(
         longClickRunnable: Runnable
     ) {
         subscribeForHighlighting(userPhrase, rootLayout)
-        mImage.setOnClickListener { clickRunnable.run() }
-        mImage.setOnLongClickListener {
+        image.setOnClickListener { clickRunnable.run() }
+        image.setOnLongClickListener {
             longClickRunnable.run()
             true
         }
@@ -109,6 +98,7 @@ class ImageFromUserViewHolder(
                 showErrorLayout(it)
             } else {
                 showCommonLayout(it)
+                moveTimeToImageLayout()
             }
         }
     }
@@ -118,11 +108,14 @@ class ImageFromUserViewHolder(
         timestamp: Long,
         longClickRunnable: Runnable
     ) {
-        mTimeStampTextView.setOnLongClickListener {
+        timeStampTextView.setOnLongClickListener {
             longClickRunnable.run()
             true
         }
-        mTimeStampTextView.text = sdf.format(Date(timestamp))
+        val timeStampText = sdf.format(Date(timestamp))
+        timeStampTextView.text = timeStampText
+        timeStampLoading.text = timeStampText
+
         val rightDrawable: Drawable? =
             when (messageState) {
                 MessageState.STATE_WAS_READ -> getColoredDrawable(
@@ -142,7 +135,8 @@ class ImageFromUserViewHolder(
                     R.drawable.empty_space_24dp
                 )
             }
-        mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, rightDrawable, null)
+        timeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, rightDrawable, null)
+        timeStampLoading.setCompoundDrawablesWithIntrinsicBounds(null, null, rightDrawable, null)
     }
 
     private fun getColoredDrawable(@DrawableRes res: Int, @ColorRes color: Int): Drawable? {
@@ -154,48 +148,37 @@ class ImageFromUserViewHolder(
         return drawable
     }
 
-    private fun applyBubbleLayoutStyle(layout: LinearLayout) {
+    private fun applyBubbleLayoutStyle(layout: ViewGroup) {
         val res = itemView.context.resources
         layout.background = AppCompatResources.getDrawable(
             itemView.context,
             style.outgoingMessageBubbleBackground
         )
-        layout.setPadding(
-            res.getDimensionPixelSize(style.bubbleOutgoingPaddingLeft),
-            res.getDimensionPixelSize(style.bubbleOutgoingPaddingTop),
-            res.getDimensionPixelSize(style.bubbleOutgoingPaddingRight),
-            res.getDimensionPixelSize(style.bubbleOutgoingPaddingBottom)
-        )
-        val layoutParams = layout.layoutParams as FrameLayout.LayoutParams
-        layoutParams.setMargins(
-            res.getDimensionPixelSize(style.bubbleOutgoingMarginLeft),
-            res.getDimensionPixelSize(style.bubbleOutgoingMarginTop),
-            res.getDimensionPixelSize(style.bubbleOutgoingMarginRight),
-            res.getDimensionPixelSize(style.bubbleOutgoingMarginBottom)
-        )
+
+        val borderLeft = res.getDimensionPixelSize(style.outgoingImageLeftBorderSize)
+        val borderTop = res.getDimensionPixelSize(style.outgoingImageTopBorderSize)
+        val borderRight = res.getDimensionPixelSize(style.outgoingImageRightBorderSize)
+        val borderBottom = res.getDimensionPixelSize(style.outgoingImageBottomBorderSize)
+
+        val layoutParams = layout.layoutParams as RelativeLayout.LayoutParams
+        val bordersCreator = BordersCreator(itemView.context, false)
+
+        layoutParams.width = bordersCreator.sideSize
+        layoutParams.height = LayoutParams.WRAP_CONTENT
+        layoutParams.setMargins(borderLeft, borderTop, borderRight, borderBottom)
         layout.layoutParams = layoutParams
         layout.background.colorFilter =
             BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
                 getColorInt(style.outgoingMessageBubbleColor),
                 BlendModeCompat.SRC_ATOP
             )
-    }
-
-    private fun applyImageParams(imageView: ImageView) {
-        val bubbleLeftMarginDp = itemView.context.resources.getDimension(R.dimen.margin_quarter)
-        val bubbleLeftMarginPx = TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP,
-            bubbleLeftMarginDp,
-            itemView.resources.displayMetrics
-        ).toInt()
-        val lp = imageView.layoutParams as FrameLayout.LayoutParams
-        lp.setMargins(bubbleLeftMarginPx, lp.topMargin, lp.rightMargin, lp.bottomMargin)
-        imageView.layoutParams = lp
+        layout.invalidate()
+        layout.requestLayout()
     }
 
     private fun showLoaderLayout(fileDescription: FileDescription) {
-        loaderLayout.isVisible = true
-        commonLayout.isVisible = false
+        loaderLayoutRoot.isVisible = true
+        imageLayout.isVisible = false
         errorText.isVisible = false
         fileName.text = fileDescription.incomingName
         initAnimation(loader, false)
@@ -203,8 +186,8 @@ class ImageFromUserViewHolder(
 
     private fun showErrorLayout(fileDescription: FileDescription) {
         errorText.isVisible = true
-        loaderLayout.isVisible = true
-        commonLayout.isVisible = false
+        loaderLayoutRoot.isVisible = true
+        imageLayout.isVisible = false
         loader.setImageResource(getErrorImageResByErrorCode(fileDescription.errorCode))
         fileName.text = fileDescription.incomingName
         val errorString = getString(getErrorStringResByErrorCode(fileDescription.errorCode))
@@ -213,9 +196,9 @@ class ImageFromUserViewHolder(
     }
 
     private fun showCommonLayout(fileDescription: FileDescription) {
-        commonLayout.isVisible = true
+        imageLayout.isVisible = true
         errorText.isVisible = false
-        loaderLayout.isVisible = false
+        loaderLayoutRoot.isVisible = false
         rotateAnim.cancel()
         val isDownloadError = fileDescription.isDownloadError
         val uri = fileDescription.fileUri
@@ -224,14 +207,14 @@ class ImageFromUserViewHolder(
             ImageLoader.get()
                 .autoRotateWithExif(true)
                 .load(uri.toString())
-                .scales(ImageView.ScaleType.FIT_END, ImageView.ScaleType.CENTER_CROP)
+                .scales(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP)
                 .modifications(maskedTransformation)
                 .errorDrawableResourceId(style.imagePlaceholder)
-                .into(mImage)
+                .into(image)
 
             loadedUri = uri.toString()
         } else {
-            mImage.setImageResource(style.imagePlaceholder)
+            image.setImageResource(style.imagePlaceholder)
         }
     }
 }

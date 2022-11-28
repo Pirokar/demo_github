@@ -37,7 +37,10 @@ class ImageRequestBuilder {
         }
         config.errorDrawableResourceId?.let { builder?.error(it) }
         config.resizePair?.let {
-            builder?.resize(it.first, it.second)
+            builder?.resize(it.width, it.height)
+        }
+        config.resizeDimen?.let {
+            builder?.resizeDimen(it.width, it.height)
         }
         if (config.isOnlyScaleDown) {
             builder?.onlyScaleDown()
