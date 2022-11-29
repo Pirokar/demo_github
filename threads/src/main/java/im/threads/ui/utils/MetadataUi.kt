@@ -8,11 +8,11 @@ object MetadataUi {
     private const val FILES_AND_MEDIA_MENU_ITEM_ENABLED = "im.threads.filesAndMediaMenuItemEnabled"
 
     @JvmStatic
-    fun getAttachmentEnabled(context: Context): Boolean {
+    fun getAttachmentEnabled(context: Context): Boolean? {
         val metaData = MetadataBusiness.getMetaData(context)
         return if (metaData != null && metaData.containsKey(ATTACHMENT_ENABLED)) {
             metaData.getBoolean(ATTACHMENT_ENABLED)
-        } else true
+        } else null
     }
 
     @JvmStatic
