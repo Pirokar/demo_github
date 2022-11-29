@@ -26,13 +26,13 @@ import im.threads.R
 import im.threads.business.models.FileDescription
 import im.threads.business.secureDatabase.DatabaseHolder
 import im.threads.business.serviceLocator.core.inject
+import im.threads.business.utils.Balloon
 import im.threads.databinding.ActivityFilesAndMediaBinding
 import im.threads.ui.ChatStyle
 import im.threads.ui.activities.BaseActivity
 import im.threads.ui.adapters.filesAndMedia.FilesAndMediaAdapter
 import im.threads.ui.adapters.filesAndMedia.FilesAndMediaAdapter.OnFileClick
 import im.threads.ui.config.Config
-import im.threads.business.utils.Balloon
 import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.utils.gone
 import im.threads.ui.utils.hideKeyboard

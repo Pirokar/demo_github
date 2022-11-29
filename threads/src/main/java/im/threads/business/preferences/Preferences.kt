@@ -51,7 +51,8 @@ open class Preferences(private val context: Context) {
         @Suppress("UNREACHABLE_CODE", "CommitPrefEdits")
         return try {
             val ret: String? = sharedPreferences.getString(key, null)
-            Gson().fromJson(ret, returnType) ?: default ?: throw NullPointerException()
+            val value = Gson().fromJson(ret, returnType) ?: default ?: throw NullPointerException()
+            if (value == "null") null else value
         } catch (exc: Exception) {
             if (sharedPreferences.all.keys.contains(key)) {
                 val value = sharedPreferences.all.getValue(key)
@@ -75,7 +76,7 @@ open class Preferences(private val context: Context) {
      * @param saveAsync указывает, следует ли сохранить объект асинхронно. По умолчанию значение = false
      */
     inline fun <reified T : Any> save(key: String, obj: T?, saveAsync: Boolean = false) {
-        val json = Gson().toJson(obj).toString()
+        val json = if (obj != null) Gson().toJson(obj).toString() else null
         val editor = sharedPreferences.edit()
         editor.putString(key, json)
 
