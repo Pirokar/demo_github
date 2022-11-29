@@ -2265,7 +2265,6 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     private void updateUIonPhraseLongClick(ChatPhrase chatPhrase, int position) {
-        LoggerEdna.error("$$$$$$$$$     updateUIonPhraseLongClick(1)");
         unChooseItem();
         Activity activity = getActivity();
         if (activity == null) {
@@ -2297,7 +2296,6 @@ public final class ChatFragment extends BaseFragment implements
             hideBackButton();
         });
         chatAdapter.setItemHighlighted(chatPhrase);
-        LoggerEdna.error("$$$$$$$$$     updateUIonPhraseLongClick(2)");
     }
 
     public void showQuickReplies(QuickReplyItem quickReplies) {
