@@ -13,7 +13,7 @@ import im.threads.R;
 import im.threads.business.models.MediaPhoto;
 import im.threads.ui.config.Config;
 import im.threads.ui.holders.GalleryItemHolder;
-import im.threads.ui.utils.Balloon;
+import im.threads.business.utils.Balloon;
 
 public final class GalleryAdapter extends RecyclerView.Adapter<GalleryItemHolder> {
     private final List<MediaPhoto> list;

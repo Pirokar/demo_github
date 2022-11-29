@@ -29,9 +29,9 @@ import im.threads.ui.fragments.PermissionDescriptionAlertFragment.Companion.newI
 import im.threads.ui.fragments.PermissionDescriptionAlertFragment.OnAllowPermissionClickListener
 import im.threads.ui.permissions.PermissionsActivity
 import im.threads.ui.styles.permissions.PermissionDescriptionType
+import im.threads.business.utils.Balloon
 import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.utils.ColorsHelper.setDrawableColor
-import im.threads.ui.utils.Balloon
 import im.threads.ui.utils.invisible
 import im.threads.ui.utils.runOnUiThread
 import im.threads.ui.utils.visible

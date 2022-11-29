@@ -1,4 +1,4 @@
-package im.threads.ui.utils
+package im.threads.business.utils
 
 import android.app.Activity
 import android.content.Context
@@ -9,6 +9,7 @@ import com.google.android.material.snackbar.Snackbar
 import im.threads.R
 import im.threads.databinding.EdnaSnackbarBinding
 import im.threads.ui.config.Config.Companion.getInstance
+import im.threads.ui.utils.ColorsHelper
 
 object Balloon {
 

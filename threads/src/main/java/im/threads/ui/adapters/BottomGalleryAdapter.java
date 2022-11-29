@@ -16,7 +16,7 @@ import im.threads.ui.config.Config;
 import im.threads.ui.holders.BottomGalleryImageHolder;
 import im.threads.ui.models.BottomGalleryItem;
 import im.threads.ui.utils.FileHelper;
-import im.threads.ui.utils.Balloon;
+import im.threads.business.utils.Balloon;
 
 public final class BottomGalleryAdapter extends RecyclerView.Adapter<BottomGalleryImageHolder> {
     private List<BottomGalleryItem> list;

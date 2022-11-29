@@ -2,7 +2,7 @@ package im.threads.ui.fragments;
 
 import androidx.fragment.app.DialogFragment;
 
-import im.threads.ui.utils.Balloon;
+import im.threads.business.utils.Balloon;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 

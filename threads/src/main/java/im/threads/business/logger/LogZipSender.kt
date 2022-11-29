@@ -2,7 +2,7 @@ package im.threads.business.logger
 
 import android.content.Context
 import android.content.Intent
-import android.widget.Toast
+import im.threads.business.utils.Balloon
 import im.threads.business.utils.FileProviderHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -37,11 +37,7 @@ class LogZipSender(private val context: Context) {
                 }
             }
         } else {
-            Toast.makeText(
-                context,
-                "Cannot send logs. Logs directory is null",
-                Toast.LENGTH_SHORT
-            ).show()
+            Balloon.show(context, "Cannot send logs. Logs directory is null")
         }
     }
 

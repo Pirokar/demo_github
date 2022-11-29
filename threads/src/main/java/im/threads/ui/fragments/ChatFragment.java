@@ -125,7 +125,7 @@ import im.threads.ui.controllers.ChatController;
 import im.threads.ui.files.FileSelectedListener;
 import im.threads.ui.permissions.PermissionsActivity;
 import im.threads.ui.styles.permissions.PermissionDescriptionType;
-import im.threads.ui.utils.Balloon;
+import im.threads.business.utils.Balloon;
 import im.threads.ui.utils.ColorsHelper;
 import im.threads.ui.utils.FileHelper;
 import im.threads.ui.utils.KeyboardKt;
