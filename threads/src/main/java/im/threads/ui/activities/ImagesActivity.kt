@@ -10,7 +10,6 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.viewpager.widget.ViewPager
@@ -25,11 +24,12 @@ import im.threads.business.utils.FileUtils.saveToDownloads
 import im.threads.business.utils.ThreadsPermissionChecker
 import im.threads.ui.adapters.ImagesAdapter
 import im.threads.ui.config.Config
-import im.threads.ui.fragments.PermissionDescriptionAlertDialogFragment
-import im.threads.ui.fragments.PermissionDescriptionAlertDialogFragment.Companion.newInstance
-import im.threads.ui.fragments.PermissionDescriptionAlertDialogFragment.OnAllowPermissionClickListener
+import im.threads.ui.fragments.PermissionDescriptionAlertFragment
+import im.threads.ui.fragments.PermissionDescriptionAlertFragment.Companion.newInstance
+import im.threads.ui.fragments.PermissionDescriptionAlertFragment.OnAllowPermissionClickListener
 import im.threads.ui.permissions.PermissionsActivity
 import im.threads.ui.styles.permissions.PermissionDescriptionType
+import im.threads.business.utils.Balloon
 import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.utils.ColorsHelper.setDrawableColor
 import im.threads.ui.utils.invisible
@@ -47,7 +47,7 @@ class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionCl
     private var collectionSize = 0
     private var files: ArrayList<FileDescription> = ArrayList()
     private var compositeDisposable: CompositeDisposable? = CompositeDisposable()
-    private var permissionDescriptionAlertDialogFragment: PermissionDescriptionAlertDialogFragment? = null
+    private var permissionDescrAlertFragment: PermissionDescriptionAlertFragment? = null
     private val config: Config by lazy { Config.getInstance() }
     private lateinit var titleTextView: TextView
     private val database: DatabaseHolder by inject()
@@ -164,8 +164,10 @@ class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionCl
     }
 
     private fun initToolbarTextPosition() {
-        val isToolbarTextCentered = im.threads.ui.config.Config.getInstance().getChatStyle().isToolbarTextCentered
-        val gravity = if (isToolbarTextCentered) android.view.Gravity.CENTER else android.view.Gravity.CENTER_VERTICAL
+        val isToolbarTextCentered =
+            im.threads.ui.config.Config.getInstance().getChatStyle().isToolbarTextCentered
+        val gravity =
+            if (isToolbarTextCentered) android.view.Gravity.CENTER else android.view.Gravity.CENTER_VERTICAL
         titleTextView.gravity = gravity
     }
 
@@ -192,19 +194,14 @@ class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionCl
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
                         {
-                            Toast.makeText(
-                                this@ImagesActivity,
-                                getString(R.string.threads_saved_to_downloads),
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            Balloon.show(
+                                this,
+                                getString(R.string.threads_saved_to_downloads)
+                            )
                         }
                     ) { throwable: Throwable? ->
+                        Balloon.show(this, getString(R.string.threads_unable_to_save))
                         error("downloadImage", throwable)
-                        Toast.makeText(
-                            this@ImagesActivity,
-                            R.string.threads_unable_to_save,
-                            Toast.LENGTH_SHORT
-                        ).show()
                     }
             )
         }
@@ -219,15 +216,15 @@ class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionCl
     }
 
     private fun showStoragePermissionDescriptionDialog() {
-        if (permissionDescriptionAlertDialogFragment == null) {
-            permissionDescriptionAlertDialogFragment = newInstance(
+        if (permissionDescrAlertFragment == null) {
+            permissionDescrAlertFragment = newInstance(
                 PermissionDescriptionType.STORAGE,
                 CODE_REQUEST_DOWNLOAD
             )
         }
-        permissionDescriptionAlertDialogFragment?.show(
+        permissionDescrAlertFragment?.show(
             supportFragmentManager,
-            PermissionDescriptionAlertDialogFragment.TAG
+            PermissionDescriptionAlertFragment.TAG
         )
     }
 
@@ -249,13 +246,14 @@ class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionCl
     }
 
     override fun onDialogDetached() {
-        permissionDescriptionAlertDialogFragment = null
+        permissionDescrAlertFragment = null
     }
 
     override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}
     override fun onPageSelected(position: Int) {
         Runnable {
-            val title = "${mViewPager.currentItem + 1} ${getString(R.string.threads_from)} $collectionSize"
+            val title =
+                "${mViewPager.currentItem + 1} ${getString(R.string.threads_from)} $collectionSize"
             setTitle(title, titleTextView)
         }.runOnUiThread()
     }

@@ -17,7 +17,6 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
@@ -34,6 +33,7 @@ import im.threads.R;
 import im.threads.business.imageLoading.ImageLoader;
 import im.threads.business.logger.LoggerEdna;
 import im.threads.business.utils.FileUtils;
+import im.threads.business.utils.Balloon;
 
 public final class CameraActivity extends BaseActivity {
     public static final String IMAGE_EXTRA = "IMAGE_EXTRA";
@@ -72,7 +72,7 @@ public final class CameraActivity extends BaseActivity {
         super.onPause();
         if (mSurfaceView.getVisibility() == View.VISIBLE) {
             if (mCamera == null) {
-                Toast.makeText(this, getString(R.string.threads_no_cameras_detected), Toast.LENGTH_SHORT).show();
+                Balloon.show(this, getString(R.string.threads_no_cameras_detected));
             } else {
                 releaseCamera();
                 isCameraReleased = true;
@@ -123,7 +123,7 @@ public final class CameraActivity extends BaseActivity {
         final ImageButton flashButton = findViewById(R.id.flash_control);
         final ImageButton takePhotoButton = findViewById(R.id.take_photo);
         if (Camera.getNumberOfCameras() == 0) {
-            Toast.makeText(this, getResources().getString(R.string.threads_no_cameras_detected), Toast.LENGTH_SHORT).show();
+            Balloon.show(this, getResources().getString(R.string.threads_no_cameras_detected));
             finish();
         }
         takePhotoButton.setEnabled(true);
@@ -242,7 +242,7 @@ public final class CameraActivity extends BaseActivity {
             LoggerEdna.error("restoreCamera", e);
         } catch (RuntimeException ex) {
             String error = getResources().getString(R.string.threads_back_camera_could_not_start_error);
-            Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
+            Balloon.show(this, error);
             LoggerEdna.error("restoreCamera", ex);
         }
     }

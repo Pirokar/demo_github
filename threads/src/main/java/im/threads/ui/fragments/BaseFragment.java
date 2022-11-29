@@ -1,7 +1,7 @@
 package im.threads.ui.fragments;
 
-
 import androidx.fragment.app.Fragment;
+
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 

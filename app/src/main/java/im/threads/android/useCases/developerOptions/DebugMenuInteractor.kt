@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Handler
 import android.os.Looper
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.Gson
 import com.jakewharton.processphoenix.ProcessPhoenix
@@ -47,6 +46,7 @@ import im.threads.android.utils.toJson
 import im.threads.business.logger.LoggerEdna
 import im.threads.business.secureDatabase.DatabaseHolder
 import im.threads.business.serviceLocator.core.inject
+import im.threads.business.utils.Balloon
 import java.io.FileOutputStream
 import java.io.InputStream
 
@@ -237,11 +237,7 @@ class DebugMenuInteractor(private val context: Context) : DebugMenuUseCase {
                 currentServerName = it.name.toString()
                 setCurrentServer(it.name.toString())
                 cleanHistory()
-                Toast.makeText(
-                    context,
-                    getString(R.string.demo_restart_app_for_server_apply),
-                    Toast.LENGTH_SHORT
-                ).show()
+                Balloon.show(context, getString(R.string.demo_restart_app_for_server_apply))
                 Handler(Looper.getMainLooper()).postDelayed({
                     ProcessPhoenix.triggerRebirth(context, Intent(context, MainActivity::class.java))
                 }, 2000)

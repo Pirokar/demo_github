@@ -17,7 +17,6 @@ import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.annotation.ColorRes
 import androidx.annotation.DimenRes
@@ -33,6 +32,7 @@ import im.threads.ui.activities.BaseActivity
 import im.threads.ui.adapters.filesAndMedia.FilesAndMediaAdapter
 import im.threads.ui.adapters.filesAndMedia.FilesAndMediaAdapter.OnFileClick
 import im.threads.ui.config.Config
+import im.threads.business.utils.Balloon
 import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.utils.gone
 import im.threads.ui.utils.hideKeyboard
@@ -269,11 +269,7 @@ internal class FilesActivity : BaseActivity(), OnFileClick {
         try {
             startActivity(intent)
         } catch (e: ActivityNotFoundException) {
-            Toast.makeText(
-                baseContext,
-                getString(R.string.threads_file_not_supported),
-                Toast.LENGTH_SHORT
-            ).show()
+            Balloon.show(this, getString(R.string.threads_file_not_supported))
         }
     }
 

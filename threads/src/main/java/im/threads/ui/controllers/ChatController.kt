@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
-import android.widget.Toast
 import androidx.annotation.MainThread
 import androidx.core.util.Consumer
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -198,11 +197,7 @@ class ChatController private constructor() {
                         if (query?.length == 1) {
                             Runnable {
                                 fragment?.showProgressBar()
-                                Toast.makeText(
-                                    appContext,
-                                    appContext.getString(R.string.threads_history_loading_message),
-                                    Toast.LENGTH_LONG
-                                ).show()
+                                fragment?.showBalloon(appContext.getString(R.string.threads_history_loading_message))
                             }.runOnUiThread()
                         }
                         return@flatMap messenger.downloadMessagesTillEnd()
@@ -252,12 +247,7 @@ class ChatController private constructor() {
                     try {
                         activity.startActivity(target)
                     } catch (e: ActivityNotFoundException) {
-                        Toast.makeText(
-                            activity,
-                            "No application support this type of file",
-                            Toast.LENGTH_SHORT
-                        )
-                            .show()
+                        fragment?.showBalloon("No application support this type of file")
                     }
                 }
             }

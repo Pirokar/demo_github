@@ -14,7 +14,6 @@ import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.appcompat.content.res.AppCompatResources
@@ -160,8 +159,7 @@ class QuickAnswerFragment : BaseDialogFragment() {
     private fun updateInputEnable(enableModel: InputFieldEnableModel) {
         editText?.isEnabled = enableModel.isEnabledInputField
         if (!enableModel.isEnabledInputField) {
-            Toast.makeText(requireContext(), R.string.threads_message_sending_is_unavailable, Toast.LENGTH_LONG)
-                .show()
+            showToast(requireContext().getString(R.string.threads_message_sending_is_unavailable))
         }
     }
 

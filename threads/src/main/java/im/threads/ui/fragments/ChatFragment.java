@@ -37,7 +37,6 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -126,6 +125,7 @@ import im.threads.ui.controllers.ChatController;
 import im.threads.ui.files.FileSelectedListener;
 import im.threads.ui.permissions.PermissionsActivity;
 import im.threads.ui.styles.permissions.PermissionDescriptionType;
+import im.threads.business.utils.Balloon;
 import im.threads.ui.utils.ColorsHelper;
 import im.threads.ui.utils.FileHelper;
 import im.threads.ui.utils.KeyboardKt;
@@ -150,7 +150,7 @@ public final class ChatFragment extends BaseFragment implements
         PopupMenu.OnMenuItemClickListener,
         FileSelectedListener,
         ChatCenterAudioConverterCallback,
-        PermissionDescriptionAlertDialogFragment.OnAllowPermissionClickListener {
+        PermissionDescriptionAlertFragment.OnAllowPermissionClickListener {
 
     public static final int REQUEST_CODE_PHOTOS = 100;
     public static final int REQUEST_CODE_PHOTO = 101;
@@ -184,6 +184,8 @@ public final class ChatFragment extends BaseFragment implements
     @NonNull
     private final MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
     private final ChatCenterAudioConverter audioConverter = new ChatCenterAudioConverter();
+    private final ChatUpdateProcessorJavaGetter chatUpdateProcessor
+            = new ChatUpdateProcessorJavaGetter();
     @Nullable
     private FileDescriptionMediaPlayer fdMediaPlayer;
     private ChatController mChatController;
@@ -202,18 +204,15 @@ public final class ChatFragment extends BaseFragment implements
     @Nullable
     private AttachmentBottomSheetDialogFragment bottomSheetDialogFragment;
     @Nullable
-    private PermissionDescriptionAlertDialogFragment permissionDescriptionAlertDialogFragment;
+    private PermissionDescriptionAlertFragment permissionDescriptionAlertDialogFragment;
     private List<String> cameraPermissions;
     private List<Uri> mAttachedImages = new ArrayList<>();
     @Nullable
     private AudioRecorder recorder = null;
     private boolean isNewMessageUpdateTimeoutOn = false;
-
     private QuickReplyItem quickReplyItem = null;
     private int previousChatItemsCount = 0;
     private Config config = Config.getInstance();
-    private final ChatUpdateProcessorJavaGetter chatUpdateProcessor
-            = new ChatUpdateProcessorJavaGetter();
 
     public static ChatFragment newInstance(@OpenWay int from) {
         Bundle arguments = new Bundle();
@@ -485,10 +484,11 @@ public final class ChatFragment extends BaseFragment implements
                 subscribe(
                         releaseRecorder()
                                 .subscribeOn(Schedulers.io())
-                                .subscribe(() -> {},
+                                .subscribe(() -> {
+                                        },
                                         error -> LoggerEdna.error("initRecording -> onLessThanSecond ", error))
                 );
-                showToast(getString(R.string.threads_hold_button_to_record_audio));
+                Balloon.show(requireContext(), getString(R.string.threads_hold_button_to_record_audio));
                 LoggerEdna.debug("RecordView: onLessThanSecond");
                 recordButton.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
             }
@@ -507,7 +507,8 @@ public final class ChatFragment extends BaseFragment implements
                                     }
                                 })
                                 .subscribeOn(Schedulers.io())
-                                .subscribe(() -> {},
+                                .subscribe(() -> {
+                                        },
                                         error -> LoggerEdna.error("initRecording -> startRecorder ", error))
                 );
             }
@@ -1036,7 +1037,7 @@ public final class ChatFragment extends BaseFragment implements
                     startActivityForResult(intent, REQUEST_EXTERNAL_CAMERA_PHOTO);
                 } catch (IllegalArgumentException e) {
                     LoggerEdna.error("Could not start external camera", e);
-                    showToast(requireContext().getString(R.string.threads_camera_could_not_start_error));
+                    Balloon.show(requireContext(), requireContext().getString(R.string.threads_camera_could_not_start_error));
                 }
 
             } else {
@@ -1191,7 +1192,7 @@ public final class ChatFragment extends BaseFragment implements
             return;
         }
         ClibpoardExtensionsKt.copyToBuffer(cm, whatToCopy);
-        showToast(getString(R.string.threads_message_text_copied));
+        Balloon.show(requireContext(), getString(R.string.threads_message_text_copied));
         unChooseItem();
     }
 
@@ -1215,7 +1216,7 @@ public final class ChatFragment extends BaseFragment implements
     @Override
     public void onSendClick() {
         if (mAttachedImages == null || mAttachedImages.isEmpty()) {
-            showToast(getString(R.string.threads_failed_to_open_file));
+            Balloon.show(requireContext(), getString(R.string.threads_failed_to_open_file));
             return;
         }
         subscribe(
@@ -1227,7 +1228,7 @@ public final class ChatFragment extends BaseFragment implements
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(filteredPhotos -> {
                                     if (filteredPhotos.isEmpty()) {
-                                        showToast(getString(R.string.threads_failed_to_open_file));
+                                        Balloon.show(requireContext(), getString(R.string.threads_failed_to_open_file));
                                         return;
                                     }
                                     String inputText = inputTextObservable.get();
@@ -1243,7 +1244,7 @@ public final class ChatFragment extends BaseFragment implements
                                     );
                                     if (isSendBlocked) {
                                         clearInput();
-                                        showToast(requireContext().getString(R.string.threads_message_were_unsent));
+                                        Balloon.show(requireContext(), requireContext().getString(R.string.threads_message_were_unsent));
                                     } else {
                                         sendMessage(messages);
                                     }
@@ -1348,7 +1349,7 @@ public final class ChatFragment extends BaseFragment implements
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(filteredPhotos -> {
                             if (filteredPhotos.isEmpty()) {
-                                showToast(getString(R.string.threads_failed_to_open_file));
+                                Balloon.show(requireContext(), getString(R.string.threads_failed_to_open_file));
                                 return;
                             }
                             unChooseItem();
@@ -1367,7 +1368,7 @@ public final class ChatFragment extends BaseFragment implements
                                             ClibpoardExtensionsKt.isLastCopyText(inputText)
                                     );
                             if (isSendBlocked) {
-                                showToast(getString(R.string.threads_message_were_unsent));
+                                Balloon.show(requireContext(), getString(R.string.threads_message_were_unsent));
                             } else {
                                 mChatController.onUserInput(uum);
                             }
@@ -1431,20 +1432,20 @@ public final class ChatFragment extends BaseFragment implements
                                     | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                             requireActivity().getContentResolver().takePersistableUriPermission(uri, takeFlags);
                         } else {
-                            showToast(getString(R.string.threads_failed_to_open_file));
+                            Balloon.show(requireContext(), getString(R.string.threads_failed_to_open_file));
                         }
                     } catch (SecurityException e) {
                         LoggerEdna.error("file can't be sent", e);
-                        showToast(getString(R.string.threads_failed_to_open_file));
+                        Balloon.show(requireContext(), getString(R.string.threads_failed_to_open_file));
                     }
                 } else {
                     // Недопустимый размер файла
-                    showToast(getString(R.string.threads_not_allowed_file_size,
+                    Balloon.show(requireContext(), getString(R.string.threads_not_allowed_file_size,
                             FileHelper.INSTANCE.getMaxAllowedFileSize()));
                 }
             } else {
                 // Недопустимое расширение файла
-                showToast(getString(R.string.threads_not_allowed_file_extension));
+                Balloon.show(requireContext(), getString(R.string.threads_not_allowed_file_extension));
             }
         }
     }
@@ -1544,7 +1545,7 @@ public final class ChatFragment extends BaseFragment implements
         if (layoutManager == null) {
             return;
         }
-        if(item == null) {
+        if (item == null) {
             return;
         }
 
@@ -1746,11 +1747,7 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     public void showConnectionError() {
-        showToast(requireContext().getString(R.string.threads_message_not_sent));
-    }
-
-    public void showToast(final String message) {
-        Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+        Balloon.show(requireContext(), requireContext().getString(R.string.threads_message_not_sent));
     }
 
     public void setMessageState(String messageId, MessageState state) {
@@ -1875,11 +1872,11 @@ public final class ChatFragment extends BaseFragment implements
             if (activity != null) {
                 updateProgress(fileDescription);
                 if (t instanceof FileNotFoundException) {
-                    showToast(getString(R.string.threads_error_no_file));
+                    Balloon.show(requireContext(), getString(R.string.threads_error_no_file));
                     chatAdapter.onDownloadError(fileDescription);
                 }
                 if (t instanceof UnknownHostException) {
-                    showToast(getString(R.string.threads_check_connection));
+                    Balloon.show(requireContext(), getString(R.string.threads_check_connection));
                     chatAdapter.onDownloadError(fileDescription);
                 }
             }
@@ -2007,7 +2004,7 @@ public final class ChatFragment extends BaseFragment implements
             case REQUEST_PERMISSION_RECORD_AUDIO:
                 if (resultCode == PermissionsActivity.RESPONSE_GRANTED) {
                     binding.recordButton.setListenForRecord(true);
-                    showToast(requireContext().getString(R.string.threads_hold_button_to_record_audio));
+                    Balloon.show(requireContext(), requireContext().getString(R.string.threads_hold_button_to_record_audio));
                 }
                 break;
         }
@@ -2330,7 +2327,7 @@ public final class ChatFragment extends BaseFragment implements
         if (FileUtils.canBeSent(requireContext(), uri)) {
             onFileResult(uri);
         } else {
-            showToast(getString(R.string.threads_failed_to_open_file));
+            Balloon.show(requireContext(), getString(R.string.threads_failed_to_open_file));
         }
     }
 
@@ -2369,6 +2366,10 @@ public final class ChatFragment extends BaseFragment implements
         binding.flEmpty.setVisibility(View.GONE);
     }
 
+    public void showBalloon(String message) {
+        Balloon.show(requireContext(), message);
+    }
+
     public int getChatItemsCount() {
         return chatAdapter.getItemCount();
     }
@@ -2396,9 +2397,9 @@ public final class ChatFragment extends BaseFragment implements
     private void showPermissionDescriptionDialog(@NonNull PermissionDescriptionType type,
                                                  int requestCode) {
         permissionDescriptionAlertDialogFragment =
-                PermissionDescriptionAlertDialogFragment.newInstance(type, requestCode);
+                PermissionDescriptionAlertFragment.newInstance(type, requestCode);
         permissionDescriptionAlertDialogFragment.show(getChildFragmentManager(),
-                PermissionDescriptionAlertDialogFragment.TAG);
+                PermissionDescriptionAlertFragment.TAG);
     }
 
     @SuppressLint("RestrictedApi")

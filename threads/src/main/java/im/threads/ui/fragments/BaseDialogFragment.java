@@ -2,6 +2,7 @@ package im.threads.ui.fragments;
 
 import androidx.fragment.app.DialogFragment;
 
+import im.threads.business.utils.Balloon;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
@@ -27,5 +28,9 @@ public abstract class BaseDialogFragment extends DialogFragment {
             compositeDisposable.dispose();
             compositeDisposable = null;
         }
+    }
+
+    public void showToast(final String message) {
+        Balloon.show(requireContext(), message);
     }
 }

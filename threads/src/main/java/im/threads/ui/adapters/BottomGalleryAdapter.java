@@ -1,9 +1,7 @@
 package im.threads.ui.adapters;
 
-import android.content.Context;
 import android.net.Uri;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -14,10 +12,11 @@ import java.util.List;
 import im.threads.R;
 import im.threads.business.config.BaseConfig;
 import im.threads.business.utils.FileUtils;
-import im.threads.ui.holders.BottomGalleryImageHolder;
 import im.threads.ui.config.Config;
+import im.threads.ui.holders.BottomGalleryImageHolder;
 import im.threads.ui.models.BottomGalleryItem;
 import im.threads.ui.utils.FileHelper;
+import im.threads.business.utils.Balloon;
 
 public final class BottomGalleryAdapter extends RecyclerView.Adapter<BottomGalleryImageHolder> {
     private List<BottomGalleryItem> list;
@@ -40,11 +39,13 @@ public final class BottomGalleryAdapter extends RecyclerView.Adapter<BottomGalle
     public void onBindViewHolder(@NonNull final BottomGalleryImageHolder holder, int position) {
         final BottomGalleryItem item = list.get(position);
         holder.onBind(list.get(position), v -> {
-            if (!isSendingAllowed(item, holder.itemView.getContext())) return;
+            if (!isSendingAllowed(item, holder)) return;
             if (!item.isChosen() &&
                     mChosenItems.size() >= config.getChatStyle().getMaxGalleryImagesCount(BaseConfig.instance.context)) {
-                Toast.makeText(BaseConfig.instance.context, BaseConfig.instance.context.getString(R.string.threads_achieve_images_count_limit_message), Toast.LENGTH_SHORT)
-                        .show();
+                Balloon.show(
+                        holder.itemView.getContext(),
+                        holder.itemView.getContext().getString(R.string.threads_achieve_images_count_limit_message)
+                );
                 return;
             }
             item.setChosen(!item.isChosen());
@@ -62,7 +63,7 @@ public final class BottomGalleryAdapter extends RecyclerView.Adapter<BottomGalle
     }
 
     private boolean isSendingAllowed(@NonNull BottomGalleryItem item,
-                                     @NonNull Context context) {
+                                     @NonNull BottomGalleryImageHolder holder) {
         Uri uri = item.getImagePath();
         if (uri != null) {
             if (FileHelper.INSTANCE.isAllowedFileExtension(
@@ -74,21 +75,25 @@ public final class BottomGalleryAdapter extends RecyclerView.Adapter<BottomGalle
                     return true;
                 } else {
                     // Недопустимый размер файла
-                    showToast(context.getString(R.string.threads_not_allowed_file_size,
-                            FileHelper.INSTANCE.getMaxAllowedFileSize()), context);
+                    Balloon.show(
+                            holder.itemView.getContext(),
+                            holder.itemView.getContext().getString(
+                                    R.string.threads_not_allowed_file_size,
+                                    FileHelper.INSTANCE.getMaxAllowedFileSize()
+                            )
+                    );
                     return false;
                 }
             } else {
                 // Недопустимое расширение файла
-                showToast(context.getString(R.string.threads_not_allowed_file_extension), context);
+                Balloon.show(
+                        holder.itemView.getContext(),
+                        holder.itemView.getContext().getString(R.string.threads_not_allowed_file_extension)
+                );
                 return false;
             }
         }
         return false;
-    }
-
-    private void showToast(final String message, @NonNull Context context) {
-        Toast.makeText(context, message, Toast.LENGTH_LONG).show();
     }
 
     @Override

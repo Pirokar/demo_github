@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Patterns;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -157,7 +156,7 @@ public final class UrlUtils {
         if (browserIntent.resolveActivity(context.getPackageManager()) != null) {
             context.startActivity(browserIntent);
         } else {
-            Toast.makeText(context, "No application support this type of link", Toast.LENGTH_SHORT).show();
+            Balloon.show(context, "No application support this type of link");
         }
     }
 

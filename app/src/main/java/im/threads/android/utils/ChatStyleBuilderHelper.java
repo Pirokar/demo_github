@@ -265,6 +265,11 @@ public class ChatStyleBuilderHelper {
                 .setEmptyMediaAndFilesDescriptionFontPath(LATO_LIGHT_FONT_PATH)
                 .setEmptyMediaAndFilesDescriptionTextSize(R.dimen.alt_threads_attachments_no_files_description_text_size)
                 .setEmptyMediaAndFilesDescriptionTextColor(R.color.white)
+                .setToastStyle(
+                        R.dimen.text_big,
+                        R.color.threads_record_button_small_mic,
+                        R.color.threads_chat_toolbar_hint
+                )
                 .setChatBodyIconsColorStateTint(
                         R.color.threads_icon_and_separators_color,
                         R.color.alt_threads_chat_icons_tint,
