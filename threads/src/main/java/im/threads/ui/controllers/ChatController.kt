@@ -148,6 +148,10 @@ class ChatController private constructor() {
         messenger.resendMessages()
     }
 
+    fun onViewStop() {
+        isAllMessagesDownloaded = false
+    }
+
     fun onRatingClick(survey: Survey) {
         if (!surveyCompletionInProgress) {
             surveyCompletionInProgress = true

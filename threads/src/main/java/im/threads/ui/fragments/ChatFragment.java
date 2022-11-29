@@ -2080,6 +2080,7 @@ public final class ChatFragment extends BaseFragment implements
         LoggerEdna.info(ChatFragment.class.getSimpleName() + " onStop.");
 
         super.onStop();
+        mChatController.onViewStop();
         chatIsShown = false;
         isInMessageSearchMode = false;
         if (fdMediaPlayer != null) {
