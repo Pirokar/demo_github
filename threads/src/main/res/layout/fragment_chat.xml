@@ -334,7 +334,6 @@
                         android:layout_height="wrap_content"
                         android:gravity="center_horizontal"
                         android:orientation="horizontal"
-                        android:paddingStart="36dp"
                         android:visibility="gone"
                         tools:visibility="visible">
 

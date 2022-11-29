@@ -2127,12 +2127,10 @@ public final class ChatFragment extends BaseFragment implements
         ColorsHelper.setTint(activity, binding.popupMenuButton, style.chatToolbarTextColorResId);
         binding.popupMenuButton.setOnClickListener(v -> showPopup());
         showOverflowMenu();
-        int toolbarInverseIconTint = style.chatBodyIconsTint == 0
-                ? style.chatToolbarInverseIconTintResId : style.chatBodyIconsTint;
         binding.contentCopy.setImageResource(style.chatToolbarContentCopyIconResId);
-        ColorsHelper.setTint(activity, binding.contentCopy, toolbarInverseIconTint);
+        ColorsHelper.setTint(activity, binding.contentCopy, style.chatToolbarTextColorResId);
         binding.reply.setImageResource(style.chatToolbarReplyIconResId);
-        ColorsHelper.setTint(activity, binding.reply, toolbarInverseIconTint);
+        ColorsHelper.setTint(activity, binding.reply, style.chatToolbarTextColorResId);
         if (getResources().getBoolean(style.fixedChatTitle)) {
             setTitleStateDefault();
         }
