@@ -67,7 +67,7 @@ class ImageFromConsultViewHolder(
         onLongClickListener: OnLongClickListener,
         onAvatarClickListener: View.OnClickListener
     ) {
-        subscribeForHighlighting(consultPhrase, rootLayout)
+        subscribeForHighlighting(consultPhrase, itemView)
         applyBubbleLayoutStyle()
         timeStampTextView.setOnClickListener(buttonClickListener)
         timeStampTextView.setOnLongClickListener(onLongClickListener)

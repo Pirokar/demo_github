@@ -12,7 +12,6 @@ import android.view.ViewGroup.MarginLayoutParams
 import android.view.animation.Animation
 import android.widget.FrameLayout
 import android.widget.ImageView
-import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.BlendModeColorFilterCompat
@@ -106,7 +105,6 @@ class ConsultPhraseHolder(
                 .toInt()
     }
 
-    private val rootLayout: RelativeLayout = itemView.findViewById(R.id.rootLayout)
     private val phraseFrame: View = itemView.findViewById(R.id.phraseFrame)
     private val ogDataLayout: ViewGroup = itemView.findViewById(R.id.ogDataLayout)
     private val ogTimestamp = itemView.findViewById<TextView>(R.id.ogTimeStamp).apply {
@@ -153,7 +151,7 @@ class ConsultPhraseHolder(
         onAvatarClickListener: View.OnClickListener
     ) {
         setupPaddingsAndBorders(consultPhrase.fileDescription)
-        subscribeForHighlighting(consultPhrase, rootLayout)
+        subscribeForHighlighting(consultPhrase, itemView)
         subscribeForOpenGraphData(
             OGDataContent(
                 WeakReference(ogDataLayout),
