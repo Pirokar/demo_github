@@ -15,6 +15,7 @@ import okhttp3.Interceptor
 
 class ConfigBuilder(context: Context) : BaseConfigBuilder(context) {
     private var chatStyle: ChatStyle? = null
+    private var isAttachmentsEnabled: Boolean? = null
 
     private var pendingIntentCreator: PendingIntentCreator =
         object : PendingIntentCreator {
@@ -102,6 +103,11 @@ class ConfigBuilder(context: Context) : BaseConfigBuilder(context) {
         return this
     }
 
+    fun showAttachmentsButton(): ConfigBuilder {
+        isAttachmentsEnabled = true
+        return this
+    }
+
     override fun enableLogging(config: LoggerConfig?): ConfigBuilder {
         super.loggerConfig = config
         return this
@@ -125,7 +131,8 @@ class ConfigBuilder(context: Context) : BaseConfigBuilder(context) {
             surveyCompletionDelay,
             requestConfig,
             isSslPinningDisabled,
-            certificateRawResIds
+            certificateRawResIds,
+            isAttachmentsEnabled
         )
     }
 }

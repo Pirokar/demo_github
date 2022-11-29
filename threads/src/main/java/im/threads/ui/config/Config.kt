@@ -33,7 +33,8 @@ class Config(
     surveyCompletionDelay: Int,
     requestConfig: RequestConfig,
     isSSLPinningDisabled: Boolean,
-    certificateRawResIds: List<Int>?
+    certificateRawResIds: List<Int>?,
+    private val isAttachmentsEnabled: Boolean?
 ) : BaseConfig(
     context, serverBaseUrl, datastoreUrl, threadsGateUrl, threadsGateProviderUid,
     isNewChatCenterApi, loggerConfig, unreadMessagesCountListener, networkInterceptor, isDebugLoggingEnabled,
@@ -53,7 +54,6 @@ class Config(
 
     private val styleUseCase: StyleUseCase by inject()
 
-    var attachmentEnabled = false
     var filesAndMediaMenuItemEnabled = false
 
     /**
@@ -62,7 +62,6 @@ class Config(
     internal var screenSize = Size(0, 0)
 
     init {
-        attachmentEnabled = MetadataUi.getAttachmentEnabled(this.context)
         filesAndMediaMenuItemEnabled = MetadataUi.getFilesAndMediaMenuItemEnabled(this.context)
         setChatStyle(chatStyle)
     }
@@ -127,6 +126,10 @@ class Config(
             cameraPermissionDescriptionDialogStyle = it
             styleUseCase.setIncomingStyle(PermissionDescriptionType.CAMERA, it)
         }
+    }
+
+    fun getIsAttachmentsEnabled(): Boolean {
+        return isAttachmentsEnabled ?: MetadataUi.getAttachmentEnabled(context) ?: false
     }
 
     companion object {

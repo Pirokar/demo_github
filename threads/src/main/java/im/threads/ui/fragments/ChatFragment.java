@@ -351,7 +351,7 @@ public final class ChatFragment extends BaseFragment implements
 
     private void initInputLayout(@NonNull Activity activity) {
         applyTintAndColorState(activity);
-        int attachmentVisibility = config.getAttachmentEnabled() ? View.VISIBLE : View.GONE;
+        int attachmentVisibility = config.getIsAttachmentsEnabled() ? View.VISIBLE : View.GONE;
         binding.addAttachment.setVisibility(attachmentVisibility);
         binding.addAttachment.setOnClickListener(v -> openBottomSheetAndGallery());
         binding.sendMessage.setOnClickListener(v -> onSendButtonClick());
@@ -386,7 +386,7 @@ public final class ChatFragment extends BaseFragment implements
 
     private void initRecording() {
         final RecordButton recordButton = binding.recordButton;
-        if (!style.voiceMessageEnabled || !config.getAttachmentEnabled()) {
+        if (!style.voiceMessageEnabled || !config.getIsAttachmentsEnabled()) {
             recordButton.setVisibility(View.GONE);
             return;
         }
@@ -767,7 +767,7 @@ public final class ChatFragment extends BaseFragment implements
 
     private void setRecordButtonVisibility(@NonNull Boolean isInputEmpty) {
         boolean isButtonVisible = isInputEmpty && style.voiceMessageEnabled
-                && config.getAttachmentEnabled();
+                && config.getIsAttachmentsEnabled();
         binding.recordButton.setVisibility(isButtonVisible ? View.VISIBLE : View.GONE);
     }
 
