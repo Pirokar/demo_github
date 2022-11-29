@@ -2126,12 +2126,10 @@ public final class ChatFragment extends BaseFragment implements
         ColorsHelper.setTint(activity, binding.popupMenuButton, style.chatToolbarTextColorResId);
         binding.popupMenuButton.setOnClickListener(v -> showPopup());
         showOverflowMenu();
-        int toolbarInverseIconTint = style.chatBodyIconsTint == 0
-                ? style.chatToolbarInverseIconTintResId : style.chatBodyIconsTint;
         binding.contentCopy.setImageResource(style.chatToolbarContentCopyIconResId);
-        ColorsHelper.setTint(activity, binding.contentCopy, toolbarInverseIconTint);
+        ColorsHelper.setTint(activity, binding.contentCopy, style.chatToolbarTextColorResId);
         binding.reply.setImageResource(style.chatToolbarReplyIconResId);
-        ColorsHelper.setTint(activity, binding.reply, toolbarInverseIconTint);
+        ColorsHelper.setTint(activity, binding.reply, style.chatToolbarTextColorResId);
         if (getResources().getBoolean(style.fixedChatTitle)) {
             setTitleStateDefault();
         }
@@ -2267,6 +2265,7 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     private void updateUIonPhraseLongClick(ChatPhrase chatPhrase, int position) {
+        LoggerEdna.error("$$$$$$$$$     updateUIonPhraseLongClick(1)");
         unChooseItem();
         Activity activity = getActivity();
         if (activity == null) {
@@ -2298,6 +2297,7 @@ public final class ChatFragment extends BaseFragment implements
             hideBackButton();
         });
         chatAdapter.setItemHighlighted(chatPhrase);
+        LoggerEdna.error("$$$$$$$$$     updateUIonPhraseLongClick(2)");
     }
 
     public void showQuickReplies(QuickReplyItem quickReplies) {
