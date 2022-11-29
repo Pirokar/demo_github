@@ -14,12 +14,8 @@ object Balloon {
 
     @JvmStatic
     fun show(context: Context, message: String) {
-        if (getInstance().getChatStyle().isToastStylable) {
-            if (context is Activity) {
-                showSnackbar(context, message)
-            } else {
-                Toast.makeText(context, message, Toast.LENGTH_LONG).show()
-            }
+        if (getInstance().getChatStyle().isToastStylable && context is Activity) {
+            showSnackbar(context, message)
         } else {
             Toast.makeText(context, message, Toast.LENGTH_LONG).show()
         }
