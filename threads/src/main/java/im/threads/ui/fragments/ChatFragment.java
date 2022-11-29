@@ -150,7 +150,7 @@ public final class ChatFragment extends BaseFragment implements
         PopupMenu.OnMenuItemClickListener,
         FileSelectedListener,
         ChatCenterAudioConverterCallback,
-        PermissionDescriptionAlertDialogFragment.OnAllowPermissionClickListener {
+        PermissionDescriptionAlertFragment.OnAllowPermissionClickListener {
 
     public static final int REQUEST_CODE_PHOTOS = 100;
     public static final int REQUEST_CODE_PHOTO = 101;
@@ -204,7 +204,7 @@ public final class ChatFragment extends BaseFragment implements
     @Nullable
     private AttachmentBottomSheetDialogFragment bottomSheetDialogFragment;
     @Nullable
-    private PermissionDescriptionAlertDialogFragment permissionDescriptionAlertDialogFragment;
+    private PermissionDescriptionAlertFragment permissionDescriptionAlertDialogFragment;
     private List<String> cameraPermissions;
     private List<Uri> mAttachedImages = new ArrayList<>();
     @Nullable
@@ -2397,9 +2397,9 @@ public final class ChatFragment extends BaseFragment implements
     private void showPermissionDescriptionDialog(@NonNull PermissionDescriptionType type,
                                                  int requestCode) {
         permissionDescriptionAlertDialogFragment =
-                PermissionDescriptionAlertDialogFragment.newInstance(type, requestCode);
+                PermissionDescriptionAlertFragment.newInstance(type, requestCode);
         permissionDescriptionAlertDialogFragment.show(getChildFragmentManager(),
-                PermissionDescriptionAlertDialogFragment.TAG);
+                PermissionDescriptionAlertFragment.TAG);
     }
 
     @SuppressLint("RestrictedApi")

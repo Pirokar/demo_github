@@ -37,7 +37,7 @@ import im.threads.ui.utils.ColorsHelper
 /**
  * Диалоговое окно с описанием причины запроса разрешения.
  */
-class PermissionDescriptionAlertDialogFragment : DialogFragment() {
+class PermissionDescriptionAlertFragment : DialogFragment() {
 
     private var onAllowPermissionClickListener: OnAllowPermissionClickListener? = null
     private val config: Config by lazy {
@@ -318,12 +318,12 @@ class PermissionDescriptionAlertDialogFragment : DialogFragment() {
         fun newInstance(
             type: PermissionDescriptionType,
             requestCode: Int
-        ): PermissionDescriptionAlertDialogFragment {
+        ): PermissionDescriptionAlertFragment {
             val args = Bundle().apply {
                 putSerializable(KEY_PERMISSION_DESCRIPTION_TYPE, type)
                 putInt(KEY_REQUEST_CODE, requestCode)
             }
-            return PermissionDescriptionAlertDialogFragment().apply {
+            return PermissionDescriptionAlertFragment().apply {
                 arguments = args
             }
         }

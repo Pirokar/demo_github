@@ -24,9 +24,9 @@ import im.threads.business.utils.FileUtils.saveToDownloads
 import im.threads.business.utils.ThreadsPermissionChecker
 import im.threads.ui.adapters.ImagesAdapter
 import im.threads.ui.config.Config
-import im.threads.ui.fragments.PermissionDescriptionAlertDialogFragment
-import im.threads.ui.fragments.PermissionDescriptionAlertDialogFragment.Companion.newInstance
-import im.threads.ui.fragments.PermissionDescriptionAlertDialogFragment.OnAllowPermissionClickListener
+import im.threads.ui.fragments.PermissionDescriptionAlertFragment
+import im.threads.ui.fragments.PermissionDescriptionAlertFragment.Companion.newInstance
+import im.threads.ui.fragments.PermissionDescriptionAlertFragment.OnAllowPermissionClickListener
 import im.threads.ui.permissions.PermissionsActivity
 import im.threads.ui.styles.permissions.PermissionDescriptionType
 import im.threads.ui.utils.ColorsHelper
@@ -47,8 +47,7 @@ class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionCl
     private var collectionSize = 0
     private var files: ArrayList<FileDescription> = ArrayList()
     private var compositeDisposable: CompositeDisposable? = CompositeDisposable()
-    private var permissionDescriptionAlertDialogFragment: PermissionDescriptionAlertDialogFragment? =
-        null
+    private var permissionDescrAlertFragment: PermissionDescriptionAlertFragment? = null
     private val config: Config by lazy { Config.getInstance() }
     private lateinit var titleTextView: TextView
     private val database: DatabaseHolder by inject()
@@ -217,15 +216,15 @@ class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionCl
     }
 
     private fun showStoragePermissionDescriptionDialog() {
-        if (permissionDescriptionAlertDialogFragment == null) {
-            permissionDescriptionAlertDialogFragment = newInstance(
+        if (permissionDescrAlertFragment == null) {
+            permissionDescrAlertFragment = newInstance(
                 PermissionDescriptionType.STORAGE,
                 CODE_REQUEST_DOWNLOAD
             )
         }
-        permissionDescriptionAlertDialogFragment?.show(
+        permissionDescrAlertFragment?.show(
             supportFragmentManager,
-            PermissionDescriptionAlertDialogFragment.TAG
+            PermissionDescriptionAlertFragment.TAG
         )
     }
 
@@ -247,7 +246,7 @@ class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionCl
     }
 
     override fun onDialogDetached() {
-        permissionDescriptionAlertDialogFragment = null
+        permissionDescrAlertFragment = null
     }
 
     override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}

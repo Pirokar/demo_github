@@ -43,7 +43,7 @@ public final class GalleryAdapter extends RecyclerView.Adapter<GalleryItemHolder
                     } else {
                         Context context = config.context;
                         if (chosenList.size() >= config.getChatStyle().getMaxGalleryImagesCount(context)) {
-                            Balloon.showSnackbar(
+                            Balloon.show(
                                     context,
                                     context.getString(R.string.threads_achieve_images_count_limit_message)
                             );
