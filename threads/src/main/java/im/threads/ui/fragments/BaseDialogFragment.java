@@ -2,8 +2,7 @@ package im.threads.ui.fragments;
 
 import androidx.fragment.app.DialogFragment;
 
-import im.threads.ui.config.Config;
-import im.threads.ui.utils.ToastUtils;
+import im.threads.ui.utils.Balloon;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
@@ -32,10 +31,6 @@ public abstract class BaseDialogFragment extends DialogFragment {
     }
 
     public void showToast(final String message) {
-        if (Config.getInstance().getChatStyle().isToastStylable())
-            ToastUtils.showSnackbar(getContext(), getView().getRootView(), message);
-        else {
-            ToastUtils.showToast(getContext(), message);
-        }
+        Balloon.show(requireContext(), message);
     }
 }

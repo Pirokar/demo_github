@@ -1,8 +1,6 @@
 package im.threads.ui.adapters;
 
-import android.content.Context;
 import android.net.Uri;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -18,7 +16,7 @@ import im.threads.ui.config.Config;
 import im.threads.ui.holders.BottomGalleryImageHolder;
 import im.threads.ui.models.BottomGalleryItem;
 import im.threads.ui.utils.FileHelper;
-import im.threads.ui.utils.ToastUtils;
+import im.threads.ui.utils.Balloon;
 
 public final class BottomGalleryAdapter extends RecyclerView.Adapter<BottomGalleryImageHolder> {
     private List<BottomGalleryItem> list;
@@ -44,9 +42,8 @@ public final class BottomGalleryAdapter extends RecyclerView.Adapter<BottomGalle
             if (!isSendingAllowed(item, holder)) return;
             if (!item.isChosen() &&
                     mChosenItems.size() >= config.getChatStyle().getMaxGalleryImagesCount(BaseConfig.instance.context)) {
-                showToast(
+                Balloon.show(
                         holder.itemView.getContext(),
-                        holder.itemView.getRootView(),
                         holder.itemView.getContext().getString(R.string.threads_achieve_images_count_limit_message)
                 );
                 return;
@@ -78,9 +75,8 @@ public final class BottomGalleryAdapter extends RecyclerView.Adapter<BottomGalle
                     return true;
                 } else {
                     // Недопустимый размер файла
-                    showToast(
+                    Balloon.show(
                             holder.itemView.getContext(),
-                            holder.itemView.getRootView(),
                             holder.itemView.getContext().getString(
                                     R.string.threads_not_allowed_file_size,
                                     FileHelper.INSTANCE.getMaxAllowedFileSize()
@@ -90,23 +86,14 @@ public final class BottomGalleryAdapter extends RecyclerView.Adapter<BottomGalle
                 }
             } else {
                 // Недопустимое расширение файла
-                showToast(
+                Balloon.show(
                         holder.itemView.getContext(),
-                        holder.itemView.getRootView(),
                         holder.itemView.getContext().getString(R.string.threads_not_allowed_file_extension)
                 );
                 return false;
             }
         }
         return false;
-    }
-
-    public void showToast(Context context, View view, final String message) {
-        if (Config.getInstance().getChatStyle().isToastStylable())
-            ToastUtils.showSnackbar(context, view, message);
-        else {
-            ToastUtils.showToast(context, message);
-        }
     }
 
     @Override

@@ -9,7 +9,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageButton
-import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
@@ -32,7 +31,7 @@ import im.threads.ui.permissions.PermissionsActivity
 import im.threads.ui.styles.permissions.PermissionDescriptionType
 import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.utils.ColorsHelper.setDrawableColor
-import im.threads.ui.utils.ToastUtils
+import im.threads.ui.utils.Balloon
 import im.threads.ui.utils.invisible
 import im.threads.ui.utils.runOnUiThread
 import im.threads.ui.utils.visible
@@ -44,12 +43,12 @@ import java.util.Collections
 
 class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionClickListener {
     private lateinit var mViewPager: ViewPager
-    private lateinit var rootView: RelativeLayout
     private var style = Config.getInstance().getChatStyle()
     private var collectionSize = 0
     private var files: ArrayList<FileDescription> = ArrayList()
     private var compositeDisposable: CompositeDisposable? = CompositeDisposable()
-    private var permissionDescriptionAlertDialogFragment: PermissionDescriptionAlertDialogFragment? = null
+    private var permissionDescriptionAlertDialogFragment: PermissionDescriptionAlertDialogFragment? =
+        null
     private val config: Config by lazy { Config.getInstance() }
     private lateinit var titleTextView: TextView
     private val database: DatabaseHolder by inject()
@@ -57,7 +56,6 @@ class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionCl
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_images)
-        rootView = findViewById(R.id.activity_root)
         initToolbar(findViewById(R.id.toolbar), findViewById(R.id.toolbar_shadow))
         mViewPager = findViewById(R.id.pager)
         mViewPager.addOnPageChangeListener(this)
@@ -167,22 +165,16 @@ class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionCl
     }
 
     private fun initToolbarTextPosition() {
-        val isToolbarTextCentered = im.threads.ui.config.Config.getInstance().getChatStyle().isToolbarTextCentered
-        val gravity = if (isToolbarTextCentered) android.view.Gravity.CENTER else android.view.Gravity.CENTER_VERTICAL
+        val isToolbarTextCentered =
+            im.threads.ui.config.Config.getInstance().getChatStyle().isToolbarTextCentered
+        val gravity =
+            if (isToolbarTextCentered) android.view.Gravity.CENTER else android.view.Gravity.CENTER_VERTICAL
         titleTextView.gravity = gravity
     }
 
     private fun setClickForBackBtn(backButton: ImageButton) {
         backButton.setOnClickListener {
             onBackPressed()
-        }
-    }
-
-    private fun showToast(message: String) {
-        if (Config.getInstance().getChatStyle().isToastStylable) {
-            ToastUtils.showSnackbar(this, rootView, message)
-        } else {
-            ToastUtils.showToast(this, message!!)
         }
     }
 
@@ -203,11 +195,14 @@ class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionCl
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
                         {
-                            showToast(getString(R.string.threads_saved_to_downloads))
+                            Balloon.show(
+                                this,
+                                getString(R.string.threads_saved_to_downloads)
+                            )
                         }
                     ) { throwable: Throwable? ->
+                        Balloon.show(this, getString(R.string.threads_unable_to_save))
                         error("downloadImage", throwable)
-                        showToast(getString(R.string.threads_unable_to_save))
                     }
             )
         }
@@ -258,7 +253,8 @@ class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionCl
     override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}
     override fun onPageSelected(position: Int) {
         Runnable {
-            val title = "${mViewPager.currentItem + 1} ${getString(R.string.threads_from)} $collectionSize"
+            val title =
+                "${mViewPager.currentItem + 1} ${getString(R.string.threads_from)} $collectionSize"
             setTitle(title, titleTextView)
         }.runOnUiThread()
     }

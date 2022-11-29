@@ -76,6 +76,7 @@ import im.threads.ui.activities.ImagesActivity.Companion.getStartIntent
 import im.threads.ui.config.Config
 import im.threads.ui.fragments.ChatFragment
 import im.threads.ui.preferences.PreferencesUiKeys
+import im.threads.ui.utils.Balloon
 import im.threads.ui.utils.preferences.PreferencesMigrationUi
 import im.threads.ui.utils.runOnUiThread
 import im.threads.ui.workers.NotificationWorker.Companion.removeNotification
@@ -197,7 +198,7 @@ class ChatController private constructor() {
                         if (query?.length == 1) {
                             Runnable {
                                 fragment?.showProgressBar()
-                                fragment?.showToast(appContext.getString(R.string.threads_history_loading_message))
+                                fragment?.showBalloon(appContext.getString(R.string.threads_history_loading_message))
                             }.runOnUiThread()
                         }
                         return@flatMap messenger.downloadMessagesTillEnd()
@@ -247,7 +248,7 @@ class ChatController private constructor() {
                     try {
                         activity.startActivity(target)
                     } catch (e: ActivityNotFoundException) {
-                        fragment?.showToast("No application support this type of file")
+                        fragment?.showBalloon("No application support this type of file")
                     }
                 }
             }
