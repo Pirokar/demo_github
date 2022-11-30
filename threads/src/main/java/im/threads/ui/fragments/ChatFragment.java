@@ -2127,10 +2127,12 @@ public final class ChatFragment extends BaseFragment implements
         ColorsHelper.setTint(activity, binding.popupMenuButton, style.chatToolbarTextColorResId);
         binding.popupMenuButton.setOnClickListener(v -> showPopup());
         showOverflowMenu();
+        int toolbarInverseIconTint = style.chatBodyIconsTint == 0
+                ? style.chatToolbarInverseIconTintResId : style.chatBodyIconsTint;
         binding.contentCopy.setImageResource(style.chatToolbarContentCopyIconResId);
-        ColorsHelper.setTint(activity, binding.contentCopy, style.chatToolbarTextColorResId);
+        ColorsHelper.setTint(activity, binding.contentCopy, toolbarInverseIconTint);
         binding.reply.setImageResource(style.chatToolbarReplyIconResId);
-        ColorsHelper.setTint(activity, binding.reply, style.chatToolbarTextColorResId);
+        ColorsHelper.setTint(activity, binding.reply, toolbarInverseIconTint);
         if (getResources().getBoolean(style.fixedChatTitle)) {
             setTitleStateDefault();
         }
@@ -2278,7 +2280,7 @@ public final class ChatFragment extends BaseFragment implements
         ColorsHelper.setTint(activity, binding.popupMenuButton, toolbarInverseIconTint);
         ColorsHelper.setTint(activity, binding.chatBackButton, toolbarInverseIconTint);
 
-        ColorsHelper.setBackgroundColor(activity, binding.toolbar, style.chatToolbarColorResId);
+        ColorsHelper.setBackgroundColor(activity, binding.toolbar, style.chatToolbarTextColorResId);
         binding.toolbar.setElevation(0);
 
         binding.copyControls.setVisibility(View.VISIBLE);
