@@ -2080,6 +2080,7 @@ public final class ChatFragment extends BaseFragment implements
         LoggerEdna.info(ChatFragment.class.getSimpleName() + " onStop.");
 
         super.onStop();
+        mChatController.onViewStop();
         chatIsShown = false;
         isInMessageSearchMode = false;
         if (fdMediaPlayer != null) {
@@ -2279,7 +2280,7 @@ public final class ChatFragment extends BaseFragment implements
         ColorsHelper.setTint(activity, binding.popupMenuButton, toolbarInverseIconTint);
         ColorsHelper.setTint(activity, binding.chatBackButton, toolbarInverseIconTint);
 
-        ColorsHelper.setBackgroundColor(activity, binding.toolbar, style.chatToolbarColorResId);
+        ColorsHelper.setBackgroundColor(activity, binding.toolbar, style.chatToolbarTextColorResId);
         binding.toolbar.setElevation(0);
 
         binding.copyControls.setVisibility(View.VISIBLE);

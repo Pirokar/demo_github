@@ -68,7 +68,7 @@ class ImageFromUserViewHolder(
         clickRunnable: Runnable,
         longClickRunnable: Runnable
     ) {
-        subscribeForHighlighting(userPhrase, rootLayout)
+        subscribeForHighlighting(userPhrase, itemView)
         image.setOnClickListener { clickRunnable.run() }
         image.setOnLongClickListener {
             longClickRunnable.run()
