@@ -570,7 +570,10 @@ class ChatController private constructor() {
         }
 
         if (!isDownloadingMessages) {
-            info(ThreadsApi.REST_TAG, "Loading history from ${ChatController::class.java.simpleName}")
+            info(
+                ThreadsApi.REST_TAG,
+                "Loading history from ${ChatController::class.java.simpleName}"
+            )
             isDownloadingMessages = true
             subscribe(
                 Single.fromCallable {
@@ -750,6 +753,7 @@ class ChatController private constructor() {
         subscribeToNewMessage()
         subscribeToUpdateAttachments()
         subscribeToMessageSendSuccess()
+        subscribeToTransportException()
         subscribeToCampaignMessageReplySuccess()
         subscribeToMessageSendError()
         subscribeToSurveySendSuccess()
@@ -760,6 +764,17 @@ class ChatController private constructor() {
         subscribeToClientNotificationDisplayTypeProcessor()
         subscribeSpeechMessageUpdated()
         subscribeForResendMessage()
+    }
+
+    private fun subscribeToTransportException() {
+        subscribe(
+            Flowable.fromPublisher(chatUpdateProcessor.errorProcessor)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+                    fragment?.showBalloon(it.message)
+                    error("subscribeToTransportException ", it)
+                }
+        )
     }
 
     private fun subscribeToCampaignMessageReplySuccess() {

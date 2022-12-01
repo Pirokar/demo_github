@@ -404,11 +404,16 @@ class ThreadsGateTransport(
             LoggerEdna.info("Receiving : $text")
             postSocketResponseMap(text)
             val response = BaseConfig.instance.gson.fromJson(text, BaseResponse::class.java)
-            LoggerEdna.error("Receiving : daseResponse ${response.data}")
             val action = response.action
-
             if (response.data.has(KEY_ERROR)) {
-                chatUpdateProcessor.postError(TransportException(response.data[KEY_ERROR].asString))
+                var errorMessage = response.data[KEY_ERROR].asString
+                if (response.data.has(KEY_ERROR_DETAILS)) {
+                    val errorDetails = response.data[KEY_ERROR_DETAILS].asString
+                    if (!errorDetails.isNullOrEmpty()) {
+                        errorMessage = "$errorMessage: $errorDetails"
+                    }
+                }
+                chatUpdateProcessor.postError(TransportException(errorMessage))
             } else if (action != null) {
                 if (action == Action.REGISTER_DEVICE) {
                     val data = BaseConfig.instance.gson.fromJson(
@@ -607,6 +612,7 @@ class ThreadsGateTransport(
 
         private const val KEY_TEXT = "text"
         private const val KEY_ERROR = "error"
+        private const val KEY_ERROR_DETAILS = "errorDetails"
         private const val KEY_CODE = "code"
         private const val KEY_REASON = "reason"
         private const val KEY_PROTOCOL = "protocol"
