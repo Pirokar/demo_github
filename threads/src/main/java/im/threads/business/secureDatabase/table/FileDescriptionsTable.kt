@@ -48,7 +48,7 @@ class FileDescriptionsTable : Table() {
             TABLE_FILE_DESCRIPTION,
             COLUMN_FD_MESSAGE_UUID_EXT
         )
-        sqlHelper.writableDatabase.rawQuery(query, arrayOf(messageUuid)).use { c ->
+        sqlHelper.readableDatabase.rawQuery(query, arrayOf(messageUuid)).use { c ->
             if (!c.moveToFirst()) {
                 return null
             }
@@ -103,7 +103,7 @@ class FileDescriptionsTable : Table() {
                 " where " + COLUMN_FD_MESSAGE_UUID_EXT + " = ?"
             )
         val selectionArgs = arrayOf(fdMessageUuid)
-        sqlHelper.writableDatabase.rawQuery(sql, selectionArgs).use { c ->
+        sqlHelper.readableDatabase.rawQuery(sql, selectionArgs).use { c ->
             val existsInDb: Boolean = c.count > 0
             if (existsInDb) {
                 c.moveToFirst()
@@ -134,7 +134,7 @@ class FileDescriptionsTable : Table() {
             COLUMN_FD_TIMESTAMP
         )
         val list: MutableList<FileDescription> = ArrayList()
-        sqlHelper.writableDatabase.rawQuery(query, arrayOf()).use { c ->
+        sqlHelper.readableDatabase.rawQuery(query, arrayOf()).use { c ->
             if (!c.moveToFirst()) {
                 return list
             }
