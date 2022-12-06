@@ -1,5 +1,6 @@
 package im.threads.ui.styles
 
+import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import im.threads.business.config.BaseConfig
 import im.threads.business.logger.LoggerEdna
@@ -11,6 +12,7 @@ import im.threads.ui.styles.permissions.PermissionDescriptionType
 import java.io.Serializable
 
 internal class StyleUseCase(private val preferences: Preferences) {
+    private val gson = Gson()
 
     val incomingStyle: ChatStyle?
         get() = getIncomingStyle(PreferencesUiKeys.APP_STYLE, ChatStyle::class.java)
@@ -75,6 +77,6 @@ internal class StyleUseCase(private val preferences: Preferences) {
     }
 
     private fun <T : Serializable?> setIncomingStyle(key: String, style: T) {
-        preferences.save(key, BaseConfig.instance.gson.toJson(style))
+        preferences.save(key, gson.toJson(style))
     }
 }
