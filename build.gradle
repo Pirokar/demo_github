@@ -1,0 +1,51 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+buildscript {
+    ext.kotlin_version = '1.6.21'
+    dependencies {
+        classpath 'com.android.tools.build:gradle:7.0.4'
+        classpath 'com.google.gms:google-services:4.3.14'
+        classpath 'net.researchgate:gradle-release:2.8.1'
+        classpath 'com.huawei.agconnect:agcp:1.6.4.300'
+        classpath "org.jlleitschuh.gradle:ktlint-gradle:10.3.0"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-allopen:$kotlin_version"
+    }
+}
+
+plugins {
+    id 'com.android.application' version '7.2.1' apply false
+    id 'com.android.library' version '7.2.1' apply false
+    id 'org.jetbrains.kotlin.android' version '1.6.10' apply false
+}
+
+plugins {
+    id 'org.jlleitschuh.gradle.ktlint' version "10.3.0"
+}
+
+subprojects {
+    apply plugin: "org.jlleitschuh.gradle.ktlint"
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+
+ext {
+    compileSdkVersion = 32
+    minSdkVersion = 21
+    targetSdkVersion = 32
+
+    androidXCoreVersion = '1.7.0'
+    materialComponentsVersion = '1.7.0'
+    appCompatVersion = '1.5.1'
+
+    constraintlayoutVersion = '2.1.4'
+    navigationVersion = '2.4.2'
+
+    testExpressoVersion = '3.4.0'
+    testJunitVersion = '4.13.2'
+    testJunitAndroidVersion = '1.1.4'
+    lifecycleViewmodelVersion = '2.4.0'
+    calligraphy3Version = '3.1.1'
+    viewpumpVersion = '2.0.3'
+}
