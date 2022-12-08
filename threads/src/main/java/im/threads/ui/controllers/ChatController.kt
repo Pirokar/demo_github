@@ -146,6 +146,7 @@ class ChatController private constructor() {
         PreferencesMigrationUi(appContext).migrateNamedPreferences(ChatController::class.java.simpleName)
         subscribeToChatEvents()
         messenger.resendMessages()
+        subscribeOnClientIdChange()
     }
 
     fun onViewStop() {
@@ -1439,7 +1440,6 @@ class ChatController private constructor() {
                 instance = ChatController()
             }
             clientUseCase.initClientId()
-            instance?.subscribeOnClientIdChange()
             return instance ?: ChatController()
         }
     }
