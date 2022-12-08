@@ -33,7 +33,7 @@ class QuickRepliesTable : Table() {
         val items: MutableList<QuickReply> = ArrayList()
         val query =
             "select * from $TABLE_QUICK_REPLIES where $COLUMN_QUICK_REPLIES_MESSAGE_UUID = ?"
-        sqlHelper.writableDatabase.rawQuery(
+        sqlHelper.readableDatabase.rawQuery(
             query,
             arrayOf(messageUUID)
         ).use { c ->

@@ -103,7 +103,7 @@ class MessagesTable(
             offset,
             COLUMN_TIMESTAMP
         )
-        sqlHelper.writableDatabase.rawQuery(query, null).use { c ->
+        sqlHelper.readableDatabase.rawQuery(query, null).use { c ->
             if (c.count == 0) {
                 return items
             }
@@ -126,7 +126,7 @@ class MessagesTable(
                 " order by " + COLUMN_TIMESTAMP + " desc"
             )
         val selectionArgs = arrayOf(messageUuid)
-        sqlHelper.writableDatabase.rawQuery(sql, selectionArgs).use { c ->
+        sqlHelper.readableDatabase.rawQuery(sql, selectionArgs).use { c ->
             if (c.moveToFirst()) {
                 return getChatItem(sqlHelper, c)
             }
@@ -229,7 +229,7 @@ class MessagesTable(
                     " order by " + COLUMN_TIMESTAMP + " desc"
                 )
         val selectionArgs = arrayOf(id)
-        sqlHelper.writableDatabase.rawQuery(sql, selectionArgs).use { c ->
+        sqlHelper.readableDatabase.rawQuery(sql, selectionArgs).use { c ->
             if (c.moveToFirst()) {
                 return ConsultInfo(
                     cursorGetString(c, COLUMN_NAME),
@@ -274,7 +274,7 @@ class MessagesTable(
                 " where " + COLUMN_MESSAGE_TYPE + " = " + MessageType.CONSULT_PHRASE.ordinal +
                 " order by " + COLUMN_TIMESTAMP + " desc"
             )
-        sqlHelper.writableDatabase.rawQuery(sql, arrayOf()).use { c ->
+        sqlHelper.readableDatabase.rawQuery(sql, arrayOf()).use { c ->
             if (c.moveToFirst()) {
                 return getConsultPhrase(sqlHelper, c)
             }
@@ -326,7 +326,7 @@ class MessagesTable(
                 " order by " + COLUMN_TIMESTAMP + " desc"
             )
         val selectionArgs = arrayOf(sendingId.toString())
-        sqlHelper.writableDatabase.rawQuery(sql, selectionArgs).use { c ->
+        sqlHelper.readableDatabase.rawQuery(sql, selectionArgs).use { c ->
             if (c.moveToFirst()) {
                 return getSurvey(sqlHelper, c)
             }
@@ -335,7 +335,7 @@ class MessagesTable(
     }
 
     fun getMessagesCount(sqlHelper: SQLiteOpenHelper): Int {
-        sqlHelper.writableDatabase.rawQuery(
+        sqlHelper.readableDatabase.rawQuery(
             String.format(
                 Locale.US,
                 "select count(%s) from %s",
@@ -364,8 +364,7 @@ class MessagesTable(
                 " and " + COLUMN_IS_READ + " = 0" +
                 " order by " + COLUMN_TIMESTAMP + " asc"
             )
-        sqlHelper.writableDatabase.rawQuery(sql, null)
-            .use { c -> return c.count }
+        sqlHelper.readableDatabase.rawQuery(sql, null).use { c -> return c.count }
     }
 
     fun getUnreadMessagesUuid(sqlHelper: SQLiteOpenHelper): List<String?> {
@@ -381,7 +380,7 @@ class MessagesTable(
                 " order by " + COLUMN_TIMESTAMP + " asc"
             )
         val ids: MutableSet<String?> = HashSet()
-        sqlHelper.writableDatabase.rawQuery(sql, null).use { c ->
+        sqlHelper.readableDatabase.rawQuery(sql, null).use { c ->
             c.moveToFirst()
             while (!c.isAfterLast) {
                 ids.add(cursorGetString(c, COLUMN_MESSAGE_UUID))
@@ -623,7 +622,7 @@ class MessagesTable(
                 " where " + COLUMN_MESSAGE_UUID + " = ?"
             )
         val selectionArgs = arrayOf(cv.getAsString(COLUMN_MESSAGE_UUID))
-        sqlHelper.writableDatabase.rawQuery(sql, selectionArgs).use { c ->
+        sqlHelper.readableDatabase.rawQuery(sql, selectionArgs).use { c ->
             if (c.count > 0) {
                 sqlHelper.writableDatabase
                     .update(
@@ -656,7 +655,7 @@ class MessagesTable(
         cv.put(COLUMN_MESSAGE_SEND_STATE, survey.sentState.ordinal)
         cv.put(COLUMN_DISPLAY_MESSAGE, survey.isDisplayMessage)
         cv.put(COLUMN_IS_READ, survey.isRead)
-        sqlHelper.writableDatabase.rawQuery(sql, selectionArgs).use { c ->
+        sqlHelper.readableDatabase.rawQuery(sql, selectionArgs).use { c ->
             if (c.count > 0) {
                 sqlHelper.writableDatabase
                     .update(

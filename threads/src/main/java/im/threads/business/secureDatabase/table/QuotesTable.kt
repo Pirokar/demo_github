@@ -36,7 +36,7 @@ class QuotesTable(private val fileDescriptionsTable: FileDescriptionsTable) : Ta
             cv.put(COLUMN_QUOTE_FROM, quote.phraseOwnerTitle)
             cv.put(COLUMN_QUOTE_BODY, quote.text)
             cv.put(COLUMN_QUOTE_TIMESTAMP, quote.timeStamp)
-            sqlHelper.writableDatabase.rawQuery(
+            sqlHelper.readableDatabase.rawQuery(
                 (
                     "select " + COLUMN_QUOTED_BY_MESSAGE_UUID_EXT + " from " + TABLE_QUOTE +
                         " where " + COLUMN_QUOTED_BY_MESSAGE_UUID_EXT + " = ?"
@@ -75,7 +75,7 @@ class QuotesTable(private val fileDescriptionsTable: FileDescriptionsTable) : Ta
             TABLE_QUOTE,
             COLUMN_QUOTED_BY_MESSAGE_UUID_EXT
         )
-        sqlHelper.writableDatabase.rawQuery(query, arrayOf(quotedByMessageUuid))
+        sqlHelper.readableDatabase.rawQuery(query, arrayOf(quotedByMessageUuid))
             .use { c ->
                 if (c.moveToFirst()) {
                     return Quote(
@@ -101,7 +101,7 @@ class QuotesTable(private val fileDescriptionsTable: FileDescriptionsTable) : Ta
             COLUMN_QUOTE_TIMESTAMP
         )
         val list: MutableList<Quote> = ArrayList()
-        sqlHelper.writableDatabase.rawQuery(query, arrayOf()).use { c ->
+        sqlHelper.readableDatabase.rawQuery(query, arrayOf()).use { c ->
             if (!c.moveToFirst()) {
                 return list
             }
