@@ -4,6 +4,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import androidx.annotation.RequiresApi
 import im.threads.business.config.BaseConfigBuilder
 import im.threads.business.core.UnreadMessagesCountListener
 import im.threads.business.logger.LoggerConfig
@@ -108,6 +109,12 @@ class ConfigBuilder(context: Context) : BaseConfigBuilder(context) {
         return this
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    override fun setNotificationImportance(importance: Int): ConfigBuilder {
+        super.setNotificationImportance(importance)
+        return this
+    }
+
     override fun enableLogging(config: LoggerConfig?): ConfigBuilder {
         super.loggerConfig = config
         return this
@@ -132,6 +139,7 @@ class ConfigBuilder(context: Context) : BaseConfigBuilder(context) {
             requestConfig,
             isSslPinningDisabled,
             certificateRawResIds,
+            notificationLevel,
             isAttachmentsEnabled
         )
     }

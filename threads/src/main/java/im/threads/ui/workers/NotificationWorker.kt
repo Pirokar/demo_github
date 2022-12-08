@@ -25,6 +25,7 @@ import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import im.threads.R
+import im.threads.business.config.BaseConfig
 import im.threads.business.controllers.UnreadMessagesController
 import im.threads.business.formatters.MessageFormatter
 import im.threads.business.imageLoading.ImageLoader
@@ -46,6 +47,7 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
     Worker(context, workerParameters) {
 
     private val executor = Executors.newSingleThreadExecutor()
+    private val config: BaseConfig by lazy { BaseConfig.instance }
 
     private var notificationChannel: NotificationChannel? = null
 
@@ -155,7 +157,7 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
                     notificationChannel = NotificationChannel(
                         CHANNEL_ID,
                         context.getString(R.string.threads_channel_name),
-                        NotificationManager.IMPORTANCE_DEFAULT
+                        config.notificationImportance
                     )
                     notificationChannel?.let {
                         notificationManager.createNotificationChannel(it)
