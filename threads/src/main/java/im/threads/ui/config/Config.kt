@@ -34,11 +34,13 @@ class Config(
     requestConfig: RequestConfig,
     isSSLPinningDisabled: Boolean,
     certificateRawResIds: List<Int>?,
+    notificationImportance: Int,
     private val isAttachmentsEnabled: Boolean?
 ) : BaseConfig(
     context, serverBaseUrl, datastoreUrl, threadsGateUrl, threadsGateProviderUid,
     isNewChatCenterApi, loggerConfig, unreadMessagesCountListener, networkInterceptor, isDebugLoggingEnabled,
-    historyLoadingCount, surveyCompletionDelay, requestConfig, isSSLPinningDisabled, certificateRawResIds
+    historyLoadingCount, surveyCompletionDelay, requestConfig, isSSLPinningDisabled, notificationImportance,
+    certificateRawResIds
 ) {
     @Volatile
     private var chatStyle: ChatStyle? = null
