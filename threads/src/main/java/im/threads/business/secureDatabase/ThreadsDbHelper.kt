@@ -2,7 +2,6 @@ package im.threads.business.secureDatabase
 
 import android.annotation.SuppressLint
 import android.content.Context
-import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.ChatItem
 import im.threads.business.models.ConsultInfo
 import im.threads.business.models.ConsultPhrase
@@ -19,7 +18,6 @@ import im.threads.business.secureDatabase.table.QuestionsTable
 import im.threads.business.secureDatabase.table.QuickRepliesTable
 import im.threads.business.secureDatabase.table.QuotesTable
 import net.zetetic.database.sqlcipher.SQLiteDatabase
-import net.zetetic.database.sqlcipher.SQLiteDatabaseCorruptException
 import net.zetetic.database.sqlcipher.SQLiteOpenHelper
 
 class ThreadsDbHelper private constructor(val context: Context, password: String) :
@@ -176,38 +174,10 @@ class ThreadsDbHelper private constructor(val context: Context, password: String
             if (securedPassword.isNullOrEmpty()) {
                 securedPassword = PasswordGenerator().generate()
                 preferences.save(PreferencesCoreKeys.DATABASE_PASSWORD, securedPassword)
-
-                try {
-                    tryToChangePassword(context, veryOldPassword, securedPassword)
-                    LoggerEdna.info("Database password migrated successfully")
-                } catch (exc: SQLiteDatabaseCorruptException) {
-                    try {
-                        tryToChangePassword(context, oldPassword, securedPassword)
-                    } catch (exc: SQLiteDatabaseCorruptException) {
-                        LoggerEdna.error("Password migrating error", exc)
-                    }
-                }
-
-                try {
-                    val newDatabase = ThreadsDbHelper(context, securedPassword)
-                    newDatabase.readableDatabase.rawQuery("SELECT * FROM ${QuotesTable.TABLE_QUOTE}")
-                    newDatabase.close()
-                } catch (exc: Exception) {
-                    LoggerEdna.error(
-                        "Cannot read database after password migrating. Database will be deleted",
-                        exc
-                    )
-                    context.deleteDatabase(DATABASE_NAME)
-                }
+                context.deleteDatabase(DATABASE_NAME)
             }
 
             return securedPassword
-        }
-
-        private fun tryToChangePassword(context: Context, oldPassword: String, newPassword: String) {
-            val oldDatabase = ThreadsDbHelper(context, oldPassword)
-            oldDatabase.writableDatabase.rawQuery("PRAGMA rekey = '$newPassword'")
-            oldDatabase.close()
         }
 
         private fun loadLibrary() {
