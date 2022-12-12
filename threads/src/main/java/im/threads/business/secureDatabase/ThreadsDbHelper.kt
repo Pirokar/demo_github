@@ -154,31 +154,34 @@ class ThreadsDbHelper private constructor(val context: Context, password: String
         private const val DATABASE_NAME = "messages_secure.db"
         private const val VERSION = 3
         private var isLibraryLoaded = false
-        private const val oldPassword = "password"
-        const val DB_PASSWORD = "CdgF9rEjzaes8G"
+        private const val veryOldPassword = "password"
+        private const val oldPassword = "CdgF9rEjzaes8G"
 
         fun getInstance(context: Context): ThreadsDbHelper {
-            migratePassword(context)
-            return ThreadsDbHelper(context, DB_PASSWORD)
+            val password = getDbPassword(context)
+            return ThreadsDbHelper(context, password)
         }
 
-        private fun migratePassword(context: Context) {
+        private fun getDbPassword(context: Context): String {
             val preferences = Preferences(context)
-            if (preferences.get<Boolean>(PreferencesCoreKeys.IS_DATABASE_PASSWORD_MIGRATED) != true) {
-                try {
-                    val oldDatabase = ThreadsDbHelper(context, oldPassword)
-                    oldDatabase.writableDatabase.rawQuery("PRAGMA rekey = '$DB_PASSWORD'")
-                    oldDatabase.close()
+            var securedPassword = preferences.get<String>(PreferencesCoreKeys.DATABASE_PASSWORD)
+            if (securedPassword.isNullOrEmpty()) {
+                securedPassword = DatabasePassGenerator().generate()
+                preferences.save(PreferencesCoreKeys.DATABASE_PASSWORD, securedPassword)
 
+                try {
+                    tryToChangePassword(context, veryOldPassword, securedPassword)
                     LoggerEdna.info("Database password migrated successfully")
                 } catch (exc: SQLiteDatabaseCorruptException) {
-                    LoggerEdna.error("Password migrating error", exc)
-                } finally {
-                    preferences.save(PreferencesCoreKeys.IS_DATABASE_PASSWORD_MIGRATED, true)
+                    try {
+                        tryToChangePassword(context, oldPassword, securedPassword)
+                    } catch (exc: SQLiteDatabaseCorruptException) {
+                        LoggerEdna.error("Password migrating error", exc)
+                    }
                 }
 
                 try {
-                    val newDatabase = ThreadsDbHelper(context, DB_PASSWORD)
+                    val newDatabase = ThreadsDbHelper(context, securedPassword)
                     newDatabase.readableDatabase.rawQuery("SELECT * FROM ${QuotesTable.TABLE_QUOTE}")
                     newDatabase.close()
                 } catch (exc: Exception) {
@@ -189,6 +192,14 @@ class ThreadsDbHelper private constructor(val context: Context, password: String
                     context.deleteDatabase(DATABASE_NAME)
                 }
             }
+
+            return securedPassword
+        }
+
+        private fun tryToChangePassword(context: Context, oldPassword: String, newPassword: String) {
+            val oldDatabase = ThreadsDbHelper(context, oldPassword)
+            oldDatabase.writableDatabase.rawQuery("PRAGMA rekey = '$newPassword'")
+            oldDatabase.close()
         }
 
         private fun loadLibrary() {
