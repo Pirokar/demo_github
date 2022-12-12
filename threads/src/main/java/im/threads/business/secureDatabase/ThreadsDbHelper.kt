@@ -1,5 +1,6 @@
 package im.threads.business.secureDatabase
 
+import android.annotation.SuppressLint
 import android.content.Context
 import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.ChatItem
@@ -157,16 +158,23 @@ class ThreadsDbHelper private constructor(val context: Context, password: String
         private const val veryOldPassword = "password"
         private const val oldPassword = "CdgF9rEjzaes8G"
 
+        @SuppressLint("StaticFieldLeak")
+        private var dbInstance: ThreadsDbHelper? = null
+
+        @Synchronized
         fun getInstance(context: Context): ThreadsDbHelper {
             val password = getDbPassword(context)
-            return ThreadsDbHelper(context, password)
+            if (dbInstance == null) {
+                dbInstance = ThreadsDbHelper(context, password)
+            }
+            return dbInstance ?: ThreadsDbHelper(context, password)
         }
 
         private fun getDbPassword(context: Context): String {
             val preferences = Preferences(context)
             var securedPassword = preferences.get<String>(PreferencesCoreKeys.DATABASE_PASSWORD)
             if (securedPassword.isNullOrEmpty()) {
-                securedPassword = DatabasePassGenerator().generate()
+                securedPassword = PasswordGenerator().generate()
                 preferences.save(PreferencesCoreKeys.DATABASE_PASSWORD, securedPassword)
 
                 try {

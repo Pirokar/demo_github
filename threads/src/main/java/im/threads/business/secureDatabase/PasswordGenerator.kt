@@ -2,11 +2,17 @@ package im.threads.business.secureDatabase
 
 import java.security.SecureRandom
 
-class DatabasePassGenerator {
+/**
+ * Генератор паролей
+ */
+class PasswordGenerator {
     private val letters = "abcdefghijklmnopqrstuvwxyz"
     private val uppercaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     private val numbers = "0123456789"
 
+    /**
+     * Генерирует и возвращает пароль, состоящий из прописных и строчных букв + цифры
+     */
     fun generate(): String {
         val result = "$letters$uppercaseLetters$numbers"
         var i = 0

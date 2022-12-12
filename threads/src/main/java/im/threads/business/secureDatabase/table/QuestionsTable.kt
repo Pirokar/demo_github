@@ -32,7 +32,7 @@ class QuestionsTable : Table() {
     fun getQuestion(sqlHelper: SQLiteOpenHelper, surveySendingId: Long): QuestionDTO? {
         val query =
             "select * from $TABLE_QUESTIONS where $COLUMN_QUESTION_SURVEY_SENDING_ID_EXT = ?"
-        sqlHelper.writableDatabase
+        sqlHelper.readableDatabase
             .rawQuery(query, arrayOf(surveySendingId.toString())).use {
                 if (!it.moveToFirst()) {
                     return null
@@ -75,7 +75,7 @@ class QuestionsTable : Table() {
         questionCv.put(COLUMN_QUESTION_TEXT, question.text)
         questionCv.put(COLUMN_QUESTION_SIMPLE, question.isSimple)
         questionCv.put(COLUMN_QUESTION_TIMESTAMP, question.phraseTimeStamp)
-        sqlHelper.writableDatabase.rawQuery(questionSql, questionSelectionArgs)
+        sqlHelper.readableDatabase.rawQuery(questionSql, questionSelectionArgs)
             .use { questionCursor ->
                 if (questionCursor.count > 0) {
                     sqlHelper.writableDatabase

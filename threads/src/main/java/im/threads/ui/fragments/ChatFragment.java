@@ -290,6 +290,61 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        LoggerEdna.info(ChatFragment.class.getSimpleName() + " onStart.");
+        setCurrentThreadId(mChatController.getThreadId());
+        BaseConfig.instance.transport.setLifecycle(getLifecycle());
+        ChatController.getInstance().getSettings();
+        ChatController.getInstance().loadHistory();
+    }
+
+    @Override
+    public void onStop() {
+        LoggerEdna.info(ChatFragment.class.getSimpleName() + " onStop.");
+
+        super.onStop();
+        mChatController.onViewStop();
+        chatIsShown = false;
+        isInMessageSearchMode = false;
+        if (fdMediaPlayer != null) {
+            fdMediaPlayer.clearClickedDownloadPath();
+        }
+        recorder = null;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        LoggerEdna.info(ChatFragment.class.getSimpleName() + " onPause.");
+        isResumed = false;
+
+        stopRecording();
+        FileDescription fileDescription = getFileDescription();
+        if (fileDescription == null || FileUtils.isVoiceMessage(fileDescription)) {
+            mChatController.setFileDescriptionDraft(fileDescription);
+        }
+        mChatController.setActivityIsForeground(false);
+        if (isAdded()) {
+            binding.swipeRefresh.setRefreshing(false);
+            binding.swipeRefresh.destroyDrawingCache();
+            binding.swipeRefresh.clearAnimation();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        LoggerEdna.info(ChatFragment.class.getSimpleName() + " onResume.");
+
+        super.onResume();
+        mChatController.setActivityIsForeground(true);
+        scrollToFirstUnreadMessage();
+        isResumed = true;
+        chatIsShown = true;
+        afterResume = true;
+    }
+
+    @Override
     public void onDestroyView() {
         LoggerEdna.info(ChatFragment.class.getSimpleName() + " onDestroyView.");
 
@@ -2010,18 +2065,6 @@ public final class ChatFragment extends BaseFragment implements
         }
     }
 
-    @Override
-    public void onResume() {
-        LoggerEdna.info(ChatFragment.class.getSimpleName() + " onResume.");
-
-        super.onResume();
-        mChatController.setActivityIsForeground(true);
-        scrollToFirstUnreadMessage();
-        isResumed = true;
-        chatIsShown = true;
-        afterResume = true;
-    }
-
     private void scrollToNewMessages() {
         LinearLayoutManager layoutManager = (LinearLayoutManager) binding.recycler.getLayoutManager();
         if (layoutManager == null) {
@@ -2062,49 +2105,6 @@ public final class ChatFragment extends BaseFragment implements
                     }
                 }
             }
-        }
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        LoggerEdna.info(ChatFragment.class.getSimpleName() + " onStart.");
-        setCurrentThreadId(mChatController.getThreadId());
-        BaseConfig.instance.transport.setLifecycle(getLifecycle());
-        ChatController.getInstance().getSettings();
-        ChatController.getInstance().loadHistory();
-    }
-
-    @Override
-    public void onStop() {
-        LoggerEdna.info(ChatFragment.class.getSimpleName() + " onStop.");
-
-        super.onStop();
-        mChatController.onViewStop();
-        chatIsShown = false;
-        isInMessageSearchMode = false;
-        if (fdMediaPlayer != null) {
-            fdMediaPlayer.clearClickedDownloadPath();
-        }
-        recorder = null;
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        LoggerEdna.info(ChatFragment.class.getSimpleName() + " onPause.");
-        isResumed = false;
-
-        stopRecording();
-        FileDescription fileDescription = getFileDescription();
-        if (fileDescription == null || FileUtils.isVoiceMessage(fileDescription)) {
-            mChatController.setFileDescriptionDraft(fileDescription);
-        }
-        mChatController.setActivityIsForeground(false);
-        if (isAdded()) {
-            binding.swipeRefresh.setRefreshing(false);
-            binding.swipeRefresh.destroyDrawingCache();
-            binding.swipeRefresh.clearAnimation();
         }
     }
 

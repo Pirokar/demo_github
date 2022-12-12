@@ -46,6 +46,7 @@ open class BaseConfig(
     val surveyCompletionDelay: Int,
     val requestConfig: RequestConfig,
     val isSSLPinningDisabled: Boolean,
+    val notificationImportance: Int,
     certificateRawResIds: List<Int>?
 ) {
     @JvmField val context: Context

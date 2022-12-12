@@ -1,9 +1,12 @@
 package im.threads.business.config;
 
+import android.app.NotificationManager;
 import android.content.Context;
+import android.os.Build;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 import java.util.Collections;
 import java.util.List;
@@ -44,6 +47,9 @@ public class BaseConfigBuilder {
     protected RequestConfig requestConfig = new RequestConfig();
     protected List<Integer> certificateRawResIds = Collections.emptyList();
     protected Boolean isSslPinningDisabled = false;
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    protected int notificationImportance = NotificationManager.IMPORTANCE_DEFAULT;
 
     public BaseConfigBuilder(@NonNull Context context) {
         this.context = context;
@@ -122,6 +128,21 @@ public class BaseConfigBuilder {
         return this;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public BaseConfigBuilder setNotificationImportance(int importance) {
+        this.notificationImportance = importance;
+        return this;
+    }
+
+    protected int getNotificationLevel() {
+        int notificationLevel = 0;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            notificationLevel = notificationImportance;
+        }
+
+        return notificationLevel;
+    }
+
     public BaseConfig build() {
         return new BaseConfig(
                 context,
@@ -138,6 +159,7 @@ public class BaseConfigBuilder {
                 surveyCompletionDelay,
                 requestConfig,
                 isSslPinningDisabled,
+                getNotificationLevel(),
                 certificateRawResIds
         );
     }
