@@ -2,6 +2,7 @@ package im.threads.business.secureDatabase
 
 import android.annotation.SuppressLint
 import android.content.Context
+import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.ChatItem
 import im.threads.business.models.ConsultInfo
 import im.threads.business.models.ConsultPhrase
@@ -19,6 +20,7 @@ import im.threads.business.secureDatabase.table.QuickRepliesTable
 import im.threads.business.secureDatabase.table.QuotesTable
 import net.zetetic.database.sqlcipher.SQLiteDatabase
 import net.zetetic.database.sqlcipher.SQLiteOpenHelper
+import java.util.UUID
 
 class ThreadsDbHelper private constructor(val context: Context, password: String) :
     SQLiteOpenHelper(
@@ -160,6 +162,7 @@ class ThreadsDbHelper private constructor(val context: Context, password: String
         @Synchronized
         fun getInstance(context: Context): ThreadsDbHelper {
             val password = getDbPassword(context)
+            checkDatabase(context, password)
             if (dbInstance == null) {
                 dbInstance = ThreadsDbHelper(context, password)
             }
@@ -170,12 +173,23 @@ class ThreadsDbHelper private constructor(val context: Context, password: String
             val preferences = Preferences(context)
             var securedPassword = preferences.get<String>(PreferencesCoreKeys.DATABASE_PASSWORD)
             if (securedPassword.isNullOrEmpty()) {
-                securedPassword = PasswordGenerator().generate()
+                securedPassword = UUID.randomUUID().toString()
                 preferences.save(PreferencesCoreKeys.DATABASE_PASSWORD, securedPassword)
                 context.deleteDatabase(DATABASE_NAME)
             }
 
             return securedPassword
+        }
+
+        private fun checkDatabase(context: Context, password: String) {
+            try {
+                val newDatabase = ThreadsDbHelper(context, password)
+                newDatabase.readableDatabase.rawQuery("SELECT * FROM ${QuotesTable.TABLE_QUOTE}")
+                newDatabase.close()
+            } catch (exc: Exception) {
+                LoggerEdna.error("Cannot read database. Database will be deleted", exc)
+                context.deleteDatabase(DATABASE_NAME)
+            }
         }
 
         private fun loadLibrary() {
