@@ -153,8 +153,6 @@ class ThreadsDbHelper private constructor(val context: Context, password: String
         private const val DATABASE_NAME = "messages_secure.db"
         private const val VERSION = 3
         private var isLibraryLoaded = false
-        private const val veryOldPassword = "password"
-        private const val oldPassword = "CdgF9rEjzaes8G"
 
         @SuppressLint("StaticFieldLeak")
         private var dbInstance: ThreadsDbHelper? = null
