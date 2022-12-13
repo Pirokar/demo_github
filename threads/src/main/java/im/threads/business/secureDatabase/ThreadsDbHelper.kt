@@ -19,8 +19,8 @@ import im.threads.business.secureDatabase.table.QuestionsTable
 import im.threads.business.secureDatabase.table.QuickRepliesTable
 import im.threads.business.secureDatabase.table.QuotesTable
 import net.zetetic.database.sqlcipher.SQLiteDatabase
-import net.zetetic.database.sqlcipher.SQLiteDatabaseCorruptException
 import net.zetetic.database.sqlcipher.SQLiteOpenHelper
+import java.util.UUID
 
 class ThreadsDbHelper private constructor(val context: Context, password: String) :
     SQLiteOpenHelper(
@@ -155,47 +155,40 @@ class ThreadsDbHelper private constructor(val context: Context, password: String
         private const val DATABASE_NAME = "messages_secure.db"
         private const val VERSION = 3
         private var isLibraryLoaded = false
-        private const val oldPassword = "password"
-        const val DB_PASSWORD = "CdgF9rEjzaes8G"
 
         @SuppressLint("StaticFieldLeak")
         private var dbInstance: ThreadsDbHelper? = null
 
         @Synchronized
         fun getInstance(context: Context): ThreadsDbHelper {
-            migratePassword(context)
+            val password = getDbPassword(context)
+            checkDatabase(context, password)
             if (dbInstance == null) {
-                dbInstance = ThreadsDbHelper(context, DB_PASSWORD)
+                dbInstance = ThreadsDbHelper(context, password)
             }
-            return dbInstance ?: ThreadsDbHelper(context, DB_PASSWORD)
+            return dbInstance ?: ThreadsDbHelper(context, password)
         }
 
-        private fun migratePassword(context: Context) {
+        private fun getDbPassword(context: Context): String {
             val preferences = Preferences(context)
-            if (preferences.get<Boolean>(PreferencesCoreKeys.IS_DATABASE_PASSWORD_MIGRATED) != true) {
-                try {
-                    val oldDatabase = ThreadsDbHelper(context, oldPassword)
-                    oldDatabase.writableDatabase.rawQuery("PRAGMA rekey = '$DB_PASSWORD'")
-                    oldDatabase.close()
+            var securedPassword = preferences.get<String>(PreferencesCoreKeys.DATABASE_PASSWORD)
+            if (securedPassword.isNullOrEmpty()) {
+                securedPassword = UUID.randomUUID().toString()
+                preferences.save(PreferencesCoreKeys.DATABASE_PASSWORD, securedPassword)
+                context.deleteDatabase(DATABASE_NAME)
+            }
 
-                    LoggerEdna.info("Database password migrated successfully")
-                } catch (exc: SQLiteDatabaseCorruptException) {
-                    LoggerEdna.error("Password migrating error", exc)
-                } finally {
-                    preferences.save(PreferencesCoreKeys.IS_DATABASE_PASSWORD_MIGRATED, true)
-                }
+            return securedPassword
+        }
 
-                try {
-                    val newDatabase = ThreadsDbHelper(context, DB_PASSWORD)
-                    newDatabase.readableDatabase.rawQuery("SELECT * FROM ${QuotesTable.TABLE_QUOTE}")
-                    newDatabase.close()
-                } catch (exc: Exception) {
-                    LoggerEdna.error(
-                        "Cannot read database after password migrating. Database will be deleted",
-                        exc
-                    )
-                    context.deleteDatabase(DATABASE_NAME)
-                }
+        private fun checkDatabase(context: Context, password: String) {
+            try {
+                val newDatabase = ThreadsDbHelper(context, password)
+                newDatabase.readableDatabase.rawQuery("SELECT * FROM ${QuotesTable.TABLE_QUOTE}")
+                newDatabase.close()
+            } catch (exc: Exception) {
+                LoggerEdna.error("Cannot read database. Database will be deleted", exc)
+                context.deleteDatabase(DATABASE_NAME)
             }
         }
 
