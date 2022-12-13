@@ -65,8 +65,6 @@ open class BaseImageHolder(
         val resources = itemView.context.resources
         val style = Config.getInstance().getChatStyle()
 
-        bordersCreator.applyViewSize(imageLayout)
-
         val background = if (isIncomingMessage) {
             style.incomingMessageBubbleBackground
         } else {

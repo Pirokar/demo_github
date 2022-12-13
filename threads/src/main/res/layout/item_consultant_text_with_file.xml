@@ -34,18 +34,18 @@
 
         <FrameLayout
             android:id="@+id/imageRoot"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_width="@dimen/message_image_size"
+            android:layout_height="@dimen/message_image_size">
 
             <FrameLayout
                 android:id="@+id/imageLayout"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
                 <ImageView
                     android:id="@+id/image"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:adjustViewBounds="true" />
 
                 <ImageView
@@ -58,8 +58,8 @@
 
             <ImageView
                 android:id="@+id/errorImage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:minWidth="200dp"
                 android:minHeight="200dp"

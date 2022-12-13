@@ -222,7 +222,6 @@ class ConsultPhraseHolder(
 
         if (isImage) {
             imageRoot.visible()
-            val size = bordersCreator.applyViewSize(bubbleLayout, true)
 
             (bubbleLayout.layoutParams as ViewGroup.MarginLayoutParams).let {
                 it.marginEnd = 0
@@ -239,13 +238,9 @@ class ConsultPhraseHolder(
                     resources.getDimensionPixelSize(style.bubbleIncomingPaddingRight),
                     resources.getDimensionPixelSize(style.bubbleIncomingPaddingBottom)
                 )
-                image.layoutParams.width = size.first
-                image.layoutParams.height = size.first
             } else {
                 setPadding(0, 0, 0, 0)
                 (image.layoutParams as FrameLayout.LayoutParams).apply {
-                    width = size.first - borderLeft - borderRight
-                    height = size.first - borderTop - borderBottom
                     setMargins(borderLeft, borderTop, borderRight, borderBottom)
                     image.layoutParams = this
                 }

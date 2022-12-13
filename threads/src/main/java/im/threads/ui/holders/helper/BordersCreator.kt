@@ -2,7 +2,6 @@ package im.threads.ui.holders.helper
 
 import android.content.Context
 import android.view.View
-import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
 import im.threads.R
 import im.threads.ui.config.Config
@@ -95,25 +94,6 @@ class BordersCreator(
         if (borders.bottom < minimumVerticalMargin) {
             rootViewLayoutParams.bottomMargin = minimumVerticalMargin - borders.bottom
         }
-    }
-
-    /**
-     * Устанавливает сторону квадрата баббла как 3/4 от ширины экрана
-     * @param layout viewGroup, для которого будут установлены новые параметры
-     * @return возвращает пару - длина и ширина
-     */
-    fun <T : ViewGroup> applyViewSize(layout: T, keepHeight: Boolean = false): Pair<Int, Int> {
-        val lp = layout.layoutParams
-        val width = sideSize
-        val height = if (keepHeight) lp.height else sideSize
-
-        lp.width = width
-        lp.height = height
-        layout.layoutParams = lp
-        layout.invalidate()
-        layout.requestLayout()
-
-        return Pair(width, height)
     }
 
     data class BordersSize(val left: Int, val top: Int, val right: Int, val bottom: Int)
