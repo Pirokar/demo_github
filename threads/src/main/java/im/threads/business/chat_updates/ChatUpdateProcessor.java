@@ -5,19 +5,19 @@ import androidx.annotation.NonNull;
 import java.util.List;
 import java.util.Map;
 
+import im.threads.business.formatters.ChatItemType;
 import im.threads.business.models.CampaignMessage;
 import im.threads.business.models.ChatItem;
+import im.threads.business.models.ChatItemSendErrorModel;
+import im.threads.business.models.ClientNotificationDisplayType;
+import im.threads.business.models.InputFieldEnableModel;
+import im.threads.business.models.QuickReplyItem;
 import im.threads.business.models.SpeechMessageUpdate;
 import im.threads.business.models.Survey;
 import im.threads.business.transport.ChatItemProviderData;
 import im.threads.business.transport.TransportException;
 import im.threads.business.transport.models.Attachment;
 import im.threads.business.transport.models.AttachmentSettings;
-import im.threads.business.formatters.ChatItemType;
-import im.threads.business.models.ChatItemSendErrorModel;
-import im.threads.business.models.ClientNotificationDisplayType;
-import im.threads.business.models.InputFieldEnableModel;
-import im.threads.business.models.QuickReplyItem;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 
