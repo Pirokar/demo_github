@@ -249,7 +249,6 @@ class UserPhraseViewHolder(
 
         if (isImage) {
             imageRoot.visible()
-            val size = bordersCreator.applyViewSize(bubbleLayout, true)
 
             (bubbleLayout.layoutParams as MarginLayoutParams).let {
                 it.marginStart = 0
@@ -266,13 +265,9 @@ class UserPhraseViewHolder(
                     resources.getDimensionPixelSize(style.bubbleOutgoingPaddingRight),
                     resources.getDimensionPixelSize(style.bubbleOutgoingPaddingBottom)
                 )
-                image.layoutParams.width = size.first
-                image.layoutParams.height = size.first
             } else {
                 setPadding(0, 0, 0, 0)
                 (image.layoutParams as FrameLayout.LayoutParams).apply {
-                    width = size.first - borderLeft - borderRight
-                    height = size.first - borderTop - borderBottom
                     setMargins(borderLeft, borderTop, borderRight, borderBottom)
                     image.layoutParams = this
                 }
@@ -337,6 +332,7 @@ class UserPhraseViewHolder(
             } else if (isLoading) {
                 stopLoader()
                 voiceMessage.gone()
+                imageRoot.gone()
                 rightTextRow.visible()
                 showLoaderLayout()
             } else if (it.state === AttachmentStateEnum.ERROR) {
@@ -353,6 +349,7 @@ class UserPhraseViewHolder(
                 } else {
                     voiceMessage.gone()
                     if (isImage(it)) {
+                        imageRoot.visible()
                         hideErrorImage(imageLayout, errorImage)
                         image.setOnClickListener(imageClickListener)
                         val downloadPath: String? = if (it.fileUri == null) {
