@@ -18,6 +18,7 @@ import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.core.view.isVisible
 import im.threads.R
+import im.threads.business.core.ContextHolder
 import im.threads.business.formatters.RussianFormatSymbols
 import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.imageLoading.ImageModifications
@@ -294,6 +295,9 @@ class ConsultPhraseHolder(
         circularProgressButton.gone()
         image.visible()
         image.setOnClickListener(imageClickListener)
+        val paddings =
+            ContextHolder.context.resources.getDimensionPixelSize(R.dimen.threads_padding_half)
+        ogDataLayout.setPadding(paddings, paddings, paddings, paddings)
 
         startLoaderAnimation()
 

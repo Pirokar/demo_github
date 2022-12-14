@@ -23,6 +23,7 @@ import androidx.core.graphics.BlendModeCompat
 import androidx.core.view.isVisible
 import com.google.android.material.slider.Slider
 import im.threads.R
+import im.threads.business.core.ContextHolder.context
 import im.threads.business.formatters.RussianFormatSymbols
 import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.imageLoading.ImageLoader.Companion.get
@@ -244,7 +245,8 @@ class UserPhraseViewHolder(
         val borderTop = resources.getDimensionPixelSize(chatStyle.outgoingImageTopBorderSize)
         val borderRight = resources.getDimensionPixelSize(chatStyle.outgoingImageRightBorderSize)
         val borderBottom = resources.getDimensionPixelSize(chatStyle.outgoingImageBottomBorderSize)
-        val isBordersNotSet = borderLeft == 0 && borderTop == 0 && borderRight == 0 && borderBottom == 0
+        val isBordersNotSet =
+            borderLeft == 0 && borderTop == 0 && borderRight == 0 && borderBottom == 0
         val isImage = isImage(fileDescription)
 
         if (isImage) {
@@ -326,7 +328,8 @@ class UserPhraseViewHolder(
             subscribeForVoiceMessageDownloaded()
 
             rightTextDescription.text = getFileDescriptionText(it)
-            val isLoading = it.state == AttachmentStateEnum.PENDING || userPhrase.sentState == MessageState.STATE_SENDING
+            val isLoading =
+                it.state == AttachmentStateEnum.PENDING || userPhrase.sentState == MessageState.STATE_SENDING
             if (isVoiceMessage(it) && isLoading) {
                 startLoader()
             } else if (isLoading) {
@@ -368,6 +371,10 @@ class UserPhraseViewHolder(
                                 }
                             })
                             .into(image)
+                        val paddings =
+                            context.resources.getDimensionPixelSize(R.dimen.threads_padding_half)
+                        ogDataLayout.setPadding(paddings, paddings, paddings, paddings)
+                        ogDataLayout.layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
                     } else {
                         if (it.fileUri != null) {
                             it.downloadProgress = 100
@@ -454,7 +461,8 @@ class UserPhraseViewHolder(
 
     override fun updateIsPlaying(isPlaying: Boolean) {
         if (buttonPlayPause.tag != loadingStateTag) {
-            val imageResource = if (isPlaying) style.voiceMessagePauseButton else style.voiceMessagePlayButton
+            val imageResource =
+                if (isPlaying) style.voiceMessagePauseButton else style.voiceMessagePlayButton
             buttonPlayPause.setImageResource(imageResource)
         }
     }
