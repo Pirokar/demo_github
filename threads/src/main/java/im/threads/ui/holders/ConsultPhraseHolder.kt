@@ -296,8 +296,9 @@ class ConsultPhraseHolder(
         image.visible()
         image.setOnClickListener(imageClickListener)
         val paddings =
-            ContextHolder.context.resources.getDimensionPixelSize(R.dimen.threads_padding_half)
+            ContextHolder.context.resources.getDimensionPixelSize(R.dimen.margin_three_fourth)
         ogDataLayout.setPadding(paddings, paddings, paddings, paddings)
+        ogDataLayout.layoutParams.width = ContextHolder.context.resources.getDimensionPixelSize(R.dimen.message_image_size)
 
         startLoaderAnimation()
 

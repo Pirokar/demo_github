@@ -245,8 +245,7 @@ class UserPhraseViewHolder(
         val borderTop = resources.getDimensionPixelSize(chatStyle.outgoingImageTopBorderSize)
         val borderRight = resources.getDimensionPixelSize(chatStyle.outgoingImageRightBorderSize)
         val borderBottom = resources.getDimensionPixelSize(chatStyle.outgoingImageBottomBorderSize)
-        val isBordersNotSet =
-            borderLeft == 0 && borderTop == 0 && borderRight == 0 && borderBottom == 0
+        val isBordersNotSet = borderLeft == 0 && borderTop == 0 && borderRight == 0 && borderBottom == 0
         val isImage = isImage(fileDescription)
 
         if (isImage) {
@@ -328,8 +327,7 @@ class UserPhraseViewHolder(
             subscribeForVoiceMessageDownloaded()
 
             rightTextDescription.text = getFileDescriptionText(it)
-            val isLoading =
-                it.state == AttachmentStateEnum.PENDING || userPhrase.sentState == MessageState.STATE_SENDING
+            val isLoading = it.state == AttachmentStateEnum.PENDING || userPhrase.sentState == MessageState.STATE_SENDING
             if (isVoiceMessage(it) && isLoading) {
                 startLoader()
             } else if (isLoading) {
@@ -372,9 +370,9 @@ class UserPhraseViewHolder(
                             })
                             .into(image)
                         val paddings =
-                            context.resources.getDimensionPixelSize(R.dimen.threads_padding_half)
+                            context.resources.getDimensionPixelSize(R.dimen.margin_three_fourth)
                         ogDataLayout.setPadding(paddings, paddings, paddings, paddings)
-                        ogDataLayout.layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
+                        ogDataLayout.layoutParams.width = context.resources.getDimensionPixelSize(R.dimen.message_image_size)
                     } else {
                         if (it.fileUri != null) {
                             it.downloadProgress = 100
