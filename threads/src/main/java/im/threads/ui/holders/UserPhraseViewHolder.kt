@@ -27,6 +27,7 @@ import im.threads.business.formatters.RussianFormatSymbols
 import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.imageLoading.ImageLoader.Companion.get
 import im.threads.business.imageLoading.ImageModifications
+import im.threads.business.logger.LoggerEdna
 import im.threads.business.media.FileDescriptionMediaPlayer
 import im.threads.business.models.CampaignMessage
 import im.threads.business.models.ChatItem
@@ -226,6 +227,7 @@ class UserPhraseViewHolder(
         }
         rightTextHeader.isVisible =
             !(rightTextHeader.text == null || rightTextHeader.text.toString() == "null")
+        setTimestamp(timeStamp)
     }
 
     private fun hideAll() {
@@ -335,11 +337,12 @@ class UserPhraseViewHolder(
                 imageRoot.gone()
                 rightTextRow.visible()
                 showLoaderLayout()
-            } else if (it.state === AttachmentStateEnum.ERROR) {
+            } else if (it.state === AttachmentStateEnum.ERROR || userPhrase.sentState == MessageState.STATE_NOT_SENT) {
                 stopLoader()
                 voiceMessage.gone()
                 rightTextRow.visible()
                 showErrorLayout(it)
+                initTimeStampView(userPhrase)
             } else {
                 stopLoader()
                 showCommonLayout()

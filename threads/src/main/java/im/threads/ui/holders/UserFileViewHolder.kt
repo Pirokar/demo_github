@@ -7,6 +7,7 @@ import android.view.View
 import android.view.View.OnLongClickListener
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.annotation.ColorRes
@@ -46,7 +47,7 @@ class UserFileViewHolder(
     private val fileSizeTextView: TextView = itemView.findViewById(R.id.fileSize)
     private val errorTextView: TextView = itemView.findViewById(R.id.errorText)
     private val loader: ImageView = itemView.findViewById(R.id.loader)
-    private val rootLayout: RelativeLayout = itemView.findViewById(R.id.rootLayout)
+    private val rootLayout: LinearLayout = itemView.findViewById(R.id.rootLayout)
 
     private val circularProgressButton =
         itemView.findViewById<CircularProgressButton>(R.id.buttonDownload).apply {
@@ -84,7 +85,7 @@ class UserFileViewHolder(
                 getColorInt(style.outgoingMessageBubbleColor),
                 BlendModeCompat.SRC_ATOP
             )
-            val layoutParams = this.layoutParams as RelativeLayout.LayoutParams
+            val layoutParams = this.layoutParams as LinearLayout.LayoutParams
             layoutParams.setMargins(
                 context.resources.getDimensionPixelSize(style.bubbleOutgoingMarginLeft),
                 context.resources.getDimensionPixelSize(style.bubbleOutgoingMarginTop),
@@ -116,7 +117,11 @@ class UserFileViewHolder(
                 viewGroup.getChildAt(i).setOnLongClickListener(onLongClick)
                 viewGroup.getChildAt(i).setOnClickListener(rowClickListener)
             }
-            updateFileView(it, buttonClickListener)
+            if (userPhrase.sentState == MessageState.STATE_NOT_SENT) {
+                showErrorLayout(it)
+            } else {
+                updateFileView(it, buttonClickListener)
+            }
 
             rootLayout.setOnLongClickListener(onLongClick)
             changeHighlighting(isFilterVisible)
@@ -171,12 +176,7 @@ class UserFileViewHolder(
     ) {
         when (fileDescription.state) {
             AttachmentStateEnum.ERROR -> {
-                loader.isVisible = true
-                errorTextView.isVisible = false
-                circularProgressButton.isVisible = false
-                loader.setImageResource(getErrorImageResByErrorCode(fileDescription.errorCode))
-                val errorString = getString(getErrorStringResByErrorCode(fileDescription.errorCode))
-                errorTextView.text = errorString
+                showErrorLayout(fileDescription)
             }
             AttachmentStateEnum.PENDING -> {
                 circularProgressButton.isVisible = false
@@ -194,5 +194,14 @@ class UserFileViewHolder(
                 circularProgressButton.setOnClickListener(buttonClickListener)
             }
         }
+    }
+
+    private fun showErrorLayout(fileDescription: FileDescription) {
+        loader.isVisible = true
+        errorTextView.isVisible = true
+        circularProgressButton.isVisible = false
+        loader.setImageResource(getErrorImageResByErrorCode(fileDescription.errorCode))
+        val errorString = getString(getErrorStringResByErrorCode(fileDescription.errorCode))
+        errorTextView.text = errorString
     }
 }

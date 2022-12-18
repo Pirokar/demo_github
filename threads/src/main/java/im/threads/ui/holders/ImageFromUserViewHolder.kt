@@ -24,7 +24,9 @@ import im.threads.business.models.MessageState
 import im.threads.business.models.UserPhrase
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.ogParser.OpenGraphParser
+import im.threads.business.utils.FileUtils
 import im.threads.ui.holders.helper.BordersCreator
+import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.widget.textView.BubbleTimeTextView
 import io.reactivex.subjects.PublishSubject
 import java.text.SimpleDateFormat
@@ -94,7 +96,7 @@ class ImageFromUserViewHolder(
         fileDescription?.let {
             if (it.state === AttachmentStateEnum.PENDING || messageState == MessageState.STATE_SENDING) {
                 showLoaderLayout(it)
-            } else if (it.state === AttachmentStateEnum.ERROR) {
+            } else if (it.state === AttachmentStateEnum.ERROR || messageState == MessageState.STATE_NOT_SENT) {
                 showErrorLayout(it)
             } else {
                 showCommonLayout(it)
@@ -172,6 +174,12 @@ class ImageFromUserViewHolder(
                 getColorInt(style.outgoingMessageBubbleColor),
                 BlendModeCompat.SRC_ATOP
             )
+        layout.setPadding(
+            itemView.context.resources.getDimensionPixelSize(style.bubbleOutgoingPaddingLeft),
+            itemView.context.resources.getDimensionPixelSize(style.bubbleOutgoingPaddingTop),
+            itemView.context.resources.getDimensionPixelSize(style.bubbleOutgoingPaddingRight),
+            itemView.context.resources.getDimensionPixelSize(style.bubbleOutgoingPaddingBottom)
+        )
         layout.invalidate()
         layout.requestLayout()
     }
@@ -189,7 +197,8 @@ class ImageFromUserViewHolder(
         loaderLayoutRoot.isVisible = true
         imageLayout.isVisible = false
         loader.setImageResource(getErrorImageResByErrorCode(fileDescription.errorCode))
-        fileName.text = fileDescription.incomingName
+        ColorsHelper.setTint(itemView.context, loader, R.color.threads_error_red_df0000)
+        fileName.text = FileUtils.getFileName(fileDescription)
         val errorString = getString(getErrorStringResByErrorCode(fileDescription.errorCode))
         errorText.text = errorString
         rotateAnim.cancel()
