@@ -139,7 +139,7 @@ class ChatController private constructor() {
     // Если пользователь не ответил на вопрос (quickReply), то блокируем поле ввода
     private var inputEnabledDuringQuickReplies = chatStyle.inputEnabledDuringQuickReplies
     private var compositeDisposable: CompositeDisposable? = CompositeDisposable()
-    public val messenger: Messenger = MessengerImpl(compositeDisposable)
+    private val messenger: Messenger = MessengerImpl(compositeDisposable)
     private val localUserMessages = ArrayList<UserPhrase>()
 
     init {
@@ -290,22 +290,18 @@ class ChatController private constructor() {
         val sendingItems = ArrayList<UserPhrase>()
         database.getChatItems(0, -1).forEach {
             if (it is UserPhrase) {
-                val phr = it as UserPhrase
+                val phr = it
                 if (phr.sentState == MessageState.STATE_SENDING) {
                     sendingItems.add(phr)
                 }
             }
         }
-        error("!!!!!!!!!!   serverItems items   ##########################################################")
-        sendingItems?.forEach { dontsendItem ->
+        sendingItems?.forEach { notsendedItem ->
             serverItems.forEach { serverItem ->
                 if (serverItem is UserPhrase) {
-                    val phr = serverItem as UserPhrase
-                    if (dontsendItem.timeStamp == phr.timeStamp) {
-                        error("!!!!!!!!!!   remove dontsendItem item  " +  dontsendItem.id+"     "+dontsendItem.timeStamp)
-                        sendingItems.remove(dontsendItem)
+                    if (notsendedItem.timeStamp == serverItem.timeStamp) {
+                        sendingItems.remove(notsendedItem)
                     }
-                    error("!!!!!!!!!!      " + phr.id+"     "+phr.timeStamp)
                 }
             }
         }

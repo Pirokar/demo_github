@@ -19,6 +19,4 @@ interface Messenger {
     fun resendMessages()
     fun clearSendQueue()
     fun recreateUnsentMessagesWith(phrases: List<UserPhrase>)
-    fun removeItemFromQueue(item: UserPhrase)
-    fun getQueue(): ArrayList<UserPhrase>
 }
