@@ -1728,7 +1728,9 @@ public final class ChatFragment extends BaseFragment implements
         if (oldAdapterSize == 0) {
             scrollToPosition(chatAdapter.getItemCount() - 1, false);
         } else if (afterResume) {
-            scrollToPosition(chatAdapter.getItemCount() - 1, false);
+            if (newAdapterSize != oldAdapterSize) {
+                scrollToPosition(chatAdapter.getItemCount() - 1, false);
+            }
             afterResume = false;
         } else if (newAdapterSize > oldAdapterSize) {
             handler.postDelayed(() -> scrollToPosition(chatAdapter.getItemCount() - 1, false), 100);
