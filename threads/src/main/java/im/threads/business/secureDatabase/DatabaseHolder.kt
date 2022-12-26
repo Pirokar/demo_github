@@ -24,6 +24,10 @@ class DatabaseHolder(private val context: Context) {
         myOpenHelper.cleanDatabase()
     }
 
+    fun cleanMessageTable() {
+        myOpenHelper.cleanMessageTable()
+    }
+
     fun getChatItems(offset: Int, limit: Int): List<ChatItem> =
         myOpenHelper.getChatItems(offset, limit)
 

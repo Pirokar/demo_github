@@ -139,7 +139,7 @@ class ChatController private constructor() {
     // Если пользователь не ответил на вопрос (quickReply), то блокируем поле ввода
     private var inputEnabledDuringQuickReplies = chatStyle.inputEnabledDuringQuickReplies
     private var compositeDisposable: CompositeDisposable? = CompositeDisposable()
-    private val messenger: Messenger = MessengerImpl(compositeDisposable)
+    public val messenger: Messenger = MessengerImpl(compositeDisposable)
     private val localUserMessages = ArrayList<UserPhrase>()
 
     init {
@@ -286,6 +286,33 @@ class ChatController private constructor() {
         )
     }
 
+    private fun checkDoubleItems(serverItems: ArrayList<ChatItem>) {
+        val sendingItems = ArrayList<UserPhrase>()
+        database.getChatItems(0, -1).forEach {
+            if (it is UserPhrase) {
+                val phr = it as UserPhrase
+                if (phr.sentState == MessageState.STATE_SENDING) {
+                    sendingItems.add(phr)
+                }
+            }
+        }
+        error("!!!!!!!!!!   serverItems items   ##########################################################")
+        sendingItems?.forEach { dontsendItem ->
+            serverItems.forEach { serverItem ->
+                if (serverItem is UserPhrase) {
+                    val phr = serverItem as UserPhrase
+                    if (dontsendItem.timeStamp == phr.timeStamp) {
+                        error("!!!!!!!!!!   remove dontsendItem item  " +  dontsendItem.id+"     "+dontsendItem.timeStamp)
+                        sendingItems.remove(dontsendItem)
+                    }
+                    error("!!!!!!!!!!      " + phr.id+"     "+phr.timeStamp)
+                }
+            }
+        }
+        serverItems.addAll(sendingItems)
+        database.cleanMessageTable()
+    }
+
     fun requestItems(currentItemsCount: Int, fromBeginning: Boolean): Observable<List<ChatItem>>? {
         return Observable
             .fromCallable {
@@ -296,6 +323,7 @@ class ChatController private constructor() {
                         val response = getHistorySync(null, fromBeginning)
                         var serverItems = HistoryParser.getChatItems(response)
                         serverItems = addLocalUserMessages(serverItems)
+                        checkDoubleItems(serverItems as ArrayList<ChatItem>)
                         messenger.saveMessages(serverItems)
                         clearUnreadPush()
                         processSystemMessages(serverItems)

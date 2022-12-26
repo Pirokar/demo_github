@@ -694,8 +694,9 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             if (getList().get(i) instanceof ConsultPhrase) {
                 final ConsultPhrase cp = (ConsultPhrase) getList().get(i);
                 if (ObjectsCompat.equals(cp.getFileDescription(), fileDescription)) {
+                    boolean stateChanged = cp.getFileDescription().getState() != fileDescription.getState();
                     cp.setFileDescription(fileDescription);
-                    if (!isImage(fileDescription)) {
+                    if (!isImage(fileDescription) || stateChanged) {
                         notifyItemChanged(ChatItemListFinder.indexOf(getList(), cp));
                     }
                 } else if (cp.getQuote() != null && ObjectsCompat.equals(cp.getQuote().getFileDescription(), fileDescription)) {
@@ -705,8 +706,9 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             } else if (getList().get(i) instanceof UserPhrase) {
                 final UserPhrase up = (UserPhrase) getList().get(i);
                 if (ObjectsCompat.equals(up.getFileDescription(), fileDescription)) {
+                    boolean stateChanged = up.getFileDescription().getState() != fileDescription.getState();
                     up.setFileDescription(fileDescription);
-                    if (!isImage(fileDescription)) {
+                    if (!isImage(fileDescription) || stateChanged) {
                         notifyItemChanged(ChatItemListFinder.indexOf(getList(), up));
                     }
                 } else if (up.getQuote() != null && ObjectsCompat.equals(up.getQuote().getFileDescription(), fileDescription)) {

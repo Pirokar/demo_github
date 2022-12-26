@@ -75,6 +75,10 @@ class ThreadsDbHelper private constructor(val context: Context, password: String
         }
     }
 
+    override fun cleanMessageTable() {
+        messagesTable.cleanTable(this)
+    }
+
     override fun cleanDatabase() {
         fileDescriptionTable.cleanTable(this)
         messagesTable.cleanTable(this)

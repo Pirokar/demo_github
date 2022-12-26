@@ -46,8 +46,6 @@ class ImageFromUserViewHolder(
 
     private var loadedUri: String? = null
 
-    private val loaderLayout: LinearLayout =
-        itemView.findViewById<LinearLayout>(R.id.loaderLayout).also { applyBubbleLayoutStyle(it) }
     private val loaderLayoutRoot: RelativeLayout = itemView.findViewById(R.id.loaderLayoutRoot)
 
     private val errorText: TextView = itemView.findViewById(R.id.errorText)
@@ -60,6 +58,7 @@ class ImageFromUserViewHolder(
             arrayOf(fileName),
             style.outgoingMessageTextColor
         )
+        itemView.findViewById<LinearLayout>(R.id.loaderLayout).also { applyBubbleLayoutStyle(it) }
     }
 
     fun onBind(
@@ -202,16 +201,14 @@ class ImageFromUserViewHolder(
         rotateAnim.cancel()
         val isDownloadError = fileDescription.isDownloadError
         val uri = fileDescription.fileUri
-
-        if (uri != null && !isDownloadError) {
+        if ((uri != null && !isDownloadError) || fileDescription.downloadPath != null) {
             ImageLoader.get()
                 .autoRotateWithExif(true)
-                .load(uri.toString())
+                .load(uri?.toString() ?: fileDescription.downloadPath)
                 .scales(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP)
                 .modifications(maskedTransformation)
                 .errorDrawableResourceId(style.imagePlaceholder)
                 .into(image)
-
             loadedUri = uri.toString()
         } else {
             image.setImageResource(style.imagePlaceholder)

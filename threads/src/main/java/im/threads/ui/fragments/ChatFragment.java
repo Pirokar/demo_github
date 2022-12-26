@@ -889,6 +889,7 @@ public final class ChatFragment extends BaseFragment implements
 
     private void afterRefresh(List<ChatItem> result) {
         int itemsBefore = chatAdapter.getItemCount();
+        LoggerEdna.error("!!!!!!!!!!   afterRefresh(1)   "+result.size()+"     "+itemsBefore);
         chatAdapter.addItems(result);
         scrollToPosition(chatAdapter.getItemCount() - itemsBefore, true);
         ThreadRunnerKt.runOnUiThread(new Runnable() {

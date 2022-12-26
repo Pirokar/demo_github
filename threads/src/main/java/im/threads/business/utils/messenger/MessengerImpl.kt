@@ -57,6 +57,14 @@ class MessengerImpl(private var compositeDisposable: CompositeDisposable?) : Mes
 
     override val resendStream = PublishSubject.create<String>()
 
+    override fun getQueue(): ArrayList<UserPhrase> {
+        return sendQueue
+    }
+
+    override fun removeItemFromQueue(item: UserPhrase) {
+        sendQueue.remove(item)
+    }
+
     override fun sendMessage(userPhrase: UserPhrase) {
         info("sendMessage: $userPhrase")
         val consultWriter = ConsultWriter(preferences)
