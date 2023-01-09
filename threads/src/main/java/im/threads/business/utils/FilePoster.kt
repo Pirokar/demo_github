@@ -138,7 +138,7 @@ private fun compressImage(uri: Uri?): File? {
     val downsizedImageFile = File(BaseConfig.instance.context.cacheDir, getFileName(uri))
     val byteArrayOutputStream = ByteArrayOutputStream()
     bitmap?.let {
-        it.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
+        compressImageToSize(it, byteArrayOutputStream, 400)
         try {
             FileOutputStream(downsizedImageFile).use { fileOutputStream ->
                 fileOutputStream.write(byteArrayOutputStream.toByteArray())
@@ -154,6 +154,17 @@ private fun compressImage(uri: Uri?): File? {
         }
     }
     return null
+}
+
+private fun compressImageToSize(bitmap: Bitmap, byteArrayOutputStream: ByteArrayOutputStream, sizeInKb: Int) {
+    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
+
+    var quality = 90
+    while (byteArrayOutputStream.toByteArray().size / 1024 > sizeInKb) {
+        byteArrayOutputStream.reset()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, quality, byteArrayOutputStream)
+        quality -= 10
+    }
 }
 
 private fun showSendingFileLog(
