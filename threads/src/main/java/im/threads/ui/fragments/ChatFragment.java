@@ -1156,7 +1156,9 @@ public final class ChatFragment extends BaseFragment implements
             filesAndMedia.setTitle(s2);
         }
         filesAndMedia.setVisible(config.getFilesAndMediaMenuItemEnabled());
-        popup.show();
+        if (isPpopupMenuEnabled()) {
+            popup.show();
+        }
     }
 
 
@@ -1728,9 +1730,7 @@ public final class ChatFragment extends BaseFragment implements
         if (oldAdapterSize == 0) {
             scrollToPosition(chatAdapter.getItemCount() - 1, false);
         } else if (afterResume) {
-            if (newAdapterSize != oldAdapterSize) {
-                scrollToPosition(chatAdapter.getItemCount() - 1, false);
-            }
+            scrollToPosition(chatAdapter.getItemCount() - 1, false);
             afterResume = false;
         } else if (newAdapterSize > oldAdapterSize) {
             handler.postDelayed(() -> scrollToPosition(chatAdapter.getItemCount() - 1, false), 100);
