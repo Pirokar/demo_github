@@ -377,6 +377,7 @@ class ConsultPhraseHolder(
         imageLayout.visibility = View.VISIBLE
         loaderImage.visibility = View.VISIBLE
         image.visibility = View.INVISIBLE
+        initAnimation(loaderImage, true)
         rotateAnim.duration = 3000
         rotateAnim.repeatCount = Animation.INFINITE
         loaderImage.animation = rotateAnim

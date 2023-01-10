@@ -1,5 +1,7 @@
 package im.threads.ui.adapters;
 
+import static im.threads.business.utils.FileUtils.isImage;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.media.MediaMetadataRetriever;
@@ -693,7 +695,9 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 final ConsultPhrase cp = (ConsultPhrase) getList().get(i);
                 if (ObjectsCompat.equals(cp.getFileDescription(), fileDescription)) {
                     cp.setFileDescription(fileDescription);
-                    notifyItemChanged(ChatItemListFinder.indexOf(getList(), cp));
+                    if (!isImage(fileDescription)) {
+                        notifyItemChanged(ChatItemListFinder.indexOf(getList(), cp));
+                    }
                 } else if (cp.getQuote() != null && ObjectsCompat.equals(cp.getQuote().getFileDescription(), fileDescription)) {
                     cp.getQuote().setFileDescription(fileDescription);
                     notifyItemChanged(ChatItemListFinder.indexOf(getList(), cp));
@@ -702,7 +706,9 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 final UserPhrase up = (UserPhrase) getList().get(i);
                 if (ObjectsCompat.equals(up.getFileDescription(), fileDescription)) {
                     up.setFileDescription(fileDescription);
-                    notifyItemChanged(ChatItemListFinder.indexOf(getList(), up));
+                    if (!isImage(fileDescription)) {
+                        notifyItemChanged(ChatItemListFinder.indexOf(getList(), up));
+                    }
                 } else if (up.getQuote() != null && ObjectsCompat.equals(up.getQuote().getFileDescription(), fileDescription)) {
                     up.getQuote().setFileDescription(fileDescription);
                     notifyItemChanged(ChatItemListFinder.indexOf(getList(), up));
@@ -896,7 +902,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     private void downloadImageIfNeeded(@Nullable FileDescription fileDescription) {
         if (fileDescription != null) {
-            if (FileUtils.isImage(fileDescription) && fileDescription.getFileUri() == null) {
+            if (isImage(fileDescription) && fileDescription.getFileUri() == null) {
                 mCallback.onFileDownloadRequest(fileDescription);
             }
         }
