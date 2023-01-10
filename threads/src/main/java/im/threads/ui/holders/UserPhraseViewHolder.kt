@@ -2,7 +2,6 @@ package im.threads.ui.holders
 
 import android.annotation.SuppressLint
 import android.app.ActionBar
-import android.app.ActionBar.LayoutParams
 import android.content.Context
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -369,9 +368,12 @@ class UserPhraseViewHolder(
                                 }
                             })
                             .into(image)
-                        val paddings =
-                            context.resources.getDimensionPixelSize(R.dimen.margin_three_fourth)
-                        ogDataLayout.setPadding(paddings, paddings, paddings, paddings)
+                        val chatStyle = Config.getInstance().getChatStyle()
+                        val paddingLeft = context.resources.getDimensionPixelSize(chatStyle.bubbleOutgoingPaddingLeft)
+                        val paddingTop = context.resources.getDimensionPixelSize(chatStyle.bubbleOutgoingPaddingTop)
+                        val paddingRight = context.resources.getDimensionPixelSize(chatStyle.bubbleOutgoingPaddingRight)
+                        val paddingBottom = context.resources.getDimensionPixelSize(chatStyle.bubbleOutgoingPaddingBottom)
+                        ogDataLayout.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom)
                         ogDataLayout.layoutParams.width = context.resources.getDimensionPixelSize(R.dimen.message_image_size)
                     } else {
                         if (it.fileUri != null) {

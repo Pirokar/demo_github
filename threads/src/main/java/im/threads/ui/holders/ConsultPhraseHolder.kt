@@ -224,7 +224,7 @@ class ConsultPhraseHolder(
         if (isImage) {
             imageRoot.visible()
 
-            (bubbleLayout.layoutParams as ViewGroup.MarginLayoutParams).let {
+            (bubbleLayout.layoutParams as MarginLayoutParams).let {
                 it.marginEnd = 0
                 bubbleLayout.layoutParams = it
             }
@@ -295,13 +295,14 @@ class ConsultPhraseHolder(
         circularProgressButton.gone()
         image.visible()
         image.setOnClickListener(imageClickListener)
-        val paddings =
-            ContextHolder.context.resources.getDimensionPixelSize(R.dimen.margin_three_fourth)
-        ogDataLayout.setPadding(paddings, paddings, paddings, paddings)
+        val chatStyle = Config.getInstance().getChatStyle()
+        val paddingLeft = ContextHolder.context.resources.getDimensionPixelSize(chatStyle.bubbleIncomingPaddingLeft)
+        val paddingTop = ContextHolder.context.resources.getDimensionPixelSize(chatStyle.bubbleIncomingPaddingTop)
+        val paddingRight = ContextHolder.context.resources.getDimensionPixelSize(chatStyle.bubbleIncomingPaddingRight)
+        val paddingBottom = ContextHolder.context.resources.getDimensionPixelSize(chatStyle.bubbleIncomingPaddingBottom)
+        ogDataLayout.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom)
         ogDataLayout.layoutParams.width = ContextHolder.context.resources.getDimensionPixelSize(R.dimen.message_image_size)
-
         startLoaderAnimation()
-
         val loadConfig = ImageLoader
             .get()
             .load(imagePath)
