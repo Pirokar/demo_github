@@ -1156,7 +1156,9 @@ public final class ChatFragment extends BaseFragment implements
             filesAndMedia.setTitle(s2);
         }
         filesAndMedia.setVisible(config.getFilesAndMediaMenuItemEnabled());
-        popup.show();
+        if (isPpopupMenuEnabled()) {
+            popup.show();
+        }
     }
 
 
@@ -2110,6 +2112,11 @@ public final class ChatFragment extends BaseFragment implements
         }
     }
 
+    private boolean isPpopupMenuEnabled() {
+        return getResources().getBoolean(config.getChatStyle().searchEnabled)
+                || config.getFilesAndMediaMenuItemEnabled();
+    }
+
     private void initToolbar() {
         Activity activity = getActivity();
         if (activity == null) return;
@@ -2128,6 +2135,8 @@ public final class ChatFragment extends BaseFragment implements
         binding.popupMenuButton.setImageResource(style.chatToolbarPopUpMenuIconResId);
         ColorsHelper.setTint(activity, binding.popupMenuButton, style.chatToolbarTextColorResId);
         binding.popupMenuButton.setOnClickListener(v -> showPopup());
+        binding.popupMenuButton.setVisibility(isPpopupMenuEnabled() ? View.VISIBLE : View.GONE);
+
         showOverflowMenu();
         int toolbarInverseIconTint = style.chatBodyIconsTint == 0
                 ? style.chatToolbarInverseIconTintResId : style.chatBodyIconsTint;
@@ -2158,7 +2167,9 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     private void showOverflowMenu() {
-        binding.popupMenuButton.setVisibility(View.VISIBLE);
+        if (isPpopupMenuEnabled()) {
+            binding.popupMenuButton.setVisibility(View.VISIBLE);
+        }
     }
 
     private void hideOverflowMenu() {
