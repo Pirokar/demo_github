@@ -369,12 +369,13 @@ class UserPhraseViewHolder(
                             })
                             .into(image)
                         val chatStyle = Config.getInstance().getChatStyle()
-                        val paddingLeft = context.resources.getDimensionPixelSize(chatStyle.bubbleOutgoingPaddingLeft)
-                        val paddingTop = context.resources.getDimensionPixelSize(chatStyle.bubbleOutgoingPaddingTop)
-                        val paddingRight = context.resources.getDimensionPixelSize(chatStyle.bubbleOutgoingPaddingRight)
-                        val paddingBottom = context.resources.getDimensionPixelSize(chatStyle.bubbleOutgoingPaddingBottom)
+                        val resources = context.resources
+                        val paddingLeft = resources.getDimensionPixelSize(chatStyle.bubbleOutgoingPaddingLeft)
+                        val paddingTop = resources.getDimensionPixelSize(chatStyle.bubbleOutgoingPaddingTop)
+                        val paddingRight = resources.getDimensionPixelSize(chatStyle.bubbleOutgoingPaddingRight)
+                        val paddingBottom = resources.getDimensionPixelSize(chatStyle.bubbleOutgoingPaddingBottom)
                         ogDataLayout.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom)
-                        ogDataLayout.layoutParams.width = context.resources.getDimensionPixelSize(R.dimen.message_image_size)
+                        ogDataLayout.layoutParams.width = resources.getDimensionPixelSize(R.dimen.message_image_size)
                     } else {
                         if (it.fileUri != null) {
                             it.downloadProgress = 100

@@ -296,12 +296,13 @@ class ConsultPhraseHolder(
         image.visible()
         image.setOnClickListener(imageClickListener)
         val chatStyle = Config.getInstance().getChatStyle()
-        val paddingLeft = ContextHolder.context.resources.getDimensionPixelSize(chatStyle.bubbleIncomingPaddingLeft)
-        val paddingTop = ContextHolder.context.resources.getDimensionPixelSize(chatStyle.bubbleIncomingPaddingTop)
-        val paddingRight = ContextHolder.context.resources.getDimensionPixelSize(chatStyle.bubbleIncomingPaddingRight)
-        val paddingBottom = ContextHolder.context.resources.getDimensionPixelSize(chatStyle.bubbleIncomingPaddingBottom)
+        val resources = ContextHolder.context.resources
+        val paddingLeft = resources.getDimensionPixelSize(chatStyle.bubbleIncomingPaddingLeft)
+        val paddingTop = resources.getDimensionPixelSize(chatStyle.bubbleIncomingPaddingTop)
+        val paddingRight = resources.getDimensionPixelSize(chatStyle.bubbleIncomingPaddingRight)
+        val paddingBottom = resources.getDimensionPixelSize(chatStyle.bubbleIncomingPaddingBottom)
         ogDataLayout.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom)
-        ogDataLayout.layoutParams.width = ContextHolder.context.resources.getDimensionPixelSize(R.dimen.message_image_size)
+        ogDataLayout.layoutParams.width = resources.getDimensionPixelSize(R.dimen.message_image_size)
         startLoaderAnimation()
         val loadConfig = ImageLoader
             .get()
