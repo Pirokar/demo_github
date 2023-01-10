@@ -286,27 +286,38 @@ class ChatController private constructor() {
         )
     }
 
-    private fun checkDoubleItems(serverItems: ArrayList<ChatItem>) {
+    private fun updateDoubleItems(serverItems: ArrayList<ChatItem>) {
+        updateServerItemsBySendingItems(serverItems, getSendingItems())
+        database.cleanMessageTable()
+    }
+
+    private fun getSendingItems(): ArrayList<UserPhrase> {
         val sendingItems = ArrayList<UserPhrase>()
         database.getChatItems(0, -1).forEach {
             if (it is UserPhrase) {
-                val phr = it
-                if (phr.sentState == MessageState.STATE_SENDING) {
-                    sendingItems.add(phr)
+                if (it.sentState == MessageState.STATE_SENDING) {
+                    sendingItems.add(it)
                 }
             }
         }
-        sendingItems?.forEach { notsendedItem ->
+        return sendingItems
+    }
+
+    private fun updateServerItemsBySendingItems(
+        serverItems: ArrayList<ChatItem>,
+        sendingItems: ArrayList<UserPhrase>
+    ) {
+        sendingItems.forEach { notSendedItem ->
             serverItems.forEach { serverItem ->
                 if (serverItem is UserPhrase) {
-                    if (notsendedItem.timeStamp == serverItem.timeStamp) {
-                        sendingItems.remove(notsendedItem)
+                    if (notSendedItem.timeStamp == serverItem.timeStamp) {
+                        serverItem.fileDescription?.fileUri = notSendedItem.fileDescription?.fileUri
+                        sendingItems.remove(notSendedItem)
                     }
                 }
             }
         }
         serverItems.addAll(sendingItems)
-        database.cleanMessageTable()
     }
 
     fun requestItems(currentItemsCount: Int, fromBeginning: Boolean): Observable<List<ChatItem>>? {
@@ -319,7 +330,7 @@ class ChatController private constructor() {
                         val response = getHistorySync(null, fromBeginning)
                         var serverItems = HistoryParser.getChatItems(response)
                         serverItems = addLocalUserMessages(serverItems)
-                        checkDoubleItems(serverItems as ArrayList<ChatItem>)
+                        updateDoubleItems(serverItems as ArrayList<ChatItem>)
                         messenger.saveMessages(serverItems)
                         clearUnreadPush()
                         processSystemMessages(serverItems)

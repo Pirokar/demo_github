@@ -1917,7 +1917,9 @@ public final class ChatFragment extends BaseFragment implements
 
     @Override
     public void updateProgress(FileDescription filedescription) {
-        chatAdapter.updateProgress(filedescription);
+        if (!FileUtils.isImage(filedescription) || filedescription.getDownloadProgress() == 100) {
+            chatAdapter.updateProgress(filedescription);
+        }
     }
 
     @Override

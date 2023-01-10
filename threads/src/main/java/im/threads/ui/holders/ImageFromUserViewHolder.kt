@@ -201,10 +201,11 @@ class ImageFromUserViewHolder(
         rotateAnim.cancel()
         val isDownloadError = fileDescription.isDownloadError
         val uri = fileDescription.fileUri
-        if ((uri != null && !isDownloadError) || fileDescription.downloadPath != null) {
+        val path = fileDescription.downloadPath
+        if ((uri != null || path != null) && !isDownloadError) {
             ImageLoader.get()
                 .autoRotateWithExif(true)
-                .load(uri?.toString() ?: fileDescription.downloadPath)
+                .load(uri?.toString() ?: path)
                 .scales(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP)
                 .modifications(maskedTransformation)
                 .errorDrawableResourceId(style.imagePlaceholder)
