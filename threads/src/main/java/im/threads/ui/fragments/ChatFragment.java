@@ -1319,7 +1319,7 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     public void showBottomSheet() {
-        if (bottomSheetDialogFragment == null) {
+        if (bottomSheetDialogFragment == null && isAdded()) {
             bottomSheetDialogFragment = new AttachmentBottomSheetDialogFragment();
             bottomSheetDialogFragment.show(getChildFragmentManager(), AttachmentBottomSheetDialogFragment.TAG);
         }
