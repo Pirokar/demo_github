@@ -2292,8 +2292,8 @@ public final class ChatFragment extends BaseFragment implements
         //для случая, если popupMenuButton отображается при выделении сообщения
         ColorsHelper.setTint(activity, binding.popupMenuButton, toolbarInverseIconTint);
         ColorsHelper.setTint(activity, binding.chatBackButton, toolbarInverseIconTint);
-
-        ColorsHelper.setBackgroundColor(activity, binding.toolbar, style.chatToolbarTextColorResId);
+        ColorsHelper.setBackgroundColor(activity, binding.toolbar,
+                style.chatToolbarContextMenuColorResId);
         binding.toolbar.setElevation(0);
 
         binding.copyControls.setVisibility(View.VISIBLE);
