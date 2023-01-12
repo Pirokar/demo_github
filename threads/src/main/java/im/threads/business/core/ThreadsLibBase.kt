@@ -79,6 +79,9 @@ open class ThreadsLibBase protected constructor(context: Context) {
         val clientId = preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)?.clientId
         if (!clientId.isNullOrBlank()) {
             BaseConfig.instance.transport.sendClientOffline(clientId)
+            preferences.save(PreferencesCoreKeys.USER_INFO, null, true)
+            preferences.save(PreferencesCoreKeys.TAG_NEW_CLIENT_ID, "", true)
+            preferences.save(PreferencesCoreKeys.THREAD_ID, -1L, true)
         } else {
             info("clientId must not be empty")
         }
