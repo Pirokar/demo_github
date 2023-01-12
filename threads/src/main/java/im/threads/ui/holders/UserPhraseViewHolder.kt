@@ -2,7 +2,6 @@ package im.threads.ui.holders
 
 import android.annotation.SuppressLint
 import android.app.ActionBar
-import android.app.ActionBar.LayoutParams
 import android.content.Context
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -27,7 +26,6 @@ import im.threads.business.formatters.RussianFormatSymbols
 import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.imageLoading.ImageLoader.Companion.get
 import im.threads.business.imageLoading.ImageModifications
-import im.threads.business.logger.LoggerEdna
 import im.threads.business.media.FileDescriptionMediaPlayer
 import im.threads.business.models.CampaignMessage
 import im.threads.business.models.ChatItem
@@ -208,16 +206,20 @@ class UserPhraseViewHolder(
         slider.addOnSliderTouchListener(onSliderTouchListener)
         slider.setLabelFormatter(VoiceTimeLabelFormatter())
         fileSizeTextView.text = formattedDuration
+
+        if (userPhrase.sentState == MessageState.STATE_NOT_SENT) {
+            showErrorLayout()
+        }
+
+        showFiles(userPhrase, imageClickListener, fileClickListener)
         setTimestamp(timeStamp)
         setSendState(sendState)
-
         phrase?.let {
             showPhrase(it)
         } ?: run {
             phraseTextView.gone()
         }
 
-        showFiles(userPhrase, imageClickListener, fileClickListener)
         quote?.let { showQuote(it, onQuoteClickListener) }
             ?: campaignMessage?.let { showCampaign(it) }
         if ((quote != null || fileDescription != null) && voiceMessage.visibility != VISIBLE) {
@@ -227,7 +229,6 @@ class UserPhraseViewHolder(
         }
         rightTextHeader.isVisible =
             !(rightTextHeader.text == null || rightTextHeader.text.toString() == "null")
-        setTimestamp(timeStamp)
     }
 
     private fun hideAll() {
@@ -289,6 +290,7 @@ class UserPhraseViewHolder(
                 it.marginEnd = resources.getDimensionPixelSize(R.dimen.user_margin_right)
                 it.marginStart = resources.getDimensionPixelSize(R.dimen.user_margin_left)
             }
+
             bubbleLayout.invalidate()
             bubbleLayout.requestLayout()
 
@@ -326,7 +328,6 @@ class UserPhraseViewHolder(
         userPhrase.fileDescription?.let {
             fileDescription = it
             subscribeForVoiceMessageDownloaded()
-
             rightTextDescription.text = getFileDescriptionText(it)
             val isLoading = it.state == AttachmentStateEnum.PENDING || userPhrase.sentState == MessageState.STATE_SENDING
             if (isVoiceMessage(it) && isLoading) {
@@ -343,6 +344,9 @@ class UserPhraseViewHolder(
                 rightTextRow.visible()
                 showErrorLayout(it)
                 initTimeStampView(userPhrase)
+                timeStampTextView = itemView.findViewById(R.id.timeStamp)
+                itemView.findViewById<BubbleTimeTextView>(R.id.timeStamp).gone()
+                timeStampTextView.visible()
             } else {
                 stopLoader()
                 showCommonLayout()
@@ -523,9 +527,21 @@ class UserPhraseViewHolder(
         initAnimation(loader, false)
     }
 
+    private fun showErrorLayout() {
+        errorText.visible()
+        loader.visible()
+        fileImageButton.gone()
+        errorText.text = getString(R.string.threads_message_not_sent)
+        rotateAnim.cancel()
+        rotateAnim.reset()
+    }
+
     private fun showErrorLayout(fileDescription: FileDescription) {
         errorText.visible()
         loader.visible()
+        imageLayout.gone()
+        imageRoot.gone()
+        image.gone()
         loader.setImageResource(getErrorImageResByErrorCode(fileDescription.errorCode))
         fileImageButton.gone()
         val errorString = getString(getErrorStringResByErrorCode(fileDescription.errorCode))

@@ -3,6 +3,7 @@ package im.threads.ui.holders
 import android.app.ActionBar.LayoutParams
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -48,20 +49,19 @@ class ImageFromUserViewHolder(
 
     private var loadedUri: String? = null
 
-    private val loaderLayout: LinearLayout =
-        itemView.findViewById<LinearLayout>(R.id.loaderLayout).also { applyBubbleLayoutStyle(it) }
     private val loaderLayoutRoot: RelativeLayout = itemView.findViewById(R.id.loaderLayoutRoot)
-
     private val errorText: TextView = itemView.findViewById(R.id.errorText)
     private val fileName: TextView = itemView.findViewById(R.id.fileName)
     private val loader: ImageView = itemView.findViewById(R.id.loader)
     private val timeStampLoading: BubbleTimeTextView = itemView.findViewById(R.id.timeStampLoading)
+    private val timeStampBottomView: View = itemView.findViewById(R.id.timeStampBottomView)
 
     init {
         setTextColorToViews(
             arrayOf(fileName),
             style.outgoingMessageTextColor
         )
+        itemView.findViewById<LinearLayout>(R.id.loaderLayout).also { applyBubbleLayoutStyle(it) }
     }
 
     fun onBind(
@@ -175,11 +175,23 @@ class ImageFromUserViewHolder(
                 BlendModeCompat.SRC_ATOP
             )
         layout.setPadding(
-            itemView.context.resources.getDimensionPixelSize(style.bubbleOutgoingPaddingLeft),
-            itemView.context.resources.getDimensionPixelSize(style.bubbleOutgoingPaddingTop),
-            itemView.context.resources.getDimensionPixelSize(style.bubbleOutgoingPaddingRight),
-            itemView.context.resources.getDimensionPixelSize(style.bubbleOutgoingPaddingBottom)
+            res.getDimensionPixelSize(style.bubbleOutgoingPaddingLeft),
+            res.getDimensionPixelSize(style.bubbleOutgoingPaddingTop),
+            res.getDimensionPixelSize(style.bubbleOutgoingPaddingRight),
+            res.getDimensionPixelSize(style.bubbleOutgoingPaddingBottom)
         )
+        val timeStampBottomViewLayoutParams = timeStampBottomView.layoutParams as LinearLayout.LayoutParams
+        timeStampBottomViewLayoutParams.height = res.getDimensionPixelSize(style.bubbleOutgoingPaddingBottom)
+        timeStampBottomView.layoutParams = timeStampBottomViewLayoutParams
+
+        val timeStampLoadingLayoutParams = timeStampLoading.layoutParams as LinearLayout.LayoutParams
+        timeStampLoadingLayoutParams.setMargins(
+            0,
+            0,
+            res.getDimensionPixelSize(style.bubbleOutgoingPaddingRight),
+            res.getDimensionPixelSize(style.bubbleOutgoingPaddingBottom)
+        )
+        timeStampLoading.layoutParams = timeStampLoadingLayoutParams
         layout.invalidate()
         layout.requestLayout()
     }

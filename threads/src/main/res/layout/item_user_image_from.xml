@@ -82,6 +82,8 @@
                         tools:text="10:19" />
 
                     <View
+                        android:id="@+id/timeStampBottomView"
+                        android:layout_marginBottom="@dimen/margin_half"
                         android:layout_width="10dp"
                         android:layout_height="@dimen/margin_three_fourth"/>
 

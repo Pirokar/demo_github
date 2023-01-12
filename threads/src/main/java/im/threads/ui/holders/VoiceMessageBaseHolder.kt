@@ -44,7 +44,7 @@ abstract class VoiceMessageBaseHolder internal constructor(
         val color = if (isIncomingMessage) {
             Config.getInstance().getChatStyle().incomingMessageLoaderColor
         } else {
-            R.color.threads_white
+            Config.getInstance().getChatStyle().outgoingMessageLoaderColor
         }
         buttonPlayPause.tag = loadingStateTag
         initAnimation(buttonPlayPause, color)
