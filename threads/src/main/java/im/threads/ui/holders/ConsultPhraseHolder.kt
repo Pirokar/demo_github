@@ -18,6 +18,7 @@ import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.core.view.isVisible
 import im.threads.R
+import im.threads.business.core.ContextHolder
 import im.threads.business.formatters.RussianFormatSymbols
 import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.imageLoading.ImageModifications
@@ -223,7 +224,7 @@ class ConsultPhraseHolder(
         if (isImage) {
             imageRoot.visible()
 
-            (bubbleLayout.layoutParams as ViewGroup.MarginLayoutParams).let {
+            (bubbleLayout.layoutParams as MarginLayoutParams).let {
                 it.marginEnd = 0
                 bubbleLayout.layoutParams = it
             }
@@ -294,6 +295,14 @@ class ConsultPhraseHolder(
         circularProgressButton.gone()
         image.visible()
         image.setOnClickListener(imageClickListener)
+        val chatStyle = Config.getInstance().getChatStyle()
+        val resources = ContextHolder.context.resources
+        val paddingLeft = resources.getDimensionPixelSize(chatStyle.bubbleIncomingPaddingLeft)
+        val paddingTop = resources.getDimensionPixelSize(chatStyle.bubbleIncomingPaddingTop)
+        val paddingRight = resources.getDimensionPixelSize(chatStyle.bubbleIncomingPaddingRight)
+        val paddingBottom = resources.getDimensionPixelSize(chatStyle.bubbleIncomingPaddingBottom)
+        ogDataLayout.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom)
+        ogDataLayout.layoutParams.width = resources.getDimensionPixelSize(R.dimen.message_image_size)
         startLoaderAnimation()
         val loadConfig = ImageLoader
             .get()

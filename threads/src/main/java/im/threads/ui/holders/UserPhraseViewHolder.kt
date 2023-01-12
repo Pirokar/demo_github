@@ -2,7 +2,6 @@ package im.threads.ui.holders
 
 import android.annotation.SuppressLint
 import android.app.ActionBar
-import android.app.ActionBar.LayoutParams
 import android.content.Context
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -23,6 +22,7 @@ import androidx.core.graphics.BlendModeCompat
 import androidx.core.view.isVisible
 import com.google.android.material.slider.Slider
 import im.threads.R
+import im.threads.business.core.ContextHolder.context
 import im.threads.business.formatters.RussianFormatSymbols
 import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.imageLoading.ImageLoader.Companion.get
@@ -368,6 +368,14 @@ class UserPhraseViewHolder(
                                 }
                             })
                             .into(image)
+                        val chatStyle = Config.getInstance().getChatStyle()
+                        val resources = context.resources
+                        val paddingLeft = resources.getDimensionPixelSize(chatStyle.bubbleOutgoingPaddingLeft)
+                        val paddingTop = resources.getDimensionPixelSize(chatStyle.bubbleOutgoingPaddingTop)
+                        val paddingRight = resources.getDimensionPixelSize(chatStyle.bubbleOutgoingPaddingRight)
+                        val paddingBottom = resources.getDimensionPixelSize(chatStyle.bubbleOutgoingPaddingBottom)
+                        ogDataLayout.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom)
+                        ogDataLayout.layoutParams.width = resources.getDimensionPixelSize(R.dimen.message_image_size)
                     } else {
                         if (it.fileUri != null) {
                             it.downloadProgress = 100
@@ -454,7 +462,8 @@ class UserPhraseViewHolder(
 
     override fun updateIsPlaying(isPlaying: Boolean) {
         if (buttonPlayPause.tag != loadingStateTag) {
-            val imageResource = if (isPlaying) style.voiceMessagePauseButton else style.voiceMessagePlayButton
+            val imageResource =
+                if (isPlaying) style.voiceMessagePauseButton else style.voiceMessagePlayButton
             buttonPlayPause.setImageResource(imageResource)
         }
     }
