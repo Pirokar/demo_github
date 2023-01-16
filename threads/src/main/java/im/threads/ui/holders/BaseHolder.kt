@@ -464,4 +464,31 @@ abstract class BaseHolder internal constructor(
             )
         }
     }
+
+    protected fun setLayoutMargins(isIncomingMessage: Boolean, layout: ViewGroup) {
+        val resources = itemView.context.resources
+        val layoutParams = layout.layoutParams as ViewGroup.MarginLayoutParams
+        if (isIncomingMessage) {
+            layoutParams.setMargins(
+                resources.getDimensionPixelSize(style.bubbleIncomingMarginLeft),
+                resources.getDimensionPixelSize(style.bubbleIncomingMarginTop),
+                resources.getDimensionPixelSize(style.bubbleIncomingMarginRight),
+                resources.getDimensionPixelSize(style.bubbleIncomingMarginBottom)
+            )
+            layoutParams.marginStart = resources.getDimensionPixelSize(style.bubbleIncomingMarginLeft)
+            layoutParams.marginEnd = resources.getDimensionPixelSize(style.bubbleIncomingMarginRight)
+        } else {
+            layoutParams.setMargins(
+                resources.getDimensionPixelSize(style.bubbleOutgoingMarginLeft),
+                resources.getDimensionPixelSize(style.bubbleOutgoingMarginTop),
+                resources.getDimensionPixelSize(style.bubbleOutgoingMarginRight),
+                resources.getDimensionPixelSize(style.bubbleOutgoingMarginBottom)
+            )
+            layoutParams.marginStart = resources.getDimensionPixelSize(style.bubbleOutgoingMarginLeft)
+            layoutParams.marginEnd = resources.getDimensionPixelSize(style.bubbleOutgoingMarginRight)
+        }
+        layout.layoutParams = layoutParams
+        layout.invalidate()
+        layout.requestLayout()
+    }
 }

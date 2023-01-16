@@ -83,9 +83,9 @@
 
                     <View
                         android:id="@+id/timeStampBottomView"
-                        android:layout_marginBottom="@dimen/margin_half"
                         android:layout_width="10dp"
-                        android:layout_height="@dimen/margin_three_fourth"/>
+                        android:layout_height="@dimen/margin_three_fourth"
+                        android:layout_marginBottom="@dimen/margin_half" />
 
                 </LinearLayout>
 
@@ -98,7 +98,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_marginTop="@dimen/margin_quarter"
                 android:layout_marginBottom="@dimen/margin_quarter"
-                android:visibility="gone">
+                android:visibility="visible">
 
                 <FrameLayout
                     android:id="@+id/imageBackground"

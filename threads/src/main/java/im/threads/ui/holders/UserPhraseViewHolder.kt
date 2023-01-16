@@ -1,7 +1,6 @@
 package im.threads.ui.holders
 
 import android.annotation.SuppressLint
-import android.app.ActionBar
 import android.content.Context
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -9,7 +8,6 @@ import android.view.View
 import android.view.View.OnLongClickListener
 import android.view.View.VISIBLE
 import android.view.ViewGroup
-import android.view.ViewGroup.MarginLayoutParams
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.RelativeLayout
@@ -251,47 +249,26 @@ class UserPhraseViewHolder(
         val isBordersNotSet = borderLeft == 0 && borderTop == 0 && borderRight == 0 && borderBottom == 0
         val isImage = isImage(fileDescription)
 
+        setLayoutMargins(false, bubbleLayout)
         if (isImage) {
             imageRoot.visible()
-
-            (bubbleLayout.layoutParams as MarginLayoutParams).let {
-                it.marginStart = 0
-                bubbleLayout.layoutParams = it
-            }
-            bubbleLayout.invalidate()
-            bubbleLayout.requestLayout()
-
             if (isBordersNotSet) {
                 phraseFrame.setPadding(borderLeft, 0, borderRight, 0)
                 setPaddings(false, this)
             } else {
-                setPadding(0, 0, 0, 0)
-                (image.layoutParams as FrameLayout.LayoutParams).apply {
-                    setMargins(borderLeft, borderTop, borderRight, borderBottom)
-                    image.layoutParams = this
-                }
+                setPadding(borderLeft, borderTop, borderRight, borderBottom)
+                image.setPadding(0, 0, 0, 0)
                 phraseFrame.setPadding(
                     borderLeft,
-                    0,
+                    borderTop,
                     borderRight,
-                    resources.getDimensionPixelSize(style.bubbleIncomingPaddingBottom)
+                    resources.getDimensionPixelSize(style.bubbleOutgoingPaddingBottom)
                 )
             }
             image.invalidate()
             image.requestLayout()
         } else {
-            (bubbleLayout.layoutParams as MarginLayoutParams).let {
-                it.width = ActionBar.LayoutParams.WRAP_CONTENT
-                it.height = ActionBar.LayoutParams.WRAP_CONTENT
-                it.marginEnd = resources.getDimensionPixelSize(R.dimen.user_margin_right)
-                it.marginStart = resources.getDimensionPixelSize(R.dimen.user_margin_left)
-            }
-
-            bubbleLayout.invalidate()
-            bubbleLayout.requestLayout()
-
             imageRoot.gone()
-
             phraseFrame.setPadding(0, 0, 0, 0)
             setPaddings(false, this)
         }

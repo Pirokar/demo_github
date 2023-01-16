@@ -221,6 +221,7 @@ class ConsultPhraseHolder(
         val isBordersNotSet = borderLeft == 0 && borderTop == 0 && borderRight == 0 && borderBottom == 0
         val isImage = isImage(fileDescription)
 
+        setLayoutMargins(true, bubbleLayout)
         if (isImage) {
             imageRoot.visible()
 
@@ -235,16 +236,13 @@ class ConsultPhraseHolder(
                 phraseFrame.setPadding(0, 0, 0, 0)
                 setPaddings(true,  this)
             } else {
-                setPadding(0, 0, 0, 0)
-                (image.layoutParams as FrameLayout.LayoutParams).apply {
-                    setMargins(borderLeft, borderTop, borderRight, borderBottom)
-                    image.layoutParams = this
-                }
+                setPadding(borderLeft, borderTop, borderRight, borderBottom)
+                image.setPadding(0, 0, 0, 0)
                 phraseFrame.setPadding(
                     borderLeft,
-                    0,
+                    borderTop,
                     borderRight,
-                    resources.getDimensionPixelSize(style.bubbleIncomingPaddingBottom)
+                    resources.getDimensionPixelSize(style.bubbleOutgoingPaddingBottom)
                 )
             }
             image.invalidate()
