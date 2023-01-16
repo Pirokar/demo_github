@@ -34,7 +34,7 @@ import java.util.Locale
 class ConsultFileViewHolder(
     parent: ViewGroup,
     highlightingStream: PublishSubject<ChatItem>,
-    openGraphParser: OpenGraphParser
+    openGraphParser: OpenGraphParser,
 ) : BaseHolder(
     LayoutInflater.from(parent.context).inflate(R.layout.item_consult_chat_file, parent, false),
     highlightingStream,
@@ -67,18 +67,13 @@ class ConsultFileViewHolder(
     }
 
     init {
-        itemView.findViewById<View>(R.id.bubble).apply {
+        itemView.findViewById<ViewGroup>(R.id.bubble).apply {
             background =
                 AppCompatResources.getDrawable(
                     itemView.context,
                     style.incomingMessageBubbleBackground
                 )
-            setPadding(
-                context.resources.getDimensionPixelSize(style.bubbleIncomingPaddingLeft),
-                context.resources.getDimensionPixelSize(style.bubbleIncomingPaddingTop),
-                context.resources.getDimensionPixelSize(style.bubbleIncomingPaddingRight),
-                context.resources.getDimensionPixelSize(style.bubbleIncomingPaddingBottom)
-            )
+            setPaddings(true, this)
             background.setColorFilter(
                 getColorInt(style.incomingMessageBubbleColor),
                 PorterDuff.Mode.SRC_ATOP
@@ -102,7 +97,7 @@ class ConsultFileViewHolder(
         highlighted: Boolean,
         buttonClickListener: View.OnClickListener,
         onLongClickListener: OnLongClickListener,
-        onAvatarClickListener: View.OnClickListener
+        onAvatarClickListener: View.OnClickListener,
     ) {
         subscribeForHighlighting(consultPhrase, rootLayout)
         val fileDescription = consultPhrase.fileDescription

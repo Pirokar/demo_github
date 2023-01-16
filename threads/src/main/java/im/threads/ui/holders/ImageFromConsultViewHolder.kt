@@ -110,12 +110,7 @@ class ImageFromConsultViewHolder(
             itemView.context,
             style.incomingMessageBubbleBackground
         )
-        loaderLayout.setPadding(
-            res.getDimensionPixelSize(style.bubbleIncomingPaddingBottom),
-            res.getDimensionPixelSize(style.bubbleIncomingPaddingTop),
-            res.getDimensionPixelSize(style.bubbleIncomingPaddingRight),
-            res.getDimensionPixelSize(style.bubbleIncomingPaddingBottom)
-        )
+        setPaddings(true, loaderLayout)
         val layoutParams = loaderLayout.layoutParams as RelativeLayout.LayoutParams
         layoutParams.setMargins(
             res.getDimensionPixelSize(style.bubbleIncomingMarginLeft),

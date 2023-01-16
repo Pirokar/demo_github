@@ -233,12 +233,7 @@ class ConsultPhraseHolder(
 
             if (isBordersNotSet) {
                 phraseFrame.setPadding(0, 0, 0, 0)
-                setPadding(
-                    resources.getDimensionPixelSize(style.bubbleIncomingPaddingLeft),
-                    resources.getDimensionPixelSize(style.bubbleIncomingPaddingTop),
-                    resources.getDimensionPixelSize(style.bubbleIncomingPaddingRight),
-                    resources.getDimensionPixelSize(style.bubbleIncomingPaddingBottom)
-                )
+                setPaddings(true,  this)
             } else {
                 setPadding(0, 0, 0, 0)
                 (image.layoutParams as FrameLayout.LayoutParams).apply {
@@ -266,13 +261,7 @@ class ConsultPhraseHolder(
             imageRoot.gone()
 
             phraseFrame.setPadding(0, 0, 0, 0)
-
-            setPadding(
-                resources.getDimensionPixelSize(style.bubbleIncomingPaddingLeft),
-                resources.getDimensionPixelSize(style.bubbleIncomingPaddingTop),
-                resources.getDimensionPixelSize(style.bubbleIncomingPaddingRight),
-                resources.getDimensionPixelSize(style.bubbleIncomingPaddingBottom)
-            )
+            setPaddings(true,  this)
         }
     }
 

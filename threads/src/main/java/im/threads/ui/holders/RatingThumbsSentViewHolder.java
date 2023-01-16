@@ -3,7 +3,6 @@ package im.threads.ui.holders;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -27,7 +26,7 @@ public final class RatingThumbsSentViewHolder extends BaseHolder {
     private TextView mHeader;
     private TextView mTimeStampTextView;
     private SimpleDateFormat sdf;
-    private View mBubble;
+    private ViewGroup mBubble;
 
     public RatingThumbsSentViewHolder(ViewGroup parent) {
         super(
@@ -41,13 +40,7 @@ public final class RatingThumbsSentViewHolder extends BaseHolder {
         mBubble = itemView.findViewById(R.id.bubble);
         sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
         mBubble.setBackground(AppCompatResources.getDrawable(itemView.getContext(), getStyle().outgoingMessageBubbleBackground));
-        mBubble.setPadding(
-                itemView.getContext().getResources().getDimensionPixelSize(getStyle().bubbleOutgoingPaddingLeft),
-                itemView.getContext().getResources().getDimensionPixelSize(getStyle().bubbleOutgoingPaddingTop),
-                itemView.getContext().getResources().getDimensionPixelSize(getStyle().bubbleOutgoingPaddingRight),
-                itemView.getContext().getResources().getDimensionPixelSize(getStyle().bubbleOutgoingPaddingBottom)
-        );
-
+        setPaddings(false,  mBubble);
         RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) mBubble.getLayoutParams();
         layoutParams.setMargins(
                 parent.getContext().getResources().getDimensionPixelSize(getStyle().bubbleOutgoingMarginLeft),

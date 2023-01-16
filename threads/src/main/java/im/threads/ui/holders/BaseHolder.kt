@@ -445,4 +445,23 @@ abstract class BaseHolder internal constructor(
     protected fun cancelAnimation() {
         rotateAnim.cancel()
     }
+
+    protected fun setPaddings(isIncomingMessage: Boolean, layout: ViewGroup) {
+        val resources = itemView.context.resources
+        if (isIncomingMessage) {
+            layout.setPadding(
+                resources.getDimensionPixelSize(style.bubbleIncomingPaddingLeft),
+                resources.getDimensionPixelSize(style.bubbleIncomingPaddingTop),
+                resources.getDimensionPixelSize(style.bubbleIncomingPaddingRight),
+                resources.getDimensionPixelSize(style.bubbleIncomingPaddingBottom)
+            )
+        } else {
+            layout.setPadding(
+                resources.getDimensionPixelSize(style.bubbleOutgoingPaddingLeft),
+                resources.getDimensionPixelSize(style.bubbleOutgoingPaddingTop),
+                resources.getDimensionPixelSize(style.bubbleOutgoingPaddingRight),
+                resources.getDimensionPixelSize(style.bubbleOutgoingPaddingBottom)
+            )
+        }
+    }
 }

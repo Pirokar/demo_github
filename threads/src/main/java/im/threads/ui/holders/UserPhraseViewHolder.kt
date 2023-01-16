@@ -207,16 +207,20 @@ class UserPhraseViewHolder(
         slider.addOnSliderTouchListener(onSliderTouchListener)
         slider.setLabelFormatter(VoiceTimeLabelFormatter())
         fileSizeTextView.text = formattedDuration
+
+        if (userPhrase.sentState == MessageState.STATE_NOT_SENT) {
+            showErrorLayout()
+        }
+
+        showFiles(userPhrase, imageClickListener, fileClickListener)
         setTimestamp(timeStamp)
         setSendState(sendState)
-
         phrase?.let {
             showPhrase(it)
         } ?: run {
             phraseTextView.gone()
         }
 
-        showFiles(userPhrase, imageClickListener, fileClickListener)
         quote?.let { showQuote(it, onQuoteClickListener) }
             ?: campaignMessage?.let { showCampaign(it) }
         if ((quote != null || fileDescription != null) && voiceMessage.visibility != VISIBLE) {
@@ -259,12 +263,7 @@ class UserPhraseViewHolder(
 
             if (isBordersNotSet) {
                 phraseFrame.setPadding(borderLeft, 0, borderRight, 0)
-                setPadding(
-                    resources.getDimensionPixelSize(style.bubbleOutgoingPaddingLeft),
-                    resources.getDimensionPixelSize(style.bubbleOutgoingPaddingTop),
-                    resources.getDimensionPixelSize(style.bubbleOutgoingPaddingRight),
-                    resources.getDimensionPixelSize(style.bubbleOutgoingPaddingBottom)
-                )
+                setPaddings(false, this)
             } else {
                 setPadding(0, 0, 0, 0)
                 (image.layoutParams as FrameLayout.LayoutParams).apply {
@@ -287,18 +286,14 @@ class UserPhraseViewHolder(
                 it.marginEnd = resources.getDimensionPixelSize(R.dimen.user_margin_right)
                 it.marginStart = resources.getDimensionPixelSize(R.dimen.user_margin_left)
             }
+
             bubbleLayout.invalidate()
             bubbleLayout.requestLayout()
 
             imageRoot.gone()
 
             phraseFrame.setPadding(0, 0, 0, 0)
-            setPadding(
-                resources.getDimensionPixelSize(style.bubbleOutgoingPaddingLeft),
-                resources.getDimensionPixelSize(style.bubbleOutgoingPaddingTop),
-                resources.getDimensionPixelSize(style.bubbleOutgoingPaddingRight),
-                resources.getDimensionPixelSize(style.bubbleOutgoingPaddingBottom)
-            )
+            setPaddings(false, this)
         }
     }
 
@@ -324,7 +319,6 @@ class UserPhraseViewHolder(
         userPhrase.fileDescription?.let {
             fileDescription = it
             subscribeForVoiceMessageDownloaded()
-
             rightTextDescription.text = getFileDescriptionText(it)
             val isLoading = it.state == AttachmentStateEnum.PENDING || userPhrase.sentState == MessageState.STATE_SENDING
             if (isVoiceMessage(it) && isLoading) {
@@ -335,11 +329,15 @@ class UserPhraseViewHolder(
                 imageRoot.gone()
                 rightTextRow.visible()
                 showLoaderLayout()
-            } else if (it.state === AttachmentStateEnum.ERROR) {
+            } else if (it.state === AttachmentStateEnum.ERROR || userPhrase.sentState == MessageState.STATE_NOT_SENT) {
                 stopLoader()
                 voiceMessage.gone()
                 rightTextRow.visible()
                 showErrorLayout(it)
+                initTimeStampView(userPhrase)
+                timeStampTextView = itemView.findViewById(R.id.timeStamp)
+                itemView.findViewById<BubbleTimeTextView>(R.id.timeStamp).gone()
+                timeStampTextView.visible()
             } else {
                 stopLoader()
                 showCommonLayout()
@@ -529,9 +527,21 @@ class UserPhraseViewHolder(
         initAnimation(loader, false)
     }
 
+    private fun showErrorLayout() {
+        errorText.visible()
+        loader.visible()
+        fileImageButton.gone()
+        errorText.text = getString(R.string.threads_message_not_sent)
+        rotateAnim.cancel()
+        rotateAnim.reset()
+    }
+
     private fun showErrorLayout(fileDescription: FileDescription) {
         errorText.visible()
         loader.visible()
+        imageLayout.gone()
+        imageRoot.gone()
+        image.gone()
         loader.setImageResource(getErrorImageResByErrorCode(fileDescription.errorCode))
         fileImageButton.gone()
         val errorString = getString(getErrorStringResByErrorCode(fileDescription.errorCode))

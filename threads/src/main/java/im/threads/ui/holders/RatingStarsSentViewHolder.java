@@ -3,7 +3,6 @@ package im.threads.ui.holders;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -31,7 +30,7 @@ public final class RatingStarsSentViewHolder extends BaseHolder {
     private TextView totalStarsCount;
     private TextView mTimeStampTextView;
     private SimpleDateFormat sdf;
-    private View mBubble;
+    private ViewGroup mBubble;
 
     public RatingStarsSentViewHolder(ViewGroup parent) {
         super(
@@ -50,12 +49,7 @@ public final class RatingStarsSentViewHolder extends BaseHolder {
         rateStarsCount.setTextColor(getColorInt(getStyle().outgoingMessageBubbleColor));
         mBubble.setBackground(AppCompatResources.getDrawable(itemView.getContext(), getStyle().outgoingMessageBubbleBackground));
 
-        mBubble.setPadding(
-                itemView.getContext().getResources().getDimensionPixelSize(getStyle().bubbleOutgoingPaddingLeft),
-                itemView.getContext().getResources().getDimensionPixelSize(getStyle().bubbleOutgoingPaddingTop),
-                itemView.getContext().getResources().getDimensionPixelSize(getStyle().bubbleOutgoingPaddingRight),
-                itemView.getContext().getResources().getDimensionPixelSize(getStyle().bubbleOutgoingPaddingBottom)
-        );
+        setPaddings(false, mBubble);
         mBubble.getBackground().setColorFilter(getColorInt(getStyle().outgoingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
 
         RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) mBubble.getLayoutParams();

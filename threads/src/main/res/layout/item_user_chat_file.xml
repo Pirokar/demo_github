@@ -1,17 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/rootLayout"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:contentDescription="chatText"
+    android:orientation="vertical"
     tools:ignore="HardcodedText">
 
     <RelativeLayout
         android:id="@+id/bubble"
         style="@style/userBubble"
         android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
         android:paddingStart="0dp"
         android:paddingEnd="17dp">
 
@@ -80,11 +83,10 @@
             android:id="@+id/timeStamp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/header"
+            android:layout_marginEnd="@dimen/margin_half"
+            android:layout_marginBottom="@dimen/margin_half"
             android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
-            android:layout_marginEnd="@dimen/margin_quarter"
-            android:layout_marginBottom="@dimen/margin_half"
             android:background="@drawable/timestamp_outgoing_underlayer"
             android:drawablePadding="@dimen/margin_half"
             android:paddingLeft="2dp"
@@ -97,16 +99,14 @@
     <im.threads.ui.widget.textView.BubbleTimeTextView
         android:id="@+id/errorText"
         style="@style/timestamp"
-        android:layout_below="@+id/bubble"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="@dimen/margin_half"
+        android:layout_gravity="end"
+        android:layout_marginTop="@dimen/margin_quarter"
+        android:layout_marginEnd="@dimen/consultant_margin_right"
         android:gravity="end"
-        android:paddingStart="0dp"
-        android:paddingEnd="@dimen/consultant_margin_right"
         android:textColor="@color/threads_error_red_df0000"
         android:textSize="@dimen/error_text_size"
         android:visibility="gone"
         tools:text="Some error text"
         tools:visibility="visible" />
 
-</RelativeLayout>
+</LinearLayout>
