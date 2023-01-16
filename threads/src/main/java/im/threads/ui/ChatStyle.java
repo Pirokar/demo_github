@@ -40,6 +40,8 @@ public final class ChatStyle implements Serializable {
     @ColorRes
     public int chatToolbarColorResId = R.color.threads_chat_toolbar;
     @ColorRes
+    public int chatToolbarContextMenuColorResId = R.color.threads_chat_toolbar_context_menu;
+    @ColorRes
     public int chatStatusBarColorResId = R.color.threads_chat_status_bar;
     @BoolRes
     public int windowLightStatusBarResId = R.bool.threads_chat_is_light_status_bar;
@@ -993,7 +995,6 @@ public final class ChatStyle implements Serializable {
      * @param chatTitleTextResId               - R.string.threads_contact_center
      * @param chatSubtitleTextResId            - R.string.threads_operator_subtitle
      * @param chatToolbarColorResId            - R.color.threads_chat_toolbar
-     * @param chatToolbarContextMenuColorResId - R.color.threads_chat_toolbar_context_menu
      * @param chatToolbarTextColorResId        - R.color.threads_chat_toolbar_text
      * @param chatStatusBarColorResId          - R.color.threads_chat_status_bar
      * @param menuItemTextColorResId           - R.color.threads_chat_toolbar_menu_item
@@ -1027,6 +1028,7 @@ public final class ChatStyle implements Serializable {
      * @param chatTitleTextResId               - R.string.threads_contact_center
      * @param chatSubtitleTextResId            - R.string.threads_operator_subtitle
      * @param chatToolbarColorResId            - R.color.threads_chat_toolbar
+     * @param chatToolbarContextMenuColorResId - R.color.threads_chat_toolbar_context_menu
      * @param chatToolbarTextColorResId        - R.color.threads_chat_toolbar_text
      * @param chatStatusBarColorResId          - R.color.threads_chat_status_bar
      * @param windowLightStatusBarResId        - R.bool.threads_chat_is_light_status_bar
@@ -1038,6 +1040,7 @@ public final class ChatStyle implements Serializable {
             @StringRes final int chatTitleTextResId,
             @StringRes final int chatSubtitleTextResId,
             @ColorRes final int chatToolbarColorResId,
+            @ColorRes final int chatToolbarContextMenuColorResId,
             @ColorRes final int chatToolbarTextColorResId,
             @ColorRes final int chatStatusBarColorResId,
             @BoolRes final int windowLightStatusBarResId,
@@ -1048,6 +1051,7 @@ public final class ChatStyle implements Serializable {
         this.chatTitleTextResId = chatTitleTextResId;
         this.chatSubtitleTextResId = chatSubtitleTextResId;
         this.chatToolbarColorResId = chatToolbarColorResId;
+        this.chatToolbarContextMenuColorResId = chatToolbarContextMenuColorResId;
         this.chatToolbarTextColorResId = chatToolbarTextColorResId;
         this.chatStatusBarColorResId = chatStatusBarColorResId;
         this.windowLightStatusBarResId = windowLightStatusBarResId;
