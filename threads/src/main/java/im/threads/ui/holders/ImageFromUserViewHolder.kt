@@ -174,12 +174,7 @@ class ImageFromUserViewHolder(
                 getColorInt(style.outgoingMessageBubbleColor),
                 BlendModeCompat.SRC_ATOP
             )
-        layout.setPadding(
-            res.getDimensionPixelSize(style.bubbleOutgoingPaddingLeft),
-            res.getDimensionPixelSize(style.bubbleOutgoingPaddingTop),
-            res.getDimensionPixelSize(style.bubbleOutgoingPaddingRight),
-            res.getDimensionPixelSize(style.bubbleOutgoingPaddingBottom)
-        )
+        setPaddings(false,  layout)
         val timeStampBottomViewLayoutParams = timeStampBottomView.layoutParams as LinearLayout.LayoutParams
         timeStampBottomViewLayoutParams.height = res.getDimensionPixelSize(style.bubbleOutgoingPaddingBottom)
         timeStampBottomView.layoutParams = timeStampBottomViewLayoutParams

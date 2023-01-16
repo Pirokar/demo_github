@@ -262,12 +262,7 @@ class UserPhraseViewHolder(
 
             if (isBordersNotSet) {
                 phraseFrame.setPadding(borderLeft, 0, borderRight, 0)
-                setPadding(
-                    resources.getDimensionPixelSize(style.bubbleOutgoingPaddingLeft),
-                    resources.getDimensionPixelSize(style.bubbleOutgoingPaddingTop),
-                    resources.getDimensionPixelSize(style.bubbleOutgoingPaddingRight),
-                    resources.getDimensionPixelSize(style.bubbleOutgoingPaddingBottom)
-                )
+                setPaddings(false, this)
             } else {
                 setPadding(0, 0, 0, 0)
                 (image.layoutParams as FrameLayout.LayoutParams).apply {
@@ -297,12 +292,7 @@ class UserPhraseViewHolder(
             imageRoot.gone()
 
             phraseFrame.setPadding(0, 0, 0, 0)
-            setPadding(
-                resources.getDimensionPixelSize(style.bubbleOutgoingPaddingLeft),
-                resources.getDimensionPixelSize(style.bubbleOutgoingPaddingTop),
-                resources.getDimensionPixelSize(style.bubbleOutgoingPaddingRight),
-                resources.getDimensionPixelSize(style.bubbleOutgoingPaddingBottom)
-            )
+            setPaddings(false, this)
         }
     }
 

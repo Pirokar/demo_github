@@ -101,12 +101,7 @@ class ConsultVoiceMessageViewHolder(
                     itemView.context,
                     style.incomingMessageBubbleBackground
                 )
-            setPadding(
-                context.resources.getDimensionPixelSize(style.bubbleIncomingPaddingLeft),
-                context.resources.getDimensionPixelSize(style.bubbleIncomingPaddingTop),
-                context.resources.getDimensionPixelSize(style.bubbleIncomingPaddingRight),
-                context.resources.getDimensionPixelSize(style.bubbleIncomingPaddingBottom)
-            )
+            setPaddings(true, this)
             background.colorFilter =
                 BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
                     getColorInt(style.incomingMessageBubbleColor),

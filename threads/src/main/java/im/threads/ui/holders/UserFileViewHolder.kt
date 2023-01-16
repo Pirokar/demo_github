@@ -75,12 +75,7 @@ class UserFileViewHolder(
                     itemView.context,
                     style.outgoingMessageBubbleBackground
                 )
-            setPadding(
-                itemView.context.resources.getDimensionPixelSize(style.bubbleOutgoingPaddingLeft),
-                itemView.context.resources.getDimensionPixelSize(style.bubbleOutgoingPaddingTop),
-                itemView.context.resources.getDimensionPixelSize(style.bubbleOutgoingPaddingRight),
-                itemView.context.resources.getDimensionPixelSize(style.bubbleOutgoingPaddingBottom)
-            )
+            setPaddings(false, this)
             background.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
                 getColorInt(style.outgoingMessageBubbleColor),
                 BlendModeCompat.SRC_ATOP
