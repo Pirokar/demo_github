@@ -35,9 +35,15 @@ public final class WelcomeScreen extends LinearLayout {
         }
         inflater.inflate(R.layout.view_welcome, this, true);
         final ChatStyle style = Config.getInstance().getChatStyle();
+        initBackgroundColor(style);
         initLogo(style);
         initTitle(style);
         initSubtitle(style);
+    }
+
+    private void initBackgroundColor(final @NonNull ChatStyle style) {
+        LinearLayout rootLayout = findViewById(R.id.rootLayout);
+        ColorsHelper.setBackgroundColor(getContext(), rootLayout, style.chatBackgroundColor);
     }
 
     private void initLogo(final @NonNull ChatStyle style) {
