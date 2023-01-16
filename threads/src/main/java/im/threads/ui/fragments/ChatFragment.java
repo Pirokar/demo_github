@@ -2161,7 +2161,20 @@ public final class ChatFragment extends BaseFragment implements
     private void initToolbarTextPosition() {
         boolean isToolbarTextCentered = Config.getInstance().getChatStyle().isToolbarTextCentered;
         int gravity = isToolbarTextCentered ? Gravity.CENTER : Gravity.CENTER_VERTICAL;
-
+        if (isToolbarTextCentered) {
+            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) binding.consultTitle.getLayoutParams();
+            int margin = getResources().getDimensionPixelSize(R.dimen.default_chat_row_height);
+            int marginTopBottom = getResources().getDimensionPixelSize(R.dimen.margin_quarter);
+            if (style.showBackButton && !isPpopupMenuEnabled()) {
+                params.setMargins(0, marginTopBottom, margin, marginTopBottom);
+                params.setMarginEnd(margin);
+            } else if (!style.showBackButton && isPpopupMenuEnabled()) {
+                params.setMargins(margin, marginTopBottom, 0, marginTopBottom);
+                params.setMarginStart(margin);
+            }
+            binding.consultTitle.setLayoutParams(params);
+            binding.consultTitle.invalidate();
+        }
         binding.consultName.setGravity(gravity);
         binding.subtitle.setGravity(gravity);
     }
