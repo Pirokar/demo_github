@@ -20,26 +20,30 @@ public final class WelcomeScreen extends LinearLayout {
 
     public WelcomeScreen(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init(context);
+        init();
     }
 
     public WelcomeScreen(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init(context);
+        init();
     }
 
-    private void init(Context context) {
+    private void init() {
         final LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         if (inflater == null) {
             return;
         }
         inflater.inflate(R.layout.view_welcome, this, true);
         final ChatStyle style = Config.getInstance().getChatStyle();
-        LinearLayout rootLayout = findViewById(R.id.rootLayout);
-        ColorsHelper.setBackgroundColor(context, rootLayout, style.chatBackgroundColor);
+        initBackgroundColor(style);
         initLogo(style);
         initTitle(style);
         initSubtitle(style);
+    }
+
+    private void initBackgroundColor(final @NonNull ChatStyle style) {
+        LinearLayout rootLayout = findViewById(R.id.rootLayout);
+        ColorsHelper.setBackgroundColor(getContext(), rootLayout, style.chatBackgroundColor);
     }
 
     private void initLogo(final @NonNull ChatStyle style) {
