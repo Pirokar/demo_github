@@ -2,7 +2,6 @@ package im.threads.ui.holders
 
 import android.util.TypedValue
 import android.view.View
-import android.view.ViewGroup.MarginLayoutParams
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -62,7 +61,6 @@ open class BaseImageHolder(
     }
 
     private fun applyImageStyle() {
-        val resources = itemView.context.resources
         val style = Config.getInstance().getChatStyle()
 
         val background = if (isIncomingMessage) {
@@ -85,14 +83,9 @@ open class BaseImageHolder(
 
         bordersCreator.addMargins(image, imageLayout, itemView)
 
-        if (!isIncomingMessage) {
-            (rootLayout.layoutParams as MarginLayoutParams).let {
-                it.marginEnd = resources.getDimensionPixelSize(R.dimen.user_margin_right)
-                rootLayout.layoutParams = it
-            }
-            rootLayout.invalidate()
-            rootLayout.requestLayout()
-        }
+        setLayoutMargins(isIncomingMessage, imageLayout)
+        rootLayout.invalidate()
+        rootLayout.requestLayout()
     }
 
     fun moveTimeToImageLayout() {

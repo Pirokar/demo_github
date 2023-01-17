@@ -5,7 +5,6 @@ import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
@@ -50,16 +49,8 @@ public final class RatingStarsSentViewHolder extends BaseHolder {
         mBubble.setBackground(AppCompatResources.getDrawable(itemView.getContext(), getStyle().outgoingMessageBubbleBackground));
 
         setPaddings(false, mBubble);
+        setLayoutMargins(false, mBubble);
         mBubble.getBackground().setColorFilter(getColorInt(getStyle().outgoingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
-
-        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) mBubble.getLayoutParams();
-        layoutParams.setMargins(
-                parent.getContext().getResources().getDimensionPixelSize(getStyle().bubbleOutgoingMarginLeft),
-                parent.getContext().getResources().getDimensionPixelSize(getStyle().bubbleOutgoingMarginTop),
-                parent.getContext().getResources().getDimensionPixelSize(getStyle().bubbleOutgoingMarginRight),
-                parent.getContext().getResources().getDimensionPixelSize(getStyle().bubbleOutgoingMarginBottom)
-        );
-        mBubble.setLayoutParams(layoutParams);
 
         setTextColorToViews(new TextView[]{mHeader, from, totalStarsCount}, getStyle().outgoingMessageTextColor);
         mTimeStampTextView.setTextColor(getColorInt(getStyle().outgoingMessageTimeColor));

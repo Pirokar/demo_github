@@ -78,15 +78,7 @@ class ConsultFileViewHolder(
                 getColorInt(style.incomingMessageBubbleColor),
                 PorterDuff.Mode.SRC_ATOP
             )
-
-            val layoutParams = this.layoutParams as RelativeLayout.LayoutParams
-            layoutParams.setMargins(
-                context.resources.getDimensionPixelSize(style.bubbleIncomingMarginLeft),
-                context.resources.getDimensionPixelSize(style.bubbleIncomingMarginTop),
-                context.resources.getDimensionPixelSize(style.bubbleIncomingMarginRight),
-                context.resources.getDimensionPixelSize(style.bubbleIncomingMarginBottom)
-            )
-            this.layoutParams = layoutParams
+            setLayoutMargins(true, this)
         }
         setTextColorToViews(arrayOf(mFileHeader, mSizeTextView), style.incomingMessageTextColor)
         setUpProgressButton(mCircularProgressButton)

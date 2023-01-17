@@ -80,14 +80,7 @@ class UserFileViewHolder(
                 getColorInt(style.outgoingMessageBubbleColor),
                 BlendModeCompat.SRC_ATOP
             )
-            val layoutParams = this.layoutParams as LinearLayout.LayoutParams
-            layoutParams.setMargins(
-                context.resources.getDimensionPixelSize(style.bubbleOutgoingMarginLeft),
-                context.resources.getDimensionPixelSize(style.bubbleOutgoingMarginTop),
-                context.resources.getDimensionPixelSize(style.bubbleOutgoingMarginRight),
-                context.resources.getDimensionPixelSize(style.bubbleOutgoingMarginBottom)
-            )
-            this.layoutParams = layoutParams
+            setLayoutMargins(false, this)
         }
         setTextColorToViews(
             arrayOf(fileHeaderTextView, fileSizeTextView),

@@ -7,7 +7,6 @@ import android.view.View.OnLongClickListener
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
@@ -123,21 +122,12 @@ class ImageFromConsultViewHolder(
     }
 
     private fun applyBubbleLayoutStyle() {
-        val res = itemView.context.resources
         loaderLayout.background = AppCompatResources.getDrawable(
             itemView.context,
             style.incomingMessageBubbleBackground
         )
         setPaddings(true, loaderLayout)
-        val layoutParams = loaderLayout.layoutParams as RelativeLayout.LayoutParams
-        layoutParams.setMargins(
-            res.getDimensionPixelSize(style.bubbleIncomingMarginLeft),
-            res.getDimensionPixelSize(style.bubbleIncomingMarginTop),
-            res.getDimensionPixelSize(style.bubbleIncomingMarginRight),
-            res.getDimensionPixelSize(style.bubbleIncomingMarginBottom)
-        )
-        loaderLayout.layoutParams = layoutParams
-
+        setLayoutMargins(true, loaderLayout)
         loaderLayout.background.colorFilter =
             BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
                 getColorInt(style.incomingMessageBubbleColor),

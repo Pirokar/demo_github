@@ -1,7 +1,6 @@
 package im.threads.ui.holders
 
 import android.annotation.SuppressLint
-import android.app.ActionBar
 import android.content.Context
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -9,12 +8,12 @@ import android.view.View
 import android.view.View.OnLongClickListener
 import android.view.View.VISIBLE
 import android.view.ViewGroup
-import android.view.ViewGroup.MarginLayoutParams
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TableRow
 import android.widget.TextView
+import androidx.appcompat.app.ActionBar
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
@@ -251,10 +250,11 @@ class UserPhraseViewHolder(
         val isBordersNotSet = borderLeft == 0 && borderTop == 0 && borderRight == 0 && borderBottom == 0
         val isImage = isImage(fileDescription)
 
+        setLayoutMargins(false, bubbleLayout)
         if (isImage) {
             imageRoot.visible()
 
-            (bubbleLayout.layoutParams as MarginLayoutParams).let {
+            (bubbleLayout.layoutParams as ViewGroup.MarginLayoutParams).let {
                 it.marginStart = 0
                 bubbleLayout.layoutParams = it
             }
@@ -280,13 +280,10 @@ class UserPhraseViewHolder(
             image.invalidate()
             image.requestLayout()
         } else {
-            (bubbleLayout.layoutParams as MarginLayoutParams).let {
+            (bubbleLayout.layoutParams as ViewGroup.MarginLayoutParams).let {
                 it.width = ActionBar.LayoutParams.WRAP_CONTENT
                 it.height = ActionBar.LayoutParams.WRAP_CONTENT
-                it.marginEnd = resources.getDimensionPixelSize(R.dimen.user_margin_right)
-                it.marginStart = resources.getDimensionPixelSize(R.dimen.user_margin_left)
             }
-
             bubbleLayout.invalidate()
             bubbleLayout.requestLayout()
 
