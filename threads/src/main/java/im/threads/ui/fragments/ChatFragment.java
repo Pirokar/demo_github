@@ -2163,15 +2163,14 @@ public final class ChatFragment extends BaseFragment implements
         int gravity = isToolbarTextCentered ? Gravity.CENTER : Gravity.CENTER_VERTICAL;
         if (isToolbarTextCentered) {
             LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) binding.consultTitle.getLayoutParams();
-            int marginTopBottom = getResources().getDimensionPixelSize(R.dimen.margin_quarter);
             if (style.showBackButton && !isPopupMenuEnabled()) {
                 int marginRight = getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
-                params.setMargins(0, marginTopBottom, marginRight, marginTopBottom);
+                params.setMarginStart(0);
                 params.setMarginEnd(marginRight);
             } else if (!style.showBackButton && isPopupMenuEnabled()) {
                 int marginLeft = getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
-                params.setMargins(marginLeft, marginTopBottom, 0, marginTopBottom);
                 params.setMarginStart(marginLeft);
+                params.setMarginEnd(0);
             }
             binding.consultTitle.setLayoutParams(params);
             binding.consultTitle.invalidate();
