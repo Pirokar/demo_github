@@ -471,12 +471,12 @@ abstract class BaseHolder internal constructor(
         if (isIncomingMessage) {
             layoutParams.marginStart = resources.getDimensionPixelSize(style.bubbleIncomingMarginLeft)
             layoutParams.marginEnd = resources.getDimensionPixelSize(style.bubbleIncomingMarginRight)
-            layoutParams.topMargin =  resources.getDimensionPixelSize(style.bubbleIncomingMarginTop)
+            layoutParams.topMargin = resources.getDimensionPixelSize(style.bubbleIncomingMarginTop)
             layoutParams.bottomMargin = resources.getDimensionPixelSize(style.bubbleIncomingMarginBottom)
         } else {
             layoutParams.marginStart = resources.getDimensionPixelSize(style.bubbleOutgoingMarginLeft)
             layoutParams.marginEnd = resources.getDimensionPixelSize(style.bubbleOutgoingMarginRight)
-            layoutParams.topMargin =  resources.getDimensionPixelSize(style.bubbleOutgoingMarginTop)
+            layoutParams.topMargin = resources.getDimensionPixelSize(style.bubbleOutgoingMarginTop)
             layoutParams.bottomMargin = resources.getDimensionPixelSize(style.bubbleOutgoingMarginBottom)
         }
         layout.layoutParams = layoutParams
