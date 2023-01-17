@@ -190,7 +190,7 @@ class ChatController private constructor() {
     fun fancySearch(
         query: String?,
         forward: Boolean,
-        consumer: Consumer<Pair<List<ChatItem?>?, ChatItem?>?>,
+        consumer: Consumer<Pair<List<ChatItem?>?, ChatItem?>?>
     ) {
         info("Trying to start search")
         subscribe(
