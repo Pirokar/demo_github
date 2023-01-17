@@ -233,7 +233,7 @@ class ConsultPhraseHolder(
 
             if (isBordersNotSet) {
                 phraseFrame.setPadding(0, 0, 0, 0)
-                setPaddings(true,  this)
+                setPaddings(true, this)
             } else {
                 setPadding(0, 0, 0, 0)
                 (image.layoutParams as FrameLayout.LayoutParams).apply {
@@ -261,7 +261,7 @@ class ConsultPhraseHolder(
             imageRoot.gone()
 
             phraseFrame.setPadding(0, 0, 0, 0)
-            setPaddings(true,  this)
+            setPaddings(true, this)
         }
     }
 
