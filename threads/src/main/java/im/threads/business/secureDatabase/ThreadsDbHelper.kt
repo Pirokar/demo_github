@@ -86,6 +86,9 @@ class ThreadsDbHelper private constructor(val context: Context, password: String
     override fun getChatItems(offset: Int, limit: Int): List<ChatItem> =
         messagesTable.getChatItems(this, offset, limit)
 
+    override fun getSentChatItems(): List<UserPhrase> =
+        messagesTable.getSentChatItems(this)
+
     override fun getChatItem(messageUuid: String?): ChatItem? =
         messagesTable.getChatItem(this, messageUuid)
 

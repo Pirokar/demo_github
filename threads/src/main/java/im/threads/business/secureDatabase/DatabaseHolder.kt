@@ -27,6 +27,9 @@ class DatabaseHolder(private val context: Context) {
     fun getChatItems(offset: Int, limit: Int): List<ChatItem> =
         myOpenHelper.getChatItems(offset, limit)
 
+    fun getSentChatItems(): List<UserPhrase> =
+        myOpenHelper.getSentChatItems()
+
     fun getChatItem(messageUuid: String?): ChatItem? = myOpenHelper.getChatItem(messageUuid)
 
     fun putChatItems(items: List<ChatItem?>?) {

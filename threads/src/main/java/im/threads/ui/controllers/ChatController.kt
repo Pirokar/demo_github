@@ -190,7 +190,7 @@ class ChatController private constructor() {
     fun fancySearch(
         query: String?,
         forward: Boolean,
-        consumer: Consumer<Pair<List<ChatItem?>?, ChatItem?>?>
+        consumer: Consumer<Pair<List<ChatItem?>?, ChatItem?>?>,
     ) {
         info("Trying to start search")
         subscribe(
@@ -291,15 +291,7 @@ class ChatController private constructor() {
     }
 
     private fun getSendingItems(): ArrayList<UserPhrase> {
-        val sendingItems = ArrayList<UserPhrase>()
-        database.getChatItems(0, -1).forEach {
-            if (it is UserPhrase) {
-                if (it.sentState == MessageState.STATE_SENDING) {
-                    sendingItems.add(it)
-                }
-            }
-        }
-        return sendingItems
+        return database.getSentChatItems() as ArrayList<UserPhrase>
     }
 
     private fun updateServerItemsBySendingItems(

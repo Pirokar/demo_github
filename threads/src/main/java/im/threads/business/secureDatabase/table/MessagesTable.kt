@@ -30,7 +30,7 @@ class MessagesTable(
     private val fileDescriptionTable: FileDescriptionsTable,
     private val quotesTable: QuotesTable,
     private val quickRepliesTable: QuickRepliesTable,
-    private val questionsTable: QuestionsTable
+    private val questionsTable: QuestionsTable,
 ) : Table() {
 
     override fun createTable(db: SQLiteDatabase) {
@@ -114,6 +114,32 @@ class MessagesTable(
                     items.add(chatItem)
                 }
                 c.moveToNext()
+            }
+        }
+        return items
+    }
+
+    fun getSentChatItems(sqlHelper: SQLiteOpenHelper): List<UserPhrase> {
+        val items: MutableList<UserPhrase> = ArrayList()
+        val query = String.format(
+            Locale.US,
+            "select * from (select * from %s " +
+                    " where " + COLUMN_MESSAGE_SEND_STATE + " = " + MessageState.STATE_SENDING.ordinal +
+                    " order by %s desc) order by %s asc",
+            TABLE_MESSAGES,
+            COLUMN_TIMESTAMP,
+            COLUMN_TIMESTAMP
+        )
+        sqlHelper.readableDatabase.rawQuery(query, arrayOf()).use { c ->
+            if (c.count > 0) {
+                c.moveToFirst()
+                while (!c.isAfterLast) {
+                    val chatItem: UserPhrase? = getUserPhrase(sqlHelper, c)
+                    if (chatItem != null) {
+                        items.add(chatItem)
+                    }
+                    c.moveToNext()
+                }
             }
         }
         return items
@@ -260,7 +286,7 @@ class MessagesTable(
     fun setUserPhraseStateByMessageId(
         sqlHelper: SQLiteOpenHelper,
         uuid: String?,
-        messageState: MessageState?
+        messageState: MessageState?,
     ) {
         val cv = ContentValues()
         cv.put(COLUMN_MESSAGE_SEND_STATE, messageState?.ordinal)
@@ -431,7 +457,7 @@ class MessagesTable(
 
     fun speechMessageUpdated(
         sqlHelper: SQLiteOpenHelper,
-        speechMessageUpdate: SpeechMessageUpdate
+        speechMessageUpdate: SpeechMessageUpdate,
     ) {
         val cv = ContentValues()
         val uuid = speechMessageUpdate.uuid
@@ -719,7 +745,7 @@ class MessagesTable(
 
     private fun setNotSentSurveyDisplayMessageToFalse(
         sqlHelper: SQLiteOpenHelper,
-        currentSurveySendingId: Long
+        currentSurveySendingId: Long,
     ) {
         val cv = ContentValues()
         cv.put(COLUMN_DISPLAY_MESSAGE, false)
@@ -734,7 +760,7 @@ class MessagesTable(
 
     private fun setOldRequestResolveThreadDisplayMessageToFalse(
         sqlHelper: SQLiteOpenHelper,
-        uuid: String
+        uuid: String,
     ) {
         val cv = ContentValues()
         cv.put(COLUMN_DISPLAY_MESSAGE, false)
