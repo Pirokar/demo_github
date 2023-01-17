@@ -22,6 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/margin_big"
+            android:layout_toRightOf="@id/consultAvatar"
             android:orientation="horizontal"
             android:visibility="gone">
 
@@ -55,6 +56,7 @@
                 android:maxLines="5"
                 android:textColor="@color/threads_incoming_message_text"
                 tools:text="ddddddddddd.pdf" />
+
 
         </LinearLayout>
 
@@ -95,16 +97,28 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"/>
 
-            </FrameLayout>
+                <im.threads.ui.widget.textView.BubbleTimeTextView
+                    android:id="@+id/timeStamp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|right"
+                    android:layout_marginEnd="@dimen/timeLabelMarginRight"
+                    android:layout_marginBottom="@dimen/timeLabelMarginBottom"
+                    android:background="@drawable/timestamp_incoming_underlayer"
+                    android:paddingLeft="2dp"
+                    android:paddingRight="2dp"
+                    android:textColor="@color/threads_incoming_message_time"
+                    tools:text="10:19" />
 
+            </FrameLayout>
         </LinearLayout>
 
         <im.threads.ui.widget.textView.BubbleTimeTextView
-            android:id="@+id/timeStamp"
+            android:id="@+id/timeStampLoader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@id/imageLayoutWithSpace"
-            android:layout_alignEnd="@id/imageLayoutWithSpace"
+            android:layout_alignBottom="@id/loaderLayout"
+            android:layout_alignEnd="@id/loaderLayout"
             android:layout_marginEnd="@dimen/timeLabelMarginRight"
             android:layout_marginBottom="@dimen/timeLabelMarginBottom"
             android:background="@drawable/timestamp_incoming_underlayer"
@@ -126,5 +140,4 @@
         tools:visibility="visible" />
 
 </LinearLayout>
-
 
