@@ -190,7 +190,7 @@ class ChatController private constructor() {
     fun fancySearch(
         query: String?,
         forward: Boolean,
-        consumer: Consumer<Pair<List<ChatItem?>?, ChatItem?>?>
+        consumer: Consumer<Pair<List<ChatItem?>?, ChatItem?>?>,
     ) {
         info("Trying to start search")
         subscribe(
@@ -286,6 +286,32 @@ class ChatController private constructor() {
         )
     }
 
+    private fun updateDoubleItems(serverItems: ArrayList<ChatItem>) {
+        updateServerItemsBySendingItems(serverItems, getSendingItems())
+    }
+
+    private fun getSendingItems(): ArrayList<UserPhrase> {
+        return database.getSendingChatItems() as ArrayList<UserPhrase>
+    }
+
+    private fun updateServerItemsBySendingItems(
+        serverItems: ArrayList<ChatItem>,
+        sendingItems: ArrayList<UserPhrase>,
+    ) {
+        sendingItems.forEach { notSendedItem ->
+            serverItems.forEach { serverItem ->
+                if (serverItem is UserPhrase) {
+                    if (notSendedItem.timeStamp == serverItem.timeStamp) {
+                        serverItem.fileDescription?.fileUri = notSendedItem.fileDescription?.fileUri
+                        sendingItems.remove(notSendedItem)
+                        database.updateChatItemByTimeStamp(serverItem)
+                    }
+                }
+            }
+        }
+        serverItems.addAll(sendingItems)
+    }
+
     fun requestItems(currentItemsCount: Int, fromBeginning: Boolean): Observable<List<ChatItem>>? {
         return Observable
             .fromCallable {
@@ -296,6 +322,7 @@ class ChatController private constructor() {
                         val response = getHistorySync(null, fromBeginning)
                         var serverItems = HistoryParser.getChatItems(response)
                         serverItems = addLocalUserMessages(serverItems)
+                        updateDoubleItems(serverItems as ArrayList<ChatItem>)
                         messenger.saveMessages(serverItems)
                         clearUnreadPush()
                         processSystemMessages(serverItems)
@@ -871,6 +898,7 @@ class ChatController private constructor() {
                             for (item in database.getChatItems(0, PER_PAGE_COUNT)) {
                                 if (item is ChatPhrase) {
                                     if (item.fileDescription != null) {
+
                                         val attachmentName = attachment.name ?: ""
                                         val incomingNameEquals =
                                             (item.fileDescription?.incomingName == attachmentName)

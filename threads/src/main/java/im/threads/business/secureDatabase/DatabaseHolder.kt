@@ -27,6 +27,9 @@ class DatabaseHolder(private val context: Context) {
     fun getChatItems(offset: Int, limit: Int): List<ChatItem> =
         myOpenHelper.getChatItems(offset, limit)
 
+    fun getSendingChatItems(): List<UserPhrase> =
+        myOpenHelper.getSendingChatItems()
+
     fun getChatItem(messageUuid: String?): ChatItem? = myOpenHelper.getChatItem(messageUuid)
 
     fun putChatItems(items: List<ChatItem?>?) {
@@ -43,6 +46,10 @@ class DatabaseHolder(private val context: Context) {
     // UserPhrase
     fun updateFileDescription(fileDescription: FileDescription) {
         myOpenHelper.updateFileDescription(fileDescription)
+    }
+
+    fun updateChatItemByTimeStamp(chatItem: ChatItem) {
+        myOpenHelper.updateChatItemByTimeStamp(chatItem)
     }
 
     fun getConsultInfo(id: String): ConsultInfo? = myOpenHelper.getLastConsultInfo(id)

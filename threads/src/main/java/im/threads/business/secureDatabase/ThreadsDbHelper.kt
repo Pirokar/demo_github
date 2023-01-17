@@ -86,6 +86,9 @@ class ThreadsDbHelper private constructor(val context: Context, password: String
     override fun getChatItems(offset: Int, limit: Int): List<ChatItem> =
         messagesTable.getChatItems(this, offset, limit)
 
+    override fun getSendingChatItems(): List<UserPhrase> =
+        messagesTable.getSendingChatItems(this)
+
     override fun getChatItem(messageUuid: String?): ChatItem? =
         messagesTable.getChatItem(this, messageUuid)
 
@@ -105,6 +108,10 @@ class ThreadsDbHelper private constructor(val context: Context, password: String
 
     override fun updateFileDescription(fileDescription: FileDescription) {
         fileDescriptionTable.updateFileDescriptionByName(this, fileDescription)
+    }
+
+    override fun updateChatItemByTimeStamp(chatItem: ChatItem) {
+        messagesTable.updateChatItemByTimeStamp(this, chatItem)
     }
 
     override fun getLastConsultInfo(id: String): ConsultInfo? =

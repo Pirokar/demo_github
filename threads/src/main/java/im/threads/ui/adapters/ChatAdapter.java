@@ -695,7 +695,8 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 final ConsultPhrase cp = (ConsultPhrase) getList().get(i);
                 if (ObjectsCompat.equals(cp.getFileDescription(), fileDescription)) {
                     cp.setFileDescription(fileDescription);
-                    if (!isImage(fileDescription)) {
+                    if (!isImage(fileDescription)
+                            || isImageChanged(cp.getFileDescription(), fileDescription)) {
                         notifyItemChanged(ChatItemListFinder.indexOf(getList(), cp));
                     }
                 } else if (cp.getQuote() != null && ObjectsCompat.equals(cp.getQuote().getFileDescription(), fileDescription)) {
@@ -706,7 +707,8 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 final UserPhrase up = (UserPhrase) getList().get(i);
                 if (ObjectsCompat.equals(up.getFileDescription(), fileDescription)) {
                     up.setFileDescription(fileDescription);
-                    if (!isImage(fileDescription)) {
+                    if (!isImage(fileDescription)
+                            || isImageChanged(up.getFileDescription(), fileDescription)) {
                         notifyItemChanged(ChatItemListFinder.indexOf(getList(), up));
                     }
                 } else if (up.getQuote() != null && ObjectsCompat.equals(up.getQuote().getFileDescription(), fileDescription)) {
@@ -715,6 +717,13 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 }
             }
         }
+    }
+
+    private boolean isImageChanged(FileDescription oldImage, FileDescription newImage) {
+        boolean stateChanged = oldImage.getState() != newImage.getState();
+        return stateChanged
+                || newImage.getDownloadProgress() == 0
+                || newImage.getDownloadProgress() == 100;
     }
 
     public void onDownloadError(final FileDescription fileDescription) {

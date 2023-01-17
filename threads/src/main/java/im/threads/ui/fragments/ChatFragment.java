@@ -880,7 +880,7 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     private void onRefresh() {
-        subscribe(mChatController.requestItems(getCurrentItemsCount(), true)
+        subscribe(mChatController.requestItems(BaseConfig.instance.getHistoryLoadingCount(), true)
                 .delay(500, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::afterRefresh, onError -> LoggerEdna.error("onRefresh ", onError))

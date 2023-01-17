@@ -13,6 +13,7 @@ interface DBHelper {
     fun cleanDatabase()
     fun getChatItems(offset: Int, limit: Int): List<ChatItem?>
     fun getChatItem(messageUuid: String?): ChatItem?
+    fun getSendingChatItems(): List<UserPhrase?>
     fun putChatItems(items: List<ChatItem?>?)
     fun putChatItem(chatItem: ChatItem?): Boolean
 
@@ -20,6 +21,7 @@ interface DBHelper {
     fun putFileDescriptions(fileDescriptions: List<FileDescription?>)
     fun updateFileDescription(fileDescription: FileDescription)
 
+    fun updateChatItemByTimeStamp(chatItem: ChatItem)
     fun getLastConsultInfo(id: String): ConsultInfo?
     fun getUnsendUserPhrase(count: Int): List<UserPhrase?>?
     fun setUserPhraseStateByMessageId(uuid: String?, messageState: MessageState?)
