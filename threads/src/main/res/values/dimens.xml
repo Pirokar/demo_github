@@ -88,5 +88,6 @@
     <dimen name="thumb_size">8dp</dimen>
     <dimen name="message_image_size">300dp</dimen>
     <dimen name="toolbar_height">56dp</dimen>
+    <dimen name="toolbar_button_width">56dp</dimen>
 
 </resources>

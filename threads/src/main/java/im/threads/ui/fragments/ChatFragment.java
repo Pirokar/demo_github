@@ -1156,7 +1156,7 @@ public final class ChatFragment extends BaseFragment implements
             filesAndMedia.setTitle(s2);
         }
         filesAndMedia.setVisible(config.getFilesAndMediaMenuItemEnabled());
-        if (isPpopupMenuEnabled()) {
+        if (isPopupMenuEnabled()) {
             popup.show();
         }
     }
@@ -2112,7 +2112,7 @@ public final class ChatFragment extends BaseFragment implements
         }
     }
 
-    private boolean isPpopupMenuEnabled() {
+    private boolean isPopupMenuEnabled() {
         return getResources().getBoolean(config.getChatStyle().searchEnabled)
                 || config.getFilesAndMediaMenuItemEnabled();
     }
@@ -2135,7 +2135,7 @@ public final class ChatFragment extends BaseFragment implements
         binding.popupMenuButton.setImageResource(style.chatToolbarPopUpMenuIconResId);
         ColorsHelper.setTint(activity, binding.popupMenuButton, style.chatToolbarTextColorResId);
         binding.popupMenuButton.setOnClickListener(v -> showPopup());
-        binding.popupMenuButton.setVisibility(isPpopupMenuEnabled() ? View.VISIBLE : View.GONE);
+        binding.popupMenuButton.setVisibility(isPopupMenuEnabled() ? View.VISIBLE : View.GONE);
 
         showOverflowMenu();
         int toolbarInverseIconTint = style.chatBodyIconsTint == 0
@@ -2161,13 +2161,26 @@ public final class ChatFragment extends BaseFragment implements
     private void initToolbarTextPosition() {
         boolean isToolbarTextCentered = Config.getInstance().getChatStyle().isToolbarTextCentered;
         int gravity = isToolbarTextCentered ? Gravity.CENTER : Gravity.CENTER_VERTICAL;
-
+        if (isToolbarTextCentered) {
+            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) binding.consultTitle.getLayoutParams();
+            if (style.showBackButton && !isPopupMenuEnabled()) {
+                int marginRight = getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
+                params.setMarginStart(0);
+                params.setMarginEnd(marginRight);
+            } else if (!style.showBackButton && isPopupMenuEnabled()) {
+                int marginLeft = getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
+                params.setMarginStart(marginLeft);
+                params.setMarginEnd(0);
+            }
+            binding.consultTitle.setLayoutParams(params);
+            binding.consultTitle.invalidate();
+        }
         binding.consultName.setGravity(gravity);
         binding.subtitle.setGravity(gravity);
     }
 
     private void showOverflowMenu() {
-        if (isPpopupMenuEnabled()) {
+        if (isPopupMenuEnabled()) {
             binding.popupMenuButton.setVisibility(View.VISIBLE);
         }
     }
