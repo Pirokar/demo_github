@@ -132,8 +132,11 @@ class MessagesTable(
         )
         sqlHelper.readableDatabase.rawQuery(query, arrayOf()).use { c ->
             if (c.moveToFirst()) {
-                val chatItem: UserPhrase = getUserPhrase(sqlHelper, c)
-                items.add(chatItem)
+                while (!c.isAfterLast) {
+                    val chatItem: UserPhrase = getUserPhrase(sqlHelper, c)
+                    items.add(chatItem)
+                    c.moveToNext()
+                }
             }
         }
         return items
