@@ -1156,7 +1156,7 @@ public final class ChatFragment extends BaseFragment implements
             filesAndMedia.setTitle(s2);
         }
         filesAndMedia.setVisible(config.getFilesAndMediaMenuItemEnabled());
-        if (isPpopupMenuEnabled()) {
+        if (isPopupMenuEnabled()) {
             popup.show();
         }
     }
@@ -2112,7 +2112,7 @@ public final class ChatFragment extends BaseFragment implements
         }
     }
 
-    private boolean isPpopupMenuEnabled() {
+    private boolean isPopupMenuEnabled() {
         return getResources().getBoolean(config.getChatStyle().searchEnabled)
                 || config.getFilesAndMediaMenuItemEnabled();
     }
@@ -2135,7 +2135,7 @@ public final class ChatFragment extends BaseFragment implements
         binding.popupMenuButton.setImageResource(style.chatToolbarPopUpMenuIconResId);
         ColorsHelper.setTint(activity, binding.popupMenuButton, style.chatToolbarTextColorResId);
         binding.popupMenuButton.setOnClickListener(v -> showPopup());
-        binding.popupMenuButton.setVisibility(isPpopupMenuEnabled() ? View.VISIBLE : View.GONE);
+        binding.popupMenuButton.setVisibility(isPopupMenuEnabled() ? View.VISIBLE : View.GONE);
 
         showOverflowMenu();
         int toolbarInverseIconTint = style.chatBodyIconsTint == 0
@@ -2163,14 +2163,15 @@ public final class ChatFragment extends BaseFragment implements
         int gravity = isToolbarTextCentered ? Gravity.CENTER : Gravity.CENTER_VERTICAL;
         if (isToolbarTextCentered) {
             LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) binding.consultTitle.getLayoutParams();
-            int margin = getResources().getDimensionPixelSize(R.dimen.default_chat_row_height);
             int marginTopBottom = getResources().getDimensionPixelSize(R.dimen.margin_quarter);
-            if (style.showBackButton && !isPpopupMenuEnabled()) {
-                params.setMargins(0, marginTopBottom, margin, marginTopBottom);
-                params.setMarginEnd(margin);
-            } else if (!style.showBackButton && isPpopupMenuEnabled()) {
-                params.setMargins(margin, marginTopBottom, 0, marginTopBottom);
-                params.setMarginStart(margin);
+            if (style.showBackButton && !isPopupMenuEnabled()) {
+                int marginRight = getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
+                params.setMargins(0, marginTopBottom, marginRight, marginTopBottom);
+                params.setMarginEnd(marginRight);
+            } else if (!style.showBackButton && isPopupMenuEnabled()) {
+                int marginLeft = getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
+                params.setMargins(marginLeft, marginTopBottom, 0, marginTopBottom);
+                params.setMarginStart(marginLeft);
             }
             binding.consultTitle.setLayoutParams(params);
             binding.consultTitle.invalidate();
@@ -2180,7 +2181,7 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     private void showOverflowMenu() {
-        if (isPpopupMenuEnabled()) {
+        if (isPopupMenuEnabled()) {
             binding.popupMenuButton.setVisibility(View.VISIBLE);
         }
     }
