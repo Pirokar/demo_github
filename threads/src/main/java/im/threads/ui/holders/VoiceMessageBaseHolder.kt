@@ -12,6 +12,7 @@ import im.threads.business.models.FileDescription
 import im.threads.business.models.FileDescriptionUri
 import im.threads.business.ogParser.OpenGraphParser
 import im.threads.ui.config.Config
+import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.utils.visible
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -53,6 +54,11 @@ abstract class VoiceMessageBaseHolder internal constructor(
     fun stopLoader() {
         cancelAnimation()
         buttonPlayPause.setImageResource(R.drawable.threads_voice_message_play)
+        ColorsHelper.setTint(
+            itemView.context,
+            buttonPlayPause,
+            R.color.threads_white
+        )
         buttonPlayPause.tag = ""
     }
 
