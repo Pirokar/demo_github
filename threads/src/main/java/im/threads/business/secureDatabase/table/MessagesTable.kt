@@ -119,27 +119,21 @@ class MessagesTable(
         return items
     }
 
-    fun getSentChatItems(sqlHelper: SQLiteOpenHelper): List<UserPhrase> {
+    fun getSendingChatItems(sqlHelper: SQLiteOpenHelper): List<UserPhrase> {
         val items: MutableList<UserPhrase> = ArrayList()
         val query = String.format(
             Locale.US,
             "select * from (select * from %s " +
-                    " where " + COLUMN_MESSAGE_SEND_STATE + " = " + MessageState.STATE_SENDING.ordinal +
-                    " order by %s desc) order by %s asc",
+                " where " + COLUMN_MESSAGE_SEND_STATE + " = " + MessageState.STATE_SENDING.ordinal +
+                " order by %s desc) order by %s asc",
             TABLE_MESSAGES,
             COLUMN_TIMESTAMP,
             COLUMN_TIMESTAMP
         )
         sqlHelper.readableDatabase.rawQuery(query, arrayOf()).use { c ->
-            if (c.count > 0) {
-                c.moveToFirst()
-                while (!c.isAfterLast) {
-                    val chatItem: UserPhrase? = getUserPhrase(sqlHelper, c)
-                    if (chatItem != null) {
-                        items.add(chatItem)
-                    }
-                    c.moveToNext()
-                }
+            if (c.moveToFirst()) {
+                val chatItem: UserPhrase = getUserPhrase(sqlHelper, c)
+                items.add(chatItem)
             }
         }
         return items
@@ -686,10 +680,10 @@ class MessagesTable(
 
     private fun insertOrUpdateMessageByTimeStamp(sqlHelper: SQLiteOpenHelper, cv: ContentValues) {
         val sql = (
-                "select " + COLUMN_MESSAGE_UUID +
-                        " from " + TABLE_MESSAGES +
-                        " where " + COLUMN_MESSAGE_UUID + " = ?"
-                )
+            "select " + COLUMN_MESSAGE_UUID +
+                " from " + TABLE_MESSAGES +
+                " where " + COLUMN_MESSAGE_UUID + " = ?"
+            )
         val selectionArgs = arrayOf(cv.getAsString(COLUMN_MESSAGE_UUID))
         sqlHelper.readableDatabase.rawQuery(sql, selectionArgs).use { c ->
             if (c.count > 0) {

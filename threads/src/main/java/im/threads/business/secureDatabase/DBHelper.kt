@@ -13,7 +13,7 @@ interface DBHelper {
     fun cleanDatabase()
     fun getChatItems(offset: Int, limit: Int): List<ChatItem?>
     fun getChatItem(messageUuid: String?): ChatItem?
-    fun getSentChatItems(): List<UserPhrase?>
+    fun getSendingChatItems(): List<UserPhrase?>
     fun putChatItems(items: List<ChatItem?>?)
     fun putChatItem(chatItem: ChatItem?): Boolean
 

@@ -291,7 +291,7 @@ class ChatController private constructor() {
     }
 
     private fun getSendingItems(): ArrayList<UserPhrase> {
-        return database.getSentChatItems() as ArrayList<UserPhrase>
+        return database.getSendingChatItems() as ArrayList<UserPhrase>
     }
 
     private fun updateServerItemsBySendingItems(
