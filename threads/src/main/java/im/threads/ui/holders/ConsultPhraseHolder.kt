@@ -236,13 +236,16 @@ class ConsultPhraseHolder(
                 phraseFrame.setPadding(0, 0, 0, 0)
                 setPaddings(true,  this)
             } else {
-                setPadding(borderLeft, borderTop, borderRight, borderBottom)
-                image.setPadding(0, 0, 0, 0)
+                setPadding(0, 0, 0, 0)
+                (image.layoutParams as FrameLayout.LayoutParams).apply {
+                    setMargins(borderLeft, borderTop, borderRight, borderBottom)
+                    image.layoutParams = this
+                }
                 phraseFrame.setPadding(
                     borderLeft,
-                    borderTop,
+                    0,
                     borderRight,
-                    resources.getDimensionPixelSize(style.bubbleOutgoingPaddingBottom)
+                    resources.getDimensionPixelSize(style.bubbleIncomingPaddingBottom)
                 )
             }
             image.invalidate()

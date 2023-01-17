@@ -13,6 +13,7 @@ import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TableRow
 import android.widget.TextView
+import androidx.appcompat.app.ActionBar
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
@@ -252,23 +253,42 @@ class UserPhraseViewHolder(
         setLayoutMargins(false, bubbleLayout)
         if (isImage) {
             imageRoot.visible()
+
+            (bubbleLayout.layoutParams as ViewGroup.MarginLayoutParams).let {
+                it.marginStart = 0
+                bubbleLayout.layoutParams = it
+            }
+            bubbleLayout.invalidate()
+            bubbleLayout.requestLayout()
+
             if (isBordersNotSet) {
                 phraseFrame.setPadding(borderLeft, 0, borderRight, 0)
                 setPaddings(false, this)
             } else {
-                setPadding(borderLeft, borderTop, borderRight, borderBottom)
-                image.setPadding(0, 0, 0, 0)
+                setPadding(0, 0, 0, 0)
+                (image.layoutParams as FrameLayout.LayoutParams).apply {
+                    setMargins(borderLeft, borderTop, borderRight, borderBottom)
+                    image.layoutParams = this
+                }
                 phraseFrame.setPadding(
                     borderLeft,
-                    borderTop,
+                    0,
                     borderRight,
-                    resources.getDimensionPixelSize(style.bubbleOutgoingPaddingBottom)
+                    resources.getDimensionPixelSize(style.bubbleIncomingPaddingBottom)
                 )
             }
             image.invalidate()
             image.requestLayout()
         } else {
+            (bubbleLayout.layoutParams as ViewGroup.MarginLayoutParams).let {
+                it.width = ActionBar.LayoutParams.WRAP_CONTENT
+                it.height = ActionBar.LayoutParams.WRAP_CONTENT
+            }
+            bubbleLayout.invalidate()
+            bubbleLayout.requestLayout()
+
             imageRoot.gone()
+
             phraseFrame.setPadding(0, 0, 0, 0)
             setPaddings(false, this)
         }

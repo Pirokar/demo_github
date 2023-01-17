@@ -98,7 +98,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_marginTop="@dimen/margin_quarter"
                 android:layout_marginBottom="@dimen/margin_quarter"
-                android:visibility="visible">
+                android:visibility="gone">
 
                 <FrameLayout
                     android:id="@+id/imageBackground"
