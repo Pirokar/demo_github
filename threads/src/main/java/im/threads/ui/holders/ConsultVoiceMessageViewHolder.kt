@@ -102,19 +102,12 @@ class ConsultVoiceMessageViewHolder(
                     style.incomingMessageBubbleBackground
                 )
             setPaddings(true, this)
+            setLayoutMargins(true, this)
             background.colorFilter =
                 BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
                     getColorInt(style.incomingMessageBubbleColor),
                     BlendModeCompat.SRC_ATOP
                 )
-            val layoutParams = this.layoutParams as ConstraintLayout.LayoutParams
-            layoutParams.setMargins(
-                context.resources.getDimensionPixelSize(style.bubbleIncomingMarginLeft),
-                context.resources.getDimensionPixelSize(style.bubbleIncomingMarginTop),
-                context.resources.getDimensionPixelSize(style.bubbleIncomingMarginRight),
-                context.resources.getDimensionPixelSize(style.bubbleIncomingMarginBottom)
-            )
-            this.layoutParams = layoutParams
         }
         setTextColorToViews(
             arrayOf(phraseTextView, fileSizeTextView, audioStatusTextView),

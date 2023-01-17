@@ -469,23 +469,15 @@ abstract class BaseHolder internal constructor(
         val resources = itemView.context.resources
         val layoutParams = layout.layoutParams as ViewGroup.MarginLayoutParams
         if (isIncomingMessage) {
-            layoutParams.setMargins(
-                resources.getDimensionPixelSize(style.bubbleIncomingMarginLeft),
-                resources.getDimensionPixelSize(style.bubbleIncomingMarginTop),
-                resources.getDimensionPixelSize(style.bubbleIncomingMarginRight),
-                resources.getDimensionPixelSize(style.bubbleIncomingMarginBottom)
-            )
             layoutParams.marginStart = resources.getDimensionPixelSize(style.bubbleIncomingMarginLeft)
             layoutParams.marginEnd = resources.getDimensionPixelSize(style.bubbleIncomingMarginRight)
+            layoutParams.topMargin =  resources.getDimensionPixelSize(style.bubbleIncomingMarginTop)
+            layoutParams.bottomMargin = resources.getDimensionPixelSize(style.bubbleIncomingMarginBottom)
         } else {
-            layoutParams.setMargins(
-                resources.getDimensionPixelSize(style.bubbleOutgoingMarginLeft),
-                resources.getDimensionPixelSize(style.bubbleOutgoingMarginTop),
-                resources.getDimensionPixelSize(style.bubbleOutgoingMarginRight),
-                resources.getDimensionPixelSize(style.bubbleOutgoingMarginBottom)
-            )
             layoutParams.marginStart = resources.getDimensionPixelSize(style.bubbleOutgoingMarginLeft)
             layoutParams.marginEnd = resources.getDimensionPixelSize(style.bubbleOutgoingMarginRight)
+            layoutParams.topMargin =  resources.getDimensionPixelSize(style.bubbleOutgoingMarginTop)
+            layoutParams.bottomMargin = resources.getDimensionPixelSize(style.bubbleOutgoingMarginBottom)
         }
         layout.layoutParams = layoutParams
         layout.invalidate()
