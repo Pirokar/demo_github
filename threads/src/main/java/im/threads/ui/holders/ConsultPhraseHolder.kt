@@ -178,6 +178,7 @@ class ConsultPhraseHolder(
             fileRow.isVisible = false
         }
 
+        setLayoutMargins(true, bubbleLayout)
         consultPhrase.fileDescription?.let {
             when (it.state) {
                 AttachmentStateEnum.PENDING -> {
@@ -233,7 +234,7 @@ class ConsultPhraseHolder(
 
             if (isBordersNotSet) {
                 phraseFrame.setPadding(0, 0, 0, 0)
-                setPaddings(true,  this)
+                setPaddings(true, this)
             } else {
                 setPadding(0, 0, 0, 0)
                 (image.layoutParams as FrameLayout.LayoutParams).apply {
@@ -261,7 +262,7 @@ class ConsultPhraseHolder(
             imageRoot.gone()
 
             phraseFrame.setPadding(0, 0, 0, 0)
-            setPaddings(true,  this)
+            setPaddings(true, this)
         }
     }
 
@@ -283,6 +284,7 @@ class ConsultPhraseHolder(
         fileRow.gone()
         circularProgressButton.gone()
         image.visible()
+        imageRoot.visible()
         image.setOnClickListener(imageClickListener)
         val chatStyle = Config.getInstance().getChatStyle()
         val resources = ContextHolder.context.resources
@@ -387,7 +389,7 @@ class ConsultPhraseHolder(
         errorTextView.isVisible = false
         rightTextDescription.text = fileDescription.incomingName
         circularProgressButton.isVisible = false
-        imageLayout.isVisible = false
+        imageRoot.isVisible = false
         fileImage.background = null
         initAnimation(fileImage, true)
     }
@@ -399,7 +401,7 @@ class ConsultPhraseHolder(
         imageLayout.isVisible = false
         circularProgressButton.isVisible = false
         fileImage.background = null
-        imageLayout.isVisible = false
+        imageRoot.isVisible = false
         fileImage.setImageResource(getErrorImageResByErrorCode(fileDescription.errorCode))
         rightTextDescription.text = fileDescription.incomingName
         val errorString = getString(getErrorStringResByErrorCode(fileDescription.errorCode))
@@ -412,7 +414,7 @@ class ConsultPhraseHolder(
         fileClickListener: View.OnClickListener,
         imageClickListener: View.OnClickListener
     ) {
-        imageLayout.isVisible = false
+        imageRoot.isVisible = false
         fileRow.isVisible = true
         errorTextView.isVisible = false
         circularProgressButton.isVisible = true

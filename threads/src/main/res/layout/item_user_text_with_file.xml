@@ -258,7 +258,6 @@
                     android:layout_height="wrap_content"
                     app:layout_constraintTop_toTopOf="@id/fileSize"
                     app:layout_constraintEnd_toEndOf="@id/voiceMessageUserSlider"
-                    android:background="@drawable/timestamp_outgoing_underlayer"
                     android:drawablePadding="@dimen/margin_half"
                     android:paddingStart="@dimen/margin_half"
                     android:layout_marginTop="@dimen/margin_quarter"
@@ -279,7 +278,6 @@
                 android:layout_marginTop="@dimen/margin_half"
                 android:paddingEnd="0dp"
                 android:layout_marginBottom="@dimen/margin_half"
-                android:background="@drawable/timestamp_outgoing_underlayer"
                 android:textColor="@color/threads_user_message_timestamp"
                 tools:text="10:19" />
 
@@ -345,7 +343,6 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|end"
                 android:drawablePadding="@dimen/margin_quarter"
-                android:background="@drawable/timestamp_outgoing_underlayer"
                 android:textColor="@color/threads_user_message_timestamp"
                 tools:text="10:19" />
         </FrameLayout>

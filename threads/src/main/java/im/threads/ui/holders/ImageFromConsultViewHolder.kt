@@ -1,5 +1,6 @@
 package im.threads.ui.holders
 
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.OnLongClickListener
@@ -26,6 +27,7 @@ import im.threads.business.utils.FileUtils
 import im.threads.ui.utils.gone
 import im.threads.ui.utils.invisible
 import im.threads.ui.utils.visible
+import im.threads.ui.widget.textView.BubbleTimeTextView
 import io.reactivex.subjects.PublishSubject
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -54,7 +56,20 @@ class ImageFromConsultViewHolder(
     private val fileNameTextView: TextView = itemView.findViewById(R.id.fileName)
     private val loader: ImageView = itemView.findViewById(R.id.loader)
     private val loaderImage: ImageView = itemView.findViewById(R.id.loaderImage)
-
+    private val imageLayoutWithSpace: LinearLayout = itemView.findViewById(R.id.imageLayoutWithSpace)
+    private val timeStampLoader: BubbleTimeTextView = itemView.findViewById<BubbleTimeTextView>(R.id.timeStampLoader).apply {
+        setTextColor(getColorInt(style.incomingImageTimeColor))
+        if (style.incomingMessageTimeTextSize > 0) {
+            setTextSize(
+                TypedValue.COMPLEX_UNIT_PX,
+                itemView.context.resources.getDimension(style.incomingMessageTimeTextSize)
+            )
+        }
+        background.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
+            getColorInt(style.incomingImageTimeBackgroundColor),
+            BlendModeCompat.SRC_ATOP
+        )
+    }
     private val consultAvatar = itemView.findViewById<ImageView>(R.id.consultAvatar).apply {
         layoutParams.height = itemView.context.resources.getDimension(style.operatorAvatarSize).toInt()
         layoutParams.width = itemView.context.resources.getDimension(style.operatorAvatarSize).toInt()
@@ -72,6 +87,9 @@ class ImageFromConsultViewHolder(
         timeStampTextView.setOnClickListener(buttonClickListener)
         timeStampTextView.setOnLongClickListener(onLongClickListener)
         timeStampTextView.text = sdf.format(Date(consultPhrase.timeStamp))
+        timeStampLoader.setOnClickListener(buttonClickListener)
+        timeStampLoader.setOnLongClickListener(onLongClickListener)
+        timeStampLoader.text = sdf.format(Date(consultPhrase.timeStamp))
         rootLayout.setOnClickListener(buttonClickListener)
         rootLayout.setOnLongClickListener(onLongClickListener)
         consultAvatar.setOnClickListener(onAvatarClickListener)
@@ -140,7 +158,8 @@ class ImageFromConsultViewHolder(
 
     private fun showLoaderLayout(fileDescription: FileDescription) {
         loaderLayout.visible()
-        imageLayout.invisible()
+        imageLayoutWithSpace.gone()
+        timeStampLoader.visible()
         errorTextView.gone()
         fileNameTextView.text = fileDescription.incomingName
         initAnimation(loader, true)
@@ -149,7 +168,8 @@ class ImageFromConsultViewHolder(
     private fun showErrorLayout(fileDescription: FileDescription) {
         loaderLayout.isVisible = true
         errorTextView.isVisible = true
-        imageLayout.invisible()
+        imageLayoutWithSpace.gone()
+        timeStampLoader.visible()
         loader.setImageResource(getErrorImageResByErrorCode(fileDescription.errorCode))
         fileNameTextView.text = fileDescription.incomingName
         val errorString = getString(getErrorStringResByErrorCode(fileDescription.errorCode))
@@ -158,8 +178,9 @@ class ImageFromConsultViewHolder(
     }
 
     private fun showCommonLayout(fileDescription: FileDescription) {
-        imageLayout.visible()
-        loaderLayout.gone()
+        imageLayoutWithSpace.visible()
+        loaderLayout.invisible()
+        timeStampLoader.gone()
         errorTextView.gone()
         rotateAnim.cancel()
         val fileUri = if (fileDescription.fileUri?.toString()?.isNotBlank() == true) {
