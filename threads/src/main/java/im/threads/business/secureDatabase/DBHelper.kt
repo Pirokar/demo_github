@@ -11,7 +11,6 @@ import im.threads.business.models.UserPhrase
 interface DBHelper {
 
     fun cleanDatabase()
-    fun cleanMessageTable()
     fun getChatItems(offset: Int, limit: Int): List<ChatItem?>
     fun getChatItem(messageUuid: String?): ChatItem?
     fun putChatItems(items: List<ChatItem?>?)
@@ -21,6 +20,7 @@ interface DBHelper {
     fun putFileDescriptions(fileDescriptions: List<FileDescription?>)
     fun updateFileDescription(fileDescription: FileDescription)
 
+    fun updateChatItemByTimeStamp(chatItem: ChatItem)
     fun getLastConsultInfo(id: String): ConsultInfo?
     fun getUnsendUserPhrase(count: Int): List<UserPhrase?>?
     fun setUserPhraseStateByMessageId(uuid: String?, messageState: MessageState?)

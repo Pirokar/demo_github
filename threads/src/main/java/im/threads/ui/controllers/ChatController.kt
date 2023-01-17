@@ -190,7 +190,7 @@ class ChatController private constructor() {
     fun fancySearch(
         query: String?,
         forward: Boolean,
-        consumer: Consumer<Pair<List<ChatItem?>?, ChatItem?>?>
+        consumer: Consumer<Pair<List<ChatItem?>?, ChatItem?>?>,
     ) {
         info("Trying to start search")
         subscribe(
@@ -288,7 +288,6 @@ class ChatController private constructor() {
 
     private fun updateDoubleItems(serverItems: ArrayList<ChatItem>) {
         updateServerItemsBySendingItems(serverItems, getSendingItems())
-        database.cleanMessageTable()
     }
 
     private fun getSendingItems(): ArrayList<UserPhrase> {
@@ -305,7 +304,7 @@ class ChatController private constructor() {
 
     private fun updateServerItemsBySendingItems(
         serverItems: ArrayList<ChatItem>,
-        sendingItems: ArrayList<UserPhrase>
+        sendingItems: ArrayList<UserPhrase>,
     ) {
         sendingItems.forEach { notSendedItem ->
             serverItems.forEach { serverItem ->
@@ -313,6 +312,7 @@ class ChatController private constructor() {
                     if (notSendedItem.timeStamp == serverItem.timeStamp) {
                         serverItem.fileDescription?.fileUri = notSendedItem.fileDescription?.fileUri
                         sendingItems.remove(notSendedItem)
+                        database.updateChatItemByTimeStamp(serverItem)
                     }
                 }
             }
@@ -906,6 +906,7 @@ class ChatController private constructor() {
                             for (item in database.getChatItems(0, PER_PAGE_COUNT)) {
                                 if (item is ChatPhrase) {
                                     if (item.fileDescription != null) {
+
                                         val attachmentName = attachment.name ?: ""
                                         val incomingNameEquals =
                                             (item.fileDescription?.incomingName == attachmentName)

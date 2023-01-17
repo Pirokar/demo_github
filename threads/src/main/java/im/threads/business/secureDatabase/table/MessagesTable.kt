@@ -367,6 +367,26 @@ class MessagesTable(
         sqlHelper.readableDatabase.rawQuery(sql, null).use { c -> return c.count }
     }
 
+    fun updateChatItemByTimeStamp(sqlHelper: SQLiteOpenHelper, chatItem: ChatItem) {
+        if (chatItem is UserPhrase) {
+            insertOrUpdateMessageByTimeStamp(sqlHelper, getUserPhraseCV(chatItem))
+            chatItem.fileDescription?.let {
+                isFileDownloaded(it)?.let { uri ->
+                    setProgressAndFileUri(it, 100, uri)
+                }
+                fileDescriptionTable.putFileDescription(
+                    sqlHelper,
+                    it,
+                    chatItem.id.orEmpty(),
+                    false
+                )
+            }
+            chatItem.id?.let {
+                chatItem.quote?.let { quote -> quotesTable.putQuote(sqlHelper, it, quote) }
+            }
+        }
+    }
+
     fun getUnreadMessagesUuid(sqlHelper: SQLiteOpenHelper): List<String?> {
         val sql = (
             "select " + COLUMN_MESSAGE_UUID +
@@ -629,6 +649,29 @@ class MessagesTable(
                         TABLE_MESSAGES,
                         cv,
                         "$COLUMN_MESSAGE_UUID = ? ",
+                        arrayOf(cv.getAsString(COLUMN_MESSAGE_UUID))
+                    )
+            } else {
+                sqlHelper.writableDatabase
+                    .insert(TABLE_MESSAGES, null, cv)
+            }
+        }
+    }
+
+    private fun insertOrUpdateMessageByTimeStamp(sqlHelper: SQLiteOpenHelper, cv: ContentValues) {
+        val sql = (
+                "select " + COLUMN_MESSAGE_UUID +
+                        " from " + TABLE_MESSAGES +
+                        " where " + COLUMN_MESSAGE_UUID + " = ?"
+                )
+        val selectionArgs = arrayOf(cv.getAsString(COLUMN_MESSAGE_UUID))
+        sqlHelper.readableDatabase.rawQuery(sql, selectionArgs).use { c ->
+            if (c.count > 0) {
+                sqlHelper.writableDatabase
+                    .update(
+                        TABLE_MESSAGES,
+                        cv,
+                        "$COLUMN_TIMESTAMP = ? ",
                         arrayOf(cv.getAsString(COLUMN_MESSAGE_UUID))
                     )
             } else {

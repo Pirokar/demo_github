@@ -75,10 +75,6 @@ class ThreadsDbHelper private constructor(val context: Context, password: String
         }
     }
 
-    override fun cleanMessageTable() {
-        messagesTable.cleanTable(this)
-    }
-
     override fun cleanDatabase() {
         fileDescriptionTable.cleanTable(this)
         messagesTable.cleanTable(this)
@@ -109,6 +105,10 @@ class ThreadsDbHelper private constructor(val context: Context, password: String
 
     override fun updateFileDescription(fileDescription: FileDescription) {
         fileDescriptionTable.updateFileDescriptionByName(this, fileDescription)
+    }
+
+    override fun updateChatItemByTimeStamp(chatItem: ChatItem) {
+        messagesTable.updateChatItemByTimeStamp(this, chatItem)
     }
 
     override fun getLastConsultInfo(id: String): ConsultInfo? =

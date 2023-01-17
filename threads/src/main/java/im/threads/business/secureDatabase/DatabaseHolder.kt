@@ -24,10 +24,6 @@ class DatabaseHolder(private val context: Context) {
         myOpenHelper.cleanDatabase()
     }
 
-    fun cleanMessageTable() {
-        myOpenHelper.cleanMessageTable()
-    }
-
     fun getChatItems(offset: Int, limit: Int): List<ChatItem> =
         myOpenHelper.getChatItems(offset, limit)
 
@@ -47,6 +43,10 @@ class DatabaseHolder(private val context: Context) {
     // UserPhrase
     fun updateFileDescription(fileDescription: FileDescription) {
         myOpenHelper.updateFileDescription(fileDescription)
+    }
+
+    fun updateChatItemByTimeStamp(chatItem: ChatItem) {
+        myOpenHelper.updateChatItemByTimeStamp(chatItem)
     }
 
     fun getConsultInfo(id: String): ConsultInfo? = myOpenHelper.getLastConsultInfo(id)
