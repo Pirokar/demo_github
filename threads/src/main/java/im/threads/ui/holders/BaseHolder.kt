@@ -180,20 +180,16 @@ abstract class BaseHolder internal constructor(
     ) {
         if (phrase.formattedPhrase.isNullOrBlank()) {
             textView.setText(phrase.phraseText, TextView.BufferType.NORMAL)
-            setTextWithHighlighting(
-                textView,
-                style.incomingMarkdownConfiguration.isLinkUnderlined,
-                url
-            )
         } else {
-            (textView as? BubbleMessageTextView)?.let {
-                setMovementMethod(it)
-                it.setFormattedText(phrase.formattedPhrase, true)
-            } ?: run {
-                setMovementMethod(textView)
+            (textView as? BubbleMessageTextView)?.setFormattedText(phrase.formattedPhrase, true) ?: run {
                 textView.setText(phrase.phraseText, TextView.BufferType.NORMAL)
             }
         }
+        setTextWithHighlighting(
+            textView,
+            style.incomingMarkdownConfiguration.isLinkUnderlined,
+            url
+        )
     }
 
     /**
