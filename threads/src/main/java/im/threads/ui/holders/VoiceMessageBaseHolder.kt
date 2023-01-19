@@ -54,12 +54,21 @@ abstract class VoiceMessageBaseHolder internal constructor(
     fun stopLoader() {
         cancelAnimation()
         buttonPlayPause.setImageResource(R.drawable.threads_voice_message_play)
+        resetTintForPlayPauseButton()
+        buttonPlayPause.tag = ""
+    }
+
+    private fun resetTintForPlayPauseButton() {
+        val color = if (isIncomingMessage) {
+            style.incomingPlayPauseButtonColor
+        } else {
+            style.outgoingPlayPauseButtonColor
+        }
         ColorsHelper.setTint(
             itemView.context,
             buttonPlayPause,
-            R.color.threads_white
+            color
         )
-        buttonPlayPause.tag = ""
     }
 
     fun subscribeForVoiceMessageDownloaded() {
@@ -77,6 +86,7 @@ abstract class VoiceMessageBaseHolder internal constructor(
                             val isCurrentPath = ourDownloadPath == fileDescriptionUri.downloadPath
                             val isClickedPath = ourDownloadPath == fdMediaPlayer.clickedDownloadPath
 
+                            resetTintForPlayPauseButton()
                             if (isCurrentPath && isClickedPath) {
                                 stopLoader()
                                 fileDescription?.fileUri = fileDescriptionUri.fileUri
