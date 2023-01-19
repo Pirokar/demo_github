@@ -358,7 +358,7 @@ public final class ChatFragment extends BaseFragment implements
             activity.unregisterReceiver(mChatReceiver);
         }
         chatIsShown = false;
-
+        binding = null;
         super.onDestroyView();
     }
 
@@ -2203,7 +2203,7 @@ public final class ChatFragment extends BaseFragment implements
      */
     public boolean onBackPressed() {
         Activity activity = getActivity();
-        if (activity == null) {
+        if (activity == null && !isAdded()) {
             return true;
         }
         if (null != chatAdapter) {
