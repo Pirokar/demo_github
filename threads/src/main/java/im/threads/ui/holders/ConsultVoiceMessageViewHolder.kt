@@ -178,7 +178,7 @@ class ConsultVoiceMessageViewHolder(
             consultPhrase.avatarPath?.let {
                 consultAvatar.loadImage(
                     FileUtils.convertRelativeUrlToAbsolute(it),
-                    listOf(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_INSIDE),
+                    listOf(ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.FIT_XY),
                     errorDrawableResId = R.drawable.threads_operator_avatar_placeholder,
                     modifications = listOf(ImageModifications.CircleCropModification)
                 )
