@@ -1,12 +1,9 @@
 package im.threads.ui.holders
 
-import android.app.ActionBar.LayoutParams
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.annotation.ColorRes
@@ -26,7 +23,6 @@ import im.threads.business.models.UserPhrase
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.ogParser.OpenGraphParser
 import im.threads.business.utils.FileUtils
-import im.threads.ui.holders.helper.BordersCreator
 import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.widget.textView.BubbleTimeTextView
 import io.reactivex.subjects.PublishSubject
@@ -38,7 +34,7 @@ class ImageFromUserViewHolder(
     parent: ViewGroup,
     private val maskedTransformation: ImageModifications.MaskedModification?,
     highlightingStream: PublishSubject<ChatItem>,
-    openGraphParser: OpenGraphParser
+    openGraphParser: OpenGraphParser,
 ) : BaseImageHolder(
     LayoutInflater.from(parent.context).inflate(R.layout.item_user_image_from, parent, false),
     highlightingStream,
@@ -54,21 +50,20 @@ class ImageFromUserViewHolder(
     private val fileName: TextView = itemView.findViewById(R.id.fileName)
     private val loader: ImageView = itemView.findViewById(R.id.loader)
     private val timeStampLoading: BubbleTimeTextView = itemView.findViewById(R.id.timeStampLoading)
-    private val timeStampBottomView: View = itemView.findViewById(R.id.timeStampBottomView)
 
     init {
         setTextColorToViews(
             arrayOf(fileName),
             style.outgoingMessageTextColor
         )
-        itemView.findViewById<LinearLayout>(R.id.loaderLayout).also { applyBubbleLayoutStyle(it) }
+        loaderLayoutRoot.also { applyBubbleLayoutStyle(it) }
     }
 
     fun onBind(
         userPhrase: UserPhrase,
         highlighted: Boolean,
         clickRunnable: Runnable,
-        longClickRunnable: Runnable
+        longClickRunnable: Runnable,
     ) {
         subscribeForHighlighting(userPhrase, itemView)
         image.setOnClickListener { clickRunnable.run() }
@@ -91,7 +86,7 @@ class ImageFromUserViewHolder(
 
     private fun bindImage(
         fileDescription: FileDescription?,
-        messageState: MessageState
+        messageState: MessageState,
     ) {
         fileDescription?.let {
             if (it.state === AttachmentStateEnum.PENDING || messageState == MessageState.STATE_SENDING) {
@@ -108,7 +103,7 @@ class ImageFromUserViewHolder(
     private fun bindTimeStamp(
         messageState: MessageState,
         timestamp: Long,
-        longClickRunnable: Runnable
+        longClickRunnable: Runnable,
     ) {
         timeStampTextView.setOnLongClickListener {
             longClickRunnable.run()
@@ -132,10 +127,7 @@ class ImageFromUserViewHolder(
                     R.drawable.threads_message_image_waiting,
                     R.color.threads_outgoing_message_image_not_send_icon
                 )
-                MessageState.STATE_SENDING -> AppCompatResources.getDrawable(
-                    itemView.context,
-                    R.drawable.empty_space_24dp
-                )
+                MessageState.STATE_SENDING -> null
             }
         timeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, rightDrawable, null)
         timeStampLoading.setCompoundDrawablesWithIntrinsicBounds(null, null, rightDrawable, null)
@@ -151,42 +143,17 @@ class ImageFromUserViewHolder(
     }
 
     private fun applyBubbleLayoutStyle(layout: ViewGroup) {
-        val res = itemView.context.resources
         layout.background = AppCompatResources.getDrawable(
             itemView.context,
             style.outgoingMessageBubbleBackground
         )
-
-        val borderLeft = res.getDimensionPixelSize(style.outgoingImageLeftBorderSize)
-        val borderTop = res.getDimensionPixelSize(style.outgoingImageTopBorderSize)
-        val borderRight = res.getDimensionPixelSize(style.outgoingImageRightBorderSize)
-        val borderBottom = res.getDimensionPixelSize(style.outgoingImageBottomBorderSize)
-
-        val layoutParams = layout.layoutParams as RelativeLayout.LayoutParams
-        val bordersCreator = BordersCreator(itemView.context, false)
-
-        layoutParams.width = bordersCreator.sideSize
-        layoutParams.height = LayoutParams.WRAP_CONTENT
-        layoutParams.setMargins(borderLeft, borderTop, borderRight, borderBottom)
-        layout.layoutParams = layoutParams
         layout.background.colorFilter =
             BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
                 getColorInt(style.outgoingMessageBubbleColor),
                 BlendModeCompat.SRC_ATOP
             )
         setPaddings(false, layout)
-        val timeStampBottomViewLayoutParams = timeStampBottomView.layoutParams as LinearLayout.LayoutParams
-        timeStampBottomViewLayoutParams.height = res.getDimensionPixelSize(style.bubbleOutgoingPaddingBottom)
-        timeStampBottomView.layoutParams = timeStampBottomViewLayoutParams
-
-        val timeStampLoadingLayoutParams = timeStampLoading.layoutParams as LinearLayout.LayoutParams
-        timeStampLoadingLayoutParams.setMargins(
-            0,
-            0,
-            res.getDimensionPixelSize(style.bubbleOutgoingPaddingRight),
-            res.getDimensionPixelSize(style.bubbleOutgoingPaddingBottom)
-        )
-        timeStampLoading.layoutParams = timeStampLoadingLayoutParams
+        setLayoutMargins(false, layout)
         layout.invalidate()
         layout.requestLayout()
     }
