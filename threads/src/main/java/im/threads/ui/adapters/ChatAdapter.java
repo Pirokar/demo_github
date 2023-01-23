@@ -33,6 +33,7 @@ import java.util.ListIterator;
 import java.util.Objects;
 import java.util.Set;
 
+import im.threads.business.config.BaseConfig;
 import im.threads.business.formatters.ChatItemType;
 import im.threads.business.imageLoading.ImageModifications;
 import im.threads.business.logger.LoggerEdna;
@@ -255,7 +256,9 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             bindSystemMessageVH((SystemMessageViewHolder) holder, (SystemMessage) getList().get(position));
         }
         if (holder instanceof ConsultPhraseHolder) {
-            bindConsultPhraseVH((ConsultPhraseHolder) holder, (ConsultPhrase) getList().get(position));
+            ConsultPhrase phrase = (ConsultPhrase) getList().get(position);
+            bindConsultPhraseVH((ConsultPhraseHolder) holder, phrase);
+            updateReadStateForConsultPhrase(phrase);
         }
         if (holder instanceof UserPhraseViewHolder) {
             bindUserPhraseVH((UserPhraseViewHolder) holder, (UserPhrase) getList().get(position));
@@ -271,7 +274,9 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             ((SpaceViewHolder) holder).onBind((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, space.getHeight(), ctx.getResources().getDisplayMetrics()));
         }
         if (holder instanceof ImageFromConsultViewHolder) {
-            bindImageFromConsultVH((ImageFromConsultViewHolder) holder, (ConsultPhrase) getList().get(position));
+            ConsultPhrase phrase = (ConsultPhrase) getList().get(position);
+            bindImageFromConsultVH((ImageFromConsultViewHolder) holder, phrase);
+            updateReadStateForConsultPhrase(phrase);
         }
         if (holder instanceof ImageFromUserViewHolder) {
             bindImageFromUserVH((ImageFromUserViewHolder) holder, (UserPhrase) getList().get(position));
@@ -280,7 +285,9 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             bindFileFromUserVH((UserFileViewHolder) holder, (UserPhrase) getList().get(position));
         }
         if (holder instanceof ConsultFileViewHolder) {
-            bindFileFromConsultVH((ConsultFileViewHolder) holder, (ConsultPhrase) getList().get(position));
+            ConsultPhrase phrase = (ConsultPhrase) getList().get(position);
+            bindFileFromConsultVH((ConsultFileViewHolder) holder, phrase);
+            updateReadStateForConsultPhrase(phrase);
         }
         if (holder instanceof UnreadMessageViewHolder) {
             ((UnreadMessageViewHolder) holder).onBind((UnreadMessages) getList().get(holder.getAdapterPosition()));
@@ -310,7 +317,9 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             ((RequestResolveThreadViewHolder) holder).bind(mCallback);
         }
         if (holder instanceof ConsultVoiceMessageViewHolder) {
-            bindVoiceMessageFromConsultVH((ConsultVoiceMessageViewHolder) holder, (ConsultPhrase) getList().get(position));
+            ConsultPhrase phrase = (ConsultPhrase) getList().get(position);
+            bindVoiceMessageFromConsultVH((ConsultVoiceMessageViewHolder) holder, phrase);
+            updateReadStateForConsultPhrase(phrase);
         }
         if (holder instanceof QuickRepliesViewHolder) {
             ((QuickRepliesViewHolder) holder).bind((QuickReplyItem) getList().get(position), mCallback);
@@ -479,6 +488,12 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 }
                 iter.remove();
             }
+        }
+    }
+
+    private void updateReadStateForConsultPhrase(ConsultPhrase phrase) {
+        if (!phrase.isRead() && phrase.getId() != null) {
+            BaseConfig.instance.transport.markMessagesAsRead(List.of(phrase.getId()));
         }
     }
 
