@@ -34,7 +34,7 @@ class ImageFromUserViewHolder(
     parent: ViewGroup,
     private val maskedTransformation: ImageModifications.MaskedModification?,
     highlightingStream: PublishSubject<ChatItem>,
-    openGraphParser: OpenGraphParser,
+    openGraphParser: OpenGraphParser
 ) : BaseImageHolder(
     LayoutInflater.from(parent.context).inflate(R.layout.item_user_image_from, parent, false),
     highlightingStream,
@@ -63,7 +63,7 @@ class ImageFromUserViewHolder(
         userPhrase: UserPhrase,
         highlighted: Boolean,
         clickRunnable: Runnable,
-        longClickRunnable: Runnable,
+        longClickRunnable: Runnable
     ) {
         subscribeForHighlighting(userPhrase, itemView)
         image.setOnClickListener { clickRunnable.run() }
@@ -86,7 +86,7 @@ class ImageFromUserViewHolder(
 
     private fun bindImage(
         fileDescription: FileDescription?,
-        messageState: MessageState,
+        messageState: MessageState
     ) {
         fileDescription?.let {
             if (it.state === AttachmentStateEnum.PENDING || messageState == MessageState.STATE_SENDING) {
@@ -103,7 +103,7 @@ class ImageFromUserViewHolder(
     private fun bindTimeStamp(
         messageState: MessageState,
         timestamp: Long,
-        longClickRunnable: Runnable,
+        longClickRunnable: Runnable
     ) {
         timeStampTextView.setOnLongClickListener {
             longClickRunnable.run()
