@@ -2163,8 +2163,7 @@ public final class ChatFragment extends BaseFragment implements
         boolean isToolbarTextCentered = Config.getInstance().getChatStyle().isToolbarTextCentered;
         int gravity = isToolbarTextCentered ? Gravity.CENTER : Gravity.CENTER_VERTICAL;
         if (isToolbarTextCentered) {
-            int paddingTop =  0;
-            int paddingBottom = 0;
+            int paddingTopBottom =  0;
             int paddingLeft = 0;
             int paddingRight = 0;
             if (ViewExtensionsKt.isVisible(binding.chatBackButton)
@@ -2174,7 +2173,7 @@ public final class ChatFragment extends BaseFragment implements
                     && ViewExtensionsKt.isVisible(binding.popupMenuButton)) {
                 paddingLeft = getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
             }
-            binding.consultTitle.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
+            binding.consultTitle.setPadding(paddingLeft, paddingTopBottom, paddingRight, paddingTopBottom);
         }
         binding.consultName.setGravity(gravity);
         binding.subtitle.setGravity(gravity);
