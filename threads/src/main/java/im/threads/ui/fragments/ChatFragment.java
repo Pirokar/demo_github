@@ -130,6 +130,7 @@ import im.threads.ui.utils.ColorsHelper;
 import im.threads.ui.utils.FileHelper;
 import im.threads.ui.utils.KeyboardKt;
 import im.threads.ui.utils.ThreadRunnerKt;
+import im.threads.ui.utils.ViewExtensionsKt;
 import im.threads.ui.views.VoiceTimeLabelFormatter;
 import im.threads.ui.views.VoiceTimeLabelFormatterKt;
 import io.reactivex.Completable;
@@ -2162,18 +2163,17 @@ public final class ChatFragment extends BaseFragment implements
         boolean isToolbarTextCentered = Config.getInstance().getChatStyle().isToolbarTextCentered;
         int gravity = isToolbarTextCentered ? Gravity.CENTER : Gravity.CENTER_VERTICAL;
         if (isToolbarTextCentered) {
-            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) binding.consultTitle.getLayoutParams();
-            if (style.showBackButton && !isPopupMenuEnabled()) {
-                int marginRight = getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
-                params.setMarginStart(0);
-                params.setMarginEnd(marginRight);
-            } else if (!style.showBackButton && isPopupMenuEnabled()) {
-                int marginLeft = getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
-                params.setMarginStart(marginLeft);
-                params.setMarginEnd(0);
+            int paddingTopBottom =  0;
+            int paddingLeft = 0;
+            int paddingRight = 0;
+            if (ViewExtensionsKt.isVisible(binding.chatBackButton)
+                    && !ViewExtensionsKt.isVisible(binding.popupMenuButton)) {
+                paddingRight = getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
+            } else if (!ViewExtensionsKt.isVisible(binding.chatBackButton)
+                    && ViewExtensionsKt.isVisible(binding.popupMenuButton)) {
+                paddingLeft = getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
             }
-            binding.consultTitle.setLayoutParams(params);
-            binding.consultTitle.invalidate();
+            binding.consultTitle.setPadding(paddingLeft, paddingTopBottom, paddingRight, paddingTopBottom);
         }
         binding.consultName.setGravity(gravity);
         binding.subtitle.setGravity(gravity);
