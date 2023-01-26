@@ -1168,7 +1168,6 @@ class ChatController private constructor() {
         }
         if (chatItem is ConsultPhrase && isActive) {
             handleQuickReplies(listOf<ChatItem>(chatItem))
-            BaseConfig.instance.transport.markMessagesAsRead(listOf(chatItem.id))
         }
         if (chatItem is SimpleSystemMessage && isActive) {
             hideQuickReplies()
