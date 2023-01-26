@@ -16,18 +16,16 @@
 
             <RelativeLayout
                 android:id="@+id/loaderLayoutRoot"
+                style="@style/userBubble"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <LinearLayout
                     android:id="@+id/loaderLayout"
-                    style="@style/userBubble"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
-                    android:layout_marginEnd="@dimen/threads_margin_zero"
-                    android:orientation="horizontal"
-                    android:paddingStart="0dp">
+                    android:orientation="horizontal">
 
                     <ImageView
                         android:id="@+id/loader"
@@ -60,34 +58,19 @@
 
                 </LinearLayout>
 
-
-                <LinearLayout
+                <im.threads.ui.widget.textView.BubbleTimeTextView
+                    android:id="@+id/timeStampLoading"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentBottom="true"
-                    android:orientation="vertical">
-
-                    <im.threads.ui.widget.textView.BubbleTimeTextView
-                        android:id="@+id/timeStampLoading"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="@dimen/bubbleOutgoingPaddingRight"
-                        android:layout_marginBottom="@dimen/margin_half"
-                        android:background="@drawable/timestamp_outgoing_underlayer"
-                        android:drawablePadding="@dimen/margin_half"
-                        android:paddingLeft="2dp"
-                        android:paddingRight="2dp"
-                        android:textColor="@color/threads_outgoing_message_time"
-                        tools:text="10:19" />
-
-                    <View
-                        android:id="@+id/timeStampBottomView"
-                        android:layout_width="10dp"
-                        android:layout_height="@dimen/margin_three_fourth"
-                        android:layout_marginBottom="@dimen/margin_half" />
-
-                </LinearLayout>
+                    android:layout_marginBottom="@dimen/margin_half"
+                    android:background="@drawable/timestamp_outgoing_underlayer"
+                    android:drawablePadding="@dimen/margin_half"
+                    android:paddingLeft="2dp"
+                    android:paddingRight="2dp"
+                    android:textColor="@color/threads_outgoing_message_time"
+                    tools:text="10:19" />
 
             </RelativeLayout>
 
