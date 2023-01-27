@@ -2,6 +2,7 @@ package im.threads.ui.holders
 
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
@@ -304,8 +305,9 @@ abstract class BaseHolder internal constructor(
 
                     val ogTitle: TextView = ogDataLayout.findViewById(R.id.og_title)
                     val ogDescription: TextView = ogDataLayout.findViewById(R.id.og_description)
-                    val ogUrl: TextView = ogDataLayout.findViewById(R.id.og_url)
+                    val ogUrl: BubbleMessageTextView = ogDataLayout.findViewById(R.id.og_url)
 
+                    alignUrlAndTime(ogDataContent, ogUrl)
                     showOGView()
                     setOgDataTitle(ogData, ogTitle)
                     setOgDataDescription(ogData, ogDescription)
@@ -331,6 +333,12 @@ abstract class BaseHolder internal constructor(
         }
     }
 
+    private fun alignUrlAndTime(ogDataContent: OGDataContent, ogTextView: BubbleMessageTextView) {
+        ogDataContent.timeStampView.get()?.let { timeStampView ->
+            ogTextView.bindTimestampView(timeStampView)
+        }
+    }
+
     private fun setOgDataTitle(ogData: OGData, ogTitle: TextView) {
         if (ogData.title.isNotEmpty()) {
             ogTitle.visibility = View.VISIBLE
@@ -350,8 +358,11 @@ abstract class BaseHolder internal constructor(
         }
     }
 
-    private fun setOgDataUrl(ogUrl: TextView, ogData: OGData) {
-        ogUrl.text = ogData.url.ifEmpty { ogDataContent?.url }
+    private fun setOgDataUrl(ogUrl: BubbleMessageTextView, ogData: OGData) {
+        val url = (ogData.url.ifEmpty { ogDataContent?.url }).let {
+            "${Uri.parse(it).scheme}://${Uri.parse(it).host}"
+        }
+        ogUrl.setText(url, TextView.BufferType.NORMAL)
     }
 
     private fun setOgDataImage(ogData: OGData, ogImage: ImageView) {

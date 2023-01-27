@@ -329,8 +329,6 @@
                     android:id="@+id/og_url"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:ellipsize="end"
-                    android:maxLines="1"
                     android:paddingTop="@dimen/ecc_margin_half"
                     android:textColor="@color/ecc_outgoing_message_text"
                     android:textSize="16sp"
