@@ -69,17 +69,17 @@ public final class RatingStarsSentViewHolder extends BaseHolder {
         switch (survey.getSentState()) {
             case STATE_WAS_READ:
                 d = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.ecc_message_received);
-                d.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_outgoing_message_received_icon), PorterDuff.Mode.SRC_ATOP);
+                d.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.ecc_outgoing_message_received_icon), PorterDuff.Mode.SRC_ATOP);
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
                 break;
             case STATE_SENT:
                 d = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.ecc_message_sent);
-                d.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_outgoing_message_sent_icon), PorterDuff.Mode.SRC_ATOP);
+                d.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.ecc_outgoing_message_sent_icon), PorterDuff.Mode.SRC_ATOP);
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
                 break;
             case STATE_NOT_SENT:
                 d = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.ecc_message_waiting);
-                d.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_outgoing_message_not_send_icon), PorterDuff.Mode.SRC_ATOP);
+                d.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.ecc_outgoing_message_not_send_icon), PorterDuff.Mode.SRC_ATOP);
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
                 break;
             case STATE_SENDING:

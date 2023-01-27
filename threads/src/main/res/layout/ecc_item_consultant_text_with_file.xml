@@ -8,19 +8,19 @@
 
     <ImageView
         android:id="@+id/consultAvatar"
-        android:layout_width="@dimen/threads_operator_photo_size"
-        android:layout_height="@dimen/threads_operator_photo_size"
+        android:layout_width="@dimen/ecc_operator_photo_size"
+        android:layout_height="@dimen/ecc_operator_photo_size"
         android:layout_alignBottom="@id/bubble"
-        android:layout_marginStart="@dimen/margin_half" />
+        android:layout_marginStart="@dimen/ecc_margin_half" />
 
     <im.threads.ui.widget.textView.BubbleTimeTextView
         android:id="@+id/errorText"
         style="@style/timestamp"
         android:layout_below="@+id/bubble"
-        android:layout_marginStart="@dimen/consultant_margin_right"
-        android:layout_marginTop="@dimen/margin_material"
-        android:textColor="@color/threads_error_red_df0000"
-        android:textSize="@dimen/error_text_size"
+        android:layout_marginStart="@dimen/ecc_consultant_margin_right"
+        android:layout_marginTop="@dimen/ecc_margin_material"
+        android:textColor="@color/ecc_error_red_df0000"
+        android:textSize="@dimen/ecc_error_text_size"
         android:visibility="gone"
         tools:text="Some error text"
         tools:visibility="visible" />
@@ -34,8 +34,8 @@
 
         <FrameLayout
             android:id="@+id/imageRoot"
-            android:layout_width="@dimen/message_image_size"
-            android:layout_height="@dimen/message_image_size">
+            android:layout_width="@dimen/ecc_message_image_size"
+            android:layout_height="@dimen/ecc_message_image_size">
 
             <FrameLayout
                 android:id="@+id/imageLayout"
@@ -73,18 +73,18 @@
             android:id="@+id/rightTextRow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/margin_quarter"
+            android:layout_marginBottom="@dimen/ecc_margin_quarter"
             android:orientation="horizontal"
-            android:paddingTop="@dimen/margin_half">
+            android:paddingTop="@dimen/ecc_margin_half">
 
             <ImageView
                 android:id="@+id/fileImage"
                 android:layout_width="42dp"
                 android:layout_height="42dp"
                 android:layout_gravity="center_vertical"
-                android:layout_marginTop="@dimen/margin_half"
-                android:layout_marginLeft="@dimen/margin_half"
-                android:layout_marginBottom="@dimen/margin_half"
+                android:layout_marginTop="@dimen/ecc_margin_half"
+                android:layout_marginLeft="@dimen/ecc_margin_half"
+                android:layout_marginBottom="@dimen/ecc_margin_half"
                 android:visibility="gone" />
 
             <im.threads.ui.views.CircularProgressButton
@@ -95,8 +95,8 @@
                 android:id="@+id/delimiter"
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
-                android:layout_marginStart="@dimen/margin_half"
-                android:layout_marginTop="@dimen/margin_half" />
+                android:layout_marginStart="@dimen/ecc_margin_half"
+                android:layout_marginTop="@dimen/ecc_margin_half" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -107,11 +107,11 @@
                     android:id="@+id/to"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/margin_half"
+                    android:layout_marginStart="@dimen/ecc_margin_half"
                     android:layout_marginTop="2dp"
                     android:paddingStart="0dp"
-                    android:paddingEnd="@dimen/margin_material"
-                    android:textColor="@color/threads_incoming_message_text"
+                    android:paddingEnd="@dimen/ecc_margin_material"
+                    android:textColor="@color/ecc_incoming_message_text"
                     android:textStyle="bold"
                     tools:text="Иван Петров" />
 
@@ -119,20 +119,20 @@
                     android:id="@+id/fileSpecs"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/margin_half"
+                    android:layout_marginStart="@dimen/ecc_margin_half"
                     android:layout_marginTop="2dp"
                     android:ellipsize="end"
                     android:maxLines="3"
-                    android:textColor="@color/threads_incoming_message_text"
+                    android:textColor="@color/ecc_incoming_message_text"
                     tools:text="счет на оплату очень длинное название очень длинное название очень длинное название.pdf" />
 
                 <im.threads.ui.widget.textView.QuoteTimeTextView
                     android:id="@+id/sendAt"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/margin_half"
+                    android:layout_marginStart="@dimen/ecc_margin_half"
                     android:layout_marginTop="2dp"
-                    android:textColor="@color/threads_incoming_message_text"
+                    android:textColor="@color/ecc_incoming_message_text"
                     android:textSize="12sp"
                     tools:text="отправлено 21 апр 2016" />
             </LinearLayout>
@@ -152,9 +152,9 @@
                 android:lineSpacingMultiplier="1.25"
                 android:autoLink="none"
                 android:paddingTop="5dp"
-                android:textColor="@color/threads_incoming_message_text"
+                android:textColor="@color/ecc_incoming_message_text"
                 android:textSize="16sp"
-                app:last_line_extra_padding_symbols="@dimen/last_line_extra_padding_symbols"
+                app:last_line_extra_padding_symbols="@dimen/ecc_last_line_extra_padding_symbols"
                 tools:text="text text text text google.com" />
 
             <im.threads.ui.widget.textView.BubbleTimeTextView
@@ -162,7 +162,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|end"
-                android:textColor="@color/threads_operator_message_timestamp"
+                android:textColor="@color/ecc_operator_message_timestamp"
                 tools:text="10:19" />
 
         </FrameLayout>
@@ -192,8 +192,8 @@
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
                     android:maxLines="2"
-                    android:paddingTop="@dimen/margin_half"
-                    android:textColor="@color/threads_incoming_message_text"
+                    android:paddingTop="@dimen/ecc_margin_half"
+                    android:textColor="@color/ecc_incoming_message_text"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     tools:text="My Awesome Site Title" />
@@ -204,7 +204,7 @@
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
                     android:maxLines="2"
-                    android:textColor="@color/threads_incoming_message_text"
+                    android:textColor="@color/ecc_incoming_message_text"
                     android:textSize="16sp"
                     tools:text="My Awesome Site Descripton. Here I would write all awesome info" />
 
@@ -214,8 +214,8 @@
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
                     android:maxLines="1"
-                    android:paddingTop="@dimen/margin_half"
-                    android:textColor="@color/threads_incoming_message_text"
+                    android:paddingTop="@dimen/ecc_margin_half"
+                    android:textColor="@color/ecc_incoming_message_text"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     tools:text="http://my.awesome.site.com" />
@@ -227,7 +227,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|end"
                 android:paddingStart="0dp"
-                android:textColor="@color/threads_operator_message_timestamp"
+                android:textColor="@color/ecc_operator_message_timestamp"
                 tools:text="10:19" />
         </FrameLayout>
     </LinearLayout>

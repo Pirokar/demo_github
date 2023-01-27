@@ -24,8 +24,8 @@
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/toolbar_height"
-            android:background="@color/threads_chat_toolbar"
+            android:layout_height="@dimen/ecc_toolbar_height"
+            android:background="@color/ecc_chat_toolbar"
             app:contentInsetStart="0dp">
 
             <ImageButton
@@ -41,11 +41,11 @@
                 android:id="@+id/title"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginEnd="@dimen/toolbar_height"
-                android:text="@string/threads_photos"
+                android:layout_marginEnd="@dimen/ecc_toolbar_height"
+                android:text="@string/ecc_photos"
                 android:gravity="center_vertical"
                 android:textColor="@android:color/white"
-                android:textSize="@dimen/text_big"/>
+                android:textSize="@dimen/ecc_text_big"/>
 
             <LinearLayout
                 android:id="@+id/search_layout"
@@ -61,15 +61,15 @@
                     android:layout_weight="0.85"
                     android:background="@null"
                     android:ellipsize="end"
-                    android:hint="@string/threads_search_photos"
+                    android:hint="@string/ecc_search_photos"
                     android:imeOptions="actionSearch"
                     android:inputType="text"
                     android:lines="1"
                     android:paddingStart="12dp"
                     android:paddingEnd="0dp"
-                    android:textColor="@color/threads_chat_toolbar_text"
-                    android:textColorHint="@color/threads_chat_toolbar_hint"
-                    android:textSize="@dimen/text_big" />
+                    android:textColor="@color/ecc_chat_toolbar_text"
+                    android:textColorHint="@color/ecc_chat_toolbar_hint"
+                    android:textSize="@dimen/ecc_text_big" />
 
                 <ImageButton
                     android:id="@+id/clear_search_button"
@@ -89,7 +89,7 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_below="@+id/toolbar"
-            android:layout_margin="@dimen/margin_quarter"
+            android:layout_margin="@dimen/ecc_margin_quarter"
             android:background="#282828"
             android:visibility="@{viewModel.screenState == GalleryActivity.ScreenState.BUCKET_LIST ? View.VISIBLE : View.GONE, default = visible}">
 
@@ -107,9 +107,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
-                android:layout_marginTop="@dimen/margin_half"
+                android:layout_marginTop="@dimen/ecc_margin_half"
                 android:layout_toEndOf="@+id/search_photo"
-                android:text="@string/threads_find_photos"
+                android:text="@string/ecc_find_photos"
                 android:textAllCaps="true"
                 android:textColor="@android:color/white" />
 
@@ -118,7 +118,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/search_photo_title"
                 android:layout_toEndOf="@+id/search_photo"
-                android:text="@string/threads_on_your_device"
+                android:text="@string/ecc_on_your_device"
                 android:textColor="#8b8b8b"
                 android:textSize="12sp" />
 
@@ -140,9 +140,9 @@
             android:layout_centerInParent="true"
             android:gravity="center_vertical"
             android:paddingTop="84dp"
-            android:text="@string/threads_nothing_found"
+            android:text="@string/ecc_nothing_found"
             android:textColor="#808080"
-            android:textSize="@dimen/text_big"
+            android:textSize="@dimen/ecc_text_big"
             android:visibility="@{viewModel.dataEmpty ? View.VISIBLE : View.GONE, default = gone}" />
 
         <FrameLayout
@@ -158,14 +158,14 @@
                 style="@style/bottomButtonTransparent"
                 android:layout_gravity="start"
                 android:onClickListener="@{v -> viewModel.onBackPressed()}"
-                android:text="@string/threads_cancel" />
+                android:text="@string/ecc_cancel" />
 
             <im.threads.ui.widget.CustomFontButton
                 android:id="@+id/send"
                 style="@style/bottomButtonTransparent"
                 android:layout_gravity="end"
                 android:onClickListener="@{v -> viewModel.send()}"
-                android:text="@string/threads_send" />
+                android:text="@string/ecc_send" />
 
         </FrameLayout>
 

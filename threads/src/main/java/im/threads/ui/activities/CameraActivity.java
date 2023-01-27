@@ -72,7 +72,7 @@ public final class CameraActivity extends BaseActivity {
         super.onPause();
         if (mSurfaceView.getVisibility() == View.VISIBLE) {
             if (mCamera == null) {
-                Balloon.show(this, getString(R.string.threads_no_cameras_detected));
+                Balloon.show(this, getString(R.string.ecc_no_cameras_detected));
             } else {
                 releaseCamera();
                 isCameraReleased = true;
@@ -123,7 +123,7 @@ public final class CameraActivity extends BaseActivity {
         final ImageButton flashButton = findViewById(R.id.flash_control);
         final ImageButton takePhotoButton = findViewById(R.id.take_photo);
         if (Camera.getNumberOfCameras() == 0) {
-            Balloon.show(this, getResources().getString(R.string.threads_no_cameras_detected));
+            Balloon.show(this, getResources().getString(R.string.ecc_no_cameras_detected));
             finish();
         }
         takePhotoButton.setEnabled(true);
@@ -241,7 +241,7 @@ public final class CameraActivity extends BaseActivity {
         } catch (IOException e) {
             LoggerEdna.error("restoreCamera", e);
         } catch (RuntimeException ex) {
-            String error = getResources().getString(R.string.threads_back_camera_could_not_start_error);
+            String error = getResources().getString(R.string.ecc_back_camera_could_not_start_error);
             Balloon.show(this, error);
             LoggerEdna.error("restoreCamera", ex);
         }

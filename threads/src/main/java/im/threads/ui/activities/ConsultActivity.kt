@@ -51,7 +51,7 @@ internal open class ConsultActivity : BaseActivity() {
     }
 
     private fun setStatusBarColor() {
-        val statusBarColor = ContextCompat.getColor(baseContext, R.color.threads_black_transparent)
+        val statusBarColor = ContextCompat.getColor(baseContext, R.color.ecc_black_transparent)
         val isStatusBarLight = resources.getBoolean(config.getChatStyle().windowLightStatusBarResId)
         super.setStatusBarColor(isStatusBarLight, statusBarColor)
     }
@@ -91,7 +91,7 @@ internal open class ConsultActivity : BaseActivity() {
             RelativeLayout.LayoutParams.MATCH_PARENT,
             RelativeLayout.LayoutParams.WRAP_CONTENT
         ).apply {
-            setMargins(0, resources.getDimension(R.dimen.margin_big).toInt(), 0, 0)
+            setMargins(0, resources.getDimension(R.dimen.ecc_margin_big).toInt(), 0, 0)
         }
         toolbar.layoutParams = layoutParams
     }

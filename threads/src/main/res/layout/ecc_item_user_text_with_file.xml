@@ -23,16 +23,16 @@
                 android:layout_width="42dp"
                 android:layout_height="42dp"
                 android:layout_gravity="center_vertical"
-                android:layout_marginTop="@dimen/margin_half"
-                android:layout_marginBottom="@dimen/margin_half"
+                android:layout_marginTop="@dimen/ecc_margin_half"
+                android:layout_marginBottom="@dimen/ecc_margin_half"
                 android:visibility="gone" />
 
             <View
                 android:id="@+id/quoteDelimiter"
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
-                android:layout_marginStart="@dimen/margin_quarter"
-                android:layout_marginTop="@dimen/margin_quarter"
+                android:layout_marginStart="@dimen/ecc_margin_quarter"
+                android:layout_marginTop="@dimen/ecc_margin_quarter"
                 android:background="@android:color/white" />
 
             <LinearLayout
@@ -46,11 +46,11 @@
                     android:id="@+id/quoteTo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/margin_half"
+                    android:layout_marginStart="@dimen/ecc_margin_half"
                     android:layout_marginTop="2dp"
                     android:paddingStart="0dp"
                     android:paddingEnd="80dp"
-                    android:textColor="@color/threads_outgoing_message_text"
+                    android:textColor="@color/ecc_outgoing_message_text"
                     android:textStyle="bold"
                     tools:text="Иван Петров" />
 
@@ -58,20 +58,20 @@
                     android:id="@+id/quoteFileSpecs"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/margin_half"
+                    android:layout_marginStart="@dimen/ecc_margin_half"
                     android:layout_marginTop="2dp"
                     android:ellipsize="end"
                     android:maxLines="3"
-                    android:textColor="@color/threads_outgoing_message_text"
+                    android:textColor="@color/ecc_outgoing_message_text"
                     tools:text="счет на оплату 1,2mb 436666666666364" />
 
                 <im.threads.ui.widget.textView.QuoteTimeTextView
                     android:id="@+id/quoteSendAt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/margin_half"
+                    android:layout_marginStart="@dimen/ecc_margin_half"
                     android:layout_marginTop="2dp"
-                    android:textColor="@color/threads_outgoing_message_text"
+                    android:textColor="@color/ecc_outgoing_message_text"
                     android:textSize="12sp"
                     tools:text="отправлено 21 апр 2016" />
             </LinearLayout>
@@ -79,8 +79,8 @@
 
         <FrameLayout
             android:id="@+id/imageRoot"
-            android:layout_width="@dimen/message_image_size"
-            android:layout_height="@dimen/message_image_size"
+            android:layout_width="@dimen/ecc_message_image_size"
+            android:layout_height="@dimen/ecc_message_image_size"
             android:layout_gravity="center_horizontal">
 
             <FrameLayout
@@ -99,7 +99,7 @@
                 android:id="@+id/errorImage"
                 android:layout_width="match_parent"
                 android:layout_height="240dp"
-                android:layout_marginTop="@dimen/margin_quarter"
+                android:layout_marginTop="@dimen/ecc_margin_quarter"
                 android:visibility="gone"
                 android:minWidth="240dp" />
 
@@ -107,12 +107,12 @@
 
         <TableRow
             android:id="@+id/rightTextRow"
-            android:layout_width="@dimen/message_image_size"
+            android:layout_width="@dimen/ecc_message_image_size"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
-            android:layout_marginBottom="@dimen/margin_quarter"
+            android:layout_marginBottom="@dimen/ecc_margin_quarter"
             android:visibility="gone"
-            android:paddingTop="@dimen/margin_quarter"
+            android:paddingTop="@dimen/ecc_margin_quarter"
             tools:visibility="visible">
 
             <im.threads.ui.views.CircularProgressButton
@@ -120,8 +120,8 @@
                 android:layout_width="42dp"
                 android:layout_height="42dp"
                 android:layout_gravity="center_vertical"
-                android:layout_marginTop="@dimen/margin_half"
-                android:layout_marginBottom="@dimen/margin_half"
+                android:layout_marginTop="@dimen/ecc_margin_half"
+                android:layout_marginBottom="@dimen/ecc_margin_half"
                 android:background="@drawable/ecc_ic_file_outline_24dp"
                 android:visibility="gone"
                 app:completed_drawable="@drawable/ecc_ic_file_outline_24dp"
@@ -130,21 +130,21 @@
 
             <ImageView
                 android:id="@+id/loader"
-                android:layout_width="@dimen/threads_operator_photo_size"
-                android:layout_height="@dimen/threads_operator_photo_size"
+                android:layout_width="@dimen/ecc_operator_photo_size"
+                android:layout_height="@dimen/ecc_operator_photo_size"
                 android:layout_gravity="center_vertical"
-                android:layout_marginStart="@dimen/margin_material"
-                android:layout_marginTop="@dimen/margin_material"
-                android:layout_marginEnd="@dimen/margin_three_fourth"
-                android:layout_marginBottom="@dimen/margin_material"
+                android:layout_marginStart="@dimen/ecc_margin_material"
+                android:layout_marginTop="@dimen/ecc_margin_material"
+                android:layout_marginEnd="@dimen/ecc_margin_three_fourth"
+                android:layout_marginBottom="@dimen/ecc_margin_material"
                 android:visibility="gone" />
 
             <View
                 android:id="@+id/delimiter"
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
-                android:layout_marginStart="@dimen/margin_quarter"
-                android:layout_marginTop="@dimen/margin_quarter"
+                android:layout_marginStart="@dimen/ecc_margin_quarter"
+                android:layout_marginTop="@dimen/ecc_margin_quarter"
                 android:background="@android:color/white" />
 
             <LinearLayout
@@ -158,11 +158,11 @@
                     android:id="@+id/to"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/margin_half"
+                    android:layout_marginStart="@dimen/ecc_margin_half"
                     android:layout_marginTop="2dp"
                     android:paddingStart="0dp"
-                    android:paddingEnd="@dimen/margin_half"
-                    android:textColor="@color/threads_outgoing_message_text"
+                    android:paddingEnd="@dimen/ecc_margin_half"
+                    android:textColor="@color/ecc_outgoing_message_text"
                     android:textStyle="bold"
                     tools:text="Иван Петров" />
 
@@ -170,20 +170,20 @@
                     android:id="@+id/fileSpecs"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/margin_half"
+                    android:layout_marginStart="@dimen/ecc_margin_half"
                     android:layout_marginTop="2dp"
                     android:ellipsize="end"
                     android:maxLines="3"
-                    android:textColor="@color/threads_outgoing_message_text"
+                    android:textColor="@color/ecc_outgoing_message_text"
                     tools:text="счет на оплату 1,2mb 436666666666364" />
 
                 <im.threads.ui.widget.textView.QuoteTimeTextView
                     android:id="@+id/sendAt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/margin_half"
+                    android:layout_marginStart="@dimen/ecc_margin_half"
                     android:layout_marginTop="2dp"
-                    android:textColor="@color/threads_outgoing_message_text"
+                    android:textColor="@color/ecc_outgoing_message_text"
                     android:textSize="12sp"
                     tools:text="отправлено 21 апр 2016" />
             </LinearLayout>
@@ -201,10 +201,10 @@
                 android:layout_gravity="center_vertical"
                 android:lineSpacingMultiplier="1.25"
                 android:paddingTop="5dp"
-                android:paddingBottom="@dimen/margin_half"
-                android:textColor="@color/threads_outgoing_message_text"
+                android:paddingBottom="@dimen/ecc_margin_half"
+                android:textColor="@color/ecc_outgoing_message_text"
                 android:textSize="16sp"
-                app:last_line_extra_padding_symbols="@dimen/last_line_extra_padding_symbols"
+                app:last_line_extra_padding_symbols="@dimen/ecc_last_line_extra_padding_symbols"
                 tools:text="user text google.com" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -218,15 +218,15 @@
 
                 <ImageButton
                     android:id="@+id/voiceMessageUserButtonPlayPause"
-                    android:layout_width="@dimen/threads_file_icon_size"
-                    android:layout_height="@dimen/threads_file_icon_size"
+                    android:layout_width="@dimen/ecc_file_icon_size"
+                    android:layout_height="@dimen/ecc_file_icon_size"
                     android:background="@null"
                     android:scaleType="fitXY"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@drawable/ecc_voice_message_play"
-                    android:contentDescription="@string/threads_play_button" />
+                    android:contentDescription="@string/ecc_play_button" />
 
                 <com.google.android.material.slider.Slider
                     android:id="@+id/voiceMessageUserSlider"
@@ -234,8 +234,8 @@
                     android:layout_height="wrap_content"
                     android:theme="@style/ThemeOverlay.ChatCenter.Slider.User"
                     android:layout_marginTop="-11dp"
-                    app:thumbRadius="@dimen/thumb_size"
-                    app:haloRadius="@dimen/halo_radius"
+                    app:thumbRadius="@dimen/ecc_thumb_size"
+                    app:haloRadius="@dimen/ecc_halo_radius"
                     app:layout_constraintStart_toEndOf="@+id/voiceMessageUserButtonPlayPause"
                     app:layout_constraintTop_toTopOf="@id/voiceMessageUserButtonPlayPause"
                     app:layout_constraintEnd_toEndOf="parent" />
@@ -245,10 +245,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:textSize="@dimen/text_small"
+                    android:textSize="@dimen/ecc_text_small"
                     android:layout_marginTop="-11dp"
-                    android:layout_marginStart="@dimen/margin_half"
-                    android:textColor="@color/threads_outgoing_message_text"
+                    android:layout_marginStart="@dimen/ecc_margin_half"
+                    android:textColor="@color/ecc_outgoing_message_text"
                     app:layout_constraintStart_toStartOf="@+id/voiceMessageUserSlider"
                     app:layout_constraintTop_toBottomOf="@+id/voiceMessageUserSlider"
                     tools:text="1:20" />
@@ -259,12 +259,12 @@
                     android:layout_height="wrap_content"
                     app:layout_constraintTop_toTopOf="@id/fileSize"
                     app:layout_constraintEnd_toEndOf="@id/voiceMessageUserSlider"
-                    android:drawablePadding="@dimen/margin_half"
-                    android:paddingStart="@dimen/margin_half"
-                    android:layout_marginTop="@dimen/margin_quarter"
-                    android:layout_marginEnd="@dimen/margin_three_fourth"
+                    android:drawablePadding="@dimen/ecc_margin_half"
+                    android:paddingStart="@dimen/ecc_margin_half"
+                    android:layout_marginTop="@dimen/ecc_margin_quarter"
+                    android:layout_marginEnd="@dimen/ecc_margin_three_fourth"
                     android:paddingEnd="0dp"
-                    android:textColor="@color/threads_user_message_timestamp"
+                    android:textColor="@color/ecc_user_message_timestamp"
                     tools:text="10:19" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -274,12 +274,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|end"
-                android:drawablePadding="@dimen/margin_half"
-                android:paddingStart="@dimen/margin_half"
-                android:layout_marginTop="@dimen/margin_half"
+                android:drawablePadding="@dimen/ecc_margin_half"
+                android:paddingStart="@dimen/ecc_margin_half"
+                android:layout_marginTop="@dimen/ecc_margin_half"
                 android:paddingEnd="0dp"
-                android:layout_marginBottom="@dimen/margin_half"
-                android:textColor="@color/threads_user_message_timestamp"
+                android:layout_marginBottom="@dimen/ecc_margin_half"
+                android:textColor="@color/ecc_user_message_timestamp"
                 tools:text="10:19" />
 
         </FrameLayout>
@@ -309,8 +309,8 @@
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
                     android:maxLines="2"
-                    android:paddingTop="@dimen/margin_half"
-                    android:textColor="@color/threads_outgoing_message_text"
+                    android:paddingTop="@dimen/ecc_margin_half"
+                    android:textColor="@color/ecc_outgoing_message_text"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     tools:text="My Awesome Site Title" />
@@ -321,7 +321,7 @@
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
                     android:maxLines="2"
-                    android:textColor="@color/threads_outgoing_message_text"
+                    android:textColor="@color/ecc_outgoing_message_text"
                     android:textSize="16sp"
                     tools:text="My Awesome Site Descripton. Here I would write all awesome info" />
 
@@ -331,8 +331,8 @@
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
                     android:maxLines="1"
-                    android:paddingTop="@dimen/margin_half"
-                    android:textColor="@color/threads_outgoing_message_text"
+                    android:paddingTop="@dimen/ecc_margin_half"
+                    android:textColor="@color/ecc_outgoing_message_text"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     tools:text="http://my.awesome.site.com" />
@@ -343,8 +343,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|end"
-                android:drawablePadding="@dimen/margin_quarter"
-                android:textColor="@color/threads_user_message_timestamp"
+                android:drawablePadding="@dimen/ecc_margin_quarter"
+                android:textColor="@color/ecc_user_message_timestamp"
                 tools:text="10:19" />
         </FrameLayout>
     </LinearLayout>
@@ -354,12 +354,12 @@
         style="@style/timestamp"
         android:layout_below="@+id/bubble"
         android:layout_alignParentEnd="true"
-        android:layout_marginTop="@dimen/margin_half"
+        android:layout_marginTop="@dimen/ecc_margin_half"
         android:gravity="end"
         android:paddingStart="0dp"
-        android:paddingEnd="@dimen/consultant_margin_right"
-        android:textColor="@color/threads_error_red_df0000"
-        android:textSize="@dimen/error_text_size"
+        android:paddingEnd="@dimen/ecc_consultant_margin_right"
+        android:textColor="@color/ecc_error_red_df0000"
+        android:textSize="@dimen/ecc_error_text_size"
         android:visibility="gone"
         tools:text="Some error text"
         tools:visibility="visible" />

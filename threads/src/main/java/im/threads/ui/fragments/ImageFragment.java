@@ -58,7 +58,7 @@ public final class ImageFragment extends Fragment {
             from.setText("");
         }
         if (fd.getTimeStamp() != 0) {
-            date.setText(sdf.format(fd.getTimeStamp()) + " " + getString(R.string.threads_in) + " " + hoursminutesSdf.format(fd.getTimeStamp()));
+            date.setText(sdf.format(fd.getTimeStamp()) + " " + getString(R.string.ecc_in) + " " + hoursminutesSdf.format(fd.getTimeStamp()));
         } else {
             date.setText("");
         }

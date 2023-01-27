@@ -117,15 +117,15 @@ class ImageFromUserViewHolder(
             when (messageState) {
                 MessageState.STATE_WAS_READ -> getColoredDrawable(
                     R.drawable.ecc_image_message_received,
-                    R.color.threads_outgoing_message_image_received_icon
+                    R.color.ecc_outgoing_message_image_received_icon
                 )
                 MessageState.STATE_SENT -> getColoredDrawable(
                     R.drawable.ecc_message_image_sent,
-                    R.color.threads_outgoing_message_image_sent_icon
+                    R.color.ecc_outgoing_message_image_sent_icon
                 )
                 MessageState.STATE_NOT_SENT -> getColoredDrawable(
                     R.drawable.ecc_message_image_waiting,
-                    R.color.threads_outgoing_message_image_not_send_icon
+                    R.color.ecc_outgoing_message_image_not_send_icon
                 )
                 MessageState.STATE_SENDING -> null
             }
@@ -171,7 +171,7 @@ class ImageFromUserViewHolder(
         loaderLayoutRoot.isVisible = true
         imageLayout.isVisible = false
         loader.setImageResource(getErrorImageResByErrorCode(fileDescription.errorCode))
-        ColorsHelper.setTint(itemView.context, loader, R.color.threads_error_red_df0000)
+        ColorsHelper.setTint(itemView.context, loader, R.color.ecc_error_red_df0000)
         fileName.text = FileUtils.getFileName(fileDescription)
         val errorString = getString(getErrorStringResByErrorCode(fileDescription.errorCode))
         errorText.text = errorString

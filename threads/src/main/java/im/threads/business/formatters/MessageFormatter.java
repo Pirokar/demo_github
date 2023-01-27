@@ -96,26 +96,26 @@ public final class MessageFormatter {
         }
         String titleText = consultName;
         if (plainFilesCount != 0) {
-            String send = sex ? ctx.getString(R.string.threads_send_male) : ctx.getString(R.string.threads_send_female);
+            String send = sex ? ctx.getString(R.string.ecc_send_male) : ctx.getString(R.string.ecc_send_female);
             titleText = consultName + " " + send + " ";
             int total = plainFilesCount + imagesCount;
-            titleText += ctx.getResources().getQuantityString(R.plurals.threads_files, total, total);
+            titleText += ctx.getResources().getQuantityString(R.plurals.ecc_files, total, total);
             if (TextUtils.isEmpty(phrase)) {
                 if (total == 1) {
                     phrase = docName;
                 } else {
-                    phrase = ctx.getString(R.string.threads_touch_to_download);
+                    phrase = ctx.getString(R.string.ecc_touch_to_download);
                 }
             }
         } else if (imagesCount != 0) {
-            String send = sex ? ctx.getString(R.string.threads_send_male) : ctx.getString(R.string.threads_send_female);
+            String send = sex ? ctx.getString(R.string.ecc_send_male) : ctx.getString(R.string.ecc_send_female);
             titleText = consultName + " " + send + " " +
-                    ctx.getResources().getQuantityString(R.plurals.threads_images, imagesCount, imagesCount);
+                    ctx.getResources().getQuantityString(R.plurals.ecc_images, imagesCount, imagesCount);
             if (TextUtils.isEmpty(phrase)) {
-                phrase = ctx.getString(R.string.threads_touch_to_look);
+                phrase = ctx.getString(R.string.ecc_touch_to_look);
             }
         } else if (unreadMessages.size() > 1) {
-            titleText = ctx.getResources().getQuantityString(R.plurals.threads_new_messages, unreadMessages.size(), unreadMessages.size());
+            titleText = ctx.getResources().getQuantityString(R.plurals.ecc_new_messages, unreadMessages.size(), unreadMessages.size());
         }
         return new MessageContent(
                 titleText,

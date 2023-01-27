@@ -183,7 +183,7 @@ object FileUtils {
                     BaseConfig.instance.context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
                 dm.addCompletedDownload(
                     getFileName(uri),
-                    BaseConfig.instance.context.getString(R.string.threads_media_description),
+                    BaseConfig.instance.context.getString(R.string.ecc_media_description),
                     true,
                     getMimeType(uri),
                     outputFile.path,
@@ -436,11 +436,11 @@ fun Long.toFileSize(): String {
 
     val dividers = longArrayOf(tb, gb, mb, kb, 1)
     val units = arrayOf(
-        context.getString(R.string.threads_tbytes),
-        context.getString(R.string.threads_gbytes),
-        context.getString(R.string.threads_mbytes),
-        context.getString(R.string.threads_kbytes),
-        context.getString(R.string.threads_bytes)
+        context.getString(R.string.ecc_tbytes),
+        context.getString(R.string.ecc_gbytes),
+        context.getString(R.string.ecc_mbytes),
+        context.getString(R.string.ecc_kbytes),
+        context.getString(R.string.ecc_bytes)
     )
     if (this < 0) {
         LoggerEdna.error("Invalid file size: $this")

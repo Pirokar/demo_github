@@ -8,14 +8,14 @@
         android:id="@+id/icon_large_bg"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_margin="@dimen/margin_three_fourth"
+        android:layout_margin="@dimen/ecc_margin_three_fourth"
         android:scaleType="centerInside" />
 
     <ImageView
         android:id="@+id/icon_large"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_margin="@dimen/margin_three_fourth"
+        android:layout_margin="@dimen/ecc_margin_three_fourth"
         android:scaleType="centerInside" />
 
     <ImageView
@@ -30,8 +30,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginLeft="@dimen/margin_quarter"
-        android:layout_marginTop="@dimen/margin_half"
+        android:layout_marginLeft="@dimen/ecc_margin_quarter"
+        android:layout_marginTop="@dimen/ecc_margin_half"
         android:layout_toRightOf="@+id/icon_large"
         android:textColor="@android:color/black"
         android:textSize="18sp" />
@@ -88,6 +88,6 @@
         android:drawableLeft="@drawable/ecc_ic_reply_gray_24dp"
         android:textAllCaps="true"
         android:textColor="@android:color/black"
-        android:textSize="@dimen/text_small" />
+        android:textSize="@dimen/ecc_text_small" />
 
 </RelativeLayout>

@@ -6,10 +6,10 @@
 
     <ProgressBar
         android:id="@+id/progress"
-        android:layout_width="@dimen/default_chat_row_height"
-        android:layout_height="@dimen/default_chat_row_height"
+        android:layout_width="@dimen/ecc_default_chat_row_height"
+        android:layout_height="@dimen/ecc_default_chat_row_height"
         android:layout_gravity="left|center_vertical"
-        android:layout_marginLeft="@dimen/margin_material"
+        android:layout_marginLeft="@dimen/ecc_margin_material"
         android:background="@drawable/circle_aqua_outline"
         android:indeterminate="true"
         android:indeterminateDrawable="@drawable/ecc_circle_with_circle"

@@ -12,9 +12,9 @@
     android:paddingBottom="8dp">
 
     <FrameLayout
-        android:layout_width="@dimen/default_chat_row_height"
-        android:layout_height="@dimen/default_chat_row_height"
-        android:layout_marginLeft="@dimen/margin_material"
+        android:layout_width="@dimen/ecc_default_chat_row_height"
+        android:layout_height="@dimen/ecc_default_chat_row_height"
+        android:layout_marginLeft="@dimen/ecc_margin_material"
         android:background="@drawable/circle_aqua_outline"
         android:padding="14dp">
 
@@ -29,9 +29,9 @@
         android:id="@+id/schedule_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/margin_half"
-        android:layout_marginRight="@dimen/margin_material"
-        android:textColor="@color/threads_schedule_text"
+        android:layout_marginLeft="@dimen/ecc_margin_half"
+        android:layout_marginRight="@dimen/ecc_margin_material"
+        android:textColor="@color/ecc_schedule_text"
         android:textSize="18sp"
         tools:text="Сегодня чат не работает. Все операторы отдыхают. Будем доступны завтра с 10:00 до 18:00."/>
 

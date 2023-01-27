@@ -25,16 +25,16 @@ class PermissionDescriptionDialogStyle : Serializable {
         fun getDefaultDialogStyle(type: PermissionDescriptionType) =
             when (type) {
                 PermissionDescriptionType.STORAGE -> createTypeSpecificDialogStyle(
-                    titleResId = R.string.threads_permission_description_access_to_files_title,
-                    messageResId = R.string.threads_permission_description_access_to_files_message
+                    titleResId = R.string.ecc_permission_description_access_to_files_title,
+                    messageResId = R.string.ecc_permission_description_access_to_files_message
                 )
                 PermissionDescriptionType.RECORD_AUDIO -> createTypeSpecificDialogStyle(
-                    titleResId = R.string.threads_permission_description_access_to_audio_recording_title,
-                    messageResId = R.string.threads_permission_description_access_to_audio_recording_message
+                    titleResId = R.string.ecc_permission_description_access_to_audio_recording_title,
+                    messageResId = R.string.ecc_permission_description_access_to_audio_recording_message
                 )
                 PermissionDescriptionType.CAMERA -> createTypeSpecificDialogStyle(
-                    titleResId = R.string.threads_permission_description_access_to_camera_title,
-                    messageResId = R.string.threads_permission_description_access_to_camera_message
+                    titleResId = R.string.ecc_permission_description_access_to_camera_title,
+                    messageResId = R.string.ecc_permission_description_access_to_camera_message
                 )
             }
 
@@ -50,11 +50,11 @@ class PermissionDescriptionDialogStyle : Serializable {
 
         private fun getDefaultDialogStyle() =
             PermissionDescriptionDialogStyle().apply {
-                messageStyle.textSizeSpResId = R.dimen.text_regular
+                messageStyle.textSizeSpResId = R.dimen.ecc_text_regular
                 negativeButtonStyle.apply {
-                    textResId = R.string.threads_close
-                    marginTopDpResId = R.dimen.margin_quarter
-                    marginBottomDpResId = R.dimen.margin_material
+                    textResId = R.string.ecc_close
+                    marginTopDpResId = R.dimen.ecc_margin_quarter
+                    marginBottomDpResId = R.dimen.ecc_margin_material
                     backgroundColorResId = android.R.color.transparent
                 }
             }
@@ -69,7 +69,7 @@ class PermissionDescriptionImageStyle : Serializable {
     var imageResId: Int = R.drawable.ecc_image_placeholder
 
     @DimenRes
-    var marginTopDpResId: Int = R.dimen.margin_material
+    var marginTopDpResId: Int = R.dimen.ecc_margin_material
     var layoutGravity: ContentGravity = ContentGravity.CENTER
 }
 
@@ -85,13 +85,13 @@ class PermissionDescriptionTextStyle : Serializable {
     var fontPath: String = ""
 
     @DimenRes
-    var textSizeSpResId: Int = R.dimen.text_medium
+    var textSizeSpResId: Int = R.dimen.ecc_text_medium
 
     @ColorRes
-    var textColorResId: Int = R.color.threads_black
+    var textColorResId: Int = R.color.ecc_black
 
     @DimenRes
-    var marginTopDpResId: Int = R.dimen.margin_three_fourth
+    var marginTopDpResId: Int = R.dimen.ecc_margin_three_fourth
     var gravity: ContentGravity = ContentGravity.CENTER
 }
 
@@ -100,38 +100,38 @@ class PermissionDescriptionTextStyle : Serializable {
  */
 class PermissionDescriptionButtonStyle : Serializable {
     @StringRes
-    var textResId: Int = R.string.threads_allow
+    var textResId: Int = R.string.ecc_allow
 
     @StyleRes
     var textAppearanceResId: Int = 0
     var fontPath: String = ""
 
     @DimenRes
-    var textSizeSpResId: Int = R.dimen.text_medium
+    var textSizeSpResId: Int = R.dimen.ecc_text_medium
 
     @ColorRes
-    var textColorResId: Int = R.color.threads_black
+    var textColorResId: Int = R.color.ecc_black
 
     @DimenRes
-    var marginTopDpResId: Int = R.dimen.margin_material
+    var marginTopDpResId: Int = R.dimen.ecc_margin_material
 
     @DimenRes
-    var marginBottomDpResId: Int = R.dimen.threads_margin_zero
+    var marginBottomDpResId: Int = R.dimen.ecc_margin_zero
 
     @DrawableRes
     var backgroundResId: Int = 0
 
     @DimenRes
-    var cornerRadiusDpResId: Int = R.dimen.threads_radius_big
+    var cornerRadiusDpResId: Int = R.dimen.ecc_threads_radius_big
 
     @ColorRes
-    var backgroundColorResId: Int = R.color.threads_teal_009688
+    var backgroundColorResId: Int = R.color.ecc_teal_009688
 
     @ColorRes
     var strokeColorResId: Int = 0
 
     @DimenRes
-    var strokeWidthDpResId: Int = R.dimen.threads_stroke_width_small
+    var strokeWidthDpResId: Int = R.dimen.ecc_stroke_width_small
 }
 
 /**
@@ -142,16 +142,16 @@ class PermissionDescriptionDialogBackgroundStyle : Serializable {
     var backgroundResId: Int = 0
 
     @DimenRes
-    var cornerRadiusDpResId: Int = R.dimen.threads_radius_big
+    var cornerRadiusDpResId: Int = R.dimen.ecc_threads_radius_big
 
     @ColorRes
-    var backgroundColorResId: Int = R.color.threads_cian_b2dfdb
+    var backgroundColorResId: Int = R.color.ecc_cian_b2dfdb
 
     @ColorRes
     var strokeColorResId: Int = 0
 
     @DimenRes
-    var strokeWidthDpResId: Int = R.dimen.threads_stroke_width_small
+    var strokeWidthDpResId: Int = R.dimen.ecc_stroke_width_small
 }
 
 enum class ContentGravity {

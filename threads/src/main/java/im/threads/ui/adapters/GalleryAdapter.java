@@ -45,7 +45,7 @@ public final class GalleryAdapter extends RecyclerView.Adapter<GalleryItemHolder
                         if (chosenList.size() >= config.getChatStyle().getMaxGalleryImagesCount(context)) {
                             Balloon.show(
                                     context,
-                                    context.getString(R.string.threads_achieve_images_count_limit_message)
+                                    context.getString(R.string.ecc_achieve_images_count_limit_message)
                             );
                         } else {
                             photo.setChecked(true);

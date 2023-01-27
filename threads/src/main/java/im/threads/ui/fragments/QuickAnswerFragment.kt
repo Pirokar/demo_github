@@ -159,7 +159,7 @@ class QuickAnswerFragment : BaseDialogFragment() {
     private fun updateInputEnable(enableModel: InputFieldEnableModel) {
         editText?.isEnabled = enableModel.isEnabledInputField
         if (!enableModel.isEnabledInputField) {
-            showToast(requireContext().getString(R.string.threads_message_sending_is_unavailable))
+            showToast(requireContext().getString(R.string.ecc_message_sending_is_unavailable))
         }
     }
 

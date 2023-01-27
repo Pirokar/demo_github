@@ -29,7 +29,7 @@ object Balloon {
         val bar = Snackbar.make(context.window.decorView, messageString, Snackbar.LENGTH_LONG)
         val layout = bar.view as Snackbar.SnackbarLayout
         EccSnackbarBinding.inflate(inflater).apply {
-            ColorsHelper.setBackgroundColor(context, layout, R.color.threads_transparent)
+            ColorsHelper.setBackgroundColor(context, layout, R.color.ecc_transparent)
             ColorsHelper.setTint(context, background, chatStyle.toastBackgroundColor)
             ColorsHelper.setTextColor(context, message, chatStyle.toastTextColor)
             val textSize = context.resources.getDimension(chatStyle.toastTextSize)

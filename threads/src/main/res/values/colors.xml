@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="ecc_green_dark">#00786c</color>
+    <color name="ecc_white_dark">#eff2f7</color>
+    <color name="ecc_gray_text">#617d8b</color>
+    <color name="ecc_black">#000000</color>
+    <color name="ecc_black_transparent">#30000000</color>
+    <color name="ecc_blue">#3299de</color>
+    <color name="ecc_blue_transparent">#303299de</color>
+    <color name="ecc_disabled_text_color">#9a9a9a</color>
+    <color name="ecc_toolbar_gray">#333333</color>
+    <color name="ecc_white">#ffffff</color>
+    <color name="ecc_transparent">#00000000</color>
+
+    <!-- значения по умолчанию в ChatStyle-->
+
+    <color name="ecc_teal_009688">#009688</color>
+    <color name="ecc_teal_004d40">#004D40</color>
+    <color name="ecc_blue_eff3f8">#eff3f8</color>
+    <color name="ecc_green_83b144">#83B144</color>
+    <color name="ecc_grey_aaa">#AAAAAA</color>
+    <color name="ecc_blue_0f87ff">#0F87FF</color>
+    <color name="ecc_blue_transparent_700f87ff">#700F87FF</color>
+    <color name="ecc_blue_3598dc">#3598DC</color>
+    <color name="ecc_blue_grey_607d8b">#607d8b</color>
+    <color name="ecc_cian_b2dfdb">#b2dfdb</color>
+    <color name="ecc_red_f44336">#f44336</color>
+    <color name="ecc_error_red_df0000">#df0000</color>
+
+    <!-- Цвета для кастомизации -->
+
+    <!-- Приветственный экран -->
+    <color name="ecc_welcome_screen_title">@color/ecc_gray_text</color>
+    <color name="ecc_welcome_screen_subtitle">@color/ecc_gray_text</color>
+
+    <!-- Заголовок экрана чата -->
+    <color name="ecc_chat_status_bar">@color/ecc_teal_004d40</color>
+    <color name="ecc_chat_toolbar">@color/ecc_teal_009688</color>
+    <color name="ecc_chat_toolbar_context_menu">@color/ecc_white</color>
+    <color name="ecc_chat_toolbar_text">@color/ecc_white</color>
+    <color name="ecc_chat_toolbar_menu_item">@color/ecc_teal_009688</color>
+    <color name="ecc_chat_toolbar_hint">@color/ecc_cian_b2dfdb</color>
+
+    <!-- Основная область чата -->
+    <color name="ecc_chat_background">@color/ecc_blue_eff3f8</color>
+    <color name="ecc_chat_highlighting">@color/ecc_blue_transparent_700f87ff</color>
+
+    <color name="ecc_chat_incoming_message_bubble">@color/ecc_white</color>
+    <color name="ecc_chat_outgoing_message_bubble">@color/ecc_blue_3598dc</color>
+    <color name="ecc_incoming_message_text">@color/ecc_black</color>
+    <color name="ecc_outgoing_message_text">@color/ecc_white</color>
+    <color name="ecc_user_message_timestamp">@color/ecc_white</color>
+    <color name="ecc_operator_message_timestamp">@color/ecc_black</color>
+
+    <color name="ecc_outgoing_message_link">@color/ecc_cian_b2dfdb</color>
+    <color name="ecc_incoming_message_link">@color/ecc_blue_0f87ff</color>
+
+    <color name="ecc_incoming_play_pause_button">@color/ecc_teal_009688</color>
+    <color name="ecc_outgoing_play_pause_button">@color/ecc_white</color>
+    <color name="ecc_preview_play_pause_button">@color/ecc_teal_009688</color>
+
+    <color name="ecc_chat_icons_tint">@color/ecc_green_83b144</color>
+    <color name="ecc_chat_system_message">@color/ecc_gray_text</color>
+    <color name="ecc_chat_connection_message">@color/ecc_black</color>
+
+    <color name="ecc_icon_and_separators_color">@color/ecc_disabled_text_color</color>
+    <color name="ecc_outgoing_time_underlay">#80000000</color>
+    <color name="ecc_outgoing_message_time">@color/ecc_white</color>
+    <color name="ecc_incoming_time_underlay">#80000000</color>
+    <color name="ecc_incoming_message_time">@color/ecc_white</color>
+
+    <!-- Цвет иконок статусов доставки сообщений пользователя -->
+    <color name="ecc_outgoing_message_sent_icon">@color/ecc_white</color>
+    <color name="ecc_outgoing_message_received_icon">@color/ecc_white</color>
+    <color name="ecc_outgoing_message_not_send_icon">@color/ecc_white</color>
+
+    <!-- Цвет иконок статусов доставки изображений пользователя -->
+    <color name="ecc_outgoing_message_image_sent_icon">@color/ecc_white</color>
+    <color name="ecc_outgoing_message_image_received_icon">@color/ecc_white</color>
+    <color name="ecc_outgoing_message_image_not_send_icon">@color/ecc_white</color>
+
+
+    <!-- Экран истории файлов -->
+    <color name="ecc_files_medias_screen_background">@color/ecc_blue_eff3f8</color>
+    <color name="ecc_files_list">@color/ecc_black</color>
+
+    <!-- Экран просмотра файлов -->
+    <color name="ecc_attachments_toolbar_background">@color/ecc_teal_009688</color>
+    <color name="ecc_attachments_toolbar_text">@color/ecc_white</color>
+    <color name="ecc_attachments_background">@color/ecc_toolbar_gray</color>
+    <color name="ecc_attachments_author_text_color">@color/ecc_white</color>
+    <color name="ecc_attachments_date_text_color">@color/ecc_white</color>
+
+    <!-- Индикатор непрочитанных сообщений -->
+    <color name="ecc_chat_unread_msg_sticker_background">@color/ecc_red_f44336</color>
+    <color name="ecc_chat_unread_msg_count_text">@color/ecc_white</color>
+
+    <!-- Поле ввода сообщения -->
+    <color name="ecc_input_background">@color/ecc_white</color>
+    <color name="ecc_input_text">@color/ecc_black</color>
+    <color name="ecc_input_hint">@color/ecc_grey_aaa</color>
+
+    <!-- Сообщения о расписании -->
+    <color name="ecc_schedule_text">@color/ecc_black</color>
+
+    <!-- Пуш нотификации -->
+    <color name="ecc_push_background">@color/ecc_green_dark</color>
+    <color name="ecc_nougat_push_accent">@color/ecc_green_dark</color>
+
+    <!-- Опросы -->
+    <color name="ecc_survey_selected_icon_tint">@color/ecc_green_dark</color>
+    <color name="ecc_survey_unselected_icon_tint">@color/ecc_green_dark</color>
+    <color name="ecc_survey_choices_text">@color/ecc_teal_009688</color>
+
+    <!-- Notification Quick Reply -->
+    <color name="ecc_notification_quick_reply_message_background">
+        @color/ecc_chat_incoming_message_bubble
+    </color>
+    <color name="ecc_notification_quick_reply_message_text_color">
+        @color/ecc_incoming_message_text
+    </color>
+
+    <!-- Quick Replies chat -->
+    <color name="ecc_quick_reply_text_color">@color/ecc_black</color>
+
+    <!-- System messages -->
+    <color name="ecc_chat_new_system_message">@color/ecc_gray_text</color>
+    <color name="ecc_system_message_link">@color/ecc_blue_0f87ff</color>
+    <array name="ecc_swipe_refresh_colors">
+        <item>@color/ecc_teal_009688</item>
+        <item>@color/ecc_teal_004d40</item>
+        <item>@color/ecc_green_dark</item>
+    </array>
+    <color name="ecc_record_button_background">@color/ecc_teal_009688</color>
+    <color name="ecc_record_button_icon">@color/ecc_white</color>
+    <color name="ecc_record_button_small_mic">#c2185b</color>
+    <color name="ecc_empty_state_background">@color/ecc_white</color>
+    <color name="ecc_empty_state_progress">@color/ecc_teal_009688</color>
+    <color name="ecc_empty_state_hint">@color/ecc_black</color>
+    <color name="ecc_consult_searching_progress_color">@color/ecc_teal_009688</color>
+</resources>

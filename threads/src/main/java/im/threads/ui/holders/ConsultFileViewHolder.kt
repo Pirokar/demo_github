@@ -101,7 +101,7 @@ class ConsultFileViewHolder(
                 loader.setImageResource(getErrorImageResByErrorCode(fileDescription.errorCode))
                 if (fileDescription.errorMessage.isNullOrEmpty()) {
                     errortext.text =
-                        config.context.getString(R.string.threads_some_error_during_load_file)
+                        config.context.getString(R.string.ecc_some_error_during_load_file)
                 } else {
                     errortext.text = fileDescription.errorMessage
                 }

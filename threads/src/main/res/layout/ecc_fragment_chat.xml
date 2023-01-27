@@ -18,17 +18,17 @@
             android:id="@+id/chat_root"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/threads_chat_background">
+            android:background="@color/ecc_chat_background">
 
             <im.threads.ui.widget.CustomFontButton
                 android:id="@+id/search_more"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:layout_below="@+id/toolbar"
-                android:layout_marginLeft="@dimen/margin_big"
-                android:layout_marginRight="@dimen/margin_big"
+                android:layout_marginLeft="@dimen/ecc_margin_big"
+                android:layout_marginRight="@dimen/ecc_margin_big"
                 android:background="@android:color/transparent"
-                android:text="@string/threads_search_more"
+                android:text="@string/ecc_search_more"
                 android:visibility="gone" />
 
             <FrameLayout
@@ -67,20 +67,20 @@
                 android:layout_height="wrap_content"
                 android:layout_above="@+id/bottom_layout"
                 android:layout_alignParentRight="true"
-                android:layout_margin="@dimen/threads_scroll_down_button_margin"
+                android:layout_margin="@dimen/ecc_scroll_down_button_margin"
                 android:visibility="gone"
                 tools:visibility="visible">
 
                 <ImageView
                     android:id="@+id/scroll_down_button"
-                    android:layout_width="@dimen/threads_scroll_down_button_width"
-                    android:layout_height="@dimen/threads_scroll_down_button_height"
+                    android:layout_width="@dimen/ecc_scroll_down_button_width"
+                    android:layout_height="@dimen/ecc_scroll_down_button_height"
                     android:layout_marginStart="4dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="4dp"
                     android:layout_marginBottom="4dp"
                     android:background="@drawable/ecc_scroll_down_background"
-                    android:elevation="@dimen/threads_scroll_down_button_elevation"
+                    android:elevation="@dimen/ecc_scroll_down_button_elevation"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -92,7 +92,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:background="@drawable/ecc_circle_red"
-                    android:elevation="@dimen/threads_scroll_down_button_elevation"
+                    android:elevation="@dimen/ecc_scroll_down_button_elevation"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -101,10 +101,10 @@
                     android:id="@+id/unread_msg_count"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:elevation="@dimen/threads_scroll_down_button_elevation"
+                    android:elevation="@dimen/ecc_scroll_down_button_elevation"
                     android:gravity="center"
-                    android:textColor="@color/threads_chat_unread_msg_count_text"
-                    android:textSize="@dimen/text_small"
+                    android:textColor="@color/ecc_chat_unread_msg_count_text"
+                    android:textSize="@dimen/ecc_text_small"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/unread_msg_sticker"
@@ -117,7 +117,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                android:background="@color/threads_input_background"
+                android:background="@color/ecc_input_background"
                 android:orientation="vertical">
 
                 <LinearLayout
@@ -132,7 +132,7 @@
                         android:id="@+id/quote_past"
                         android:layout_width="24dp"
                         android:layout_height="match_parent"
-                        android:layout_marginStart="@dimen/activity_horizontal_margin"
+                        android:layout_marginStart="@dimen/ecc_activity_horizontal_margin"
                         android:background="@null"
                         app:srcCompat="@drawable/ecc_ic_reply_gray_24dp"
                         tools:visibility="gone" />
@@ -142,7 +142,7 @@
                         android:layout_width="64dp"
                         android:layout_height="64dp"
                         android:minWidth="1dp"
-                        android:padding="@dimen/margin_half"
+                        android:padding="@dimen/ecc_margin_half"
                         android:visibility="gone" />
 
                     <ImageView
@@ -159,7 +159,7 @@
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_marginStart="@dimen/activity_horizontal_margin"
+                        android:layout_marginStart="@dimen/ecc_activity_horizontal_margin"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:orientation="vertical">
@@ -178,8 +178,8 @@
                             android:layout_marginStart="8dp"
                             android:layout_marginEnd="8dp"
                             android:layout_marginBottom="4dp"
-                            android:textColor="@color/threads_incoming_message_text"
-                            android:textSize="@dimen/text_medium"
+                            android:textColor="@color/ecc_incoming_message_text"
+                            android:textSize="@dimen/ecc_text_medium"
                             tools:text="title_title_title" />
 
                         <im.threads.ui.widget.textView.InputQuotedMessageTextView
@@ -190,7 +190,7 @@
                             android:layout_marginEnd="8dp"
                             android:ellipsize="end"
                             android:lines="1"
-                            android:textColor="@color/threads_incoming_message_text"
+                            android:textColor="@color/ecc_incoming_message_text"
                             tools:text="text_text_text_text_text_text_text_text_text_text_text_text_text_text_text_text" />
 
                     </LinearLayout>
@@ -200,8 +200,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:textColor="@color/threads_incoming_message_text"
-                        android:textSize="@dimen/text_medium"
+                        android:textColor="@color/ecc_incoming_message_text"
+                        android:textSize="@dimen/ecc_text_medium"
                         tools:text="00:00" />
 
                     <ImageButton
@@ -228,7 +228,7 @@
                         android:id="@+id/input_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@color/threads_input_background"
+                        android:background="@color/ecc_input_background"
                         android:gravity="center_vertical"
                         android:orientation="horizontal">
 
@@ -244,7 +244,7 @@
                             android:id="@+id/input_edit_view"
                             style="@style/InputEditTextStyle"
                             android:ellipsize="end"
-                            android:hint="@string/threads_input_hint"
+                            android:hint="@string/ecc_input_hint"
                             android:inputType="textCapSentences|textMultiLine"
                             android:maxLines="7"
                             android:text="@={inputTextObservable}" />
@@ -273,7 +273,7 @@
                             android:layout_alignParentBottom="true"
                             android:layout_toLeftOf="@id/record_button"
                             android:layout_weight="1"
-                            android:background="@color/threads_input_background"
+                            android:background="@color/ecc_input_background"
                             android:visibility="invisible"
                             app:counter_time_color="#ff0000"
                             app:slide_to_cancel_arrow="@drawable/recv_ic_arrow"
@@ -307,8 +307,8 @@
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/toolbar_height"
-                android:background="@color/threads_chat_toolbar"
+                android:layout_height="@dimen/ecc_toolbar_height"
+                android:background="@color/ecc_chat_toolbar"
                 app:contentInsetStart="0dp">
 
                 <LinearLayout
@@ -319,7 +319,7 @@
 
                     <ImageButton
                         android:id="@+id/chat_back_button"
-                        android:layout_width="@dimen/toolbar_button_width"
+                        android:layout_width="@dimen/ecc_toolbar_button_width"
                         android:layout_height="match_parent"
                         android:background="?android:attr/selectableItemBackground"
                         android:gravity="center"
@@ -347,7 +347,7 @@
                             android:id="@+id/content_copy"
                             android:layout_width="30dp"
                             android:layout_height="30dp"
-                            android:layout_marginLeft="@dimen/margin_big"
+                            android:layout_marginLeft="@dimen/ecc_margin_big"
                             android:background="@null"
                             app:srcCompat="@drawable/ecc_ic_content_copy_24dp" />
 
@@ -358,10 +358,10 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginStart="@dimen/margin_half"
-                        android:layout_marginEnd="@dimen/margin_half"
-                        android:layout_marginTop="@dimen/margin_quarter"
-                        android:layout_marginBottom="@dimen/margin_quarter"
+                        android:layout_marginStart="@dimen/ecc_margin_half"
+                        android:layout_marginEnd="@dimen/ecc_margin_half"
+                        android:layout_marginTop="@dimen/ecc_margin_quarter"
+                        android:layout_marginBottom="@dimen/ecc_margin_quarter"
                         android:layout_weight="1"
                         android:gravity="center_vertical"
                         android:orientation="vertical">
@@ -373,9 +373,9 @@
                             android:ellipsize="end"
                             android:gravity="center_vertical"
                             android:lines="1"
-                            android:textColor="@color/threads_chat_toolbar_text"
-                            android:textSize="@dimen/text_big"
-                            tools:text="@string/threads_searching_operator" />
+                            android:textColor="@color/ecc_chat_toolbar_text"
+                            android:textSize="@dimen/ecc_text_big"
+                            tools:text="@string/ecc_searching_operator" />
 
                         <im.threads.ui.widget.textView.ToolbarSubtitleTextView
                             android:id="@+id/subtitle"
@@ -384,8 +384,8 @@
                             android:ellipsize="end"
                             android:gravity="center_vertical"
                             android:maxLines="1"
-                            android:textColor="@color/threads_chat_toolbar_text"
-                            android:textSize="@dimen/text_regular"
+                            android:textColor="@color/ecc_chat_toolbar_text"
+                            android:textSize="@dimen/ecc_text_regular"
                             android:visibility="gone" />
 
                         <RelativeLayout
@@ -402,14 +402,14 @@
                                 android:layout_alignParentTop="true"
                                 android:layout_toStartOf="@+id/search_up_ib"
                                 android:background="@null"
-                                android:hint="@string/threads_search_messages"
+                                android:hint="@string/ecc_search_messages"
                                 android:imeOptions="actionSearch"
                                 android:inputType="text"
                                 android:lines="1"
-                                android:textColor="@color/threads_chat_toolbar_text"
-                                android:textColorHint="@color/threads_chat_toolbar_hint"
+                                android:textColor="@color/ecc_chat_toolbar_text"
+                                android:textColorHint="@color/ecc_chat_toolbar_hint"
                                 android:textCursorDrawable="@null"
-                                android:textSize="@dimen/text_big"
+                                android:textSize="@dimen/ecc_text_big"
                                 android:visibility="visible" />
 
                             <androidx.appcompat.widget.AppCompatImageButton
@@ -426,7 +426,7 @@
                                 android:layout_width="36dp"
                                 android:layout_height="match_parent"
                                 android:layout_alignParentEnd="true"
-                                android:layout_marginEnd="@dimen/margin_half"
+                                android:layout_marginEnd="@dimen/ecc_margin_half"
                                 android:alpha="0.5"
                                 app:backgroundTint="@android:color/transparent"
                                 app:srcCompat="@drawable/ecc_ic_expand_less_white_24dp" />
@@ -437,7 +437,7 @@
 
                     <ImageButton
                         android:id="@+id/popup_menu_button"
-                        android:layout_width="@dimen/toolbar_button_width"
+                        android:layout_width="@dimen/ecc_toolbar_button_width"
                         android:layout_height="match_parent"
                         android:background="?android:attr/selectableItemBackground"
                         android:gravity="center"
@@ -453,7 +453,7 @@
                 android:layout_height="match_parent"
                 android:layout_below="@+id/toolbar"
                 android:layout_alignParentStart="true"
-                android:background="@color/threads_empty_state_background"
+                android:background="@color/ecc_empty_state_background"
                 android:gravity="center"
                 android:orientation="vertical"
                 android:visibility="gone"
@@ -469,8 +469,8 @@
                     android:id="@+id/tv_empty_state_hint"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/threads_empty_state_hint"
-                    android:textColor="@color/threads_empty_state_hint" />
+                    android:text="@string/ecc_empty_state_hint"
+                    android:textColor="@color/ecc_empty_state_hint" />
 
             </LinearLayout>
 

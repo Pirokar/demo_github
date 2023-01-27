@@ -3,13 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/threads_chat_background">
+    android:background="@color/ecc_chat_background">
 
     <ImageView
         android:id="@+id/consultImage"
         android:layout_width="match_parent"
         android:layout_height="280dp"
-        android:contentDescription="@string/threads_consult_portrait"
+        android:contentDescription="@string/ecc_consult_portrait"
         android:scaleType="centerCrop"
         app:srcCompat="@drawable/ecc_operator_avatar_placeholder" />
 
@@ -29,25 +29,25 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/consultImage"
-        android:background="@color/threads_outgoing_time_underlay"
+        android:background="@color/ecc_outgoing_time_underlay"
         android:orientation="vertical"
-        android:paddingLeft="@dimen/margin_material"
-        android:paddingTop="@dimen/margin_material"
-        android:paddingRight="@dimen/margin_material"
-        android:paddingBottom="@dimen/margin_material">
+        android:paddingLeft="@dimen/ecc_margin_material"
+        android:paddingTop="@dimen/ecc_margin_material"
+        android:paddingRight="@dimen/ecc_margin_material"
+        android:paddingBottom="@dimen/ecc_margin_material">
 
         <im.threads.ui.widget.CustomFontTextView
             android:id="@+id/consultTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/threads_chat_toolbar_text"
-            android:textSize="@dimen/text_medium" />
+            android:textColor="@color/ecc_chat_toolbar_text"
+            android:textSize="@dimen/ecc_text_medium" />
 
         <im.threads.ui.widget.CustomFontTextView
             android:id="@+id/consult_status"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/threads_chat_toolbar_text"
-            android:textSize="@dimen/text_regular" />
+            android:textColor="@color/ecc_chat_toolbar_text"
+            android:textSize="@dimen/ecc_text_regular" />
     </LinearLayout>
 </RelativeLayout>
