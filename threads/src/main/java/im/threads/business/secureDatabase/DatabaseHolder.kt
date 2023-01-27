@@ -115,7 +115,7 @@ class DatabaseHolder(private val context: Context) {
         return try {
             helper.getChatItems(0, -1).size > 0 || helper.allFileDescriptions.size > 0
         } catch (exc: SQLiteDiskIOException) {
-            Balloon.show(context, context.getString(R.string.not_enough_space))
+            Balloon.show(context, context.getString(R.string.ecc_not_enough_space))
             false
         }
     }
