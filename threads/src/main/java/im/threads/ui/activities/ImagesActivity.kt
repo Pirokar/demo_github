@@ -54,7 +54,7 @@ class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionCl
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_images)
+        setContentView(R.layout.ecc_activity_images)
         initToolbar(findViewById(R.id.toolbar), findViewById(R.id.toolbar_shadow))
         mViewPager = findViewById(R.id.pager)
         mViewPager.addOnPageChangeListener(this)

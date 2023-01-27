@@ -15,13 +15,13 @@ import im.threads.R
 import im.threads.business.imageLoading.loadImage
 import im.threads.business.models.ConsultInfo
 import im.threads.business.utils.FileUtils.convertRelativeUrlToAbsolute
-import im.threads.databinding.ActivityConsultPageBinding
+import im.threads.databinding.EccActivityConsultPageBinding
 import im.threads.ui.config.Config
 import im.threads.ui.utils.setColorFilter
 
 internal open class ConsultActivity : BaseActivity() {
-    private val binding: ActivityConsultPageBinding by lazy {
-        ActivityConsultPageBinding.inflate(layoutInflater)
+    private val binding: EccActivityConsultPageBinding by lazy {
+        EccActivityConsultPageBinding.inflate(layoutInflater)
     }
     private val config: Config by lazy { Config.getInstance() }
 

@@ -24,7 +24,7 @@ public final class FilesDateStampHolder extends RecyclerView.ViewHolder {
     private ChatStyle style;
 
     public FilesDateStampHolder(ViewGroup parent) {
-        super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_files_date_mark, parent, false));
+        super(LayoutInflater.from(parent.getContext()).inflate(R.layout.ecc_item_files_date_mark, parent, false));
         mDateTextView = itemView.findViewById(R.id.text);
         LinearLayout linearLayout = itemView.findViewById(R.id.line);
         if (Locale.getDefault().getLanguage().equalsIgnoreCase("ru")) {

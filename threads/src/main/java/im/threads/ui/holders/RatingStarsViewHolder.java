@@ -24,7 +24,7 @@ public final class RatingStarsViewHolder extends BaseHolder {
 
     public RatingStarsViewHolder(ViewGroup parent) {
         super(
-                LayoutInflater.from(parent.getContext()).inflate(R.layout.item_rate_stars, parent, false),
+                LayoutInflater.from(parent.getContext()).inflate(R.layout.ecc_item_rate_stars, parent, false),
                 null,
                 null
         );

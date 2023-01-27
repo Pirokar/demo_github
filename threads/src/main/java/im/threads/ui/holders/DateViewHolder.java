@@ -24,7 +24,7 @@ public final class DateViewHolder extends RecyclerView.ViewHolder {
     private SimpleDateFormat sdf;
 
     public DateViewHolder(ViewGroup parent) {
-        super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_date, parent, false));
+        super(LayoutInflater.from(parent.getContext()).inflate(R.layout.ecc_item_date, parent, false));
         mTextView = itemView.findViewById(R.id.text);
         ChatStyle style = Config.getInstance().getChatStyle();
         if (Locale.getDefault().getLanguage().equalsIgnoreCase("ru")) {

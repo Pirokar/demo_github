@@ -66,7 +66,7 @@ class UserPhraseViewHolder(
     fdMediaPlayer: FileDescriptionMediaPlayer
 ) : VoiceMessageBaseHolder(
     LayoutInflater.from(parentView.context)
-        .inflate(R.layout.item_user_text_with_file, parentView, false),
+        .inflate(R.layout.ecc_item_user_text_with_file, parentView, false),
     highlightingStream,
     openGraphParser,
     fdMediaPlayer,

@@ -36,7 +36,7 @@ class ImageFromUserViewHolder(
     highlightingStream: PublishSubject<ChatItem>,
     openGraphParser: OpenGraphParser
 ) : BaseImageHolder(
-    LayoutInflater.from(parent.context).inflate(R.layout.item_user_image_from, parent, false),
+    LayoutInflater.from(parent.context).inflate(R.layout.ecc_item_user_image_from, parent, false),
     highlightingStream,
     openGraphParser,
     false

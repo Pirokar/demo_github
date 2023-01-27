@@ -29,7 +29,7 @@ public final class RatingThumbsSentViewHolder extends BaseHolder {
 
     public RatingThumbsSentViewHolder(ViewGroup parent) {
         super(
-                LayoutInflater.from(parent.getContext()).inflate(R.layout.item_rate_thumbs_sent, parent, false),
+                LayoutInflater.from(parent.getContext()).inflate(R.layout.ecc_item_rate_thumbs_sent, parent, false),
                 null,
                 null
         );

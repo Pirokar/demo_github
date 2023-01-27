@@ -16,7 +16,7 @@ import im.threads.ui.config.Config;
 public final class SearchingConsultViewHolder extends RecyclerView.ViewHolder {
 
     public SearchingConsultViewHolder(ViewGroup parent) {
-        super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_searching_consult, parent, false));
+        super(LayoutInflater.from(parent.getContext()).inflate(R.layout.ecc_item_searching_consult, parent, false));
         ProgressBar progressBar = itemView.findViewById(R.id.progress);
         ChatStyle style = Config.getInstance().getChatStyle();
         progressBar.getIndeterminateDrawable().setColorFilter(ContextCompat.getColor(itemView.getContext(), style.consultSearchingProgressColor), PorterDuff.Mode.SRC_ATOP);

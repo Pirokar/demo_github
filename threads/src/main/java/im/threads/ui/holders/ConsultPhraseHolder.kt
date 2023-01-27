@@ -56,7 +56,7 @@ class ConsultPhraseHolder(
     openGraphParser: OpenGraphParser
 ) : BaseHolder(
     LayoutInflater.from(parent.context)
-        .inflate(R.layout.item_consultant_text_with_file, parent, false),
+        .inflate(R.layout.ecc_item_consultant_text_with_file, parent, false),
     highlightingStream,
     openGraphParser
 ) {

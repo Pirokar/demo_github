@@ -45,7 +45,7 @@ public final class Rating extends LinearLayout {
         removeAllViews();
         viewsStar = new ArrayList<>();
         for (int i = 0; i < countStars; i++) {
-            View view = inflater.inflate(R.layout.rating_star, this, false);
+            View view = inflater.inflate(R.layout.ecc_rating_star, this, false);
             setImage(view, i < ratingCount);
             viewsStar.add(view);
             addView(view);

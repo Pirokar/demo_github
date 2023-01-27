@@ -27,7 +27,7 @@ public class SystemMessageViewHolder extends RecyclerView.ViewHolder {
     private Context context;
 
     public SystemMessageViewHolder(@NonNull ViewGroup parent) {
-        super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_system_message, parent, false));
+        super(LayoutInflater.from(parent.getContext()).inflate(R.layout.ecc_item_system_message, parent, false));
         context = parent.getContext();
         tvSystemMessage = itemView.findViewById(R.id.tv_system_message);
         if (style == null) {

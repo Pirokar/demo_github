@@ -13,7 +13,7 @@ import im.threads.ui.widget.CustomFontTextView
  * ViewHolder для отображения быстрых ответов
  */
 class QuickRepliesViewHolder(val parent: ViewGroup) : BaseHolder(
-    LayoutInflater.from(parent.context).inflate(R.layout.item_quick_replies, parent, false)
+    LayoutInflater.from(parent.context).inflate(R.layout.ecc_item_quick_replies, parent, false)
 ) {
     private val chipGroup: FlexboxLayout = itemView.findViewById(R.id.chipGroup)
 
@@ -21,7 +21,7 @@ class QuickRepliesViewHolder(val parent: ViewGroup) : BaseHolder(
         chipGroup.removeAllViews()
         for (repl in quickReplies.items) {
             val view =
-                LayoutInflater.from(parent.context).inflate(R.layout.layout_chip, null, false)
+                LayoutInflater.from(parent.context).inflate(R.layout.ecc_layout_chip, null, false)
             val newChip = view.findViewById<CustomFontTextView>(R.id.chip)
             newChip.text = repl.text
             newChip.setBackgroundResource(style.quickReplyButtonBackground)

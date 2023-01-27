@@ -8,7 +8,7 @@ import io.github.kakaocup.kakao.text.KTextView
 import io.github.kakaocup.kakao.toolbar.KToolbar
 
 object ConsultScreen : KScreen<ConsultScreen>() {
-    override val layoutId: Int = R.layout.activity_consult_page
+    override val layoutId: Int = R.layout.ecc_activity_consult_page
     override val viewClass: Class<*> = ConsultActivity::class.java
 
     val consultImage = KImageView { withId(R.id.consultImage) }

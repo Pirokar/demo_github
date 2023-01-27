@@ -37,7 +37,7 @@ class UserFileViewHolder(
     highlightingStream: PublishSubject<ChatItem>,
     openGraphParser: OpenGraphParser
 ) : BaseHolder(
-    LayoutInflater.from(parent.context).inflate(R.layout.item_user_chat_file, parent, false),
+    LayoutInflater.from(parent.context).inflate(R.layout.ecc_item_user_chat_file, parent, false),
     highlightingStream,
     openGraphParser
 ) {

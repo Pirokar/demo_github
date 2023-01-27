@@ -205,8 +205,8 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
     ): Notification {
         val builder: NotificationCompat.Builder =
             NotificationCompat.Builder(context, CHANNEL_ID)
-        val pushSmall = RemoteViews(context.packageName, R.layout.remote_push_small)
-        val pushBig = RemoteViews(context.packageName, R.layout.remote_push_expanded)
+        val pushSmall = RemoteViews(context.packageName, R.layout.ecc_remote_push_small)
+        val pushBig = RemoteViews(context.packageName, R.layout.ecc_remote_push_expanded)
         builder.setContentTitle(context.getString(config.getChatStyle().defTitleResId))
         builder.setGroup(GROUP_KEY_PUSH)
         pushSmall.setTextViewText(R.id.title, context.getString(config.getChatStyle().defTitleResId))

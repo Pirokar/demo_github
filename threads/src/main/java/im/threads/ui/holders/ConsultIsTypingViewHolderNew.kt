@@ -19,7 +19,7 @@ import im.threads.ui.config.Config
  * layout/item_consult_typing.xml
  */
 class ConsultIsTypingViewHolderNew(parent: ViewGroup) : RecyclerView.ViewHolder(
-    LayoutInflater.from(parent.context).inflate(R.layout.item_consult_typing, parent, false)
+    LayoutInflater.from(parent.context).inflate(R.layout.ecc_item_consult_typing, parent, false)
 ) {
     private val config: Config by lazy { Config.getInstance() }
 

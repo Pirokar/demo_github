@@ -39,7 +39,7 @@ class ImageFromConsultViewHolder(
     openGraphParser: OpenGraphParser
 ) : BaseImageHolder(
     LayoutInflater.from(parent.context).inflate(
-        R.layout.item_image_from_consult,
+        R.layout.ecc_item_image_from_consult,
         parent,
         false
     ),
