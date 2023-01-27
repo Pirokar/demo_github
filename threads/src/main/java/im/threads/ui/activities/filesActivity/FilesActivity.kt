@@ -269,7 +269,7 @@ internal class FilesActivity : BaseActivity(), OnFileClick {
         try {
             startActivity(intent)
         } catch (e: ActivityNotFoundException) {
-            Balloon.show(this, getString(R.string.threads_file_not_supported))
+            Balloon.show(this, getString(R.string.ecc_file_not_supported))
         }
     }
 

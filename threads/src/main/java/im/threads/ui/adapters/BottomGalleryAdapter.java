@@ -44,7 +44,7 @@ public final class BottomGalleryAdapter extends RecyclerView.Adapter<BottomGalle
                     mChosenItems.size() >= config.getChatStyle().getMaxGalleryImagesCount(BaseConfig.instance.context)) {
                 Balloon.show(
                         holder.itemView.getContext(),
-                        holder.itemView.getContext().getString(R.string.threads_achieve_images_count_limit_message)
+                        holder.itemView.getContext().getString(R.string.ecc_achieve_images_count_limit_message)
                 );
                 return;
             }
@@ -78,7 +78,7 @@ public final class BottomGalleryAdapter extends RecyclerView.Adapter<BottomGalle
                     Balloon.show(
                             holder.itemView.getContext(),
                             holder.itemView.getContext().getString(
-                                    R.string.threads_not_allowed_file_size,
+                                    R.string.ecc_not_allowed_file_size,
                                     FileHelper.INSTANCE.getMaxAllowedFileSize()
                             )
                     );
@@ -88,7 +88,7 @@ public final class BottomGalleryAdapter extends RecyclerView.Adapter<BottomGalle
                 // Недопустимое расширение файла
                 Balloon.show(
                         holder.itemView.getContext(),
-                        holder.itemView.getContext().getString(R.string.threads_not_allowed_file_extension)
+                        holder.itemView.getContext().getString(R.string.ecc_not_allowed_file_extension)
                 );
                 return false;
             }

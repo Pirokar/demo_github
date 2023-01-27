@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="24dp"
-    android:background="@color/threads_transparent"
+    android:background="@color/ecc_transparent"
     android:gravity="center">
 
     <ImageView
@@ -22,6 +22,6 @@
         android:layout_marginBottom="140dp"
         android:gravity="center"
         android:layout_gravity="bottom"
-        android:textSize="@dimen/text_big"/>
+        android:textSize="@dimen/ecc_text_big"/>
 
 </FrameLayout>

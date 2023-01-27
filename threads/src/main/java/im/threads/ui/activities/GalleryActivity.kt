@@ -226,7 +226,7 @@ class GalleryActivity : BaseActivity(), OnItemClick, OnGalleryItemClick {
     private fun showBucketListState() {
         screenState.set(ScreenState.BUCKET_LIST)
         chosenItems.clear()
-        setTitle(resources.getString(R.string.threads_photos))
+        setTitle(resources.getString(R.string.ecc_photos))
         binding.recycler.removeItemDecoration(galleryDecorator)
         binding.recycler.addItemDecoration(bucketsGalleryDecorator)
         binding.recycler.layoutManager = GridLayoutManager(this, 2)
@@ -305,7 +305,7 @@ class GalleryActivity : BaseActivity(), OnItemClick, OnGalleryItemClick {
             binding.send.setTextColor(
                 ContextCompat.getColor(
                     this,
-                    R.color.threads_disabled_text_color
+                    R.color.ecc_disabled_text_color
                 )
             )
         }

@@ -4,17 +4,17 @@
     android:id="@+id/line"
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
-    android:background="@color/threads_chat_background">
+    android:background="@color/ecc_chat_background">
 
     <im.threads.ui.widget.CustomFontTextView
         android:id="@+id/text"
         android:layout_width="wrap_content"
         android:layout_height="40dp"
         android:gravity="center_vertical"
-        android:paddingLeft="@dimen/margin_big"
-        android:paddingRight="@dimen/margin_big"
-        android:text="@string/threads_recently"
+        android:paddingLeft="@dimen/ecc_margin_big"
+        android:paddingRight="@dimen/ecc_margin_big"
+        android:text="@string/ecc_recently"
         android:textAllCaps="true"
-        android:textColor="@color/threads_chat_system_message"/>
+        android:textColor="@color/ecc_chat_system_message"/>
 
 </LinearLayout>

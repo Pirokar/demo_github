@@ -5,14 +5,14 @@
     android:id="@+id/layout_root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/threads_chat_background">
+    android:background="@color/ecc_chat_background">
 
     <LinearLayout
         android:id="@+id/header"
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:layout_alignParentTop="true"
-        android:background="@color/threads_chat_toolbar"
+        android:background="@color/ecc_chat_toolbar"
         android:orientation="horizontal">
 
         <ImageView
@@ -20,17 +20,17 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_gravity="center_vertical"
-            android:layout_marginStart="@dimen/margin_half"/>
+            android:layout_marginStart="@dimen/ecc_margin_half"/>
 
         <im.threads.ui.widget.CustomFontTextView
             android:id="@+id/consult_name"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center_vertical"
-            android:paddingLeft="@dimen/margin_half"
+            android:paddingLeft="@dimen/ecc_margin_half"
             android:text="Иван Иванович Иванов"
-            android:textColor="@color/threads_chat_toolbar_text"
-            android:textSize="@dimen/text_medium"/>
+            android:textColor="@color/ecc_chat_toolbar_text"
+            android:textSize="@dimen/ecc_text_medium"/>
 
     </LinearLayout>
 
@@ -39,14 +39,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/header"
-        android:background="@color/threads_notification_quick_reply_message_background"
+        android:background="@color/ecc_notification_quick_reply_message_background"
         android:gravity="center"
         android:minHeight="120dp"
-        android:padding="@dimen/margin_material"
-        android:textColor="@color/threads_notification_quick_reply_message_text_color"
+        android:padding="@dimen/ecc_margin_material"
+        android:textColor="@color/ecc_notification_quick_reply_message_text_color"
         android:ellipsize="end"
         android:maxLines="5"
-        android:textSize="@dimen/text_medium"
+        android:textSize="@dimen/ecc_text_medium"
         tools:text="very very long message very very long message very very long message very very long message very very long message very very long message very very long message very very long message very very long message very very long message very very long message very very long message very very long message very very long message very very long message "/>
 
     <LinearLayout
@@ -54,13 +54,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/question"
-        android:background="@color/threads_input_background"
+        android:background="@color/ecc_input_background"
         android:gravity="center_vertical">
 
         <im.threads.ui.widget.CustomFontEditText
             android:id="@+id/answer"
             style="@style/InputEditTextStyle"
-            android:layout_marginLeft="@dimen/margin_big"
+            android:layout_marginLeft="@dimen/ecc_margin_big"
             android:maxLines="5"/>
 
         <ImageButton
@@ -80,8 +80,8 @@
         android:layout_width="140dp"
         android:layout_height="56dp"
         android:layout_below="@+id/answer_layout"
-        android:layout_marginBottom="@dimen/margin_half"
-        android:text="@string/threads_close"
+        android:layout_marginBottom="@dimen/ecc_margin_half"
+        android:text="@string/ecc_close"
         android:textColor="@android:color/black"/>
 
     <View

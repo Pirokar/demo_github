@@ -6,7 +6,7 @@
    >
 
     <androidx.recyclerview.widget.RecyclerView
-        android:layout_marginLeft="@dimen/margin_half"
+        android:layout_marginLeft="@dimen/ecc_margin_half"
         android:id="@+id/bottom_gallery_recycler"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

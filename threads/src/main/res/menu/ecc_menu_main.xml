@@ -3,11 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/search"
-        android:title="@string/threads_search_messages"
+        android:id="@+id/ecc_search"
+        android:title="@string/ecc_search_messages"
         app:showAsAction="never" />
     <item
-        android:id="@+id/files_and_media"
-        android:title="@string/threads_files_and_media"
+        android:id="@+id/ecc_files_and_media"
+        android:title="@string/ecc_files_and_media"
         app:showAsAction="never" />
 </menu>

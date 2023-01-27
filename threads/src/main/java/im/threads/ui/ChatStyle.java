@@ -30,44 +30,44 @@ public final class ChatStyle implements Serializable {
 
     //common styles
     @ColorRes
-    public int chatDisabledTextColor = R.color.threads_disabled_text_color;
+    public int chatDisabledTextColor = R.color.ecc_disabled_text_color;
 
     // chat title style
     @StringRes
-    public int chatTitleTextResId = R.string.threads_contact_center;
+    public int chatTitleTextResId = R.string.ecc_contact_center;
     @StringRes
-    public int chatSubtitleTextResId = R.string.threads_operator_subtitle;
+    public int chatSubtitleTextResId = R.string.ecc_operator_subtitle;
     @ColorRes
-    public int chatToolbarColorResId = R.color.threads_chat_toolbar;
+    public int chatToolbarColorResId = R.color.ecc_chat_toolbar;
     @ColorRes
-    public int chatToolbarContextMenuColorResId = R.color.threads_chat_toolbar_context_menu;
+    public int chatToolbarContextMenuColorResId = R.color.ecc_chat_toolbar_context_menu;
     @ColorRes
-    public int chatStatusBarColorResId = R.color.threads_chat_status_bar;
+    public int chatStatusBarColorResId = R.color.ecc_chat_status_bar;
     @BoolRes
-    public int windowLightStatusBarResId = R.bool.threads_chat_is_light_status_bar;
+    public int windowLightStatusBarResId = R.bool.ecc_chat_is_light_status_bar;
     @ColorRes
-    public int menuItemTextColorResId = R.color.threads_chat_toolbar_menu_item;
+    public int menuItemTextColorResId = R.color.ecc_chat_toolbar_menu_item;
     @ColorRes
-    public int chatToolbarTextColorResId = R.color.threads_chat_toolbar_text;
+    public int chatToolbarTextColorResId = R.color.ecc_chat_toolbar_text;
     @ColorRes
-    public int chatToolbarHintTextColor = R.color.threads_chat_toolbar_hint;
+    public int chatToolbarHintTextColor = R.color.ecc_chat_toolbar_hint;
     @BoolRes
-    public int fixedChatTitle = R.bool.threads_chat_fixed_chat_title;
+    public int fixedChatTitle = R.bool.ecc_chat_fixed_chat_title;
     @BoolRes
-    public int fixedChatSubtitle = R.bool.threads_chat_fixed_chat_subtitle;
+    public int fixedChatSubtitle = R.bool.ecc_chat_fixed_chat_subtitle;
     @BoolRes
-    public int isChatSubtitleVisible = R.bool.threads_chat_subtitle_is_visible;
+    public int isChatSubtitleVisible = R.bool.ecc_chat_subtitle_is_visible;
     @BoolRes
-    public int isChatTitleShadowVisible = R.bool.threads_chat_title_shadow_is_visible;
+    public int isChatTitleShadowVisible = R.bool.ecc_chat_title_shadow_is_visible;
     @BoolRes
-    public int searchEnabled = R.bool.threads_chat_search_enabled;
+    public int searchEnabled = R.bool.ecc_chat_search_enabled;
 
     public boolean showBackButton = false;
     public boolean isToolbarTextCentered = false;
     public boolean chatSubtitleShowOrgUnit = false;
 
     @ColorRes
-    public int chatToolbarInverseIconTintResId = R.color.threads_green_83B144;
+    public int chatToolbarInverseIconTintResId = R.color.ecc_green_83b144;
     @DrawableRes
     public int chatToolbarBackIconResId = R.drawable.ecc_ic_arrow_back_24dp;
     @DrawableRes
@@ -79,31 +79,31 @@ public final class ChatStyle implements Serializable {
 
     // chat body style
     @ColorRes
-    public int chatBackgroundColor = R.color.threads_chat_background;
+    public int chatBackgroundColor = R.color.ecc_chat_background;
     @ColorRes
-    public int chatHighlightingColor = R.color.threads_chat_highlighting;
+    public int chatHighlightingColor = R.color.ecc_chat_highlighting;
     @ColorRes
-    public int incomingMessageBubbleColor = R.color.threads_chat_incoming_message_bubble;
+    public int incomingMessageBubbleColor = R.color.ecc_chat_incoming_message_bubble;
     @ColorRes
-    public int outgoingMessageBubbleColor = R.color.threads_chat_outgoing_message_bubble;
+    public int outgoingMessageBubbleColor = R.color.ecc_chat_outgoing_message_bubble;
     @DrawableRes
     public int incomingMessageBubbleBackground = R.drawable.ecc_incoming_bubble;
     @DrawableRes
     public int outgoingMessageBubbleBackground = R.drawable.ecc_outgoing_bubble;
     @ColorRes
-    public int incomingMessageTextColor = R.color.threads_incoming_message_text;
+    public int incomingMessageTextColor = R.color.ecc_incoming_message_text;
     @ColorRes
-    public int outgoingMessageTextColor = R.color.threads_outgoing_message_text;
+    public int outgoingMessageTextColor = R.color.ecc_outgoing_message_text;
 
     @ColorRes
-    public int incomingMessageTimeColor = R.color.threads_operator_message_timestamp;
+    public int incomingMessageTimeColor = R.color.ecc_operator_message_timestamp;
     @ColorRes
-    public int outgoingMessageTimeColor = R.color.threads_user_message_timestamp;
+    public int outgoingMessageTimeColor = R.color.ecc_user_message_timestamp;
 
     @ColorRes
-    public int incomingMessageLoaderColor = R.color.threads_green_83B144;
+    public int incomingMessageLoaderColor = R.color.ecc_green_83b144;
     @ColorRes
-    public int outgoingMessageLoaderColor = R.color.threads_teal_004D40;
+    public int outgoingMessageLoaderColor = R.color.ecc_teal_004d40;
 
     @DimenRes
     public int incomingMessageTimeTextSize = 0;
@@ -113,120 +113,120 @@ public final class ChatStyle implements Serializable {
     @DrawableRes
     public int outgoingImageBubbleMask = R.drawable.ecc_outgoing_image_mask;
     @ColorRes
-    public int outgoingImageTimeColor = R.color.threads_outgoing_message_time;
+    public int outgoingImageTimeColor = R.color.ecc_outgoing_message_time;
     @ColorRes
-    public int outgoingImageTimeBackgroundColor = R.color.threads_outgoing_time_underlay;
+    public int outgoingImageTimeBackgroundColor = R.color.ecc_outgoing_time_underlay;
     @DrawableRes
     public int incomingImageBubbleMask = R.drawable.ecc_incoming_image_mask;
     @ColorRes
-    public int incomingImageTimeColor = R.color.threads_incoming_message_time;
+    public int incomingImageTimeColor = R.color.ecc_incoming_message_time;
     @ColorRes
-    public int incomingImageTimeBackgroundColor = R.color.threads_incoming_time_underlay;
+    public int incomingImageTimeBackgroundColor = R.color.ecc_incoming_time_underlay;
 
     @DimenRes
-    public int bubbleOutgoingPaddingLeft = R.dimen.bubbleOutgoingPaddingLeft;
+    public int bubbleOutgoingPaddingLeft = R.dimen.ecc_bubbleOutgoingPaddingLeft;
     @DimenRes
-    public int bubbleOutgoingPaddingTop = R.dimen.bubbleOutgoingPaddingTop;
+    public int bubbleOutgoingPaddingTop = R.dimen.ecc_bubbleOutgoingPaddingTop;
     @DimenRes
-    public int bubbleOutgoingPaddingRight = R.dimen.bubbleOutgoingPaddingRight;
+    public int bubbleOutgoingPaddingRight = R.dimen.ecc_bubbleOutgoingPaddingRight;
     @DimenRes
-    public int bubbleOutgoingPaddingBottom = R.dimen.bubbleOutgoingPaddingBottom;
+    public int bubbleOutgoingPaddingBottom = R.dimen.ecc_bubbleOutgoingPaddingBottom;
 
     @DimenRes
-    public int bubbleIncomingPaddingLeft = R.dimen.bubbleIncomingPaddingLeft;
+    public int bubbleIncomingPaddingLeft = R.dimen.ecc_bubbleIncomingPaddingLeft;
     @DimenRes
-    public int bubbleIncomingPaddingTop = R.dimen.bubbleIncomingPaddingTop;
+    public int bubbleIncomingPaddingTop = R.dimen.ecc_bubbleIncomingPaddingTop;
     @DimenRes
-    public int bubbleIncomingPaddingRight = R.dimen.bubbleIncomingPaddingRight;
+    public int bubbleIncomingPaddingRight = R.dimen.ecc_bubbleIncomingPaddingRight;
     @DimenRes
-    public int bubbleIncomingPaddingBottom = R.dimen.bubbleIncomingPaddingBottom;
+    public int bubbleIncomingPaddingBottom = R.dimen.ecc_bubbleIncomingPaddingBottom;
 
     @DimenRes
-    public int bubbleOutgoingMarginLeft = R.dimen.user_margin_left;
+    public int bubbleOutgoingMarginLeft = R.dimen.ecc_user_margin_left;
     @DimenRes
-    public int bubbleOutgoingMarginTop = R.dimen.margin_quarter;
+    public int bubbleOutgoingMarginTop = R.dimen.ecc_margin_quarter;
     @DimenRes
-    public int bubbleOutgoingMarginRight = R.dimen.user_margin_right;
+    public int bubbleOutgoingMarginRight = R.dimen.ecc_user_margin_right;
     @DimenRes
-    public int bubbleOutgoingMarginBottom = R.dimen.margin_quarter;
+    public int bubbleOutgoingMarginBottom = R.dimen.ecc_margin_quarter;
 
     @DimenRes
-    public int bubbleIncomingMarginLeft = R.dimen.margin_quarter;
+    public int bubbleIncomingMarginLeft = R.dimen.ecc_margin_quarter;
     @DimenRes
-    public int bubbleIncomingMarginTop = R.dimen.margin_quarter;
+    public int bubbleIncomingMarginTop = R.dimen.ecc_margin_quarter;
     @DimenRes
-    public int bubbleIncomingMarginRight = R.dimen.consultant_margin_right;
+    public int bubbleIncomingMarginRight = R.dimen.ecc_consultant_margin_right;
     @DimenRes
-    public int bubbleIncomingMarginBottom = R.dimen.margin_quarter;
+    public int bubbleIncomingMarginBottom = R.dimen.ecc_margin_quarter;
 
     @DimenRes
-    public int incomingImageLeftBorderSize = R.dimen.incomingImageLeftBorderSize;
+    public int incomingImageLeftBorderSize = R.dimen.ecc_incomingImageLeftBorderSize;
     @DimenRes
-    public int incomingImageTopBorderSize = R.dimen.incomingImageTopBorderSize;
+    public int incomingImageTopBorderSize = R.dimen.ecc_incomingImageTopBorderSize;
     @DimenRes
-    public int incomingImageRightBorderSize = R.dimen.incomingImageRightBorderSize;
+    public int incomingImageRightBorderSize = R.dimen.ecc_incomingImageRightBorderSize;
     @DimenRes
-    public int incomingImageBottomBorderSize = R.dimen.incomingImageBottomBorderSize;
+    public int incomingImageBottomBorderSize = R.dimen.ecc_incomingImageBottomBorderSize;
     @DimenRes
-    public int outgoingImageLeftBorderSize = R.dimen.outgoingImageLeftBorderSize;
+    public int outgoingImageLeftBorderSize = R.dimen.ecc_outgoingImageLeftBorderSize;
     @DimenRes
-    public int outgoingImageTopBorderSize = R.dimen.outgoingImageTopBorderSize;
+    public int outgoingImageTopBorderSize = R.dimen.ecc_outgoingImageTopBorderSize;
     @DimenRes
-    public int outgoingImageRightBorderSize = R.dimen.outgoingImageRightBorderSize;
+    public int outgoingImageRightBorderSize = R.dimen.ecc_outgoingImageRightBorderSize;
     @DimenRes
-    public int outgoingImageBottomBorderSize = R.dimen.outgoingImageBottomBorderSize;
+    public int outgoingImageBottomBorderSize = R.dimen.ecc_outgoingImageBottomBorderSize;
 
     public float imageBubbleSize = 0.66f;
 
     @DimenRes
-    public int inputFieldPaddingLeft = R.dimen.margin_three_fourth;
+    public int inputFieldPaddingLeft = R.dimen.ecc_margin_three_fourth;
     @DimenRes
-    public int inputFieldPaddingTop = R.dimen.margin_quarter;
+    public int inputFieldPaddingTop = R.dimen.ecc_margin_quarter;
     @DimenRes
-    public int inputFieldPaddingRight = R.dimen.margin_three_fourth;
+    public int inputFieldPaddingRight = R.dimen.ecc_margin_three_fourth;
     @DimenRes
-    public int inputFieldPaddingBottom = R.dimen.margin_quarter;
+    public int inputFieldPaddingBottom = R.dimen.ecc_margin_quarter;
 
     @DimenRes
-    public int inputFieldMarginLeft = R.dimen.threads_margin_zero;
+    public int inputFieldMarginLeft = R.dimen.ecc_margin_zero;
     @DimenRes
-    public int inputFieldMarginTop = R.dimen.threads_margin_zero;
+    public int inputFieldMarginTop = R.dimen.ecc_margin_zero;
     @DimenRes
-    public int inputFieldMarginRight = R.dimen.threads_margin_zero;
+    public int inputFieldMarginRight = R.dimen.ecc_margin_zero;
     @DimenRes
-    public int inputFieldMarginBottom = R.dimen.threads_margin_zero;
+    public int inputFieldMarginBottom = R.dimen.ecc_margin_zero;
 
     @ColorRes
-    public int incomingMessageLinkColor = R.color.threads_incoming_message_link;
+    public int incomingMessageLinkColor = R.color.ecc_incoming_message_link;
     @ColorRes
-    public int outgoingMessageLinkColor = R.color.threads_outgoing_message_link;
+    public int outgoingMessageLinkColor = R.color.ecc_outgoing_message_link;
 
     @ColorRes
-    public int incomingPlayPauseButtonColor = R.color.threads_incoming_play_pause_button;
+    public int incomingPlayPauseButtonColor = R.color.ecc_incoming_play_pause_button;
     @ColorRes
-    public int outgoingPlayPauseButtonColor = R.color.threads_outgoing_play_pause_button;
+    public int outgoingPlayPauseButtonColor = R.color.ecc_outgoing_play_pause_button;
     @ColorRes
-    public int previewPlayPauseButtonColor = R.color.threads_preview_play_pause_button;
+    public int previewPlayPauseButtonColor = R.color.ecc_preview_play_pause_button;
     @DrawableRes
     public int voiceMessagePlayButton = R.drawable.ecc_voice_message_play;
     @DrawableRes
     public int voiceMessagePauseButton = R.drawable.ecc_voice_message_pause;
 
     @ColorRes
-    public int chatBodyIconsTint = R.color.threads_chat_icons_tint;
+    public int chatBodyIconsTint = R.color.ecc_chat_icons_tint;
     public int[] chatBodyIconsColorState = null;
 
     @ColorRes
-    public int chatSystemMessageTextColor = R.color.threads_chat_connection_message;
+    public int chatSystemMessageTextColor = R.color.ecc_chat_connection_message;
 
     @ColorRes
-    public int iconsAndSeparatorsColor = R.color.threads_icon_and_separators_color;
+    public int iconsAndSeparatorsColor = R.color.ecc_icon_and_separators_color;
     @DrawableRes
     public int defaultOperatorAvatar = R.drawable.ecc_operator_avatar_placeholder;
     @DimenRes
-    public int operatorAvatarSize = R.dimen.threads_operator_photo_size;
+    public int operatorAvatarSize = R.dimen.ecc_operator_photo_size;
     @DimenRes
-    public int operatorSystemAvatarSize = R.dimen.threads_system_operator_photo_size;
+    public int operatorSystemAvatarSize = R.dimen.ecc_system_operator_photo_size;
     @DrawableRes
     public int imagePlaceholder = R.drawable.ecc_image_placeholder;
     @StyleRes
@@ -239,36 +239,36 @@ public final class ChatStyle implements Serializable {
     @DrawableRes
     public int scrollDownBackgroundResId = R.drawable.ecc_scroll_down_background;
     @DimenRes
-    public int scrollDownButtonWidth = R.dimen.threads_scroll_down_button_width;
+    public int scrollDownButtonWidth = R.dimen.ecc_scroll_down_button_width;
     @DimenRes
-    public int scrollDownButtonHeight = R.dimen.threads_scroll_down_button_height;
+    public int scrollDownButtonHeight = R.dimen.ecc_scroll_down_button_height;
     @DimenRes
-    public int scrollDownButtonMargin = R.dimen.threads_scroll_down_button_margin;
+    public int scrollDownButtonMargin = R.dimen.ecc_scroll_down_button_margin;
     @DimenRes
-    public int scrollDownButtonElevation = R.dimen.threads_scroll_down_button_elevation;
+    public int scrollDownButtonElevation = R.dimen.ecc_scroll_down_button_elevation;
     @ColorRes
-    public int unreadMsgStickerColorResId = R.color.threads_chat_unread_msg_sticker_background;
+    public int unreadMsgStickerColorResId = R.color.ecc_chat_unread_msg_sticker_background;
     @ColorRes
-    public int unreadMsgCountTextColorResId = R.color.threads_chat_unread_msg_count_text;
+    public int unreadMsgCountTextColorResId = R.color.ecc_chat_unread_msg_count_text;
     @ArrayRes
-    public int threadsSwipeRefreshColors = R.array.threads_swipe_refresh_colors;
+    public int threadsSwipeRefreshColors = R.array.ecc_swipe_refresh_colors;
 
     @DrawableRes
     public int threadsRecordButtonBackground = R.drawable.ecc_record_button_background;
     @ColorRes
-    public int threadsRecordButtonBackgroundColor = R.color.threads_record_button_background;
+    public int threadsRecordButtonBackgroundColor = R.color.ecc_record_button_background;
     @DrawableRes
     public int threadsRecordButtonIcon = R.drawable.ecc_record_button_icon;
     @ColorRes
-    public int threadsRecordButtonIconColor = R.color.threads_record_button_icon;
+    public int threadsRecordButtonIconColor = R.color.ecc_record_button_icon;
     @ColorRes
-    public int threadsRecordButtonSmallMicColor = R.color.threads_record_button_small_mic;
+    public int threadsRecordButtonSmallMicColor = R.color.ecc_record_button_small_mic;
 
     //download button
     @ColorRes
-    public int downloadButtonTintResId = R.color.threads_green_83B144;
+    public int downloadButtonTintResId = R.color.ecc_green_83b144;
     @ColorRes
-    public int loaderTintResId = R.color.threads_green_83B144;
+    public int loaderTintResId = R.color.ecc_green_83b144;
     @DrawableRes
     public int startDownloadIconResId = R.drawable.ecc_ic_vertical_align_bottom_18dp;
     @DrawableRes
@@ -295,41 +295,41 @@ public final class ChatStyle implements Serializable {
 
     //images history & gallery screens
     @ColorRes
-    public int imagesScreenBackgroundColor = R.color.threads_attachments_background;
+    public int imagesScreenBackgroundColor = R.color.ecc_attachments_background;
     @ColorRes
-    public int imagesScreenAuthorTextColor = R.color.threads_attachments_author_text_color;
+    public int imagesScreenAuthorTextColor = R.color.ecc_attachments_author_text_color;
     @ColorRes
-    public int imagesScreenDateTextColor = R.color.threads_attachments_date_text_color;
+    public int imagesScreenDateTextColor = R.color.ecc_attachments_date_text_color;
     @DimenRes
-    public int imagesScreenAuthorTextSize = R.dimen.threads_attachments_author_text_size;
+    public int imagesScreenAuthorTextSize = R.dimen.ecc_attachments_author_text_size;
     @DimenRes
-    public int imagesScreenDateTextSize = R.dimen.threads_attachments_date_text_size;
+    public int imagesScreenDateTextSize = R.dimen.ecc_attachments_date_text_size;
 
     // quote style
     @ColorRes
-    public int quoteClearIconTintResId = R.color.threads_green_83B144;
+    public int quoteClearIconTintResId = R.color.ecc_green_83b144;
     @DrawableRes
     public int quoteClearIconResId = R.drawable.ecc_ic_clear_36dp;
 
     // chat input style
     @ColorRes
-    public int chatMessageInputColor = R.color.threads_input_background;
+    public int chatMessageInputColor = R.color.ecc_input_background;
     @ColorRes
-    public int chatMessageInputHintTextColor = R.color.threads_input_hint;
+    public int chatMessageInputHintTextColor = R.color.ecc_input_hint;
     @ColorRes
-    public int inputTextColor = R.color.threads_input_text;
+    public int inputTextColor = R.color.ecc_input_text;
     @Nullable
     public String inputTextFont;
     @ColorRes
-    public int inputIconTintResId = R.color.threads_green_83B144;
+    public int inputIconTintResId = R.color.ecc_green_83b144;
     @DrawableRes
     public int attachmentIconResId = R.drawable.ecc_ic_attachment_button;
     @DrawableRes
     public int sendMessageIconResId = R.drawable.ecc_ic_send_button;
     @StringRes
-    public int inputHint = R.string.threads_input_hint;
+    public int inputHint = R.string.ecc_input_hint;
     @DimenRes
-    public int inputHeight = R.dimen.threads_input_height;
+    public int inputHeight = R.dimen.ecc_input_height;
     @DrawableRes
     public int inputBackground = R.drawable.ecc_chat_input_background;
     @DrawableRes
@@ -337,7 +337,7 @@ public final class ChatStyle implements Serializable {
 
     //attachment bottom sheet style
     @ColorRes
-    public int attachmentBottomSheetButtonTintResId = R.color.threads_green_83B144;
+    public int attachmentBottomSheetButtonTintResId = R.color.ecc_green_83b144;
     @DrawableRes
     public int attachmentDoneIconResId = R.drawable.ecc_ic_circle_done_36dp;
     @DrawableRes
@@ -351,63 +351,63 @@ public final class ChatStyle implements Serializable {
 
     // Media and files screen
     @BoolRes
-    public int mediaAndFilesWindowLightStatusBarResId = R.bool.threads_chat_is_light_status_bar;
+    public int mediaAndFilesWindowLightStatusBarResId = R.bool.ecc_chat_is_light_status_bar;
     @ColorRes
-    public int mediaAndFilesStatusBarColorResId = R.color.threads_chat_status_bar;
+    public int mediaAndFilesStatusBarColorResId = R.color.ecc_chat_status_bar;
     @ColorRes
-    public int mediaAndFilesToolbarColorResId = R.color.threads_chat_toolbar;
+    public int mediaAndFilesToolbarColorResId = R.color.ecc_chat_toolbar;
     @ColorRes
-    public int mediaAndFilesToolbarTextColorResId = R.color.threads_chat_toolbar_text;
+    public int mediaAndFilesToolbarTextColorResId = R.color.ecc_chat_toolbar_text;
     @ColorRes
-    public int mediaAndFilesToolbarHintTextColor = R.color.threads_chat_toolbar_hint;
+    public int mediaAndFilesToolbarHintTextColor = R.color.ecc_chat_toolbar_hint;
     @ColorRes
-    public int mediaAndFilesScreenBackgroundColor = R.color.threads_files_medias_screen_background;
+    public int mediaAndFilesScreenBackgroundColor = R.color.ecc_files_medias_screen_background;
     @ColorRes
-    public int mediaAndFilesTextColor = R.color.threads_files_list;
+    public int mediaAndFilesTextColor = R.color.ecc_files_list;
     @ColorRes
-    public int mediaAndFilesFileIconTintResId = R.color.threads_green_83B144;
+    public int mediaAndFilesFileIconTintResId = R.color.ecc_green_83b144;
     @DrawableRes
     public int mediaAndFilesFileIconResId = R.drawable.ecc_ic_file_fill_36dp;
 
     // Empty Media and files screen header
     @StringRes
-    public int emptyMediaAndFilesHeaderText = R.string.threads_no_media_and_files_header;
+    public int emptyMediaAndFilesHeaderText = R.string.ecc_no_media_and_files_header;
     public String emptyMediaAndFilesHeaderFontPath;
     @DimenRes
-    public int emptyMediaAndFilesHeaderTextSize = R.dimen.text_medium;
+    public int emptyMediaAndFilesHeaderTextSize = R.dimen.ecc_text_medium;
     @ColorRes
-    public int emptyMediaAndFilesHeaderTextColor = R.color.threads_files_list;
+    public int emptyMediaAndFilesHeaderTextColor = R.color.ecc_files_list;
 
     // Empty Media and files screen description
     @StringRes
-    public int emptyMediaAndFilesDescriptionText = R.string.threads_no_media_and_files_description;
+    public int emptyMediaAndFilesDescriptionText = R.string.ecc_no_media_and_files_description;
     public String emptyMediaAndFilesDescriptionFontPath;
     @DimenRes
-    public int emptyMediaAndFilesDescriptionTextSize = R.dimen.text_regular;
+    public int emptyMediaAndFilesDescriptionTextSize = R.dimen.ecc_text_regular;
     @ColorRes
-    public int emptyMediaAndFilesDescriptionTextColor = R.color.threads_files_list;
+    public int emptyMediaAndFilesDescriptionTextColor = R.color.ecc_files_list;
 
     // push notification style
     @DrawableRes
     public int defPushIconResId = R.drawable.ecc_default_push_icon;
     @StringRes
-    public int defTitleResId = R.string.threads_push_title;
+    public int defTitleResId = R.string.ecc_push_title;
     @ColorRes
-    public int pushBackgroundColorResId = R.color.threads_push_background;
+    public int pushBackgroundColorResId = R.color.ecc_push_background;
     @ColorRes
-    public int nougatPushAccentColorResId = R.color.threads_nougat_push_accent;
+    public int nougatPushAccentColorResId = R.color.ecc_nougat_push_accent;
     @ColorRes
-    public int notificationQuickReplyMessageBackgroundColor = R.color.threads_notification_quick_reply_message_background;
+    public int notificationQuickReplyMessageBackgroundColor = R.color.ecc_notification_quick_reply_message_background;
     @ColorRes
-    public int notificationQuickReplyMessageTextColor = R.color.threads_notification_quick_reply_message_text_color;
+    public int notificationQuickReplyMessageTextColor = R.color.ecc_notification_quick_reply_message_text_color;
 
     // resolve thread request style
     @StringRes
-    public int requestToResolveThreadTextResId = R.string.threads_request_to_resolve_thread;
+    public int requestToResolveThreadTextResId = R.string.ecc_request_to_resolve_thread;
     @StringRes
-    public int approveRequestToResolveThreadTextResId = R.string.threads_request_to_resolve_thread_close;
+    public int approveRequestToResolveThreadTextResId = R.string.ecc_request_to_resolve_thread_close;
     @StringRes
-    public int denyRequestToResolveThreadTextResId = R.string.threads_request_to_resolve_thread_open;
+    public int denyRequestToResolveThreadTextResId = R.string.ecc_request_to_resolve_thread_open;
 
     // survey style
     @DrawableRes
@@ -423,17 +423,17 @@ public final class ChatStyle implements Serializable {
     @DrawableRes
     public int optionsSurveySelectedIconResId = R.drawable.ecc_options_survey_selected;
     @ColorRes
-    public int surveySelectedColorFilterResId = R.color.threads_survey_selected_icon_tint;
+    public int surveySelectedColorFilterResId = R.color.ecc_survey_selected_icon_tint;
     @ColorRes
-    public int surveyUnselectedColorFilterResId = R.color.threads_survey_unselected_icon_tint;
+    public int surveyUnselectedColorFilterResId = R.color.ecc_survey_unselected_icon_tint;
     @ColorRes
-    public int surveyTextColorResId = R.color.threads_chat_system_message;
+    public int surveyTextColorResId = R.color.ecc_chat_system_message;
     @ColorRes
-    public int surveyChoicesTextColorResId = R.color.threads_survey_choices_text;
+    public int surveyChoicesTextColorResId = R.color.ecc_survey_choices_text;
 
     // schedule message style
     @ColorRes
-    public int scheduleMessageTextColorResId = R.color.threads_schedule_text;
+    public int scheduleMessageTextColorResId = R.color.ecc_schedule_text;
     @DrawableRes
     public int scheduleMessageIconResId = R.drawable.ecc_schedule_icon;
 
@@ -441,52 +441,52 @@ public final class ChatStyle implements Serializable {
     @DrawableRes
     public int welcomeScreenLogoResId = R.drawable.ecc_welcome_logo;
     @StringRes
-    public int welcomeScreenTitleTextResId = R.string.threads_welcome_screen_title_text;
+    public int welcomeScreenTitleTextResId = R.string.ecc_welcome_screen_title_text;
     @StringRes
-    public int welcomeScreenSubtitleTextResId = R.string.threads_welcome_screen_subtitle_text;
+    public int welcomeScreenSubtitleTextResId = R.string.ecc_welcome_screen_subtitle_text;
     @ColorRes
-    public int welcomeScreenTitleTextColorResId = R.color.threads_welcome_screen_title;
+    public int welcomeScreenTitleTextColorResId = R.color.ecc_welcome_screen_title;
     @ColorRes
-    public int welcomeScreenSubtitleTextColorResId = R.color.threads_welcome_screen_subtitle;
+    public int welcomeScreenSubtitleTextColorResId = R.color.ecc_welcome_screen_subtitle;
     @DimenRes
-    public int welcomeScreenTitleSizeInSp = R.dimen.threads_welcome_screen_title;
+    public int welcomeScreenTitleSizeInSp = R.dimen.ecc_welcome_screen_title;
     @DimenRes
-    public int welcomeScreenSubtitleSizeInSp = R.dimen.threads_welcome_screen_subtitle;
+    public int welcomeScreenSubtitleSizeInSp = R.dimen.ecc_welcome_screen_subtitle;
     @DimenRes
-    public int welcomeScreenLogoWidth = R.dimen.threads_welcome_logo_width;
+    public int welcomeScreenLogoWidth = R.dimen.ecc_welcome_logo_width;
     @DimenRes
-    public int welcomeScreenLogoHeight = R.dimen.threads_welcome_logo_height;
+    public int welcomeScreenLogoHeight = R.dimen.ecc_welcome_logo_height;
 
     // empty state
     @ColorRes
-    public int emptyStateBackgroundColorResId = R.color.threads_empty_state_background;
+    public int emptyStateBackgroundColorResId = R.color.ecc_empty_state_background;
     @ColorRes
-    public int emptyStateProgressBarColorResId = R.color.threads_empty_state_progress;
+    public int emptyStateProgressBarColorResId = R.color.ecc_empty_state_progress;
     @ColorRes
-    public int emptyStateHintColorResId = R.color.threads_empty_state_hint;
+    public int emptyStateHintColorResId = R.color.ecc_empty_state_hint;
     @StringRes
-    public int loaderTextResId = R.string.loading;
+    public int loaderTextResId = R.string.ecc_loading;
 
     // system messages
     @DimenRes
-    public int systemMessageTextSize = R.dimen.threads_system_message_text_size;
+    public int systemMessageTextSize = R.dimen.ecc_system_message_text_size;
     @ColorRes
-    public int systemMessageTextColorResId = R.color.threads_chat_new_system_message;
+    public int systemMessageTextColorResId = R.color.ecc_chat_new_system_message;
     @DimenRes
-    public int systemMessageLeftRightPadding = R.dimen.threads_system_message_left_right_padding;
+    public int systemMessageLeftRightPadding = R.dimen.ecc_system_message_left_right_padding;
     public int systemMessageTextGravity = Gravity.CENTER;
     @ColorRes
-    public int systemMessageLinkColor = R.color.threads_system_message_link;
+    public int systemMessageLinkColor = R.color.ecc_system_message_link;
     @DrawableRes
     public int quickReplyButtonBackground = R.drawable.ecc_quick_reply_button_background;
     @ColorRes
-    public int quickReplyTextColor = R.color.threads_quick_reply_text_color;
+    public int quickReplyTextColor = R.color.ecc_quick_reply_text_color;
     @IntegerRes
-    public int maxGalleryImagesCount = R.integer.max_count_attached_images;
+    public int maxGalleryImagesCount = R.integer.ecc_max_count_attached_images;
     @IntegerRes
-    public int maxGalleryImagesCountFixedBySystem = R.integer.max_count_attached_images_final;
+    public int maxGalleryImagesCountFixedBySystem = R.integer.ecc_max_count_attached_images_final;
     @ColorRes
-    public int consultSearchingProgressColor = R.color.threads_consult_searching_progress_color;
+    public int consultSearchingProgressColor = R.color.ecc_consult_searching_progress_color;
 
     // set can show specialist info
     public boolean canShowSpecialistInfo = true;

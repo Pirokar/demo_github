@@ -7,17 +7,17 @@
         android:id="@+id/chip"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/margin_quarter"
-        android:layout_marginTop="@dimen/margin_quarter"
-        android:layout_marginRight="@dimen/margin_quarter"
-        android:layout_marginBottom="@dimen/margin_quarter"
+        android:layout_marginLeft="@dimen/ecc_margin_quarter"
+        android:layout_marginTop="@dimen/ecc_margin_quarter"
+        android:layout_marginRight="@dimen/ecc_margin_quarter"
+        android:layout_marginBottom="@dimen/ecc_margin_quarter"
         android:background="@drawable/ecc_quick_reply_button_background"
         android:gravity="center"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingTop="@dimen/margin_half"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingBottom="@dimen/margin_half"
-        android:textColor="@color/threads_quick_reply_text_color"
-        android:textSize="@dimen/text_medium" />
+        android:paddingLeft="@dimen/ecc_activity_horizontal_margin"
+        android:paddingTop="@dimen/ecc_margin_half"
+        android:paddingRight="@dimen/ecc_activity_horizontal_margin"
+        android:paddingBottom="@dimen/ecc_margin_half"
+        android:textColor="@color/ecc_quick_reply_text_color"
+        android:textSize="@dimen/ecc_text_medium" />
 
 </FrameLayout>

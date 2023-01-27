@@ -9,7 +9,7 @@
     <RelativeLayout
         android:id="@+id/bubble"
         style="@style/userBubble"
-        android:layout_marginBottom="@dimen/margin_half"
+        android:layout_marginBottom="@dimen/ecc_margin_half"
         android:background="@drawable/ecc_outgoing_bubble"
         android:paddingEnd="24dp"
         android:paddingStart="0dp">
@@ -19,7 +19,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_marginStart="@dimen/margin_half"
+            android:layout_marginStart="@dimen/ecc_margin_half"
             android:orientation="vertical">
 
             <RelativeLayout
@@ -32,7 +32,7 @@
                     android:layout_width="42dp"
                     android:layout_height="42dp"
                     android:layout_centerInParent="true"
-                    app:tint="@color/threads_outgoing_message_text"
+                    app:tint="@color/ecc_outgoing_message_text"
                     app:srcCompat="@drawable/ecc_options_survey_selected" />
 
                 <im.threads.ui.widget.textView.BubbleMessageTextView
@@ -49,7 +49,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="@dimen/margin_quarter"
+                android:layout_marginTop="@dimen/ecc_margin_quarter"
                 android:orientation="horizontal">
 
                 <im.threads.ui.widget.textView.BubbleMessageTextView
@@ -58,15 +58,15 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="4dp"
                     android:gravity="center"
-                    android:text="@string/threads_item_user_rate_text"
-                    android:textColor="@color/threads_outgoing_message_text"/>
+                    android:text="@string/ecc_item_user_rate_text"
+                    android:textColor="@color/ecc_outgoing_message_text"/>
 
                 <im.threads.ui.widget.textView.BubbleMessageTextView
                     android:id="@+id/total_stars_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:textColor="@color/threads_outgoing_message_text"
+                    android:textColor="@color/ecc_outgoing_message_text"
                     tools:text="5"/>
 
             </LinearLayout>
@@ -76,11 +76,11 @@
             android:id="@+id/header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_half"
-            android:layout_marginTop="@dimen/margin_half"
+            android:layout_marginStart="@dimen/ecc_margin_half"
+            android:layout_marginTop="@dimen/ecc_margin_half"
             android:layout_toEndOf="@+id/image_layout"
-            android:textColor="@color/threads_outgoing_message_text"
-            tools:text="@string/threads_item_user_rate_header" />
+            android:textColor="@color/ecc_outgoing_message_text"
+            tools:text="@string/ecc_item_user_rate_header" />
 
         <im.threads.ui.widget.textView.BubbleTimeTextView
             android:id="@+id/timestamp"
@@ -88,9 +88,9 @@
             android:layout_below="@+id/header"
             android:layout_alignEnd="@+id/header"
             android:layout_alignParentEnd="true"
-            android:layout_marginTop="@dimen/margin_quarter"
-            android:drawablePadding="@dimen/margin_quarter"
+            android:layout_marginTop="@dimen/ecc_margin_quarter"
+            android:drawablePadding="@dimen/ecc_margin_quarter"
             tools:text="10:19"
-            android:textColor="@color/threads_user_message_timestamp" />
+            android:textColor="@color/ecc_user_message_timestamp" />
     </RelativeLayout>
 </RelativeLayout>

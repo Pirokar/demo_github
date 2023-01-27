@@ -115,7 +115,7 @@ class ImageFromConsultViewHolder(
             setBackgroundColor(
                 ContextCompat.getColor(
                     itemView.context,
-                    if (highlighted) style.chatHighlightingColor else R.color.threads_transparent
+                    if (highlighted) style.chatHighlightingColor else R.color.ecc_transparent
                 )
             )
         }

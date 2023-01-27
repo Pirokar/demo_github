@@ -156,7 +156,7 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
                 if (notificationChannel == null) {
                     notificationChannel = NotificationChannel(
                         CHANNEL_ID,
-                        context.getString(R.string.threads_channel_name),
+                        context.getString(R.string.ecc_channel_name),
                         config.notificationImportance
                     )
                     notificationChannel?.let {
@@ -311,7 +311,7 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
                 )
             }
         }
-        pushBig.setTextViewText(R.id.reply, context.getString(R.string.threads_reply))
+        pushBig.setTextViewText(R.id.reply, context.getString(R.string.ecc_reply))
         builder.setContent(pushSmall)
         val pend = getChatIntent(inputData.getString(EXTRA_APP_MARKER), config)
         builder.setContentIntent(pend)
@@ -413,7 +413,7 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
             builder.setSmallIcon(config.getChatStyle().defPushIconResId)
             builder.addAction(
                 0,
-                context.getString(R.string.threads_answer),
+                context.getString(R.string.ecc_answer),
                 QuickAnswerActivity.createPendingIntent(context)
             )
         } else if (messageContent != null) {
@@ -425,7 +425,7 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
             if (messageContent.isNeedAnswer) {
                 builder.addAction(
                     0,
-                    context.getString(R.string.threads_answer),
+                    context.getString(R.string.ecc_answer),
                     QuickAnswerActivity.createPendingIntent(context)
                 )
             }
@@ -472,7 +472,7 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
     ) {
         val notificationBuilder: NotificationCompat.Builder =
             NotificationCompat.Builder(context, CHANNEL_ID)
-        notificationBuilder.setContentTitle(context.getString(R.string.threads_message_were_unsent))
+        notificationBuilder.setContentTitle(context.getString(R.string.ecc_message_were_unsent))
         val pend = getChatIntent(appMarker, config)
         val iconResId = config.getChatStyle().defPushIconResId
         notificationBuilder.setSmallIcon(iconResId)

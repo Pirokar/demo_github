@@ -1,0 +1,169 @@
+<resources>
+    <string name="ecc_allow">Разрешить</string>
+    <string name="ecc_close">Закрыть</string>
+    <string name="ecc_camera">Камера</string>
+    <string name="ecc_gallery">Галерея</string>
+    <string name="ecc_file">Файл</string>
+    <string name="ecc_hide">Свернуть</string>
+    <string name="ecc_left_female">покинула диалог в</string>
+    <string name="ecc_eft_dialog">покинул диалог в</string>
+    <string name="ecc_connected_female">подключилась к диалогу в</string>
+    <string name="ecc_connected">подключился к диалогу в</string>
+    <string name="ecc_sent_at">отправлено %1$s</string>
+    <string name="ecc_image">изображение</string>
+    <string name="ecc_send">Отправить</string>
+    <string name="ecc_search_messages">Поиск сообщений</string>
+    <string name="ecc_files_and_media">Медиа и файлы</string>
+    <string name="ecc_recently">Недавно</string>
+    <string name="ecc_yesterday">Вчера</string>
+    <string name="ecc_photos">Фотографии</string>
+    <string name="ecc_find_photos">Найти фотографии</string>
+    <string name="ecc_on_your_device">на вашем устройстве</string>
+    <string name="ecc_cancel">Отмена</string>
+    <string name="ecc_search_photos">Поиск изображений…</string>
+    <string name="ecc_nothing_found">Ничего не найдено</string>
+    <string name="ecc_press">Нажмите</string>
+    <string name="ecc_to_photo">для фото</string>
+    <string name="ecc_no_cameras_detected">На устройстве отсутствует камера</string>
+    <string name="ecc_camera_could_not_start_error">Не удалось запустить приложение камеры</string>
+    <string name="ecc_back_camera_could_not_start_error">Не удалось запустить тыльную камеру.</string>
+    <string name="ecc_retake">Переснять</string>
+    <string name="ecc_consult">Консультант</string>
+    <string name="ecc_bot">Бот</string>
+    <string name="ecc_operator">Оператор</string>
+
+    <string name="ecc_error_no_file">Файл удалён на сервере</string>
+    <string name="ecc_no_media_and_files_header">Медиа-файлы отсутствуют</string>
+    <string name="ecc_no_media_and_files_description">Добавьте новые с помощью кнопки\n«Прикрепить» на экране чата</string>
+    <string name="ecc_I">Я</string>
+    <string name="ecc_choose_file">Выберите файл</string>
+    <string name="ecc_folder_up">Выше</string>
+    <string name="ecc_now_you_are_in_directory">Вы находитесь в </string>
+    <string name="ecc_from">из</string>
+    <string name="ecc_in">в</string>
+    <string name="ecc_search_more">Искать дальше</string>
+    <string name="ecc_download">Загрузить</string>
+    <string name="ecc_message_were_unsent">Сообщение не было отправлено</string>
+    <string name="ecc_failed_to_open_file">Невозможно открыть выбранный файл</string>
+    <string name="ecc_saved_to_downloads">Сохранено в Загрузки</string>
+    <string name="ecc_unable_to_save">Сейчас невозможно сохранить файл</string>
+    <string name="ecc_search_files">Искать файлы</string>
+    <string name="ecc_talkback_search_icon">Иконка поиска</string>
+    <string name="ecc_push_left_female">покинула диалог</string>
+    <string name="ecc_push_left">покинул диалог</string>
+    <string name="ecc_push_connected_female">подключилась к диалогу</string>
+    <string name="ecc_push_connected">подключился к диалогу</string>
+    <string name="ecc_reply">Ответить</string>
+    <string name="ecc_send_male">прислал</string>
+    <string name="ecc_send_female">прислала</string>
+    <string name="ecc_touch_to_look">Дотроньтесь для просмотра</string>
+    <string name="ecc_touch_to_download">Дотроньтесь чтобы скачать</string>
+    <string name="ecc_answer">ОТВЕТИТЬ</string>
+    <string name="ecc_check_connection">Проблемы с доступом в интрнет, проверьте соединение</string>
+    <string name="ecc_message_not_sent">Сообщение не отправлено, проверьте настройки подключения</string>
+    <string name="ecc_typing">печатает…</string>
+    <string name="ecc_ask_to_rate">Пожалуйста, оцените качество нашего сервиса</string>
+    <string name="ecc_thanks_for_rate">Спасибо за вашу оценку</string>
+    <string name="ecc_item_user_rate_header">Оценка решения вопроса</string>
+    <string name="ecc_item_user_rate_text">из</string>
+
+    <!-- Разрешения. Диалоги при отказе от предоставления разрешений. -->
+    <string name="ecc_permissions_help">Помощь</string>
+    <string name="ecc_permissions_string_help_text">Отсутствуют разрешения.\n\nЧтобы предоставить разрешения, нажмите "Настройки", затем "Разрешения" и включите их.\n\nЗатем вернитесь в приложение.</string>
+    <string name="ecc_permissions_camera_and_write_external_storage_help_text">Отсутствуют разрешения на Камеру и Память (Запись на внешнее хранилище).\n\nЧтобы предоставить разрешения, нажмите "Настройки", затем "Разрешения" и включите их.\n\nЗатем вернитесь в приложение.</string>
+    <string name="ecc_permissions_write_external_storage_help_text">Отсутствует разрешение на Память (Запись на внешнее хранилище).\n\nЧтобы предоставить разрешения, нажмите "Настройки", затем "Разрешения" и включите их.\n\nЗатем вернитесь в приложение.</string>
+    <string name="ecc_permissions_read_external_storage_help_text">Отсутствует разрешение на Память (Чтение с вешнего хранилища).\n\nЧтобы предоставить разрешения, нажмите "Настройки", затем "Разрешения" и включите их.\n\nЗатем вернитесь в приложение.</string>
+    <string name="ecc_permissions_record_audio_help_text">Отсутствует разрешение на Аудиозапись (Микрофон).\n\nЧтобы предоставить разрешения, нажмите "Настройки", затем "Разрешения" и включите их.\n\nЗатем вернитесь в приложение.</string>
+    <string name="ecc_permissions_settings">Настройки</string>
+
+    <!-- Разрешения. Диалоги описания причины запроса доступа. -->
+    <string name="ecc_permission_description_access_to_files_title">Разрешите приложению доступ к файлам на вашем устройстве</string>
+    <string name="ecc_permission_description_access_to_files_message">Это необходимо для отправки файлов</string>
+    <string name="ecc_permission_description_access_to_audio_recording_title">Разрешите приложению записывать аудио</string>
+    <string name="ecc_permission_description_access_to_audio_recording_message">Это необходимо для отправки голосовых сообщений</string>
+    <string name="ecc_permission_description_access_to_camera_title">Разрешите приложению снимать фото</string>
+    <string name="ecc_permission_description_access_to_camera_message">Это необходимо для отправки фото</string>
+
+    <plurals name="ecc_unread_messages">
+        <item quantity="one">%d непрочитанное сообщение</item>
+        <item quantity="few">%d непрочитанных сообщения</item>
+        <item quantity="many">%d непрочитанных сообщений</item>
+        <item quantity="other">%d непрочитанных сообщений</item>
+    </plurals>
+
+    <plurals name="ecc_new_messages">
+        <item quantity="one">%d новое сообщение</item>
+        <item quantity="few">%d новых сообщения</item>
+        <item quantity="many">%d новых сообщений</item>
+        <item quantity="other">%d новых сообщений</item>
+    </plurals>
+
+    <plurals name="ecc_images">
+        <item quantity="one">%d изображение</item>
+        <item quantity="few">%d изображения</item>
+        <item quantity="many">%d изображений</item>
+        <item quantity="other">%d изображений</item>
+    </plurals>
+
+    <plurals name="ecc_files">
+        <item quantity="one">%d файл</item>
+        <item quantity="few">%d файла</item>
+        <item quantity="many">%d файлов</item>
+        <item quantity="other">%d файлов</item>
+    </plurals>
+
+    <!-- Тексты для кастомизации -->
+    <string name="ecc_push_title">Threads</string>
+    <string name="ecc_media_description">Threads</string>
+
+    <string name="ecc_contact_center">Контакт центр</string>
+    <string name="ecc_searching_operator">Поиск оператора…</string>
+    <string name="ecc_operator_subtitle">@string/ecc_operator</string>
+    <string name="ecc_unknown_operator">Неизвестный</string>
+
+    <string name="ecc_channel_name">Контакт центр</string>
+
+    <string name="ecc_request_to_resolve_thread">Специалист ответил на все ваши вопросы, продолжить консультацию?</string>
+    <string name="ecc_request_to_resolve_thread_close">Нет</string>
+    <string name="ecc_request_to_resolve_thread_open">Да</string>
+
+    <string name="ecc_welcome_screen_title_text">Добро пожаловать</string>
+    <string name="ecc_welcome_screen_subtitle_text">Отправьте ваш вопрос</string>
+    <string name="ecc_input_hint">Ваше сообщение…</string>
+
+    <string name="ecc_message_text_copied">Текст скопирован в буфер обмена</string>
+
+    <string name="ecc_not_allowed_file_extension">Недопустимый формат файла</string>
+    <string name="ecc_not_allowed_file_size">Файл превышает максимально допустимый размер %1$d МБ</string>
+    <string name="ecc_message_sending_is_unavailable">Отправка сообщения временно недоступна</string>
+    <string name="ecc_hold_button_to_record_audio">Удерживайте кнопку записи для отправки голосового сообщения</string>
+    <string name="ecc_voice_message">Голосовое сообщение</string>
+    <string name="ecc_voice_message_slide_to_cancel">Влево - отмена</string>
+    <string name="ecc_voice_message_is_processing">Голосовое сообщение обрабатывается</string>
+    <string name="ecc_voice_message_error">Ошибка обработки голосового сообщения</string>
+    <string name="ecc_empty_state_hint">Инициализация клиента</string>
+    <string name="ecc_achieve_images_count_limit_message">Вы достигли лимита изображений для отправки</string>
+
+    <string name="ecc_disallowed_error_during_load_file">Загрузка файла не выполнена.\nНе удалось проверить файл</string>
+    <string name="ecc_timeout_error_during_load_file">Не удалось завершить загрузку файла, истек таймаут.\nПопробуйте загрузить файл позже</string>
+    <string name="ecc_unexpected_error_during_load_file">Не удалось завершить загрузку файла.\nПопробуйте отправить файл позже</string>
+    <string name="ecc_some_error_during_load_file">Произошла ошибка при загрузке\nили проверке файла</string>
+    <string name="ecc_file_restricted_type_error_during_load_file">Файл с таким расширением запрещен к загрузке</string>
+    <string name="ecc_file_restricted_size_error_during_load_file">Размер файла превышает допустимое значение</string>
+    <string name="ecc_file_not_found_error_during_load_file">Файл для загрузки не найден</string>
+
+    <string name="ecc_loading"></string>
+
+    <string name="ecc_history_loading_message">Выполняется загрузка сообщений из истории, подождите завершения</string>
+    <string name="ecc_consult_portrait">Consult portrait</string>
+    <string name="ecc_file_not_supported">No application support this type of file</string>
+    <string name="ecc_operator_avatar">Аватар оператора</string>
+    <string name="ecc_play_button">Кнопка воспроизведения</string>
+    <string name="ecc_loading_animation">Загрузка</string>
+    <string name="ecc_bytes">Б</string>
+    <string name="ecc_kbytes">КБ</string>
+    <string name="ecc_mbytes">МБ</string>
+    <string name="ecc_gbytes">ГБ</string>
+    <string name="ecc_tbytes">ТБ</string>
+
+</resources>

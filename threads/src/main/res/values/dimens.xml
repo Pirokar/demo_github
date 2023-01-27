@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="ecc_margin_large">28dp</dimen>
+    <dimen name="ecc_margin_big">20dp</dimen>
+    <dimen name="ecc_margin_material">16dp</dimen>
+    <dimen name="ecc_margin_three_fourth">12dp</dimen>
+    <dimen name="ecc_margin_half">8dp</dimen>
+    <dimen name="ecc_margin_quarter">4dp</dimen>
+    <dimen name="ecc_margin_eight">2dp</dimen>
+    <dimen name="ecc_margin_zero">0dp</dimen>
+
+    <dimen name="ecc_padding_material">16dp</dimen>
+    <dimen name="ecc_padding_half">8dp</dimen>
+    <dimen name="ecc_padding_quarter">4dp</dimen>
+
+    <dimen name="ecc_error_text_size">11sp</dimen>
+    <dimen name="ecc_text_small">12sp</dimen>
+    <dimen name="ecc_text_regular">14sp</dimen>
+    <dimen name="ecc_text_medium">16sp</dimen>
+    <dimen name="ecc_text_big">20sp</dimen>
+
+    <dimen name="ecc_threads_radius_big">16dp</dimen>
+
+    <dimen name="ecc_stroke_width_small">1dp</dimen>
+
+    <dimen name="ecc_consultant_height_error_item_layout">100dp</dimen>
+    <dimen name="ecc_consultant_height_error_bubble_item_layout">80dp</dimen>
+
+    <dimen name="ecc_consultant_margin_left">16dp</dimen>
+    <dimen name="ecc_consultant_margin_right">52dp</dimen>
+    <dimen name="ecc_operator_photo_size">40dp</dimen>
+    <dimen name="ecc_system_operator_photo_size">40dp</dimen>
+    <dimen name="ecc_photo_offset_size">-20dp</dimen>
+    <dimen name="ecc_offset_size">20dp</dimen>
+    <dimen name="ecc_user_margin_left">72dp</dimen>
+    <dimen name="ecc_user_margin_right">28dp</dimen>
+    <dimen name="ecc_default_chat_row_height">56dp</dimen>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="ecc_activity_horizontal_margin">16dp</dimen>
+    <dimen name="ecc_activity_vertical_margin">16dp</dimen>
+    <dimen name="ecc_icon_small_size">24dp</dimen>
+
+
+    <dimen name="ecc_welcome_screen_title">18sp</dimen>
+    <dimen name="ecc_welcome_screen_subtitle">14sp</dimen>
+    <dimen name="ecc_input_height">64dp</dimen>
+
+    <dimen name="ecc_attachments_author_text_size">@dimen/ecc_text_regular</dimen>
+    <dimen name="ecc_attachments_date_text_size">@dimen/ecc_text_regular</dimen>
+
+    <dimen name="ecc_system_message_text_size">@dimen/ecc_text_regular</dimen>
+    <dimen name="ecc_system_message_left_right_padding">16dp</dimen>
+
+    <dimen name="ecc_scroll_down_button_width">32dp</dimen>
+    <dimen name="ecc_scroll_down_button_height">32dp</dimen>
+    <dimen name="ecc_scroll_down_button_elevation">2dp</dimen>
+    <dimen name="ecc_scroll_down_button_margin">8dp</dimen>
+
+    <dimen name="ecc_file_icon_size">44dp</dimen>
+
+    <dimen name="ecc_welcome_logo_height">200dp</dimen>
+    <dimen name="ecc_welcome_logo_width">200dp</dimen>
+
+    <dimen name="ecc_bubbleOutgoingPaddingLeft">8dp</dimen>
+    <dimen name="ecc_bubbleOutgoingPaddingTop">8dp</dimen>
+    <dimen name="ecc_bubbleOutgoingPaddingRight">24dp</dimen>
+    <dimen name="ecc_bubbleOutgoingPaddingBottom">8dp</dimen>
+    <dimen name="ecc_timeLabelMarginRight">8dp</dimen>
+    <dimen name="ecc_timeLabelMarginBottom">8dp</dimen>
+    <dimen name="ecc_timeLabelOutgoingExtraMarginRight">12dp</dimen>
+
+    <dimen name="ecc_bubbleIncomingPaddingLeft">8dp</dimen>
+    <dimen name="ecc_bubbleIncomingPaddingTop">8dp</dimen>
+    <dimen name="ecc_bubbleIncomingPaddingRight">8dp</dimen>
+    <dimen name="ecc_bubbleIncomingPaddingBottom">8dp</dimen>
+
+    <dimen name="ecc_incomingImageLeftBorderSize">0dp</dimen>
+    <dimen name="ecc_incomingImageTopBorderSize">0dp</dimen>
+    <dimen name="ecc_incomingImageRightBorderSize">0dp</dimen>
+    <dimen name="ecc_incomingImageBottomBorderSize">0dp</dimen>
+    <dimen name="ecc_outgoingImageLeftBorderSize">0dp</dimen>
+    <dimen name="ecc_outgoingImageTopBorderSize">0dp</dimen>
+    <dimen name="ecc_outgoingImageRightBorderSize">0dp</dimen>
+    <dimen name="ecc_outgoingImageBottomBorderSize">0dp</dimen>
+
+    <dimen name="ecc_last_line_extra_padding_symbols">2</dimen>
+    <dimen name="ecc_halo_radius">13dp</dimen>
+    <dimen name="ecc_thumb_size">8dp</dimen>
+    <dimen name="ecc_message_image_size">300dp</dimen>
+    <dimen name="ecc_toolbar_height">56dp</dimen>
+    <dimen name="ecc_toolbar_button_width">56dp</dimen>
+
+</resources>

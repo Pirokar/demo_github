@@ -9,12 +9,12 @@
         android:id="@+id/bottom_gallery"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/threads_input_background" />
+        android:background="@color/ecc_input_background" />
 
     <im.threads.ui.views.BottomSheetView
         android:id="@+id/file_input_sheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/threads_input_background" />
+        android:background="@color/ecc_input_background" />
 
 </LinearLayout>

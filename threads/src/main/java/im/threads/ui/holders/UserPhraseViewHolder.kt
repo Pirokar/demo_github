@@ -370,7 +370,7 @@ class UserPhraseViewHolder(
                         val paddingRight = resources.getDimensionPixelSize(chatStyle.bubbleOutgoingPaddingRight)
                         val paddingBottom = resources.getDimensionPixelSize(chatStyle.bubbleOutgoingPaddingBottom)
                         ogDataLayout.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom)
-                        ogDataLayout.layoutParams.width = resources.getDimensionPixelSize(R.dimen.message_image_size)
+                        ogDataLayout.layoutParams.width = resources.getDimensionPixelSize(R.dimen.ecc_message_image_size)
                     } else {
                         if (it.fileUri != null) {
                             it.downloadProgress = 100
@@ -380,7 +380,7 @@ class UserPhraseViewHolder(
                         fileImageButton.visible()
                         rightTextHeader.text = it.from
                         val timeStampText = parentView.context.getString(
-                            R.string.threads_sent_at,
+                            R.string.ecc_sent_at,
                             fileSdf.format(Date(it.timeStamp))
                         )
                         rightTextTimeStamp.text = timeStampText
@@ -400,7 +400,7 @@ class UserPhraseViewHolder(
         quoteTextDescription.text = quote.text
         quoteTextHeader.text = quote.phraseOwnerTitle
         val timeStampText = parentView.context.resources.getString(
-            R.string.threads_sent_at,
+            R.string.ecc_sent_at,
             fileSdf.format(Date(quote.timeStamp))
         )
         quoteTextTimeStamp.text = timeStampText
@@ -423,9 +423,9 @@ class UserPhraseViewHolder(
                     quoteImage.setOnClickListener(onQuoteClickListener)
                 }
             } else if (isVoiceMessage(it)) {
-                quoteTextDescription.setText(R.string.threads_voice_message)
+                quoteTextDescription.setText(R.string.ecc_voice_message)
             } else {
-                quoteTextDescription.setText(R.string.threads_file)
+                quoteTextDescription.setText(R.string.ecc_file)
             }
         }
     }
@@ -435,7 +435,7 @@ class UserPhraseViewHolder(
         quoteTextDescription.text = campaignMessage.text
         quoteTextHeader.text = campaignMessage.senderName
         val text = parentView.context.resources.getString(
-            R.string.threads_sent_at,
+            R.string.ecc_sent_at,
             fileSdf.format(campaignMessage.receivedDate)
         )
         quoteTextTimeStamp.text = text
@@ -483,17 +483,17 @@ class UserPhraseViewHolder(
             MessageState.STATE_WAS_READ -> updateDrawable(
                 parentView.context,
                 R.drawable.ecc_message_received,
-                R.color.threads_outgoing_message_received_icon
+                R.color.ecc_outgoing_message_received_icon
             )
             MessageState.STATE_SENT -> updateDrawable(
                 parentView.context,
                 R.drawable.ecc_message_sent,
-                R.color.threads_outgoing_message_sent_icon
+                R.color.ecc_outgoing_message_sent_icon
             )
             MessageState.STATE_NOT_SENT -> updateDrawable(
                 parentView.context,
                 R.drawable.ecc_message_waiting,
-                R.color.threads_outgoing_message_not_send_icon
+                R.color.ecc_outgoing_message_not_send_icon
             )
             MessageState.STATE_SENDING -> updateDrawable(
                 parentView.context,
@@ -528,7 +528,7 @@ class UserPhraseViewHolder(
         errorText.visible()
         loader.visible()
         fileImageButton.gone()
-        errorText.text = getString(R.string.threads_message_not_sent)
+        errorText.text = getString(R.string.ecc_message_not_sent)
         rotateAnim.cancel()
         rotateAnim.reset()
     }

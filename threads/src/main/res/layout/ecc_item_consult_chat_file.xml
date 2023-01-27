@@ -8,11 +8,11 @@
 
     <ImageView
         android:id="@+id/consult_avatar"
-        android:layout_width="@dimen/threads_operator_photo_size"
-        android:layout_height="@dimen/threads_operator_photo_size"
+        android:layout_width="@dimen/ecc_operator_photo_size"
+        android:layout_height="@dimen/ecc_operator_photo_size"
         android:layout_alignBottom="@id/bubble"
         tools:src="@drawable/ecc_operator_avatar_placeholder"
-        android:layout_marginStart="@dimen/margin_half"/>
+        android:layout_marginStart="@dimen/ecc_margin_half"/>
 
     <RelativeLayout
         android:id="@+id/bubble"
@@ -25,11 +25,11 @@
             style="@style/CircularProgressButtonStyle"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
-            android:layout_marginStart="@dimen/margin_half"
-            android:layout_marginTop="@dimen/margin_half"
-            android:layout_marginEnd="@dimen/margin_quarter"
-            android:layout_marginBottom="@dimen/margin_three_fourth"
-            android:background="@color/threads_chat_background"
+            android:layout_marginStart="@dimen/ecc_margin_half"
+            android:layout_marginTop="@dimen/ecc_margin_half"
+            android:layout_marginEnd="@dimen/ecc_margin_quarter"
+            android:layout_marginBottom="@dimen/ecc_margin_three_fourth"
+            android:background="@color/ecc_chat_background"
             app:completed_drawable="@drawable/ecc_ic_file_outline_24dp"
             app:in_progress_label="@drawable/ecc_ic_clear_36dp"
             app:start_download_label="@drawable/ecc_ic_vertical_align_bottom_18dp" />
@@ -39,7 +39,7 @@
             android:layout_width="42dp"
             android:layout_height="42dp"
             android:layout_centerVertical="true"
-            android:layout_marginStart="@dimen/margin_half"
+            android:layout_marginStart="@dimen/ecc_margin_half"
             app:srcCompat="@drawable/ecc_im_loading_consult" />
 
         <View
@@ -47,18 +47,18 @@
             android:layout_width="1dp"
             android:layout_height="100dp"
             android:layout_centerVertical="true"
-            android:layout_marginStart="@dimen/margin_quarter"
+            android:layout_marginStart="@dimen/ecc_margin_quarter"
             android:layout_toEndOf="@+id/loader"
-            android:background="@color/threads_incoming_message_text" />
+            android:background="@color/ecc_incoming_message_text" />
 
         <im.threads.ui.widget.textView.BubbleMessageTextView
             android:id="@+id/header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_half"
-            android:layout_marginTop="@dimen/margin_half"
+            android:layout_marginStart="@dimen/ecc_margin_half"
+            android:layout_marginTop="@dimen/ecc_margin_half"
             android:layout_toEndOf="@+id/delimiter"
-            android:textColor="@color/threads_incoming_message_text"
+            android:textColor="@color/ecc_incoming_message_text"
             tools:text="счет на оплатуrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr.pdf" />
 
         <im.threads.ui.widget.textView.BubbleMessageTextView
@@ -67,11 +67,11 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/header"
             android:layout_gravity="center_vertical"
-            android:layout_marginStart="@dimen/margin_half"
-            android:layout_marginTop="@dimen/margin_half"
+            android:layout_marginStart="@dimen/ecc_margin_half"
+            android:layout_marginTop="@dimen/ecc_margin_half"
             android:layout_toEndOf="@+id/delimiter"
-            android:paddingBottom="@dimen/margin_half"
-            android:textColor="@color/threads_incoming_message_text"
+            android:paddingBottom="@dimen/ecc_margin_half"
+            android:textColor="@color/ecc_incoming_message_text"
             tools:text="1,2 mb" />
 
         <im.threads.ui.widget.textView.BubbleTimeTextView
@@ -80,8 +80,8 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/header"
             android:layout_alignParentEnd="true"
-            android:layout_marginTop="@dimen/margin_half"
-            android:textColor="@color/threads_operator_message_timestamp"
+            android:layout_marginTop="@dimen/ecc_margin_half"
+            android:textColor="@color/ecc_operator_message_timestamp"
             tools:text="10:19" />
     </RelativeLayout>
 
@@ -90,11 +90,11 @@
         style="@style/timestamp"
         android:layout_below="@+id/bubble"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="@dimen/margin_half"
+        android:layout_marginTop="@dimen/ecc_margin_half"
         android:paddingStart="60dp"
         android:paddingEnd="0dp"
         android:textColor="#DF0000"
-        android:textSize="@dimen/error_text_size"
+        android:textSize="@dimen/ecc_error_text_size"
         android:visibility="visible"
         tools:text="10:19" />
 

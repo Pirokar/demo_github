@@ -131,15 +131,15 @@ class UserFileViewHolder(
             when (messageState) {
                 MessageState.STATE_WAS_READ -> getColoredDrawable(
                     R.drawable.ecc_image_message_received,
-                    R.color.threads_outgoing_message_image_received_icon
+                    R.color.ecc_outgoing_message_image_received_icon
                 )
                 MessageState.STATE_SENT -> getColoredDrawable(
                     R.drawable.ecc_message_image_sent,
-                    R.color.threads_outgoing_message_image_sent_icon
+                    R.color.ecc_outgoing_message_image_sent_icon
                 )
                 MessageState.STATE_NOT_SENT -> getColoredDrawable(
                     R.drawable.ecc_message_image_waiting,
-                    R.color.threads_outgoing_message_image_not_send_icon
+                    R.color.ecc_outgoing_message_image_not_send_icon
                 )
                 MessageState.STATE_SENDING -> AppCompatResources.getDrawable(
                     itemView.context,

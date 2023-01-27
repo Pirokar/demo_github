@@ -260,7 +260,7 @@ class ConsultVoiceMessageViewHolder(
                 fileSizeTextView.invisible()
                 timeStampTextView.invisible()
                 slider.isEnabled = false
-                audioStatusTextView.setText(R.string.threads_voice_message_is_processing)
+                audioStatusTextView.setText(R.string.ecc_voice_message_is_processing)
             }
             else -> {
                 buttonPlayPause.isClickable = false
@@ -269,7 +269,7 @@ class ConsultVoiceMessageViewHolder(
                 fileSizeTextView.invisible()
                 timeStampTextView.invisible()
                 slider.isEnabled = false
-                audioStatusTextView.setText(R.string.threads_voice_message_error)
+                audioStatusTextView.setText(R.string.ecc_voice_message_error)
             }
         }
     }

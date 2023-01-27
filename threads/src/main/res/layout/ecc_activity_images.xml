@@ -21,10 +21,10 @@
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
-        android:background="@color/threads_attachments_toolbar_background"
-        app:titleTextColor="@color/threads_attachments_toolbar_text"
+        android:background="@color/ecc_attachments_toolbar_background"
+        app:titleTextColor="@color/ecc_attachments_toolbar_text"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/toolbar_height"
+        android:layout_height="@dimen/ecc_toolbar_height"
         android:layout_alignParentTop="true"
         app:contentInsetStart="0dp">
 
@@ -48,7 +48,7 @@
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
                 android:textColor="@android:color/white"
-                android:textSize="@dimen/text_big"/>
+                android:textSize="@dimen/ecc_text_big"/>
 
         </LinearLayout>
 

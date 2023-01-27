@@ -29,31 +29,31 @@
 
                     <ImageView
                         android:id="@+id/loader"
-                        android:layout_width="@dimen/threads_operator_photo_size"
-                        android:layout_height="@dimen/threads_operator_photo_size"
+                        android:layout_width="@dimen/ecc_operator_photo_size"
+                        android:layout_height="@dimen/ecc_operator_photo_size"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginStart="@dimen/margin_material"
-                        android:layout_marginTop="@dimen/margin_material"
-                        android:layout_marginEnd="@dimen/margin_three_fourth"
-                        android:layout_marginBottom="@dimen/margin_material" />
+                        android:layout_marginStart="@dimen/ecc_margin_material"
+                        android:layout_marginTop="@dimen/ecc_margin_material"
+                        android:layout_marginEnd="@dimen/ecc_margin_three_fourth"
+                        android:layout_marginBottom="@dimen/ecc_margin_material" />
 
                     <View
                         android:id="@+id/delimiter"
                         android:layout_width="1dp"
                         android:layout_height="match_parent"
-                        android:layout_marginTop="@dimen/margin_quarter"
-                        android:background="@color/threads_outgoing_message_text" />
+                        android:layout_marginTop="@dimen/ecc_margin_quarter"
+                        android:background="@color/ecc_outgoing_message_text" />
 
                     <im.threads.ui.widget.textView.BubbleMessageTextView
                         android:id="@+id/fileName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/margin_half"
-                        android:layout_marginTop="@dimen/margin_half"
-                        android:layout_marginBottom="@dimen/margin_big"
+                        android:layout_marginStart="@dimen/ecc_margin_half"
+                        android:layout_marginTop="@dimen/ecc_margin_half"
+                        android:layout_marginBottom="@dimen/ecc_margin_big"
                         android:ellipsize="end"
                         android:maxLines="5"
-                        android:textColor="@color/threads_outgoing_message_text"
+                        android:textColor="@color/ecc_outgoing_message_text"
                         tools:text="ddddddddddddddd.pdf" />
 
                 </LinearLayout>
@@ -64,23 +64,23 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentBottom="true"
-                    android:layout_marginBottom="@dimen/margin_half"
+                    android:layout_marginBottom="@dimen/ecc_margin_half"
                     android:background="@drawable/ecc_timestamp_outgoing_underlayer"
-                    android:drawablePadding="@dimen/margin_half"
+                    android:drawablePadding="@dimen/ecc_margin_half"
                     android:paddingLeft="2dp"
                     android:paddingRight="2dp"
-                    android:textColor="@color/threads_outgoing_message_time"
+                    android:textColor="@color/ecc_outgoing_message_time"
                     tools:text="10:19" />
 
             </RelativeLayout>
 
             <FrameLayout
                 android:id="@+id/imageLayout"
-                android:layout_width="@dimen/message_image_size"
-                android:layout_height="@dimen/message_image_size"
+                android:layout_width="@dimen/ecc_message_image_size"
+                android:layout_height="@dimen/ecc_message_image_size"
                 android:layout_alignParentEnd="true"
-                android:layout_marginTop="@dimen/margin_quarter"
-                android:layout_marginBottom="@dimen/margin_quarter"
+                android:layout_marginTop="@dimen/ecc_margin_quarter"
+                android:layout_marginBottom="@dimen/ecc_margin_quarter"
                 android:visibility="gone">
 
                 <FrameLayout
@@ -99,13 +99,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end|bottom"
-                    android:layout_marginEnd="@dimen/timeLabelMarginRight"
-                    android:layout_marginBottom="@dimen/timeLabelMarginBottom"
+                    android:layout_marginEnd="@dimen/ecc_timeLabelMarginRight"
+                    android:layout_marginBottom="@dimen/ecc_timeLabelMarginBottom"
                     android:background="@drawable/ecc_timestamp_outgoing_underlayer"
-                    android:drawablePadding="@dimen/margin_half"
+                    android:drawablePadding="@dimen/ecc_margin_half"
                     android:paddingLeft="2dp"
                     android:paddingRight="2dp"
-                    android:textColor="@color/threads_outgoing_message_time"
+                    android:textColor="@color/ecc_outgoing_message_time"
                     tools:ignore="RelativeOverlap"
                     tools:text="10:19" />
 
@@ -117,11 +117,11 @@
             android:id="@+id/errorText"
             style="@style/timestamp"
             android:layout_gravity="end"
-            android:layout_marginTop="@dimen/margin_quarter"
-            android:layout_marginEnd="@dimen/user_margin_right"
+            android:layout_marginTop="@dimen/ecc_margin_quarter"
+            android:layout_marginEnd="@dimen/ecc_user_margin_right"
             android:gravity="end"
-            android:textColor="@color/threads_error_red_df0000"
-            android:textSize="@dimen/error_text_size"
+            android:textColor="@color/ecc_error_red_df0000"
+            android:textSize="@dimen/ecc_error_text_size"
             android:visibility="gone"
             tools:text="Some error text"
             tools:visibility="visible" />

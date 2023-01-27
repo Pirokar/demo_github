@@ -20,9 +20,9 @@
             android:visibility="visible"
             android:layout_width="64dp"
             android:layout_height="match_parent"
-            android:padding="@dimen/margin_half"
+            android:padding="@dimen/ecc_margin_half"
             android:scaleType="centerInside"
-            android:background="@color/threads_chat_background"
+            android:background="@color/ecc_chat_background"
             app:completed_drawable="@drawable/ecc_ic_file_outline_24dp"
             app:in_progress_label="@drawable/ecc_ic_clear_36dp"
             app:start_download_label="@drawable/ecc_ic_vertical_align_bottom_18dp" />
@@ -33,7 +33,7 @@
             android:layout_width="64dp"
             android:layout_height="match_parent"
             android:background="@null"
-            android:padding="@dimen/margin_half"
+            android:padding="@dimen/ecc_margin_half"
             android:scaleType="centerInside"
             app:srcCompat="@drawable/ecc_ic_file_fill_42dp"/>
     </LinearLayout>
@@ -43,12 +43,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="@dimen/margin_three_fourth"
-        android:layout_marginRight="@dimen/margin_big"
+        android:layout_marginTop="@dimen/ecc_margin_three_fourth"
+        android:layout_marginRight="@dimen/ecc_margin_big"
         android:layout_toRightOf="@id/buttons_layout"
         android:ellipsize="end"
         android:lines="1"
-        android:textColor="@color/threads_files_list"
+        android:textColor="@color/ecc_files_list"
         android:textStyle="bold"
         tools:text="Название файла"/>
 
@@ -57,9 +57,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/file_title"
-        android:layout_marginTop="@dimen/margin_quarter"
+        android:layout_marginTop="@dimen/ecc_margin_quarter"
         android:layout_toRightOf="@+id/buttons_layout"
-        android:textColor="@color/threads_files_list"
+        android:textColor="@color/ecc_files_list"
         tools:text="2.3 Мб"/>
 
     <im.threads.ui.widget.LightCustomFontTextView
@@ -69,8 +69,8 @@
         android:layout_below="@+id/file_title"
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginTop="@dimen/margin_quarter"
-        android:layout_marginRight="@dimen/margin_big"
-        android:textColor="@color/threads_files_list"
+        android:layout_marginTop="@dimen/ecc_margin_quarter"
+        android:layout_marginRight="@dimen/ecc_margin_big"
+        android:textColor="@color/ecc_files_list"
         tools:text="20:15"/>
 </RelativeLayout>

@@ -6,7 +6,7 @@
     android:id="@+id/activity_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/threads_files_medias_screen_background"
+    android:background="@color/ecc_files_medias_screen_background"
     android:orientation="vertical">
 
     <androidx.recyclerview.widget.RecyclerView
@@ -26,8 +26,8 @@
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/toolbar_height"
-        android:background="@color/threads_chat_toolbar"
+        android:layout_height="@dimen/ecc_toolbar_height"
+        android:background="@color/ecc_chat_toolbar"
         app:contentInsetStart="0dp">
 
         <RelativeLayout
@@ -47,12 +47,12 @@
                 android:id="@+id/title"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginEnd="@dimen/toolbar_height"
+                android:layout_marginEnd="@dimen/ecc_toolbar_height"
                 android:layout_toEndOf="@id/back_button"
-                android:text="@string/threads_files_and_media"
+                android:text="@string/ecc_files_and_media"
                 android:gravity="center_vertical"
                 android:textColor="@android:color/white"
-                android:textSize="@dimen/text_big"/>
+                android:textSize="@dimen/ecc_text_big"/>
 
             <im.threads.ui.widget.CustomFontEditText
                 android:id="@+id/searchEditText"
@@ -61,14 +61,14 @@
                 android:layout_marginEnd="40dp"
                 android:layout_toEndOf="@id/back_button"
                 android:background="@null"
-                android:hint="@string/threads_search_files"
+                android:hint="@string/ecc_search_files"
                 android:imeOptions="actionSearch"
                 android:inputType="text"
                 android:lines="1"
-                android:textColor="@color/threads_chat_toolbar_text"
-                android:textColorHint="@color/threads_chat_toolbar_hint"
+                android:textColor="@color/ecc_chat_toolbar_text"
+                android:textColorHint="@color/ecc_chat_toolbar_hint"
                 android:textCursorDrawable="@null"
-                android:textSize="@dimen/text_big"
+                android:textSize="@dimen/ecc_text_big"
                 android:visibility="gone" />
 
             <ImageButton
@@ -78,7 +78,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:background="@android:color/transparent"
-                android:contentDescription="@string/threads_talkback_search_icon"
+                android:contentDescription="@string/ecc_talkback_search_icon"
                 android:visibility="gone"
                 app:srcCompat="@drawable/ecc_ic_search_white_24dp" />
 
@@ -90,8 +90,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/toolbar"
-        android:layout_marginStart="@dimen/margin_material"
-        android:layout_marginEnd="@dimen/margin_material"
+        android:layout_marginStart="@dimen/ecc_margin_material"
+        android:layout_marginEnd="@dimen/ecc_margin_material"
         android:gravity="center"
         android:orientation="vertical"
         android:visibility="visible">
@@ -101,15 +101,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            tools:text="@string/threads_no_media_and_files_header" />
+            tools:text="@string/ecc_no_media_and_files_header" />
 
         <TextView
             android:id="@+id/emptyListDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_half"
+            android:layout_marginTop="@dimen/ecc_margin_half"
             android:gravity="center"
-            tools:text="@string/threads_no_media_and_files_description" />
+            tools:text="@string/ecc_no_media_and_files_description" />
 
     </LinearLayout>
 

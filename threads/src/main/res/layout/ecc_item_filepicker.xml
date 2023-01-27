@@ -4,11 +4,11 @@
     android:id="@+id/text"
     android:layout_width="match_parent"
     android:layout_height="56dp"
-    android:layout_marginLeft="@dimen/margin_material"
+    android:layout_marginLeft="@dimen/ecc_margin_material"
     android:gravity="center_vertical"
     android:orientation="vertical"
     android:text="Exmaple text"
-    android:textColor="@color/threads_gray_text"
-    android:textSize="@dimen/text_medium">
+    android:textColor="@color/ecc_gray_text"
+    android:textSize="@dimen/ecc_text_medium">
 
 </im.threads.ui.widget.CustomFontTextView>

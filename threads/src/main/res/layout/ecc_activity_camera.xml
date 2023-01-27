@@ -17,18 +17,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginLeft="@dimen/margin_material"
-            android:layout_marginRight="@dimen/margin_material"
+            android:layout_marginLeft="@dimen/ecc_margin_material"
+            android:layout_marginRight="@dimen/ecc_margin_material"
             android:gravity="center_vertical">
 
             <im.threads.ui.widget.CustomFontTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignBottom="@+id/p"
-                android:layout_marginRight="@dimen/margin_half"
+                android:layout_marginRight="@dimen/ecc_margin_half"
                 android:layout_marginBottom="2dp"
                 android:layout_toStartOf="@+id/p"
-                android:text="@string/threads_press"
+                android:text="@string/ecc_press"
                 android:textColor="@android:color/white" />
 
             <ImageView
@@ -42,10 +42,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignBottom="@+id/p"
-                android:layout_marginLeft="@dimen/margin_half"
+                android:layout_marginLeft="@dimen/ecc_margin_half"
                 android:layout_marginBottom="2dp"
                 android:layout_toEndOf="@+id/p"
-                android:text="@string/threads_to_photo"
+                android:text="@string/ecc_to_photo"
                 android:textColor="@android:color/white" />
 
         </RelativeLayout>
@@ -124,7 +124,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="@string/threads_retake" />
+                android:text="@string/ecc_retake" />
 
             <im.threads.ui.widget.CustomFontButton
                 android:id="@+id/send"
@@ -132,7 +132,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="@string/threads_send" />
+                android:text="@string/ecc_send" />
 
         </LinearLayout>
 
