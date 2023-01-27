@@ -146,6 +146,7 @@
 
     <string name="ecc_loading"></string>
 
+    <string name="ecc_not_enough_space">Insufficient storage available</string>
     <string name="ecc_history_loading_message">The chat history is being loaded, please wait</string>
     <string name="ecc_consult_portrait">Consult portrait</string>
     <string name="ecc_file_not_supported">No application support this type of file</string>

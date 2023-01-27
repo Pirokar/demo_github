@@ -1,6 +1,8 @@
 package im.threads.business.secureDatabase
 
 import android.content.Context
+import android.database.sqlite.SQLiteDiskIOException
+import im.threads.R
 import im.threads.business.annotation.OpenForTesting
 import im.threads.business.models.ChatItem
 import im.threads.business.models.ConsultInfo
@@ -9,6 +11,7 @@ import im.threads.business.models.FileDescription
 import im.threads.business.models.MessageState
 import im.threads.business.models.SpeechMessageUpdate
 import im.threads.business.models.UserPhrase
+import im.threads.business.utils.Balloon
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
@@ -16,7 +19,9 @@ import io.reactivex.schedulers.Schedulers
 @OpenForTesting
 class DatabaseHolder(private val context: Context) {
 
-    init { checkAndUpdate() }
+    init {
+        checkAndUpdate()
+    }
 
     private var myOpenHelper = ThreadsDbHelper.getInstance(context)
 
@@ -107,7 +112,12 @@ class DatabaseHolder(private val context: Context) {
     }
 
     private fun needMigrateToNewDB(helper: im.threads.business.database.ThreadsDbHelper): Boolean {
-        return helper.getChatItems(0, -1).size > 0 || helper.allFileDescriptions.size > 0
+        return try {
+            helper.getChatItems(0, -1).size > 0 || helper.allFileDescriptions.size > 0
+        } catch (exc: SQLiteDiskIOException) {
+            Balloon.show(context, context.getString(R.string.ecc_not_enough_space))
+            false
+        }
     }
 
     private fun <T> tryExecute(block: () -> T?): T? {
