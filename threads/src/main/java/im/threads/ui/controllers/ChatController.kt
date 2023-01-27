@@ -202,7 +202,7 @@ class ChatController private constructor() {
                         if (query?.length == 1) {
                             Runnable {
                                 fragment?.showProgressBar()
-                                fragment?.showBalloon(appContext.getString(R.string.threads_history_loading_message))
+                                fragment?.showBalloon(appContext.getString(R.string.ecc_history_loading_message))
                             }.runOnUiThread()
                         }
                         return@flatMap messenger.downloadMessagesTillEnd()
@@ -1168,7 +1168,6 @@ class ChatController private constructor() {
         }
         if (chatItem is ConsultPhrase && isActive) {
             handleQuickReplies(listOf<ChatItem>(chatItem))
-            BaseConfig.instance.transport.markMessagesAsRead(listOf(chatItem.id))
         }
         if (chatItem is SimpleSystemMessage && isActive) {
             hideQuickReplies()

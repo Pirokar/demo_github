@@ -98,7 +98,7 @@ public final class PermissionsActivity extends AppCompatActivity {
         if (permissions == null) {
             finish();
         }
-        setContentView(R.layout.activity_permissions);
+        setContentView(R.layout.ecc_activity_permissions);
         requiresCheck = true;
     }
 
@@ -167,9 +167,9 @@ public final class PermissionsActivity extends AppCompatActivity {
 
     private void showMissingPermissionDialog() {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(PermissionsActivity.this);
-        dialogBuilder.setTitle(R.string.threads_permissions_help);
+        dialogBuilder.setTitle(R.string.ecc_permissions_help);
         dialogBuilder.setMessage(getPermissionText());
-        dialogBuilder.setNegativeButton(R.string.threads_close, (dialog, which) -> {
+        dialogBuilder.setNegativeButton(R.string.ecc_close, (dialog, which) -> {
             if (PermissionsChecker.clickedNeverAskAgain(PermissionsActivity.this, permissions)) {
                 // Если во всех кликнуто - БОЛЬШЕ НЕ ПОКАЗЫВАТЬ, то закрыть с соответствующим результатом
                 neverAskAgain();
@@ -178,7 +178,7 @@ public final class PermissionsActivity extends AppCompatActivity {
                 allPermissionsDenied();
             }
         });
-        dialogBuilder.setPositiveButton(R.string.threads_permissions_settings, (dialog, which) -> startAppSettings());
+        dialogBuilder.setPositiveButton(R.string.ecc_permissions_settings, (dialog, which) -> startAppSettings());
         dialogBuilder.setOnCancelListener(dialog -> allPermissionsDenied());
         final AlertDialog alertDialog = dialogBuilder.create();
         alertDialog.setOnShowListener(dialog -> {
@@ -190,7 +190,7 @@ public final class PermissionsActivity extends AppCompatActivity {
 
     private int getPermissionText() {
         if (textId == TEXT_DEFAULT) {
-            textId = R.string.threads_permissions_string_help_text;
+            textId = R.string.ecc_permissions_string_help_text;
         }
         return textId;
     }

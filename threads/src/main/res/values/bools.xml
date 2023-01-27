@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <bool name="threads_chat_is_light_status_bar">false</bool>
-    <bool name="threads_chat_fixed_chat_title">false</bool>
-    <bool name="threads_chat_fixed_chat_subtitle">false</bool>
-    <bool name="threads_chat_subtitle_is_visible">true</bool>
-    <bool name="threads_chat_title_shadow_is_visible">true</bool>
-    <bool name="threads_chat_search_enabled">true</bool>
+    <bool name="ecc_chat_is_light_status_bar">false</bool>
+    <bool name="ecc_chat_fixed_chat_title">false</bool>
+    <bool name="ecc_chat_fixed_chat_subtitle">false</bool>
+    <bool name="ecc_chat_subtitle_is_visible">true</bool>
+    <bool name="ecc_chat_title_shadow_is_visible">true</bool>
+    <bool name="ecc_chat_search_enabled">true</bool>
 </resources>

@@ -24,7 +24,7 @@ public final class FilesDateStampHolder extends RecyclerView.ViewHolder {
     private ChatStyle style;
 
     public FilesDateStampHolder(ViewGroup parent) {
-        super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_files_date_mark, parent, false));
+        super(LayoutInflater.from(parent.getContext()).inflate(R.layout.ecc_item_files_date_mark, parent, false));
         mDateTextView = itemView.findViewById(R.id.text);
         LinearLayout linearLayout = itemView.findViewById(R.id.line);
         if (Locale.getDefault().getLanguage().equalsIgnoreCase("ru")) {
@@ -42,9 +42,9 @@ public final class FilesDateStampHolder extends RecyclerView.ViewHolder {
         Calendar current = Calendar.getInstance();
         date.setTimeInMillis(timeStamp);
         if (date.get(Calendar.DAY_OF_YEAR) == current.get(Calendar.DAY_OF_YEAR)) {
-            mDateTextView.setText(itemView.getResources().getString(R.string.threads_recently));
+            mDateTextView.setText(itemView.getResources().getString(R.string.ecc_recently));
         } else if ((current.get(Calendar.DAY_OF_YEAR) - date.get(Calendar.DAY_OF_YEAR) == 1)) {
-            mDateTextView.setText(itemView.getResources().getString(R.string.threads_yesterday));
+            mDateTextView.setText(itemView.getResources().getString(R.string.ecc_yesterday));
         } else {
             mDateTextView.setText(sdf.format(new Date(timeStamp)));
         }

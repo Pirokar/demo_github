@@ -33,7 +33,7 @@ public final class WelcomeScreen extends LinearLayout {
         if (inflater == null) {
             return;
         }
-        inflater.inflate(R.layout.view_welcome, this, true);
+        inflater.inflate(R.layout.ecc_view_welcome, this, true);
         final ChatStyle style = Config.getInstance().getChatStyle();
         initBackgroundColor(style);
         initLogo(style);

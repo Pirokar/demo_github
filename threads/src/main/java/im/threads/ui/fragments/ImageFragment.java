@@ -37,7 +37,7 @@ public final class ImageFragment extends Fragment {
     @NonNull
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_image, container, false);
+        View v = inflater.inflate(R.layout.ecc_fragment_image, container, false);
         if (sdf == null) {
             hoursminutesSdf = new SimpleDateFormat("hh:mm", Locale.getDefault());
             if (Locale.getDefault().getLanguage().equals("ru")) {
@@ -58,7 +58,7 @@ public final class ImageFragment extends Fragment {
             from.setText("");
         }
         if (fd.getTimeStamp() != 0) {
-            date.setText(sdf.format(fd.getTimeStamp()) + " " + getString(R.string.threads_in) + " " + hoursminutesSdf.format(fd.getTimeStamp()));
+            date.setText(sdf.format(fd.getTimeStamp()) + " " + getString(R.string.ecc_in) + " " + hoursminutesSdf.format(fd.getTimeStamp()));
         } else {
             date.setText("");
         }

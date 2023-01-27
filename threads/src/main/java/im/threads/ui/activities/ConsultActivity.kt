@@ -15,13 +15,13 @@ import im.threads.R
 import im.threads.business.imageLoading.loadImage
 import im.threads.business.models.ConsultInfo
 import im.threads.business.utils.FileUtils.convertRelativeUrlToAbsolute
-import im.threads.databinding.ActivityConsultPageBinding
+import im.threads.databinding.EccActivityConsultPageBinding
 import im.threads.ui.config.Config
 import im.threads.ui.utils.setColorFilter
 
 internal open class ConsultActivity : BaseActivity() {
-    private val binding: ActivityConsultPageBinding by lazy {
-        ActivityConsultPageBinding.inflate(layoutInflater)
+    private val binding: EccActivityConsultPageBinding by lazy {
+        EccActivityConsultPageBinding.inflate(layoutInflater)
     }
     private val config: Config by lazy { Config.getInstance() }
 
@@ -51,7 +51,7 @@ internal open class ConsultActivity : BaseActivity() {
     }
 
     private fun setStatusBarColor() {
-        val statusBarColor = ContextCompat.getColor(baseContext, R.color.threads_black_transparent)
+        val statusBarColor = ContextCompat.getColor(baseContext, R.color.ecc_black_transparent)
         val isStatusBarLight = resources.getBoolean(config.getChatStyle().windowLightStatusBarResId)
         super.setStatusBarColor(isStatusBarLight, statusBarColor)
     }
@@ -91,7 +91,7 @@ internal open class ConsultActivity : BaseActivity() {
             RelativeLayout.LayoutParams.MATCH_PARENT,
             RelativeLayout.LayoutParams.WRAP_CONTENT
         ).apply {
-            setMargins(0, resources.getDimension(R.dimen.margin_big).toInt(), 0, 0)
+            setMargins(0, resources.getDimension(R.dimen.ecc_margin_big).toInt(), 0, 0)
         }
         toolbar.layoutParams = layoutParams
     }

@@ -159,7 +159,7 @@ abstract class BaseHolder internal constructor(
             it.setBackgroundColor(
                 ContextCompat.getColor(
                     itemView.context,
-                    if (isHighlighted) style.chatHighlightingColor else R.color.threads_transparent
+                    if (isHighlighted) style.chatHighlightingColor else R.color.ecc_transparent
                 )
             )
         }
@@ -217,10 +217,10 @@ abstract class BaseHolder internal constructor(
      * @param code код ошибки
      */
     protected fun getErrorImageResByErrorCode(code: ErrorStateEnum) = when (code) {
-        ErrorStateEnum.DISALLOWED -> R.drawable.im_wrong_file
-        ErrorStateEnum.TIMEOUT -> R.drawable.im_unexpected
-        ErrorStateEnum.UNEXPECTED -> R.drawable.im_unexpected
-        ErrorStateEnum.ANY -> R.drawable.im_unexpected
+        ErrorStateEnum.DISALLOWED -> R.drawable.ecc_im_wrong_file
+        ErrorStateEnum.TIMEOUT -> R.drawable.ecc_im_unexpected
+        ErrorStateEnum.UNEXPECTED -> R.drawable.ecc_im_unexpected
+        ErrorStateEnum.ANY -> R.drawable.ecc_im_unexpected
     }
 
     /**
@@ -228,10 +228,10 @@ abstract class BaseHolder internal constructor(
      * @param code код ошибки
      */
     protected fun getErrorStringResByErrorCode(code: ErrorStateEnum) = when (code) {
-        ErrorStateEnum.DISALLOWED -> R.string.threads_disallowed_error_during_load_file
-        ErrorStateEnum.TIMEOUT -> R.string.threads_timeout_error_during_load_file
-        ErrorStateEnum.UNEXPECTED -> R.string.threads_some_error_during_load_file
-        ErrorStateEnum.ANY -> R.string.threads_some_error_during_load_file
+        ErrorStateEnum.DISALLOWED -> R.string.ecc_disallowed_error_during_load_file
+        ErrorStateEnum.TIMEOUT -> R.string.ecc_timeout_error_during_load_file
+        ErrorStateEnum.UNEXPECTED -> R.string.ecc_some_error_during_load_file
+        ErrorStateEnum.ANY -> R.string.ecc_some_error_during_load_file
     }
 
     /**
@@ -437,7 +437,7 @@ abstract class BaseHolder internal constructor(
     }
 
     protected fun initAnimation(view: ImageView, @ColorRes colorOfLoader: Int) {
-        view.setImageResource(R.drawable.im_loading_themed)
+        view.setImageResource(R.drawable.ecc_im_loading_themed)
         ColorsHelper.setTint(
             itemView.context,
             view,

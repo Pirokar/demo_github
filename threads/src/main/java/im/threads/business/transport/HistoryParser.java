@@ -148,7 +148,7 @@ public final class HistoryParser {
                             );
                         } else {
                             if (fileDescription != null) {
-                                fileDescription.setFrom(BaseConfig.instance.context.getString(R.string.threads_I));
+                                fileDescription.setFrom(BaseConfig.instance.context.getString(R.string.ecc_I));
                             }
                             MessageState sentState = message.isRead() ? MessageState.STATE_WAS_READ : MessageState.STATE_SENT;
                             out.add(new UserPhrase(uuid, phraseText, quote, timeStamp, fileDescription, sentState, message.getThreadId()));
@@ -217,7 +217,7 @@ public final class HistoryParser {
             if (quoteFromHistory.getOperator() != null) {
                 authorName = quoteFromHistory.getOperator().getAliasOrName();
             } else {
-                authorName = BaseConfig.instance.context.getString(R.string.threads_I);
+                authorName = BaseConfig.instance.context.getString(R.string.ecc_I);
             }
             if (quoteString != null || quoteFileDescription != null) {
                 quote = new Quote(quoteFromHistory.getUuid(), authorName, quoteString, quoteFileDescription, timestamp);

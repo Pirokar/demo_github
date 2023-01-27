@@ -16,7 +16,7 @@ public final class SpaceViewHolder extends RecyclerView.ViewHolder {
     private View root;
 
     public SpaceViewHolder(ViewGroup parent) {
-        super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_free_space, parent, false));
+        super(LayoutInflater.from(parent.getContext()).inflate(R.layout.ecc_item_free_space, parent, false));
         root = itemView.findViewById(R.id.root);
     }
 

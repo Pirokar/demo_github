@@ -72,7 +72,7 @@ class BordersCreator(
 
         val parentViewLayoutParams = parentView.layoutParams as MarginLayoutParams
         val defaultLeft = if (isIncomingMessage) {
-            resources.getDimensionPixelSize(R.dimen.margin_eight)
+            resources.getDimensionPixelSize(R.dimen.ecc_margin_eight)
         } else {
             0
         }
@@ -86,7 +86,7 @@ class BordersCreator(
         parentView.invalidate()
         parentView.requestLayout()
 
-        val minimumVerticalMargin = resources.getDimensionPixelSize(R.dimen.margin_quarter)
+        val minimumVerticalMargin = resources.getDimensionPixelSize(R.dimen.ecc_margin_quarter)
         val rootViewLayoutParams = rootView.layoutParams as MarginLayoutParams
         if (borders.top < minimumVerticalMargin) {
             rootViewLayoutParams.topMargin = minimumVerticalMargin - borders.top

@@ -53,7 +53,7 @@ abstract class VoiceMessageBaseHolder internal constructor(
 
     fun stopLoader() {
         cancelAnimation()
-        buttonPlayPause.setImageResource(R.drawable.threads_voice_message_play)
+        buttonPlayPause.setImageResource(R.drawable.ecc_voice_message_play)
         resetTintForPlayPauseButton()
         buttonPlayPause.tag = ""
     }

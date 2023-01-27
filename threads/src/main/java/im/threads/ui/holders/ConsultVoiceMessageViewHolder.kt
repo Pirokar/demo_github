@@ -43,7 +43,7 @@ class ConsultVoiceMessageViewHolder(
     openGraphParser: OpenGraphParser,
     fdMediaPlayer: FileDescriptionMediaPlayer
 ) : VoiceMessageBaseHolder(
-    LayoutInflater.from(parent.context).inflate(R.layout.item_consult_voice_message, parent, false),
+    LayoutInflater.from(parent.context).inflate(R.layout.ecc_item_consult_voice_message, parent, false),
     highlightingStream,
     openGraphParser,
     fdMediaPlayer,
@@ -179,7 +179,7 @@ class ConsultVoiceMessageViewHolder(
                 consultAvatar.loadImage(
                     FileUtils.convertRelativeUrlToAbsolute(it),
                     listOf(ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.FIT_XY),
-                    errorDrawableResId = R.drawable.threads_operator_avatar_placeholder,
+                    errorDrawableResId = R.drawable.ecc_operator_avatar_placeholder,
                     modifications = listOf(ImageModifications.CircleCropModification)
                 )
             } ?: run {
@@ -260,7 +260,7 @@ class ConsultVoiceMessageViewHolder(
                 fileSizeTextView.invisible()
                 timeStampTextView.invisible()
                 slider.isEnabled = false
-                audioStatusTextView.setText(R.string.threads_voice_message_is_processing)
+                audioStatusTextView.setText(R.string.ecc_voice_message_is_processing)
             }
             else -> {
                 buttonPlayPause.isClickable = false
@@ -269,7 +269,7 @@ class ConsultVoiceMessageViewHolder(
                 fileSizeTextView.invisible()
                 timeStampTextView.invisible()
                 slider.isEnabled = false
-                audioStatusTextView.setText(R.string.threads_voice_message_error)
+                audioStatusTextView.setText(R.string.ecc_voice_message_error)
             }
         }
     }

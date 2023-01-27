@@ -84,7 +84,7 @@ class ThreadsLib(context: Context) : ThreadsLibBase(context) {
             var fileDescription: FileDescription? = null
             if (fileUri != null) {
                 fileDescription = FileDescription(
-                    Config.getInstance().context.getString(R.string.threads_I),
+                    Config.getInstance().context.getString(R.string.ecc_I),
                     fileUri,
                     getFileSize(fileUri),
                     System.currentTimeMillis()

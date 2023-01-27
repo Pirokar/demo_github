@@ -18,7 +18,7 @@ public final class GalleryBucketImageHolder extends RecyclerView.ViewHolder {
     private TextView mSizeTextView;
 
     public GalleryBucketImageHolder(ViewGroup parent) {
-        super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_gallery_bucket, parent, false));
+        super(LayoutInflater.from(parent.getContext()).inflate(R.layout.ecc_item_gallery_bucket, parent, false));
         mImageView = itemView.findViewById(R.id.image);
         mNameTextView = itemView.findViewById(R.id.bucket_name);
         mSizeTextView = itemView.findViewById(R.id.photos_count);
