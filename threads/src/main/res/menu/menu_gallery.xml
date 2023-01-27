@@ -6,6 +6,6 @@
     <item
         app:showAsAction="always"
         android:id="@+id/download"
-        android:icon="@drawable/ic_file_download_white_24dp"
+        android:icon="@drawable/ecc_ic_file_download_white_24dp"
         android:title="@string/threads_download" />
 </menu>

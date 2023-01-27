@@ -14,7 +14,7 @@
         android:layout_width="@dimen/threads_welcome_logo_width"
         android:layout_height="@dimen/threads_welcome_logo_height"
         android:layout_gravity="center_horizontal"
-        app:srcCompat="@drawable/threads_welcome_logo"/>
+        app:srcCompat="@drawable/ecc_welcome_logo"/>
 
     <im.threads.ui.widget.textView.PlaceholderTitleTextView
         android:id="@+id/welcome_title"

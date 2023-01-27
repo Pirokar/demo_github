@@ -211,8 +211,8 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
         builder.setGroup(GROUP_KEY_PUSH)
         pushSmall.setTextViewText(R.id.title, context.getString(config.getChatStyle().defTitleResId))
         pushBig.setTextViewText(R.id.title, context.getString(config.getChatStyle().defTitleResId))
-        pushSmall.setImageViewResource(R.id.icon_large_bg, R.drawable.ic_circle_40dp)
-        pushBig.setImageViewResource(R.id.icon_large_bg, R.drawable.ic_circle_40dp)
+        pushSmall.setImageViewResource(R.id.icon_large_bg, R.drawable.ecc_ic_circle_40dp)
+        pushBig.setImageViewResource(R.id.icon_large_bg, R.drawable.ecc_ic_circle_40dp)
         builder.color = context.resources.getColor(config.getChatStyle().pushBackgroundColorResId)
         pushSmall.setInt(
             R.id.icon_large_bg,
@@ -285,7 +285,7 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
                 val b =
                     BitmapFactory.decodeResource(
                         context.resources,
-                        R.drawable.attach_file_grey_48x48
+                        R.drawable.ecc_attach_file_grey_48x48
                     )
                 pushSmall.setImageViewBitmap(R.id.attach_image, b)
                 pushBig.setImageViewBitmap(R.id.attach_image, b)
@@ -295,7 +295,7 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
                 val b =
                     BitmapFactory.decodeResource(
                         context.resources,
-                        R.drawable.insert_photo_grey_48x48
+                        R.drawable.ecc_insert_photo_grey_48x48
                     )
                 pushSmall.setImageViewBitmap(R.id.attach_image, b)
                 pushBig.setImageViewBitmap(R.id.attach_image, b)
@@ -382,7 +382,7 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
     ) {
         val big = BitmapFactory.decodeResource(
             context.resources,
-            R.drawable.threads_operator_avatar_placeholder
+            R.drawable.ecc_operator_avatar_placeholder
         )
         pushSmall.setImageViewBitmap(R.id.icon_large, big)
         pushBig.setImageViewBitmap(R.id.icon_large, big)
@@ -432,9 +432,9 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
             if (!messageContent.hasImage && !messageContent.hasPlainFiles) {
                 builder.setSmallIcon(config.getChatStyle().defPushIconResId)
             } else if (messageContent.hasPlainFiles) {
-                builder.setSmallIcon(R.drawable.attach_file_grey_48x48)
+                builder.setSmallIcon(R.drawable.ecc_attach_file_grey_48x48)
             } else {
-                builder.setSmallIcon(R.drawable.insert_photo_grey_48x48)
+                builder.setSmallIcon(R.drawable.ecc_insert_photo_grey_48x48)
             }
         }
         val finalAvatarPath = avatarPath

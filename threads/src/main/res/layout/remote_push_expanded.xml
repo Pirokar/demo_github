@@ -85,7 +85,7 @@
         android:layout_below="@+id/delimeter"
         android:layout_marginLeft="-40dp"
         android:background="@null"
-        android:drawableLeft="@drawable/ic_reply_gray_24dp"
+        android:drawableLeft="@drawable/ecc_ic_reply_gray_24dp"
         android:textAllCaps="true"
         android:textColor="@android:color/black"
         android:textSize="@dimen/text_small" />

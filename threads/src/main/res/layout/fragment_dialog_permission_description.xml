@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:importantForAccessibility="no"
-            tools:src="@drawable/threads_image_placeholder" />
+            tools:src="@drawable/ecc_image_placeholder" />
 
         <TextView
             android:id="@+id/title"

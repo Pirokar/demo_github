@@ -70,7 +70,7 @@
             android:layout_height="64dp"
             android:layout_gravity="right|bottom"
             android:background="@android:color/transparent"
-            app:srcCompat="@drawable/threads_ic_send_button"/>
+            app:srcCompat="@drawable/ecc_ic_send_button"/>
 
     </LinearLayout>
 

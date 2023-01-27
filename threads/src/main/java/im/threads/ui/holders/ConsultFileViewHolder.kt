@@ -89,7 +89,7 @@ class ConsultFileViewHolder(
         highlighted: Boolean,
         buttonClickListener: View.OnClickListener,
         onLongClickListener: OnLongClickListener,
-        onAvatarClickListener: View.OnClickListener,
+        onAvatarClickListener: View.OnClickListener
     ) {
         subscribeForHighlighting(consultPhrase, rootLayout)
         val fileDescription = consultPhrase.fileDescription
@@ -107,7 +107,7 @@ class ConsultFileViewHolder(
                 }
             } else if (fileDescription.state == AttachmentStateEnum.PENDING) {
                 mCircularProgressButton.visibility = View.INVISIBLE
-                loader.setImageResource(R.drawable.im_loading_consult)
+                loader.setImageResource(R.drawable.ecc_im_loading_consult)
                 loader.isVisible = true
                 errortext.isVisible = false
                 val rotate = RotateAnimation(
@@ -153,7 +153,7 @@ class ConsultFileViewHolder(
                 mConsultAvatar.loadImage(
                     FileUtils.convertRelativeUrlToAbsolute(consultPhrase.avatarPath),
                     listOf(ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.FIT_XY),
-                    errorDrawableResId = R.drawable.threads_operator_avatar_placeholder,
+                    errorDrawableResId = R.drawable.ecc_operator_avatar_placeholder,
                     autoRotateWithExif = true,
                     modifications = listOf(ImageModifications.CircleCropModification)
                 )

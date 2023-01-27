@@ -53,7 +53,7 @@ public final class BottomGalleryImageHolder extends BaseHolder {
             }
         } else {
             drawable = AppCompatResources.getDrawable(itemView.getContext(),
-                    R.drawable.ic_panorama_fish_eye_white_36dp);
+                    R.drawable.ecc_ic_panorama_fish_eye_white_36dp);
         }
         chosenMark.setBackground(drawable);
     }

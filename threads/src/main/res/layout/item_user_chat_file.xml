@@ -32,10 +32,10 @@
                 android:id="@+id/buttonDownload"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/threads_ic_file_outline_24dp"
-                app:completed_drawable="@drawable/threads_ic_file_outline_24dp"
-                app:in_progress_label="@drawable/threads_ic_clear_36dp"
-                app:start_download_label="@drawable/threads_ic_vertical_align_bottom_18dp" />
+                android:background="@drawable/ecc_ic_file_outline_24dp"
+                app:completed_drawable="@drawable/ecc_ic_file_outline_24dp"
+                app:in_progress_label="@drawable/ecc_ic_clear_36dp"
+                app:start_download_label="@drawable/ecc_ic_vertical_align_bottom_18dp" />
 
             <ImageView
                 android:id="@+id/loader"
@@ -87,7 +87,7 @@
             android:layout_marginBottom="@dimen/margin_half"
             android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
-            android:background="@drawable/timestamp_outgoing_underlayer"
+            android:background="@drawable/ecc_timestamp_outgoing_underlayer"
             android:drawablePadding="@dimen/margin_half"
             android:paddingLeft="2dp"
             android:paddingRight="2dp"

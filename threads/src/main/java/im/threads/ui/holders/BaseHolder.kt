@@ -216,10 +216,10 @@ abstract class BaseHolder internal constructor(
      * @param code код ошибки
      */
     protected fun getErrorImageResByErrorCode(code: ErrorStateEnum) = when (code) {
-        ErrorStateEnum.DISALLOWED -> R.drawable.im_wrong_file
-        ErrorStateEnum.TIMEOUT -> R.drawable.im_unexpected
-        ErrorStateEnum.UNEXPECTED -> R.drawable.im_unexpected
-        ErrorStateEnum.ANY -> R.drawable.im_unexpected
+        ErrorStateEnum.DISALLOWED -> R.drawable.ecc_im_wrong_file
+        ErrorStateEnum.TIMEOUT -> R.drawable.ecc_im_unexpected
+        ErrorStateEnum.UNEXPECTED -> R.drawable.ecc_im_unexpected
+        ErrorStateEnum.ANY -> R.drawable.ecc_im_unexpected
     }
 
     /**
@@ -426,7 +426,7 @@ abstract class BaseHolder internal constructor(
     }
 
     protected fun initAnimation(view: ImageView, @ColorRes colorOfLoader: Int) {
-        view.setImageResource(R.drawable.im_loading_themed)
+        view.setImageResource(R.drawable.ecc_im_loading_themed)
         ColorsHelper.setTint(
             itemView.context,
             view,

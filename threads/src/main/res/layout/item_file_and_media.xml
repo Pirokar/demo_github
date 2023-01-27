@@ -23,9 +23,9 @@
             android:padding="@dimen/margin_half"
             android:scaleType="centerInside"
             android:background="@color/threads_chat_background"
-            app:completed_drawable="@drawable/threads_ic_file_outline_24dp"
-            app:in_progress_label="@drawable/threads_ic_clear_36dp"
-            app:start_download_label="@drawable/threads_ic_vertical_align_bottom_18dp" />
+            app:completed_drawable="@drawable/ecc_ic_file_outline_24dp"
+            app:in_progress_label="@drawable/ecc_ic_clear_36dp"
+            app:start_download_label="@drawable/ecc_ic_vertical_align_bottom_18dp" />
 
         <ImageButton
             android:id="@+id/file_button"
@@ -35,7 +35,7 @@
             android:background="@null"
             android:padding="@dimen/margin_half"
             android:scaleType="centerInside"
-            app:srcCompat="@drawable/threads_ic_file_fill_42dp"/>
+            app:srcCompat="@drawable/ecc_ic_file_fill_42dp"/>
     </LinearLayout>
 
     <im.threads.ui.widget.BoldCustomFontTextView

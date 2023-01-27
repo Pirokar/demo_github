@@ -195,8 +195,8 @@ public class ChatStyleBuilderHelper {
                         R.color.alt_threads_incoming_play_pause_button,
                         R.color.alt_threads_outgoing_play_pause_button,
                         R.color.alt_threads_preview_play_pause_button,
-                        R.drawable.alt_threads_voice_message_play,
-                        R.drawable.alt_threads_voice_message_pause
+                        R.drawable.alt_ecc_voice_message_play,
+                        R.drawable.alt_ecc__voice_message_pause
                 )
                 .setEmptyStateStyle(
                         R.color.alt_threads_empty_state_background,

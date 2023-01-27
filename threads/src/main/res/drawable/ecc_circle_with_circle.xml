@@ -12,7 +12,7 @@
             android:width="36dp"
             android:height="36dp"
             android:gravity="center"
-            android:drawable="@drawable/ring_orange"
+            android:drawable="@drawable/ecc_ring_orange"
             />
 
     </layer-list>

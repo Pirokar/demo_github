@@ -453,7 +453,7 @@ class ConsultPhraseHolder(
                 consultAvatar.loadImage(
                     FileUtils.convertRelativeUrlToAbsolute(consultPhrase.avatarPath),
                     listOf(ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.FIT_XY),
-                    errorDrawableResId = R.drawable.threads_operator_avatar_placeholder,
+                    errorDrawableResId = R.drawable.ecc_operator_avatar_placeholder,
                     autoRotateWithExif = true,
                     modifications = listOf(ImageModifications.CircleCropModification)
                 )

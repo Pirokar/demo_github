@@ -122,11 +122,11 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginTop="@dimen/margin_half"
                 android:layout_marginBottom="@dimen/margin_half"
-                android:background="@drawable/threads_ic_file_outline_24dp"
+                android:background="@drawable/ecc_ic_file_outline_24dp"
                 android:visibility="gone"
-                app:completed_drawable="@drawable/threads_ic_file_outline_24dp"
-                app:in_progress_label="@drawable/threads_ic_clear_36dp"
-                app:start_download_label="@drawable/threads_ic_vertical_align_bottom_18dp" />
+                app:completed_drawable="@drawable/ecc_ic_file_outline_24dp"
+                app:in_progress_label="@drawable/ecc_ic_clear_36dp"
+                app:start_download_label="@drawable/ecc_ic_vertical_align_bottom_18dp" />
 
             <ImageView
                 android:id="@+id/loader"
@@ -225,7 +225,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/threads_voice_message_play"
+                    app:srcCompat="@drawable/ecc_voice_message_play"
                     android:contentDescription="@string/threads_play_button" />
 
                 <com.google.android.material.slider.Slider

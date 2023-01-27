@@ -64,7 +64,7 @@ class GalleryActivity : BaseActivity(), OnItemClick, OnGalleryItemClick {
             resources.getBoolean(getInstance().getChatStyle().windowLightStatusBarResId)
         super.setStatusBarColor(isStatusBarLight, statusBarColor)
         val backButtonDrawable =
-            AppCompatResources.getDrawable(this, R.drawable.ic_arrow_back_white_24dp)
+            AppCompatResources.getDrawable(this, R.drawable.ecc_ic_arrow_back_white_24dp)
         setDrawableColor(this, backButtonDrawable, style.chatToolbarTextColorResId)
         supportActionBar?.apply {
             setBackgroundDrawable(ColorDrawable(toolBarColor))
@@ -76,7 +76,7 @@ class GalleryActivity : BaseActivity(), OnItemClick, OnGalleryItemClick {
         binding.toolbar.title
         binding.searchEditText.setTextColor(textColor)
         binding.searchEditText.setHintTextColor(hintTextColor)
-        binding.clearSearchButton.setImageResource(R.drawable.ic_clear_gray_30dp)
+        binding.clearSearchButton.setImageResource(R.drawable.ecc_ic_clear_gray_30dp)
         binding.title.setTextColor(textColor)
         ColorsHelper.setTint(this, binding.clearSearchButton, style.chatToolbarTextColorResId)
         ColorsHelper.setTint(this, binding.backButton, style.chatToolbarTextColorResId)
