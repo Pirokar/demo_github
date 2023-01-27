@@ -130,7 +130,7 @@ class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionCl
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu_gallery, menu)
+        menuInflater.inflate(R.menu.ecc_menu_gallery, menu)
         if (menu.size() > 0) {
             setDrawableColor(
                 this,

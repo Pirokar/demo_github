@@ -1140,7 +1140,7 @@ public final class ChatFragment extends BaseFragment implements
         PopupMenu popup = new PopupMenu(activity, binding.popupMenuButton);
         popup.setOnMenuItemClickListener(this);
         MenuInflater inflater = popup.getMenuInflater();
-        inflater.inflate(R.menu.threads_menu_main, popup.getMenu());
+        inflater.inflate(R.menu.ecc_menu_main, popup.getMenu());
         Menu menu = popup.getMenu();
         MenuItem searchMenuItem = menu.findItem(R.id.search);
         if (searchMenuItem != null) {
