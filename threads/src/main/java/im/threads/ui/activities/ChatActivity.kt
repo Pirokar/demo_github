@@ -10,7 +10,7 @@ import im.threads.ui.fragments.ChatFragment
 class ChatActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_chat_activity)
+        setContentView(R.layout.ecc_activity_chat_activity)
     }
 
     override fun onBackPressed() {

@@ -24,7 +24,7 @@ public final class ScheduleInfoViewHolder extends RecyclerView.ViewHolder {
     private ChatStyle style;
 
     public ScheduleInfoViewHolder(ViewGroup parent) {
-        super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_schedule_info, parent, false));
+        super(LayoutInflater.from(parent.getContext()).inflate(R.layout.ecc_item_schedule_info, parent, false));
         icon = itemView.findViewById(R.id.schedule_icon);
         text = itemView.findViewById(R.id.schedule_text);
         style = Config.getInstance().getChatStyle();

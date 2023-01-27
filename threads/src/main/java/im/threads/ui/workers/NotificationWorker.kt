@@ -156,7 +156,7 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
                 if (notificationChannel == null) {
                     notificationChannel = NotificationChannel(
                         CHANNEL_ID,
-                        context.getString(R.string.threads_channel_name),
+                        context.getString(R.string.ecc_channel_name),
                         config.notificationImportance
                     )
                     notificationChannel?.let {
@@ -205,14 +205,14 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
     ): Notification {
         val builder: NotificationCompat.Builder =
             NotificationCompat.Builder(context, CHANNEL_ID)
-        val pushSmall = RemoteViews(context.packageName, R.layout.remote_push_small)
-        val pushBig = RemoteViews(context.packageName, R.layout.remote_push_expanded)
+        val pushSmall = RemoteViews(context.packageName, R.layout.ecc_remote_push_small)
+        val pushBig = RemoteViews(context.packageName, R.layout.ecc_remote_push_expanded)
         builder.setContentTitle(context.getString(config.getChatStyle().defTitleResId))
         builder.setGroup(GROUP_KEY_PUSH)
         pushSmall.setTextViewText(R.id.title, context.getString(config.getChatStyle().defTitleResId))
         pushBig.setTextViewText(R.id.title, context.getString(config.getChatStyle().defTitleResId))
-        pushSmall.setImageViewResource(R.id.icon_large_bg, R.drawable.ic_circle_40dp)
-        pushBig.setImageViewResource(R.id.icon_large_bg, R.drawable.ic_circle_40dp)
+        pushSmall.setImageViewResource(R.id.icon_large_bg, R.drawable.ecc_ic_circle_40dp)
+        pushBig.setImageViewResource(R.id.icon_large_bg, R.drawable.ecc_ic_circle_40dp)
         builder.color = context.resources.getColor(config.getChatStyle().pushBackgroundColorResId)
         pushSmall.setInt(
             R.id.icon_large_bg,
@@ -285,7 +285,7 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
                 val b =
                     BitmapFactory.decodeResource(
                         context.resources,
-                        R.drawable.attach_file_grey_48x48
+                        R.drawable.ecc_attach_file_grey_48x48
                     )
                 pushSmall.setImageViewBitmap(R.id.attach_image, b)
                 pushBig.setImageViewBitmap(R.id.attach_image, b)
@@ -295,7 +295,7 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
                 val b =
                     BitmapFactory.decodeResource(
                         context.resources,
-                        R.drawable.insert_photo_grey_48x48
+                        R.drawable.ecc_insert_photo_grey_48x48
                     )
                 pushSmall.setImageViewBitmap(R.id.attach_image, b)
                 pushBig.setImageViewBitmap(R.id.attach_image, b)
@@ -311,7 +311,7 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
                 )
             }
         }
-        pushBig.setTextViewText(R.id.reply, context.getString(R.string.threads_reply))
+        pushBig.setTextViewText(R.id.reply, context.getString(R.string.ecc_reply))
         builder.setContent(pushSmall)
         val pend = getChatIntent(inputData.getString(EXTRA_APP_MARKER), config)
         builder.setContentIntent(pend)
@@ -382,7 +382,7 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
     ) {
         val big = BitmapFactory.decodeResource(
             context.resources,
-            R.drawable.threads_operator_avatar_placeholder
+            R.drawable.ecc_operator_avatar_placeholder
         )
         pushSmall.setImageViewBitmap(R.id.icon_large, big)
         pushBig.setImageViewBitmap(R.id.icon_large, big)
@@ -413,7 +413,7 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
             builder.setSmallIcon(config.getChatStyle().defPushIconResId)
             builder.addAction(
                 0,
-                context.getString(R.string.threads_answer),
+                context.getString(R.string.ecc_answer),
                 QuickAnswerActivity.createPendingIntent(context)
             )
         } else if (messageContent != null) {
@@ -425,16 +425,16 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
             if (messageContent.isNeedAnswer) {
                 builder.addAction(
                     0,
-                    context.getString(R.string.threads_answer),
+                    context.getString(R.string.ecc_answer),
                     QuickAnswerActivity.createPendingIntent(context)
                 )
             }
             if (!messageContent.hasImage && !messageContent.hasPlainFiles) {
                 builder.setSmallIcon(config.getChatStyle().defPushIconResId)
             } else if (messageContent.hasPlainFiles) {
-                builder.setSmallIcon(R.drawable.attach_file_grey_48x48)
+                builder.setSmallIcon(R.drawable.ecc_attach_file_grey_48x48)
             } else {
-                builder.setSmallIcon(R.drawable.insert_photo_grey_48x48)
+                builder.setSmallIcon(R.drawable.ecc_insert_photo_grey_48x48)
             }
         }
         val finalAvatarPath = avatarPath
@@ -472,7 +472,7 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
     ) {
         val notificationBuilder: NotificationCompat.Builder =
             NotificationCompat.Builder(context, CHANNEL_ID)
-        notificationBuilder.setContentTitle(context.getString(R.string.threads_message_were_unsent))
+        notificationBuilder.setContentTitle(context.getString(R.string.ecc_message_were_unsent))
         val pend = getChatIntent(appMarker, config)
         val iconResId = config.getChatStyle().defPushIconResId
         notificationBuilder.setSmallIcon(iconResId)

@@ -12,6 +12,7 @@ import im.threads.business.models.FileDescription
 import im.threads.business.models.FileDescriptionUri
 import im.threads.business.ogParser.OpenGraphParser
 import im.threads.ui.config.Config
+import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.utils.visible
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -52,8 +53,22 @@ abstract class VoiceMessageBaseHolder internal constructor(
 
     fun stopLoader() {
         cancelAnimation()
-        buttonPlayPause.setImageResource(R.drawable.threads_voice_message_play)
+        buttonPlayPause.setImageResource(R.drawable.ecc_voice_message_play)
+        resetTintForPlayPauseButton()
         buttonPlayPause.tag = ""
+    }
+
+    private fun resetTintForPlayPauseButton() {
+        val color = if (isIncomingMessage) {
+            style.incomingPlayPauseButtonColor
+        } else {
+            style.outgoingPlayPauseButtonColor
+        }
+        ColorsHelper.setTint(
+            itemView.context,
+            buttonPlayPause,
+            color
+        )
     }
 
     fun subscribeForVoiceMessageDownloaded() {
@@ -71,6 +86,7 @@ abstract class VoiceMessageBaseHolder internal constructor(
                             val isCurrentPath = ourDownloadPath == fileDescriptionUri.downloadPath
                             val isClickedPath = ourDownloadPath == fdMediaPlayer.clickedDownloadPath
 
+                            resetTintForPlayPauseButton()
                             if (isCurrentPath && isClickedPath) {
                                 stopLoader()
                                 fileDescription?.fileUri = fileDescriptionUri.fileUri

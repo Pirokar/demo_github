@@ -54,7 +54,7 @@ class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionCl
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_images)
+        setContentView(R.layout.ecc_activity_images)
         initToolbar(findViewById(R.id.toolbar), findViewById(R.id.toolbar_shadow))
         mViewPager = findViewById(R.id.pager)
         mViewPager.addOnPageChangeListener(this)
@@ -130,7 +130,7 @@ class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionCl
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu_gallery, menu)
+        menuInflater.inflate(R.menu.ecc_menu_gallery, menu)
         if (menu.size() > 0) {
             setDrawableColor(
                 this,
@@ -196,11 +196,11 @@ class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionCl
                         {
                             Balloon.show(
                                 this,
-                                getString(R.string.threads_saved_to_downloads)
+                                getString(R.string.ecc_saved_to_downloads)
                             )
                         }
                     ) { throwable: Throwable? ->
-                        Balloon.show(this, getString(R.string.threads_unable_to_save))
+                        Balloon.show(this, getString(R.string.ecc_unable_to_save))
                         error("downloadImage", throwable)
                     }
             )
@@ -239,7 +239,7 @@ class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionCl
             PermissionsActivity.startActivityForResult(
                 this,
                 CODE_REQUEST_DOWNLOAD,
-                R.string.threads_permissions_write_external_storage_help_text,
+                R.string.ecc_permissions_write_external_storage_help_text,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
             )
         }
@@ -253,7 +253,7 @@ class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionCl
     override fun onPageSelected(position: Int) {
         Runnable {
             val title =
-                "${mViewPager.currentItem + 1} ${getString(R.string.threads_from)} $collectionSize"
+                "${mViewPager.currentItem + 1} ${getString(R.string.ecc_from)} $collectionSize"
             setTitle(title, titleTextView)
         }.runOnUiThread()
     }

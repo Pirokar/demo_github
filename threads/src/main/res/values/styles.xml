@@ -5,7 +5,7 @@
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@android:color/holo_green_light</item>
         <item name="colorPrimaryDark">@android:color/holo_green_dark</item>
-        <item name="android:windowBackground">@color/threads_white_dark</item>
+        <item name="android:windowBackground">@color/ecc_white_dark</item>
         <item name="android:textColor">@android:color/white</item>
         <item name="android:itemTextAppearance">@style/menuItemTheme</item>
 
@@ -43,7 +43,7 @@
     <style name="ThreadsStyleConsultPage" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <!-- Customize your theme here. -->
         <!--  <item name="colorPrimaryDark">@color/black_transparent</item>-->
-        <item name="android:windowBackground">@color/threads_white_dark</item>
+        <item name="android:windowBackground">@color/ecc_white_dark</item>
         <item name="android:textColor">@android:color/white</item>
         <item name="windowActionBar">false</item>
 
@@ -55,7 +55,7 @@
         <!-- Customize your theme here. -->
         <item name="colorPrimaryDark">#282828</item>
         <item name="windowActionBar">false</item>
-        <item name="android:windowBackground">@color/threads_white_dark</item>
+        <item name="android:windowBackground">@color/ecc_white_dark</item>
         <item name="android:textColor">@android:color/white</item>
         <item name="android:itemTextAppearance">@style/menuItemThemeDark</item>
 
@@ -74,14 +74,14 @@
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_weight">1</item>
-        <item name="android:background">@drawable/threads_chat_input_background</item>
-        <item name="android:minHeight">@dimen/threads_input_height</item>
-        <item name="android:textColorHint">@color/threads_input_hint</item>
-        <item name="android:textColor">@color/threads_input_text</item>
-        <item name="android:paddingBottom">@dimen/margin_quarter</item>
-        <item name="android:paddingLeft">@dimen/margin_three_fourth</item>
-        <item name="android:paddingRight">@dimen/margin_three_fourth</item>
-        <item name="android:paddingTop">@dimen/margin_quarter</item>
+        <item name="android:background">@drawable/ecc_chat_input_background</item>
+        <item name="android:minHeight">@dimen/ecc_input_height</item>
+        <item name="android:textColorHint">@color/ecc_input_hint</item>
+        <item name="android:textColor">@color/ecc_input_text</item>
+        <item name="android:paddingBottom">@dimen/ecc_margin_quarter</item>
+        <item name="android:paddingLeft">@dimen/ecc_margin_three_fourth</item>
+        <item name="android:paddingRight">@dimen/ecc_margin_three_fourth</item>
+        <item name="android:paddingTop">@dimen/ecc_margin_quarter</item>
     </style>
 
     <style name="Base.Widget.AppCompat.Button.Borderless.BottomSheetButtonsStyle">
@@ -89,7 +89,7 @@
         <item name="android:textColor">@android:color/holo_green_light</item>
         <item name="android:paddingBottom">36dp</item>
         <item name="android:paddingTop">30dp</item>
-        <item name="android:textSize">@dimen/text_small</item>
+        <item name="android:textSize">@dimen/ecc_text_small</item>
     </style>
 
     <style name="CircularProgressButtonStyle">
@@ -108,7 +108,7 @@
     <style name="timestamp">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingBottom">@dimen/margin_half</item>
+        <item name="android:paddingBottom">@dimen/ecc_margin_half</item>
         <item name="android:textColor">@android:color/white</item>
     </style>
 
@@ -116,29 +116,29 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_alignParentRight">true</item>
-        <item name="android:layout_marginStart">@dimen/user_margin_left</item>
-        <item name="android:layout_marginEnd">@dimen/user_margin_right</item>
-        <item name="android:layout_marginTop">@dimen/margin_quarter</item>
-        <item name="android:layout_marginBottom">@dimen/margin_quarter</item>
+        <item name="android:layout_marginStart">@dimen/ecc_user_margin_left</item>
+        <item name="android:layout_marginEnd">@dimen/ecc_user_margin_right</item>
+        <item name="android:layout_marginTop">@dimen/ecc_margin_quarter</item>
+        <item name="android:layout_marginBottom">@dimen/ecc_margin_quarter</item>
     </style>
 
     <style name="consultBubble">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginEnd">@dimen/consultant_margin_right</item>
-        <item name="android:layout_marginTop">@dimen/margin_quarter</item>
-        <item name="android:layout_marginBottom">@dimen/margin_quarter</item>
+        <item name="android:layout_marginEnd">@dimen/ecc_consultant_margin_right</item>
+        <item name="android:layout_marginTop">@dimen/ecc_margin_quarter</item>
+        <item name="android:layout_marginBottom">@dimen/ecc_margin_quarter</item>
     </style>
 
     <style name="ThemeOverlay.ChatCenter.Slider.User" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <item name="colorPrimary">@color/threads_white</item>
+        <item name="colorPrimary">@color/ecc_white</item>
     </style>
 
     <style name="ThemeOverlay.ChatCenter.Slider.Consult" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <item name="colorPrimary">@color/threads_teal_009688</item>
+        <item name="colorPrimary">@color/ecc_teal_009688</item>
     </style>
 
     <style name="ThemeOverlay.ChatCenter.Slider.Preview" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <item name="colorPrimary">@color/threads_black</item>
+        <item name="colorPrimary">@color/ecc_black</item>
     </style>
 </resources>

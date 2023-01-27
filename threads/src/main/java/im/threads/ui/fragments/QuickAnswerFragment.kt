@@ -41,7 +41,7 @@ class QuickAnswerFragment : BaseDialogFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val style = getInstance().getChatStyle()
-        val view = inflater.inflate(R.layout.dialog_fast_answer, container, false)
+        val view = inflater.inflate(R.layout.ecc_dialog_fast_answer, container, false)
         val consultNameTextView = view.findViewById<TextView>(R.id.consult_name)
         val textView = view.findViewById<TextView>(R.id.question)
         editText = view.findViewById(R.id.answer)
@@ -159,7 +159,7 @@ class QuickAnswerFragment : BaseDialogFragment() {
     private fun updateInputEnable(enableModel: InputFieldEnableModel) {
         editText?.isEnabled = enableModel.isEnabledInputField
         if (!enableModel.isEnabledInputField) {
-            showToast(requireContext().getString(R.string.threads_message_sending_is_unavailable))
+            showToast(requireContext().getString(R.string.ecc_message_sending_is_unavailable))
         }
     }
 

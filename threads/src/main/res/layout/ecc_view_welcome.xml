@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rootLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/ecc_chat_background"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/welcome_logo"
+        android:layout_width="@dimen/ecc_welcome_logo_width"
+        android:layout_height="@dimen/ecc_welcome_logo_height"
+        android:layout_gravity="center_horizontal"
+        app:srcCompat="@drawable/ecc_welcome_logo"/>
+
+    <im.threads.ui.widget.textView.PlaceholderTitleTextView
+        android:id="@+id/welcome_title"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/ecc_margin_half"
+        android:gravity="center"
+        android:text="@string/ecc_welcome_screen_title_text"
+        android:textColor="@color/ecc_welcome_screen_title"
+        android:textSize="@dimen/ecc_welcome_screen_title"
+        android:textStyle="bold" />
+
+    <im.threads.ui.widget.textView.PlaceholderSubtitleTextView
+        android:id="@+id/welcome_subtitle"
+        android:layout_width="220dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/ecc_margin_quarter"
+        android:gravity="center"
+        android:text="@string/ecc_welcome_screen_subtitle_text"
+        android:textColor="@color/ecc_welcome_screen_subtitle"
+        android:textSize="@dimen/ecc_welcome_screen_subtitle"/>
+
+</LinearLayout>

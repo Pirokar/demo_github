@@ -23,7 +23,7 @@ public final class GalleryItemHolder extends RecyclerView.ViewHolder {
     private final ChatStyle mStyle;
 
     public GalleryItemHolder(final ViewGroup parent) {
-        super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_gallery_image, parent, false));
+        super(LayoutInflater.from(parent.getContext()).inflate(R.layout.ecc_item_gallery_image, parent, false));
 
         mImageView = itemView.findViewById(R.id.image);
         mCheckBox = itemView.findViewById(R.id.checkbox);
@@ -59,7 +59,7 @@ public final class GalleryItemHolder extends RecyclerView.ViewHolder {
             }
         } else {
             drawable = AppCompatResources.getDrawable(itemView.getContext(),
-                    R.drawable.ic_panorama_fish_eye_white_36dp);
+                    R.drawable.ecc_ic_panorama_fish_eye_white_36dp);
         }
         mCheckBox.setButtonDrawable(drawable);
     }

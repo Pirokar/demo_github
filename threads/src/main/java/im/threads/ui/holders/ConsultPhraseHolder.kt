@@ -56,7 +56,7 @@ class ConsultPhraseHolder(
     openGraphParser: OpenGraphParser
 ) : BaseHolder(
     LayoutInflater.from(parent.context)
-        .inflate(R.layout.item_consultant_text_with_file, parent, false),
+        .inflate(R.layout.ecc_item_consultant_text_with_file, parent, false),
     highlightingStream,
     openGraphParser
 ) {
@@ -255,7 +255,7 @@ class ConsultPhraseHolder(
             (bubbleLayout.layoutParams as MarginLayoutParams).let {
                 it.width = ActionBar.LayoutParams.WRAP_CONTENT
                 it.height = ActionBar.LayoutParams.WRAP_CONTENT
-                it.marginEnd = resources.getDimensionPixelSize(R.dimen.user_margin_right)
+                it.marginEnd = resources.getDimensionPixelSize(R.dimen.ecc_user_margin_right)
             }
             bubbleLayout.invalidate()
             bubbleLayout.requestLayout()
@@ -294,7 +294,7 @@ class ConsultPhraseHolder(
         val paddingRight = resources.getDimensionPixelSize(chatStyle.bubbleIncomingPaddingRight)
         val paddingBottom = resources.getDimensionPixelSize(chatStyle.bubbleIncomingPaddingBottom)
         ogDataLayout.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom)
-        ogDataLayout.layoutParams.width = resources.getDimensionPixelSize(R.dimen.message_image_size)
+        ogDataLayout.layoutParams.width = resources.getDimensionPixelSize(R.dimen.ecc_message_image_size)
         startLoaderAnimation()
         val loadConfig = ImageLoader
             .get()
@@ -337,15 +337,15 @@ class ConsultPhraseHolder(
         fileImage.visibility = View.GONE
         circularProgressButton.visibility = View.GONE
         rightTextHeader.text = if (quote.phraseOwnerTitle == null) itemView.context
-            .getString(R.string.threads_I) else quote.phraseOwnerTitle
+            .getString(R.string.ecc_I) else quote.phraseOwnerTitle
         rightTextDescription.text = quote.text
         rightTextFileStamp.text = itemView.context
-            .getString(R.string.threads_sent_at, quoteSdf.format(Date(quote.timeStamp)))
+            .getString(R.string.ecc_sent_at, quoteSdf.format(Date(quote.timeStamp)))
         viewUtils.setClickListener(fileRow as ViewGroup, onQuoteClickListener)
         val quoteFileDescription = quote.fileDescription
         if (quoteFileDescription != null) {
             if (FileUtils.isVoiceMessage(quoteFileDescription)) {
-                rightTextDescription.setText(R.string.threads_voice_message)
+                rightTextDescription.setText(R.string.ecc_voice_message)
             } else {
                 if (isImage(quote.fileDescription)) {
                     fileImage.visibility = View.VISIBLE
@@ -439,7 +439,7 @@ class ConsultPhraseHolder(
             }
             rightTextDescription.text = getFileDescriptionText(fileDescription)
             rightTextFileStamp.text = itemView.context.getString(
-                R.string.threads_sent_at,
+                R.string.ecc_sent_at,
                 quoteSdf.format(Date(fileDescription.timeStamp))
             )
             circularProgressButton.setProgress(if (fileDescription.fileUri != null) 100 else fileDescription.downloadProgress)
@@ -452,8 +452,8 @@ class ConsultPhraseHolder(
             consultPhrase.avatarPath?.let {
                 consultAvatar.loadImage(
                     FileUtils.convertRelativeUrlToAbsolute(consultPhrase.avatarPath),
-                    listOf(ImageView.ScaleType.FIT_XY),
-                    errorDrawableResId = R.drawable.threads_operator_avatar_placeholder,
+                    listOf(ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.FIT_XY),
+                    errorDrawableResId = R.drawable.ecc_operator_avatar_placeholder,
                     autoRotateWithExif = true,
                     modifications = listOf(ImageModifications.CircleCropModification)
                 )

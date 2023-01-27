@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="imageBubbleSize" type="dimen" format="float">0.75</item>
+    <item name="ecc_imageBubbleSize" type="dimen" format="float">0.75</item>
 </resources>

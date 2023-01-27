@@ -32,53 +32,53 @@ public class PluralsTest {
 
     @Test
     public void checkPluralUnreadMessages() {
-        String pluralString = appContext.getResources().getQuantityString(R.plurals.threads_unread_messages, quantity, quantity);
+        String pluralString = appContext.getResources().getQuantityString(R.plurals.ecc_unread_messages, quantity, quantity);
         Assert.assertNotNull(pluralString);
     }
 
     @Config(qualifiers="en")
     @Test
     public void checkENPluralUnreadMessages() {
-        String pluralEnString = appContext.getResources().getQuantityString(R.plurals.threads_unread_messages, quantity, quantity);
+        String pluralEnString = appContext.getResources().getQuantityString(R.plurals.ecc_unread_messages, quantity, quantity);
         Assert.assertNotNull(pluralEnString);
     }
 
     @Test
     public void checkPluralNewMessages() {
-        String pluralString = appContext.getResources().getQuantityString(R.plurals.threads_new_messages, quantity, quantity);
+        String pluralString = appContext.getResources().getQuantityString(R.plurals.ecc_new_messages, quantity, quantity);
         Assert.assertNotNull(pluralString);
     }
 
     @Config(qualifiers="en")
     @Test
     public void checkENPluralNewMessages() {
-        String pluralEnString = appContext.getResources().getQuantityString(R.plurals.threads_new_messages, quantity, quantity);
+        String pluralEnString = appContext.getResources().getQuantityString(R.plurals.ecc_new_messages, quantity, quantity);
         Assert.assertNotNull(pluralEnString);
     }
 
     @Test
     public void checkPluralImages() {
-        String pluralString = appContext.getResources().getQuantityString(R.plurals.threads_images, quantity, quantity);
+        String pluralString = appContext.getResources().getQuantityString(R.plurals.ecc_images, quantity, quantity);
         Assert.assertNotNull(pluralString);
     }
 
     @Config(qualifiers="en")
     @Test
     public void checkENPluralImages() {
-        String pluralEnString = appContext.getResources().getQuantityString(R.plurals.threads_images, quantity, quantity);
+        String pluralEnString = appContext.getResources().getQuantityString(R.plurals.ecc_images, quantity, quantity);
         Assert.assertNotNull(pluralEnString);
     }
 
     @Test
     public void checkPluralFiles() {
-        String pluralString = appContext.getResources().getQuantityString(R.plurals.threads_files, quantity, quantity);
+        String pluralString = appContext.getResources().getQuantityString(R.plurals.ecc_files, quantity, quantity);
         Assert.assertNotNull(pluralString);
     }
 
     @Config(qualifiers="en")
     @Test
     public void checkENPluralFiles() {
-        String pluralEnString = appContext.getResources().getQuantityString(R.plurals.threads_files, quantity, quantity);
+        String pluralEnString = appContext.getResources().getQuantityString(R.plurals.ecc_files, quantity, quantity);
         Assert.assertNotNull(pluralEnString);
     }
 

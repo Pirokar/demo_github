@@ -34,9 +34,9 @@ import java.util.Locale
 class ConsultFileViewHolder(
     parent: ViewGroup,
     highlightingStream: PublishSubject<ChatItem>,
-    openGraphParser: OpenGraphParser,
+    openGraphParser: OpenGraphParser
 ) : BaseHolder(
-    LayoutInflater.from(parent.context).inflate(R.layout.item_consult_chat_file, parent, false),
+    LayoutInflater.from(parent.context).inflate(R.layout.ecc_item_consult_chat_file, parent, false),
     highlightingStream,
     openGraphParser
 ) {
@@ -89,7 +89,7 @@ class ConsultFileViewHolder(
         highlighted: Boolean,
         buttonClickListener: View.OnClickListener,
         onLongClickListener: OnLongClickListener,
-        onAvatarClickListener: View.OnClickListener,
+        onAvatarClickListener: View.OnClickListener
     ) {
         subscribeForHighlighting(consultPhrase, rootLayout)
         val fileDescription = consultPhrase.fileDescription
@@ -101,13 +101,13 @@ class ConsultFileViewHolder(
                 loader.setImageResource(getErrorImageResByErrorCode(fileDescription.errorCode))
                 if (fileDescription.errorMessage.isNullOrEmpty()) {
                     errortext.text =
-                        config.context.getString(R.string.threads_some_error_during_load_file)
+                        config.context.getString(R.string.ecc_some_error_during_load_file)
                 } else {
                     errortext.text = fileDescription.errorMessage
                 }
             } else if (fileDescription.state == AttachmentStateEnum.PENDING) {
                 mCircularProgressButton.visibility = View.INVISIBLE
-                loader.setImageResource(R.drawable.im_loading_consult)
+                loader.setImageResource(R.drawable.ecc_im_loading_consult)
                 loader.isVisible = true
                 errortext.isVisible = false
                 val rotate = RotateAnimation(
@@ -152,8 +152,8 @@ class ConsultFileViewHolder(
             if (!TextUtils.isEmpty(consultPhrase.avatarPath)) {
                 mConsultAvatar.loadImage(
                     FileUtils.convertRelativeUrlToAbsolute(consultPhrase.avatarPath),
-                    listOf(ImageView.ScaleType.FIT_XY),
-                    errorDrawableResId = R.drawable.threads_operator_avatar_placeholder,
+                    listOf(ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.FIT_XY),
+                    errorDrawableResId = R.drawable.ecc_operator_avatar_placeholder,
                     autoRotateWithExif = true,
                     modifications = listOf(ImageModifications.CircleCropModification)
                 )

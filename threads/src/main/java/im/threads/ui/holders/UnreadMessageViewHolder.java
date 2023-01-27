@@ -16,7 +16,7 @@ public final class UnreadMessageViewHolder extends RecyclerView.ViewHolder {
     private TextView mTextView;
 
     public UnreadMessageViewHolder(ViewGroup parent) {
-        super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_unread_counter, parent, false));
+        super(LayoutInflater.from(parent.getContext()).inflate(R.layout.ecc_item_unread_counter, parent, false));
         mTextView = itemView.findViewById(R.id.text);
         ChatStyle style = Config.getInstance().getChatStyle();
         mTextView.setTextColor(ContextCompat.getColor(itemView.getContext(), style.chatSystemMessageTextColor));

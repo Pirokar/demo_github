@@ -23,86 +23,84 @@ class DatabaseHolder(private val context: Context) {
         checkAndUpdate()
     }
 
-    private val myOpenHelper = ThreadsDbHelper.getInstance(context)
+    private var myOpenHelper = ThreadsDbHelper.getInstance(context)
 
-    fun cleanDatabase() {
-        myOpenHelper.cleanDatabase()
-    }
+    fun cleanDatabase() = tryExecute { myOpenHelper.cleanDatabase() }
 
-    fun getChatItems(offset: Int, limit: Int): List<ChatItem> =
-        myOpenHelper.getChatItems(offset, limit)
+    fun getChatItems(offset: Int, limit: Int): List<ChatItem> = tryExecute { myOpenHelper.getChatItems(offset, limit) } ?: arrayListOf()
 
-    fun getSendingChatItems(): List<UserPhrase> =
-        myOpenHelper.getSendingChatItems()
+    fun getSendingChatItems(): List<UserPhrase> = tryExecute { myOpenHelper.getSendingChatItems() } ?: arrayListOf()
 
-    fun getChatItem(messageUuid: String?): ChatItem? = myOpenHelper.getChatItem(messageUuid)
+    fun getChatItem(messageUuid: String?): ChatItem? = tryExecute { myOpenHelper.getChatItem(messageUuid) }
 
-    fun putChatItems(items: List<ChatItem?>?) {
-        myOpenHelper.putChatItems(items)
-    }
+    fun putChatItems(items: List<ChatItem?>?) = tryExecute { myOpenHelper.putChatItems(items) }
 
-    fun putChatItem(chatItem: ChatItem?): Boolean = myOpenHelper.putChatItem(chatItem)
+    fun putChatItem(chatItem: ChatItem?): Boolean = tryExecute { myOpenHelper.putChatItem(chatItem) } ?: false
 
     // FileDescriptions
     val allFileDescriptions: Single<List<FileDescription?>?>
-        get() = Single.fromCallable { myOpenHelper.getAllFileDescriptions() }
+        get() = Single.fromCallable { tryExecute { myOpenHelper.getAllFileDescriptions() } }
             .subscribeOn(Schedulers.io())
 
     // UserPhrase
     fun updateFileDescription(fileDescription: FileDescription) {
-        myOpenHelper.updateFileDescription(fileDescription)
+        tryExecute { myOpenHelper.updateFileDescription(fileDescription) }
     }
 
     fun updateChatItemByTimeStamp(chatItem: ChatItem) {
-        myOpenHelper.updateChatItemByTimeStamp(chatItem)
+        tryExecute { myOpenHelper.updateChatItemByTimeStamp(chatItem) }
     }
 
-    fun getConsultInfo(id: String): ConsultInfo? = myOpenHelper.getLastConsultInfo(id)
+    fun getConsultInfo(id: String): ConsultInfo? = tryExecute { myOpenHelper.getLastConsultInfo(id) }
 
-    fun getUnsendUserPhrase(count: Int): List<UserPhrase> = myOpenHelper.getUnsendUserPhrase(count)
+    fun getUnsendUserPhrase(count: Int): List<UserPhrase> = tryExecute { myOpenHelper.getUnsendUserPhrase(count) } ?: arrayListOf()
 
     // ConsultPhrase
     fun setStateOfUserPhraseByMessageId(uuid: String?, messageState: MessageState?) {
-        myOpenHelper.setUserPhraseStateByMessageId(uuid, messageState)
+        tryExecute { myOpenHelper.setUserPhraseStateByMessageId(uuid, messageState) }
     }
 
     val lastConsultPhrase: Single<ConsultPhrase?> =
-        Single.fromCallable { myOpenHelper.getLastConsultPhrase() }
+        Single.fromCallable { tryExecute { myOpenHelper.getLastConsultPhrase() } }
             .subscribeOn(Schedulers.io())
 
     fun setAllConsultMessagesWereRead(): Completable {
-        return Completable.fromCallable { myOpenHelper.setAllConsultMessagesWereRead() }
+        return Completable.fromCallable { tryExecute { myOpenHelper.setAllConsultMessagesWereRead() } }
             .subscribeOn(Schedulers.io())
     }
 
     fun setAllConsultMessagesWereReadInThread(threadId: Long?): Completable {
-        return Completable.fromCallable { myOpenHelper.setAllConsultMessagesWereReadWithThreadId(threadId) }
+        return Completable.fromCallable { tryExecute { myOpenHelper.setAllConsultMessagesWereReadWithThreadId(threadId) } }
             .subscribeOn(Schedulers.io())
     }
 
     fun setMessageWasRead(uuid: String?) {
-        uuid?.let { myOpenHelper.setMessageWasRead(it) }
+        uuid?.let { tryExecute { myOpenHelper.setMessageWasRead(it) } }
     }
 
     fun saveSpeechMessageUpdate(speechMessageUpdate: SpeechMessageUpdate?) {
-        myOpenHelper.speechMessageUpdated(speechMessageUpdate)
+        tryExecute { myOpenHelper.speechMessageUpdated(speechMessageUpdate) }
     }
 
     fun setNotSentSurveyDisplayMessageToFalse(): Completable {
-        return Completable.fromCallable { myOpenHelper.setNotSentSurveyDisplayMessageToFalse() }
+        return Completable.fromCallable { tryExecute { myOpenHelper.setNotSentSurveyDisplayMessageToFalse() } }
             .subscribeOn(Schedulers.io())
     }
 
     fun setOldRequestResolveThreadDisplayMessageToFalse(): Completable {
-        return Completable.fromCallable { myOpenHelper.setOldRequestResolveThreadDisplayMessageToFalse() }
+        return Completable.fromCallable { tryExecute { myOpenHelper.setOldRequestResolveThreadDisplayMessageToFalse() } }
             .subscribeOn(Schedulers.io())
     }
 
-    fun getMessagesCount(): Int = myOpenHelper.getMessagesCount()
+    fun getMessagesCount(): Int = tryExecute { myOpenHelper.getMessagesCount() } ?: 0
 
-    fun getUnreadMessagesCount(): Int = myOpenHelper.getUnreadMessagesCount()
+    fun getUnreadMessagesCount(): Int = tryExecute { myOpenHelper.getUnreadMessagesCount() } ?: 0
 
-    fun getUnreadMessagesUuid(): List<String?> = myOpenHelper.getUnreadMessagesUuid()
+    fun getUnreadMessagesUuid(): List<String?> = tryExecute { myOpenHelper.getUnreadMessagesUuid() } ?: arrayListOf()
+
+    private fun checkIsDatabaseCorrupted() {
+        myOpenHelper = ThreadsDbHelper.getInstance(context)
+    }
 
     private fun checkAndUpdate() {
         val oldHelper = im.threads.business.database.ThreadsDbHelper(context)
@@ -119,6 +117,15 @@ class DatabaseHolder(private val context: Context) {
         } catch (exc: SQLiteDiskIOException) {
             Balloon.show(context, context.getString(R.string.not_enough_space))
             false
+        }
+    }
+
+    private fun <T> tryExecute(block: () -> T?): T? {
+        return try {
+            block()
+        } catch (exc: Exception) {
+            checkIsDatabaseCorrupted()
+            block()
         }
     }
 }

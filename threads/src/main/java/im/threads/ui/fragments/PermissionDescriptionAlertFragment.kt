@@ -86,7 +86,7 @@ class PermissionDescriptionAlertFragment : DialogFragment() {
         savedInstanceState: Bundle?
     ): View? {
         val dialogView = LayoutInflater.from(context)
-            .inflate(R.layout.fragment_dialog_permission_description, container)
+            .inflate(R.layout.ecc_fragment_dialog_permission_description, container)
 
         val type = requireArguments().getSerializable(KEY_PERMISSION_DESCRIPTION_TYPE)
             as PermissionDescriptionType

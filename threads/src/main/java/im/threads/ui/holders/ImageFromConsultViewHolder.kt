@@ -39,7 +39,7 @@ class ImageFromConsultViewHolder(
     openGraphParser: OpenGraphParser
 ) : BaseImageHolder(
     LayoutInflater.from(parent.context).inflate(
-        R.layout.item_image_from_consult,
+        R.layout.ecc_item_image_from_consult,
         parent,
         false
     ),
@@ -115,7 +115,7 @@ class ImageFromConsultViewHolder(
             setBackgroundColor(
                 ContextCompat.getColor(
                     itemView.context,
-                    if (highlighted) style.chatHighlightingColor else R.color.threads_transparent
+                    if (highlighted) style.chatHighlightingColor else R.color.ecc_transparent
                 )
             )
         }
@@ -209,8 +209,8 @@ class ImageFromConsultViewHolder(
             consultPhrase.avatarPath?.let {
                 consultAvatar.loadImage(
                     FileUtils.convertRelativeUrlToAbsolute(it),
-                    listOf(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_INSIDE),
-                    errorDrawableResId = R.drawable.threads_operator_avatar_placeholder,
+                    listOf(ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.FIT_XY),
+                    errorDrawableResId = R.drawable.ecc_operator_avatar_placeholder,
                     modifications = listOf(ImageModifications.CircleCropModification)
                 )
             } ?: run {

@@ -77,7 +77,7 @@ abstract class BaseActivity : AppCompatActivity() {
     protected fun setTitle(text: String, titleTextView: TextView? = null) {
         val style = Config.getInstance().getChatStyle()
         val textColor = ContextCompat.getColor(this, style.chatToolbarTextColorResId)
-        val fontSize = resources.getDimensionPixelSize(R.dimen.text_big)
+        val fontSize = resources.getDimensionPixelSize(R.dimen.ecc_text_big)
         var typeface: Typeface? = null
         style.defaultFontRegular?.let { typefaceUri ->
             Typeface.createFromAsset(assets, typefaceUri)?.let {
