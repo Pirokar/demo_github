@@ -79,19 +79,19 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="4dp"
                     android:layout_marginBottom="4dp"
-                    android:background="@drawable/threads_scroll_down_background"
+                    android:background="@drawable/ecc_scroll_down_background"
                     android:elevation="@dimen/threads_scroll_down_button_elevation"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/threads_scroll_down_icon" />
+                    app:srcCompat="@drawable/ecc_scroll_down_icon" />
 
                 <View
                     android:id="@+id/unread_msg_sticker"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:background="@drawable/circle_red"
+                    android:background="@drawable/ecc_circle_red"
                     android:elevation="@dimen/threads_scroll_down_button_elevation"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -134,7 +134,7 @@
                         android:layout_height="match_parent"
                         android:layout_marginStart="@dimen/activity_horizontal_margin"
                         android:background="@null"
-                        app:srcCompat="@drawable/ic_reply_gray_24dp"
+                        app:srcCompat="@drawable/ecc_ic_reply_gray_24dp"
                         tools:visibility="gone" />
 
                     <ImageView
@@ -152,7 +152,7 @@
                         android:background="@null"
                         android:scaleType="centerInside"
                         android:visibility="gone"
-                        app:srcCompat="@drawable/threads_voice_message_play"
+                        app:srcCompat="@drawable/ecc_voice_message_play"
                         tools:tint="@color/colorAccent"
                         tools:visibility="visible" />
 
@@ -209,7 +209,7 @@
                         android:layout_width="64dp"
                         android:layout_height="match_parent"
                         android:background="@null"
-                        app:srcCompat="@drawable/threads_ic_clear_36dp" />
+                        app:srcCompat="@drawable/ecc_ic_clear_36dp" />
 
                 </LinearLayout>
 
@@ -238,7 +238,7 @@
                             android:layout_width="60dp"
                             android:layout_height="64dp"
                             android:background="@android:color/transparent"
-                            app:srcCompat="@drawable/threads_ic_attachment_button" />
+                            app:srcCompat="@drawable/ecc_ic_attachment_button" />
 
                         <im.threads.ui.widget.CustomFontEditText
                             android:id="@+id/input_edit_view"
@@ -255,7 +255,7 @@
                             android:layout_width="64dp"
                             android:layout_height="64dp"
                             android:background="@android:color/transparent"
-                            app:srcCompat="@drawable/threads_ic_send_button" />
+                            app:srcCompat="@drawable/ecc_ic_send_button" />
 
                     </LinearLayout>
 
@@ -288,9 +288,9 @@
                             android:layout_height="wrap_content"
                             android:layout_alignParentRight="true"
                             android:layout_alignParentBottom="true"
-                            android:background="@drawable/threads_record_button_background"
+                            android:background="@drawable/ecc_record_button_background"
                             android:scaleType="centerInside"
-                            app:mic_icon="@drawable/threads_record_button_icon" />
+                            app:mic_icon="@drawable/ecc_record_button_icon" />
 
                     </LinearLayout>
 
@@ -302,7 +302,7 @@
                 android:id="@+id/toolbar_shadow"
                 android:layout_width="match_parent"
                 android:layout_height="63dp"
-                android:background="@drawable/toolbar_shadow" />
+                android:background="@drawable/ecc_toolbar_shadow" />
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
@@ -324,7 +324,7 @@
                         android:background="?android:attr/selectableItemBackground"
                         android:gravity="center"
                         android:visibility="gone"
-                        app:srcCompat="@drawable/threads_ic_arrow_back_24dp"
+                        app:srcCompat="@drawable/ecc_ic_arrow_back_24dp"
                         tools:visibility="visible" />
 
                     <LinearLayout
@@ -341,7 +341,7 @@
                             android:layout_height="30dp"
                             android:layout_marginLeft="-60dp"
                             android:background="@null"
-                            app:srcCompat="@drawable/threads_ic_reply_24dp" />
+                            app:srcCompat="@drawable/ecc_ic_reply_24dp" />
 
                         <ImageButton
                             android:id="@+id/content_copy"
@@ -349,7 +349,7 @@
                             android:layout_height="30dp"
                             android:layout_marginLeft="@dimen/margin_big"
                             android:background="@null"
-                            app:srcCompat="@drawable/threads_ic_content_copy_24dp" />
+                            app:srcCompat="@drawable/ecc_ic_content_copy_24dp" />
 
                     </LinearLayout>
 
@@ -419,7 +419,7 @@
                                 android:layout_toStartOf="@+id/search_up_ib"
                                 android:alpha="0.5"
                                 app:backgroundTint="@android:color/transparent"
-                                app:srcCompat="@drawable/ic_expand_more_white_24dp" />
+                                app:srcCompat="@drawable/ecc_ic_expand_more_white_24dp" />
 
                             <androidx.appcompat.widget.AppCompatImageButton
                                 android:id="@+id/search_up_ib"
@@ -429,7 +429,7 @@
                                 android:layout_marginEnd="@dimen/margin_half"
                                 android:alpha="0.5"
                                 app:backgroundTint="@android:color/transparent"
-                                app:srcCompat="@drawable/ic_expand_less_white_24dp" />
+                                app:srcCompat="@drawable/ecc_ic_expand_less_white_24dp" />
 
                         </RelativeLayout>
 
@@ -441,7 +441,7 @@
                         android:layout_height="match_parent"
                         android:background="?android:attr/selectableItemBackground"
                         android:gravity="center"
-                        app:srcCompat="@drawable/threads_ic_more_vert_24dp" />
+                        app:srcCompat="@drawable/ecc_ic_more_vert_24dp" />
 
                 </LinearLayout>
 

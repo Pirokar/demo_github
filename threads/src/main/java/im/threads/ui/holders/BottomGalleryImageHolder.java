@@ -20,7 +20,7 @@ public final class BottomGalleryImageHolder extends BaseHolder {
 
     public BottomGalleryImageHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_gallery_bottom, parent, false), null, null);
+                .inflate(R.layout.ecc_item_gallery_bottom, parent, false), null, null);
         image = itemView.findViewById(R.id.image);
         chosenMark = itemView.findViewById(R.id.mark);
     }
@@ -53,7 +53,7 @@ public final class BottomGalleryImageHolder extends BaseHolder {
             }
         } else {
             drawable = AppCompatResources.getDrawable(itemView.getContext(),
-                    R.drawable.ic_panorama_fish_eye_white_36dp);
+                    R.drawable.ecc_ic_panorama_fish_eye_white_36dp);
         }
         chosenMark.setBackground(drawable);
     }

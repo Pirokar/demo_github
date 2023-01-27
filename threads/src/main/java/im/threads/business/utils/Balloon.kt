@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.widget.Toast
 import com.google.android.material.snackbar.Snackbar
 import im.threads.R
-import im.threads.databinding.EdnaSnackbarBinding
+import im.threads.databinding.EccSnackbarBinding
 import im.threads.ui.config.Config.Companion.getInstance
 import im.threads.ui.utils.ColorsHelper
 
@@ -28,7 +28,7 @@ object Balloon {
         val inflater: LayoutInflater = context.layoutInflater
         val bar = Snackbar.make(context.window.decorView, messageString, Snackbar.LENGTH_LONG)
         val layout = bar.view as Snackbar.SnackbarLayout
-        EdnaSnackbarBinding.inflate(inflater).apply {
+        EccSnackbarBinding.inflate(inflater).apply {
             ColorsHelper.setBackgroundColor(context, layout, R.color.threads_transparent)
             ColorsHelper.setTint(context, background, chatStyle.toastBackgroundColor)
             ColorsHelper.setTextColor(context, message, chatStyle.toastTextColor)

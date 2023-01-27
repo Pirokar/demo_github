@@ -36,7 +36,7 @@
                 android:layout_width="18dp"
                 android:layout_height="18dp"
                 android:layout_centerHorizontal="true"
-                app:srcCompat="@drawable/ic_c_in_c_white_24dp" />
+                app:srcCompat="@drawable/ecc_ic_c_in_c_white_24dp" />
 
             <im.threads.ui.widget.CustomFontTextView
                 android:layout_width="wrap_content"
@@ -92,7 +92,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@null"
-                app:srcCompat="@drawable/ic_flash_auto_white_30dp" />
+                app:srcCompat="@drawable/ecc_ic_flash_auto_white_30dp" />
 
             <ImageButton
                 android:id="@+id/take_photo"
@@ -102,7 +102,7 @@
                 android:background="@null"
                 android:padding="36dp"
                 android:scaleType="centerCrop"
-                app:srcCompat="@drawable/ic_c_in_c_48dp" />
+                app:srcCompat="@drawable/ecc_ic_c_in_c_48dp" />
 
             <View
                 android:layout_width="0dp"

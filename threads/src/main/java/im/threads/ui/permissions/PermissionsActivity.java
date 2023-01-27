@@ -98,7 +98,7 @@ public final class PermissionsActivity extends AppCompatActivity {
         if (permissions == null) {
             finish();
         }
-        setContentView(R.layout.activity_permissions);
+        setContentView(R.layout.ecc_activity_permissions);
         requiresCheck = true;
     }
 

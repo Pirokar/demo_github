@@ -21,7 +21,7 @@ import im.threads.R
 import im.threads.business.models.MediaPhoto
 import im.threads.business.models.PhotoBucketItem
 import im.threads.business.utils.MediaHelper
-import im.threads.databinding.ActivityGalleryBinding
+import im.threads.databinding.EccActivityGalleryBinding
 import im.threads.ui.adapters.GalleryAdapter
 import im.threads.ui.adapters.GalleryAdapter.OnGalleryItemClick
 import im.threads.ui.adapters.PhotoBucketsGalleryAdapter
@@ -44,11 +44,11 @@ class GalleryActivity : BaseActivity(), OnItemClick, OnGalleryItemClick {
     private val bucketsGalleryDecorator = BucketsGalleryDecorator(4)
     private val galleryDecorator = GalleryDecorator(4)
 
-    private lateinit var binding: ActivityGalleryBinding
+    private lateinit var binding: EccActivityGalleryBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_gallery)
+        binding = DataBindingUtil.setContentView(this, R.layout.ecc_activity_gallery)
         binding.viewModel = this
         initViews()
         initStatusBar()
@@ -64,7 +64,7 @@ class GalleryActivity : BaseActivity(), OnItemClick, OnGalleryItemClick {
             resources.getBoolean(getInstance().getChatStyle().windowLightStatusBarResId)
         super.setStatusBarColor(isStatusBarLight, statusBarColor)
         val backButtonDrawable =
-            AppCompatResources.getDrawable(this, R.drawable.ic_arrow_back_white_24dp)
+            AppCompatResources.getDrawable(this, R.drawable.ecc_ic_arrow_back_white_24dp)
         setDrawableColor(this, backButtonDrawable, style.chatToolbarTextColorResId)
         supportActionBar?.apply {
             setBackgroundDrawable(ColorDrawable(toolBarColor))
@@ -76,7 +76,7 @@ class GalleryActivity : BaseActivity(), OnItemClick, OnGalleryItemClick {
         binding.toolbar.title
         binding.searchEditText.setTextColor(textColor)
         binding.searchEditText.setHintTextColor(hintTextColor)
-        binding.clearSearchButton.setImageResource(R.drawable.ic_clear_gray_30dp)
+        binding.clearSearchButton.setImageResource(R.drawable.ecc_ic_clear_gray_30dp)
         binding.title.setTextColor(textColor)
         ColorsHelper.setTint(this, binding.clearSearchButton, style.chatToolbarTextColorResId)
         ColorsHelper.setTint(this, binding.backButton, style.chatToolbarTextColorResId)

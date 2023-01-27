@@ -69,13 +69,13 @@ public final class ChatStyle implements Serializable {
     @ColorRes
     public int chatToolbarInverseIconTintResId = R.color.threads_green_83B144;
     @DrawableRes
-    public int chatToolbarBackIconResId = R.drawable.threads_ic_arrow_back_24dp;
+    public int chatToolbarBackIconResId = R.drawable.ecc_ic_arrow_back_24dp;
     @DrawableRes
-    public int chatToolbarPopUpMenuIconResId = R.drawable.threads_ic_more_vert_24dp;
+    public int chatToolbarPopUpMenuIconResId = R.drawable.ecc_ic_more_vert_24dp;
     @DrawableRes
-    public int chatToolbarContentCopyIconResId = R.drawable.threads_ic_content_copy_24dp;
+    public int chatToolbarContentCopyIconResId = R.drawable.ecc_ic_content_copy_24dp;
     @DrawableRes
-    public int chatToolbarReplyIconResId = R.drawable.threads_ic_reply_24dp;
+    public int chatToolbarReplyIconResId = R.drawable.ecc_ic_reply_24dp;
 
     // chat body style
     @ColorRes
@@ -87,9 +87,9 @@ public final class ChatStyle implements Serializable {
     @ColorRes
     public int outgoingMessageBubbleColor = R.color.threads_chat_outgoing_message_bubble;
     @DrawableRes
-    public int incomingMessageBubbleBackground = R.drawable.thread_incoming_bubble;
+    public int incomingMessageBubbleBackground = R.drawable.ecc_incoming_bubble;
     @DrawableRes
-    public int outgoingMessageBubbleBackground = R.drawable.thread_outgoing_bubble;
+    public int outgoingMessageBubbleBackground = R.drawable.ecc_outgoing_bubble;
     @ColorRes
     public int incomingMessageTextColor = R.color.threads_incoming_message_text;
     @ColorRes
@@ -111,13 +111,13 @@ public final class ChatStyle implements Serializable {
     public int outgoingMessageTimeTextSize = 0;
 
     @DrawableRes
-    public int outgoingImageBubbleMask = R.drawable.thread_outgoing_image_mask;
+    public int outgoingImageBubbleMask = R.drawable.ecc_outgoing_image_mask;
     @ColorRes
     public int outgoingImageTimeColor = R.color.threads_outgoing_message_time;
     @ColorRes
     public int outgoingImageTimeBackgroundColor = R.color.threads_outgoing_time_underlay;
     @DrawableRes
-    public int incomingImageBubbleMask = R.drawable.thread_incoming_image_mask;
+    public int incomingImageBubbleMask = R.drawable.ecc_incoming_image_mask;
     @ColorRes
     public int incomingImageTimeColor = R.color.threads_incoming_message_time;
     @ColorRes
@@ -208,9 +208,9 @@ public final class ChatStyle implements Serializable {
     @ColorRes
     public int previewPlayPauseButtonColor = R.color.threads_preview_play_pause_button;
     @DrawableRes
-    public int voiceMessagePlayButton = R.drawable.threads_voice_message_play;
+    public int voiceMessagePlayButton = R.drawable.ecc_voice_message_play;
     @DrawableRes
-    public int voiceMessagePauseButton = R.drawable.threads_voice_message_pause;
+    public int voiceMessagePauseButton = R.drawable.ecc_voice_message_pause;
 
     @ColorRes
     public int chatBodyIconsTint = R.color.threads_chat_icons_tint;
@@ -222,22 +222,22 @@ public final class ChatStyle implements Serializable {
     @ColorRes
     public int iconsAndSeparatorsColor = R.color.threads_icon_and_separators_color;
     @DrawableRes
-    public int defaultOperatorAvatar = R.drawable.threads_operator_avatar_placeholder;
+    public int defaultOperatorAvatar = R.drawable.ecc_operator_avatar_placeholder;
     @DimenRes
     public int operatorAvatarSize = R.dimen.threads_operator_photo_size;
     @DimenRes
     public int operatorSystemAvatarSize = R.dimen.threads_system_operator_photo_size;
     @DrawableRes
-    public int imagePlaceholder = R.drawable.threads_image_placeholder;
+    public int imagePlaceholder = R.drawable.ecc_image_placeholder;
     @StyleRes
     public int fileBrowserDialogStyleResId = R.style.FileDialogStyleTransparent;
     public boolean showConsultSearching = false;
     public boolean scrollChatToEndIfUserTyping = false;
     public boolean inputEnabledDuringQuickReplies = false;
     @DrawableRes
-    public int scrollDownIconResId = R.drawable.threads_scroll_down_icon;
+    public int scrollDownIconResId = R.drawable.ecc_scroll_down_icon;
     @DrawableRes
-    public int scrollDownBackgroundResId = R.drawable.threads_scroll_down_background;
+    public int scrollDownBackgroundResId = R.drawable.ecc_scroll_down_background;
     @DimenRes
     public int scrollDownButtonWidth = R.dimen.threads_scroll_down_button_width;
     @DimenRes
@@ -254,11 +254,11 @@ public final class ChatStyle implements Serializable {
     public int threadsSwipeRefreshColors = R.array.threads_swipe_refresh_colors;
 
     @DrawableRes
-    public int threadsRecordButtonBackground = R.drawable.threads_record_button_background;
+    public int threadsRecordButtonBackground = R.drawable.ecc_record_button_background;
     @ColorRes
     public int threadsRecordButtonBackgroundColor = R.color.threads_record_button_background;
     @DrawableRes
-    public int threadsRecordButtonIcon = R.drawable.threads_record_button_icon;
+    public int threadsRecordButtonIcon = R.drawable.ecc_record_button_icon;
     @ColorRes
     public int threadsRecordButtonIconColor = R.color.threads_record_button_icon;
     @ColorRes
@@ -270,11 +270,11 @@ public final class ChatStyle implements Serializable {
     @ColorRes
     public int loaderTintResId = R.color.threads_green_83B144;
     @DrawableRes
-    public int startDownloadIconResId = R.drawable.threads_ic_vertical_align_bottom_18dp;
+    public int startDownloadIconResId = R.drawable.ecc_ic_vertical_align_bottom_18dp;
     @DrawableRes
-    public int inProgressIconResId = R.drawable.threads_ic_clear_36dp;
+    public int inProgressIconResId = R.drawable.ecc_ic_clear_36dp;
     @DrawableRes
-    public int completedIconResId = R.drawable.threads_ic_file_outline_24dp;
+    public int completedIconResId = R.drawable.ecc_ic_file_outline_24dp;
 
     //TODO #THREADS-3523
     //chat message statuses
@@ -309,7 +309,7 @@ public final class ChatStyle implements Serializable {
     @ColorRes
     public int quoteClearIconTintResId = R.color.threads_green_83B144;
     @DrawableRes
-    public int quoteClearIconResId = R.drawable.threads_ic_clear_36dp;
+    public int quoteClearIconResId = R.drawable.ecc_ic_clear_36dp;
 
     // chat input style
     @ColorRes
@@ -323,31 +323,31 @@ public final class ChatStyle implements Serializable {
     @ColorRes
     public int inputIconTintResId = R.color.threads_green_83B144;
     @DrawableRes
-    public int attachmentIconResId = R.drawable.threads_ic_attachment_button;
+    public int attachmentIconResId = R.drawable.ecc_ic_attachment_button;
     @DrawableRes
-    public int sendMessageIconResId = R.drawable.threads_ic_send_button;
+    public int sendMessageIconResId = R.drawable.ecc_ic_send_button;
     @StringRes
     public int inputHint = R.string.threads_input_hint;
     @DimenRes
     public int inputHeight = R.dimen.threads_input_height;
     @DrawableRes
-    public int inputBackground = R.drawable.threads_chat_input_background;
+    public int inputBackground = R.drawable.ecc_chat_input_background;
     @DrawableRes
-    public int quoteAttachmentIconResId = R.drawable.ic_reply_gray_24dp;
+    public int quoteAttachmentIconResId = R.drawable.ecc_ic_reply_gray_24dp;
 
     //attachment bottom sheet style
     @ColorRes
     public int attachmentBottomSheetButtonTintResId = R.color.threads_green_83B144;
     @DrawableRes
-    public int attachmentDoneIconResId = R.drawable.threads_ic_circle_done_36dp;
+    public int attachmentDoneIconResId = R.drawable.ecc_ic_circle_done_36dp;
     @DrawableRes
-    public int attachmentCameraIconResId = R.drawable.threads_ic_camera_42dp;
+    public int attachmentCameraIconResId = R.drawable.ecc_ic_camera_42dp;
     @DrawableRes
-    public int attachmentGalleryIconResId = R.drawable.threads_ic_photo_42dp;
+    public int attachmentGalleryIconResId = R.drawable.ecc_ic_photo_42dp;
     @DrawableRes
-    public int attachmentFileIconResId = R.drawable.threads_ic_file_fill_42dp;
+    public int attachmentFileIconResId = R.drawable.ecc_ic_file_fill_42dp;
     @DrawableRes
-    public int attachmentSendIconResId = R.drawable.threads_ic_send_42dp;
+    public int attachmentSendIconResId = R.drawable.ecc_ic_send_42dp;
 
     // Media and files screen
     @BoolRes
@@ -367,7 +367,7 @@ public final class ChatStyle implements Serializable {
     @ColorRes
     public int mediaAndFilesFileIconTintResId = R.color.threads_green_83B144;
     @DrawableRes
-    public int mediaAndFilesFileIconResId = R.drawable.threads_ic_file_fill_36dp;
+    public int mediaAndFilesFileIconResId = R.drawable.ecc_ic_file_fill_36dp;
 
     // Empty Media and files screen header
     @StringRes
@@ -389,7 +389,7 @@ public final class ChatStyle implements Serializable {
 
     // push notification style
     @DrawableRes
-    public int defPushIconResId = R.drawable.default_push_icon;
+    public int defPushIconResId = R.drawable.ecc_default_push_icon;
     @StringRes
     public int defTitleResId = R.string.threads_push_title;
     @ColorRes
@@ -411,17 +411,17 @@ public final class ChatStyle implements Serializable {
 
     // survey style
     @DrawableRes
-    public int binarySurveyLikeUnselectedIconResId = R.drawable.threads_binary_survey_like_unselected;
+    public int binarySurveyLikeUnselectedIconResId = R.drawable.ecc_binary_survey_like_unselected;
     @DrawableRes
-    public int binarySurveyLikeSelectedIconResId = R.drawable.threads_binary_survey_like_selected;
+    public int binarySurveyLikeSelectedIconResId = R.drawable.ecc_binary_survey_like_selected;
     @DrawableRes
-    public int binarySurveyDislikeUnselectedIconResId = R.drawable.threads_binary_survey_dislike_unselected;
+    public int binarySurveyDislikeUnselectedIconResId = R.drawable.ecc_binary_survey_dislike_unselected;
     @DrawableRes
-    public int binarySurveyDislikeSelectedIconResId = R.drawable.threads_binary_survey_dislike_selected;
+    public int binarySurveyDislikeSelectedIconResId = R.drawable.ecc_binary_survey_dislike_selected;
     @DrawableRes
-    public int optionsSurveyUnselectedIconResId = R.drawable.threads_options_survey_unselected;
+    public int optionsSurveyUnselectedIconResId = R.drawable.ecc_options_survey_unselected;
     @DrawableRes
-    public int optionsSurveySelectedIconResId = R.drawable.threads_options_survey_selected;
+    public int optionsSurveySelectedIconResId = R.drawable.ecc_options_survey_selected;
     @ColorRes
     public int surveySelectedColorFilterResId = R.color.threads_survey_selected_icon_tint;
     @ColorRes
@@ -435,11 +435,11 @@ public final class ChatStyle implements Serializable {
     @ColorRes
     public int scheduleMessageTextColorResId = R.color.threads_schedule_text;
     @DrawableRes
-    public int scheduleMessageIconResId = R.drawable.threads_schedule_icon;
+    public int scheduleMessageIconResId = R.drawable.ecc_schedule_icon;
 
     // welcome screen style
     @DrawableRes
-    public int welcomeScreenLogoResId = R.drawable.threads_welcome_logo;
+    public int welcomeScreenLogoResId = R.drawable.ecc_welcome_logo;
     @StringRes
     public int welcomeScreenTitleTextResId = R.string.threads_welcome_screen_title_text;
     @StringRes
@@ -478,7 +478,7 @@ public final class ChatStyle implements Serializable {
     @ColorRes
     public int systemMessageLinkColor = R.color.threads_system_message_link;
     @DrawableRes
-    public int quickReplyButtonBackground = R.drawable.threads_quick_reply_button_background;
+    public int quickReplyButtonBackground = R.drawable.ecc_quick_reply_button_background;
     @ColorRes
     public int quickReplyTextColor = R.color.threads_quick_reply_text_color;
     @IntegerRes

@@ -27,7 +27,7 @@ import im.threads.business.models.FileDescription
 import im.threads.business.secureDatabase.DatabaseHolder
 import im.threads.business.serviceLocator.core.inject
 import im.threads.business.utils.Balloon
-import im.threads.databinding.ActivityFilesAndMediaBinding
+import im.threads.databinding.EccActivityFilesAndMediaBinding
 import im.threads.ui.ChatStyle
 import im.threads.ui.activities.BaseActivity
 import im.threads.ui.adapters.filesAndMedia.FilesAndMediaAdapter
@@ -44,8 +44,8 @@ import im.threads.ui.utils.visible
  * Показывает список файлов, которые присутствовали в диалоге с оператором с обоих сторон
  */
 internal class FilesActivity : BaseActivity(), OnFileClick {
-    private val binding: ActivityFilesAndMediaBinding by lazy {
-        ActivityFilesAndMediaBinding.inflate(layoutInflater)
+    private val binding: EccActivityFilesAndMediaBinding by lazy {
+        EccActivityFilesAndMediaBinding.inflate(layoutInflater)
     }
     private val config: Config by lazy {
         Config.getInstance()

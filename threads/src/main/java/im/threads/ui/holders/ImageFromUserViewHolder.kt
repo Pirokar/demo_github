@@ -36,7 +36,7 @@ class ImageFromUserViewHolder(
     highlightingStream: PublishSubject<ChatItem>,
     openGraphParser: OpenGraphParser
 ) : BaseImageHolder(
-    LayoutInflater.from(parent.context).inflate(R.layout.item_user_image_from, parent, false),
+    LayoutInflater.from(parent.context).inflate(R.layout.ecc_item_user_image_from, parent, false),
     highlightingStream,
     openGraphParser,
     false
@@ -116,15 +116,15 @@ class ImageFromUserViewHolder(
         val rightDrawable: Drawable? =
             when (messageState) {
                 MessageState.STATE_WAS_READ -> getColoredDrawable(
-                    R.drawable.threads_image_message_received,
+                    R.drawable.ecc_image_message_received,
                     R.color.threads_outgoing_message_image_received_icon
                 )
                 MessageState.STATE_SENT -> getColoredDrawable(
-                    R.drawable.threads_message_image_sent,
+                    R.drawable.ecc_message_image_sent,
                     R.color.threads_outgoing_message_image_sent_icon
                 )
                 MessageState.STATE_NOT_SENT -> getColoredDrawable(
-                    R.drawable.threads_message_image_waiting,
+                    R.drawable.ecc_message_image_waiting,
                     R.color.threads_outgoing_message_image_not_send_icon
                 )
                 MessageState.STATE_SENDING -> null

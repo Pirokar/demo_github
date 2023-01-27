@@ -36,7 +36,7 @@ public final class CircularProgressButton extends FrameLayout {
     }
 
     private void init(AttributeSet attributeSet) {
-        ((LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.view_progress_button, this, true);
+        ((LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.ecc_view_progress_button, this, true);
         mcp = findViewById(R.id.circular_progress);
         mImageLabel = findViewById(R.id.label_image);
         TypedArray ta = getContext().getTheme().obtainStyledAttributes(
@@ -52,7 +52,7 @@ public final class CircularProgressButton extends FrameLayout {
         mcp.setVisibility(VISIBLE);
         background.setVisibility(VISIBLE);
         mImageLabel.setBackground(startDownloadDrawable);
-        progressBackgroundDrawable = AppCompatResources.getDrawable(getContext(), R.drawable.circle_gray_48dp);
+        progressBackgroundDrawable = AppCompatResources.getDrawable(getContext(), R.drawable.ecc_circle_gray_48dp);
         background.setBackground(progressBackgroundDrawable);
         this.setBackground(null);
     }

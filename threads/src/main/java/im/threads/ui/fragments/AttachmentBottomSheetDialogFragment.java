@@ -88,7 +88,7 @@ public class AttachmentBottomSheetDialogFragment extends BottomSheetDialogFragme
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         ChatStyle chatStyle = Config.getInstance().getChatStyle();
-        View view = inflater.inflate(R.layout.bottom_sheet_dialog_attachment, container, false);
+        View view = inflater.inflate(R.layout.ecc_bottom_sheet_dialog_attachment, container, false);
         BottomSheetView fileInputSheet = view.findViewById(R.id.file_input_sheet);
         BottomGallery bottomGallery = view.findViewById(R.id.bottom_gallery);
         int attachmentBottomSheetButtonTintResId = chatStyle.chatBodyIconsTint == 0

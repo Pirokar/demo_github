@@ -66,7 +66,7 @@ class UserPhraseViewHolder(
     fdMediaPlayer: FileDescriptionMediaPlayer
 ) : VoiceMessageBaseHolder(
     LayoutInflater.from(parentView.context)
-        .inflate(R.layout.item_user_text_with_file, parentView, false),
+        .inflate(R.layout.ecc_item_user_text_with_file, parentView, false),
     highlightingStream,
     openGraphParser,
     fdMediaPlayer,
@@ -482,22 +482,22 @@ class UserPhraseViewHolder(
         when (sendState) {
             MessageState.STATE_WAS_READ -> updateDrawable(
                 parentView.context,
-                R.drawable.threads_message_received,
+                R.drawable.ecc_message_received,
                 R.color.threads_outgoing_message_received_icon
             )
             MessageState.STATE_SENT -> updateDrawable(
                 parentView.context,
-                R.drawable.threads_message_sent,
+                R.drawable.ecc_message_sent,
                 R.color.threads_outgoing_message_sent_icon
             )
             MessageState.STATE_NOT_SENT -> updateDrawable(
                 parentView.context,
-                R.drawable.threads_message_waiting,
+                R.drawable.ecc_message_waiting,
                 R.color.threads_outgoing_message_not_send_icon
             )
             MessageState.STATE_SENDING -> updateDrawable(
                 parentView.context,
-                R.drawable.empty_space_24dp,
+                R.drawable.ecc_empty_space_24dp,
                 -1
             )
         }

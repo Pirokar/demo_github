@@ -30,7 +30,7 @@
                     android:background="?android:attr/selectableItemBackground"
                     android:paddingLeft="16dp"
                     android:paddingRight="16dp"
-                    app:srcCompat="@drawable/ic_arrow_back_white_24dp"/>
+                    app:srcCompat="@drawable/ecc_ic_arrow_back_white_24dp"/>
 
                 <im.threads.ui.widget.textView.ToolbarTitleTextView
                     android:id="@+id/title"

@@ -35,7 +35,7 @@ public final class BottomGallery extends FrameLayout {
     }
 
     private void init() {
-        LayoutInflater.from(getContext()).inflate(R.layout.view_bottom_gallery, this, true);
+        LayoutInflater.from(getContext()).inflate(R.layout.ecc_view_bottom_gallery, this, true);
         mRecyclerView = findViewById(R.id.bottom_gallery_recycler);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
     }

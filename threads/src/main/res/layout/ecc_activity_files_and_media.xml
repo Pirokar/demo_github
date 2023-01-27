@@ -21,7 +21,7 @@
         android:id="@+id/toolbarShadow"
         android:layout_width="match_parent"
         android:layout_height="63dp"
-        android:background="@drawable/toolbar_shadow" />
+        android:background="@drawable/ecc_toolbar_shadow" />
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -41,7 +41,7 @@
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
                 android:background="?android:attr/selectableItemBackground"
-                app:srcCompat="@drawable/threads_ic_arrow_back_24dp" />
+                app:srcCompat="@drawable/ecc_ic_arrow_back_24dp" />
 
             <TextView
                 android:id="@+id/title"
@@ -80,7 +80,7 @@
                 android:background="@android:color/transparent"
                 android:contentDescription="@string/threads_talkback_search_icon"
                 android:visibility="gone"
-                app:srcCompat="@drawable/ic_search_white_24dp" />
+                app:srcCompat="@drawable/ecc_ic_search_white_24dp" />
 
         </RelativeLayout>
     </androidx.appcompat.widget.Toolbar>

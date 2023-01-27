@@ -11,14 +11,14 @@
         android:layout_width="@dimen/threads_operator_photo_size"
         android:layout_height="@dimen/threads_operator_photo_size"
         android:layout_alignBottom="@id/bubble"
-        tools:src="@drawable/threads_operator_avatar_placeholder"
+        tools:src="@drawable/ecc_operator_avatar_placeholder"
         android:layout_marginStart="@dimen/margin_half"/>
 
     <RelativeLayout
         android:id="@+id/bubble"
         style="@style/consultBubble"
         android:layout_toEndOf="@+id/consult_avatar"
-        android:background="@drawable/thread_incoming_bubble">
+        android:background="@drawable/ecc_incoming_bubble">
 
         <im.threads.ui.views.CircularProgressButton
             android:id="@+id/circ_button"
@@ -30,9 +30,9 @@
             android:layout_marginEnd="@dimen/margin_quarter"
             android:layout_marginBottom="@dimen/margin_three_fourth"
             android:background="@color/threads_chat_background"
-            app:completed_drawable="@drawable/threads_ic_file_outline_24dp"
-            app:in_progress_label="@drawable/threads_ic_clear_36dp"
-            app:start_download_label="@drawable/threads_ic_vertical_align_bottom_18dp" />
+            app:completed_drawable="@drawable/ecc_ic_file_outline_24dp"
+            app:in_progress_label="@drawable/ecc_ic_clear_36dp"
+            app:start_download_label="@drawable/ecc_ic_vertical_align_bottom_18dp" />
 
         <ImageView
             android:id="@+id/loader"
@@ -40,7 +40,7 @@
             android:layout_height="42dp"
             android:layout_centerVertical="true"
             android:layout_marginStart="@dimen/margin_half"
-            app:srcCompat="@drawable/im_loading_consult" />
+            app:srcCompat="@drawable/ecc_im_loading_consult" />
 
         <View
             android:id="@+id/delimiter"

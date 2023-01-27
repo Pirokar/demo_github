@@ -22,7 +22,7 @@
             android:id="@+id/schedule_icon"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:srcCompat="@drawable/threads_schedule_icon"/>
+            app:srcCompat="@drawable/ecc_schedule_icon"/>
     </FrameLayout>
 
     <im.threads.ui.widget.textView.ScheduleAlertTextView

@@ -67,7 +67,7 @@ public final class BottomSheetView extends LinearLayout {
     }
 
     private void init() {
-        ((LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.view_bottom_attachment_sheet, this, true);
+        ((LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.ecc_view_bottom_attachment_sheet, this, true);
         camera = findViewById(R.id.camera);
         viewUtils.setCompoundDrawablesWithIntrinsicBoundsCompat(camera,
                 chatStyle.attachmentCameraIconResId, ViewUtils.DrawablePosition.TOP);

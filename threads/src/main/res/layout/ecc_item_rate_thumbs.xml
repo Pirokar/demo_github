@@ -33,13 +33,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="@dimen/activity_horizontal_margin"
-            app:srcCompat="@drawable/threads_binary_survey_like_unselected"/>
+            app:srcCompat="@drawable/ecc_binary_survey_like_unselected"/>
 
         <ImageView
             android:id="@+id/thumb_down"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:srcCompat="@drawable/threads_binary_survey_dislike_unselected"/>
+            app:srcCompat="@drawable/ecc_binary_survey_dislike_unselected"/>
 
     </LinearLayout>
 

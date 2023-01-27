@@ -39,7 +39,7 @@ class PermissionDescriptionDialogStyle : Serializable {
             }
 
         private fun createTypeSpecificDialogStyle(
-            @DrawableRes imageResId: Int = R.drawable.threads_image_placeholder,
+            @DrawableRes imageResId: Int = R.drawable.ecc_image_placeholder,
             @StringRes titleResId: Int,
             @StringRes messageResId: Int
         ) = getDefaultDialogStyle().apply {
@@ -66,7 +66,7 @@ class PermissionDescriptionDialogStyle : Serializable {
  */
 class PermissionDescriptionImageStyle : Serializable {
     @DrawableRes
-    var imageResId: Int = R.drawable.threads_image_placeholder
+    var imageResId: Int = R.drawable.ecc_image_placeholder
 
     @DimenRes
     var marginTopDpResId: Int = R.dimen.margin_material

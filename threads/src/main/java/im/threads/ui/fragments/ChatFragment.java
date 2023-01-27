@@ -112,7 +112,7 @@ import im.threads.business.utils.FileUtilsKt;
 import im.threads.business.utils.MediaHelper;
 import im.threads.business.utils.RxUtils;
 import im.threads.business.utils.ThreadsPermissionChecker;
-import im.threads.databinding.FragmentChatBinding;
+import im.threads.databinding.EccFragmentChatBinding;
 import im.threads.ui.ChatStyle;
 import im.threads.ui.activities.CameraActivity;
 import im.threads.ui.activities.ChatActivity;
@@ -200,7 +200,7 @@ public final class ChatFragment extends BaseFragment implements
     private boolean isResumed;
     private boolean isSendBlocked = false;
     private ChatStyle style;
-    private FragmentChatBinding binding;
+    private EccFragmentChatBinding binding;
     private File externalCameraPhotoFile;
     @Nullable
     private AttachmentBottomSheetDialogFragment bottomSheetDialogFragment;
@@ -239,7 +239,7 @@ public final class ChatFragment extends BaseFragment implements
             ColorsHelper.setStatusBarColor(new WeakReference<>(activity), style.chatStatusBarColorResId, style.windowLightStatusBarResId);
         }
 
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_chat, container, false);
+        binding = DataBindingUtil.inflate(inflater, R.layout.ecc_fragment_chat, container, false);
         binding.setInputTextObservable(inputTextObservable);
         chatAdapterCallback = new ChatFragment.AdapterCallback();
         AudioManager audioManager = (AudioManager) requireContext().getSystemService(Context.AUDIO_SERVICE);
@@ -1140,7 +1140,7 @@ public final class ChatFragment extends BaseFragment implements
         PopupMenu popup = new PopupMenu(activity, binding.popupMenuButton);
         popup.setOnMenuItemClickListener(this);
         MenuInflater inflater = popup.getMenuInflater();
-        inflater.inflate(R.menu.threads_menu_main, popup.getMenu());
+        inflater.inflate(R.menu.ecc_menu_main, popup.getMenu());
         Menu menu = popup.getMenu();
         MenuItem searchMenuItem = menu.findItem(R.id.search);
         if (searchMenuItem != null) {

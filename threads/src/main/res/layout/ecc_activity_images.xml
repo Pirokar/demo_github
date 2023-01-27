@@ -17,7 +17,7 @@
         android:id="@+id/toolbar_shadow"
         android:layout_width="match_parent"
         android:layout_height="63dp"
-        android:background="@drawable/toolbar_shadow" />
+        android:background="@drawable/ecc_toolbar_shadow" />
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -40,7 +40,7 @@
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
                 android:background="?android:attr/selectableItemBackground"
-                app:srcCompat="@drawable/threads_ic_arrow_back_24dp" />
+                app:srcCompat="@drawable/ecc_ic_arrow_back_24dp" />
 
             <TextView
                 android:id="@+id/title"

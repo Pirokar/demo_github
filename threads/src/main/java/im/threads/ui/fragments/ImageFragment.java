@@ -37,7 +37,7 @@ public final class ImageFragment extends Fragment {
     @NonNull
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_image, container, false);
+        View v = inflater.inflate(R.layout.ecc_fragment_image, container, false);
         if (sdf == null) {
             hoursminutesSdf = new SimpleDateFormat("hh:mm", Locale.getDefault());
             if (Locale.getDefault().getLanguage().equals("ru")) {

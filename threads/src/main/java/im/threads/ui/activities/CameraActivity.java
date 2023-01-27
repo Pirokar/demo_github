@@ -54,7 +54,7 @@ public final class CameraActivity extends BaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_camera);
+        setContentView(R.layout.ecc_activity_camera);
         initPreview();
     }
 
@@ -180,21 +180,21 @@ public final class CameraActivity extends BaseActivity {
         switch (state) {
             case FLASH_ON:
                 mFlashMode = FLASH_OFF;
-                flashButton.setImageResource(R.drawable.ic_flash_off_white_30dp);
+                flashButton.setImageResource(R.drawable.ecc_ic_flash_off_white_30dp);
                 p = mCamera.getParameters();
                 if (supportedFlashParams.contains(Camera.Parameters.FLASH_MODE_OFF))
                     p.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
                 return p;
             case FLASH_OFF:
                 mFlashMode = FLASH_AUTO;
-                flashButton.setImageResource(R.drawable.ic_flash_auto_white_30dp);
+                flashButton.setImageResource(R.drawable.ecc_ic_flash_auto_white_30dp);
                 p = mCamera.getParameters();
                 if (supportedFlashParams.contains(Camera.Parameters.FLASH_MODE_AUTO))
                     p.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
                 return p;
             case FLASH_AUTO:
                 mFlashMode = FLASH_ON;
-                flashButton.setImageResource(R.drawable.ic_flash_on_white_30dp);
+                flashButton.setImageResource(R.drawable.ecc_ic_flash_on_white_30dp);
                 p = mCamera.getParameters();
                 if (supportedFlashParams.contains(Camera.Parameters.FLASH_MODE_ON))
                     p.setFlashMode(Camera.Parameters.FLASH_MODE_ON);

@@ -20,7 +20,7 @@ public final class RequestResolveThreadViewHolder extends BaseHolder {
 
     public RequestResolveThreadViewHolder(ViewGroup parent) {
         super(
-                LayoutInflater.from(parent.getContext()).inflate(R.layout.item_request_resolve_thread, parent, false),
+                LayoutInflater.from(parent.getContext()).inflate(R.layout.ecc_item_request_resolve_thread, parent, false),
                 null,
                 null
         );

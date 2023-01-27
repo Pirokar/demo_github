@@ -33,7 +33,7 @@
             android:background="@null"
             tools:background="@color/threads_toolbar_gray"
             android:scaleType="fitXY"
-            app:srcCompat="@drawable/threads_voice_message_play"
+            app:srcCompat="@drawable/ecc_voice_message_play"
             android:contentDescription="@string/threads_play_button" />
 
         <ImageView

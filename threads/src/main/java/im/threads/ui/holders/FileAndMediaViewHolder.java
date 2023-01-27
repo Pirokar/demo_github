@@ -36,7 +36,7 @@ public final class FileAndMediaViewHolder extends BaseHolder {
 
     public FileAndMediaViewHolder(ViewGroup parent) {
         super(
-                LayoutInflater.from(parent.getContext()).inflate(R.layout.item_file_and_media, parent, false),
+                LayoutInflater.from(parent.getContext()).inflate(R.layout.ecc_item_file_and_media, parent, false),
                 null,
                 null
         );
