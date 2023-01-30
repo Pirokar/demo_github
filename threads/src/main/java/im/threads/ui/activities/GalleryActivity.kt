@@ -204,7 +204,9 @@ class GalleryActivity : BaseActivity(), OnItemClick, OnGalleryItemClick {
                                     )
                                 )
                             }
-                            photosMap[bucketName] = mediaPhotos
+                            if (mediaPhotos.size > 0) {
+                                photosMap[bucketName] = mediaPhotos
+                            }
                         }
                         it.moveToNext()
                     }
@@ -212,13 +214,15 @@ class GalleryActivity : BaseActivity(), OnItemClick, OnGalleryItemClick {
             }
 
             for ((key, value) in photosMap) {
-                bucketItems.add(
-                    PhotoBucketItem(
-                        key,
-                        value.size.toString(),
-                        value[0].imageUri
+                if (value.size > 0) {
+                    bucketItems.add(
+                        PhotoBucketItem(
+                            key,
+                            value.size.toString(),
+                            value[0].imageUri
+                        )
                     )
-                )
+                }
             }
         }
     }
