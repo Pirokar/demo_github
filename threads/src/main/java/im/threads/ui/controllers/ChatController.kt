@@ -802,7 +802,6 @@ class ChatController private constructor() {
             Flowable.fromPublisher(chatUpdateProcessor.errorProcessor)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
-                    fragment?.showBalloon(it.message)
                     error("subscribeToTransportException ", it)
                 }
         )
@@ -1031,9 +1030,6 @@ class ChatController private constructor() {
                         if (chatItem is UserPhrase) {
                             fragment?.setMessageState(chatItem.id, chatItem.sentState)
                             messenger.addMsgToResendQueue(chatItem)
-                            if (isActive) {
-                                fragment?.showConnectionError()
-                            }
                             messenger.proceedSendingQueue(chatItem)
                         }
                     }

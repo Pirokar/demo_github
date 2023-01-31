@@ -64,7 +64,7 @@ class UserPhraseViewHolder(
     highlightingStream: PublishSubject<ChatItem>,
     openGraphParser: OpenGraphParser,
     fdMediaPlayer: FileDescriptionMediaPlayer,
-    val messageErrorProcessor: PublishSubject<Long>
+    private val messageErrorProcessor: PublishSubject<Long>
 ) : VoiceMessageBaseHolder(
     LayoutInflater.from(parentView.context)
         .inflate(R.layout.ecc_item_user_text_with_file, parentView, false),
@@ -83,7 +83,6 @@ class UserPhraseViewHolder(
     }
     override var fileDescription: FileDescription? = null
     private var timeStamp: Long? = null
-    private var previousSentStatus: MessageState? = null
     private var formattedDuration = ""
 
     private val rootLayout: RelativeLayout = itemView.findViewById(R.id.rootLayout)
@@ -161,7 +160,6 @@ class UserPhraseViewHolder(
         itemView.findViewById<View>(R.id.delimiter)
             .setBackgroundColor(getColorInt(style.outgoingMessageTextColor))
         setUpProgressButton(fileImageButton)
-        showNormalBubble()
     }
 
     fun onBind(
@@ -178,6 +176,7 @@ class UserPhraseViewHolder(
         isChosen: Boolean
     ) {
         timeStamp = userPhrase.timeStamp
+        showBubbleByCurrentStatus()
         initTimeStampView(userPhrase)
         hideAll()
         setupPaddingsAndBorders(userPhrase.fileDescription)
@@ -505,7 +504,10 @@ class UserPhraseViewHolder(
             }
             MessageState.STATE_SENDING -> {
                 style.approveRequestToResolveThreadTextResId
-                showNormalBubble()
+                val previousStatus = statuses[timeStamp]
+                if (previousStatus == null || previousStatus != MessageState.STATE_NOT_SENT) {
+                    showNormalBubble()
+                }
                 updateDrawable(
                     parentView.context,
                     R.drawable.ecc_empty_space_24dp,
@@ -513,11 +515,12 @@ class UserPhraseViewHolder(
                 )
             }
         }
-        previousSentStatus = sendStatus
+        timeStamp?.let { statuses[it] = sendStatus }
     }
 
     private fun scrollToErrorIfAppearsFirstTime() {
-        if (previousSentStatus != MessageState.STATE_NOT_SENT) {
+        val previousStatus = statuses[timeStamp]
+        if (previousStatus == null || previousStatus != MessageState.STATE_NOT_SENT) {
             timeStamp?.let { messageErrorProcessor.onNext(it) }
         }
     }
@@ -559,6 +562,15 @@ class UserPhraseViewHolder(
                 BlendModeCompat.SRC_ATOP
             )
         hideErrorText()
+    }
+
+    private fun showBubbleByCurrentStatus() {
+        val previousStatus = statuses[timeStamp]
+        if (previousStatus == null || previousStatus != MessageState.STATE_NOT_SENT) {
+            showNormalBubble()
+        } else {
+            showErrorBubble()
+        }
     }
 
     private fun showErrorText() {

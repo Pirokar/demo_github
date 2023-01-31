@@ -236,7 +236,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             case TYPE_FILE_FROM_CONSULT:
                 return new ConsultFileViewHolder(parent, highlightingStream, openGraphParser);
             case TYPE_FILE_FROM_USER:
-                return new UserFileViewHolder(parent, highlightingStream, openGraphParser);
+                return new UserFileViewHolder(parent, highlightingStream, openGraphParser, messageErrorProcessor);
             case TYPE_UNREAD_MESSAGES:
                 return new UnreadMessageViewHolder(parent);
             case TYPE_SCHEDULE:

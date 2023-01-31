@@ -25,6 +25,7 @@ import im.threads.business.markdown.LinksHighlighter
 import im.threads.business.models.ChatItem
 import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.ExtractedLink
+import im.threads.business.models.MessageState
 import im.threads.business.models.enums.ErrorStateEnum
 import im.threads.business.ogParser.OGData
 import im.threads.business.ogParser.OGDataContent
@@ -489,5 +490,9 @@ abstract class BaseHolder internal constructor(
         layout.layoutParams = layoutParams
         layout.invalidate()
         layout.requestLayout()
+    }
+
+    companion object {
+        val statuses = HashMap<Long, MessageState?>()
     }
 }

@@ -123,6 +123,7 @@ import im.threads.ui.adapters.ChatAdapter;
 import im.threads.ui.config.Config;
 import im.threads.ui.controllers.ChatController;
 import im.threads.ui.files.FileSelectedListener;
+import im.threads.ui.holders.BaseHolder;
 import im.threads.ui.permissions.PermissionsActivity;
 import im.threads.ui.styles.permissions.PermissionDescriptionType;
 import im.threads.business.utils.Balloon;
@@ -361,6 +362,7 @@ public final class ChatFragment extends BaseFragment implements
         }
         chatIsShown = false;
         binding = null;
+        BaseHolder.Companion.getStatuses().clear();
         super.onDestroyView();
     }
 
