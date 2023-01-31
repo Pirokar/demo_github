@@ -131,6 +131,8 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private final FileDescriptionMediaPlayer fdMediaPlayer;
     @NonNull
     private final MediaMetadataRetriever mediaMetadataRetriever;
+    @NonNull
+    private final PublishSubject<Long> messageErrorProcessor;
     private final ChatMessagesOrderer chatMessagesOrderer;
     @NonNull
     PublishSubject<ChatItem> highlightingStream = PublishSubject.create();
@@ -151,10 +153,13 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public ChatAdapter(
             @NonNull Callback callback,
             @NonNull FileDescriptionMediaPlayer fdMediaPlayer,
-            @NonNull MediaMetadataRetriever mediaMetadataRetriever) {
+            @NonNull MediaMetadataRetriever mediaMetadataRetriever,
+            @NonNull PublishSubject<Long> messageErrorProcessor
+    ) {
         this.mCallback = callback;
         this.fdMediaPlayer = fdMediaPlayer;
         this.mediaMetadataRetriever = mediaMetadataRetriever;
+        this.messageErrorProcessor = messageErrorProcessor;
 
         PreferencesJavaUI preferences = new PreferencesJavaUI();
         clientNotificationDisplayType = preferences.getClientNotificationDisplayType();
@@ -214,7 +219,14 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             case TYPE_CONSULT_PHRASE:
                 return new ConsultPhraseHolder(parent, incomingImageMaskTransformation, highlightingStream, openGraphParser);
             case TYPE_USER_PHRASE:
-                return new UserPhraseViewHolder(parent, outgoingImageMaskTransformation, highlightingStream, openGraphParser, fdMediaPlayer);
+                return new UserPhraseViewHolder(
+                        parent,
+                        outgoingImageMaskTransformation,
+                        highlightingStream,
+                        openGraphParser,
+                        fdMediaPlayer,
+                        messageErrorProcessor
+                );
             case TYPE_FREE_SPACE:
                 return new SpaceViewHolder(parent);
             case TYPE_IMAGE_FROM_CONSULT:

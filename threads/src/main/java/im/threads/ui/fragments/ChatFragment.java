@@ -191,6 +191,7 @@ public final class ChatFragment extends BaseFragment implements
     private FileDescriptionMediaPlayer fdMediaPlayer;
     private ChatController mChatController;
     private ChatAdapter chatAdapter;
+    private LinearLayoutManager mLayoutManager;
     private ChatAdapter.Callback chatAdapterCallback;
     private QuoteLayoutHolder mQuoteLayoutHolder;
     private Quote mQuote = null;
@@ -371,6 +372,29 @@ public final class ChatFragment extends BaseFragment implements
         BaseConfig.instance.transport.setLifecycle(null);
     }
 
+    public int getLastVisibleItemPosition() {
+        if (isAdded() && mLayoutManager != null) {
+            return mLayoutManager.findLastVisibleItemPosition();
+        } else {
+            return RecyclerView.NO_POSITION;
+        }
+    }
+
+    public void scrollToElementByIndex(int index) {
+        if (isAdded() && mLayoutManager != null) {
+            mLayoutManager.smoothScrollToPosition(binding.recycler, new RecyclerView.State(), index);
+        }
+    }
+
+    public List<ChatItem> getElements() {
+        if (isAdded() && chatAdapter != null) {
+            List<ChatItem> list = chatAdapter.getList();
+            return list == null ? new ArrayList<>() : list;
+        } else {
+            return new ArrayList<>();
+        }
+    }
+
     private void initController() {
         Activity activity = getActivity();
         if (activity == null) {
@@ -393,9 +417,14 @@ public final class ChatFragment extends BaseFragment implements
         }
         initInputLayout(activity);
         mQuoteLayoutHolder = new QuoteLayoutHolder();
-        LinearLayoutManager mLayoutManager = new LinearLayoutManager(activity);
+        mLayoutManager = new LinearLayoutManager(activity);
         binding.recycler.setLayoutManager(mLayoutManager);
-        chatAdapter = new ChatAdapter(chatAdapterCallback, fdMediaPlayer, mediaMetadataRetriever);
+        chatAdapter = new ChatAdapter(
+                chatAdapterCallback,
+                fdMediaPlayer,
+                mediaMetadataRetriever,
+                ChatController.getInstance().getMessageErrorProcessor()
+        );
         RecyclerView.ItemAnimator itemAnimator = binding.recycler.getItemAnimator();
         if (itemAnimator != null) {
             itemAnimator.setChangeDuration(0);
@@ -1879,7 +1908,12 @@ public final class ChatFragment extends BaseFragment implements
             if (fdMediaPlayer == null) {
                 return;
             }
-            chatAdapter = new ChatAdapter(chatAdapterCallback, fdMediaPlayer, mediaMetadataRetriever);
+            chatAdapter = new ChatAdapter(
+                    chatAdapterCallback,
+                    fdMediaPlayer,
+                    mediaMetadataRetriever,
+                    ChatController.getInstance().getMessageErrorProcessor()
+            );
             binding.recycler.setAdapter(chatAdapter);
             setTitleStateDefault();
             welcomeScreenVisibility(false);

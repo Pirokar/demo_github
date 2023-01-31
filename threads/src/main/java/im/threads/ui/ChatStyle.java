@@ -86,6 +86,8 @@ public final class ChatStyle implements Serializable {
     public int incomingMessageBubbleColor = R.color.ecc_chat_incoming_message_bubble;
     @ColorRes
     public int outgoingMessageBubbleColor = R.color.ecc_chat_outgoing_message_bubble;
+    @ColorRes
+    public int messageNotSentBubbleBackgroundColor = R.color.ecc_error_red_df0000;
     @DrawableRes
     public int incomingMessageBubbleBackground = R.drawable.ecc_incoming_bubble;
     @DrawableRes
@@ -487,7 +489,6 @@ public final class ChatStyle implements Serializable {
     public int maxGalleryImagesCountFixedBySystem = R.integer.ecc_max_count_attached_images_final;
     @ColorRes
     public int consultSearchingProgressColor = R.color.ecc_consult_searching_progress_color;
-
     // set can show specialist info
     public boolean canShowSpecialistInfo = true;
 
@@ -1547,6 +1548,18 @@ public final class ChatStyle implements Serializable {
      */
     public ChatStyle setConsultSearchingProgressColor(@ColorRes final int consultSearchingProgressColor) {
         this.consultSearchingProgressColor = consultSearchingProgressColor;
+        return this;
+    }
+
+    /**
+     * Устанавливает цвет баббла, если сообщение не было отправлено.
+     * Default values:
+     *
+     * @param messageNotSentBackgroundColor - R.color.ecc_error_red_df0000
+     * @return Builder
+     */
+    public ChatStyle setMessageNotSentBubbleBackgroundColor(@ColorRes final int messageNotSentBackgroundColor) {
+        this.messageNotSentBubbleBackgroundColor = messageNotSentBackgroundColor;
         return this;
     }
 

@@ -89,6 +89,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.processors.PublishProcessor
 import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.PublishSubject
 import retrofit2.Response
 import java.util.Date
 import java.util.concurrent.TimeUnit
@@ -99,6 +100,7 @@ import java.util.concurrent.TimeUnit
  * don't forget to unbindFragment() in ChatFragment onDestroy, to avoid leaks;
  */
 class ChatController private constructor() {
+    val messageErrorProcessor = PublishSubject.create<Long>()
     private val surveyCompletionProcessor = PublishProcessor.create<Survey>()
     private val chatUpdateProcessor: ChatUpdateProcessor by inject()
     private val database: DatabaseHolder by inject()
@@ -147,6 +149,7 @@ class ChatController private constructor() {
         subscribeToChatEvents()
         messenger.resendMessages()
         subscribeOnClientIdChange()
+        subscribeOnMessageError()
     }
 
     fun onViewStop() {
@@ -190,7 +193,7 @@ class ChatController private constructor() {
     fun fancySearch(
         query: String?,
         forward: Boolean,
-        consumer: Consumer<Pair<List<ChatItem?>?, ChatItem?>?>,
+        consumer: Consumer<Pair<List<ChatItem?>?, ChatItem?>?>
     ) {
         info("Trying to start search")
         subscribe(
@@ -296,7 +299,7 @@ class ChatController private constructor() {
 
     private fun updateServerItemsBySendingItems(
         serverItems: ArrayList<ChatItem>,
-        sendingItems: ArrayList<UserPhrase>,
+        sendingItems: ArrayList<UserPhrase>
     ) {
         sendingItems.forEach { notSendedItem ->
             serverItems.forEach { serverItem ->
@@ -898,7 +901,6 @@ class ChatController private constructor() {
                             for (item in database.getChatItems(0, PER_PAGE_COUNT)) {
                                 if (item is ChatPhrase) {
                                     if (item.fileDescription != null) {
-
                                         val attachmentName = attachment.name ?: ""
                                         val incomingNameEquals =
                                             (item.fileDescription?.incomingName == attachmentName)
@@ -1463,6 +1465,22 @@ class ChatController private constructor() {
                         }
                     }
                 ) { obj: Throwable -> obj.message }
+        )
+    }
+
+    private fun subscribeOnMessageError() {
+        subscribe(
+            messageErrorProcessor
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+                    val lastVisibleItem = fragment?.lastVisibleItemPosition
+                    val items = fragment?.elements
+
+                    if (lastVisibleItem != null && items != null && items.last().timeStamp == items[lastVisibleItem].timeStamp) {
+                        fragment?.scrollToElementByIndex(lastVisibleItem)
+                    }
+                }
         )
     }
 
