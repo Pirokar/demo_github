@@ -780,7 +780,7 @@ class ChatController private constructor() {
 
     private fun subscribeToChatEvents() {
         subscribeToTyping()
-        subscribeToOutgoingMessageRead()
+        subscribeToOutgoingMessageStatusChanged()
         subscribeToIncomingMessageRead()
         subscribeToNewMessage()
         subscribeToUpdateAttachments()
@@ -836,20 +836,23 @@ class ChatController private constructor() {
         )
     }
 
-    private fun subscribeToOutgoingMessageRead() {
+    private fun subscribeToOutgoingMessageStatusChanged() {
         subscribe(
             Flowable.fromPublisher(chatUpdateProcessor.outgoingMessageStatusChangedProcessor)
                 .concatMap { Flowable.fromIterable(it) }
                 .observeOn(Schedulers.io())
                 .doOnNext { status: Status ->
-                    database.setStateOfUserPhraseByMessageId(status.messageId, status.status)
+                    database.setOrUpdateMessageId(status.correlationId, status.messageId)
+                    database.setStateOfUserPhraseByMessageId(status.correlationId, status.status) //TODO: add saving with backend message id
                 }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                     { status: Status ->
-                        fragment?.setMessageState(status.messageId, MessageStatus.READ)
+                        fragment?.setMessageState(status.correlationId, status.messageId, status.status)
                     }
-                ) { error: Throwable? -> error("subscribeToOutgoingMessageRead ", error) }
+                ) { error: Throwable? ->
+                    error("subscribeToOutgoingMessageRead ", error)
+                }
         )
     }
 
@@ -872,7 +875,7 @@ class ChatController private constructor() {
                 .debounce(UPDATE_SPEECH_STATUS_DEBOUNCE, TimeUnit.MILLISECONDS)
                 .map { speechMessageUpdate: SpeechMessageUpdate ->
                     database.saveSpeechMessageUpdate(speechMessageUpdate)
-                    val itemFromDb = database.getChatItem(speechMessageUpdate.uuid)
+                    val itemFromDb = database.getChatItemByCorrelationId(speechMessageUpdate.uuid)
                     if (itemFromDb == null) {
                         return@map speechMessageUpdate
                     } else {
@@ -931,9 +934,9 @@ class ChatController private constructor() {
                     if (chatItem is MessageRead) {
                         val readMessagesIds = chatItem.messageId
                         for (readId in readMessagesIds) {
-                            (database.getChatItem(readId) as UserPhrase?)?.let { userPhrase ->
+                            (database.getChatItemByCorrelationId(readId) as UserPhrase?)?.let { userPhrase ->
                                 userPhrase.id?.let {
-                                    chatUpdateProcessor.postOutgoingMessageStatusChanged(listOf(Status(it, MessageStatus.READ)))
+                                    chatUpdateProcessor.postOutgoingMessageStatusChanged(listOf(Status(it, status = MessageStatus.READ)))
                                 }
                             }
                         }
@@ -981,7 +984,7 @@ class ChatController private constructor() {
             Flowable.fromPublisher(chatUpdateProcessor.messageSendSuccessProcessor)
                 .observeOn(Schedulers.io())
                 .flatMapMaybe { chatItemSent: ChatItemProviderData ->
-                    val chatItem = database.getChatItem(chatItemSent.uuid)
+                    val chatItem = database.getChatItemByCorrelationId(chatItemSent.uuid)
                     if (chatItem is UserPhrase) {
                         debug("server answer on phrase sent with id " + chatItemSent.messageId)
                         if (chatItemSent.sentAt > 0) {
@@ -1012,7 +1015,7 @@ class ChatController private constructor() {
             Flowable.fromPublisher(chatUpdateProcessor.messageSendErrorProcessor)
                 .observeOn(Schedulers.io())
                 .flatMapMaybe { (_, phraseUuid): ChatItemSendErrorModel ->
-                    val chatItem = database.getChatItem(phraseUuid)
+                    val chatItem = database.getChatItemByCorrelationId(phraseUuid)
                     if (chatItem is UserPhrase) {
                         debug("server answer on phrase sent with id $phraseUuid")
                         chatItem.sentState = MessageStatus.FAILED
@@ -1027,7 +1030,7 @@ class ChatController private constructor() {
                 .subscribe(
                     { chatItem: ChatItem? ->
                         if (chatItem is UserPhrase) {
-                            fragment?.setMessageState(chatItem.id, chatItem.sentState)
+                            fragment?.setMessageState(chatItem.id, null, chatItem.sentState)
                             messenger.addMsgToResendQueue(chatItem)
                             messenger.proceedSendingQueue(chatItem)
                         }
@@ -1110,7 +1113,7 @@ class ChatController private constructor() {
             messenger.resendStream
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ messageId: String? ->
-                    fragment?.setMessageState(messageId, MessageStatus.SENDING)
+                    fragment?.setMessageState(messageId, null, MessageStatus.SENDING)
                 }) { obj: Throwable -> obj.message }
         )
     }

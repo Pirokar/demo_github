@@ -7,12 +7,14 @@ import im.threads.business.models.FileDescription
 import im.threads.business.models.MessageStatus
 import im.threads.business.models.Survey
 import im.threads.business.models.UserPhrase
+import net.zetetic.database.sqlcipher.SQLiteOpenHelper
 
 interface DBHelper {
 
     fun cleanDatabase()
     fun getChatItems(offset: Int, limit: Int): List<ChatItem?>
-    fun getChatItem(messageUuid: String?): ChatItem?
+    fun getChatItemByCorrelationId(messageUuid: String?): ChatItem?
+    fun getChatItemByBackendMessageId(messageId: String?): ChatItem?
     fun getSendingChatItems(): List<UserPhrase?>
     fun putChatItems(items: List<ChatItem?>?)
     fun putChatItem(chatItem: ChatItem?): Boolean
@@ -36,4 +38,5 @@ interface DBHelper {
     fun getMessagesCount(): Int
     fun getUnreadMessagesCount(): Int
     fun getUnreadMessagesUuid(): List<String?>?
+    fun setOrUpdateMessageId(correlationId: String?, backendMessageId: String?)
 }

@@ -30,7 +30,7 @@ class MessagesTable(
     private val fileDescriptionTable: FileDescriptionsTable,
     private val quotesTable: QuotesTable,
     private val quickRepliesTable: QuickRepliesTable,
-    private val questionsTable: QuestionsTable,
+    private val questionsTable: QuestionsTable
 ) : Table() {
 
     override fun createTable(db: SQLiteDatabase) {
@@ -45,7 +45,8 @@ class MessagesTable(
                     " %s integer, " + // item type
                     " %s text, " + // name
                     " %s text, " + // avatar path
-                    " %s text, " + // message id
+                    " %s text, " + // correlation message id
+                    " %s text, " + // message id (received from backend)
                     " %s integer, " + // sex
                     " %s integer," + // message sent state
                     "%s text," + // consultid
@@ -70,7 +71,8 @@ class MessagesTable(
                 COLUMN_MESSAGE_TYPE,
                 COLUMN_NAME,
                 COLUMN_AVATAR_PATH,
-                COLUMN_MESSAGE_UUID,
+                COLUMN_MESSAGE_CORRELATION_ID,
+                COLUMN_MESSAGE_ID,
                 COLUMN_SEX,
                 COLUMN_MESSAGE_SEND_STATE,
                 COLUMN_CONSULT_ID,
@@ -109,7 +111,7 @@ class MessagesTable(
             }
             c.moveToFirst()
             while (!c.isAfterLast) {
-                val chatItem: ChatItem? = getChatItem(sqlHelper, c)
+                val chatItem: ChatItem? = getChatItemByCorrelationId(sqlHelper, c)
                 if (chatItem != null) {
                     items.add(chatItem)
                 }
@@ -142,16 +144,32 @@ class MessagesTable(
         return items
     }
 
-    fun getChatItem(sqlHelper: SQLiteOpenHelper, messageUuid: String?): ChatItem? {
+    fun getChatItemByCorrelationId(sqlHelper: SQLiteOpenHelper, messageUuid: String?): ChatItem? {
         val sql = (
             "select * from " + TABLE_MESSAGES +
-                " where " + COLUMN_MESSAGE_UUID + " = ?" +
+                " where " + COLUMN_MESSAGE_CORRELATION_ID + " = ?" +
                 " order by " + COLUMN_TIMESTAMP + " desc"
             )
         val selectionArgs = arrayOf(messageUuid)
         sqlHelper.readableDatabase.rawQuery(sql, selectionArgs).use { c ->
             if (c.moveToFirst()) {
-                return getChatItem(sqlHelper, c)
+                return getChatItemByCorrelationId(sqlHelper, c)
+            }
+        }
+        return null
+    }
+
+    fun getChatItemByBackendMessageId(sqlHelper: SQLiteOpenHelper, messageId: String?): ChatItem? {
+        if (messageId == null) return null
+
+        val sql = (
+            "select * from " + TABLE_MESSAGES +
+                " where " + COLUMN_MESSAGE_ID + " = '$messageId'" +
+                " order by " + COLUMN_TIMESTAMP + " desc"
+            )
+        sqlHelper.readableDatabase.rawQuery(sql, null).use { c ->
+            if (c.moveToFirst()) {
+                return getChatItemByCorrelationId(sqlHelper, c)
             }
         }
         return null
@@ -288,7 +306,7 @@ class MessagesTable(
         val cv = ContentValues()
         cv.put(COLUMN_MESSAGE_SEND_STATE, messageStatus?.ordinal)
         sqlHelper.writableDatabase
-            .update(TABLE_MESSAGES, cv, "$COLUMN_MESSAGE_UUID = ?", arrayOf(uuid))
+            .update(TABLE_MESSAGES, cv, "$COLUMN_MESSAGE_CORRELATION_ID = ?", arrayOf(uuid))
     }
 
     fun getLastConsultPhrase(sqlHelper: SQLiteOpenHelper): ConsultPhrase? {
@@ -335,7 +353,7 @@ class MessagesTable(
         val cv = ContentValues()
         cv.put(COLUMN_IS_READ, true)
         val whereClause = (
-            COLUMN_MESSAGE_UUID + " = ? " +
+            COLUMN_MESSAGE_CORRELATION_ID + " = ? " +
                 " and " + COLUMN_IS_READ + " = 0"
             )
         sqlHelper.writableDatabase
@@ -377,7 +395,7 @@ class MessagesTable(
 
     fun getUnreadMessagesCount(sqlHelper: SQLiteOpenHelper): Int {
         val sql = (
-            "select " + COLUMN_MESSAGE_UUID +
+            "select " + COLUMN_MESSAGE_CORRELATION_ID +
                 " from " + TABLE_MESSAGES +
                 " where (" +
                 COLUMN_MESSAGE_TYPE + " = " + MessageType.CONSULT_PHRASE.ordinal + " or " +
@@ -412,7 +430,7 @@ class MessagesTable(
 
     fun getUnreadMessagesUuid(sqlHelper: SQLiteOpenHelper): List<String?> {
         val sql = (
-            "select " + COLUMN_MESSAGE_UUID +
+            "select " + COLUMN_MESSAGE_CORRELATION_ID +
                 " from " + TABLE_MESSAGES +
                 " where (" +
                 COLUMN_MESSAGE_TYPE + " = " + MessageType.CONSULT_PHRASE.ordinal + " or " +
@@ -426,7 +444,7 @@ class MessagesTable(
         sqlHelper.readableDatabase.rawQuery(sql, null).use { c ->
             c.moveToFirst()
             while (!c.isAfterLast) {
-                ids.add(cursorGetString(c, COLUMN_MESSAGE_UUID))
+                ids.add(cursorGetString(c, COLUMN_MESSAGE_CORRELATION_ID))
                 c.moveToNext()
             }
         }
@@ -454,7 +472,7 @@ class MessagesTable(
 
     fun speechMessageUpdated(
         sqlHelper: SQLiteOpenHelper,
-        speechMessageUpdate: SpeechMessageUpdate,
+        speechMessageUpdate: SpeechMessageUpdate
     ) {
         val cv = ContentValues()
         val uuid = speechMessageUpdate.uuid
@@ -465,16 +483,32 @@ class MessagesTable(
             speechMessageUpdate.uuid,
             false
         )
-        val whereClause = "$COLUMN_MESSAGE_UUID = ?"
+        val whereClause = "$COLUMN_MESSAGE_CORRELATION_ID = ?"
         sqlHelper.writableDatabase
             .update(TABLE_MESSAGES, cv, whereClause, arrayOf(uuid))
     }
 
-    private fun getChatItem(sqlHelper: SQLiteOpenHelper, c: Cursor): ChatItem? {
+    fun setOrUpdateMessageId(sqlHelper: SQLiteOpenHelper, correlationId: String?, messageId: String?) {
+        if (correlationId != null && messageId != null) {
+            val content = ContentValues().apply {
+                put(COLUMN_MESSAGE_ID, messageId)
+            }
+            val split = correlationId.split(":")
+            val correlationIdWithHandle = if (split.size > 1) {
+                split[1]
+            } else {
+                split[0]
+            }
+            val whereClause = "$COLUMN_MESSAGE_CORRELATION_ID = '$correlationIdWithHandle'"
+            sqlHelper.writableDatabase.update(TABLE_MESSAGES, content, whereClause, null)
+        }
+    }
+
+    private fun getChatItemByCorrelationId(sqlHelper: SQLiteOpenHelper, c: Cursor): ChatItem? {
         when (cursorGetInt(c, COLUMN_MESSAGE_TYPE)) {
             MessageType.CONSULT_CONNECTED.ordinal -> {
                 return ConsultConnectionMessage(
-                    cursorGetString(c, COLUMN_MESSAGE_UUID),
+                    cursorGetString(c, COLUMN_MESSAGE_CORRELATION_ID),
                     cursorGetString(c, COLUMN_CONSULT_ID),
                     cursorGetString(c, COLUMN_CONNECTION_TYPE),
                     cursorGetString(c, COLUMN_NAME),
@@ -492,7 +526,7 @@ class MessagesTable(
             }
             MessageType.SYSTEM_MESSAGE.ordinal -> {
                 return SimpleSystemMessage(
-                    cursorGetString(c, COLUMN_MESSAGE_UUID),
+                    cursorGetString(c, COLUMN_MESSAGE_CORRELATION_ID),
                     cursorGetString(c, COLUMN_CONNECTION_TYPE),
                     cursorGetLong(c, COLUMN_TIMESTAMP),
                     cursorGetString(c, COLUMN_PHRASE),
@@ -517,12 +551,12 @@ class MessagesTable(
 
     private fun getConsultPhrase(sqlHelper: SQLiteOpenHelper, c: Cursor): ConsultPhrase {
         return ConsultPhrase(
-            cursorGetString(c, COLUMN_MESSAGE_UUID),
+            cursorGetString(c, COLUMN_MESSAGE_CORRELATION_ID),
             fileDescriptionTable.getFileDescription(
                 sqlHelper,
-                cursorGetString(c, COLUMN_MESSAGE_UUID)
+                cursorGetString(c, COLUMN_MESSAGE_CORRELATION_ID)
             ),
-            quotesTable.getQuote(sqlHelper, cursorGetString(c, COLUMN_MESSAGE_UUID)),
+            quotesTable.getQuote(sqlHelper, cursorGetString(c, COLUMN_MESSAGE_CORRELATION_ID)),
             cursorGetString(c, COLUMN_NAME),
             cursorGetString(c, COLUMN_PHRASE),
             cursorGetString(c, COLUMN_FORMATTED_PHRASE),
@@ -533,7 +567,7 @@ class MessagesTable(
             cursorGetString(c, COLUMN_CONSULT_STATUS),
             cursorGetBool(c, COLUMN_SEX),
             cursorGetLong(c, COLUMN_THREAD_ID),
-            cursorGetString(c, COLUMN_MESSAGE_UUID)?.let {
+            cursorGetString(c, COLUMN_MESSAGE_CORRELATION_ID)?.let {
                 quickRepliesTable.getQuickReplies(sqlHelper, it)
             },
             cursorGetBool(c, COLUMN_BLOCK_INPUT),
@@ -543,13 +577,13 @@ class MessagesTable(
 
     private fun getUserPhrase(sqlHelper: SQLiteOpenHelper, c: Cursor): UserPhrase {
         return UserPhrase(
-            cursorGetString(c, COLUMN_MESSAGE_UUID),
+            cursorGetString(c, COLUMN_MESSAGE_CORRELATION_ID),
             cursorGetString(c, COLUMN_PHRASE),
-            quotesTable.getQuote(sqlHelper, cursorGetString(c, COLUMN_MESSAGE_UUID)),
+            quotesTable.getQuote(sqlHelper, cursorGetString(c, COLUMN_MESSAGE_CORRELATION_ID)),
             cursorGetLong(c, COLUMN_TIMESTAMP),
             fileDescriptionTable.getFileDescription(
                 sqlHelper,
-                cursorGetString(c, COLUMN_MESSAGE_UUID)
+                cursorGetString(c, COLUMN_MESSAGE_CORRELATION_ID)
             ),
             MessageStatus.fromOrdinal(cursorGetInt(c, COLUMN_MESSAGE_SEND_STATE)),
             cursorGetLong(c, COLUMN_THREAD_ID)
@@ -559,7 +593,7 @@ class MessagesTable(
     private fun getSurvey(sqlHelper: SQLiteOpenHelper, c: Cursor): Survey {
         val surveySendingId = cursorGetLong(c, COLUMN_SURVEY_SENDING_ID)
         val survey = Survey(
-            cursorGetString(c, COLUMN_MESSAGE_UUID),
+            cursorGetString(c, COLUMN_MESSAGE_CORRELATION_ID),
             surveySendingId,
             cursorGetLong(c, COLUMN_SURVEY_HIDE_AFTER),
             cursorGetLong(c, COLUMN_TIMESTAMP),
@@ -574,7 +608,7 @@ class MessagesTable(
     private fun getRequestResolveThread(c: Cursor): RequestResolveThread? {
         val requestResolveThread =
             RequestResolveThread(
-                cursorGetString(c, COLUMN_MESSAGE_UUID),
+                cursorGetString(c, COLUMN_MESSAGE_CORRELATION_ID),
                 cursorGetLong(c, COLUMN_SURVEY_HIDE_AFTER),
                 cursorGetLong(c, COLUMN_TIMESTAMP),
                 cursorGetLong(c, COLUMN_THREAD_ID),
@@ -587,7 +621,7 @@ class MessagesTable(
 
     private fun getConsultPhraseCV(phrase: ConsultPhrase): ContentValues {
         val cv = ContentValues()
-        cv.put(COLUMN_MESSAGE_UUID, phrase.id)
+        cv.put(COLUMN_MESSAGE_CORRELATION_ID, phrase.id)
         cv.put(COLUMN_PHRASE, phrase.phraseText)
         cv.put(COLUMN_FORMATTED_PHRASE, phrase.formattedPhrase)
         cv.put(COLUMN_TIMESTAMP, phrase.timeStamp)
@@ -606,7 +640,7 @@ class MessagesTable(
 
     private fun getUserPhraseCV(phrase: UserPhrase): ContentValues {
         val cv = ContentValues()
-        cv.put(COLUMN_MESSAGE_UUID, phrase.id)
+        cv.put(COLUMN_MESSAGE_CORRELATION_ID, phrase.id)
         cv.put(COLUMN_PHRASE, phrase.phraseText)
         cv.put(COLUMN_TIMESTAMP, phrase.timeStamp)
         cv.put(COLUMN_MESSAGE_TYPE, MessageType.USER_PHRASE.ordinal)
@@ -628,7 +662,7 @@ class MessagesTable(
         cv.put(COLUMN_CONSULT_TITLE, consultConnectionMessage.title)
         cv.put(COLUMN_CONSULT_ORG_UNIT, consultConnectionMessage.orgUnit)
         cv.put(COLUMN_CONSULT_ROLE, consultConnectionMessage.role)
-        cv.put(COLUMN_MESSAGE_UUID, consultConnectionMessage.uuid)
+        cv.put(COLUMN_MESSAGE_CORRELATION_ID, consultConnectionMessage.uuid)
         cv.put(COLUMN_DISPLAY_MESSAGE, consultConnectionMessage.isDisplayMessage)
         cv.put(COLUMN_PHRASE, consultConnectionMessage.text)
         cv.put(COLUMN_THREAD_ID, consultConnectionMessage.threadId)
@@ -637,7 +671,7 @@ class MessagesTable(
 
     private fun getSimpleSystemMessageCV(simpleSystemMessage: SimpleSystemMessage): ContentValues {
         val cv = ContentValues()
-        cv.put(COLUMN_MESSAGE_UUID, simpleSystemMessage.uuid)
+        cv.put(COLUMN_MESSAGE_CORRELATION_ID, simpleSystemMessage.uuid)
         cv.put(COLUMN_MESSAGE_TYPE, MessageType.SYSTEM_MESSAGE.ordinal)
         cv.put(COLUMN_CONNECTION_TYPE, simpleSystemMessage.type)
         cv.put(COLUMN_TIMESTAMP, simpleSystemMessage.timeStamp)
@@ -648,7 +682,7 @@ class MessagesTable(
 
     private fun getRequestResolveThreadCV(requestResolveThread: RequestResolveThread): ContentValues {
         val cv = ContentValues()
-        cv.put(COLUMN_MESSAGE_UUID, requestResolveThread.uuid)
+        cv.put(COLUMN_MESSAGE_CORRELATION_ID, requestResolveThread.uuid)
         cv.put(COLUMN_MESSAGE_TYPE, MessageType.REQUEST_RESOLVE_THREAD.ordinal)
         cv.put(COLUMN_SURVEY_HIDE_AFTER, requestResolveThread.hideAfter)
         cv.put(COLUMN_TIMESTAMP, requestResolveThread.timeStamp)
@@ -660,19 +694,19 @@ class MessagesTable(
 
     private fun insertOrUpdateMessage(sqlHelper: SQLiteOpenHelper, cv: ContentValues) {
         val sql = (
-            "select " + COLUMN_MESSAGE_UUID +
+            "select " + COLUMN_MESSAGE_CORRELATION_ID +
                 " from " + TABLE_MESSAGES +
-                " where " + COLUMN_MESSAGE_UUID + " = ?"
+                " where " + COLUMN_MESSAGE_CORRELATION_ID + " = ?"
             )
-        val selectionArgs = arrayOf(cv.getAsString(COLUMN_MESSAGE_UUID))
+        val selectionArgs = arrayOf(cv.getAsString(COLUMN_MESSAGE_CORRELATION_ID))
         sqlHelper.readableDatabase.rawQuery(sql, selectionArgs).use { c ->
             if (c.count > 0) {
                 sqlHelper.writableDatabase
                     .update(
                         TABLE_MESSAGES,
                         cv,
-                        "$COLUMN_MESSAGE_UUID = ? ",
-                        arrayOf(cv.getAsString(COLUMN_MESSAGE_UUID))
+                        "$COLUMN_MESSAGE_CORRELATION_ID = ? ",
+                        arrayOf(cv.getAsString(COLUMN_MESSAGE_CORRELATION_ID))
                     )
             } else {
                 sqlHelper.writableDatabase
@@ -683,11 +717,11 @@ class MessagesTable(
 
     private fun insertOrUpdateMessageByTimeStamp(sqlHelper: SQLiteOpenHelper, cv: ContentValues) {
         val sql = (
-            "select " + COLUMN_MESSAGE_UUID +
+            "select " + COLUMN_MESSAGE_CORRELATION_ID +
                 " from " + TABLE_MESSAGES +
-                " where " + COLUMN_MESSAGE_UUID + " = ?"
+                " where " + COLUMN_MESSAGE_CORRELATION_ID + " = ?"
             )
-        val selectionArgs = arrayOf(cv.getAsString(COLUMN_MESSAGE_UUID))
+        val selectionArgs = arrayOf(cv.getAsString(COLUMN_MESSAGE_CORRELATION_ID))
         sqlHelper.readableDatabase.rawQuery(sql, selectionArgs).use { c ->
             if (c.count > 0) {
                 sqlHelper.writableDatabase
@@ -695,7 +729,7 @@ class MessagesTable(
                         TABLE_MESSAGES,
                         cv,
                         "$COLUMN_TIMESTAMP = ? ",
-                        arrayOf(cv.getAsString(COLUMN_MESSAGE_UUID))
+                        arrayOf(cv.getAsString(COLUMN_MESSAGE_CORRELATION_ID))
                     )
             } else {
                 sqlHelper.writableDatabase
@@ -714,7 +748,7 @@ class MessagesTable(
             arrayOf(survey.sendingId.toString(), MessageType.SURVEY.ordinal.toString())
         val cv = ContentValues()
         cv.put(COLUMN_MESSAGE_TYPE, MessageType.SURVEY.ordinal)
-        cv.put(COLUMN_MESSAGE_UUID, survey.uuid)
+        cv.put(COLUMN_MESSAGE_CORRELATION_ID, survey.uuid)
         cv.put(COLUMN_SURVEY_SENDING_ID, survey.sendingId)
         cv.put(COLUMN_SURVEY_HIDE_AFTER, survey.hideAfter)
         cv.put(COLUMN_TIMESTAMP, survey.timeStamp)
@@ -742,7 +776,7 @@ class MessagesTable(
 
     private fun setNotSentSurveyDisplayMessageToFalse(
         sqlHelper: SQLiteOpenHelper,
-        currentSurveySendingId: Long,
+        currentSurveySendingId: Long
     ) {
         val cv = ContentValues()
         cv.put(COLUMN_DISPLAY_MESSAGE, false)
@@ -757,14 +791,14 @@ class MessagesTable(
 
     private fun setOldRequestResolveThreadDisplayMessageToFalse(
         sqlHelper: SQLiteOpenHelper,
-        uuid: String,
+        uuid: String
     ) {
         val cv = ContentValues()
         cv.put(COLUMN_DISPLAY_MESSAGE, false)
         val whereClause =
             (
                 COLUMN_MESSAGE_TYPE + " = " + MessageType.REQUEST_RESOLVE_THREAD.ordinal +
-                    " and " + COLUMN_MESSAGE_UUID + " != ?"
+                    " and " + COLUMN_MESSAGE_CORRELATION_ID + " != ?"
                 )
         sqlHelper.writableDatabase
             .update(TABLE_MESSAGES, cv, whereClause, arrayOf(uuid))
@@ -817,7 +851,8 @@ class MessagesTable(
 
 private const val TABLE_MESSAGES = "TABLE_MESSAGES"
 private const val COLUMN_TABLE_ID = "TABLE_ID"
-private const val COLUMN_MESSAGE_UUID = "COLUMN_MESSAGE_UUID"
+private const val COLUMN_MESSAGE_CORRELATION_ID = "COLUMN_MESSAGE_CORRELATION_ID"
+private const val COLUMN_MESSAGE_ID = "COLUMN_MESSAGE_ID"
 private const val COLUMN_TIMESTAMP = "COLUMN_TIMESTAMP"
 private const val COLUMN_PHRASE = "COLUMN_PHRASE"
 private const val COLUMN_FORMATTED_PHRASE = "COLUMN_FORMATTED_PHRASE"

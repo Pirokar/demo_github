@@ -16,6 +16,7 @@ import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.CampaignMessage
 import im.threads.business.models.ChatItemSendErrorModel
 import im.threads.business.models.ConsultInfo
+import im.threads.business.models.MessageStatus
 import im.threads.business.models.SpeechMessageUpdate
 import im.threads.business.models.SslSocketFactoryConfig
 import im.threads.business.models.Survey
@@ -41,6 +42,7 @@ import im.threads.business.transport.threadsGate.responses.GetMessagesData
 import im.threads.business.transport.threadsGate.responses.GetStatusesData
 import im.threads.business.transport.threadsGate.responses.RegisterDeviceData
 import im.threads.business.transport.threadsGate.responses.SendMessageData
+import im.threads.business.transport.threadsGate.responses.Status
 import im.threads.business.utils.AppInfoHelper
 import im.threads.business.utils.DeviceInfoHelper
 import im.threads.business.utils.SSLCertificateInterceptor
@@ -406,6 +408,7 @@ class ThreadsGateTransport(
             postSocketResponseMap(text)
             val response = BaseConfig.instance.gson.fromJson(text, BaseResponse::class.java)
             val action = response.action
+            val correlationId = response.correlationId
             if (response.data.has(KEY_ERROR)) {
                 var errorMessage = response.data[KEY_ERROR].asString
                 if (response.data.has(KEY_ERROR_DETAILS)) {
@@ -447,7 +450,7 @@ class ThreadsGateTransport(
                                     ChatItemProviderData(
                                         tokens[1],
                                         data.messageId,
-                                        data.sentAt.time
+                                        data.sentAt?.time ?: Calendar.getInstance().time.time
                                     )
                                 )
                             }
@@ -462,10 +465,10 @@ class ThreadsGateTransport(
                             ChatItemType.REOPEN_THREAD, ChatItemType.CLOSE_THREAD ->
                                 chatUpdateProcessor
                                     .postRemoveChatItem(ChatItemType.REQUEST_CLOSE_THREAD)
-                            else -> {
-                            }
+                            else -> {}
                         }
                     }
+                    chatUpdateProcessor.postOutgoingMessageStatusChanged(listOf(Status(correlationId, data.messageId, MessageStatus.SENT)))
                 }
                 if (action == Action.GET_STATUSES) {
                     val data = BaseConfig.instance.gson.fromJson(
@@ -507,8 +510,7 @@ class ThreadsGateTransport(
                             } else if (ChatItemType.SPEECH_MESSAGE_UPDATED == type) {
                                 val chatItem = ThreadsGateMessageParser.format(message)
                                 if (chatItem is SpeechMessageUpdate) {
-                                    chatUpdateProcessor
-                                        .postSpeechMessageUpdate(chatItem)
+                                    chatUpdateProcessor.postSpeechMessageUpdate(chatItem)
                                 }
                             } else {
                                 val chatItem = ThreadsGateMessageParser.format(message)

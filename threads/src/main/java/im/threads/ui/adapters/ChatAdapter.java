@@ -703,13 +703,17 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
     }
 
-    public void changeStateOfMessageByMessageId(final String messageId, final MessageStatus state) {
+    public void changeStateOfMessageByMessageId(
+            final String correlationMessageId,
+            final String backendMessageId,
+            final MessageStatus status
+    ) {
         for (final ChatItem cm : getList()) {
             if (cm instanceof UserPhrase) {
                 final UserPhrase up = (UserPhrase) cm;
-                if (ObjectsCompat.equals(messageId, up.getId())) {
+                if (ObjectsCompat.equals(correlationMessageId, up.getId()) || ObjectsCompat.equals(backendMessageId, up.getId())) {
                     LoggerEdna.info("changeStateOfMessageById: changing read state");
-                    ((UserPhrase) cm).setSentState(state);
+                    ((UserPhrase) cm).setSentState(status);
                     notifyItemChangedOnUi(cm);
                 }
             }

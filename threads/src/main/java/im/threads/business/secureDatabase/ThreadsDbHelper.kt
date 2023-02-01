@@ -89,8 +89,11 @@ class ThreadsDbHelper private constructor(val context: Context, password: String
     override fun getSendingChatItems(): List<UserPhrase> =
         messagesTable.getSendingChatItems(this)
 
-    override fun getChatItem(messageUuid: String?): ChatItem? =
-        messagesTable.getChatItem(this, messageUuid)
+    override fun getChatItemByCorrelationId(messageUuid: String?): ChatItem? =
+        messagesTable.getChatItemByCorrelationId(this, messageUuid)
+
+    override fun getChatItemByBackendMessageId(messageId: String?): ChatItem? =
+        messagesTable.getChatItemByBackendMessageId(this, messageId)
 
     override fun putChatItems(items: List<ChatItem?>?) {
         messagesTable.putChatItems(this, items)
@@ -154,13 +157,17 @@ class ThreadsDbHelper private constructor(val context: Context, password: String
 
     override fun getUnreadMessagesUuid(): List<String?> = messagesTable.getUnreadMessagesUuid(this)
 
+    override fun setOrUpdateMessageId(correlationId: String?, backendMessageId: String?) {
+        messagesTable.setOrUpdateMessageId(this, correlationId, backendMessageId)
+    }
+
     fun speechMessageUpdated(speechMessageUpdate: SpeechMessageUpdate?) {
         messagesTable.speechMessageUpdated(this, speechMessageUpdate!!)
     }
 
     companion object {
         private const val DATABASE_NAME = "messages_secure.db"
-        private const val VERSION = 3
+        private const val VERSION = 4
         private var isLibraryLoaded = false
 
         @SuppressLint("StaticFieldLeak")

@@ -15,6 +15,7 @@ import im.threads.business.utils.Balloon
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
+import net.zetetic.database.sqlcipher.SQLiteOpenHelper
 
 @OpenForTesting
 class DatabaseHolder(private val context: Context) {
@@ -31,7 +32,11 @@ class DatabaseHolder(private val context: Context) {
 
     fun getSendingChatItems(): List<UserPhrase> = tryExecute { myOpenHelper.getSendingChatItems() } ?: arrayListOf()
 
-    fun getChatItem(messageUuid: String?): ChatItem? = tryExecute { myOpenHelper.getChatItem(messageUuid) }
+    fun getChatItemByCorrelationId(messageUuid: String?): ChatItem? =
+        tryExecute { myOpenHelper.getChatItemByCorrelationId(messageUuid) }
+
+    fun getChatItemByBackendMessageId(messageId: String?): ChatItem? =
+        tryExecute { myOpenHelper.getChatItemByBackendMessageId(messageId) }
 
     fun putChatItems(items: List<ChatItem?>?) = tryExecute { myOpenHelper.putChatItems(items) }
 
@@ -97,6 +102,10 @@ class DatabaseHolder(private val context: Context) {
     fun getUnreadMessagesCount(): Int = tryExecute { myOpenHelper.getUnreadMessagesCount() } ?: 0
 
     fun getUnreadMessagesUuid(): List<String?> = tryExecute { myOpenHelper.getUnreadMessagesUuid() } ?: arrayListOf()
+
+    fun setOrUpdateMessageId(correlationId: String?, backendMessageId: String?) {
+        tryExecute { myOpenHelper.setOrUpdateMessageId(correlationId, backendMessageId) }
+    }
 
     private fun checkIsDatabaseCorrupted() {
         myOpenHelper = ThreadsDbHelper.getInstance(context)

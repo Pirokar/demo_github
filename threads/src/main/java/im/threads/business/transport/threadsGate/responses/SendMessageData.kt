@@ -1,16 +1,9 @@
-package im.threads.business.transport.threadsGate.responses;
+package im.threads.business.transport.threadsGate.responses
 
-import java.util.Date;
+import java.util.Date
 
-public class SendMessageData {
-    private String messageId;
-    private Date sentAt;
-
-    public String getMessageId() {
-        return messageId;
-    }
-
-    public Date getSentAt() {
-        return sentAt;
-    }
+class SendMessageData {
+    val messageId: String? = null
+    val status: String? = null
+    val sentAt: Date? = null
 }

@@ -1841,8 +1841,8 @@ public final class ChatFragment extends BaseFragment implements
         Balloon.show(requireContext(), requireContext().getString(R.string.ecc_message_not_sent));
     }
 
-    public void setMessageState(String messageId, MessageStatus state) {
-        chatAdapter.changeStateOfMessageByMessageId(messageId, state);
+    public void setMessageState(String correlationId, String backendMessageId, MessageStatus state) {
+        chatAdapter.changeStateOfMessageByMessageId(correlationId, backendMessageId, state);
     }
 
     public void setSurveySentStatus(long uuid, MessageStatus sentState) {
