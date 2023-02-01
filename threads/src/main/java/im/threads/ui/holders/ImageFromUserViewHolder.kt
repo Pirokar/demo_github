@@ -102,7 +102,6 @@ class ImageFromUserViewHolder(
                 showErrorLayout(it)
             } else {
                 showCommonLayout(it)
-                moveTimeToImageLayout()
             }
         }
     }
@@ -276,6 +275,7 @@ class ImageFromUserViewHolder(
             } else {
                 image.setImageResource(style.imagePlaceholder)
             }
+            moveTimeToImageLayout()
         }
     }
 }

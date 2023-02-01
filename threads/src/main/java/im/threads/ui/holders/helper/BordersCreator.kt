@@ -62,7 +62,6 @@ class BordersCreator(
      */
     fun addMargins(view: View, parentView: View, rootView: View) {
         val resources = context.resources
-        val chatStyle = Config.getInstance().getChatStyle()
 
         val viewLayoutParams = view.layoutParams as MarginLayoutParams
         viewLayoutParams.setMargins(borders.left, borders.top, borders.right, borders.bottom)
