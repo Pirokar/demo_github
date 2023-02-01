@@ -47,7 +47,7 @@ import im.threads.business.models.ConsultPhrase;
 import im.threads.business.models.ConsultTyping;
 import im.threads.business.models.DateRow;
 import im.threads.business.models.FileDescription;
-import im.threads.business.models.MessageState;
+import im.threads.business.models.MessageStatus;
 import im.threads.business.models.NoChatItem;
 import im.threads.business.models.QuestionDTO;
 import im.threads.business.models.QuickReply;
@@ -232,7 +232,13 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             case TYPE_IMAGE_FROM_CONSULT:
                 return new ImageFromConsultViewHolder(parent, incomingImageMaskTransformation, highlightingStream, openGraphParser);
             case TYPE_IMAGE_FROM_USER:
-                return new ImageFromUserViewHolder(parent, outgoingImageMaskTransformation, highlightingStream, openGraphParser);
+                return new ImageFromUserViewHolder(
+                        parent,
+                        outgoingImageMaskTransformation,
+                        highlightingStream,
+                        openGraphParser,
+                        messageErrorProcessor
+                );
             case TYPE_FILE_FROM_CONSULT:
                 return new ConsultFileViewHolder(parent, highlightingStream, openGraphParser);
             case TYPE_FILE_FROM_USER:
@@ -684,7 +690,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
     }
 
-    public void changeStateOfSurvey(long sendingId, MessageState sentState) {
+    public void changeStateOfSurvey(long sendingId, MessageStatus sentState) {
         for (final ChatItem cm : getList()) {
             if (cm instanceof Survey) {
                 final Survey survey = (Survey) cm;
@@ -697,7 +703,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
     }
 
-    public void changeStateOfMessageByMessageId(final String messageId, final MessageState state) {
+    public void changeStateOfMessageByMessageId(final String messageId, final MessageStatus state) {
         for (final ChatItem cm : getList()) {
             if (cm instanceof UserPhrase) {
                 final UserPhrase up = (UserPhrase) cm;

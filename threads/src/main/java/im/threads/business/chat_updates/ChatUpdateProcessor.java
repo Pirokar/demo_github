@@ -18,6 +18,8 @@ import im.threads.business.transport.ChatItemProviderData;
 import im.threads.business.transport.TransportException;
 import im.threads.business.transport.models.Attachment;
 import im.threads.business.transport.models.AttachmentSettings;
+import im.threads.business.transport.threadsGate.responses.Status;
+import io.reactivex.Flowable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 
@@ -27,7 +29,7 @@ public class ChatUpdateProcessor {
 
     private final FlowableProcessor<String> typingProcessor = PublishProcessor.create();
     private final FlowableProcessor<AttachmentSettings> attachmentSettingsProcessor = PublishProcessor.create();
-    private final FlowableProcessor<String> outgoingMessageReadProcessor = PublishProcessor.create();
+    private final FlowableProcessor<List<Status>> outgoingMessageStatusChangedProcessor = PublishProcessor.create();
     private final FlowableProcessor<String> incomingMessageReadProcessor = PublishProcessor.create();
     private final FlowableProcessor<ChatItem> newMessageProcessor = PublishProcessor.create();
     private final FlowableProcessor<List<Attachment>> updateAttachmentsProcessor = PublishProcessor.create();
@@ -59,8 +61,8 @@ public class ChatUpdateProcessor {
         attachmentSettingsProcessor.onNext(attachmentSettings);
     }
 
-    public void postOutgoingMessageWasRead(@NonNull String messageId) {
-        outgoingMessageReadProcessor.onNext(messageId);
+    public void postOutgoingMessageStatusChanged(@NonNull List<Status> statuses) {
+        outgoingMessageStatusChangedProcessor.onNext(statuses);
     }
 
     public void postIncomingMessageWasRead(@NonNull String messageId) {
@@ -135,8 +137,8 @@ public class ChatUpdateProcessor {
         return attachmentSettingsProcessor;
     }
 
-    public FlowableProcessor<String> getOutgoingMessageReadProcessor() {
-        return outgoingMessageReadProcessor;
+    public FlowableProcessor<List<Status>> getOutgoingMessageStatusChangedProcessor() {
+        return outgoingMessageStatusChangedProcessor;
     }
 
     public FlowableProcessor<String> getIncomingMessageReadProcessor() {

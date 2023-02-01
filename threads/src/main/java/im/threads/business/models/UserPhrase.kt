@@ -13,7 +13,7 @@ class UserPhrase constructor(
     override val quote: Quote?,
     override var timeStamp: Long,
     override var fileDescription: FileDescription?,
-    var sentState: MessageState,
+    var sentState: MessageStatus,
     override val threadId: Long?
 ) : ChatPhrase {
     @JvmField
@@ -37,7 +37,7 @@ class UserPhrase constructor(
         mQuote,
         phraseTimeStamp,
         fileDescription,
-        MessageState.STATE_SENDING,
+        MessageStatus.SENDING,
         threadId
     )
 
@@ -53,7 +53,7 @@ class UserPhrase constructor(
         mQuote,
         phraseTimeStamp,
         fileDescription,
-        MessageState.STATE_SENDING,
+        MessageStatus.SENDING,
         threadId
     )
 

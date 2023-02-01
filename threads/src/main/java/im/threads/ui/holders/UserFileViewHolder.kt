@@ -20,7 +20,7 @@ import androidx.core.view.isVisible
 import im.threads.R
 import im.threads.business.models.ChatItem
 import im.threads.business.models.FileDescription
-import im.threads.business.models.MessageState
+import im.threads.business.models.MessageStatus
 import im.threads.business.models.UserPhrase
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.ogParser.OpenGraphParser
@@ -108,7 +108,7 @@ class UserFileViewHolder(
                 viewGroup.getChildAt(i).setOnLongClickListener(onLongClick)
                 viewGroup.getChildAt(i).setOnClickListener(rowClickListener)
             }
-            if (userPhrase.sentState == MessageState.STATE_NOT_SENT) {
+            if (userPhrase.sentState == MessageStatus.FAILED) {
                 showErrorLayout(it)
             } else {
                 updateFileView(it, buttonClickListener)
@@ -122,7 +122,7 @@ class UserFileViewHolder(
     }
 
     private fun bindTimeStamp(
-        messageStatus: MessageState,
+        messageStatus: MessageStatus,
         timeStamp: Long,
         onLongClick: OnLongClickListener
     ) {
@@ -133,36 +133,48 @@ class UserFileViewHolder(
         timeStampTextView.text = sdf.format(Date(timeStamp))
         val rightDrawable: Drawable? =
             when (messageStatus) {
-                MessageState.STATE_WAS_READ -> {
+                MessageStatus.SENDING -> {
+                    val previousStatus = statuses[timeStamp]
+                    if (previousStatus == null || previousStatus != MessageStatus.FAILED) {
+                        showNormalBubble()
+                        AppCompatResources.getDrawable(
+                            itemView.context,
+                            R.drawable.ecc_message_image_sending
+                        )
+                    } else {
+                        getColoredDrawable(
+                            R.drawable.ecc_message_image_failed,
+                            R.color.ecc_outgoing_message_image_failed_icon
+                        )
+                    }
+                }
+                MessageStatus.SENT -> {
                     showNormalBubble()
-                    getColoredDrawable(
-                        R.drawable.ecc_image_message_received,
-                        R.color.ecc_outgoing_message_image_received_icon
+                    AppCompatResources.getDrawable(
+                        itemView.context,
+                        R.drawable.ecc_message_image_sending
                     )
                 }
-                MessageState.STATE_SENT -> {
+                MessageStatus.DELIVERED -> {
                     showNormalBubble()
                     getColoredDrawable(
-                        R.drawable.ecc_message_image_sent,
+                        R.drawable.ecc_message_image_delivered,
                         R.color.ecc_outgoing_message_image_sent_icon
                     )
                 }
-                MessageState.STATE_NOT_SENT -> {
+                MessageStatus.READ -> {
+                    showNormalBubble()
+                    getColoredDrawable(
+                        R.drawable.ecc_image_message_read,
+                        R.color.ecc_outgoing_message_image_received_icon
+                    )
+                }
+                MessageStatus.FAILED -> {
                     showErrorBubble()
                     scrollToErrorIfAppearsFirstTime()
                     getColoredDrawable(
-                        R.drawable.ecc_message_image_waiting,
-                        R.color.ecc_outgoing_message_image_not_send_icon
-                    )
-                }
-                MessageState.STATE_SENDING -> {
-                    val previousStatus = statuses[timeStamp]
-                    if (previousStatus == null || previousStatus != MessageState.STATE_NOT_SENT) {
-                        showNormalBubble()
-                    }
-                    AppCompatResources.getDrawable(
-                        itemView.context,
-                        R.drawable.ecc_empty_space_24dp
+                        R.drawable.ecc_message_image_failed,
+                        R.color.ecc_outgoing_message_image_failed_icon
                     )
                 }
             }
@@ -221,7 +233,7 @@ class UserFileViewHolder(
 
     private fun scrollToErrorIfAppearsFirstTime() {
         val previousStatus = statuses[timeStamp]
-        if (previousStatus == null || previousStatus != MessageState.STATE_NOT_SENT) {
+        if (previousStatus == null || previousStatus != MessageStatus.FAILED) {
             timeStamp?.let { messageErrorProcessor.onNext(it) }
         }
     }
@@ -246,7 +258,7 @@ class UserFileViewHolder(
 
     private fun showBubbleByCurrentStatus() {
         val previousStatus = statuses[timeStamp]
-        if (previousStatus == null || previousStatus != MessageState.STATE_NOT_SENT) {
+        if (previousStatus == null || previousStatus != MessageStatus.FAILED) {
             showNormalBubble()
         } else {
             showErrorBubble()

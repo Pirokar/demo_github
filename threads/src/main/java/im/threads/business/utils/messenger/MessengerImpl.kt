@@ -12,7 +12,7 @@ import im.threads.business.logger.LoggerEdna.info
 import im.threads.business.models.ChatItem
 import im.threads.business.models.ChatItemSendErrorModel
 import im.threads.business.models.ConsultInfo
-import im.threads.business.models.MessageState
+import im.threads.business.models.MessageStatus
 import im.threads.business.models.UserPhrase
 import im.threads.business.preferences.Preferences
 import im.threads.business.preferences.PreferencesCoreKeys
@@ -180,7 +180,7 @@ class MessengerImpl(private var compositeDisposable: CompositeDisposable?) : Mes
     }
 
     override fun forceResend(userPhrase: UserPhrase) {
-        if (userPhrase.sentState == MessageState.STATE_NOT_SENT) {
+        if (userPhrase.sentState == MessageStatus.FAILED) {
             synchronized(unsentMessages) {
                 unsentMessages.removeAll { it.isTheSameItem(userPhrase) }
                 checkAndResendPhrase(userPhrase)
@@ -189,7 +189,7 @@ class MessengerImpl(private var compositeDisposable: CompositeDisposable?) : Mes
     }
 
     private fun checkAndResendPhrase(userPhrase: UserPhrase) {
-        if (userPhrase.sentState == MessageState.STATE_NOT_SENT) {
+        if (userPhrase.sentState == MessageStatus.FAILED) {
             userPhrase.id?.run { resendStream.onNext(this) }
             queueMessageSending(userPhrase)
         }

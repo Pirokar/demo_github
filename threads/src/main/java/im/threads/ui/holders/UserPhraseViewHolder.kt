@@ -30,7 +30,7 @@ import im.threads.business.media.FileDescriptionMediaPlayer
 import im.threads.business.models.CampaignMessage
 import im.threads.business.models.ChatItem
 import im.threads.business.models.FileDescription
-import im.threads.business.models.MessageState
+import im.threads.business.models.MessageStatus
 import im.threads.business.models.Quote
 import im.threads.business.models.UserPhrase
 import im.threads.business.models.enums.AttachmentStateEnum
@@ -204,7 +204,7 @@ class UserPhraseViewHolder(
         slider.setLabelFormatter(VoiceTimeLabelFormatter())
         fileSizeTextView.text = formattedDuration
 
-        if (userPhrase.sentState == MessageState.STATE_NOT_SENT) {
+        if (userPhrase.sentState == MessageStatus.FAILED) {
             showErrorText()
         }
 
@@ -314,7 +314,7 @@ class UserPhraseViewHolder(
             fileDescription = it
             subscribeForVoiceMessageDownloaded()
             rightTextDescription.text = getFileDescriptionText(it)
-            val isLoading = it.state == AttachmentStateEnum.PENDING || userPhrase.sentState == MessageState.STATE_SENDING
+            val isLoading = it.state == AttachmentStateEnum.PENDING || userPhrase.sentState == MessageStatus.SENDING
             if (isVoiceMessage(it) && isLoading) {
                 startLoader()
             } else if (isLoading) {
@@ -323,7 +323,7 @@ class UserPhraseViewHolder(
                 imageRoot.gone()
                 rightTextRow.visible()
                 showLoaderLayout()
-            } else if (it.state === AttachmentStateEnum.ERROR || userPhrase.sentState == MessageState.STATE_NOT_SENT) {
+            } else if (it.state === AttachmentStateEnum.ERROR || userPhrase.sentState == MessageStatus.FAILED) {
                 stopLoader()
                 voiceMessage.gone()
                 rightTextRow.visible()
@@ -475,9 +475,37 @@ class UserPhraseViewHolder(
         ogTimestamp.text = timeText
     }
 
-    private fun setSendState(sendStatus: MessageState) {
+    private fun setSendState(sendStatus: MessageStatus) {
         when (sendStatus) {
-            MessageState.STATE_WAS_READ -> {
+            MessageStatus.SENDING -> {
+                style.approveRequestToResolveThreadTextResId
+                val previousStatus = statuses[timeStamp]
+                if (previousStatus == null || previousStatus != MessageStatus.FAILED) {
+                    showNormalBubble()
+                    updateDrawable(
+                        parentView.context,
+                        R.drawable.ecc_message_image_sending,
+                        -1
+                    )
+                }
+            }
+            MessageStatus.SENT -> {
+                showNormalBubble()
+                updateDrawable(
+                    parentView.context,
+                    R.drawable.ecc_message_image_sending,
+                    R.color.ecc_outgoing_message_sent_icon
+                )
+            }
+            MessageStatus.DELIVERED -> {
+                showNormalBubble()
+                updateDrawable(
+                    parentView.context,
+                    R.drawable.ecc_message_image_delivered,
+                    R.color.ecc_outgoing_message_image_sent_icon
+                )
+            }
+            MessageStatus.READ -> {
                 showNormalBubble()
                 updateDrawable(
                     parentView.context,
@@ -485,33 +513,13 @@ class UserPhraseViewHolder(
                     R.color.ecc_outgoing_message_received_icon
                 )
             }
-            MessageState.STATE_SENT -> {
-                showNormalBubble()
-                updateDrawable(
-                    parentView.context,
-                    R.drawable.ecc_message_sent,
-                    R.color.ecc_outgoing_message_sent_icon
-                )
-            }
-            MessageState.STATE_NOT_SENT -> {
+            MessageStatus.FAILED -> {
                 showErrorBubble()
                 scrollToErrorIfAppearsFirstTime()
                 updateDrawable(
                     parentView.context,
-                    R.drawable.ecc_message_waiting,
+                    R.drawable.ecc_message_failed,
                     R.color.ecc_outgoing_message_not_send_icon
-                )
-            }
-            MessageState.STATE_SENDING -> {
-                style.approveRequestToResolveThreadTextResId
-                val previousStatus = statuses[timeStamp]
-                if (previousStatus == null || previousStatus != MessageState.STATE_NOT_SENT) {
-                    showNormalBubble()
-                }
-                updateDrawable(
-                    parentView.context,
-                    R.drawable.ecc_empty_space_24dp,
-                    -1
                 )
             }
         }
@@ -520,7 +528,7 @@ class UserPhraseViewHolder(
 
     private fun scrollToErrorIfAppearsFirstTime() {
         val previousStatus = statuses[timeStamp]
-        if (previousStatus == null || previousStatus != MessageState.STATE_NOT_SENT) {
+        if (previousStatus == null || previousStatus != MessageStatus.FAILED) {
             timeStamp?.let { messageErrorProcessor.onNext(it) }
         }
     }
@@ -566,7 +574,7 @@ class UserPhraseViewHolder(
 
     private fun showBubbleByCurrentStatus() {
         val previousStatus = statuses[timeStamp]
-        if (previousStatus == null || previousStatus != MessageState.STATE_NOT_SENT) {
+        if (previousStatus == null || previousStatus != MessageStatus.FAILED) {
             showNormalBubble()
         } else {
             showErrorBubble()

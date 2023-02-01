@@ -22,7 +22,7 @@ import im.threads.business.models.ConsultConnectionMessage;
 import im.threads.business.models.ConsultPhrase;
 import im.threads.business.models.FileDescription;
 import im.threads.business.models.MessageFromHistory;
-import im.threads.business.models.MessageState;
+import im.threads.business.models.MessageStatus;
 import im.threads.business.models.Operator;
 import im.threads.business.models.Optional;
 import im.threads.business.models.QuestionDTO;
@@ -150,7 +150,7 @@ public final class HistoryParser {
                             if (fileDescription != null) {
                                 fileDescription.setFrom(BaseConfig.instance.context.getString(R.string.ecc_I));
                             }
-                            MessageState sentState = message.isRead() ? MessageState.STATE_WAS_READ : MessageState.STATE_SENT;
+                            MessageStatus sentState = message.isRead() ? MessageStatus.READ : MessageStatus.SENT;
                             out.add(new UserPhrase(uuid, phraseText, quote, timeStamp, fileDescription, sentState, message.getThreadId()));
                         }
                 }
@@ -167,7 +167,7 @@ public final class HistoryParser {
             Survey survey = BaseConfig.instance.gson.fromJson(text, Survey.class);
             final long time = new Date().getTime();
             survey.setPhraseTimeStamp(time);
-            survey.setSentState(MessageState.STATE_NOT_SENT);
+            survey.setSentState(MessageStatus.FAILED);
             survey.setDisplayMessage(true);
             for (final QuestionDTO questionDTO : survey.getQuestions()) {
                 questionDTO.setPhraseTimeStamp(time);
@@ -180,7 +180,7 @@ public final class HistoryParser {
     }
 
     private static Survey getCompletedSurveyFromHistory(MessageFromHistory message) {
-        Survey survey = new Survey(message.getUuid(), message.getSendingId(), message.getTimeStamp(), MessageState.STATE_WAS_READ, message.isRead(), message.isDisplay());
+        Survey survey = new Survey(message.getUuid(), message.getSendingId(), message.getTimeStamp(), MessageStatus.READ, message.isRead(), message.isDisplay());
         QuestionDTO question = new QuestionDTO();
         question.setId(message.getQuestionId());
         question.setPhraseTimeStamp(message.getTimeStamp());

@@ -8,7 +8,7 @@ import im.threads.business.models.ChatItem
 import im.threads.business.models.ConsultInfo
 import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.FileDescription
-import im.threads.business.models.MessageState
+import im.threads.business.models.MessageStatus
 import im.threads.business.models.SpeechMessageUpdate
 import im.threads.business.models.UserPhrase
 import im.threads.business.utils.Balloon
@@ -56,8 +56,8 @@ class DatabaseHolder(private val context: Context) {
     fun getUnsendUserPhrase(count: Int): List<UserPhrase> = tryExecute { myOpenHelper.getUnsendUserPhrase(count) } ?: arrayListOf()
 
     // ConsultPhrase
-    fun setStateOfUserPhraseByMessageId(uuid: String?, messageState: MessageState?) {
-        tryExecute { myOpenHelper.setUserPhraseStateByMessageId(uuid, messageState) }
+    fun setStateOfUserPhraseByMessageId(uuid: String?, messageStatus: MessageStatus?) {
+        tryExecute { myOpenHelper.setUserPhraseStateByMessageId(uuid, messageStatus) }
     }
 
     val lastConsultPhrase: Single<ConsultPhrase?> =

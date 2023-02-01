@@ -4,7 +4,7 @@ import im.threads.business.models.ChatItem
 import im.threads.business.models.ConsultInfo
 import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.FileDescription
-import im.threads.business.models.MessageState
+import im.threads.business.models.MessageStatus
 import im.threads.business.models.Survey
 import im.threads.business.models.UserPhrase
 
@@ -24,7 +24,7 @@ interface DBHelper {
     fun updateChatItemByTimeStamp(chatItem: ChatItem)
     fun getLastConsultInfo(id: String): ConsultInfo?
     fun getUnsendUserPhrase(count: Int): List<UserPhrase?>?
-    fun setUserPhraseStateByMessageId(uuid: String?, messageState: MessageState?)
+    fun setUserPhraseStateByMessageId(uuid: String?, messageStatus: MessageStatus?)
     fun getLastConsultPhrase(): ConsultPhrase?
 
     fun setAllConsultMessagesWereRead(): Int

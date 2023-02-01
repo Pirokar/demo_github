@@ -3,7 +3,6 @@ package im.threads.business.transport.threadsGate
 import android.os.Build
 import android.provider.Settings
 import android.text.TextUtils
-import androidx.core.util.ObjectsCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
@@ -473,11 +472,7 @@ class ThreadsGateTransport(
                         response.data.toString(),
                         GetStatusesData::class.java
                     )
-                    for (status in data.statuses) {
-                        if (ObjectsCompat.equals(MessageStatus.READ, status.status)) {
-                            chatUpdateProcessor.postOutgoingMessageWasRead(status.messageId)
-                        }
-                    }
+                    data.statuses?.let { chatUpdateProcessor.postOutgoingMessageStatusChanged(it) }
                 }
                 if (action == Action.GET_MESSAGES) {
                     val data = BaseConfig.instance.gson.fromJson(

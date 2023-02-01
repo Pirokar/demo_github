@@ -7,7 +7,7 @@ import im.threads.business.models.ChatItem
 import im.threads.business.models.ConsultInfo
 import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.FileDescription
-import im.threads.business.models.MessageState
+import im.threads.business.models.MessageStatus
 import im.threads.business.models.SpeechMessageUpdate
 import im.threads.business.models.Survey
 import im.threads.business.models.UserPhrase
@@ -120,8 +120,8 @@ class ThreadsDbHelper private constructor(val context: Context, password: String
     override fun getUnsendUserPhrase(count: Int): List<UserPhrase> =
         messagesTable.getUnsendUserPhrase(this, count)
 
-    override fun setUserPhraseStateByMessageId(uuid: String?, messageState: MessageState?) {
-        messagesTable.setUserPhraseStateByMessageId(this, uuid, messageState)
+    override fun setUserPhraseStateByMessageId(uuid: String?, messageStatus: MessageStatus?) {
+        messagesTable.setUserPhraseStateByMessageId(this, uuid, messageStatus)
     }
 
     override fun getLastConsultPhrase(): ConsultPhrase? = messagesTable.getLastConsultPhrase(this)

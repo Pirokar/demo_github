@@ -16,11 +16,11 @@ public final class Survey implements ChatItem, Hidable {
     private Long hideAfter;
     private long phraseTimeStamp;
     private boolean displayMessage;
-    private MessageState sentState;
+    private MessageStatus sentState;
     private boolean read;
 
     public Survey(String uuid, long surveySendingId, Long hideAfter, long phraseTimeStamp,
-                  MessageState messageState, boolean read, boolean displayMessage) {
+                  MessageStatus messageState, boolean read, boolean displayMessage) {
         this.uuid = uuid;
         this.sendingId = surveySendingId;
         this.hideAfter = hideAfter;
@@ -30,7 +30,7 @@ public final class Survey implements ChatItem, Hidable {
         this.displayMessage = displayMessage;
     }
 
-    public Survey(String uuid, long surveySendingId, long phraseTimeStamp, MessageState messageState, boolean read, boolean displayMessage) {
+    public Survey(String uuid, long surveySendingId, long phraseTimeStamp, MessageStatus messageState, boolean read, boolean displayMessage) {
         this(uuid, surveySendingId, null, phraseTimeStamp, messageState, read, displayMessage);
     }
 
@@ -63,11 +63,11 @@ public final class Survey implements ChatItem, Hidable {
         return hideAfter;
     }
 
-    public MessageState getSentState() {
+    public MessageStatus getSentState() {
         return sentState;
     }
 
-    public void setSentState(MessageState sentState) {
+    public void setSentState(MessageStatus sentState) {
         this.sentState = sentState;
     }
 
@@ -109,7 +109,7 @@ public final class Survey implements ChatItem, Hidable {
     }
 
     public boolean isCompleted() {
-        return sentState == MessageState.STATE_SENT || sentState == MessageState.STATE_WAS_READ;
+        return sentState == MessageStatus.SENT || sentState == MessageStatus.READ;
     }
 
     @Override

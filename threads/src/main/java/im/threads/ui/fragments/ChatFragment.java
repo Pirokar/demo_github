@@ -93,7 +93,7 @@ import im.threads.business.models.ConsultTyping;
 import im.threads.business.models.DateRow;
 import im.threads.business.models.FileDescription;
 import im.threads.business.models.InputFieldEnableModel;
-import im.threads.business.models.MessageState;
+import im.threads.business.models.MessageStatus;
 import im.threads.business.models.QuickReply;
 import im.threads.business.models.QuickReplyItem;
 import im.threads.business.models.Quote;
@@ -1841,11 +1841,11 @@ public final class ChatFragment extends BaseFragment implements
         Balloon.show(requireContext(), requireContext().getString(R.string.ecc_message_not_sent));
     }
 
-    public void setMessageState(String messageId, MessageState state) {
+    public void setMessageState(String messageId, MessageStatus state) {
         chatAdapter.changeStateOfMessageByMessageId(messageId, state);
     }
 
-    public void setSurveySentStatus(long uuid, MessageState sentState) {
+    public void setSurveySentStatus(long uuid, MessageStatus sentState) {
         chatAdapter.changeStateOfSurvey(uuid, sentState);
     }
 
@@ -2692,10 +2692,10 @@ public final class ChatFragment extends BaseFragment implements
                 return;
             }
             if (chatPhrase instanceof UserPhrase) {
-                if (((UserPhrase) chatPhrase).getSentState() != MessageState.STATE_WAS_READ) {
+                if (((UserPhrase) chatPhrase).getSentState() != MessageStatus.READ) {
                     mChatController.forceResend((UserPhrase) chatPhrase);
                 }
-                if (((UserPhrase) chatPhrase).getSentState() != MessageState.STATE_NOT_SENT) {
+                if (((UserPhrase) chatPhrase).getSentState() != MessageStatus.FAILED) {
                     Activity activity = getActivity();
                     if (activity != null) {
                         activity.startActivity(ImagesActivity.getStartIntent(activity, chatPhrase.getFileDescription()));

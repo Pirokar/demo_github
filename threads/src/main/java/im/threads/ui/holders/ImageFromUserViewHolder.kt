@@ -18,12 +18,11 @@ import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.imageLoading.ImageModifications
 import im.threads.business.models.ChatItem
 import im.threads.business.models.FileDescription
-import im.threads.business.models.MessageState
+import im.threads.business.models.MessageStatus
 import im.threads.business.models.UserPhrase
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.ogParser.OpenGraphParser
 import im.threads.business.utils.FileUtils
-import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.widget.textView.BubbleTimeTextView
 import io.reactivex.subjects.PublishSubject
 import java.text.SimpleDateFormat
@@ -34,7 +33,8 @@ class ImageFromUserViewHolder(
     parent: ViewGroup,
     private val maskedTransformation: ImageModifications.MaskedModification?,
     highlightingStream: PublishSubject<ChatItem>,
-    openGraphParser: OpenGraphParser
+    openGraphParser: OpenGraphParser,
+    private val messageErrorProcessor: PublishSubject<Long>
 ) : BaseImageHolder(
     LayoutInflater.from(parent.context).inflate(R.layout.ecc_item_user_image_from, parent, false),
     highlightingStream,
@@ -42,6 +42,7 @@ class ImageFromUserViewHolder(
     false
 ) {
     private val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
+    private var timeStamp: Long? = null
 
     private var loadedUri: String? = null
 
@@ -65,6 +66,8 @@ class ImageFromUserViewHolder(
         clickRunnable: Runnable,
         longClickRunnable: Runnable
     ) {
+        timeStamp = userPhrase.timeStamp
+        showBubbleByCurrentStatus(userPhrase.fileDescription)
         subscribeForHighlighting(userPhrase, itemView)
         image.setOnClickListener { clickRunnable.run() }
         image.setOnLongClickListener {
@@ -73,7 +76,7 @@ class ImageFromUserViewHolder(
         }
         bindImage(userPhrase.fileDescription, userPhrase.sentState)
         bindIsChosen(highlighted, longClickRunnable)
-        bindTimeStamp(userPhrase.sentState, userPhrase.timeStamp, longClickRunnable)
+        bindTimeStamp(userPhrase.sentState, userPhrase.timeStamp, userPhrase.fileDescription, longClickRunnable)
     }
 
     private fun bindIsChosen(isChosen: Boolean, longClickRunnable: Runnable) {
@@ -86,12 +89,16 @@ class ImageFromUserViewHolder(
 
     private fun bindImage(
         fileDescription: FileDescription?,
-        messageState: MessageState
+        messageStatus: MessageStatus
     ) {
         fileDescription?.let {
-            if (it.state === AttachmentStateEnum.PENDING || messageState == MessageState.STATE_SENDING) {
+            if ((it.state === AttachmentStateEnum.PENDING || messageStatus == MessageStatus.SENDING) &&
+                statuses[timeStamp] == null || statuses[timeStamp] != MessageStatus.FAILED
+            ) {
                 showLoaderLayout(it)
-            } else if (it.state === AttachmentStateEnum.ERROR || messageState == MessageState.STATE_NOT_SENT) {
+            } else if (it.state === AttachmentStateEnum.ERROR || messageStatus == MessageStatus.FAILED ||
+                (statuses[timeStamp] != null && statuses[timeStamp] == MessageStatus.FAILED)
+            ) {
                 showErrorLayout(it)
             } else {
                 showCommonLayout(it)
@@ -101,36 +108,69 @@ class ImageFromUserViewHolder(
     }
 
     private fun bindTimeStamp(
-        messageState: MessageState,
-        timestamp: Long,
+        messageStatus: MessageStatus,
+        timeStamp: Long,
+        fileDescription: FileDescription?,
         longClickRunnable: Runnable
     ) {
         timeStampTextView.setOnLongClickListener {
             longClickRunnable.run()
             true
         }
-        val timeStampText = sdf.format(Date(timestamp))
+        val timeStampText = sdf.format(Date(timeStamp))
         timeStampTextView.text = timeStampText
         timeStampLoading.text = timeStampText
 
         val rightDrawable: Drawable? =
-            when (messageState) {
-                MessageState.STATE_WAS_READ -> getColoredDrawable(
-                    R.drawable.ecc_image_message_received,
-                    R.color.ecc_outgoing_message_image_received_icon
-                )
-                MessageState.STATE_SENT -> getColoredDrawable(
-                    R.drawable.ecc_message_image_sent,
-                    R.color.ecc_outgoing_message_image_sent_icon
-                )
-                MessageState.STATE_NOT_SENT -> getColoredDrawable(
-                    R.drawable.ecc_message_image_waiting,
-                    R.color.ecc_outgoing_message_image_not_send_icon
-                )
-                MessageState.STATE_SENDING -> null
+            when (messageStatus) {
+                MessageStatus.SENDING -> {
+                    val previousStatus = statuses[timeStamp]
+                    if (previousStatus == null || previousStatus != MessageStatus.FAILED) {
+                        showCommonLayout(fileDescription)
+                        AppCompatResources.getDrawable(
+                            itemView.context,
+                            R.drawable.ecc_message_image_sending
+                        )
+                    } else {
+                        getColoredDrawable(
+                            R.drawable.ecc_message_image_failed,
+                            R.color.ecc_outgoing_message_image_failed_icon
+                        )
+                    }
+                }
+                MessageStatus.SENT -> {
+                    showCommonLayout(fileDescription)
+                    AppCompatResources.getDrawable(
+                        itemView.context,
+                        R.drawable.ecc_message_image_sending
+                    )
+                }
+                MessageStatus.DELIVERED -> {
+                    showCommonLayout(fileDescription)
+                    getColoredDrawable(
+                        R.drawable.ecc_message_image_delivered,
+                        R.color.ecc_outgoing_message_image_sent_icon
+                    )
+                }
+                MessageStatus.READ -> {
+                    showCommonLayout(fileDescription)
+                    getColoredDrawable(
+                        R.drawable.ecc_image_message_read,
+                        R.color.ecc_outgoing_message_image_received_icon
+                    )
+                }
+                MessageStatus.FAILED -> {
+                    if (fileDescription != null) showErrorLayout(fileDescription)
+                    scrollToErrorIfAppearsFirstTime()
+                    getColoredDrawable(
+                        R.drawable.ecc_message_image_failed,
+                        R.color.ecc_outgoing_message_image_failed_icon
+                    )
+                }
             }
         timeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, rightDrawable, null)
         timeStampLoading.setCompoundDrawablesWithIntrinsicBounds(null, null, rightDrawable, null)
+        statuses[timeStamp] = messageStatus
     }
 
     private fun getColoredDrawable(@DrawableRes res: Int, @ColorRes color: Int): Drawable? {
@@ -166,37 +206,76 @@ class ImageFromUserViewHolder(
         initAnimation(loader, false)
     }
 
-    private fun showErrorLayout(fileDescription: FileDescription) {
+    private fun showErrorLayout(fileDescription: FileDescription?) {
         errorText.isVisible = true
         loaderLayoutRoot.isVisible = true
         imageLayout.isVisible = false
-        loader.setImageResource(getErrorImageResByErrorCode(fileDescription.errorCode))
-        ColorsHelper.setTint(itemView.context, loader, R.color.ecc_error_red_df0000)
-        fileName.text = FileUtils.getFileName(fileDescription)
-        val errorString = getString(getErrorStringResByErrorCode(fileDescription.errorCode))
-        errorText.text = errorString
-        rotateAnim.cancel()
+        showErrorBubble()
+
+        if (fileDescription != null) {
+            loader.setImageResource(getErrorImageResByErrorCode(fileDescription.errorCode))
+            fileName.text = FileUtils.getFileName(fileDescription)
+            val errorString = getString(getErrorStringResByErrorCode(fileDescription.errorCode))
+            errorText.text = errorString
+            rotateAnim.cancel()
+        }
     }
 
-    private fun showCommonLayout(fileDescription: FileDescription) {
+    private fun showErrorBubble() {
+        loaderLayoutRoot.background.colorFilter =
+            BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
+                getColorInt(style.messageNotSentBubbleBackgroundColor),
+                BlendModeCompat.SRC_ATOP
+            )
+    }
+
+    private fun showNormalBubble() {
+        loaderLayoutRoot.background.colorFilter =
+            BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
+                getColorInt(style.outgoingMessageBubbleColor),
+                BlendModeCompat.SRC_ATOP
+            )
+    }
+
+    private fun scrollToErrorIfAppearsFirstTime() {
+        val previousStatus = statuses[timeStamp]
+        if (previousStatus == null || previousStatus != MessageStatus.FAILED) {
+            timeStamp?.let { messageErrorProcessor.onNext(it) }
+        }
+    }
+
+    private fun showBubbleByCurrentStatus(fileDescription: FileDescription?) {
+        val previousStatus = statuses[timeStamp]
+        if (previousStatus == null || previousStatus != MessageStatus.FAILED) {
+            showCommonLayout(fileDescription)
+        } else if (fileDescription != null) {
+            showErrorLayout(fileDescription)
+        }
+    }
+
+    private fun showCommonLayout(fileDescription: FileDescription?) {
         imageLayout.isVisible = true
         errorText.isVisible = false
         loaderLayoutRoot.isVisible = false
         rotateAnim.cancel()
-        val isDownloadError = fileDescription.isDownloadError
-        val uri = fileDescription.fileUri
-        val path = fileDescription.downloadPath
-        if ((uri != null || path != null) && !isDownloadError) {
-            ImageLoader.get()
-                .autoRotateWithExif(true)
-                .load(uri?.toString() ?: path)
-                .scales(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP)
-                .modifications(maskedTransformation)
-                .errorDrawableResourceId(style.imagePlaceholder)
-                .into(image)
-            loadedUri = uri.toString()
-        } else {
-            image.setImageResource(style.imagePlaceholder)
+        showNormalBubble()
+
+        if (fileDescription != null) {
+            val isDownloadError = fileDescription.isDownloadError
+            val uri = fileDescription.fileUri
+            val path = fileDescription.downloadPath
+            if ((uri != null || path != null) && !isDownloadError) {
+                ImageLoader.get()
+                    .autoRotateWithExif(true)
+                    .load(uri?.toString() ?: path)
+                    .scales(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP)
+                    .modifications(maskedTransformation)
+                    .errorDrawableResourceId(style.imagePlaceholder)
+                    .into(image)
+                loadedUri = uri.toString()
+            } else {
+                image.setImageResource(style.imagePlaceholder)
+            }
         }
     }
 }

@@ -18,7 +18,7 @@ import im.threads.business.models.ConsultConnectionMessage;
 import im.threads.business.models.ConsultPhrase;
 import im.threads.business.models.FileDescription;
 import im.threads.business.models.MessageRead;
-import im.threads.business.models.MessageState;
+import im.threads.business.models.MessageStatus;
 import im.threads.business.models.QuestionDTO;
 import im.threads.business.models.Quote;
 import im.threads.business.models.RequestResolveThread;
@@ -146,7 +146,7 @@ public final class MessageParser {
         Survey survey = BaseConfig.instance.gson.fromJson(content.getText(), Survey.class);
         survey.setUuid(content.getUuid());
         survey.setPhraseTimeStamp(sentAt);
-        survey.setSentState(MessageState.STATE_NOT_SENT);
+        survey.setSentState(MessageStatus.FAILED);
         survey.setDisplayMessage(true);
         survey.setRead(false);
         for (final QuestionDTO questionDTO : survey.getQuestions()) {
@@ -213,7 +213,7 @@ public final class MessageParser {
                 fileDescription = getFileDescription(content.getAttachments(), null, sentAt);
             }
             final UserPhrase userPhrase = new UserPhrase(content.getUuid(), phrase, quote, sentAt, fileDescription, content.getThreadId());
-            userPhrase.setSentState(MessageState.STATE_SENT);
+            userPhrase.setSentState(MessageStatus.SENT);
             return userPhrase;
         }
     }

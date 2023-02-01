@@ -37,7 +37,7 @@ import im.threads.business.models.FileDescription
 import im.threads.business.models.Hidable
 import im.threads.business.models.InputFieldEnableModel
 import im.threads.business.models.MessageRead
-import im.threads.business.models.MessageState
+import im.threads.business.models.MessageStatus
 import im.threads.business.models.QuickReplyItem
 import im.threads.business.models.RequestResolveThread
 import im.threads.business.models.ScheduleInfo
@@ -61,6 +61,7 @@ import im.threads.business.transport.HistoryLoader.getHistorySync
 import im.threads.business.transport.HistoryParser
 import im.threads.business.transport.TransportException
 import im.threads.business.transport.models.Attachment
+import im.threads.business.transport.threadsGate.responses.Status
 import im.threads.business.utils.ChatMessageSeeker
 import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.ConsultWriter
@@ -837,18 +838,16 @@ class ChatController private constructor() {
 
     private fun subscribeToOutgoingMessageRead() {
         subscribe(
-            Flowable.fromPublisher(chatUpdateProcessor.outgoingMessageReadProcessor)
+            Flowable.fromPublisher(chatUpdateProcessor.outgoingMessageStatusChangedProcessor)
+                .concatMap { Flowable.fromIterable(it) }
                 .observeOn(Schedulers.io())
-                .doOnNext { messageId: String? ->
-                    database.setStateOfUserPhraseByMessageId(
-                        messageId,
-                        MessageState.STATE_WAS_READ
-                    )
+                .doOnNext { status: Status ->
+                    database.setStateOfUserPhraseByMessageId(status.messageId, status.status)
                 }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                    { messageId: String? ->
-                        fragment?.setMessageState(messageId, MessageState.STATE_WAS_READ)
+                    { status: Status ->
+                        fragment?.setMessageState(status.messageId, MessageStatus.READ)
                     }
                 ) { error: Throwable? -> error("subscribeToOutgoingMessageRead ", error) }
         )
@@ -934,7 +933,7 @@ class ChatController private constructor() {
                         for (readId in readMessagesIds) {
                             (database.getChatItem(readId) as UserPhrase?)?.let { userPhrase ->
                                 userPhrase.id?.let {
-                                    chatUpdateProcessor.postOutgoingMessageWasRead(it)
+                                    chatUpdateProcessor.postOutgoingMessageStatusChanged(listOf(Status(it, MessageStatus.READ)))
                                 }
                             }
                         }
@@ -988,7 +987,7 @@ class ChatController private constructor() {
                         if (chatItemSent.sentAt > 0) {
                             chatItem.timeStamp = chatItemSent.sentAt
                         }
-                        chatItem.sentState = MessageState.STATE_SENT
+                        chatItem.sentState = MessageStatus.SENT
                         database.putChatItem(chatItem)
                     }
                     if (chatItem == null) {
@@ -1016,7 +1015,7 @@ class ChatController private constructor() {
                     val chatItem = database.getChatItem(phraseUuid)
                     if (chatItem is UserPhrase) {
                         debug("server answer on phrase sent with id $phraseUuid")
-                        chatItem.sentState = MessageState.STATE_NOT_SENT
+                        chatItem.sentState = MessageStatus.FAILED
                         database.putChatItem(chatItem)
                     }
                     if (chatItem == null) {
@@ -1111,7 +1110,7 @@ class ChatController private constructor() {
             messenger.resendStream
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ messageId: String? ->
-                    fragment?.setMessageState(messageId, MessageState.STATE_SENDING)
+                    fragment?.setMessageState(messageId, MessageStatus.SENDING)
                 }) { obj: Throwable -> obj.message }
         )
     }
@@ -1218,7 +1217,7 @@ class ChatController private constructor() {
     }
 
     private fun setSurveyStateSent(survey: Survey) {
-        survey.sentState = MessageState.STATE_SENT
+        survey.sentState = MessageStatus.SENT
         survey.isDisplayMessage = true
         fragment?.setSurveySentStatus(survey.sendingId, survey.sentState)
         database.putChatItem(survey)
