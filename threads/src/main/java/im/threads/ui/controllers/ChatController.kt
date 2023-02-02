@@ -336,6 +336,7 @@ class ChatController private constructor() {
                         var serverItems = HistoryParser.getChatItems(response)
                         serverItems = addLocalUserMessages(serverItems)
                         updateDoubleItems(serverItems as ArrayList<ChatItem>)
+                        parseHistoryItemsForSentStatus(serverItems)
                         messenger.saveMessages(serverItems)
                         clearUnreadPush()
                         processSystemMessages(serverItems)
@@ -539,6 +540,7 @@ class ChatController private constructor() {
         val response = getHistorySync(null, true)
         var serverItems = HistoryParser.getChatItems(response)
         serverItems = addLocalUserMessages(serverItems)
+        parseHistoryItemsForSentStatus(serverItems)
         messenger.saveMessages(serverItems)
         clearUnreadPush()
         processSystemMessages(serverItems)
@@ -570,6 +572,7 @@ class ChatController private constructor() {
                         if (serverItems.size == 0) {
                             isAllMessagesDownloaded = true
                         }
+                        parseHistoryItemsForSentStatus(serverItems)
                         messenger.saveMessages(serverItems)
                         processSystemMessages(serverItems)
                         if (fragment != null && isActive) {
@@ -630,6 +633,7 @@ class ChatController private constructor() {
                     if (serverItems.size == 0) {
                         isAllMessagesDownloaded = true
                     }
+                    parseHistoryItemsForSentStatus(serverItems)
                     messenger.saveMessages(serverItems)
                     clearUnreadPush()
                     processSystemMessages(serverItems)
@@ -1325,6 +1329,7 @@ class ChatController private constructor() {
                     )
                     var chatItems = HistoryParser.getChatItems(response)
                     chatItems = addLocalUserMessages(chatItems)
+                    parseHistoryItemsForSentStatus(chatItems)
                     messenger.saveMessages(chatItems)
                     clearUnreadPush()
                     processSystemMessages(chatItems)
@@ -1353,6 +1358,18 @@ class ChatController private constructor() {
                     "fragment != null && !TextUtils.isEmpty(clientId) == false"
             )
         }
+    }
+
+    private fun parseHistoryItemsForSentStatus(items: List<ChatItem>) {
+        items
+            .mapNotNull { it as? UserPhrase }
+            .forEach { userPhrase ->
+                if (userPhrase.isRead) {
+                    userPhrase.sentState = MessageStatus.READ
+                } else if (userPhrase.sentState.ordinal < MessageStatus.DELIVERED.ordinal) {
+                    userPhrase.sentState = MessageStatus.DELIVERED
+                }
+            }
     }
 
     private fun clearUnreadPush() {

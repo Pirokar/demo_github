@@ -225,10 +225,13 @@ class MessagesTable(
         }
         if (chatItem is UserPhrase) {
             chatItem.id?.let { id ->
-                val existedItem = getChatItemByCorrelationId(sqlHelper, id) as? UserPhrase
-                if (existedItem != null && existedItem.sentState.ordinal > chatItem.sentState.ordinal) {
-                    chatItem.sentState = existedItem.sentState
+                if (chatItem.sentState != MessageStatus.READ) {
+                    val existedItem = getChatItemByCorrelationId(sqlHelper, id) as? UserPhrase
+                    if (existedItem != null && existedItem.sentState.ordinal > chatItem.sentState.ordinal) {
+                        chatItem.sentState = existedItem.sentState
+                    }
                 }
+
                 insertOrUpdateMessage(sqlHelper, getUserPhraseCV(chatItem))
                 chatItem.fileDescription?.let {
                     isFileDownloaded(it)?.let { uri ->

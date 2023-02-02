@@ -19,6 +19,7 @@ class UserPhrase constructor(
     @JvmField
     var ogUrl: String? = null
     var isCopy = false
+    var isRead = false
     var campaignMessage: CampaignMessage? = null
     var backendMessageId: String? = null
 

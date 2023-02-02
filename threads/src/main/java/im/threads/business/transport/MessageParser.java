@@ -166,6 +166,10 @@ public final class MessageParser {
         if (content.getText() == null && content.getAttachments() == null && content.getQuotes() == null) {
             return null;
         }
+        Boolean isMessageRead = false;
+        if (content.getRead() != null) {
+            isMessageRead = content.getRead();
+        }
         String phrase;
         if (content.getText() != null) {
             phrase = content.getText();
@@ -214,6 +218,7 @@ public final class MessageParser {
             }
             final UserPhrase userPhrase = new UserPhrase(content.getUuid(), phrase, quote, sentAt, fileDescription, content.getThreadId());
             userPhrase.setSentState(MessageStatus.SENT);
+            userPhrase.setRead(isMessageRead);
             return userPhrase;
         }
     }

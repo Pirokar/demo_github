@@ -151,7 +151,10 @@ public final class HistoryParser {
                                 fileDescription.setFrom(BaseConfig.instance.context.getString(R.string.ecc_I));
                             }
                             MessageStatus sentState = message.isRead() ? MessageStatus.READ : MessageStatus.SENT;
-                            out.add(new UserPhrase(uuid, phraseText, quote, timeStamp, fileDescription, sentState, message.getThreadId()));
+                            UserPhrase userPhrase
+                                    = new UserPhrase(uuid, phraseText, quote, timeStamp, fileDescription, sentState, message.getThreadId());
+                            userPhrase.setRead(message.isRead());
+                            out.add(userPhrase);
                         }
                 }
             }
