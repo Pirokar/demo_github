@@ -225,6 +225,10 @@ class MessagesTable(
         }
         if (chatItem is UserPhrase) {
             chatItem.id?.let { id ->
+                val existedItem = getChatItemByCorrelationId(sqlHelper, id) as? UserPhrase
+                if (existedItem != null && existedItem.sentState.ordinal > chatItem.sentState.ordinal) {
+                    chatItem.sentState = existedItem.sentState
+                }
                 insertOrUpdateMessage(sqlHelper, getUserPhraseCV(chatItem))
                 chatItem.fileDescription?.let {
                     isFileDownloaded(it)?.let { uri ->
@@ -298,7 +302,7 @@ class MessagesTable(
         return userPhrases
     }
 
-    fun setUserPhraseStateByMessageId(
+    fun setUserPhraseStateByCorrelationId(
         sqlHelper: SQLiteOpenHelper,
         uuid: String?,
         messageStatus: MessageStatus?
@@ -307,6 +311,17 @@ class MessagesTable(
         cv.put(COLUMN_MESSAGE_SEND_STATE, messageStatus?.ordinal)
         sqlHelper.writableDatabase
             .update(TABLE_MESSAGES, cv, "$COLUMN_MESSAGE_CORRELATION_ID = ?", arrayOf(uuid))
+    }
+
+    fun setUserPhraseStateByBackendMessageId(
+        sqlHelper: SQLiteOpenHelper,
+        messageId: String?,
+        messageStatus: MessageStatus?
+    ) {
+        val cv = ContentValues()
+        cv.put(COLUMN_MESSAGE_SEND_STATE, messageStatus?.ordinal)
+        sqlHelper.writableDatabase
+            .update(TABLE_MESSAGES, cv, "$COLUMN_MESSAGE_ID = ?", arrayOf(messageId))
     }
 
     fun getLastConsultPhrase(sqlHelper: SQLiteOpenHelper): ConsultPhrase? {

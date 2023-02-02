@@ -7,7 +7,6 @@ import im.threads.business.models.FileDescription
 import im.threads.business.models.MessageStatus
 import im.threads.business.models.Survey
 import im.threads.business.models.UserPhrase
-import net.zetetic.database.sqlcipher.SQLiteOpenHelper
 
 interface DBHelper {
 
@@ -26,7 +25,8 @@ interface DBHelper {
     fun updateChatItemByTimeStamp(chatItem: ChatItem)
     fun getLastConsultInfo(id: String): ConsultInfo?
     fun getUnsendUserPhrase(count: Int): List<UserPhrase?>?
-    fun setUserPhraseStateByMessageId(uuid: String?, messageStatus: MessageStatus?)
+    fun setUserPhraseStateByCorrelationId(uuid: String?, messageStatus: MessageStatus?)
+    fun setUserPhraseStateByBackendMessageId(messageId: String?, messageStatus: MessageStatus?)
     fun getLastConsultPhrase(): ConsultPhrase?
 
     fun setAllConsultMessagesWereRead(): Int

@@ -704,16 +704,33 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     public void changeStateOfMessageByMessageId(
-            final String correlationMessageId,
+            String correlationId,
             final String backendMessageId,
             final MessageStatus status
     ) {
         for (final ChatItem cm : getList()) {
             if (cm instanceof UserPhrase) {
-                final UserPhrase up = (UserPhrase) cm;
-                if (ObjectsCompat.equals(correlationMessageId, up.getId()) || ObjectsCompat.equals(backendMessageId, up.getId())) {
-                    LoggerEdna.info("changeStateOfMessageById: changing read state");
+                UserPhrase up = (UserPhrase) cm;
+
+                if (correlationId != null) {
+                    String[] split = correlationId.split(":");
+                    if (split.length > 1) {
+                        correlationId = split[1];
+                    }
+                }
+                LoggerEdna.info(
+                        "changeStateOfMessageById: UserPhrase text: " + up.getPhraseText() + ", MessageStatus: " + status.name() +
+                                ", correlationMessageId - " + correlationId
+                                + ", backendMessageId - " + backendMessageId + ", up.getId() - " + up.getId()
+                                + ", up.getBackendMessageId() - " + up.getBackendMessageId()
+                );
+
+                if (ObjectsCompat.equals(correlationId, up.getId()) || ObjectsCompat.equals(backendMessageId, up.getBackendMessageId())) {
+                    LoggerEdna.info("changeStateOfMessageById: changing message state to " + status.name());
                     ((UserPhrase) cm).setSentState(status);
+                    if (backendMessageId != null) {
+                        ((UserPhrase) cm).setBackendMessageId(backendMessageId);
+                    }
                     notifyItemChangedOnUi(cm);
                 }
             }

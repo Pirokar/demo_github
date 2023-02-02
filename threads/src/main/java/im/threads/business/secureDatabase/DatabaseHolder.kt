@@ -15,7 +15,6 @@ import im.threads.business.utils.Balloon
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
-import net.zetetic.database.sqlcipher.SQLiteOpenHelper
 
 @OpenForTesting
 class DatabaseHolder(private val context: Context) {
@@ -60,9 +59,12 @@ class DatabaseHolder(private val context: Context) {
 
     fun getUnsendUserPhrase(count: Int): List<UserPhrase> = tryExecute { myOpenHelper.getUnsendUserPhrase(count) } ?: arrayListOf()
 
-    // ConsultPhrase
-    fun setStateOfUserPhraseByMessageId(uuid: String?, messageStatus: MessageStatus?) {
-        tryExecute { myOpenHelper.setUserPhraseStateByMessageId(uuid, messageStatus) }
+    fun setStateOfUserPhraseByCorrelationId(uuid: String?, messageStatus: MessageStatus?) {
+        tryExecute { myOpenHelper.setUserPhraseStateByCorrelationId(uuid, messageStatus) }
+    }
+
+    fun setStateOfUserPhraseByBackendMessageId(messageId: String?, messageStatus: MessageStatus?) {
+        tryExecute { myOpenHelper.setUserPhraseStateByBackendMessageId(messageId, messageStatus) }
     }
 
     val lastConsultPhrase: Single<ConsultPhrase?> =

@@ -3,11 +3,18 @@ package im.threads.business.models
 import com.google.gson.annotations.SerializedName
 
 enum class MessageStatus {
+    FAILED,
+
     SENDING,
-    @SerializedName("delivered") DELIVERED,
-    @SerializedName("sent") SENT,
-    @SerializedName("read") READ,
-    FAILED;
+
+    @SerializedName("delivered")
+    DELIVERED,
+
+    @SerializedName("sent")
+    SENT,
+
+    @SerializedName("read")
+    READ;
 
     companion object {
         @JvmStatic

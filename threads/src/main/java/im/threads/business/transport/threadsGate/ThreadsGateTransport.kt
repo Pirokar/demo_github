@@ -468,7 +468,15 @@ class ThreadsGateTransport(
                             else -> {}
                         }
                     }
-                    chatUpdateProcessor.postOutgoingMessageStatusChanged(listOf(Status(correlationId, data.messageId, MessageStatus.SENT)))
+                    chatUpdateProcessor.postOutgoingMessageStatusChanged(
+                        listOf(
+                            Status(
+                                correlationId,
+                                data.messageId,
+                                MessageStatus.fromString(data.status) ?: MessageStatus.SENT
+                            )
+                        )
+                    )
                 }
                 if (action == Action.GET_STATUSES) {
                     val data = BaseConfig.instance.gson.fromJson(

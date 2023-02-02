@@ -123,8 +123,12 @@ class ThreadsDbHelper private constructor(val context: Context, password: String
     override fun getUnsendUserPhrase(count: Int): List<UserPhrase> =
         messagesTable.getUnsendUserPhrase(this, count)
 
-    override fun setUserPhraseStateByMessageId(uuid: String?, messageStatus: MessageStatus?) {
-        messagesTable.setUserPhraseStateByMessageId(this, uuid, messageStatus)
+    override fun setUserPhraseStateByCorrelationId(uuid: String?, messageStatus: MessageStatus?) {
+        messagesTable.setUserPhraseStateByCorrelationId(this, uuid, messageStatus)
+    }
+
+    override fun setUserPhraseStateByBackendMessageId(messageId: String?, messageStatus: MessageStatus?) {
+        messagesTable.setUserPhraseStateByBackendMessageId(this, messageId, messageStatus)
     }
 
     override fun getLastConsultPhrase(): ConsultPhrase? = messagesTable.getLastConsultPhrase(this)

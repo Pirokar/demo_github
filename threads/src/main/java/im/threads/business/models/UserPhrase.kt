@@ -7,8 +7,8 @@ import im.threads.business.utils.FileUtils.isVoiceMessage
 import java.util.UUID
 
 class UserPhrase constructor(
-    override var id: String?,
     // This this a mfms messageId required for read status updates
+    override var id: String?,
     override val phraseText: String?,
     override val quote: Quote?,
     override var timeStamp: Long,
@@ -20,6 +20,7 @@ class UserPhrase constructor(
     var ogUrl: String? = null
     var isCopy = false
     var campaignMessage: CampaignMessage? = null
+    var backendMessageId: String? = null
 
     // для поиска сообщений в чате
     override var found = false
