@@ -726,12 +726,14 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 );
 
                 if (ObjectsCompat.equals(correlationId, up.getId()) || ObjectsCompat.equals(backendMessageId, up.getBackendMessageId())) {
-                    LoggerEdna.info("changeStateOfMessageById: changing message state to " + status.name());
-                    ((UserPhrase) cm).setSentState(status);
                     if (backendMessageId != null) {
                         ((UserPhrase) cm).setBackendMessageId(backendMessageId);
                     }
-                    notifyItemChangedOnUi(cm);
+                    if (up.getSentState().ordinal() < status.ordinal()) {
+                        LoggerEdna.info("changeStateOfMessageById: changing message state to " + status.name());
+                        ((UserPhrase) cm).setSentState(status);
+                        notifyItemChangedOnUi(cm);
+                    }
                 }
             }
         }

@@ -888,19 +888,23 @@ class ChatController private constructor() {
                             "Received new status: ${status.status.name}, correlationId: ${status.correlationId}," +
                                 " messageId: ${status.messageId}"
                         )
-                        coroutineScope.launch {
-                            val result = coroutineScope.async(Dispatchers.IO) {
-                                database.getChatItemByBackendMessageId(status.messageId)
-                            }
-                            val chatItem = result.await()
-                            val messageStatus = getMessageStatus(chatItem, status)
-                            fragment?.setMessageState(messageStatus.correlationId, messageStatus.messageId, messageStatus.status)
-                        }
+                        sentStatus(status)
                     }
                 ) { error: Throwable? ->
                     error("subscribeToOutgoingMessageRead ", error)
                 }
         )
+    }
+
+    private fun sentStatus(status: Status) {
+        coroutineScope.launch {
+            val result = coroutineScope.async(Dispatchers.IO) {
+                database.getChatItemByBackendMessageId(status.messageId)
+            }
+            val chatItem = result.await()
+            val messageStatus = getMessageStatus(chatItem, status)
+            fragment?.setMessageState(messageStatus.correlationId, messageStatus.messageId, messageStatus.status)
+        }
     }
 
     private fun getMessageStatus(chatItem: ChatItem?, receivedStatus: Status): Status {
