@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.slider.Slider;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -69,6 +70,7 @@ import im.threads.business.utils.FileUtils;
 import im.threads.business.utils.FileUtilsKt;
 import im.threads.business.workers.FileDownloadWorker;
 import im.threads.ui.ChatStyle;
+import im.threads.ui.adapters.utils.SendingStatusObserver;
 import im.threads.ui.config.Config;
 import im.threads.ui.holders.BaseHolder;
 import im.threads.ui.holders.ConsultFileViewHolder;
@@ -149,6 +151,9 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private boolean ignorePlayerUpdates = false;
     @Nullable
     private VoiceMessageBaseHolder playingHolder = null;
+    private final SendingStatusObserver sendingStatusObserver = new SendingStatusObserver(
+            new WeakReference<>(this), 40000L
+    );
 
     public ChatAdapter(
             @NonNull Callback callback,
@@ -165,6 +170,18 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         clientNotificationDisplayType = preferences.getClientNotificationDisplayType();
         currentThreadId = preferences.getThreadId() == null ? 0L : preferences.getThreadId();
         chatMessagesOrderer = new ChatMessagesOrderer();
+    }
+
+    public void onResumeView() {
+        sendingStatusObserver.startObserving();
+    }
+
+    public void onPauseView() {
+        sendingStatusObserver.pauseObserving();
+    }
+
+    public void onDestroyView() {
+        sendingStatusObserver.finishObserving();
     }
 
     private static int getUnreadCount(final List<ChatItem> list) {
@@ -624,6 +641,10 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
         ArrayList<ChatItem> newList = new ArrayList<>(getList());
         chatMessagesOrderer.addAndOrder(newList, items, clientNotificationDisplayType, currentThreadId);
+        notifyDatasetChangedWithDiffUtil(newList);
+    }
+
+    public void notifyDatasetChangedWithDiffUtil(ArrayList<ChatItem> newList) {
         removeSurveyIfNotLatest(newList);
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new ChatDiffCallback(getList(), newList));
         getList().clear();

@@ -333,6 +333,10 @@ public final class ChatFragment extends BaseFragment implements
             binding.swipeRefresh.setRefreshing(false);
             binding.swipeRefresh.destroyDrawingCache();
             binding.swipeRefresh.clearAnimation();
+
+            if (chatAdapter != null) {
+                chatAdapter.onPauseView();
+            }
         }
     }
 
@@ -343,6 +347,9 @@ public final class ChatFragment extends BaseFragment implements
         super.onResume();
         mChatController.setActivityIsForeground(true);
         scrollToFirstUnreadMessage();
+        if (chatAdapter != null) {
+            chatAdapter.onResumeView();
+        }
         isResumed = true;
         chatIsShown = true;
         afterResume = true;
@@ -373,6 +380,9 @@ public final class ChatFragment extends BaseFragment implements
 
         super.onDestroy();
         BaseConfig.instance.transport.setLifecycle(null);
+        if (chatAdapter != null) {
+            chatAdapter.onDestroyView();
+        }
     }
 
     public int getLastVisibleItemPosition() {

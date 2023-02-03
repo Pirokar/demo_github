@@ -94,7 +94,8 @@ class UserPhrase constructor(
             ObjectsCompat.equals(quote, that.quote) &&
             ObjectsCompat.equals(fileDescription, that.fileDescription) &&
             ObjectsCompat.equals(ogUrl, that.ogUrl) &&
-            ObjectsCompat.equals(threadId, that.threadId)
+            ObjectsCompat.equals(threadId, that.threadId) &&
+            ObjectsCompat.equals(sentState, that.sentState)
     }
 
     override fun hashCode(): Int {
