@@ -5,33 +5,43 @@ import android.graphics.drawable.Drawable
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.Target
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class PicassoImageLoader : ImageLoaderRealisation {
     private val requestBuilder = ImageRequestBuilder()
+    private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
     override fun load(config: ImageLoader.Config) {
-        val request = requestBuilder.getImageRequestBuilder(config)
-        if (config.callback != null) {
-            request?.into(
-                config.imageView,
-                object : Callback {
-                    override fun onSuccess() {
-                        config.callback?.onImageLoaded()
-                    }
+        coroutineScope.launch {
+            val request = withContext(Dispatchers.IO) { requestBuilder.getImageRequestBuilder(config) }
+            if (config.callback != null) {
+                request?.into(
+                    config.imageView,
+                    object : Callback {
+                        override fun onSuccess() {
+                            config.callback?.onImageLoaded()
+                        }
 
-                    override fun onError(e: java.lang.Exception?) {
-                        config.callback?.onImageLoadError()
+                        override fun onError(e: java.lang.Exception?) {
+                            config.callback?.onImageLoadError()
+                        }
                     }
-                }
-            )
-        } else {
-            request?.into(config.imageView)
+                )
+            } else {
+                request?.into(config.imageView)
+            }
         }
     }
 
     override fun getBitmap(config: ImageLoader.Config) {
         if (config.callback != null) {
-            requestBuilder.getImageRequestBuilder(config)?.into(getPicassoTarget(config))
+            coroutineScope.launch {
+                val request = withContext(Dispatchers.IO) { requestBuilder.getImageRequestBuilder(config) }
+                request?.into(getPicassoTarget(config))
+            }
         }
     }
 

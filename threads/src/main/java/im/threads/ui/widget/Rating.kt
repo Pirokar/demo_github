@@ -21,7 +21,6 @@ class Rating : LinearLayout {
     constructor(context: Context) : super(context)
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
 
-
     fun initRating(context: Context, ratingCount: Int, countStars: Int) {
         this.ratingCount = ratingCount
         this.countStars = countStars
