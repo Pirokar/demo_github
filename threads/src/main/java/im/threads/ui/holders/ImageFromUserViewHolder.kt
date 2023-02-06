@@ -23,6 +23,8 @@ import im.threads.business.models.UserPhrase
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.ogParser.OpenGraphParser
 import im.threads.business.utils.FileUtils
+import im.threads.ui.config.Config
+import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.widget.textView.BubbleTimeTextView
 import io.reactivex.subjects.PublishSubject
 import java.text.SimpleDateFormat
@@ -213,6 +215,7 @@ class ImageFromUserViewHolder(
 
         if (fileDescription != null) {
             loader.setImageResource(getErrorImageResByErrorCode(fileDescription.errorCode))
+            ColorsHelper.setTint(itemView.context, loader, Config.getInstance().getChatStyle().messageNotSentErrorImageColor)
             fileName.text = FileUtils.getFileName(fileDescription)
             val errorString = getString(getErrorStringResByErrorCode(fileDescription.errorCode))
             errorText.text = errorString

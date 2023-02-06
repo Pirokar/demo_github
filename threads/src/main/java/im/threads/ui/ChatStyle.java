@@ -88,6 +88,9 @@ public final class ChatStyle implements Serializable {
     public int outgoingMessageBubbleColor = R.color.ecc_chat_outgoing_message_bubble;
     @ColorRes
     public int messageNotSentBubbleBackgroundColor = R.color.ecc_error_red_df0000;
+
+    @ColorRes
+    public int messageNotSentErrorImageColor = R.color.ecc_white;
     @DrawableRes
     public int incomingMessageBubbleBackground = R.drawable.ecc_incoming_bubble;
     @DrawableRes
@@ -1552,14 +1555,19 @@ public final class ChatStyle implements Serializable {
     }
 
     /**
-     * Устанавливает цвет баббла, если сообщение не было отправлено.
-     * Default values:
+     * Устанавливает цвет баббла и цвет картинки-ошибки слева (восклицательный знако по дефолту) если сообщение не было отправлено.
      *
-     * @param messageNotSentBackgroundColor - R.color.ecc_error_red_df0000
+     * @param messageNotSentBackgroundColor - Фоновый цвет для баббла. По умолчанию - R.color.ecc_error_red_df0000
+     * @param messageNotSentErrorImageColor - Цвет картинки-ошибки слева для баббла (восклицательный знако по дефолту).
+*      По умолчанию - R.color.ecc_white
      * @return Builder
      */
-    public ChatStyle setMessageNotSentBubbleBackgroundColor(@ColorRes final int messageNotSentBackgroundColor) {
+    public ChatStyle setMessageNotSentBubbleColors(
+            @ColorRes final int messageNotSentBackgroundColor,
+            @ColorRes final int messageNotSentErrorImageColor
+    ) {
         this.messageNotSentBubbleBackgroundColor = messageNotSentBackgroundColor;
+        this.messageNotSentErrorImageColor = messageNotSentErrorImageColor;
         return this;
     }
 
