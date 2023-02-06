@@ -547,6 +547,27 @@ public final class ChatStyle implements Serializable {
     @ColorRes
     public int toastBackgroundColor = 0;
     // Конфигурации markdown в сообщениях
+    @DrawableRes
+    public int messageSendingIconResId = R.drawable.ecc_message_image_sending;
+    @DrawableRes
+    public int messageSentIconResId = R.drawable.ecc_message_image_sending;
+    @DrawableRes
+    public int messageDeliveredIconResId = R.drawable.ecc_message_image_delivered;
+    @DrawableRes
+    public int messageReadIconResId = R.drawable.ecc_image_message_read;
+    @DrawableRes
+    public int messageFailedIconResId = R.drawable.ecc_message_image_failed;
+    @ColorRes
+    public int messageSendingIconColorResId = R.color.ecc_white;
+    @ColorRes
+    public int messageSentIconColorResId = R.color.ecc_white;
+    @ColorRes
+    public int messageDeliveredIconColorResId = R.color.ecc_white;
+    @ColorRes
+    public int messageReadIconColorResId = R.color.ecc_white;
+    @ColorRes
+    public int messageFailedIconColorResId = R.color.ecc_white;
+
     private MarkdownConfig incomingMarkdownConfiguration, outgoingMarkdownConfiguration;
 
     public ChatStyle() {
@@ -1799,5 +1820,75 @@ public final class ChatStyle implements Serializable {
      */
     public boolean isToastStylable() {
         return  toastTextSize != 0 || toastTextColor != 0 || toastBackgroundColor != 0;
+    }
+
+    /**
+     * Устанавливает иконку и цвет для исходящего сообщения со статусом "sending"
+     * @param messageSendingIconResId - русурс id иконки. По умолчанию - R.drawable.ecc_message_image_sending
+     * @param messageSendingIconColorResId - ресурс id цвета для иконки. По умолчанию - R.color.ecc_white
+     */
+    public ChatStyle setMessageSendingResources(
+            @DrawableRes int messageSendingIconResId,
+            @ColorRes int messageSendingIconColorResId
+    ) {
+        this.messageSendingIconResId = messageSendingIconResId;
+        this.messageSendingIconColorResId = messageSendingIconColorResId;
+        return this;
+    }
+
+    /**
+     * Устанавливает иконку и цвет для исходящего сообщения со статусом "sent"
+     * @param messageSentIconResId - русурс id иконки. По умолчанию - R.drawable.ecc_message_image_sending
+     * @param messageSentIconColorResId - ресурс id цвета для иконки. По умолчанию - R.color.ecc_white
+     */
+    public ChatStyle setMessageSentResources(
+            @DrawableRes int messageSentIconResId,
+            @ColorRes int messageSentIconColorResId
+    ) {
+        this.messageSentIconResId = messageSentIconResId;
+        this.messageSentIconColorResId = messageSentIconColorResId;
+        return this;
+    }
+
+    /**
+     * Устанавливает иконку и цвет для исходящего сообщения со статусом "delivered"
+     * @param messageDeliveredIconResId - русурс id иконки. По умолчанию - R.drawable.ecc_message_image_delivered
+     * @param messageDeliveredIconColorResId - ресурс id цвета для иконки. По умолчанию - R.color.ecc_white
+     */
+    public ChatStyle setMessageDeliveredResources(
+            @DrawableRes int messageDeliveredIconResId,
+            @ColorRes int messageDeliveredIconColorResId
+    ) {
+        this.messageDeliveredIconResId = messageDeliveredIconResId;
+        this.messageDeliveredIconColorResId = messageDeliveredIconColorResId;
+        return this;
+    }
+
+    /**
+     * Устанавливает иконку и цвет для исходящего сообщения со статусом "read"
+     * @param messageReadIconResId - русурс id иконки. По умолчанию - R.drawable.ecc_image_message_read
+     * @param messageReadIconColorResId - ресурс id цвета для иконки. По умолчанию - R.color.ecc_white
+     */
+    public ChatStyle setMessageReadResources(
+            @DrawableRes int messageReadIconResId,
+            @ColorRes int messageReadIconColorResId
+    ) {
+        this.messageReadIconResId = messageReadIconResId;
+        this.messageReadIconColorResId = messageReadIconColorResId;
+        return this;
+    }
+
+    /**
+     * Устанавливает иконку и цвет для исходящего сообщения со статусом "failed"
+     * @param messageFailedIconResId - русурс id иконки. По умолчанию - R.drawable.ecc_message_image_failed
+     * @param messageFailedIconColorResId - ресурс id цвета для иконки. По умолчанию - R.color.ecc_white
+     */
+    public ChatStyle setMessageFailedResources(
+            @DrawableRes int messageFailedIconResId,
+            @ColorRes int messageFailedIconColorResId
+    ) {
+        this.messageFailedIconResId = messageFailedIconResId;
+        this.messageFailedIconColorResId = messageFailedIconColorResId;
+        return this;
     }
 }
