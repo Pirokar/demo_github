@@ -20,12 +20,13 @@ import androidx.core.view.isVisible
 import im.threads.R
 import im.threads.business.models.ChatItem
 import im.threads.business.models.FileDescription
-import im.threads.business.models.MessageState
+import im.threads.business.models.MessageStatus
 import im.threads.business.models.UserPhrase
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.ogParser.OpenGraphParser
 import im.threads.business.utils.FileUtils.getFileName
 import im.threads.business.utils.toFileSize
+import im.threads.ui.utils.gone
 import im.threads.ui.views.CircularProgressButton
 import io.reactivex.subjects.PublishSubject
 import java.text.SimpleDateFormat
@@ -35,19 +36,23 @@ import java.util.Locale
 class UserFileViewHolder(
     parent: ViewGroup,
     highlightingStream: PublishSubject<ChatItem>,
-    openGraphParser: OpenGraphParser
+    openGraphParser: OpenGraphParser,
+    private val messageErrorProcessor: PublishSubject<Long>
 ) : BaseHolder(
     LayoutInflater.from(parent.context).inflate(R.layout.ecc_item_user_chat_file, parent, false),
     highlightingStream,
     openGraphParser
 ) {
     private val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
+    private var timeStamp: Long? = null
+    private var fileDescription: FileDescription? = null
 
     private val fileHeaderTextView: TextView = itemView.findViewById(R.id.header)
     private val fileSizeTextView: TextView = itemView.findViewById(R.id.fileSize)
     private val errorTextView: TextView = itemView.findViewById(R.id.errorText)
     private val loader: ImageView = itemView.findViewById(R.id.loader)
     private val rootLayout: LinearLayout = itemView.findViewById(R.id.rootLayout)
+    private val bubbleLayout: RelativeLayout = itemView.findViewById<RelativeLayout>(R.id.bubble)
 
     private val circularProgressButton =
         itemView.findViewById<CircularProgressButton>(R.id.buttonDownload).apply {
@@ -69,17 +74,13 @@ class UserFileViewHolder(
     }
 
     init {
-        itemView.findViewById<RelativeLayout>(R.id.bubble).apply {
+        bubbleLayout.apply {
             background =
                 AppCompatResources.getDrawable(
                     itemView.context,
                     style.outgoingMessageBubbleBackground
                 )
             setPaddings(false, this)
-            background.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
-                getColorInt(style.outgoingMessageBubbleColor),
-                BlendModeCompat.SRC_ATOP
-            )
             setLayoutMargins(false, this)
         }
         setTextColorToViews(
@@ -95,8 +96,10 @@ class UserFileViewHolder(
         onLongClick: OnLongClickListener,
         isFilterVisible: Boolean
     ) {
+        timeStamp = userPhrase.timeStamp
         subscribeForHighlighting(userPhrase, rootLayout)
         userPhrase.fileDescription?.let {
+            this.fileDescription = it
             val viewGroup = itemView as ViewGroup
             fileHeaderTextView.text = getFileName(it)
             fileSizeTextView.text = it.size.toFileSize()
@@ -105,7 +108,7 @@ class UserFileViewHolder(
                 viewGroup.getChildAt(i).setOnLongClickListener(onLongClick)
                 viewGroup.getChildAt(i).setOnClickListener(rowClickListener)
             }
-            if (userPhrase.sentState == MessageState.STATE_NOT_SENT) {
+            if (userPhrase.sentState == MessageStatus.FAILED) {
                 showErrorLayout(it)
             } else {
                 updateFileView(it, buttonClickListener)
@@ -114,11 +117,12 @@ class UserFileViewHolder(
             rootLayout.setOnLongClickListener(onLongClick)
             changeHighlighting(isFilterVisible)
         }
+        showBubbleByCurrentStatus()
         bindTimeStamp(userPhrase.sentState, userPhrase.timeStamp, onLongClick)
     }
 
     private fun bindTimeStamp(
-        messageState: MessageState,
+        messageStatus: MessageStatus,
         timeStamp: Long,
         onLongClick: OnLongClickListener
     ) {
@@ -128,25 +132,54 @@ class UserFileViewHolder(
         }
         timeStampTextView.text = sdf.format(Date(timeStamp))
         val rightDrawable: Drawable? =
-            when (messageState) {
-                MessageState.STATE_WAS_READ -> getColoredDrawable(
-                    R.drawable.ecc_image_message_received,
-                    R.color.ecc_outgoing_message_image_received_icon
-                )
-                MessageState.STATE_SENT -> getColoredDrawable(
-                    R.drawable.ecc_message_image_sent,
-                    R.color.ecc_outgoing_message_image_sent_icon
-                )
-                MessageState.STATE_NOT_SENT -> getColoredDrawable(
-                    R.drawable.ecc_message_image_waiting,
-                    R.color.ecc_outgoing_message_image_not_send_icon
-                )
-                MessageState.STATE_SENDING -> AppCompatResources.getDrawable(
-                    itemView.context,
-                    R.drawable.ecc_empty_space_24dp
-                )
+            when (messageStatus) {
+                MessageStatus.SENDING -> {
+                    val previousStatus = statuses[timeStamp]
+                    if (previousStatus == null || previousStatus != MessageStatus.FAILED) {
+                        showNormalBubble()
+                        AppCompatResources.getDrawable(
+                            itemView.context,
+                            R.drawable.ecc_message_image_sending
+                        )
+                    } else {
+                        getColoredDrawable(
+                            R.drawable.ecc_message_image_failed,
+                            R.color.ecc_outgoing_message_image_failed_icon
+                        )
+                    }
+                }
+                MessageStatus.SENT -> {
+                    showNormalBubble()
+                    AppCompatResources.getDrawable(
+                        itemView.context,
+                        R.drawable.ecc_message_image_sending
+                    )
+                }
+                MessageStatus.DELIVERED -> {
+                    showNormalBubble()
+                    getColoredDrawable(
+                        R.drawable.ecc_message_image_delivered,
+                        R.color.ecc_outgoing_message_image_sent_icon
+                    )
+                }
+                MessageStatus.READ -> {
+                    showNormalBubble()
+                    getColoredDrawable(
+                        R.drawable.ecc_image_message_read,
+                        R.color.ecc_outgoing_message_image_received_icon
+                    )
+                }
+                MessageStatus.FAILED -> {
+                    showErrorBubble()
+                    scrollToErrorIfAppearsFirstTime()
+                    getColoredDrawable(
+                        R.drawable.ecc_message_image_failed,
+                        R.color.ecc_outgoing_message_image_failed_icon
+                    )
+                }
             }
         timeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, rightDrawable, null)
+        statuses[timeStamp] = messageStatus
     }
 
     private fun getColoredDrawable(@DrawableRes res: Int, @ColorRes color: Int): Drawable? {
@@ -191,5 +224,44 @@ class UserFileViewHolder(
         loader.setImageResource(getErrorImageResByErrorCode(fileDescription.errorCode))
         val errorString = getString(getErrorStringResByErrorCode(fileDescription.errorCode))
         errorTextView.text = errorString
+    }
+
+    private fun hideErrorLayout() {
+        loader.gone()
+        errorTextView.gone()
+    }
+
+    private fun scrollToErrorIfAppearsFirstTime() {
+        val previousStatus = statuses[timeStamp]
+        if (previousStatus == null || previousStatus != MessageStatus.FAILED) {
+            timeStamp?.let { messageErrorProcessor.onNext(it) }
+        }
+    }
+
+    private fun showErrorBubble() {
+        bubbleLayout.background.colorFilter =
+            BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
+                getColorInt(style.messageNotSentBubbleBackgroundColor),
+                BlendModeCompat.SRC_ATOP
+            )
+        fileDescription?.let { showErrorLayout(it) }
+    }
+
+    private fun showNormalBubble() {
+        bubbleLayout.background.colorFilter =
+            BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
+                getColorInt(style.outgoingMessageBubbleColor),
+                BlendModeCompat.SRC_ATOP
+            )
+        hideErrorLayout()
+    }
+
+    private fun showBubbleByCurrentStatus() {
+        val previousStatus = statuses[timeStamp]
+        if (previousStatus == null || previousStatus != MessageStatus.FAILED) {
+            showNormalBubble()
+        } else {
+            showErrorBubble()
+        }
     }
 }

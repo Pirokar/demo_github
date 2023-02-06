@@ -12,5 +12,6 @@ public enum Action {
     @SerializedName("getStatuses")
     GET_STATUSES,
     @SerializedName("updateStatuses")
-    UPDATE_STATUSES;
+    UPDATE_STATUSES,
+    UNDEFINED
 }

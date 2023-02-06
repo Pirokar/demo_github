@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.slider.Slider;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -47,7 +48,7 @@ import im.threads.business.models.ConsultPhrase;
 import im.threads.business.models.ConsultTyping;
 import im.threads.business.models.DateRow;
 import im.threads.business.models.FileDescription;
-import im.threads.business.models.MessageState;
+import im.threads.business.models.MessageStatus;
 import im.threads.business.models.NoChatItem;
 import im.threads.business.models.QuestionDTO;
 import im.threads.business.models.QuickReply;
@@ -69,6 +70,7 @@ import im.threads.business.utils.FileUtils;
 import im.threads.business.utils.FileUtilsKt;
 import im.threads.business.workers.FileDownloadWorker;
 import im.threads.ui.ChatStyle;
+import im.threads.ui.adapters.utils.SendingStatusObserver;
 import im.threads.ui.config.Config;
 import im.threads.ui.holders.BaseHolder;
 import im.threads.ui.holders.ConsultFileViewHolder;
@@ -131,6 +133,8 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private final FileDescriptionMediaPlayer fdMediaPlayer;
     @NonNull
     private final MediaMetadataRetriever mediaMetadataRetriever;
+    @NonNull
+    private final PublishSubject<Long> messageErrorProcessor;
     private final ChatMessagesOrderer chatMessagesOrderer;
     @NonNull
     PublishSubject<ChatItem> highlightingStream = PublishSubject.create();
@@ -147,19 +151,37 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private boolean ignorePlayerUpdates = false;
     @Nullable
     private VoiceMessageBaseHolder playingHolder = null;
+    private final SendingStatusObserver sendingStatusObserver = new SendingStatusObserver(
+            new WeakReference<>(this), 40000L
+    );
 
     public ChatAdapter(
             @NonNull Callback callback,
             @NonNull FileDescriptionMediaPlayer fdMediaPlayer,
-            @NonNull MediaMetadataRetriever mediaMetadataRetriever) {
+            @NonNull MediaMetadataRetriever mediaMetadataRetriever,
+            @NonNull PublishSubject<Long> messageErrorProcessor
+    ) {
         this.mCallback = callback;
         this.fdMediaPlayer = fdMediaPlayer;
         this.mediaMetadataRetriever = mediaMetadataRetriever;
+        this.messageErrorProcessor = messageErrorProcessor;
 
         PreferencesJavaUI preferences = new PreferencesJavaUI();
         clientNotificationDisplayType = preferences.getClientNotificationDisplayType();
         currentThreadId = preferences.getThreadId() == null ? 0L : preferences.getThreadId();
         chatMessagesOrderer = new ChatMessagesOrderer();
+    }
+
+    public void onResumeView() {
+        sendingStatusObserver.startObserving();
+    }
+
+    public void onPauseView() {
+        sendingStatusObserver.pauseObserving();
+    }
+
+    public void onDestroyView() {
+        sendingStatusObserver.finishObserving();
     }
 
     private static int getUnreadCount(final List<ChatItem> list) {
@@ -214,17 +236,30 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             case TYPE_CONSULT_PHRASE:
                 return new ConsultPhraseHolder(parent, incomingImageMaskTransformation, highlightingStream, openGraphParser);
             case TYPE_USER_PHRASE:
-                return new UserPhraseViewHolder(parent, outgoingImageMaskTransformation, highlightingStream, openGraphParser, fdMediaPlayer);
+                return new UserPhraseViewHolder(
+                        parent,
+                        outgoingImageMaskTransformation,
+                        highlightingStream,
+                        openGraphParser,
+                        fdMediaPlayer,
+                        messageErrorProcessor
+                );
             case TYPE_FREE_SPACE:
                 return new SpaceViewHolder(parent);
             case TYPE_IMAGE_FROM_CONSULT:
                 return new ImageFromConsultViewHolder(parent, incomingImageMaskTransformation, highlightingStream, openGraphParser);
             case TYPE_IMAGE_FROM_USER:
-                return new ImageFromUserViewHolder(parent, outgoingImageMaskTransformation, highlightingStream, openGraphParser);
+                return new ImageFromUserViewHolder(
+                        parent,
+                        outgoingImageMaskTransformation,
+                        highlightingStream,
+                        openGraphParser,
+                        messageErrorProcessor
+                );
             case TYPE_FILE_FROM_CONSULT:
                 return new ConsultFileViewHolder(parent, highlightingStream, openGraphParser);
             case TYPE_FILE_FROM_USER:
-                return new UserFileViewHolder(parent, highlightingStream, openGraphParser);
+                return new UserFileViewHolder(parent, highlightingStream, openGraphParser, messageErrorProcessor);
             case TYPE_UNREAD_MESSAGES:
                 return new UnreadMessageViewHolder(parent);
             case TYPE_SCHEDULE:
@@ -606,6 +641,10 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
         ArrayList<ChatItem> newList = new ArrayList<>(getList());
         chatMessagesOrderer.addAndOrder(newList, items, clientNotificationDisplayType, currentThreadId);
+        notifyDatasetChangedWithDiffUtil(newList);
+    }
+
+    public void notifyDatasetChangedWithDiffUtil(ArrayList<ChatItem> newList) {
         removeSurveyIfNotLatest(newList);
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new ChatDiffCallback(getList(), newList));
         getList().clear();
@@ -672,7 +711,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
     }
 
-    public void changeStateOfSurvey(long sendingId, MessageState sentState) {
+    public void changeStateOfSurvey(long sendingId, MessageStatus sentState) {
         for (final ChatItem cm : getList()) {
             if (cm instanceof Survey) {
                 final Survey survey = (Survey) cm;
@@ -685,14 +724,37 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
     }
 
-    public void changeStateOfMessageByMessageId(final String messageId, final MessageState state) {
+    public void changeStateOfMessageByMessageId(
+            String correlationId,
+            final String backendMessageId,
+            final MessageStatus status
+    ) {
         for (final ChatItem cm : getList()) {
             if (cm instanceof UserPhrase) {
-                final UserPhrase up = (UserPhrase) cm;
-                if (ObjectsCompat.equals(messageId, up.getId())) {
-                    LoggerEdna.info("changeStateOfMessageById: changing read state");
-                    ((UserPhrase) cm).setSentState(state);
-                    notifyItemChangedOnUi(cm);
+                UserPhrase up = (UserPhrase) cm;
+
+                if (correlationId != null) {
+                    String[] split = correlationId.split(":");
+                    if (split.length > 1) {
+                        correlationId = split[1];
+                    }
+                }
+                LoggerEdna.info(
+                        "changeStateOfMessageById: UserPhrase text: " + up.getPhraseText() + ", MessageStatus: " + status.name() +
+                                ", correlationMessageId - " + correlationId
+                                + ", backendMessageId - " + backendMessageId + ", up.getId() - " + up.getId()
+                                + ", up.getBackendMessageId() - " + up.getBackendMessageId()
+                );
+
+                if (ObjectsCompat.equals(correlationId, up.getId()) || ObjectsCompat.equals(backendMessageId, up.getBackendMessageId())) {
+                    if (backendMessageId != null) {
+                        ((UserPhrase) cm).setBackendMessageId(backendMessageId);
+                    }
+                    if (up.getSentState().ordinal() < status.ordinal()) {
+                        LoggerEdna.info("changeStateOfMessageById: changing message state to " + status.name());
+                        ((UserPhrase) cm).setSentState(status);
+                        notifyItemChangedOnUi(cm);
+                    }
                 }
             }
         }

@@ -4,7 +4,7 @@ import im.threads.business.models.ChatItem
 import im.threads.business.models.ConsultInfo
 import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.FileDescription
-import im.threads.business.models.MessageState
+import im.threads.business.models.MessageStatus
 import im.threads.business.models.Survey
 import im.threads.business.models.UserPhrase
 
@@ -12,7 +12,8 @@ interface DBHelper {
 
     fun cleanDatabase()
     fun getChatItems(offset: Int, limit: Int): List<ChatItem?>
-    fun getChatItem(messageUuid: String?): ChatItem?
+    fun getChatItemByCorrelationId(messageUuid: String?): ChatItem?
+    fun getChatItemByBackendMessageId(messageId: String?): ChatItem?
     fun getSendingChatItems(): List<UserPhrase?>
     fun putChatItems(items: List<ChatItem?>?)
     fun putChatItem(chatItem: ChatItem?): Boolean
@@ -24,7 +25,8 @@ interface DBHelper {
     fun updateChatItemByTimeStamp(chatItem: ChatItem)
     fun getLastConsultInfo(id: String): ConsultInfo?
     fun getUnsendUserPhrase(count: Int): List<UserPhrase?>?
-    fun setUserPhraseStateByMessageId(uuid: String?, messageState: MessageState?)
+    fun setUserPhraseStateByCorrelationId(uuid: String?, messageStatus: MessageStatus?)
+    fun setUserPhraseStateByBackendMessageId(messageId: String?, messageStatus: MessageStatus?)
     fun getLastConsultPhrase(): ConsultPhrase?
 
     fun setAllConsultMessagesWereRead(): Int
@@ -36,4 +38,5 @@ interface DBHelper {
     fun getMessagesCount(): Int
     fun getUnreadMessagesCount(): Int
     fun getUnreadMessagesUuid(): List<String?>?
+    fun setOrUpdateMessageId(correlationId: String?, backendMessageId: String?)
 }

@@ -16,7 +16,7 @@ import im.threads.business.formatters.SpeechStatus;
 import im.threads.business.models.ChatItem;
 import im.threads.business.models.ConsultConnectionMessage;
 import im.threads.business.models.ConsultPhrase;
-import im.threads.business.models.MessageState;
+import im.threads.business.models.MessageStatus;
 import im.threads.business.models.RequestResolveThread;
 import im.threads.business.models.SimpleSystemMessage;
 import im.threads.business.models.Survey;
@@ -197,7 +197,7 @@ public class MessagesTable extends Table {
                 quotesTable.getQuote(sqlHelper, cGetString(c, COLUMN_MESSAGE_UUID)),
                 cGetLong(c, COLUMN_TIMESTAMP),
                 fileDescriptionTable.getFileDescription(sqlHelper, cGetString(c, COLUMN_MESSAGE_UUID)),
-                MessageState.fromOrdinal(cGetInt(c, COLUMN_MESSAGE_SEND_STATE)),
+                MessageStatus.fromOrdinal(cGetInt(c, COLUMN_MESSAGE_SEND_STATE)),
                 cGetLong(c, COLUMN_THREAD_ID)
         );
     }
@@ -209,7 +209,7 @@ public class MessagesTable extends Table {
                 surveySendingId,
                 cGetLong(c, COLUMN_SURVEY_HIDE_AFTER),
                 cGetLong(c, COLUMN_TIMESTAMP),
-                MessageState.fromOrdinal(cGetInt(c, COLUMN_MESSAGE_SEND_STATE)),
+                MessageStatus.fromOrdinal(cGetInt(c, COLUMN_MESSAGE_SEND_STATE)),
                 cGetBool(c, COLUMN_IS_READ),
                 cGetBool(c, COLUMN_DISPLAY_MESSAGE)
         );

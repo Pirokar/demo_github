@@ -7,19 +7,21 @@ import im.threads.business.utils.FileUtils.isVoiceMessage
 import java.util.UUID
 
 class UserPhrase constructor(
-    override var id: String?,
     // This this a mfms messageId required for read status updates
+    override var id: String?,
     override val phraseText: String?,
     override val quote: Quote?,
     override var timeStamp: Long,
     override var fileDescription: FileDescription?,
-    var sentState: MessageState,
+    var sentState: MessageStatus,
     override val threadId: Long?
 ) : ChatPhrase {
     @JvmField
     var ogUrl: String? = null
     var isCopy = false
+    var isRead = false
     var campaignMessage: CampaignMessage? = null
+    var backendMessageId: String? = null
 
     // для поиска сообщений в чате
     override var found = false
@@ -37,7 +39,7 @@ class UserPhrase constructor(
         mQuote,
         phraseTimeStamp,
         fileDescription,
-        MessageState.STATE_SENDING,
+        MessageStatus.SENDING,
         threadId
     )
 
@@ -53,7 +55,7 @@ class UserPhrase constructor(
         mQuote,
         phraseTimeStamp,
         fileDescription,
-        MessageState.STATE_SENDING,
+        MessageStatus.SENDING,
         threadId
     )
 
@@ -92,7 +94,8 @@ class UserPhrase constructor(
             ObjectsCompat.equals(quote, that.quote) &&
             ObjectsCompat.equals(fileDescription, that.fileDescription) &&
             ObjectsCompat.equals(ogUrl, that.ogUrl) &&
-            ObjectsCompat.equals(threadId, that.threadId)
+            ObjectsCompat.equals(threadId, that.threadId) &&
+            ObjectsCompat.equals(sentState, that.sentState)
     }
 
     override fun hashCode(): Int {

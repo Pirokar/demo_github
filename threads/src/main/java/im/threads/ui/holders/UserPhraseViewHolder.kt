@@ -30,7 +30,7 @@ import im.threads.business.media.FileDescriptionMediaPlayer
 import im.threads.business.models.CampaignMessage
 import im.threads.business.models.ChatItem
 import im.threads.business.models.FileDescription
-import im.threads.business.models.MessageState
+import im.threads.business.models.MessageStatus
 import im.threads.business.models.Quote
 import im.threads.business.models.UserPhrase
 import im.threads.business.models.enums.AttachmentStateEnum
@@ -63,7 +63,8 @@ class UserPhraseViewHolder(
     private val maskedTransformation: ImageModifications.MaskedModification?,
     highlightingStream: PublishSubject<ChatItem>,
     openGraphParser: OpenGraphParser,
-    fdMediaPlayer: FileDescriptionMediaPlayer
+    fdMediaPlayer: FileDescriptionMediaPlayer,
+    private val messageErrorProcessor: PublishSubject<Long>
 ) : VoiceMessageBaseHolder(
     LayoutInflater.from(parentView.context)
         .inflate(R.layout.ecc_item_user_text_with_file, parentView, false),
@@ -81,6 +82,7 @@ class UserPhraseViewHolder(
         SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
     }
     override var fileDescription: FileDescription? = null
+    private var timeStamp: Long? = null
     private var formattedDuration = ""
 
     private val rootLayout: RelativeLayout = itemView.findViewById(R.id.rootLayout)
@@ -104,6 +106,14 @@ class UserPhraseViewHolder(
     private val rightTextHeader: TextView = itemView.findViewById(R.id.to)
     private val rightTextTimeStamp: TextView = itemView.findViewById(R.id.sendAt)
 
+    private val bubbleLayout: ViewGroup = itemView.findViewById<ViewGroup>(R.id.bubble).apply {
+        background =
+            AppCompatResources.getDrawable(
+                itemView.context,
+                style.outgoingMessageBubbleBackground
+            )
+    }
+
     private val ogTimestamp: TextView = itemView.findViewById<TextView>(R.id.ogTimestamp).apply {
         setTextColor(getColorInt(style.outgoingMessageTimeColor))
     }
@@ -117,20 +127,6 @@ class UserPhraseViewHolder(
         itemView.findViewById<CircularProgressButton>(R.id.buttonDownload).apply {
             setBackgroundColorResId(style.outgoingMessageTextColor)
         }
-
-    private val bubbleLayout = itemView.findViewById<ViewGroup>(R.id.bubble).apply {
-        background =
-            AppCompatResources.getDrawable(
-                parentView.context,
-                style.outgoingMessageBubbleBackground
-            )
-
-        background.colorFilter =
-            BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
-                getColorInt(style.outgoingMessageBubbleColor),
-                BlendModeCompat.SRC_ATOP
-            )
-    }
 
     override val buttonPlayPause: ImageView =
         itemView.findViewById<ImageView>(R.id.voiceMessageUserButtonPlayPause).apply {
@@ -179,6 +175,8 @@ class UserPhraseViewHolder(
         onLongClickListener: OnLongClickListener?,
         isChosen: Boolean
     ) {
+        timeStamp = userPhrase.timeStamp
+        showBubbleByCurrentStatus()
         initTimeStampView(userPhrase)
         hideAll()
         setupPaddingsAndBorders(userPhrase.fileDescription)
@@ -192,8 +190,7 @@ class UserPhraseViewHolder(
         )
         rootLayout.setOnLongClickListener(onLongClickListener)
         changeHighlighting(isChosen)
-        val phrase =
-            if (userPhrase.phraseText != null) userPhrase.phraseText.trim { it <= ' ' } else null
+        val phrase = if (userPhrase.phraseText != null) userPhrase.phraseText.trim { it <= ' ' } else null
         val timeStamp = userPhrase.timeStamp
         val sendState = userPhrase.sentState
         val quote = userPhrase.quote
@@ -207,8 +204,8 @@ class UserPhraseViewHolder(
         slider.setLabelFormatter(VoiceTimeLabelFormatter())
         fileSizeTextView.text = formattedDuration
 
-        if (userPhrase.sentState == MessageState.STATE_NOT_SENT) {
-            showErrorLayout()
+        if (userPhrase.sentState == MessageStatus.FAILED) {
+            showErrorText()
         }
 
         showFiles(userPhrase, imageClickListener, fileClickListener)
@@ -317,7 +314,7 @@ class UserPhraseViewHolder(
             fileDescription = it
             subscribeForVoiceMessageDownloaded()
             rightTextDescription.text = getFileDescriptionText(it)
-            val isLoading = it.state == AttachmentStateEnum.PENDING || userPhrase.sentState == MessageState.STATE_SENDING
+            val isLoading = it.state == AttachmentStateEnum.PENDING || userPhrase.sentState == MessageStatus.SENDING
             if (isVoiceMessage(it) && isLoading) {
                 startLoader()
             } else if (isLoading) {
@@ -326,11 +323,11 @@ class UserPhraseViewHolder(
                 imageRoot.gone()
                 rightTextRow.visible()
                 showLoaderLayout()
-            } else if (it.state === AttachmentStateEnum.ERROR || userPhrase.sentState == MessageState.STATE_NOT_SENT) {
+            } else if (it.state === AttachmentStateEnum.ERROR || userPhrase.sentState == MessageStatus.FAILED) {
                 stopLoader()
                 voiceMessage.gone()
                 rightTextRow.visible()
-                showErrorLayout(it)
+                showErrorText(it)
                 initTimeStampView(userPhrase)
                 timeStampTextView = itemView.findViewById(R.id.timeStamp)
                 itemView.findViewById<BubbleTimeTextView>(R.id.timeStamp).gone()
@@ -478,28 +475,61 @@ class UserPhraseViewHolder(
         ogTimestamp.text = timeText
     }
 
-    private fun setSendState(sendState: MessageState) {
-        when (sendState) {
-            MessageState.STATE_WAS_READ -> updateDrawable(
-                parentView.context,
-                R.drawable.ecc_message_received,
-                R.color.ecc_outgoing_message_received_icon
-            )
-            MessageState.STATE_SENT -> updateDrawable(
-                parentView.context,
-                R.drawable.ecc_message_sent,
-                R.color.ecc_outgoing_message_sent_icon
-            )
-            MessageState.STATE_NOT_SENT -> updateDrawable(
-                parentView.context,
-                R.drawable.ecc_message_waiting,
-                R.color.ecc_outgoing_message_not_send_icon
-            )
-            MessageState.STATE_SENDING -> updateDrawable(
-                parentView.context,
-                R.drawable.ecc_empty_space_24dp,
-                -1
-            )
+    private fun setSendState(sendStatus: MessageStatus) {
+        when (sendStatus) {
+            MessageStatus.SENDING -> {
+                style.approveRequestToResolveThreadTextResId
+                val previousStatus = statuses[timeStamp]
+                if (previousStatus == null || previousStatus != MessageStatus.FAILED) {
+                    showNormalBubble()
+                    updateDrawable(
+                        parentView.context,
+                        R.drawable.ecc_message_image_sending,
+                        -1
+                    )
+                }
+            }
+            MessageStatus.SENT -> {
+                showNormalBubble()
+                updateDrawable(
+                    parentView.context,
+                    R.drawable.ecc_message_image_sending,
+                    R.color.ecc_outgoing_message_sent_icon
+                )
+            }
+            MessageStatus.DELIVERED -> {
+                showNormalBubble()
+                updateDrawable(
+                    parentView.context,
+                    R.drawable.ecc_message_image_delivered,
+                    R.color.ecc_outgoing_message_image_sent_icon
+                )
+            }
+            MessageStatus.READ -> {
+                showNormalBubble()
+                updateDrawable(
+                    parentView.context,
+                    R.drawable.ecc_message_received,
+                    R.color.ecc_outgoing_message_received_icon
+                )
+            }
+            MessageStatus.FAILED -> {
+                showErrorBubble()
+                scrollToErrorIfAppearsFirstTime()
+                updateDrawable(
+                    parentView.context,
+                    R.drawable.ecc_message_failed,
+                    R.color.ecc_outgoing_message_not_send_icon
+                )
+            }
+        }
+        timeStamp?.let { statuses[it] = sendStatus }
+    }
+
+    private fun scrollToErrorIfAppearsFirstTime() {
+        val previousStatus = statuses[timeStamp]
+        if (previousStatus == null || previousStatus != MessageStatus.FAILED) {
+            timeStamp?.let { messageErrorProcessor.onNext(it) }
         }
     }
 
@@ -524,7 +554,34 @@ class UserPhraseViewHolder(
         initAnimation(loader, false)
     }
 
-    private fun showErrorLayout() {
+    private fun showErrorBubble() {
+        bubbleLayout.background.colorFilter =
+            BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
+                getColorInt(style.messageNotSentBubbleBackgroundColor),
+                BlendModeCompat.SRC_ATOP
+            )
+        showErrorText()
+    }
+
+    private fun showNormalBubble() {
+        bubbleLayout.background.colorFilter =
+            BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
+                getColorInt(style.outgoingMessageBubbleColor),
+                BlendModeCompat.SRC_ATOP
+            )
+        hideErrorText()
+    }
+
+    private fun showBubbleByCurrentStatus() {
+        val previousStatus = statuses[timeStamp]
+        if (previousStatus == null || previousStatus != MessageStatus.FAILED) {
+            showNormalBubble()
+        } else {
+            showErrorBubble()
+        }
+    }
+
+    private fun showErrorText() {
         errorText.visible()
         loader.visible()
         fileImageButton.gone()
@@ -533,7 +590,7 @@ class UserPhraseViewHolder(
         rotateAnim.reset()
     }
 
-    private fun showErrorLayout(fileDescription: FileDescription) {
+    private fun showErrorText(fileDescription: FileDescription) {
         errorText.visible()
         loader.visible()
         imageLayout.gone()
@@ -545,6 +602,10 @@ class UserPhraseViewHolder(
         errorText.text = errorString
         rotateAnim.cancel()
         rotateAnim.reset()
+    }
+
+    private fun hideErrorText() {
+        errorText.gone()
     }
 
     private fun showCommonLayout() {

@@ -37,7 +37,7 @@ import im.threads.business.models.FileDescription
 import im.threads.business.models.Hidable
 import im.threads.business.models.InputFieldEnableModel
 import im.threads.business.models.MessageRead
-import im.threads.business.models.MessageState
+import im.threads.business.models.MessageStatus
 import im.threads.business.models.QuickReplyItem
 import im.threads.business.models.RequestResolveThread
 import im.threads.business.models.ScheduleInfo
@@ -61,6 +61,7 @@ import im.threads.business.transport.HistoryLoader.getHistorySync
 import im.threads.business.transport.HistoryParser
 import im.threads.business.transport.TransportException
 import im.threads.business.transport.models.Attachment
+import im.threads.business.transport.threadsGate.responses.Status
 import im.threads.business.utils.ChatMessageSeeker
 import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.ConsultWriter
@@ -89,6 +90,12 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.processors.PublishProcessor
 import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.PublishSubject
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import retrofit2.Response
 import java.util.Date
 import java.util.concurrent.TimeUnit
@@ -99,6 +106,7 @@ import java.util.concurrent.TimeUnit
  * don't forget to unbindFragment() in ChatFragment onDestroy, to avoid leaks;
  */
 class ChatController private constructor() {
+    val messageErrorProcessor = PublishSubject.create<Long>()
     private val surveyCompletionProcessor = PublishProcessor.create<Survey>()
     private val chatUpdateProcessor: ChatUpdateProcessor by inject()
     private val database: DatabaseHolder by inject()
@@ -106,6 +114,8 @@ class ChatController private constructor() {
     private val chatStyle = Config.getInstance().getChatStyle()
     private val appContext: Context by inject()
     private val preferences: Preferences by inject()
+
+    private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
     // this flag is keeping the visibility state of the request to resolve thread
     private var surveyCompletionInProgress = false
@@ -146,7 +156,10 @@ class ChatController private constructor() {
         PreferencesMigrationUi(appContext).migrateNamedPreferences(ChatController::class.java.simpleName)
         subscribeToChatEvents()
         messenger.resendMessages()
-        subscribeOnClientIdChange()
+    }
+
+    fun onViewStart() {
+        checkSubscribing()
     }
 
     fun onViewStop() {
@@ -190,7 +203,7 @@ class ChatController private constructor() {
     fun fancySearch(
         query: String?,
         forward: Boolean,
-        consumer: Consumer<Pair<List<ChatItem?>?, ChatItem?>?>,
+        consumer: Consumer<Pair<List<ChatItem?>?, ChatItem?>?>
     ) {
         info("Trying to start search")
         subscribe(
@@ -296,7 +309,7 @@ class ChatController private constructor() {
 
     private fun updateServerItemsBySendingItems(
         serverItems: ArrayList<ChatItem>,
-        sendingItems: ArrayList<UserPhrase>,
+        sendingItems: ArrayList<UserPhrase>
     ) {
         sendingItems.forEach { notSendedItem ->
             serverItems.forEach { serverItem ->
@@ -323,6 +336,7 @@ class ChatController private constructor() {
                         var serverItems = HistoryParser.getChatItems(response)
                         serverItems = addLocalUserMessages(serverItems)
                         updateDoubleItems(serverItems as ArrayList<ChatItem>)
+                        parseHistoryItemsForSentStatus(serverItems)
                         messenger.saveMessages(serverItems)
                         clearUnreadPush()
                         processSystemMessages(serverItems)
@@ -526,6 +540,7 @@ class ChatController private constructor() {
         val response = getHistorySync(null, true)
         var serverItems = HistoryParser.getChatItems(response)
         serverItems = addLocalUserMessages(serverItems)
+        parseHistoryItemsForSentStatus(serverItems)
         messenger.saveMessages(serverItems)
         clearUnreadPush()
         processSystemMessages(serverItems)
@@ -557,6 +572,7 @@ class ChatController private constructor() {
                         if (serverItems.size == 0) {
                             isAllMessagesDownloaded = true
                         }
+                        parseHistoryItemsForSentStatus(serverItems)
                         messenger.saveMessages(serverItems)
                         processSystemMessages(serverItems)
                         if (fragment != null && isActive) {
@@ -617,6 +633,7 @@ class ChatController private constructor() {
                     if (serverItems.size == 0) {
                         isAllMessagesDownloaded = true
                     }
+                    parseHistoryItemsForSentStatus(serverItems)
                     messenger.saveMessages(serverItems)
                     clearUnreadPush()
                     processSystemMessages(serverItems)
@@ -776,7 +793,7 @@ class ChatController private constructor() {
 
     private fun subscribeToChatEvents() {
         subscribeToTyping()
-        subscribeToOutgoingMessageRead()
+        subscribeToOutgoingMessageStatusChanged()
         subscribeToIncomingMessageRead()
         subscribeToNewMessage()
         subscribeToUpdateAttachments()
@@ -792,6 +809,29 @@ class ChatController private constructor() {
         subscribeToClientNotificationDisplayTypeProcessor()
         subscribeSpeechMessageUpdated()
         subscribeForResendMessage()
+        subscribeOnClientIdChange()
+        subscribeOnMessageError()
+    }
+
+    private fun checkSubscribing() {
+        if (!chatUpdateProcessor.typingProcessor.hasSubscribers()) subscribeToTyping()
+        if (!chatUpdateProcessor.outgoingMessageStatusChangedProcessor.hasSubscribers()) subscribeToOutgoingMessageStatusChanged()
+        if (!chatUpdateProcessor.incomingMessageReadProcessor.hasSubscribers()) subscribeToIncomingMessageRead()
+        if (!chatUpdateProcessor.newMessageProcessor.hasSubscribers()) subscribeToNewMessage()
+        if (!chatUpdateProcessor.updateAttachmentsProcessor.hasSubscribers()) subscribeToUpdateAttachments()
+        if (!chatUpdateProcessor.messageSendSuccessProcessor.hasSubscribers()) subscribeToMessageSendSuccess()
+        if (!chatUpdateProcessor.errorProcessor.hasSubscribers()) subscribeToTransportException()
+        if (!chatUpdateProcessor.campaignMessageReplySuccessProcessor.hasSubscribers()) subscribeToCampaignMessageReplySuccess()
+        if (!chatUpdateProcessor.messageSendErrorProcessor.hasSubscribers()) subscribeToMessageSendError()
+        if (!chatUpdateProcessor.surveySendSuccessProcessor.hasSubscribers()) subscribeToSurveySendSuccess()
+        if (!chatUpdateProcessor.removeChatItemProcessor.hasSubscribers()) subscribeToRemoveChatItem()
+        if (!chatUpdateProcessor.deviceAddressChangedProcessor.hasSubscribers()) subscribeToDeviceAddressChanged()
+        if (!chatUpdateProcessor.quickRepliesProcessor.hasSubscribers()) subscribeToQuickReplies()
+        if (!chatUpdateProcessor.attachAudioFilesProcessor.hasSubscribers()) subscribeToAttachAudioFiles()
+        if (!chatUpdateProcessor.clientNotificationDisplayTypeProcessor.hasSubscribers()) subscribeToClientNotificationDisplayTypeProcessor()
+        if (!chatUpdateProcessor.speechMessageUpdateProcessor.hasSubscribers()) subscribeSpeechMessageUpdated()
+        if (!messenger.resendStream.hasObservers()) subscribeForResendMessage()
+        if (!messageErrorProcessor.hasObservers()) subscribeOnMessageError()
     }
 
     private fun subscribeToTransportException() {
@@ -799,7 +839,6 @@ class ChatController private constructor() {
             Flowable.fromPublisher(chatUpdateProcessor.errorProcessor)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
-                    fragment?.showBalloon(it.message)
                     error("subscribeToTransportException ", it)
                 }
         )
@@ -833,23 +872,60 @@ class ChatController private constructor() {
         )
     }
 
-    private fun subscribeToOutgoingMessageRead() {
+    private fun subscribeToOutgoingMessageStatusChanged() {
         subscribe(
-            Flowable.fromPublisher(chatUpdateProcessor.outgoingMessageReadProcessor)
+            Flowable.fromPublisher(chatUpdateProcessor.outgoingMessageStatusChangedProcessor)
+                .concatMap { Flowable.fromIterable(it) }
                 .observeOn(Schedulers.io())
-                .doOnNext { messageId: String? ->
-                    database.setStateOfUserPhraseByMessageId(
-                        messageId,
-                        MessageState.STATE_WAS_READ
-                    )
+                .doOnNext { status: Status ->
+                    database.setOrUpdateMessageId(status.correlationId, status.messageId)
+                    if (status.messageId != null) {
+                        database.setStateOfUserPhraseByBackendMessageId(status.messageId, status.status)
+                    } else {
+                        database.setStateOfUserPhraseByCorrelationId(status.correlationId, status.status)
+                    }
                 }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                    { messageId: String? ->
-                        fragment?.setMessageState(messageId, MessageState.STATE_WAS_READ)
+                    { status: Status ->
+                        info(
+                            "Received new status: ${status.status.name}, correlationId: ${status.correlationId}," +
+                                " messageId: ${status.messageId}"
+                        )
+                        sentStatus(status)
                     }
-                ) { error: Throwable? -> error("subscribeToOutgoingMessageRead ", error) }
+                ) { error: Throwable? ->
+                    error("subscribeToOutgoingMessageRead ", error)
+                }
         )
+    }
+
+    private fun sentStatus(status: Status) {
+        coroutineScope.launch {
+            val result = coroutineScope.async(Dispatchers.IO) {
+                database.getChatItemByBackendMessageId(status.messageId)
+            }
+            val chatItem = result.await()
+            val messageStatus = getMessageStatus(chatItem, status)
+            fragment?.setMessageState(messageStatus.correlationId, messageStatus.messageId, messageStatus.status)
+        }
+    }
+
+    private fun getMessageStatus(chatItem: ChatItem?, receivedStatus: Status): Status {
+        val item = (chatItem as? UserPhrase)
+        return if (item != null) {
+            if (item.sentState.ordinal > receivedStatus.status.ordinal) {
+                Status(
+                    item.backendMessageId ?: receivedStatus.correlationId,
+                    item.backendMessageId ?: receivedStatus.messageId,
+                    item.sentState
+                )
+            } else {
+                receivedStatus
+            }
+        } else {
+            receivedStatus
+        }
     }
 
     private fun subscribeToIncomingMessageRead() {
@@ -871,7 +947,7 @@ class ChatController private constructor() {
                 .debounce(UPDATE_SPEECH_STATUS_DEBOUNCE, TimeUnit.MILLISECONDS)
                 .map { speechMessageUpdate: SpeechMessageUpdate ->
                     database.saveSpeechMessageUpdate(speechMessageUpdate)
-                    val itemFromDb = database.getChatItem(speechMessageUpdate.uuid)
+                    val itemFromDb = database.getChatItemByCorrelationId(speechMessageUpdate.uuid)
                     if (itemFromDb == null) {
                         return@map speechMessageUpdate
                     } else {
@@ -898,7 +974,6 @@ class ChatController private constructor() {
                             for (item in database.getChatItems(0, PER_PAGE_COUNT)) {
                                 if (item is ChatPhrase) {
                                     if (item.fileDescription != null) {
-
                                         val attachmentName = attachment.name ?: ""
                                         val incomingNameEquals =
                                             (item.fileDescription?.incomingName == attachmentName)
@@ -931,9 +1006,14 @@ class ChatController private constructor() {
                     if (chatItem is MessageRead) {
                         val readMessagesIds = chatItem.messageId
                         for (readId in readMessagesIds) {
-                            (database.getChatItem(readId) as UserPhrase?)?.let { userPhrase ->
+                            val databaseItem = database.getChatItemByCorrelationId(readId)
+                            (databaseItem as UserPhrase?)?.let { userPhrase ->
                                 userPhrase.id?.let {
-                                    chatUpdateProcessor.postOutgoingMessageWasRead(it)
+                                    info("Sending read status to update processor. CorrelationId: $it")
+                                    if (!chatUpdateProcessor.outgoingMessageStatusChangedProcessor.hasSubscribers()) {
+                                        subscribeToOutgoingMessageStatusChanged()
+                                    }
+                                    chatUpdateProcessor.postOutgoingMessageStatusChanged(listOf(Status(it, status = MessageStatus.READ)))
                                 }
                             }
                         }
@@ -981,13 +1061,13 @@ class ChatController private constructor() {
             Flowable.fromPublisher(chatUpdateProcessor.messageSendSuccessProcessor)
                 .observeOn(Schedulers.io())
                 .flatMapMaybe { chatItemSent: ChatItemProviderData ->
-                    val chatItem = database.getChatItem(chatItemSent.uuid)
+                    val chatItem = database.getChatItemByCorrelationId(chatItemSent.uuid)
                     if (chatItem is UserPhrase) {
                         debug("server answer on phrase sent with id " + chatItemSent.messageId)
                         if (chatItemSent.sentAt > 0) {
                             chatItem.timeStamp = chatItemSent.sentAt
                         }
-                        chatItem.sentState = MessageState.STATE_SENT
+                        chatItem.sentState = MessageStatus.SENT
                         database.putChatItem(chatItem)
                     }
                     if (chatItem == null) {
@@ -1012,10 +1092,10 @@ class ChatController private constructor() {
             Flowable.fromPublisher(chatUpdateProcessor.messageSendErrorProcessor)
                 .observeOn(Schedulers.io())
                 .flatMapMaybe { (_, phraseUuid): ChatItemSendErrorModel ->
-                    val chatItem = database.getChatItem(phraseUuid)
+                    val chatItem = database.getChatItemByCorrelationId(phraseUuid)
                     if (chatItem is UserPhrase) {
                         debug("server answer on phrase sent with id $phraseUuid")
-                        chatItem.sentState = MessageState.STATE_NOT_SENT
+                        chatItem.sentState = MessageStatus.FAILED
                         database.putChatItem(chatItem)
                     }
                     if (chatItem == null) {
@@ -1027,11 +1107,8 @@ class ChatController private constructor() {
                 .subscribe(
                     { chatItem: ChatItem? ->
                         if (chatItem is UserPhrase) {
-                            fragment?.setMessageState(chatItem.id, chatItem.sentState)
+                            fragment?.setMessageState(chatItem.id, null, chatItem.sentState)
                             messenger.addMsgToResendQueue(chatItem)
-                            if (isActive) {
-                                fragment?.showConnectionError()
-                            }
                             messenger.proceedSendingQueue(chatItem)
                         }
                     }
@@ -1113,7 +1190,7 @@ class ChatController private constructor() {
             messenger.resendStream
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ messageId: String? ->
-                    fragment?.setMessageState(messageId, MessageState.STATE_SENDING)
+                    fragment?.setMessageState(messageId, null, MessageStatus.SENDING)
                 }) { obj: Throwable -> obj.message }
         )
     }
@@ -1220,7 +1297,7 @@ class ChatController private constructor() {
     }
 
     private fun setSurveyStateSent(survey: Survey) {
-        survey.sentState = MessageState.STATE_SENT
+        survey.sentState = MessageStatus.SENT
         survey.isDisplayMessage = true
         fragment?.setSurveySentStatus(survey.sendingId, survey.sentState)
         database.putChatItem(survey)
@@ -1252,6 +1329,7 @@ class ChatController private constructor() {
                     )
                     var chatItems = HistoryParser.getChatItems(response)
                     chatItems = addLocalUserMessages(chatItems)
+                    parseHistoryItemsForSentStatus(chatItems)
                     messenger.saveMessages(chatItems)
                     clearUnreadPush()
                     processSystemMessages(chatItems)
@@ -1280,6 +1358,18 @@ class ChatController private constructor() {
                     "fragment != null && !TextUtils.isEmpty(clientId) == false"
             )
         }
+    }
+
+    private fun parseHistoryItemsForSentStatus(items: List<ChatItem>) {
+        items
+            .mapNotNull { it as? UserPhrase }
+            .forEach { userPhrase ->
+                if (userPhrase.isRead) {
+                    userPhrase.sentState = MessageStatus.READ
+                } else if (userPhrase.sentState.ordinal < MessageStatus.DELIVERED.ordinal) {
+                    userPhrase.sentState = MessageStatus.DELIVERED
+                }
+            }
     }
 
     private fun clearUnreadPush() {
@@ -1463,6 +1553,22 @@ class ChatController private constructor() {
                         }
                     }
                 ) { obj: Throwable -> obj.message }
+        )
+    }
+
+    private fun subscribeOnMessageError() {
+        subscribe(
+            messageErrorProcessor
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+                    val lastVisibleItem = fragment?.lastVisibleItemPosition
+                    val items = fragment?.elements
+
+                    if (lastVisibleItem != null && items != null && items.last().timeStamp == items[lastVisibleItem].timeStamp) {
+                        fragment?.scrollToElementByIndex(lastVisibleItem)
+                    }
+                }
         )
     }
 

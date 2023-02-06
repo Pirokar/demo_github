@@ -3,7 +3,6 @@ package im.threads.business.transport.threadsGate
 import android.os.Build
 import android.provider.Settings
 import android.text.TextUtils
-import androidx.core.util.ObjectsCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
@@ -15,8 +14,10 @@ import im.threads.business.config.BaseConfig
 import im.threads.business.formatters.ChatItemType
 import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.CampaignMessage
+import im.threads.business.models.ChatItem
 import im.threads.business.models.ChatItemSendErrorModel
 import im.threads.business.models.ConsultInfo
+import im.threads.business.models.MessageStatus
 import im.threads.business.models.SpeechMessageUpdate
 import im.threads.business.models.SslSocketFactoryConfig
 import im.threads.business.models.Survey
@@ -24,6 +25,7 @@ import im.threads.business.models.UserPhrase
 import im.threads.business.preferences.Preferences
 import im.threads.business.preferences.PreferencesCoreKeys
 import im.threads.business.rest.config.SocketClientSettings
+import im.threads.business.secureDatabase.DatabaseHolder
 import im.threads.business.serviceLocator.core.inject
 import im.threads.business.transport.AuthInterceptor
 import im.threads.business.transport.ChatItemProviderData
@@ -42,9 +44,14 @@ import im.threads.business.transport.threadsGate.responses.GetMessagesData
 import im.threads.business.transport.threadsGate.responses.GetStatusesData
 import im.threads.business.transport.threadsGate.responses.RegisterDeviceData
 import im.threads.business.transport.threadsGate.responses.SendMessageData
+import im.threads.business.transport.threadsGate.responses.Status
 import im.threads.business.utils.AppInfoHelper
 import im.threads.business.utils.DeviceInfoHelper
 import im.threads.business.utils.SSLCertificateInterceptor
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -71,6 +78,7 @@ class ThreadsGateTransport(
     private val client: OkHttpClient
     private val request: Request
     private val listener: WebSocketListener
+    private val coroutineScope = CoroutineScope(Dispatchers.Main)
     private val messageInProcessIds: MutableList<String> = ArrayList()
     private val surveysInProcess: MutableMap<Long, Survey> = HashMap()
     private val campaignsInProcess: MutableMap<String?, CampaignMessage> = HashMap()
@@ -80,6 +88,7 @@ class ThreadsGateTransport(
     private val preferences: Preferences by inject()
     private val authInterceptor: AuthInterceptor by inject()
     private val chatUpdateProcessor: ChatUpdateProcessor by inject()
+    private val database: DatabaseHolder by inject()
 
     init {
         val httpClientBuilder = OkHttpClient.Builder()
@@ -407,6 +416,7 @@ class ThreadsGateTransport(
             postSocketResponseMap(text)
             val response = BaseConfig.instance.gson.fromJson(text, BaseResponse::class.java)
             val action = response.action
+            val correlationId = response.correlationId
             if (response.data.has(KEY_ERROR)) {
                 var errorMessage = response.data[KEY_ERROR].asString
                 if (response.data.has(KEY_ERROR_DETAILS)) {
@@ -448,7 +458,7 @@ class ThreadsGateTransport(
                                     ChatItemProviderData(
                                         tokens[1],
                                         data.messageId,
-                                        data.sentAt.time
+                                        data.sentAt?.time ?: Calendar.getInstance().time.time
                                     )
                                 )
                             }
@@ -463,21 +473,25 @@ class ThreadsGateTransport(
                             ChatItemType.REOPEN_THREAD, ChatItemType.CLOSE_THREAD ->
                                 chatUpdateProcessor
                                     .postRemoveChatItem(ChatItemType.REQUEST_CLOSE_THREAD)
-                            else -> {
-                            }
+                            else -> {}
                         }
                     }
+                    chatUpdateProcessor.postOutgoingMessageStatusChanged(
+                        listOf(
+                            Status(
+                                correlationId,
+                                data.messageId,
+                                MessageStatus.fromString(data.status) ?: MessageStatus.SENT
+                            )
+                        )
+                    )
                 }
                 if (action == Action.GET_STATUSES) {
                     val data = BaseConfig.instance.gson.fromJson(
                         response.data.toString(),
                         GetStatusesData::class.java
                     )
-                    for (status in data.statuses) {
-                        if (ObjectsCompat.equals(MessageStatus.READ, status.status)) {
-                            chatUpdateProcessor.postOutgoingMessageWasRead(status.messageId)
-                        }
-                    }
+                    data.statuses?.let { chatUpdateProcessor.postOutgoingMessageStatusChanged(it) }
                 }
                 if (action == Action.GET_MESSAGES) {
                     val data = BaseConfig.instance.gson.fromJson(
@@ -512,8 +526,7 @@ class ThreadsGateTransport(
                             } else if (ChatItemType.SPEECH_MESSAGE_UPDATED == type) {
                                 val chatItem = ThreadsGateMessageParser.format(message)
                                 if (chatItem is SpeechMessageUpdate) {
-                                    chatUpdateProcessor
-                                        .postSpeechMessageUpdate(chatItem)
+                                    chatUpdateProcessor.postSpeechMessageUpdate(chatItem)
                                 }
                             } else {
                                 val chatItem = ThreadsGateMessageParser.format(message)
@@ -573,12 +586,39 @@ class ThreadsGateTransport(
             LoggerEdna.info("Error : " + t.message)
             chatUpdateProcessor.postError(TransportException(t.message))
             synchronized(messageInProcessIds) {
-                for (messageId in messageInProcessIds) {
-                    processMessageSendError(messageId)
+                coroutineScope.launch {
+                    for (messageId in messageInProcessIds) {
+                        val result = coroutineScope.async(Dispatchers.IO) {
+                            database.getChatItemByCorrelationId(messageId)
+                        }
+                        val dbItem = result.await()
+                        val messageStatus = getMessageStatus(dbItem, Status(messageId, null, MessageStatus.FAILED))
+                        if (messageStatus.status == MessageStatus.FAILED) {
+                            LoggerEdna.info("Starting process error for messageId: $messageId")
+                            processMessageSendError(messageId)
+                        }
+                    }
+                    messageInProcessIds.clear()
+                    closeWebSocket()
                 }
-                messageInProcessIds.clear()
             }
-            closeWebSocket()
+        }
+
+        private fun getMessageStatus(chatItem: ChatItem?, receivedStatus: Status): Status {
+            val item = (chatItem as? UserPhrase)
+            return if (item != null) {
+                if (item.sentState.ordinal > receivedStatus.status.ordinal) {
+                    Status(
+                        item.backendMessageId ?: receivedStatus.correlationId,
+                        item.backendMessageId ?: receivedStatus.messageId,
+                        item.sentState
+                    )
+                } else {
+                    receivedStatus
+                }
+            } else {
+                receivedStatus
+            }
         }
 
         private fun JSONObject.toMap(): Map<String, Any> {

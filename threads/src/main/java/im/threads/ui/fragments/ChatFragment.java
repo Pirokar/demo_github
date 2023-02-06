@@ -93,7 +93,7 @@ import im.threads.business.models.ConsultTyping;
 import im.threads.business.models.DateRow;
 import im.threads.business.models.FileDescription;
 import im.threads.business.models.InputFieldEnableModel;
-import im.threads.business.models.MessageState;
+import im.threads.business.models.MessageStatus;
 import im.threads.business.models.QuickReply;
 import im.threads.business.models.QuickReplyItem;
 import im.threads.business.models.Quote;
@@ -123,6 +123,7 @@ import im.threads.ui.adapters.ChatAdapter;
 import im.threads.ui.config.Config;
 import im.threads.ui.controllers.ChatController;
 import im.threads.ui.files.FileSelectedListener;
+import im.threads.ui.holders.BaseHolder;
 import im.threads.ui.permissions.PermissionsActivity;
 import im.threads.ui.styles.permissions.PermissionDescriptionType;
 import im.threads.business.utils.Balloon;
@@ -191,6 +192,7 @@ public final class ChatFragment extends BaseFragment implements
     private FileDescriptionMediaPlayer fdMediaPlayer;
     private ChatController mChatController;
     private ChatAdapter chatAdapter;
+    private LinearLayoutManager mLayoutManager;
     private ChatAdapter.Callback chatAdapterCallback;
     private QuoteLayoutHolder mQuoteLayoutHolder;
     private Quote mQuote = null;
@@ -294,6 +296,7 @@ public final class ChatFragment extends BaseFragment implements
     public void onStart() {
         super.onStart();
         LoggerEdna.info(ChatFragment.class.getSimpleName() + " onStart.");
+        ChatController.getInstance().onViewStart();
         setCurrentThreadId(mChatController.getThreadId());
         BaseConfig.instance.transport.setLifecycle(getLifecycle());
         ChatController.getInstance().getSettings();
@@ -330,6 +333,10 @@ public final class ChatFragment extends BaseFragment implements
             binding.swipeRefresh.setRefreshing(false);
             binding.swipeRefresh.destroyDrawingCache();
             binding.swipeRefresh.clearAnimation();
+
+            if (chatAdapter != null) {
+                chatAdapter.onPauseView();
+            }
         }
     }
 
@@ -340,6 +347,9 @@ public final class ChatFragment extends BaseFragment implements
         super.onResume();
         mChatController.setActivityIsForeground(true);
         scrollToFirstUnreadMessage();
+        if (chatAdapter != null) {
+            chatAdapter.onResumeView();
+        }
         isResumed = true;
         chatIsShown = true;
         afterResume = true;
@@ -360,6 +370,7 @@ public final class ChatFragment extends BaseFragment implements
         }
         chatIsShown = false;
         binding = null;
+        BaseHolder.Companion.getStatuses().clear();
         super.onDestroyView();
     }
 
@@ -369,6 +380,32 @@ public final class ChatFragment extends BaseFragment implements
 
         super.onDestroy();
         BaseConfig.instance.transport.setLifecycle(null);
+        if (chatAdapter != null) {
+            chatAdapter.onDestroyView();
+        }
+    }
+
+    public int getLastVisibleItemPosition() {
+        if (isAdded() && mLayoutManager != null) {
+            return mLayoutManager.findLastVisibleItemPosition();
+        } else {
+            return RecyclerView.NO_POSITION;
+        }
+    }
+
+    public void scrollToElementByIndex(int index) {
+        if (isAdded() && mLayoutManager != null) {
+            mLayoutManager.smoothScrollToPosition(binding.recycler, new RecyclerView.State(), index);
+        }
+    }
+
+    public List<ChatItem> getElements() {
+        if (isAdded() && chatAdapter != null) {
+            List<ChatItem> list = chatAdapter.getList();
+            return list == null ? new ArrayList<>() : list;
+        } else {
+            return new ArrayList<>();
+        }
     }
 
     private void initController() {
@@ -393,9 +430,14 @@ public final class ChatFragment extends BaseFragment implements
         }
         initInputLayout(activity);
         mQuoteLayoutHolder = new QuoteLayoutHolder();
-        LinearLayoutManager mLayoutManager = new LinearLayoutManager(activity);
+        mLayoutManager = new LinearLayoutManager(activity);
         binding.recycler.setLayoutManager(mLayoutManager);
-        chatAdapter = new ChatAdapter(chatAdapterCallback, fdMediaPlayer, mediaMetadataRetriever);
+        chatAdapter = new ChatAdapter(
+                chatAdapterCallback,
+                fdMediaPlayer,
+                mediaMetadataRetriever,
+                ChatController.getInstance().getMessageErrorProcessor()
+        );
         RecyclerView.ItemAnimator itemAnimator = binding.recycler.getItemAnimator();
         if (itemAnimator != null) {
             itemAnimator.setChangeDuration(0);
@@ -1810,11 +1852,11 @@ public final class ChatFragment extends BaseFragment implements
         Balloon.show(requireContext(), requireContext().getString(R.string.ecc_message_not_sent));
     }
 
-    public void setMessageState(String messageId, MessageState state) {
-        chatAdapter.changeStateOfMessageByMessageId(messageId, state);
+    public void setMessageState(String correlationId, String backendMessageId, MessageStatus state) {
+        chatAdapter.changeStateOfMessageByMessageId(correlationId, backendMessageId, state);
     }
 
-    public void setSurveySentStatus(long uuid, MessageState sentState) {
+    public void setSurveySentStatus(long uuid, MessageStatus sentState) {
         chatAdapter.changeStateOfSurvey(uuid, sentState);
     }
 
@@ -1879,7 +1921,12 @@ public final class ChatFragment extends BaseFragment implements
             if (fdMediaPlayer == null) {
                 return;
             }
-            chatAdapter = new ChatAdapter(chatAdapterCallback, fdMediaPlayer, mediaMetadataRetriever);
+            chatAdapter = new ChatAdapter(
+                    chatAdapterCallback,
+                    fdMediaPlayer,
+                    mediaMetadataRetriever,
+                    ChatController.getInstance().getMessageErrorProcessor()
+            );
             binding.recycler.setAdapter(chatAdapter);
             setTitleStateDefault();
             welcomeScreenVisibility(false);
@@ -2656,10 +2703,10 @@ public final class ChatFragment extends BaseFragment implements
                 return;
             }
             if (chatPhrase instanceof UserPhrase) {
-                if (((UserPhrase) chatPhrase).getSentState() != MessageState.STATE_WAS_READ) {
+                if (((UserPhrase) chatPhrase).getSentState() != MessageStatus.READ) {
                     mChatController.forceResend((UserPhrase) chatPhrase);
                 }
-                if (((UserPhrase) chatPhrase).getSentState() != MessageState.STATE_NOT_SENT) {
+                if (((UserPhrase) chatPhrase).getSentState() != MessageStatus.FAILED) {
                     Activity activity = getActivity();
                     if (activity != null) {
                         activity.startActivity(ImagesActivity.getStartIntent(activity, chatPhrase.getFileDescription()));

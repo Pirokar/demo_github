@@ -8,7 +8,7 @@ import im.threads.business.models.ChatItem
 import im.threads.business.models.ConsultInfo
 import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.FileDescription
-import im.threads.business.models.MessageState
+import im.threads.business.models.MessageStatus
 import im.threads.business.models.SpeechMessageUpdate
 import im.threads.business.models.UserPhrase
 import im.threads.business.utils.Balloon
@@ -31,7 +31,11 @@ class DatabaseHolder(private val context: Context) {
 
     fun getSendingChatItems(): List<UserPhrase> = tryExecute { myOpenHelper.getSendingChatItems() } ?: arrayListOf()
 
-    fun getChatItem(messageUuid: String?): ChatItem? = tryExecute { myOpenHelper.getChatItem(messageUuid) }
+    fun getChatItemByCorrelationId(messageUuid: String?): ChatItem? =
+        tryExecute { myOpenHelper.getChatItemByCorrelationId(messageUuid) }
+
+    fun getChatItemByBackendMessageId(messageId: String?): ChatItem? =
+        tryExecute { myOpenHelper.getChatItemByBackendMessageId(messageId) }
 
     fun putChatItems(items: List<ChatItem?>?) = tryExecute { myOpenHelper.putChatItems(items) }
 
@@ -55,9 +59,12 @@ class DatabaseHolder(private val context: Context) {
 
     fun getUnsendUserPhrase(count: Int): List<UserPhrase> = tryExecute { myOpenHelper.getUnsendUserPhrase(count) } ?: arrayListOf()
 
-    // ConsultPhrase
-    fun setStateOfUserPhraseByMessageId(uuid: String?, messageState: MessageState?) {
-        tryExecute { myOpenHelper.setUserPhraseStateByMessageId(uuid, messageState) }
+    fun setStateOfUserPhraseByCorrelationId(uuid: String?, messageStatus: MessageStatus?) {
+        tryExecute { myOpenHelper.setUserPhraseStateByCorrelationId(uuid, messageStatus) }
+    }
+
+    fun setStateOfUserPhraseByBackendMessageId(messageId: String?, messageStatus: MessageStatus?) {
+        tryExecute { myOpenHelper.setUserPhraseStateByBackendMessageId(messageId, messageStatus) }
     }
 
     val lastConsultPhrase: Single<ConsultPhrase?> =
@@ -97,6 +104,10 @@ class DatabaseHolder(private val context: Context) {
     fun getUnreadMessagesCount(): Int = tryExecute { myOpenHelper.getUnreadMessagesCount() } ?: 0
 
     fun getUnreadMessagesUuid(): List<String?> = tryExecute { myOpenHelper.getUnreadMessagesUuid() } ?: arrayListOf()
+
+    fun setOrUpdateMessageId(correlationId: String?, backendMessageId: String?) {
+        tryExecute { myOpenHelper.setOrUpdateMessageId(correlationId, backendMessageId) }
+    }
 
     private fun checkIsDatabaseCorrupted() {
         myOpenHelper = ThreadsDbHelper.getInstance(context)

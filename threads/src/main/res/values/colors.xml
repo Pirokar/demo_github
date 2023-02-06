@@ -77,7 +77,7 @@
     <!-- Цвет иконок статусов доставки изображений пользователя -->
     <color name="ecc_outgoing_message_image_sent_icon">@color/ecc_white</color>
     <color name="ecc_outgoing_message_image_received_icon">@color/ecc_white</color>
-    <color name="ecc_outgoing_message_image_not_send_icon">@color/ecc_white</color>
+    <color name="ecc_outgoing_message_image_failed_icon">@color/ecc_white</color>
 
 
     <!-- Экран истории файлов -->
