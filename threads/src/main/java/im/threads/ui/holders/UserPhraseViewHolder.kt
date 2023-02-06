@@ -484,8 +484,8 @@ class UserPhraseViewHolder(
                     showNormalBubble()
                     updateDrawable(
                         parentView.context,
-                        R.drawable.ecc_message_image_sending,
-                        -1
+                        style.messageSendingIconResId,
+                        style.messageSendingIconColorResId
                     )
                 }
             }
@@ -493,24 +493,24 @@ class UserPhraseViewHolder(
                 showNormalBubble()
                 updateDrawable(
                     parentView.context,
-                    R.drawable.ecc_message_image_sending,
-                    R.color.ecc_outgoing_message_sent_icon
+                    style.messageSentIconResId,
+                    style.messageSentIconColorResId
                 )
             }
             MessageStatus.DELIVERED -> {
                 showNormalBubble()
                 updateDrawable(
                     parentView.context,
-                    R.drawable.ecc_message_image_delivered,
-                    R.color.ecc_outgoing_message_image_sent_icon
+                    style.messageDeliveredIconResId,
+                    style.messageDeliveredIconColorResId
                 )
             }
             MessageStatus.READ -> {
                 showNormalBubble()
                 updateDrawable(
                     parentView.context,
-                    R.drawable.ecc_message_received,
-                    R.color.ecc_outgoing_message_received_icon
+                    style.messageReadIconResId,
+                    style.messageReadIconColorResId
                 )
             }
             MessageStatus.FAILED -> {
@@ -518,8 +518,8 @@ class UserPhraseViewHolder(
                 scrollToErrorIfAppearsFirstTime()
                 updateDrawable(
                     parentView.context,
-                    R.drawable.ecc_message_failed,
-                    R.color.ecc_outgoing_message_not_send_icon
+                    style.messageFailedIconResId,
+                    style.messageFailedIconColorResId
                 )
             }
         }

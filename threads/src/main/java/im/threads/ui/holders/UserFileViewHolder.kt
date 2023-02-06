@@ -137,44 +137,44 @@ class UserFileViewHolder(
                     val previousStatus = statuses[timeStamp]
                     if (previousStatus == null || previousStatus != MessageStatus.FAILED) {
                         showNormalBubble()
-                        AppCompatResources.getDrawable(
-                            itemView.context,
-                            R.drawable.ecc_message_image_sending
+                        getColoredDrawable(
+                            style.messageSendingIconResId,
+                            style.messageSendingIconColorResId
                         )
                     } else {
                         getColoredDrawable(
-                            R.drawable.ecc_message_image_failed,
-                            R.color.ecc_outgoing_message_image_failed_icon
+                            style.messageFailedIconResId,
+                            style.messageFailedIconColorResId
                         )
                     }
                 }
                 MessageStatus.SENT -> {
                     showNormalBubble()
-                    AppCompatResources.getDrawable(
-                        itemView.context,
-                        R.drawable.ecc_message_image_sending
+                    getColoredDrawable(
+                        style.messageSentIconResId,
+                        style.messageSentIconColorResId
                     )
                 }
                 MessageStatus.DELIVERED -> {
                     showNormalBubble()
                     getColoredDrawable(
-                        R.drawable.ecc_message_image_delivered,
-                        R.color.ecc_outgoing_message_image_sent_icon
+                        style.messageDeliveredIconResId,
+                        style.messageDeliveredIconColorResId
                     )
                 }
                 MessageStatus.READ -> {
                     showNormalBubble()
                     getColoredDrawable(
-                        R.drawable.ecc_image_message_read,
-                        R.color.ecc_outgoing_message_image_received_icon
+                        style.messageReadIconResId,
+                        style.messageReadIconColorResId
                     )
                 }
                 MessageStatus.FAILED -> {
                     showErrorBubble()
                     scrollToErrorIfAppearsFirstTime()
                     getColoredDrawable(
-                        R.drawable.ecc_message_image_failed,
-                        R.color.ecc_outgoing_message_image_failed_icon
+                        style.messageFailedIconResId,
+                        style.messageFailedIconColorResId
                     )
                 }
             }
