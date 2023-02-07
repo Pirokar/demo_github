@@ -1837,7 +1837,7 @@ public final class ChatFragment extends BaseFragment implements
     public void setTitleStateDefault() {
         handler.post(
                 () -> {
-                    if (!isInMessageSearchMode) {
+                    if (!isInMessageSearchMode && isAdded()) {
                         binding.subtitle.setVisibility(View.GONE);
                         binding.consultName.setVisibility(View.VISIBLE);
                         binding.searchLo.setVisibility(View.GONE);
@@ -2657,7 +2657,15 @@ public final class ChatFragment extends BaseFragment implements
 
         @Override
         public void onUserPhraseClick(final UserPhrase userPhrase, int position) {
-            mChatController.forceResend(userPhrase);
+            if (userPhrase.getSentState().ordinal() >= MessageStatus.SENT.ordinal()) {
+                ChatItem item = chatAdapter.getList().get(position);
+                if (item instanceof UserPhrase) {
+                    chatAdapter.getList().set(position, userPhrase);
+                    chatAdapter.notifyItemChanged(position);
+                }
+            } else {
+                mChatController.forceResend(userPhrase);
+            }
         }
 
         @Override

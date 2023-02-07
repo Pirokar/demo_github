@@ -119,6 +119,8 @@ class MessengerImpl(private var compositeDisposable: CompositeDisposable?) : Mes
         synchronized(sendQueue) { sendQueue.add(userPhrase) }
         if (sendQueue.size == 1) {
             sendMessage(userPhrase)
+        } else if (sendQueue.size > 1) {
+            resendMessages()
         }
     }
 
@@ -136,7 +138,7 @@ class MessengerImpl(private var compositeDisposable: CompositeDisposable?) : Mes
                                 val iterator: MutableListIterator<UserPhrase> = unsentMessages.listIterator()
                                 while (iterator.hasNext()) {
                                     val phrase = iterator.next()
-                                    checkAndResendPhrase(phrase)
+                                    sendMessage(phrase)
                                     iterator.remove()
                                 }
                             }
@@ -180,7 +182,7 @@ class MessengerImpl(private var compositeDisposable: CompositeDisposable?) : Mes
     }
 
     override fun forceResend(userPhrase: UserPhrase) {
-        if (userPhrase.sentState == MessageStatus.FAILED) {
+        if (userPhrase.sentState.ordinal < MessageStatus.SENT.ordinal) {
             synchronized(unsentMessages) {
                 unsentMessages.removeAll { it.isTheSameItem(userPhrase) }
                 checkAndResendPhrase(userPhrase)
@@ -189,7 +191,7 @@ class MessengerImpl(private var compositeDisposable: CompositeDisposable?) : Mes
     }
 
     private fun checkAndResendPhrase(userPhrase: UserPhrase) {
-        if (userPhrase.sentState == MessageStatus.FAILED) {
+        if (userPhrase.sentState.ordinal < MessageStatus.SENT.ordinal) {
             userPhrase.id?.run { resendStream.onNext(this) }
             queueMessageSending(userPhrase)
         }
