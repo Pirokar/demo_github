@@ -26,6 +26,7 @@ class Rating : LinearLayout {
         this.countStars = countStars
         val inflater = LayoutInflater.from(context)
         removeAllViews()
+        viewsStar.clear()
         for (i in 0 until countStars) {
             val view = inflater.inflate(R.layout.ecc_rating_star, this, false)
             setImage(view, i < ratingCount)
