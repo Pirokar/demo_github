@@ -48,8 +48,8 @@ class SendingStatusObserver(private val chatAdapterRef: WeakReference<ChatAdapte
                                             val failedStatus = MessageStatus.FAILED
                                             database.setStateOfUserPhraseByCorrelationId(item.id, failedStatus)
                                             item.sentState = failedStatus
+                                            indexesToUpdate.add(index)
                                         }
-                                        indexesToUpdate.add(index)
                                     }
                                 }
                                 indexesToUpdate
