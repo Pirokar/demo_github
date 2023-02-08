@@ -1,8 +1,5 @@
 package im.threads.business.utils.messenger
 
-import android.os.Handler
-import android.os.Looper
-import android.os.Message
 import im.threads.business.UserInfoBuilder
 import im.threads.business.chat_updates.ChatUpdateProcessor
 import im.threads.business.config.BaseConfig
@@ -24,7 +21,6 @@ import im.threads.business.transport.HistoryParser
 import im.threads.business.utils.ConsultWriter
 import im.threads.business.utils.getErrorStringResByCode
 import im.threads.business.utils.internet.NetworkInteractor
-import im.threads.business.utils.internet.NetworkInteractorImpl
 import im.threads.business.utils.postFile
 import io.reactivex.Completable
 import io.reactivex.Single
@@ -35,30 +31,49 @@ import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 class MessengerImpl(private var compositeDisposable: CompositeDisposable?) : Messenger {
     private val context = BaseConfig.instance.context
     private val transport = BaseConfig.instance.transport
-    private val chatUpdateProcessor: ChatUpdateProcessor by inject()
     private var isDownloadingMessages = false
     private var isAllMessagesDownloaded = false
     private var lastMessageTimestamp = 0L
     private val unsentMessages: ArrayList<UserPhrase> = ArrayList()
     private val sendQueue: ArrayList<UserPhrase> = ArrayList()
-    private var unsentMessageHandler: Handler? = null
-    private val networkInteractor: NetworkInteractor = NetworkInteractorImpl()
     private val mainCoroutineScope = CoroutineScope(Dispatchers.Main)
+    private val networkInteractor: NetworkInteractor by inject()
+    private val chatUpdateProcessor: ChatUpdateProcessor by inject()
     private val preferences: Preferences by inject()
     private val database: DatabaseHolder by inject()
 
-    private val resendMessageKey = 123
+    private var isViewActive = false
     var pageItemsCount = 100
 
-    override val resendStream = PublishSubject.create<String>()
+    override val resendStream: PublishSubject<String> = PublishSubject.create()
+
+    init { runResendJob() }
+
+    override fun onViewStart() {
+        isViewActive = true
+    }
+
+    override fun onViewStop() {
+        isViewActive = false
+    }
+
+    override fun onViewDestroy() {
+        onViewStop()
+        mainCoroutineScope.cancel()
+    }
 
     override fun sendMessage(userPhrase: UserPhrase) {
         info("sendMessage: $userPhrase")
+        userPhrase.id?.let { resendStream.onNext(it) }
+
         val consultWriter = ConsultWriter(preferences)
         var consultInfo: ConsultInfo? = null
 
@@ -98,7 +113,7 @@ class MessengerImpl(private var compositeDisposable: CompositeDisposable?) : Mes
                 return@fromCallable database.getChatItems(0, -1)
             }
         }
-            .doOnError { throwable: Throwable? -> isDownloadingMessages = false }
+            .doOnError { isDownloadingMessages = false }
     }
 
     override fun saveMessages(chatItems: List<ChatItem>) {
@@ -115,7 +130,7 @@ class MessengerImpl(private var compositeDisposable: CompositeDisposable?) : Mes
     }
 
     override fun queueMessageSending(userPhrase: UserPhrase) {
-        info("queueMessageSending: $userPhrase")
+        info("queueMessageSending: $userPhrase, queue size: ${sendQueue.size}")
         synchronized(sendQueue) { sendQueue.add(userPhrase) }
         if (sendQueue.size == 1) {
             sendMessage(userPhrase)
@@ -125,37 +140,14 @@ class MessengerImpl(private var compositeDisposable: CompositeDisposable?) : Mes
     }
 
     override fun resendMessages() {
-        mainCoroutineScope.launch {
-            unsentMessageHandler = Handler(Looper.getMainLooper()) { msg: Message ->
-                if (msg.what == resendMessageKey) {
-                    if (!unsentMessages.isEmpty()) {
-                        if (networkInteractor.hasNoInternet(context)) {
-                            scheduleResend()
-                        } else {
-                            // try to send all unsent messages
-                            unsentMessageHandler?.removeMessages(resendMessageKey)
-                            synchronized(unsentMessages) {
-                                val iterator: MutableListIterator<UserPhrase> = unsentMessages.listIterator()
-                                while (iterator.hasNext()) {
-                                    val phrase = iterator.next()
-                                    sendMessage(phrase)
-                                    iterator.remove()
-                                }
-                            }
-                        }
-                    }
-                }
-                false
-            }
+        mainCoroutineScope.launch(Dispatchers.IO) {
+            proceedUnsentMessages()
         }
     }
 
-    override fun scheduleResend() {
-        if (unsentMessageHandler?.hasMessages(resendMessageKey) == false) {
-            val resendInterval = BaseConfig.instance.requestConfig.socketClientSettings
-                .resendIntervalMillis
-            unsentMessageHandler?.sendEmptyMessageDelayed(resendMessageKey, resendInterval.toLong())
-        }
+    override fun removeUserMessageFromQueue(userPhrase: UserPhrase) {
+        sendQueue.removeAll { it.isTheSameItem(userPhrase) }
+        unsentMessages.removeAll { it.isTheSameItem(userPhrase) }
     }
 
     override fun proceedSendingQueue(chatItem: UserPhrase) {
@@ -177,7 +169,6 @@ class MessengerImpl(private var compositeDisposable: CompositeDisposable?) : Mes
     override fun addMsgToResendQueue(userPhrase: UserPhrase) {
         if (!unsentMessages.contains(userPhrase)) {
             unsentMessages.add(userPhrase)
-            scheduleResend()
         }
     }
 
@@ -192,7 +183,6 @@ class MessengerImpl(private var compositeDisposable: CompositeDisposable?) : Mes
 
     private fun checkAndResendPhrase(userPhrase: UserPhrase) {
         if (userPhrase.sentState.ordinal < MessageStatus.SENT.ordinal) {
-            userPhrase.id?.run { resendStream.onNext(this) }
             queueMessageSending(userPhrase)
         }
     }
@@ -235,6 +225,25 @@ class MessengerImpl(private var compositeDisposable: CompositeDisposable?) : Mes
                     error(e)
                 }
         )
+    }
+
+    private fun runResendJob() {
+        mainCoroutineScope.launch(Dispatchers.IO) {
+            while (isActive) {
+                if (isViewActive) {
+                    proceedUnsentMessages()
+                }
+                delay(BaseConfig.instance.requestConfig.socketClientSettings.resendIntervalMillis)
+            }
+        }
+    }
+
+    private fun proceedUnsentMessages() {
+        if (unsentMessages.isNotEmpty() && !networkInteractor.hasNoInternet(context)) {
+            synchronized(unsentMessages) {
+                unsentMessages.forEach { sendMessage(it) }
+            }
+        }
     }
 
     private fun subscribe(event: Disposable): Boolean {

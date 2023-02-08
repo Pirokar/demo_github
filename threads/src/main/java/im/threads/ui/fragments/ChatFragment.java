@@ -380,6 +380,7 @@ public final class ChatFragment extends BaseFragment implements
 
         super.onDestroy();
         BaseConfig.instance.transport.setLifecycle(null);
+        mChatController.onViewDestroy();
         if (chatAdapter != null) {
             chatAdapter.onDestroyView();
         }
