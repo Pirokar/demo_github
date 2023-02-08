@@ -587,7 +587,8 @@ class ThreadsGateTransport(
             chatUpdateProcessor.postError(TransportException(t.message))
             synchronized(messageInProcessIds) {
                 coroutineScope.launch {
-                    for (messageId in messageInProcessIds) {
+                    for (i in 0 until messageInProcessIds.size) {
+                        val messageId = messageInProcessIds[i]
                         val result = coroutineScope.async(Dispatchers.IO) {
                             database.getChatItemByCorrelationId(messageId)
                         }
