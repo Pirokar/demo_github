@@ -94,7 +94,6 @@ import io.reactivex.subjects.PublishSubject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import java.util.Date
@@ -160,10 +159,16 @@ class ChatController private constructor() {
 
     fun onViewStart() {
         checkSubscribing()
+        messenger.onViewStart()
     }
 
     fun onViewStop() {
         isAllMessagesDownloaded = false
+        messenger.onViewStop()
+    }
+
+    fun onViewDestroy() {
+        messenger.onViewDestroy()
     }
 
     fun onRatingClick(survey: Survey) {
@@ -417,7 +422,6 @@ class ChatController private constructor() {
                 val unsentUserPhrase = database.getUnsendUserPhrase(historyLoadingCount)
                 if (unsentUserPhrase.isNotEmpty()) {
                     messenger.recreateUnsentMessagesWith(unsentUserPhrase)
-                    messenger.scheduleResend()
                 }
                 setLastAvatars(database.getChatItems(0, historyLoadingCount))
             }
@@ -879,10 +883,19 @@ class ChatController private constructor() {
                 .observeOn(Schedulers.io())
                 .doOnNext { status: Status ->
                     database.setOrUpdateMessageId(status.correlationId, status.messageId)
-                    if (status.messageId != null) {
+                    val message = if (status.messageId != null) {
                         database.setStateOfUserPhraseByBackendMessageId(status.messageId, status.status)
+                        database.getChatItemByBackendMessageId(status.messageId)
                     } else {
                         database.setStateOfUserPhraseByCorrelationId(status.correlationId, status.status)
+                        database.getChatItemByCorrelationId(status.correlationId)
+                    }
+                    if (message is UserPhrase) {
+                        if (status.status > MessageStatus.FAILED) {
+                            messenger.removeUserMessageFromQueue(message)
+                        } else if (status.status == MessageStatus.FAILED) {
+                            messenger.addMsgToResendQueue(message)
+                        }
                     }
                 }
                 .observeOn(AndroidSchedulers.mainThread())

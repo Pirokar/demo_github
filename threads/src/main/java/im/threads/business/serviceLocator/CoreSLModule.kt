@@ -9,6 +9,8 @@ import im.threads.business.transport.AuthInterceptor
 import im.threads.business.transport.OutgoingMessageCreator
 import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.ConsultWriter
+import im.threads.business.utils.internet.NetworkInteractor
+import im.threads.business.utils.internet.NetworkInteractorImpl
 
 /**
  * Модуль зависимостей сервис локатора уровня core (business logic)
@@ -22,4 +24,5 @@ val coreSLModule = module {
     factory { AuthInterceptor(get()) }
     factory { ConsultWriter(get()) }
     factory { ChatUpdateProcessor() }
+    factory<NetworkInteractor> { NetworkInteractorImpl() }
 }

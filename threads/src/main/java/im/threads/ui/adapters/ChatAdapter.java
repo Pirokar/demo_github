@@ -70,6 +70,7 @@ import im.threads.business.utils.FileUtils;
 import im.threads.business.utils.FileUtilsKt;
 import im.threads.business.workers.FileDownloadWorker;
 import im.threads.ui.ChatStyle;
+import im.threads.ui.adapters.utils.DuplicateMessagesRemover;
 import im.threads.ui.adapters.utils.SendingStatusObserver;
 import im.threads.ui.config.Config;
 import im.threads.ui.holders.BaseHolder;
@@ -1265,6 +1266,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             for (int i = 1; i < items.size(); i++) {
                 updateConsultAvatarIfNeed(items.get(i - 1), items.get(i));
             }
+            DuplicateMessagesRemover.removeDuplicateSystemMessages(items);
             insertSpacing(items);
         }
 
