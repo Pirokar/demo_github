@@ -1,9 +1,11 @@
 package im.threads.ui.adapters.utils
 
+import im.threads.business.chat_updates.ChatUpdateProcessor
 import im.threads.business.models.MessageStatus
 import im.threads.business.models.UserPhrase
 import im.threads.business.secureDatabase.DatabaseHolder
 import im.threads.business.serviceLocator.core.inject
+import im.threads.business.transport.threadsGate.responses.Status
 import im.threads.ui.adapters.ChatAdapter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -12,6 +14,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.lang.ref.WeakReference
 import java.util.Date
 
@@ -23,6 +26,7 @@ import java.util.Date
  */
 class SendingStatusObserver(private val chatAdapterRef: WeakReference<ChatAdapter>, private val interval: Long) {
     private val database: DatabaseHolder by inject()
+    private val chatUpdateProcessor: ChatUpdateProcessor by inject()
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
     private var isObserving = false
 
@@ -48,8 +52,13 @@ class SendingStatusObserver(private val chatAdapterRef: WeakReference<ChatAdapte
                                             val failedStatus = MessageStatus.FAILED
                                             database.setStateOfUserPhraseByCorrelationId(item.id, failedStatus)
                                             item.sentState = failedStatus
+                                            indexesToUpdate.add(index)
+                                            withContext(Dispatchers.Main) {
+                                                chatUpdateProcessor.postOutgoingMessageStatusChanged(
+                                                    listOf(Status(item.id, item.backendMessageId, MessageStatus.FAILED))
+                                                )
+                                            }
                                         }
-                                        indexesToUpdate.add(index)
                                     }
                                 }
                                 indexesToUpdate

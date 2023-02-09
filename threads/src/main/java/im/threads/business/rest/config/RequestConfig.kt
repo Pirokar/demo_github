@@ -11,11 +11,11 @@ class RequestConfig {
 }
 
 data class SocketClientSettings(
-    var resendIntervalMillis: Int = 10_000,
-    var resendPingIntervalMillis: Int = 10_000,
-    var connectTimeoutMillis: Int = 10_000,
-    var readTimeoutMillis: Int = 10_000,
-    var writeTimeoutMillis: Int = 10_000
+    var resendIntervalMillis: Long = 10_000,
+    var resendPingIntervalMillis: Long = 10_000,
+    var connectTimeoutMillis: Long = 10_000,
+    var readTimeoutMillis: Long = 10_000,
+    var writeTimeoutMillis: Long = 10_000
 )
 
 data class HttpClientSettings(

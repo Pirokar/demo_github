@@ -80,7 +80,7 @@ class UserPhrase constructor(
 
     override fun isTheSameItem(otherItem: ChatItem?): Boolean {
         return if (otherItem is UserPhrase) {
-            ObjectsCompat.equals(id, otherItem.id)
+            id == otherItem.id
         } else false
     }
 

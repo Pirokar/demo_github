@@ -12,11 +12,14 @@ interface Messenger {
     fun downloadMessagesTillEnd(): Single<List<ChatItem>>
     fun saveMessages(chatItems: List<ChatItem>)
     fun queueMessageSending(userPhrase: UserPhrase)
-    fun scheduleResend()
     fun proceedSendingQueue(chatItem: UserPhrase)
     fun addMsgToResendQueue(userPhrase: UserPhrase)
     fun forceResend(userPhrase: UserPhrase)
     fun resendMessages()
+    fun removeUserMessageFromQueue(userPhrase: UserPhrase)
     fun clearSendQueue()
     fun recreateUnsentMessagesWith(phrases: List<UserPhrase>)
+    fun onViewStart()
+    fun onViewStop()
+    fun onViewDestroy()
 }
