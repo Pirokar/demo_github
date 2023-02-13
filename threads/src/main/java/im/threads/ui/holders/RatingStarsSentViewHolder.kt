@@ -47,6 +47,9 @@ class RatingStarsSentViewHolder(parent: ViewGroup) : BaseHolder(
     }
 
     fun bind(survey: Survey) {
+        if (survey.isRead) {
+            survey.sentState = MessageStatus.READ
+        }
         val rate = survey.questions[0].rate
         val scale = survey.questions[0].scale
         rateStarsCount.text = rate.toString()
