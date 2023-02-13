@@ -51,7 +51,7 @@ class RatingThumbsSentViewHolder(parent: ViewGroup) : BaseHolder(
         header.text = survey.questions[0].text
         timeStampTextView.text = sdf.format(Date(survey.timeStamp))
         val drawable: Drawable?
-        when (survey.sentState) {
+        when (survey.sentState ?: MessageStatus.FAILED) {
             MessageStatus.SENDING -> {
                 drawable = AppCompatResources.getDrawable(itemView.context, style.messageSendingIconResId)
                 drawable?.setColorFilter(ContextCompat.getColor(itemView.context, style.messageSendingIconColorResId))
