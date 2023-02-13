@@ -1,91 +1,85 @@
-package im.threads.ui.holders;
+package im.threads.ui.holders
 
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
-import android.view.LayoutInflater;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
-
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.content.ContextCompat;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
-import im.threads.R;
-import im.threads.business.models.Survey;
+import android.graphics.PorterDuff
+import android.graphics.drawable.Drawable
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.content.ContextCompat
+import im.threads.R
+import im.threads.business.models.MessageStatus
+import im.threads.business.models.Survey
+import im.threads.ui.utils.setColorFilter
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 /**
  * ViewHolder для результатов опроса с рейтингом
  */
-public final class RatingStarsSentViewHolder extends BaseHolder {
+class RatingStarsSentViewHolder(parent: ViewGroup) : BaseHolder(
+    LayoutInflater.from(parent.context).inflate(R.layout.ecc_item_rate_stars_sent, parent, false),
+    null,
+    null
+) {
+    private val star: ImageView = itemView.findViewById(R.id.star)
+    private val mHeader: TextView = itemView.findViewById(R.id.header)
+    private val rateStarsCount: TextView = itemView.findViewById(R.id.rate_stars_count)
+    private val from: TextView = itemView.findViewById(R.id.from)
+    private val totalStarsCount: TextView = itemView.findViewById(R.id.total_stars_count)
+    private val timeStampTextView: TextView = itemView.findViewById(R.id.timestamp)
+    private val sdf: SimpleDateFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+    private val mBubble: ViewGroup = itemView.findViewById(R.id.bubble)
 
-    private ImageView star;
-    private TextView mHeader;
-    private TextView rateStarsCount;
-    private TextView from;
-    private TextView totalStarsCount;
-    private TextView mTimeStampTextView;
-    private SimpleDateFormat sdf;
-    private ViewGroup mBubble;
-
-    public RatingStarsSentViewHolder(ViewGroup parent) {
-        super(
-                LayoutInflater.from(parent.getContext()).inflate(R.layout.ecc_item_rate_stars_sent, parent, false),
-                null,
-                null
-        );
-        star = itemView.findViewById(R.id.star);
-        mTimeStampTextView = itemView.findViewById(R.id.timestamp);
-        mHeader = itemView.findViewById(R.id.header);
-        rateStarsCount = itemView.findViewById(R.id.rate_stars_count);
-        from = itemView.findViewById(R.id.from);
-        totalStarsCount = itemView.findViewById(R.id.total_stars_count);
-        sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
-        mBubble = itemView.findViewById(R.id.bubble);
-        rateStarsCount.setTextColor(getColorInt(getStyle().outgoingMessageBubbleColor));
-        mBubble.setBackground(AppCompatResources.getDrawable(itemView.getContext(), getStyle().outgoingMessageBubbleBackground));
-
-        setPaddings(false, mBubble);
-        setLayoutMargins(false, mBubble);
-        mBubble.getBackground().setColorFilter(getColorInt(getStyle().outgoingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
-
-        setTextColorToViews(new TextView[]{mHeader, from, totalStarsCount}, getStyle().outgoingMessageTextColor);
-        mTimeStampTextView.setTextColor(getColorInt(getStyle().outgoingMessageTimeColor));
-        star.setColorFilter(ContextCompat.getColor(itemView.getContext(), getStyle().outgoingMessageTextColor), PorterDuff.Mode.SRC_ATOP);
-        star.setImageResource(getStyle().optionsSurveySelectedIconResId);
+    init {
+        rateStarsCount.setTextColor(getColorInt(style.outgoingMessageBubbleColor))
+        mBubble.background =
+            AppCompatResources.getDrawable(itemView.context, style.outgoingMessageBubbleBackground)
+        setPaddings(false, mBubble)
+        setLayoutMargins(false, mBubble)
+        mBubble.background.setColorFilter(ContextCompat.getColor(itemView.context, style.outgoingMessageBubbleColor))
+        setTextColorToViews(arrayOf(mHeader, from, totalStarsCount), style.outgoingMessageTextColor)
+        timeStampTextView.setTextColor(getColorInt(style.outgoingMessageTimeColor))
+        star.setColorFilter(ContextCompat.getColor(itemView.context, style.outgoingMessageTextColor), PorterDuff.Mode.SRC_ATOP)
+        star.setImageResource(style.optionsSurveySelectedIconResId)
     }
 
-    public void bind(Survey survey) {
-        int rate = survey.getQuestions().get(0).getRate();
-        int scale = survey.getQuestions().get(0).getScale();
-        rateStarsCount.setText(String.valueOf(rate));
-        totalStarsCount.setText(String.valueOf(scale));
-        mTimeStampTextView.setText(sdf.format(new Date(survey.getTimeStamp())));
-        mHeader.setText(survey.getQuestions().get(0).getText());
-        Drawable d;
-        switch (survey.getSentState()) {
-            case READ:
-                d = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.ecc_message_received);
-                d.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.ecc_outgoing_message_received_icon), PorterDuff.Mode.SRC_ATOP);
-                mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
-                break;
-            case SENT:
-                d = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.ecc_message_sent);
-                d.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.ecc_outgoing_message_sent_icon), PorterDuff.Mode.SRC_ATOP);
-                mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
-                break;
-            case FAILED:
-                d = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.ecc_message_failed);
-                d.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.ecc_outgoing_message_not_send_icon), PorterDuff.Mode.SRC_ATOP);
-                mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
-                break;
-            case SENDING:
-                d = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.ecc_empty_space_24dp);
-                mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
-                break;
+    fun bind(survey: Survey) {
+        val rate = survey.questions[0].rate
+        val scale = survey.questions[0].scale
+        rateStarsCount.text = rate.toString()
+        totalStarsCount.text = scale.toString()
+        timeStampTextView.text = sdf.format(Date(survey.timeStamp))
+        mHeader.text = survey.questions[0].text
+        val drawable: Drawable?
+        when (survey.sentState ?: MessageStatus.FAILED) {
+            MessageStatus.SENDING -> {
+                drawable = AppCompatResources.getDrawable(itemView.context, style.messageSendingIconResId)
+                drawable?.setColorFilter(ContextCompat.getColor(itemView.context, style.messageSendingIconColorResId))
+                timeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null)
+            }
+            MessageStatus.SENT -> {
+                drawable = AppCompatResources.getDrawable(itemView.context, style.messageSentIconResId)
+                drawable?.setColorFilter(ContextCompat.getColor(itemView.context, style.messageSentIconColorResId))
+                timeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null)
+            }
+            MessageStatus.DELIVERED -> {
+                drawable = AppCompatResources.getDrawable(itemView.context, style.messageDeliveredIconResId)
+                drawable?.setColorFilter(ContextCompat.getColor(itemView.context, style.messageDeliveredIconColorResId))
+                timeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null)
+            }
+            MessageStatus.READ -> {
+                drawable = AppCompatResources.getDrawable(itemView.context, style.messageReadIconResId)
+                drawable?.setColorFilter(ContextCompat.getColor(itemView.context, style.messageReadIconColorResId))
+                timeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null)
+            }
+            MessageStatus.FAILED -> {
+                drawable = AppCompatResources.getDrawable(itemView.context, style.messageFailedIconResId)
+                drawable?.setColorFilter(ContextCompat.getColor(itemView.context, style.messageFailedIconColorResId))
+                timeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null)
+            }
         }
     }
 }
