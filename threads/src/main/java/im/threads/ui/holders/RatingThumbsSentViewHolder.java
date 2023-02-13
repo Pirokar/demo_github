@@ -1,82 +1,82 @@
-package im.threads.ui.holders;
+package im.threads.ui.holders
 
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
-import android.view.LayoutInflater;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
-
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.content.ContextCompat;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
-import im.threads.R;
-import im.threads.business.models.Survey;
+import android.graphics.PorterDuff
+import android.graphics.drawable.Drawable
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.content.ContextCompat
+import im.threads.R
+import im.threads.business.models.MessageStatus
+import im.threads.business.models.Survey
+import im.threads.ui.utils.setColorFilter
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 /**
  * ViewHolder для результатов бинарного опроса
  */
-public final class RatingThumbsSentViewHolder extends BaseHolder {
-    private ImageView thumb;
-    private TextView mHeader;
-    private TextView mTimeStampTextView;
-    private SimpleDateFormat sdf;
-    private ViewGroup mBubble;
+class RatingThumbsSentViewHolder(parent: ViewGroup) : BaseHolder(
+    LayoutInflater.from(parent.context).inflate(R.layout.ecc_item_rate_thumbs_sent, parent, false),
+    null,
+    null
+) {
+    private val thumb: ImageView = itemView.findViewById(R.id.thumb)
+    private val header: TextView = itemView.findViewById(R.id.header)
+    private val timeStampTextView: TextView = itemView.findViewById(R.id.timestamp)
+    private val sdf: SimpleDateFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+    private val bubble: ViewGroup = itemView.findViewById(R.id.bubble)
 
-    public RatingThumbsSentViewHolder(ViewGroup parent) {
-        super(
-                LayoutInflater.from(parent.getContext()).inflate(R.layout.ecc_item_rate_thumbs_sent, parent, false),
-                null,
-                null
-        );
-        thumb = itemView.findViewById(R.id.thumb);
-        mTimeStampTextView = itemView.findViewById(R.id.timestamp);
-        mHeader = itemView.findViewById(R.id.header);
-        mBubble = itemView.findViewById(R.id.bubble);
-        sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
-        mBubble.setBackground(AppCompatResources.getDrawable(itemView.getContext(), getStyle().outgoingMessageBubbleBackground));
-        setPaddings(false,  mBubble);
-        setLayoutMargins(false, mBubble);
-        mBubble.getBackground().setColorFilter(getColorInt(getStyle().outgoingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
-        setTextColorToViews(new TextView[]{mHeader}, getStyle().outgoingMessageTextColor);
-        mTimeStampTextView.setTextColor(getColorInt(getStyle().outgoingMessageTimeColor));
+    init {
+        bubble.background =
+            AppCompatResources.getDrawable(itemView.context, style.outgoingMessageBubbleBackground)
+        setPaddings(false, bubble)
+        setLayoutMargins(false, bubble)
+        bubble.background.setColorFilter(getColorInt(style.outgoingMessageBubbleColor))
+        setTextColorToViews(arrayOf(header), style.outgoingMessageTextColor)
+        timeStampTextView.setTextColor(getColorInt(style.outgoingMessageTimeColor))
     }
 
-    public void bind(Survey survey) {
-        int rate = survey.getQuestions().get(0).getRate();
+    fun bind(survey: Survey) {
+        val rate = survey.questions[0].rate
         if (rate == 1) {
-            thumb.setImageResource(getStyle().binarySurveyLikeSelectedIconResId);
+            thumb.setImageResource(style.binarySurveyLikeSelectedIconResId)
         } else {
-            thumb.setImageResource(getStyle().binarySurveyDislikeSelectedIconResId);
+            thumb.setImageResource(style.binarySurveyDislikeSelectedIconResId)
         }
-        thumb.setColorFilter(ContextCompat.getColor(itemView.getContext(), getStyle().outgoingMessageTextColor), PorterDuff.Mode.SRC_ATOP);
-        mHeader.setText(survey.getQuestions().get(0).getText());
-        mTimeStampTextView.setText(sdf.format(new Date(survey.getTimeStamp())));
-        Drawable d;
-        switch (survey.getSentState()) {
-            case READ:
-                d = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.ecc_message_received);
-                d.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.ecc_outgoing_message_received_icon), PorterDuff.Mode.SRC_ATOP);
-                mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
-                break;
-            case SENT:
-                d = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.ecc_message_sent);
-                d.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.ecc_outgoing_message_sent_icon), PorterDuff.Mode.SRC_ATOP);
-                mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
-                break;
-            case FAILED:
-                d = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.ecc_message_failed);
-                d.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.ecc_outgoing_message_not_send_icon), PorterDuff.Mode.SRC_ATOP);
-                mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
-                break;
-            case SENDING:
-                d = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.ecc_empty_space_24dp);
-                mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
-                break;
+        thumb.setColorFilter(ContextCompat.getColor(itemView.context, style.outgoingMessageTextColor), PorterDuff.Mode.SRC_ATOP)
+        header.text = survey.questions[0].text
+        timeStampTextView.text = sdf.format(Date(survey.timeStamp))
+        val drawable: Drawable?
+        when (survey.sentState) {
+            MessageStatus.SENDING -> {
+                drawable = AppCompatResources.getDrawable(itemView.context, style.messageSendingIconResId)
+                drawable?.setColorFilter(ContextCompat.getColor(itemView.context, style.messageSendingIconColorResId))
+                timeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null)
+            }
+            MessageStatus.SENT -> {
+                drawable = AppCompatResources.getDrawable(itemView.context, style.messageSentIconResId)
+                drawable?.setColorFilter(ContextCompat.getColor(itemView.context, style.messageSentIconColorResId))
+                timeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null)
+            }
+            MessageStatus.DELIVERED -> {
+                drawable = AppCompatResources.getDrawable(itemView.context, style.messageDeliveredIconResId)
+                drawable?.setColorFilter(ContextCompat.getColor(itemView.context, style.messageDeliveredIconColorResId))
+                timeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null)
+            }
+            MessageStatus.READ -> {
+                drawable = AppCompatResources.getDrawable(itemView.context, style.messageReadIconResId)
+                drawable?.setColorFilter(ContextCompat.getColor(itemView.context, style.messageReadIconColorResId))
+                timeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null)
+            }
+            MessageStatus.FAILED -> {
+                drawable = AppCompatResources.getDrawable(itemView.context, style.messageFailedIconResId)
+                drawable?.setColorFilter(ContextCompat.getColor(itemView.context, style.messageFailedIconColorResId))
+                timeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null)
+            }
         }
     }
 }
