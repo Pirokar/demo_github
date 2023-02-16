@@ -2,6 +2,7 @@ package im.threads.ui.permissions
 
 import android.Manifest
 import android.app.Activity
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -157,8 +158,8 @@ class PermissionsActivity : AppCompatActivity() {
 
         @JvmStatic
         fun startActivityForResult(fragment: Fragment, requestCode: Int, text: Int, vararg permissions: String) {
-            if (permissions.isNotEmpty()) {
-                val checkedPermissions = checkForMediaPermissions(*permissions)
+            if (permissions.isNotEmpty() && fragment.context != null) {
+                val checkedPermissions = checkForMediaPermissions(fragment.requireContext(), *permissions)
                 val intent = Intent(fragment.activity, PermissionsActivity::class.java)
                 intent.putExtra(EXTRA_PERMISSIONS, checkedPermissions)
                 intent.putExtra(EXTRA_PERMISSION_TEXT, text)
@@ -173,9 +174,10 @@ class PermissionsActivity : AppCompatActivity() {
             startActivityForResult(activity, requestCode, TEXT_DEFAULT, *permissions)
         }
 
-        private fun checkForMediaPermissions(vararg permissions: String): Array<String> {
+        private fun checkForMediaPermissions(context: Context, vararg permissions: String): Array<String> {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-                permissions.contains(Manifest.permission.READ_EXTERNAL_STORAGE)
+                permissions.contains(Manifest.permission.READ_EXTERNAL_STORAGE) &&
+                    context.applicationContext.applicationInfo.targetSdkVersion >= Build.VERSION_CODES.TIRAMISU
             ) {
                 val list = permissions.toMutableList()
                 list.remove(Manifest.permission.READ_EXTERNAL_STORAGE)
