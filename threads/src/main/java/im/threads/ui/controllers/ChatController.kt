@@ -1475,21 +1475,27 @@ class ChatController private constructor() {
     private fun refreshUserInputState() {
         chatUpdateProcessor.postUserInputEnableChanged(
             InputFieldEnableModel(
-                isInputFieldEnabled,
+                isInputFieldEnabled(),
                 isSendButtonEnabled
             )
         )
     }
 
-    private val isInputFieldEnabled: Boolean
-        get() = if (fragment?.fileDescription != null && isVoiceMessage(fragment?.fileDescription)) {
+    private fun isInputFieldEnabled(): Boolean {
+        val fileDescription = fragment?.fileDescription?.get()?.get()
+        return if (fileDescription != null && isVoiceMessage(fileDescription)) {
             false
-        } else isSendButtonEnabled
+        } else {
+            isSendButtonEnabled
+        }
+    }
 
     private val isSendButtonEnabled: Boolean
         get() = if (hasQuickReplies && !inputEnabledDuringQuickReplies) {
             false
-        } else enableInputBySchedule()
+        } else {
+            enableInputBySchedule()
+        }
 
     private fun enableInputBySchedule(): Boolean {
         return if (currentScheduleInfo == null) {
