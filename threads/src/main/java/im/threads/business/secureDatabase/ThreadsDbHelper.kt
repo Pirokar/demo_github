@@ -165,6 +165,10 @@ class ThreadsDbHelper private constructor(val context: Context, password: String
         messagesTable.setOrUpdateMessageId(this, correlationId, backendMessageId)
     }
 
+    override fun removeItem(correlationId: String?, messageId: String?) {
+        messagesTable.removeItem(this, correlationId, messageId)
+    }
+
     fun speechMessageUpdated(speechMessageUpdate: SpeechMessageUpdate?) {
         messagesTable.speechMessageUpdated(this, speechMessageUpdate!!)
     }

@@ -487,6 +487,7 @@ class ThreadsGateTransport(
                     )
                 }
                 if (action == Action.GET_STATUSES) {
+                    LoggerEdna.info("Receiving GetStatusesData: ${response.data}")
                     val data = BaseConfig.instance.gson.fromJson(
                         response.data.toString(),
                         GetStatusesData::class.java

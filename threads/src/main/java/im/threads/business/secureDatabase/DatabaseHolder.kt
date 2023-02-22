@@ -109,6 +109,10 @@ class DatabaseHolder(private val context: Context) {
         tryExecute { myOpenHelper.setOrUpdateMessageId(correlationId, backendMessageId) }
     }
 
+    fun removeItem(correlationId: String?, messageId: String?) = tryExecute {
+        myOpenHelper.removeItem(correlationId, messageId)
+    }
+
     private fun checkIsDatabaseCorrupted() {
         myOpenHelper = ThreadsDbHelper.getInstance(context)
     }

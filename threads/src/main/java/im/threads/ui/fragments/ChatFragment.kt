@@ -159,6 +159,7 @@ class ChatFragment :
     FileSelectedListener,
     ChatCenterAudioConverterCallback,
     OnAllowPermissionClickListener {
+
     private val handler = Handler(Looper.getMainLooper())
     private val fileNameDateFormat = SimpleDateFormat("dd.MM.yyyy.HH:mm:ss.S", Locale.getDefault())
     private val inputTextObservable = ObservableField("")
@@ -2459,7 +2460,7 @@ class ChatFragment :
             updateUIonPhraseLongClick(chatPhrase, position)
         }
 
-        override fun onUserPhraseClick(userPhrase: UserPhrase, position: Int) {
+        override fun onUserPhraseClick(userPhrase: UserPhrase, position: Int, view: View) {
             if (userPhrase.sentState.ordinal >= MessageStatus.SENT.ordinal) {
                 chatAdapter?.let {
                     val item = it.list[position]
@@ -2469,7 +2470,24 @@ class ChatFragment :
                     }
                 }
             } else {
-                chatController.forceResend(userPhrase)
+                PopupMenu(view.context, view, Gravity.END, 0, R.style.PopupMenu).apply {
+                    inflate(R.menu.ecc_menu_user_phrase_sent_error)
+                    setOnMenuItemClickListener {
+                        return@setOnMenuItemClickListener when (it.itemId) {
+                            R.id.resend -> {
+                                chatController.forceResend(userPhrase)
+                                true
+                            }
+                            R.id.delete -> {
+                                chatAdapter?.removeItem(position)
+                                chatController.removeUserPhraseFromDatabaseAsync(userPhrase)
+                                true
+                            }
+                            else -> false
+                        }
+                    }
+                    show()
+                }
             }
         }
 

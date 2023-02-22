@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
 import android.util.TypedValue;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -912,7 +913,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     }
                 },
                 v -> onVoiceMessagePlayClick(holder),
-                v -> mCallback.onUserPhraseClick(userPhrase, holder.getAdapterPosition()),
+                v -> mCallback.onUserPhraseClick(userPhrase, holder.getAdapterPosition(), holder.itemView),
                 (slider, value, fromUser) -> {
                     if (fromUser) {
                         MediaPlayer mediaPlayer = fdMediaPlayer.getMediaPlayer();
@@ -1007,7 +1008,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         holder.onBind(
                 userPhrase,
                 v -> mCallback.onFileClick(userPhrase.getFileDescription()),
-                v -> mCallback.onUserPhraseClick(userPhrase, holder.getAdapterPosition()),
+                v -> mCallback.onUserPhraseClick(userPhrase, holder.getAdapterPosition(), holder.itemView),
                 v -> {
                     phraseLongClick(userPhrase, holder.getAdapterPosition());
                     return true;
@@ -1149,8 +1150,15 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public void removeItem(ChatItem chatItem) {
         final int index = ChatItemListFinder.lastIndexOf(getList(), chatItem);
         if (index != -1) {
-            notifyItemRemoved(index);
             getList().remove(index);
+            notifyItemRemoved(index);
+        }
+    }
+
+    public void removeItem(int index) {
+        if (index != -1 && getList().size() > index) {
+            getList().remove(index);
+            notifyItemRemoved(index);
         }
     }
 
@@ -1179,7 +1187,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
         void onQuoteClick(Quote quote);
 
-        void onUserPhraseClick(UserPhrase userPhrase, int position);
+        void onUserPhraseClick(UserPhrase userPhrase, int position, View view);
 
         void onConsultAvatarClick(String consultId);
 

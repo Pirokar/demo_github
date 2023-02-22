@@ -39,4 +39,5 @@ interface DBHelper {
     fun getUnreadMessagesCount(): Int
     fun getUnreadMessagesUuid(): List<String?>?
     fun setOrUpdateMessageId(correlationId: String?, backendMessageId: String?)
+    fun removeItem(correlationId: String?, messageId: String?)
 }

@@ -756,6 +756,12 @@ class ChatController private constructor() {
         messenger.forceResend(userPhrase!!)
     }
 
+    fun removeUserPhraseFromDatabaseAsync(userPhrase: UserPhrase) {
+        coroutineScope.launch(Dispatchers.IO) {
+            database.removeItem(userPhrase.id, userPhrase.backendMessageId)
+        }
+    }
+
     private fun addLocalUserMessages(serverItems: MutableList<ChatItem>): MutableList<ChatItem> {
         val localMessagesToDelete = java.util.ArrayList<UserPhrase>()
         for (localUserMessage in localUserMessages) {

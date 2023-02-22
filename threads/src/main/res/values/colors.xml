@@ -70,6 +70,7 @@
     <color name="ecc_incoming_message_time">@color/ecc_white</color>
 
     <!-- Цвет иконок статусов доставки сообщений пользователя -->
+    <color name="ecc_outgoing_message_sending_icon">@color/ecc_white</color>
     <color name="ecc_outgoing_message_sent_icon">@color/ecc_white</color>
     <color name="ecc_outgoing_message_received_icon">@color/ecc_white</color>
     <color name="ecc_outgoing_message_not_send_icon">@color/ecc_white</color>
