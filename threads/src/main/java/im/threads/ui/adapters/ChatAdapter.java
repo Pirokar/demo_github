@@ -752,7 +752,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     if (backendMessageId != null) {
                         ((UserPhrase) cm).setBackendMessageId(backendMessageId);
                     }
-                    if (up.getSentState().ordinal() < status.ordinal()) {
+                    if (up.getSentState().ordinal() <= status.ordinal()) {
                         LoggerEdna.info("changeStateOfMessageById: changing message state to " + status.name());
                         ((UserPhrase) cm).setSentState(status);
                         notifyItemChangedOnUi(cm);
