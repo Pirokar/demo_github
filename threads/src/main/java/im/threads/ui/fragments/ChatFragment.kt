@@ -33,6 +33,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
 import android.view.inputmethod.EditorInfo
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -55,6 +56,7 @@ import im.threads.business.audio.audioRecorder.AudioRecorder
 import im.threads.business.broadcastReceivers.ProgressReceiver
 import im.threads.business.chat_updates.ChatUpdateProcessorJavaGetter
 import im.threads.business.config.BaseConfig
+import im.threads.business.extensions.withMainContext
 import im.threads.business.imageLoading.ImageLoader.Companion.get
 import im.threads.business.logger.LogZipSender
 import im.threads.business.logger.LoggerEdna.debug
@@ -137,6 +139,9 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileNotFoundException
 import java.lang.ref.WeakReference
@@ -2020,19 +2025,22 @@ class ChatFragment :
         binding.popupMenuButton.setOnClickListener { showPopup() }
         binding.popupMenuButton.visibility = if (isPopupMenuEnabled) View.VISIBLE else View.GONE
         showOverflowMenu()
+        binding.contentCopy.setImageResource(style.chatToolbarContentCopyIconResId)
+        binding.reply.setImageResource(style.chatToolbarReplyIconResId)
+        setContextIconDefaultTint(binding.contentCopy, binding.reply)
+        if (resources.getBoolean(style.fixedChatTitle)) {
+            setTitleStateDefault()
+        }
+        initToolbarTextPosition()
+    }
+
+    private fun setContextIconDefaultTint(vararg imageButtons: ImageButton) {
         val toolbarInverseIconTint = if (style.chatBodyIconsTint == 0) {
             style.chatToolbarInverseIconTintResId
         } else {
             style.chatBodyIconsTint
         }
-        binding.contentCopy.setImageResource(style.chatToolbarContentCopyIconResId)
-        ColorsHelper.setTint(activity, binding.contentCopy, toolbarInverseIconTint)
-        binding.reply.setImageResource(style.chatToolbarReplyIconResId)
-        ColorsHelper.setTint(activity, binding.reply, toolbarInverseIconTint)
-        if (resources.getBoolean(style.fixedChatTitle)) {
-            setTitleStateDefault()
-        }
-        initToolbarTextPosition()
+        imageButtons.forEach { ColorsHelper.setTint(context, it, toolbarInverseIconTint) }
     }
 
     private fun initToolbarShadow() {
@@ -2183,14 +2191,36 @@ class ChatFragment :
         if (binding.chatBackButton.visibility == View.GONE) {
             binding.chatBackButton.visibility = View.VISIBLE
         }
-        binding.contentCopy.setOnClickListener { v: View? ->
+
+        CoroutineScope(Dispatchers.IO).launch {
+            if (chatController.isMessageSent(chatPhrase.id)) {
+                withMainContext {
+                    setContextIconDefaultTint(binding.reply)
+                    binding.reply.isEnabled = true
+                    binding.reply.setOnClickListener {
+                        onReplyClick(chatPhrase, position)
+                        hideBackButton()
+                    }
+                }
+            } else {
+                withMainContext {
+                    try {
+                        style.chatBodyIconsColorState[0]
+                    } catch (exc: Exception) {
+                        R.color.disabled_icons_color
+                    }.also { color ->
+                        ColorsHelper.setTint(context, binding.reply, color)
+                    }
+                    binding.reply.isEnabled = false
+                }
+            }
+        }
+
+        binding.contentCopy.setOnClickListener {
             onCopyClick(activity, chatPhrase)
             hideBackButton()
         }
-        binding.reply.setOnClickListener { v: View? ->
-            onReplyClick(chatPhrase, position)
-            hideBackButton()
-        }
+
         chatAdapter?.setItemHighlighted(chatPhrase)
     }
 

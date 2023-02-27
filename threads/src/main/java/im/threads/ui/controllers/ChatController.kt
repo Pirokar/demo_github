@@ -533,6 +533,12 @@ class ChatController private constructor() {
         fragment?.setAllMessagesWereRead()
     }
 
+    fun isMessageSent(correlationId: String?): Boolean {
+        return database
+            .getNotDeliveredChatItems()
+            .firstOrNull { it.id == correlationId } == null
+    }
+
     private val isChatWorking: Boolean
         get() = currentScheduleInfo == null || currentScheduleInfo?.isChatWorking == true
 

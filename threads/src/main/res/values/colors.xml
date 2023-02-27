@@ -64,6 +64,7 @@
     <color name="ecc_chat_connection_message">@color/ecc_black</color>
 
     <color name="ecc_icon_and_separators_color">@color/ecc_disabled_text_color</color>
+    <color name="disabled_icons_color">#E8E6E6</color>
     <color name="ecc_outgoing_time_underlay">#80000000</color>
     <color name="ecc_outgoing_message_time">@color/ecc_white</color>
     <color name="ecc_incoming_time_underlay">#80000000</color>

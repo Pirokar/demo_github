@@ -31,6 +31,8 @@ class DatabaseHolder(private val context: Context) {
 
     fun getSendingChatItems(): List<UserPhrase> = tryExecute { myOpenHelper.getSendingChatItems() } ?: arrayListOf()
 
+    fun getNotDeliveredChatItems(): List<UserPhrase> = tryExecute { myOpenHelper.getNotDeliveredChatItems() } ?: arrayListOf()
+
     fun getChatItemByCorrelationId(messageUuid: String?): ChatItem? =
         tryExecute { myOpenHelper.getChatItemByCorrelationId(messageUuid) }
 
