@@ -312,8 +312,7 @@ class MessagesTable(
     ) {
         val cv = ContentValues()
         cv.put(COLUMN_MESSAGE_SEND_STATE, messageStatus?.ordinal)
-        sqlHelper.writableDatabase
-            .update(TABLE_MESSAGES, cv, "$COLUMN_MESSAGE_CORRELATION_ID = ?", arrayOf(uuid))
+        sqlHelper.writableDatabase.update(TABLE_MESSAGES, cv, "$COLUMN_MESSAGE_CORRELATION_ID = ?", arrayOf(uuid))
     }
 
     fun setUserPhraseStateByBackendMessageId(
@@ -323,8 +322,7 @@ class MessagesTable(
     ) {
         val cv = ContentValues()
         cv.put(COLUMN_MESSAGE_SEND_STATE, messageStatus?.ordinal)
-        sqlHelper.writableDatabase
-            .update(TABLE_MESSAGES, cv, "$COLUMN_MESSAGE_ID = ?", arrayOf(messageId))
+        sqlHelper.writableDatabase.update(TABLE_MESSAGES, cv, "$COLUMN_MESSAGE_ID = ?", arrayOf(messageId))
     }
 
     fun getLastConsultPhrase(sqlHelper: SQLiteOpenHelper): ConsultPhrase? {
@@ -773,6 +771,11 @@ class MessagesTable(
         cv.put(COLUMN_MESSAGE_SEND_STATE, survey.sentState.ordinal)
         cv.put(COLUMN_DISPLAY_MESSAGE, survey.isDisplayMessage)
         cv.put(COLUMN_IS_READ, survey.isRead)
+        if (survey.isRead) {
+            cv.put(COLUMN_MESSAGE_SEND_STATE, MessageStatus.READ.ordinal)
+        } else {
+            cv.put(COLUMN_MESSAGE_SEND_STATE, survey.sentState.ordinal)
+        }
         sqlHelper.readableDatabase.rawQuery(sql, selectionArgs).use { c ->
             if (c.count > 0) {
                 sqlHelper.writableDatabase
