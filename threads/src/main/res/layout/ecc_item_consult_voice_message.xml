@@ -99,6 +99,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="@id/voiceMessageConsultSlider"
             app:layout_constraintTop_toBottomOf="@id/voiceMessageConsultText"
+            android:layout_marginTop="@dimen/ecc_margin_material"
             android:drawablePadding="@dimen/ecc_margin_half"
             android:paddingStart="0dp"
             android:paddingEnd="@dimen/ecc_margin_half"

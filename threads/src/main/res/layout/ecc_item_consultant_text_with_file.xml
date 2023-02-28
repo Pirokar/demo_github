@@ -83,7 +83,7 @@
                 android:layout_height="42dp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginTop="@dimen/ecc_margin_half"
-                android:layout_marginLeft="@dimen/ecc_margin_half"
+                android:layout_marginEnd="@dimen/ecc_margin_half"
                 android:layout_marginBottom="@dimen/ecc_margin_half"
                 android:visibility="gone" />
 
@@ -162,6 +162,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|end"
+                android:layout_marginTop="@dimen/ecc_margin_material"
                 android:textColor="@color/ecc_operator_message_timestamp"
                 tools:text="10:19" />
 
