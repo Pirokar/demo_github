@@ -15,6 +15,8 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.BlendModeColorFilterCompat
+import androidx.core.graphics.BlendModeCompat
 import androidx.recyclerview.widget.RecyclerView
 import im.threads.R
 import im.threads.business.imageLoading.ImageLoader
@@ -312,8 +314,9 @@ abstract class BaseHolder internal constructor(
                     val ogDescription: TextView = ogDataLayout.findViewById(R.id.og_description)
                     val ogUrl: BubbleMessageTextView = ogDataLayout.findViewById(R.id.og_url)
 
-                    alignUrlAndTime(ogDataContent, ogUrl)
+                    setColorToDivider(ogDataContent)
                     showOGView()
+                    setTimeStamp(ogDataContent)
                     setOgDataTitle(ogData, ogTitle)
                     setOgDataDescription(ogData, ogDescription)
                     setOgDataUrl(ogUrl, ogData)
@@ -333,14 +336,52 @@ abstract class BaseHolder internal constructor(
                 }
 
                 ogDataContent.ogDataLayout.clear()
-                ogDataContent.timeStampView.clear()
+                ogDataContent.ogTimeStampView.clear()
             }
         }
     }
 
-    private fun alignUrlAndTime(ogDataContent: OGDataContent, ogTextView: BubbleMessageTextView) {
-        ogDataContent.timeStampView.get()?.let { timeStampView ->
-            ogTextView.bindTimestampView(timeStampView)
+    private fun setColorToDivider(ogDataContent: OGDataContent) {
+        ogDataContent.ogDataLayout.get()?.findViewById<View>(R.id.ogDivider)?.let { divider ->
+            val color = if (this is UserPhraseViewHolder) {
+                style.incomingMessageBubbleColor
+            } else {
+                style.outgoingMessageBubbleColor
+            }
+            divider.setBackgroundColor(ContextCompat.getColor(itemView.context, color))
+        }
+    }
+
+    private fun setTimeStamp(ogDataContent: OGDataContent) {
+        ogDataContent.ogTimeStampView.get()?.let { timeStampView ->
+            timeStampView.visible()
+            if (this is ConsultPhraseHolder) {
+                if (style.incomingImageTimeColor != 0) {
+                    timeStampView.setTextColor(getColorInt(style.incomingImageTimeColor))
+                }
+                if (style.incomingMessageTimeTextSize != 0) {
+                    timeStampView.textSize = itemView.context.resources.getDimension(style.incomingMessageTimeTextSize)
+                }
+                if (style.incomingImageTimeBackgroundColor != 0 && timeStampView.background != null) {
+                    timeStampView.background.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
+                        getColorInt(style.incomingImageTimeBackgroundColor),
+                        BlendModeCompat.SRC_ATOP
+                    )
+                }
+            } else {
+                if (style.outgoingImageTimeColor != 0) {
+                    timeStampView.setTextColor(getColorInt(style.outgoingImageTimeColor))
+                }
+                if (style.outgoingMessageTimeTextSize != 0) {
+                    timeStampView.textSize = itemView.context.resources.getDimension(style.outgoingMessageTimeTextSize)
+                }
+                if (style.outgoingImageTimeBackgroundColor != 0) {
+                    timeStampView.background.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
+                        getColorInt(style.outgoingImageTimeBackgroundColor),
+                        BlendModeCompat.SRC_ATOP
+                    )
+                }
+            }
         }
     }
 
@@ -368,6 +409,7 @@ abstract class BaseHolder internal constructor(
             "${Uri.parse(it).scheme}://${Uri.parse(it).host}"
         }
         ogUrl.setText(url, TextView.BufferType.NORMAL)
+        ColorsHelper.setTextColor(ogUrl, style.openGraphLinkTextColor)
     }
 
     private fun setOgDataImage(ogData: OGData, ogImage: ImageView) {
@@ -378,6 +420,7 @@ abstract class BaseHolder internal constructor(
                     ogData.imageUrl,
                     errorDrawableResId = style.imagePlaceholder,
                     isExternalImage = true,
+                    scales = listOf(ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.FIT_XY),
                     callback = object : ImageLoader.ImageLoaderCallback {
                         override fun onImageLoaded() {
                             super.onImageLoaded()
@@ -397,13 +440,15 @@ abstract class BaseHolder internal constructor(
 
     private fun showOGView() {
         ogDataContent?.ogDataLayout?.get()?.visible()
-        ogDataContent?.timeStampView?.get()?.gone()
+        ogDataContent?.ogTimeStampView?.get()?.visible()
+        ogDataContent?.mainTimeStampView?.get()?.invisible()
     }
 
     private fun hideOGView() {
         ogDataContent?.ogDataLayout?.get()?.gone()
-        ogDataContent?.timeStampView?.get()?.visible()
+        ogDataContent?.ogTimeStampView?.get()?.gone()
         ogDataContent?.ogDataLayout?.get()?.tag = ""
+        ogDataContent?.mainTimeStampView?.get()?.visible()
     }
 
     private fun setTextWithHighlighting(

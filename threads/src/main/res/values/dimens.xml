@@ -8,6 +8,7 @@
     <dimen name="ecc_margin_quarter">4dp</dimen>
     <dimen name="ecc_margin_eight">2dp</dimen>
     <dimen name="ecc_margin_zero">0dp</dimen>
+    <dimen name="ecc_margin_three_fourth_minus">-12dp</dimen>
 
     <dimen name="ecc_padding_material">16dp</dimen>
     <dimen name="ecc_padding_half">8dp</dimen>

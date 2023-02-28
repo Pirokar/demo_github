@@ -18,7 +18,6 @@ import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.core.view.isVisible
 import im.threads.R
-import im.threads.business.core.ContextHolder
 import im.threads.business.formatters.RussianFormatSymbols
 import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.imageLoading.ImageModifications
@@ -35,7 +34,6 @@ import im.threads.business.utils.FileUtils.isImage
 import im.threads.business.utils.UrlUtils
 import im.threads.business.utils.toFileSize
 import im.threads.ui.config.Config
-import im.threads.ui.holders.helper.BordersCreator
 import im.threads.ui.utils.gone
 import im.threads.ui.utils.invisible
 import im.threads.ui.utils.visible
@@ -108,7 +106,7 @@ class ConsultPhraseHolder(
 
     private val phraseFrame: View = itemView.findViewById(R.id.phraseFrame)
     private val ogDataLayout: ViewGroup = itemView.findViewById(R.id.ogDataLayout)
-    private val ogTimestamp = itemView.findViewById<TextView>(R.id.ogTimeStamp).apply {
+    private val ogTimestamp = itemView.findViewById<BubbleTimeTextView>(R.id.ogTimeStamp).apply {
         setTextColor(getColorInt(style.incomingMessageTimeColor))
     }
     private val bubbleLayout = itemView.findViewById<ViewGroup>(R.id.bubble).apply {
@@ -124,8 +122,6 @@ class ConsultPhraseHolder(
                 BlendModeCompat.SRC_ATOP
             )
     }
-
-    private val bordersCreator = BordersCreator(itemView.context, true)
 
     init {
         itemView.findViewById<View>(R.id.delimiter)
@@ -156,6 +152,7 @@ class ConsultPhraseHolder(
         subscribeForOpenGraphData(
             OGDataContent(
                 WeakReference(ogDataLayout),
+                WeakReference(ogTimestamp),
                 WeakReference(timeStampTextView),
                 consultPhrase.phraseText
             )
@@ -287,14 +284,6 @@ class ConsultPhraseHolder(
         image.visible()
         imageRoot.visible()
         image.setOnClickListener(imageClickListener)
-        val chatStyle = Config.getInstance().getChatStyle()
-        val resources = ContextHolder.context.resources
-        val paddingLeft = resources.getDimensionPixelSize(chatStyle.bubbleIncomingPaddingLeft)
-        val paddingTop = resources.getDimensionPixelSize(chatStyle.bubbleIncomingPaddingTop)
-        val paddingRight = resources.getDimensionPixelSize(chatStyle.bubbleIncomingPaddingRight)
-        val paddingBottom = resources.getDimensionPixelSize(chatStyle.bubbleIncomingPaddingBottom)
-        ogDataLayout.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom)
-        ogDataLayout.layoutParams.width = resources.getDimensionPixelSize(R.dimen.ecc_message_image_size)
         startLoaderAnimation()
         val loadConfig = ImageLoader
             .get()

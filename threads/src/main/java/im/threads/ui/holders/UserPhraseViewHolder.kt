@@ -114,7 +114,7 @@ class UserPhraseViewHolder(
             )
     }
 
-    private val ogTimestamp: TextView = itemView.findViewById<TextView>(R.id.ogTimestamp).apply {
+    private val ogTimestamp: BubbleTimeTextView = itemView.findViewById<BubbleTimeTextView>(R.id.ogTimestamp).apply {
         setTextColor(getColorInt(style.outgoingMessageTimeColor))
     }
 
@@ -184,6 +184,7 @@ class UserPhraseViewHolder(
         subscribeForOpenGraphData(
             OGDataContent(
                 WeakReference(ogDataLayout),
+                WeakReference(ogTimestamp),
                 WeakReference(timeStampTextView),
                 userPhrase.phraseText
             )

@@ -212,7 +212,7 @@
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="-5dp"
-                android:layout_marginRight="-12dp"
+                android:layout_marginEnd="-12dp"
                 android:paddingStart="0dp"
                 android:paddingEnd="0dp">
 
@@ -276,9 +276,7 @@
                 android:layout_gravity="bottom|end"
                 android:drawablePadding="@dimen/ecc_margin_half"
                 android:paddingStart="@dimen/ecc_margin_half"
-                android:layout_marginTop="@dimen/ecc_margin_half"
                 android:paddingEnd="0dp"
-                android:layout_marginBottom="@dimen/ecc_margin_half"
                 android:textColor="@color/ecc_user_message_timestamp"
                 tools:text="10:19" />
 
