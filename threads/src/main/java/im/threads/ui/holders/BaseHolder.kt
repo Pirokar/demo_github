@@ -390,6 +390,7 @@ abstract class BaseHolder internal constructor(
             ogTitle.visibility = View.VISIBLE
             ogTitle.text = ogData.title
             ogTitle.setTypeface(ogTitle.typeface, Typeface.BOLD)
+            ogTitle.setTextColor(textColor)
         } else {
             ogTitle.visibility = View.GONE
         }
@@ -399,6 +400,7 @@ abstract class BaseHolder internal constructor(
         if (ogData.description.isNotEmpty()) {
             ogDescription.visibility = View.VISIBLE
             ogDescription.text = ogData.description
+            ogDescription.setTextColor(textColor)
         } else {
             ogDescription.visibility = View.GONE
         }
@@ -409,7 +411,7 @@ abstract class BaseHolder internal constructor(
             "${Uri.parse(it).scheme}://${Uri.parse(it).host}"
         }
         ogUrl.setText(url, TextView.BufferType.NORMAL)
-        ColorsHelper.setTextColor(ogUrl, style.openGraphLinkTextColor)
+        ogUrl.setTextColor(textColor)
     }
 
     private fun setOgDataImage(ogData: OGData, ogImage: ImageView) {
@@ -450,6 +452,16 @@ abstract class BaseHolder internal constructor(
         ogDataContent?.ogDataLayout?.get()?.tag = ""
         ogDataContent?.mainTimeStampView?.get()?.visible()
     }
+
+    private val textColor: Int
+        get() {
+            val color = if (this is UserPhraseViewHolder) {
+                style.outgoingMessageTextColor
+            } else {
+                style.incomingMessageTextColor
+            }
+            return ContextCompat.getColor(itemView.context, color)
+        }
 
     private fun setTextWithHighlighting(
         textView: TextView,

@@ -280,8 +280,6 @@ public final class ChatStyle implements Serializable {
     public int inProgressIconResId = R.drawable.ecc_ic_clear_36dp;
     @DrawableRes
     public int completedIconResId = R.drawable.ecc_ic_file_outline_24dp;
-    @ColorRes
-    public int openGraphLinkTextColor = R.color.ecc_teal_004d40;
 
     //TODO #THREADS-3523
     //chat message statuses
@@ -912,16 +910,6 @@ public final class ChatStyle implements Serializable {
 
     public ChatStyle setEmptyMediaAndFilesDescriptionTextResId(@StringRes final int descriptionTextResId) {
         this.emptyMediaAndFilesDescriptionText = descriptionTextResId;
-        return this;
-    }
-
-    /**
-     * Устанавливает цвет ссылки для OpenGraph
-     * @param openGraphLinkTextColor ссылка на ресурс цвета
-     * @return возвращает инстанс ChatStyle
-     */
-    public ChatStyle setOpenGraphLinkTextColor(@ColorRes final int openGraphLinkTextColor) {
-        this.openGraphLinkTextColor = openGraphLinkTextColor;
         return this;
     }
 
