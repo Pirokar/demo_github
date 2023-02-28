@@ -1,13 +1,22 @@
 package im.threads.ui.adapters.utils
 
 import im.threads.business.chat_updates.ChatUpdateProcessor
+import im.threads.business.models.MessageStatus
+import im.threads.business.models.UserPhrase
 import im.threads.business.secureDatabase.DatabaseHolder
 import im.threads.business.serviceLocator.core.inject
+import im.threads.business.transport.threadsGate.responses.Status
 import im.threads.ui.adapters.ChatAdapter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.lang.ref.WeakReference
+import java.util.Date
 
 /**
  * Проверяет через определенный интервал статусы отправленных сообщений.
@@ -27,7 +36,7 @@ class SendingStatusObserver(private val chatAdapterRef: WeakReference<ChatAdapte
      * Не будет работать, если был вызван "finishObserving" ранее.
      */
     fun startObserving() {
-        /*if (!isObserving) {
+        if (!isObserving) {
             isObserving = true
             coroutineScope.launch {
                 while (true) {
@@ -65,7 +74,7 @@ class SendingStatusObserver(private val chatAdapterRef: WeakReference<ChatAdapte
                     }
                 }
             }
-        }*/
+        }
     }
 
     /**
