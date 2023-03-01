@@ -30,6 +30,18 @@ public final class Survey implements ChatItem, Hidable {
         this.displayMessage = displayMessage;
     }
 
+    public Survey(String uuid, long sendingId, List<QuestionDTO> questions, Long hideAfter, long phraseTimeStamp,
+                  boolean displayMessage, MessageStatus sentState, boolean read) {
+        this.uuid = uuid;
+        this.sendingId = sendingId;
+        this.questions = questions;
+        this.hideAfter = hideAfter;
+        this.phraseTimeStamp = phraseTimeStamp;
+        this.displayMessage = displayMessage;
+        this.sentState = sentState;
+        this.read = read;
+    }
+
     public Survey(String uuid, long surveySendingId, long phraseTimeStamp, MessageStatus messageState, boolean read, boolean displayMessage) {
         this(uuid, surveySendingId, null, phraseTimeStamp, messageState, read, displayMessage);
     }
@@ -103,7 +115,8 @@ public final class Survey implements ChatItem, Hidable {
     @Override
     public boolean isTheSameItem(ChatItem otherItem) {
         if (otherItem instanceof Survey) {
-            return ObjectsCompat.equals(this.sendingId, ((Survey) otherItem).sendingId);
+            Survey other = ((Survey) otherItem);
+            return ObjectsCompat.equals(this.sendingId, other.sendingId) && this.questions.equals(other.questions);
         }
         return false;
     }
@@ -132,5 +145,9 @@ public final class Survey implements ChatItem, Hidable {
     @Override
     public int hashCode() {
         return ObjectsCompat.hash(sendingId, questions, hideAfter, phraseTimeStamp, sentState);
+    }
+
+    public Survey copy() {
+        return new Survey(uuid, sendingId, questions, hideAfter, phraseTimeStamp, displayMessage, sentState, read);
     }
 }

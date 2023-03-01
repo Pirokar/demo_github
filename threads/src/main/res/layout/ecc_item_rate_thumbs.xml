@@ -7,13 +7,6 @@
     android:gravity="center_horizontal"
     android:orientation="vertical">
 
-    <View
-        android:id="@+id/top_separator"
-        android:layout_width="wrap_content"
-        android:layout_height="1dp"
-        android:layout_margin="@dimen/ecc_activity_horizontal_margin"
-        android:background="@color/ecc_icon_and_separators_color"/>
-
     <im.threads.ui.widget.textView.BubbleMessageTextView
         android:id="@+id/ask_for_rate"
         android:layout_width="250dp"
@@ -51,11 +44,4 @@
         android:text="@string/ecc_thanks_for_rate"
         android:textColor="@color/ecc_chat_system_message"
         android:visibility="gone"/>
-
-    <View
-        android:id="@+id/bottom_separator"
-        android:layout_width="wrap_content"
-        android:layout_height="1dp"
-        android:layout_margin="@dimen/ecc_activity_horizontal_margin"
-        android:background="@color/ecc_icon_and_separators_color"/>
 </LinearLayout>

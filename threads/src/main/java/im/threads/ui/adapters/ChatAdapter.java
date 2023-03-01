@@ -96,6 +96,7 @@ import im.threads.ui.holders.UnreadMessageViewHolder;
 import im.threads.ui.holders.UserFileViewHolder;
 import im.threads.ui.holders.UserPhraseViewHolder;
 import im.threads.ui.holders.VoiceMessageBaseHolder;
+import im.threads.ui.holders.helper.SurveySplitterKt;
 import im.threads.ui.preferences.PreferencesJavaUI;
 import im.threads.ui.utils.ThreadRunnerKt;
 import im.threads.ui.views.VoiceTimeLabelFormatterKt;
@@ -616,9 +617,10 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         return count;
     }
 
-    public void addItems(@NonNull final List<ChatItem> items) {
+    public void addItems(@NonNull List<ChatItem> items) {
         boolean withTyping = false;
         boolean withRequestResolveThread = false;
+        items = SurveySplitterKt.splitSurveyQuestions(items);
         for (final ChatItem ci : items) {
             if (ci instanceof ConsultTyping) {
                 withTyping = true;
@@ -1158,8 +1160,9 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         boolean isListSizeMoreThat1Element = list != null && list.size() > 1;
         boolean isPreviousItemSurvey = isListSizeMoreThat1Element &&
                 list.get(list.size() - 2) instanceof Survey;
+        boolean isLatestItemSurvey = isListSizeMoreThat1Element && list.get(list.size() - 1) instanceof Survey;
 
-        if (isPreviousItemSurvey) {
+        if (isPreviousItemSurvey && !isLatestItemSurvey) {
             list.remove(list.size() - 2);
         }
     }
