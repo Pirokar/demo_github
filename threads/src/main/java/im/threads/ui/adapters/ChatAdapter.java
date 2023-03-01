@@ -1186,7 +1186,10 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         boolean isLatestItemSurvey = isListSizeMoreThat1Element && list.get(list.size() - 1) instanceof Survey;
 
         if (isPreviousItemSurvey && !isLatestItemSurvey) {
-            list.remove(list.size() - 2);
+            Survey item = (Survey)list.get(list.size() - 2);
+            if (!item.isCompleted()) {
+                list.remove(list.size() - 2);
+            }
         }
     }
 
