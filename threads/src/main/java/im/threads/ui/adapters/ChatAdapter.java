@@ -714,19 +714,39 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
     }
 
-    public void changeStateOfSurvey(long sendingId, MessageStatus sentState) {
+    public void changeStateOfSurvey(Survey updatedSurvey) {
         for (final ChatItem cm : getList()) {
             if (cm instanceof Survey) {
                 final Survey survey = (Survey) cm;
-                if (sendingId == survey.getSendingId()) {
-                    LoggerEdna.info("changeStateOfMessageById: changing read state");
-                    ((Survey) cm).setSentState(sentState);
-                    notifyItemChangedOnUi(survey);
+                if (updatedSurvey.getSendingId() == survey.getSendingId()) {
+                    boolean questionsAreEmpty = survey.getQuestions() == null || survey.getQuestions().size() == 0;
+                    boolean questionsOfUpdatedAreEmpty = updatedSurvey.getQuestions() == null || updatedSurvey.getQuestions().size() == 0;
+
+                    if (questionsAreEmpty || questionsOfUpdatedAreEmpty) {
+                        changeSurveyState(cm, updatedSurvey.getSentState());
+                    } else {
+                        boolean breakUpperLoop = false;
+                        for (QuestionDTO updatableQuestion : updatedSurvey.getQuestions()) {
+                            if (breakUpperLoop) break;
+                            for (QuestionDTO questionToUpdate : survey.getQuestions()) {
+                                if (questionToUpdate.getId() == updatableQuestion.getId()) {
+                                    changeSurveyState(cm, updatedSurvey.getSentState());
+                                    breakUpperLoop = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
     }
 
+    private void changeSurveyState(ChatItem message, MessageStatus sentState) {
+        LoggerEdna.info("changeStateOfMessageById: changing read state");
+        ((Survey) message).setSentState(sentState);
+        notifyItemChangedOnUi(message);
+    }
     public void changeStateOfMessageByMessageId(
             String correlationId,
             final String backendMessageId,

@@ -1857,8 +1857,8 @@ public final class ChatFragment extends BaseFragment implements
         chatAdapter.changeStateOfMessageByMessageId(correlationId, backendMessageId, state);
     }
 
-    public void setSurveySentStatus(long uuid, MessageStatus sentState) {
-        chatAdapter.changeStateOfSurvey(uuid, sentState);
+    public void setSurveySentStatus(Survey survey) {
+        chatAdapter.changeStateOfSurvey(survey);
     }
 
     private void hideCopyControls() {

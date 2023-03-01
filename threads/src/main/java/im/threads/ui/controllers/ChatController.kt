@@ -1312,7 +1312,7 @@ class ChatController private constructor() {
     private fun setSurveyStateSent(survey: Survey) {
         survey.sentState = MessageStatus.SENT
         survey.isDisplayMessage = true
-        fragment?.setSurveySentStatus(survey.sendingId, survey.sentState)
+        fragment?.setSurveySentStatus(survey)
         database.putChatItem(survey)
     }
 
