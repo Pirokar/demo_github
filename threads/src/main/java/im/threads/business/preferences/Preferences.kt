@@ -2,11 +2,11 @@ package im.threads.business.preferences
 
 import android.content.Context
 import android.content.SharedPreferences
-import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKey
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import im.threads.business.logger.LoggerEdna
+import im.threads.business.preferences.encrypted.EncryptedSharedPreferences
+import im.threads.business.preferences.encrypted.MasterKey
 import java.io.IOException
 import java.lang.reflect.Type
 import java.security.GeneralSecurityException

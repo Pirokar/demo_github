@@ -158,7 +158,6 @@ dependencies {
     implementation "com.writingminds:FFmpegAndroid:$ffmpeg"
 
     implementation "com.google.firebase:firebase-messaging:$fcmVersion"
-    implementation "androidx.security:security-crypto:$crypto"
 
     implementation "com.google.android.flexbox:flexbox:$flexboxVersion"
 
@@ -166,6 +165,9 @@ dependencies {
 
     implementation "net.zetetic:sqlcipher-android:$sqlcipher_version"
     implementation "androidx.sqlite:sqlite:$sqlite_version"
+
+    //For encrypted preferences
+    implementation "com.google.crypto.tink:tink-android:$crypto_tink"
 
     //Markwon
     implementation "io.noties.markwon:core:$markwonVersion"
