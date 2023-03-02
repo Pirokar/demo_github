@@ -12,7 +12,6 @@ import im.threads.business.models.ConsultInfo
 import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.FileDescription
 import im.threads.business.models.MessageStatus
-import im.threads.business.models.QuestionDTO
 import im.threads.business.models.RequestResolveThread
 import im.threads.business.models.SimpleSystemMessage
 import im.threads.business.models.SpeechMessageUpdate
@@ -617,7 +616,7 @@ class MessagesTable(
             cursorGetBool(c, COLUMN_IS_READ),
             cursorGetBool(c, COLUMN_DISPLAY_MESSAGE)
         )
-        survey.questions = listOf(questionsTable.getQuestion(sqlHelper, surveySendingId))
+        survey.questions = questionsTable.getQuestions(sqlHelper, surveySendingId)
         return survey
     }
 
@@ -632,7 +631,9 @@ class MessagesTable(
             )
         return if (!cursorGetBool(c, COLUMN_DISPLAY_MESSAGE)) {
             null
-        } else requestResolveThread
+        } else {
+            requestResolveThread
+        }
     }
 
     private fun getConsultPhraseCV(phrase: ConsultPhrase): ContentValues {
@@ -790,9 +791,7 @@ class MessagesTable(
                     .insert(TABLE_MESSAGES, null, cv)
             }
         }
-        for (question: QuestionDTO in survey.questions) {
-            questionsTable.putQuestion(sqlHelper, question, survey.sendingId)
-        }
+        questionsTable.putQuestions(sqlHelper, survey.questions, survey.sendingId)
     }
 
     private fun setNotSentSurveyDisplayMessageToFalse(
@@ -838,7 +837,9 @@ class MessagesTable(
                 BaseConfig.instance.context,
                 outputFile
             )
-        } else null
+        } else {
+            null
+        }
     }
 
     private fun setProgressAndFileUri(fileDescription: FileDescription, progress: Int, uri: Uri) {
@@ -849,7 +850,9 @@ class MessagesTable(
     private fun stringToList(text: String?): List<String> {
         return if (text == null) {
             emptyList()
-        } else listOf(*text.split(";".toRegex()).toTypedArray())
+        } else {
+            listOf(*text.split(";".toRegex()).toTypedArray())
+        }
     }
 
     private fun listToString(list: List<String>?): String? {

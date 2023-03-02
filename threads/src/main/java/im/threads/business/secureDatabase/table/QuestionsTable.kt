@@ -29,67 +29,76 @@ class QuestionsTable : Table() {
         sqlHelper.writableDatabase.execSQL("delete from $TABLE_QUESTIONS")
     }
 
-    fun getQuestion(sqlHelper: SQLiteOpenHelper, surveySendingId: Long): QuestionDTO? {
-        val query =
-            "select * from $TABLE_QUESTIONS where $COLUMN_QUESTION_SURVEY_SENDING_ID_EXT = ?"
+    fun getQuestions(sqlHelper: SQLiteOpenHelper, surveySendingId: Long): List<QuestionDTO> {
+        val query = "select * from $TABLE_QUESTIONS where $COLUMN_QUESTION_SURVEY_SENDING_ID_EXT = $surveySendingId"
         sqlHelper.readableDatabase
-            .rawQuery(query, arrayOf(surveySendingId.toString())).use {
+            .rawQuery(query, arrayOf()).use {
+                val result = mutableListOf<QuestionDTO>()
                 if (!it.moveToFirst()) {
-                    return null
+                    return result
                 }
-                val question = QuestionDTO()
-                question.phraseTimeStamp = cursorGetLong(it, COLUMN_QUESTION_TIMESTAMP)
-                question.id = cursorGetLong(it, COLUMN_QUESTION_ID)
-                question.sendingId = cursorGetLong(it, COLUMN_QUESTION_SENDING_ID)
-                question.isSimple = cursorGetBool(it, COLUMN_QUESTION_SIMPLE)
-                question.text = cursorGetString(it, COLUMN_QUESTION_TEXT)
-                question.scale = cursorGetInt(it, COLUMN_QUESTION_SCALE)
-                // TODO THREADS-3625. This is a workaround on rate = 0 is a negative answer in simple (binary) survey
-                if (isCursorNull(it, COLUMN_QUESTION_RATE)) {
-                    // Null is unanswered survey
-                    question.setRate(null)
-                } else {
-                    question.rate = cursorGetInt(it, COLUMN_QUESTION_RATE)
-                }
-                return question
+                do {
+                    val question = QuestionDTO()
+                    question.phraseTimeStamp = cursorGetLong(it, COLUMN_QUESTION_TIMESTAMP)
+                    question.id = cursorGetLong(it, COLUMN_QUESTION_ID)
+                    question.sendingId = cursorGetLong(it, COLUMN_QUESTION_SENDING_ID)
+                    question.isSimple = cursorGetBool(it, COLUMN_QUESTION_SIMPLE)
+                    question.text = cursorGetString(it, COLUMN_QUESTION_TEXT)
+                    question.scale = cursorGetInt(it, COLUMN_QUESTION_SCALE)
+                    // TODO THREADS-3625. This is a workaround on rate = 0 is a negative answer in simple (binary) survey
+                    if (isCursorNull(it, COLUMN_QUESTION_RATE)) {
+                        // Null is unanswered survey
+                        question.setRate(null)
+                    } else {
+                        question.rate = cursorGetInt(it, COLUMN_QUESTION_RATE)
+                    }
+                    result.add(question)
+                } while (it.moveToNext())
+
+                return result
             }
     }
 
-    fun putQuestion(sqlHelper: SQLiteOpenHelper, question: QuestionDTO, surveySendingId: Long) {
-        val questionSql = (
-            "select " + COLUMN_QUESTION_SENDING_ID +
-                " from " + TABLE_QUESTIONS +
-                " where " + COLUMN_QUESTION_SENDING_ID + " = ? "
-            )
-        val questionSelectionArgs = arrayOf(question.sendingId.toString())
-        val questionCv = ContentValues()
-        questionCv.put(COLUMN_QUESTION_SURVEY_SENDING_ID_EXT, surveySendingId)
-        questionCv.put(COLUMN_QUESTION_ID, question.id)
-        questionCv.put(COLUMN_QUESTION_SENDING_ID, question.sendingId)
-        questionCv.put(COLUMN_QUESTION_SCALE, question.scale)
-        // TODO THREADS-3625. This is a workaround on rate = 0 is a negative answer in simple (binary) survey
-        // Null is unanswered survey
-        if (question.hasRate()) {
-            questionCv.put(COLUMN_QUESTION_RATE, question.rate)
-        }
-        questionCv.put(COLUMN_QUESTION_TEXT, question.text)
-        questionCv.put(COLUMN_QUESTION_SIMPLE, question.isSimple)
-        questionCv.put(COLUMN_QUESTION_TIMESTAMP, question.phraseTimeStamp)
-        sqlHelper.readableDatabase.rawQuery(questionSql, questionSelectionArgs)
-            .use { questionCursor ->
-                if (questionCursor.count > 0) {
-                    sqlHelper.writableDatabase
-                        .update(
-                            TABLE_QUESTIONS,
-                            questionCv,
-                            "$COLUMN_QUESTION_SENDING_ID = ? ",
-                            arrayOf(question.sendingId.toString())
-                        )
+    fun putQuestions(sqlHelper: SQLiteOpenHelper, questions: List<QuestionDTO>, surveySendingId: Long) {
+        if (questions.isNotEmpty()) {
+            val availableQuestions = getQuestions(sqlHelper, surveySendingId).toMutableList()
+            questions.forEach { question ->
+                val indexOfItem = availableQuestions.indexOfFirst { it.id == question.id && it.text == question.text }
+                if (indexOfItem < 0) {
+                    availableQuestions.add(question)
                 } else {
-                    sqlHelper.writableDatabase
-                        .insert(TABLE_QUESTIONS, null, questionCv)
+                    availableQuestions[indexOfItem] = question
                 }
             }
+            sqlHelper.writableDatabase.beginTransaction()
+
+            sqlHelper.writableDatabase.delete(
+                TABLE_QUESTIONS,
+                "$COLUMN_QUESTION_SENDING_ID = $surveySendingId",
+                null
+            )
+
+            availableQuestions.forEach {
+                val questionCv = ContentValues()
+                questionCv.put(COLUMN_QUESTION_SURVEY_SENDING_ID_EXT, surveySendingId)
+                questionCv.put(COLUMN_QUESTION_ID, it.id)
+                questionCv.put(COLUMN_QUESTION_SENDING_ID, it.sendingId)
+                questionCv.put(COLUMN_QUESTION_SCALE, it.scale)
+
+                if (it.hasRate()) {
+                    questionCv.put(COLUMN_QUESTION_RATE, it.rate)
+                }
+
+                questionCv.put(COLUMN_QUESTION_TEXT, it.text)
+                questionCv.put(COLUMN_QUESTION_SIMPLE, it.isSimple)
+                questionCv.put(COLUMN_QUESTION_TIMESTAMP, it.phraseTimeStamp)
+
+                sqlHelper.writableDatabase.insert(TABLE_QUESTIONS, null, questionCv)
+            }
+
+            sqlHelper.writableDatabase.setTransactionSuccessful()
+            sqlHelper.writableDatabase.endTransaction()
+        }
     }
 }
 

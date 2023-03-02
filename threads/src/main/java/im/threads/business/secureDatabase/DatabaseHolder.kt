@@ -10,6 +10,7 @@ import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.FileDescription
 import im.threads.business.models.MessageStatus
 import im.threads.business.models.SpeechMessageUpdate
+import im.threads.business.models.Survey
 import im.threads.business.models.UserPhrase
 import im.threads.business.utils.Balloon
 import io.reactivex.Completable
@@ -27,7 +28,24 @@ class DatabaseHolder(private val context: Context) {
 
     fun cleanDatabase() = tryExecute { myOpenHelper.cleanDatabase() }
 
-    fun getChatItems(offset: Int, limit: Int): List<ChatItem> = tryExecute { myOpenHelper.getChatItems(offset, limit) } ?: arrayListOf()
+    fun getChatItems(offset: Int, limit: Int): List<ChatItem> {
+        return tryExecute {
+            val items = myOpenHelper.getChatItems(offset, limit).toMutableList()
+            val surveysWithQuestions = mutableListOf<Survey>()
+            items.filterIsInstance<Survey>().forEach { survey ->
+                (myOpenHelper.getChatItemByCorrelationId(survey.uuid) as? Survey)?.let { surveyWithQuestions ->
+                    surveysWithQuestions.add(surveyWithQuestions)
+                }
+            }
+            surveysWithQuestions.forEach { surveyWithQuestions ->
+                val indexOfSurvey = items.indexOfFirst { it is Survey && it.sendingId == surveyWithQuestions.sendingId }
+                if (indexOfSurvey >= 0) {
+                    items[indexOfSurvey] = surveyWithQuestions
+                }
+            }
+            items
+        } ?: arrayListOf()
+    }
 
     fun getSendingChatItems(): List<UserPhrase> = tryExecute { myOpenHelper.getSendingChatItems() } ?: arrayListOf()
 

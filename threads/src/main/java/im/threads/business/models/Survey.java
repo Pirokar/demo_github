@@ -116,7 +116,7 @@ public final class Survey implements ChatItem, Hidable {
     public boolean isTheSameItem(ChatItem otherItem) {
         if (otherItem instanceof Survey) {
             Survey other = ((Survey) otherItem);
-            return ObjectsCompat.equals(this.sendingId, other.sendingId) && this.questions.equals(other.questions);
+            return ObjectsCompat.equals(this.sendingId, other.sendingId) && isQuestionsEquals(this.questions, other.questions);
         }
         return false;
     }
@@ -149,5 +149,27 @@ public final class Survey implements ChatItem, Hidable {
 
     public Survey copy() {
         return new Survey(uuid, sendingId, questions, hideAfter, phraseTimeStamp, displayMessage, sentState, read);
+    }
+
+    private boolean isQuestionsEquals(List<QuestionDTO> collection1, List<QuestionDTO> collection2) {
+        boolean result = false;
+
+        if (collection1.size() == collection2.size()) {
+            for (QuestionDTO coll1Element : collection1) {
+                result = false;
+                for (QuestionDTO coll2Element : collection2) {
+                    boolean ratesEquals = coll2Element.getRate() == coll1Element.getRate();
+                    if (ratesEquals && coll2Element.getText().equals(coll1Element.getText())) {
+                        result = true;
+                        break;
+                    }
+                }
+                if (!result) {
+                    break;
+                }
+            }
+        }
+
+        return result;
     }
 }
