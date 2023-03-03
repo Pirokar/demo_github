@@ -10,7 +10,6 @@ android {
         applicationId "io.edna.threads.demo"
         minSdk rootProject.minSdkVersion
         targetSdk rootProject.targetSdkVersion
-//        versionName "${version}"
         versionName "1.0.1"
         versionCode 1
 
@@ -70,12 +69,12 @@ dependencies {
     implementation "androidx.appcompat:appcompat:$rootProject.appCompatVersion"
     implementation "com.google.android.material:material:$rootProject.materialComponentsVersion"
     implementation "androidx.constraintlayout:constraintlayout:$rootProject.constraintlayoutVersion"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$rootProject.lifecycleViewmodelVersion"
 
     implementation "androidx.navigation:navigation-fragment-ktx:$rootProject.navigationVersion"
     implementation "androidx.navigation:navigation-ui-ktx:$rootProject.navigationVersion"
 
-
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$rootProject.viewmodelVersion"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$rootProject.viewmodelVersion"
 
     testImplementation "junit:junit:$rootProject.testJunitVersion"
     androidTestImplementation "androidx.test.ext:junit:$rootProject.testJunitAndroidVersion"
