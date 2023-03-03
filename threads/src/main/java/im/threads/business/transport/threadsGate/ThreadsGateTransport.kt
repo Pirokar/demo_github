@@ -124,13 +124,14 @@ class ThreadsGateTransport(
 
     override fun init() {}
     override fun sendRatingDone(survey: Survey) {
-        val content = outgoingMessageCreator.createRatingDoneMessage(survey)
-        surveysInProcess[survey.sendingId] = survey
-        sendMessage(
-            content,
-            true,
-            ChatItemType.SURVEY_QUESTION_ANSWER.name + CORRELATION_ID_DIVIDER + survey.sendingId
-        )
+        if (survey.questions.isNotEmpty()) {
+            val content = outgoingMessageCreator.createRatingDoneMessage(survey)
+            val firstPartOfCorrelationId = "${ChatItemType.SURVEY_QUESTION_ANSWER.name}$CORRELATION_ID_DIVIDER"
+            val secondPartOfCorrelationId = "${survey.sendingId}$CORRELATION_ID_DIVIDER${survey.questions.first().correlationId}"
+            val correlationId = "$firstPartOfCorrelationId$secondPartOfCorrelationId"
+            surveysInProcess[survey.sendingId] = survey
+            sendMessage(content, true, correlationId)
+        }
     }
 
     override fun sendResolveThread(approveResolve: Boolean) {
@@ -373,7 +374,9 @@ class ThreadsGateTransport(
                 BaseConfig.instance.context.contentResolver,
                 Settings.Global.DEVICE_NAME
             )
-        } else null
+        } else {
+            null
+        }
 
         return if (deviceName.isNullOrBlank() && Build.VERSION.SDK_INT <= Build.VERSION_CODES.S) {
             val blName = try {
@@ -464,10 +467,21 @@ class ThreadsGateTransport(
                             }
                             ChatItemType.SURVEY_QUESTION_ANSWER -> {
                                 val sendingId = tokens[1].toLong()
+                                val questionSendingId = tokens[2]
                                 if (surveysInProcess.containsKey(sendingId)) {
                                     val survey = surveysInProcess[sendingId]
-                                    chatUpdateProcessor.postSurveySendSuccess(survey)
-                                    surveysInProcess.remove(sendingId)
+                                    val copyToSend = survey?.copy()?.apply {
+                                        questions?.removeAll { it.correlationId != questionSendingId }
+                                    }
+                                    chatUpdateProcessor.postSurveySendSuccess(copyToSend)
+                                    survey?.questions?.toMutableList()?.let { questions ->
+                                        questions.removeAll { it.correlationId == questionSendingId }
+                                        if (questions.isEmpty()) {
+                                            surveysInProcess.remove(sendingId)
+                                        } else {
+                                            surveysInProcess[sendingId]?.questions = questions
+                                        }
+                                    } ?: surveysInProcess.remove(sendingId)
                                 }
                             }
                             ChatItemType.REOPEN_THREAD, ChatItemType.CLOSE_THREAD ->

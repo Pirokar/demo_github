@@ -715,6 +715,8 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     public void changeStateOfSurvey(Survey updatedSurvey) {
+        LoggerEdna.info("Updating survey state to \"" + updatedSurvey.getSentState().toString() + "\"," +
+                " sendingId: \"" + updatedSurvey.getSendingId() + "\"");
         for (final ChatItem cm : getList()) {
             if (cm instanceof Survey) {
                 final Survey survey = (Survey) cm;
@@ -729,7 +731,8 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                         for (QuestionDTO updatableQuestion : updatedSurvey.getQuestions()) {
                             if (breakUpperLoop) break;
                             for (QuestionDTO questionToUpdate : survey.getQuestions()) {
-                                if (questionToUpdate.getId() == updatableQuestion.getId()) {
+                                if (questionToUpdate.getId() == updatableQuestion.getId() &&
+                                        questionToUpdate.getCorrelationId().equals(updatableQuestion.getCorrelationId())) {
                                     changeSurveyState(cm, updatedSurvey.getSentState());
                                     breakUpperLoop = true;
                                     break;

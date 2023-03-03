@@ -57,8 +57,7 @@ public class QuestionsTable extends Table {
             question.setScale(cGetInt(c, COLUMN_QUESTION_SCALE));
             //TODO THREADS-3625. This is a workaround on rate = 0 is a negative answer in simple (binary) survey
             if (cIsNull(c, COLUMN_QUESTION_RATE)) {
-                //Null is unanswered survey
-                question.setRate(null);
+                question.setRate(0);
             } else {
                 question.setRate(cGetInt(c, COLUMN_QUESTION_RATE));
             }

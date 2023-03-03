@@ -48,7 +48,7 @@ class QuestionsTable : Table() {
                     // TODO THREADS-3625. This is a workaround on rate = 0 is a negative answer in simple (binary) survey
                     if (isCursorNull(it, COLUMN_QUESTION_RATE)) {
                         // Null is unanswered survey
-                        question.setRate(null)
+                        question.rate = 0
                     } else {
                         question.rate = cursorGetInt(it, COLUMN_QUESTION_RATE)
                     }
