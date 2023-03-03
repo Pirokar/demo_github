@@ -122,7 +122,7 @@ public final class Survey implements ChatItem, Hidable {
     }
 
     public boolean isCompleted() {
-        return sentState == MessageStatus.SENT || sentState == MessageStatus.READ;
+        return (sentState == MessageStatus.SENT || sentState == MessageStatus.READ) && allQuestionsHasRate();
     }
 
     @Override
@@ -168,6 +168,17 @@ public final class Survey implements ChatItem, Hidable {
                     break;
                 }
             }
+        }
+
+        return result;
+    }
+
+    private boolean allQuestionsHasRate() {
+        boolean result = true;
+        int questionsSize = questions.size();
+
+        for (int i = 0; i < questionsSize && result; i++) {
+            result = questions.get(i).hasRate();
         }
 
         return result;
