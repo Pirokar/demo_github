@@ -4,8 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import io.edna.threads.demo.R
 import io.edna.threads.demo.databinding.FragmentServersBinding
 
 class ServersFragment : Fragment() {
@@ -17,10 +19,9 @@ class ServersFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        binding = FragmentServersBinding.inflate(inflater, container, false)
+    ): View {
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_servers, container, false)
         viewModel = ViewModelProvider(this)[ServerViewModel::class.java]
-
         return binding.root
     }
 }

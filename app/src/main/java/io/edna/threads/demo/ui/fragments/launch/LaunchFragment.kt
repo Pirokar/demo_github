@@ -4,10 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
-import im.threads.business.utils.Balloon
 import im.threads.ui.core.ThreadsLib
 import io.edna.threads.demo.BuildConfig
 import io.edna.threads.demo.R
@@ -24,8 +23,9 @@ class LaunchFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         super.onCreate(savedInstanceState)
-        binding = FragmentLaunchBinding.inflate(layoutInflater)
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_launch, container, false)
         viewModel = ViewModelProvider(this)[LaunchViewModel::class.java]
+        binding.viewModel = viewModel
         initView()
         initObservers()
         return binding.root
@@ -33,19 +33,6 @@ class LaunchFragment : Fragment() {
 
     private fun initView() = with(binding) {
         login.isEnabled = false
-        login.setOnClickListener {}
-        serverButton.setOnClickListener {
-            findNavController().navigate(R.id.action_LaunchFragment_to_ServersFragment)
-        }
-        userButton.setOnClickListener {
-            findNavController().navigate(R.id.action_LaunchFragment_to_ServersFragment)
-        }
-        demonstrations.setOnClickListener {
-            Balloon.show(requireContext(), getString(R.string.functional_not_support))
-        }
-        settings.setOnClickListener {
-            Balloon.show(requireContext(), getString(R.string.functional_not_support))
-        }
         about.text = generateAboutText()
     }
 
