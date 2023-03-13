@@ -2,12 +2,12 @@ package io.edna.threads.demo.ui.activity
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.databinding.DataBindingUtil
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import io.edna.threads.demo.R
 import io.edna.threads.demo.databinding.ActivityMainBinding
+import io.edna.threads.demo.ui.extenstions.inflateWithBinding
 
 class MainActivity : AppCompatActivity() {
 
@@ -16,7 +16,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        binding = inflateWithBinding(R.layout.activity_main)
         findNavController(R.id.nav_host_fragment_content_main)
     }
 

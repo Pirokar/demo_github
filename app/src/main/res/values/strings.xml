@@ -12,5 +12,6 @@
 
     <string name="launch_fragment_label">Welcome screen</string>
     <string name="servers_fragment_label">Select server screen</string>
+    <string name="demonstrations">Демонстрации</string>
 
 </resources>

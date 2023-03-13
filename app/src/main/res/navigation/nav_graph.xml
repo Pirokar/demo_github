@@ -14,13 +14,21 @@
         <action
             android:id="@+id/action_LaunchFragment_to_ServersFragment"
             app:destination="@id/ServersFragment" />
+
+        <action
+            android:id="@+id/action_LaunchFragment_to_DemonstrationsFragment"
+            app:destination="@id/DemoSamplesFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/ServersFragment"
         android:name="io.edna.threads.demo.ui.fragments.server.ServersFragment"
         android:label="@string/servers_fragment_label"
-        tools:layout="@layout/fragment_servers">
+        tools:layout="@layout/fragment_servers"/>
 
-    </fragment>
+    <fragment
+        android:id="@+id/DemoSamplesFragment"
+        android:name="io.edna.threads.demo.ui.fragments.demoSamples.DemoSamplesFragment"
+        android:label="@string/demonstrations"
+        tools:layout="@layout/fragment_samples"/>
 </navigation>

@@ -66,12 +66,16 @@ dependencies {
     releaseImplementation "im.threads:threads-release:$version"
 
     implementation "androidx.core:core-ktx:$rootProject.androidXCoreVersion"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:$rootProject.kotlinReflect"
     implementation "androidx.appcompat:appcompat:$rootProject.appCompatVersion"
     implementation "com.google.android.material:material:$rootProject.materialComponentsVersion"
     implementation "androidx.constraintlayout:constraintlayout:$rootProject.constraintlayoutVersion"
 
     implementation "androidx.navigation:navigation-fragment-ktx:$rootProject.navigationVersion"
     implementation "androidx.navigation:navigation-ui-ktx:$rootProject.navigationVersion"
+
+    // Koin main features for Android
+    implementation "io.insert-koin:koin-android:$koin_version"
 
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$rootProject.viewmodelVersion"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$rootProject.viewmodelVersion"

@@ -19,11 +19,7 @@ class LaunchViewModel : ViewModel() {
         when (view.id) {
             R.id.serverButton -> navigationController.navigate(R.id.action_LaunchFragment_to_ServersFragment)
             R.id.userButton -> navigationController.navigate(R.id.action_LaunchFragment_to_ServersFragment)
-            R.id.demonstrations -> Toast.makeText(
-                view.context,
-                view.context.getString(R.string.functional_not_support),
-                Toast.LENGTH_LONG
-            ).show()
+            R.id.demonstrations -> navigationController.navigate(R.id.action_LaunchFragment_to_DemonstrationsFragment)
             R.id.settings -> Toast.makeText(
                 view.context,
                 view.context.getString(R.string.functional_not_support),
