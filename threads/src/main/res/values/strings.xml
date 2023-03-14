@@ -15,6 +15,8 @@
     <string name="ecc_sent_at">sent at %1$s</string>
     <string name="ecc_image">Picture</string>
     <string name="ecc_send">Send</string>
+    <string name="ecc_repeat_sending">Retry</string>
+    <string name="ecc_delete">Delete</string>
     <string name="ecc_search_messages">Search message</string>
     <string name="ecc_search_files">Search files</string>
     <string name="ecc_talkback_search_icon">Search icon</string>

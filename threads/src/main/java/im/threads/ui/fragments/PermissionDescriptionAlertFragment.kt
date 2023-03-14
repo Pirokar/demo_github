@@ -315,10 +315,7 @@ class PermissionDescriptionAlertFragment : DialogFragment() {
         private const val KEY_REQUEST_CODE = "KEY_REQUEST_CODE"
 
         @JvmStatic
-        fun newInstance(
-            type: PermissionDescriptionType,
-            requestCode: Int
-        ): PermissionDescriptionAlertFragment {
+        fun newInstance(type: PermissionDescriptionType, requestCode: Int): PermissionDescriptionAlertFragment {
             val args = Bundle().apply {
                 putSerializable(KEY_PERMISSION_DESCRIPTION_TYPE, type)
                 putInt(KEY_REQUEST_CODE, requestCode)

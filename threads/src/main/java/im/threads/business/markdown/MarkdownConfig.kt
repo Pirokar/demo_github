@@ -2,7 +2,7 @@ package im.threads.business.markdown
 
 import android.graphics.Typeface
 
-class MarkdownConfig() {
+class MarkdownConfig {
     /**
      * Color of links in text.
      * TextPaint#linkColor will be used as a default linkColor. @ColorRes

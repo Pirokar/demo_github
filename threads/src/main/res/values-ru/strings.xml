@@ -12,6 +12,8 @@
     <string name="ecc_sent_at">отправлено %1$s</string>
     <string name="ecc_image">изображение</string>
     <string name="ecc_send">Отправить</string>
+    <string name="ecc_repeat_sending">Повторить отправку</string>
+    <string name="ecc_delete">Удалить</string>
     <string name="ecc_search_messages">Поиск сообщений</string>
     <string name="ecc_files_and_media">Медиа и файлы</string>
     <string name="ecc_recently">Недавно</string>

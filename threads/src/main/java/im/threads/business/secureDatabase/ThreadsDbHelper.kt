@@ -89,6 +89,9 @@ class ThreadsDbHelper private constructor(val context: Context, password: String
     override fun getSendingChatItems(): List<UserPhrase> =
         messagesTable.getSendingChatItems(this)
 
+    override fun getNotDeliveredChatItems(): List<UserPhrase> =
+        messagesTable.getNotDeliveredChatItems(this)
+
     override fun getChatItemByCorrelationId(messageUuid: String?): ChatItem? =
         messagesTable.getChatItemByCorrelationId(this, messageUuid)
 
@@ -163,6 +166,10 @@ class ThreadsDbHelper private constructor(val context: Context, password: String
 
     override fun setOrUpdateMessageId(correlationId: String?, backendMessageId: String?) {
         messagesTable.setOrUpdateMessageId(this, correlationId, backendMessageId)
+    }
+
+    override fun removeItem(correlationId: String?, messageId: String?) {
+        messagesTable.removeItem(this, correlationId, messageId)
     }
 
     fun speechMessageUpdated(speechMessageUpdate: SpeechMessageUpdate?) {

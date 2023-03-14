@@ -500,7 +500,7 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
     private fun getChatIntent(appMarker: String?, config: Config): PendingIntent? =
         config.pendingIntentCreator.create(context, appMarker)
 
-    private fun needsShowNotification(): Boolean = !ChatFragment.isShown()
+    private fun needsShowNotification(): Boolean = !ChatFragment.isShown
 
     companion object {
 

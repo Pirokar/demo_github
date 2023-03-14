@@ -143,6 +143,29 @@ class MessagesTable(
         return items
     }
 
+    fun getNotDeliveredChatItems(sqlHelper: SQLiteOpenHelper): List<UserPhrase> {
+        val items: MutableList<UserPhrase> = ArrayList()
+        val query = String.format(
+            Locale.US,
+            "select * from (select * from %s " +
+                " where " + COLUMN_MESSAGE_SEND_STATE + " < " + MessageStatus.DELIVERED.ordinal +
+                " order by %s desc) order by %s asc",
+            TABLE_MESSAGES,
+            COLUMN_TIMESTAMP,
+            COLUMN_TIMESTAMP
+        )
+        sqlHelper.readableDatabase.rawQuery(query, arrayOf()).use { c ->
+            if (c.moveToFirst()) {
+                while (!c.isAfterLast) {
+                    val chatItem: UserPhrase = getUserPhrase(sqlHelper, c)
+                    items.add(chatItem)
+                    c.moveToNext()
+                }
+            }
+        }
+        return items
+    }
+
     fun getChatItemByCorrelationId(sqlHelper: SQLiteOpenHelper, messageUuid: String?): ChatItem? {
         val sql = (
             "select * from " + TABLE_MESSAGES +
@@ -516,6 +539,18 @@ class MessagesTable(
             }
             val whereClause = "$COLUMN_MESSAGE_CORRELATION_ID = '$correlationIdWithHandle'"
             sqlHelper.writableDatabase.update(TABLE_MESSAGES, content, whereClause, null)
+        }
+    }
+
+    fun removeItem(sqlHelper: SQLiteOpenHelper, correlationId: String?, messageId: String?) {
+        val removedItemCount = if (correlationId != null) {
+            sqlHelper.writableDatabase.delete(TABLE_MESSAGES, "$COLUMN_MESSAGE_CORRELATION_ID = '$correlationId'", null)
+        } else {
+            0
+        }
+
+        if (removedItemCount == 0 && messageId != null) {
+            sqlHelper.writableDatabase.delete(TABLE_MESSAGES, "$COLUMN_MESSAGE_ID = '$messageId'", null)
         }
     }
 

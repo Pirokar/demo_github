@@ -6,7 +6,8 @@ import java.lang.ref.WeakReference
 
 data class OGDataContent(
     val ogDataLayout: WeakReference<ViewGroup>,
-    val timeStampView: WeakReference<BubbleTimeTextView>,
+    val ogTimeStampView: WeakReference<BubbleTimeTextView>,
+    val mainTimeStampView: WeakReference<BubbleTimeTextView>?,
     val messageText: String?,
     var url: String = ""
 )

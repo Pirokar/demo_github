@@ -1,6 +1,8 @@
 package im.threads.ui.activities
 
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.widget.Toast
 import im.threads.R
 import im.threads.ui.fragments.ChatFragment
 
@@ -19,5 +21,22 @@ class ChatActivity : BaseActivity() {
                 super.onBackPressed()
             }
         }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String?>, grantResults: IntArray) {
+        if (requestCode == 123 && hasAllPermissionsGranted(grantResults)) {
+            Toast.makeText(this, "All permissions are granted", Toast.LENGTH_LONG).show()
+        } else {
+            Toast.makeText(this, "Permissions not granted. Code: $requestCode", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun hasAllPermissionsGranted(grantResults: IntArray): Boolean {
+        for (grantResult in grantResults) {
+            if (grantResult == PackageManager.PERMISSION_DENIED) {
+                return false
+            }
+        }
+        return true
     }
 }

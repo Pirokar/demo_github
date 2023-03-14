@@ -8,6 +8,7 @@
     <dimen name="ecc_margin_quarter">4dp</dimen>
     <dimen name="ecc_margin_eight">2dp</dimen>
     <dimen name="ecc_margin_zero">0dp</dimen>
+    <dimen name="ecc_margin_three_fourth_minus">-12dp</dimen>
 
     <dimen name="ecc_padding_material">16dp</dimen>
     <dimen name="ecc_padding_half">8dp</dimen>
@@ -89,5 +90,6 @@
     <dimen name="ecc_message_image_size">300dp</dimen>
     <dimen name="ecc_toolbar_height">56dp</dimen>
     <dimen name="ecc_toolbar_button_width">56dp</dimen>
+    <dimen name="ecc_dropdown_horizontal_offset">-40dp</dimen>
 
 </resources>

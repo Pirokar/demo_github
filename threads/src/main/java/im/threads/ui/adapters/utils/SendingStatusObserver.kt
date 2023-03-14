@@ -48,7 +48,9 @@ class SendingStatusObserver(private val chatAdapterRef: WeakReference<ChatAdapte
                                 list.indices.forEach { index ->
                                     (list[index] as? UserPhrase)?.let { item ->
                                         val thisTime = Date().time
-                                        if (item.sentState == MessageStatus.SENDING && thisTime - item.timeStamp > interval) {
+                                        val notDeliveredStatus = item.sentState == MessageStatus.SENDING ||
+                                            item.sentState == MessageStatus.SENT
+                                        if (notDeliveredStatus && thisTime - item.timeStamp > interval) {
                                             val failedStatus = MessageStatus.FAILED
                                             database.setStateOfUserPhraseByCorrelationId(item.id, failedStatus)
                                             item.sentState = failedStatus

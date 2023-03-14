@@ -912,6 +912,7 @@ public final class ChatStyle implements Serializable {
         this.emptyMediaAndFilesDescriptionText = descriptionTextResId;
         return this;
     }
+
     // </editor-fold>
 
     /**
