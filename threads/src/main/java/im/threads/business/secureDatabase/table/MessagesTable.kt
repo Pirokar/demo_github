@@ -144,6 +144,29 @@ class MessagesTable(
         return items
     }
 
+    fun getNotDeliveredChatItems(sqlHelper: SQLiteOpenHelper): List<UserPhrase> {
+        val items: MutableList<UserPhrase> = ArrayList()
+        val query = String.format(
+            Locale.US,
+            "select * from (select * from %s " +
+                " where " + COLUMN_MESSAGE_SEND_STATE + " < " + MessageStatus.DELIVERED.ordinal +
+                " order by %s desc) order by %s asc",
+            TABLE_MESSAGES,
+            COLUMN_TIMESTAMP,
+            COLUMN_TIMESTAMP
+        )
+        sqlHelper.readableDatabase.rawQuery(query, arrayOf()).use { c ->
+            if (c.moveToFirst()) {
+                while (!c.isAfterLast) {
+                    val chatItem: UserPhrase = getUserPhrase(sqlHelper, c)
+                    items.add(chatItem)
+                    c.moveToNext()
+                }
+            }
+        }
+        return items
+    }
+
     fun getChatItemByCorrelationId(sqlHelper: SQLiteOpenHelper, messageUuid: String?): ChatItem? {
         val sql = (
             "select * from " + TABLE_MESSAGES +
@@ -520,6 +543,18 @@ class MessagesTable(
         }
     }
 
+    fun removeItem(sqlHelper: SQLiteOpenHelper, correlationId: String?, messageId: String?) {
+        val removedItemCount = if (correlationId != null) {
+            sqlHelper.writableDatabase.delete(TABLE_MESSAGES, "$COLUMN_MESSAGE_CORRELATION_ID = '$correlationId'", null)
+        } else {
+            0
+        }
+
+        if (removedItemCount == 0 && messageId != null) {
+            sqlHelper.writableDatabase.delete(TABLE_MESSAGES, "$COLUMN_MESSAGE_ID = '$messageId'", null)
+        }
+    }
+
     private fun getChatItemByCorrelationId(sqlHelper: SQLiteOpenHelper, c: Cursor): ChatItem? {
         when (cursorGetInt(c, COLUMN_MESSAGE_TYPE)) {
             MessageType.CONSULT_CONNECTED.ordinal -> {
@@ -632,7 +667,9 @@ class MessagesTable(
             )
         return if (!cursorGetBool(c, COLUMN_DISPLAY_MESSAGE)) {
             null
-        } else requestResolveThread
+        } else {
+            requestResolveThread
+        }
     }
 
     private fun getConsultPhraseCV(phrase: ConsultPhrase): ContentValues {
@@ -838,7 +875,9 @@ class MessagesTable(
                 BaseConfig.instance.context,
                 outputFile
             )
-        } else null
+        } else {
+            null
+        }
     }
 
     private fun setProgressAndFileUri(fileDescription: FileDescription, progress: Int, uri: Uri) {
@@ -849,7 +888,9 @@ class MessagesTable(
     private fun stringToList(text: String?): List<String> {
         return if (text == null) {
             emptyList()
-        } else listOf(*text.split(";".toRegex()).toTypedArray())
+        } else {
+            listOf(*text.split(";".toRegex()).toTypedArray())
+        }
     }
 
     private fun listToString(list: List<String>?): String? {

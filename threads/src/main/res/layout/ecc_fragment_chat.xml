@@ -339,7 +339,7 @@
                             android:id="@+id/reply"
                             android:layout_width="30dp"
                             android:layout_height="30dp"
-                            android:layout_marginLeft="-60dp"
+                            android:layout_marginStart="-60dp"
                             android:background="@null"
                             app:srcCompat="@drawable/ecc_ic_reply_24dp" />
 
@@ -347,7 +347,7 @@
                             android:id="@+id/content_copy"
                             android:layout_width="30dp"
                             android:layout_height="30dp"
-                            android:layout_marginLeft="@dimen/ecc_margin_big"
+                            android:layout_marginStart="@dimen/ecc_margin_big"
                             android:background="@null"
                             app:srcCompat="@drawable/ecc_ic_content_copy_24dp" />
 

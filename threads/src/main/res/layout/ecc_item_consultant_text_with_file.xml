@@ -83,7 +83,7 @@
                 android:layout_height="42dp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginTop="@dimen/ecc_margin_half"
-                android:layout_marginLeft="@dimen/ecc_margin_half"
+                android:layout_marginEnd="@dimen/ecc_margin_half"
                 android:layout_marginBottom="@dimen/ecc_margin_half"
                 android:visibility="gone" />
 
@@ -162,71 +162,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|end"
+                android:layout_marginTop="@dimen/ecc_margin_material"
                 android:textColor="@color/ecc_operator_message_timestamp"
                 tools:text="10:19" />
 
         </FrameLayout>
 
-        <FrameLayout
-            android:id="@+id/ogDataLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            tools:visibility="visible">
+        <include layout="@layout/ecc_open_graph_layout"/>
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <ImageView
-                    android:id="@+id/og_image"
-                    android:layout_width="match_parent"
-                    android:layout_height="125dp"
-                    android:minWidth="240dp"
-                    android:scaleType="fitCenter" />
-
-                <im.threads.ui.widget.textView.BubbleMessageTextView
-                    android:id="@+id/og_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:ellipsize="end"
-                    android:maxLines="2"
-                    android:paddingTop="@dimen/ecc_margin_half"
-                    android:textColor="@color/ecc_incoming_message_text"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    tools:text="My Awesome Site Title" />
-
-                <im.threads.ui.widget.textView.BubbleMessageTextView
-                    android:id="@+id/og_description"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:ellipsize="end"
-                    android:maxLines="2"
-                    android:textColor="@color/ecc_incoming_message_text"
-                    android:textSize="16sp"
-                    tools:text="My Awesome Site Descripton. Here I would write all awesome info" />
-
-                <im.threads.ui.widget.textView.BubbleMessageTextView
-                    android:id="@+id/og_url"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="@dimen/ecc_margin_half"
-                    android:textColor="@color/ecc_incoming_message_text"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    tools:text="http://my.awesome.site.com" />
-            </LinearLayout>
-
-            <im.threads.ui.widget.textView.BubbleTimeTextView
-                android:id="@+id/ogTimeStamp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|end"
-                android:paddingStart="0dp"
-                android:textColor="@color/ecc_operator_message_timestamp"
-                tools:text="10:19" />
-        </FrameLayout>
     </LinearLayout>
 </RelativeLayout>

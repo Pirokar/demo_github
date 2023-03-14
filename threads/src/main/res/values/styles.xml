@@ -141,4 +141,8 @@
     <style name="ThemeOverlay.ChatCenter.Slider.Preview" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="colorPrimary">@color/ecc_black</item>
     </style>
+
+    <style name="PopupMenu" parent="@style/Widget.AppCompat.PopupMenu">
+        <item name="android:dropDownHorizontalOffset">@dimen/ecc_dropdown_horizontal_offset</item>
+    </style>
 </resources>

@@ -31,6 +31,8 @@ class DatabaseHolder(private val context: Context) {
 
     fun getSendingChatItems(): List<UserPhrase> = tryExecute { myOpenHelper.getSendingChatItems() } ?: arrayListOf()
 
+    fun getNotDeliveredChatItems(): List<UserPhrase> = tryExecute { myOpenHelper.getNotDeliveredChatItems() } ?: arrayListOf()
+
     fun getChatItemByCorrelationId(messageUuid: String?): ChatItem? =
         tryExecute { myOpenHelper.getChatItemByCorrelationId(messageUuid) }
 
@@ -107,6 +109,10 @@ class DatabaseHolder(private val context: Context) {
 
     fun setOrUpdateMessageId(correlationId: String?, backendMessageId: String?) {
         tryExecute { myOpenHelper.setOrUpdateMessageId(correlationId, backendMessageId) }
+    }
+
+    fun removeItem(correlationId: String?, messageId: String?) = tryExecute {
+        myOpenHelper.removeItem(correlationId, messageId)
     }
 
     private fun checkIsDatabaseCorrupted() {

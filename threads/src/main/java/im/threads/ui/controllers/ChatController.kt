@@ -533,6 +533,12 @@ class ChatController private constructor() {
         fragment?.setAllMessagesWereRead()
     }
 
+    fun isMessageSent(correlationId: String?): Boolean {
+        return database
+            .getNotDeliveredChatItems()
+            .firstOrNull { it.id == correlationId } == null
+    }
+
     private val isChatWorking: Boolean
         get() = currentScheduleInfo == null || currentScheduleInfo?.isChatWorking == true
 
@@ -754,6 +760,12 @@ class ChatController private constructor() {
 
     fun forceResend(userPhrase: UserPhrase?) {
         messenger.forceResend(userPhrase!!)
+    }
+
+    fun removeUserPhraseFromDatabaseAsync(userPhrase: UserPhrase) {
+        coroutineScope.launch(Dispatchers.IO) {
+            database.removeItem(userPhrase.id, userPhrase.backendMessageId)
+        }
     }
 
     private fun addLocalUserMessages(serverItems: MutableList<ChatItem>): MutableList<ChatItem> {
@@ -1475,21 +1487,27 @@ class ChatController private constructor() {
     private fun refreshUserInputState() {
         chatUpdateProcessor.postUserInputEnableChanged(
             InputFieldEnableModel(
-                isInputFieldEnabled,
+                isInputFieldEnabled(),
                 isSendButtonEnabled
             )
         )
     }
 
-    private val isInputFieldEnabled: Boolean
-        get() = if (fragment?.fileDescription != null && isVoiceMessage(fragment?.fileDescription)) {
+    private fun isInputFieldEnabled(): Boolean {
+        val fileDescription = fragment?.fileDescription?.get()?.get()
+        return if (fileDescription != null && isVoiceMessage(fileDescription)) {
             false
-        } else isSendButtonEnabled
+        } else {
+            isSendButtonEnabled
+        }
+    }
 
     private val isSendButtonEnabled: Boolean
         get() = if (hasQuickReplies && !inputEnabledDuringQuickReplies) {
             false
-        } else enableInputBySchedule()
+        } else {
+            enableInputBySchedule()
+        }
 
     private fun enableInputBySchedule(): Boolean {
         return if (currentScheduleInfo == null) {
