@@ -50,4 +50,5 @@ ext {
     viewpumpVersion = '2.0.3'
 
     viewmodelVersion = '2.5.1'
+    koin_version = '3.2.0'
 }

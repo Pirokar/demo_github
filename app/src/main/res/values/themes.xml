@@ -33,7 +33,7 @@
 
     <style name="TextButtonsStyle" parent="android:Widget.TextView">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">@dimen/height_56</item>
+        <item name="android:layout_height">@dimen/login_screen_buttons_height</item>
         <item name="android:layout_marginLeft">@dimen/margin_16</item>
         <item name="android:layout_marginRight">@dimen/margin_16</item>
         <item name="android:paddingLeft">@dimen/margin_16</item>
@@ -72,7 +72,7 @@
 
     <style name="ButtonsStyle" parent="android:Widget.Button">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">@dimen/height_56</item>
+        <item name="android:layout_height">@dimen/login_screen_buttons_height</item>
         <item name="android:layout_marginLeft">@dimen/margin_16</item>
         <item name="android:layout_marginRight">@dimen/margin_16</item>
         <item name="android:textColor">@drawable/buttons_text_color_selector</item>
@@ -86,7 +86,7 @@
 
     <style name="SecondaryButtonsStyle" parent="android:Widget.Button">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">@dimen/height_56</item>
+        <item name="android:layout_height">@dimen/login_screen_buttons_height</item>
         <item name="android:layout_marginLeft">@dimen/margin_16</item>
         <item name="android:layout_marginRight">@dimen/margin_16</item>
         <item name="android:textColor">@drawable/secondary_buttons_text_color_selector</item>

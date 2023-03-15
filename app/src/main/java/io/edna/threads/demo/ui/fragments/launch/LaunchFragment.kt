@@ -4,18 +4,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import im.threads.ui.core.ThreadsLib
 import io.edna.threads.demo.BuildConfig
 import io.edna.threads.demo.R
 import io.edna.threads.demo.databinding.FragmentLaunchBinding
+import io.edna.threads.demo.ui.extenstions.inflateWithBinding
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class LaunchFragment : Fragment() {
 
     private lateinit var binding: FragmentLaunchBinding
-    private lateinit var viewModel: LaunchViewModel
+    private val viewModel: LaunchViewModel by viewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -23,8 +23,7 @@ class LaunchFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_launch, container, false)
-        viewModel = ViewModelProvider(this)[LaunchViewModel::class.java]
+        binding = inflater.inflateWithBinding(container, R.layout.fragment_launch)
         binding.viewModel = viewModel
         initView()
         initObservers()
