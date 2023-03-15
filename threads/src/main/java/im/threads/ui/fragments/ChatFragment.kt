@@ -102,6 +102,7 @@ import im.threads.business.utils.FileUtils.isVoiceMessage
 import im.threads.business.utils.MediaHelper.grantPermissionsForImageUri
 import im.threads.business.utils.RxUtils
 import im.threads.business.utils.ThreadsPermissionChecker
+import im.threads.business.utils.ThreadsPermissionChecker.isRecordAudioPermissionGranted
 import im.threads.business.utils.copyToBuffer
 import im.threads.business.utils.getDuration
 import im.threads.business.utils.isLastCopyText
@@ -258,6 +259,7 @@ class ChatFragment :
         super.onStart()
         info(ChatFragment::class.java.simpleName + " onStart.")
         ChatController.getInstance().onViewStart()
+        initRecordButtonState()
         chatController.threadId?.let { setCurrentThreadId(it) }
         BaseConfig.instance.transport.setLifecycle(lifecycle)
         ChatController.getInstance().settings
@@ -417,18 +419,11 @@ class ChatFragment :
         }
     }
 
-    private fun initRecording() {
+    private fun initRecordButtonState() {
         val recordButton = binding.recordButton
-        if (!style.voiceMessageEnabled || !config.getIsAttachmentsEnabled()) {
-            recordButton.visibility = View.GONE
-            return
-        }
-        val recordView = binding.recordView
-        recordView.setRecordPermissionHandler { ThreadsPermissionChecker.isRecordAudioPermissionGranted(requireContext()) }
-        recordButton.setRecordView(recordView)
-        if (!ThreadsPermissionChecker.isRecordAudioPermissionGranted(requireContext())) {
+        if (!isRecordAudioPermissionGranted(requireContext())) {
             recordButton.isListenForRecord = false
-            recordButton.setOnRecordClickListener { v: View? ->
+            recordButton.setOnRecordClickListener {
                 if (style.arePermissionDescriptionDialogsEnabled) {
                     showSafelyPermissionDescriptionDialog(
                         PermissionDescriptionType.RECORD_AUDIO,
@@ -438,7 +433,21 @@ class ChatFragment :
                     startRecordAudioPermissionActivity(REQUEST_PERMISSION_RECORD_AUDIO)
                 }
             }
+        } else {
+            recordButton.isListenForRecord = true
+            recordButton.setOnRecordClickListener(null)
         }
+    }
+
+    private fun initRecording() {
+        val recordButton = binding.recordButton
+        if (!style.voiceMessageEnabled || !config.getIsAttachmentsEnabled()) {
+            recordButton.visibility = View.GONE
+            return
+        }
+        val recordView = binding.recordView
+        recordView.setRecordPermissionHandler { isRecordAudioPermissionGranted(requireContext()) }
+        recordButton.setRecordView(recordView)
         var drawable = AppCompatResources.getDrawable(
             requireContext(),
             style.threadsRecordButtonBackground
@@ -524,6 +533,9 @@ class ChatFragment :
                 show(requireContext(), getString(R.string.ecc_hold_button_to_record_audio))
                 debug("RecordView: onLessThanSecond")
                 recordButton.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
+            }
+
+            override fun onLock() {
             }
 
             private fun startRecorder() {
@@ -1582,7 +1594,7 @@ class ChatFragment :
      */
     private fun scrollDelayedOnNewMessageReceived(
         isUserPhrase: Boolean,
-        isLastMessageVisible: Boolean
+        isLastMessageVisible: Boolean,
     ) {
         if (!isNewMessageUpdateTimeoutOn) {
             isNewMessageUpdateTimeoutOn = true
@@ -2300,7 +2312,7 @@ class ChatFragment :
     }
 
     private fun showSafelyCameraPermissionDescriptionDialog(
-        cameraPermissions: List<String>
+        cameraPermissions: List<String>,
     ) {
         if (permissionDescriptionAlertDialogFragment == null) {
             this.cameraPermissions = cameraPermissions
@@ -2310,7 +2322,7 @@ class ChatFragment :
 
     private fun showSafelyPermissionDescriptionDialog(
         type: PermissionDescriptionType,
-        requestCode: Int
+        requestCode: Int,
     ) {
         if (permissionDescriptionAlertDialogFragment == null) {
             showPermissionDescriptionDialog(type, requestCode)
@@ -2319,7 +2331,7 @@ class ChatFragment :
 
     private fun showPermissionDescriptionDialog(
         type: PermissionDescriptionType,
-        requestCode: Int
+        requestCode: Int,
     ) {
         permissionDescriptionAlertDialogFragment = newInstance(type, requestCode)
         permissionDescriptionAlertDialogFragment?.show(
