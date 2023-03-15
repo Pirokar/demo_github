@@ -315,15 +315,10 @@ class ChatFragment :
         isShown = false
         _binding = null
         statuses.clear()
-        super.onDestroyView()
-    }
-
-    override fun onDestroy() {
-        info(ChatFragment::class.java.simpleName + " onDestroy.")
-        super.onDestroy()
         BaseConfig.instance.transport.setLifecycle(null)
         chatController.onViewDestroy()
         chatAdapter?.onDestroyView()
+        super.onDestroyView()
     }
 
     val lastVisibleItemPosition: Int
