@@ -158,7 +158,6 @@ class ChatController private constructor() {
     }
 
     fun onViewStart() {
-        checkSubscribing()
         messenger.onViewStart()
     }
 
@@ -831,7 +830,8 @@ class ChatController private constructor() {
         subscribeOnMessageError()
     }
 
-    private fun checkSubscribing() {
+    fun checkSubscribing() {
+        if (fragment?.isAdded != true) return
         if (!chatUpdateProcessor.typingProcessor.hasSubscribers()) subscribeToTyping()
         if (!chatUpdateProcessor.outgoingMessageStatusChangedProcessor.hasSubscribers()) subscribeToOutgoingMessageStatusChanged()
         if (!chatUpdateProcessor.incomingMessageReadProcessor.hasSubscribers()) subscribeToIncomingMessageRead()
