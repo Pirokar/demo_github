@@ -261,6 +261,7 @@ class ChatController private constructor() {
                 if (fileDescription.fileUri == null) {
                     startDownloadFD(activity, fileDescription)
                 } else if (isImage(fileDescription)) {
+                    fragment?.setupStartSecondLevelScreen()
                     activity.startActivity(getStartIntent(activity, fileDescription))
                 } else {
                     val target = Intent(Intent.ACTION_VIEW)
@@ -268,6 +269,7 @@ class ChatController private constructor() {
                     target.flags =
                         Intent.FLAG_ACTIVITY_NO_HISTORY or Intent.FLAG_GRANT_READ_URI_PERMISSION
                     try {
+                        fragment?.setupStartSecondLevelScreen()
                         activity.startActivity(target)
                     } catch (e: ActivityNotFoundException) {
                         fragment?.showBalloon("No application support this type of file")
@@ -647,7 +649,7 @@ class ChatController private constructor() {
                     messenger.saveMessages(serverItems)
                     clearUnreadPush()
                     processSystemMessages(serverItems)
-                    if (fragment != null && isActive) {
+                    if (fragment != null && isActive && !fragment!!.isStartSecondLevelScreen()) {
                         val uuidList: List<String?> = database.getUnreadMessagesUuid()
                         if (uuidList.isNotEmpty()) {
                             BaseConfig.instance.transport.markMessagesAsRead(uuidList)
