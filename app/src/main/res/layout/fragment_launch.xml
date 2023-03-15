@@ -6,13 +6,13 @@
     <data>
         <variable
             name="viewModel"
-            type="io.edna.threads.demo.ui.fragments.launch.LaunchViewModel" />
+            type="io.edna.threads.demo.appCode.fragments.launch.LaunchViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.activity.MainActivity">
+        tools:context=".appCode.activity.MainActivity">
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/logo"

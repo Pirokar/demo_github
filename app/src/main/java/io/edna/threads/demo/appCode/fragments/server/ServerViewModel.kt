@@ -1,4 +1,4 @@
-package io.edna.threads.demo.ui.fragments.server
+package io.edna.threads.demo.appCode.fragments.server
 
 import androidx.lifecycle.ViewModel
 

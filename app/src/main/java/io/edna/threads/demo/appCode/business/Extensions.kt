@@ -1,4 +1,4 @@
-package io.edna.threads.demo.business
+package io.edna.threads.demo.appCode.business
 
 inline fun <reified T : Any> T.ordinal(): Int {
     if (T::class.isSealed) {

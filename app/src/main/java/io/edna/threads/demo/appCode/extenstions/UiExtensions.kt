@@ -1,4 +1,4 @@
-package io.edna.threads.demo.ui.extenstions
+package io.edna.threads.demo.appCode.extenstions
 
 import android.app.Activity
 import android.view.LayoutInflater
@@ -11,5 +11,5 @@ fun <T : ViewDataBinding> LayoutInflater.inflateWithBinding(viewGroup: ViewGroup
 }
 
 fun <T : ViewDataBinding> Activity.inflateWithBinding(layoutRes: Int): T {
-    return DataBindingUtil.setContentView<T>(this, layoutRes)
+    return DataBindingUtil.setContentView(this, layoutRes)
 }

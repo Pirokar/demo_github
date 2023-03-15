@@ -1,4 +1,4 @@
-package io.edna.threads.demo.ui.activity
+package io.edna.threads.demo.appCode.activity
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -6,8 +6,8 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import io.edna.threads.demo.R
+import io.edna.threads.demo.appCode.extenstions.inflateWithBinding
 import io.edna.threads.demo.databinding.ActivityMainBinding
-import io.edna.threads.demo.ui.extenstions.inflateWithBinding
 
 class MainActivity : AppCompatActivity() {
 

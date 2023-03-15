@@ -1,21 +1,21 @@
-package io.edna.threads.demo.ui.adapters
+package io.edna.threads.demo.appCode.adapters.demoSamplesList
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import io.edna.threads.demo.R
-import io.edna.threads.demo.business.ordinal
+import io.edna.threads.demo.appCode.business.ordinal
+import io.edna.threads.demo.appCode.extenstions.inflateWithBinding
+import io.edna.threads.demo.appCode.models.DemoSamplesListItem
+import io.edna.threads.demo.appCode.models.DemoSamplesListItem.DIVIDER
+import io.edna.threads.demo.appCode.models.DemoSamplesListItem.TEXT
+import io.edna.threads.demo.appCode.models.DemoSamplesListItem.TITLE
 import io.edna.threads.demo.databinding.HolderDemoSamplesTextBinding
 import io.edna.threads.demo.databinding.HolderDemoSamplesTitleBinding
 import io.edna.threads.demo.databinding.HolderHorizontalLineBinding
-import io.edna.threads.demo.ui.extenstions.inflateWithBinding
-import io.edna.threads.demo.ui.models.DemoSamplesListItem
-import io.edna.threads.demo.ui.models.DemoSamplesListItem.DIVIDER
-import io.edna.threads.demo.ui.models.DemoSamplesListItem.TEXT
-import io.edna.threads.demo.ui.models.DemoSamplesListItem.TITLE
 
-class DemoSamplesAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class DemoSamplesAdapter(private val onItemClickListener: SampleListItemOnClick) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val list: MutableList<DemoSamplesListItem> = mutableListOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -68,7 +68,12 @@ class DemoSamplesAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         RecyclerView.ViewHolder(binding.root), DemoSamplesHolder {
 
         override fun onBind(position: Int) {
-            (list[position] as? TEXT)?.let { binding.textTextView.text = it.text }
+            (list[position] as? TEXT)?.let { item ->
+                binding.textTextView.apply {
+                    text = item.text
+                    setOnClickListener { onItemClickListener.onClick(item) }
+                }
+            }
         }
     }
 

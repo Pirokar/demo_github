@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/LaunchFragment"
-        android:name="io.edna.threads.demo.ui.fragments.launch.LaunchFragment"
+        android:name="io.edna.threads.demo.appCode.fragments.launch.LaunchFragment"
         android:label="@string/launch_fragment_label"
         tools:layout="@layout/fragment_servers">
 
@@ -16,19 +16,31 @@
             app:destination="@id/ServersFragment" />
 
         <action
-            android:id="@+id/action_LaunchFragment_to_DemonstrationsFragment"
-            app:destination="@id/DemoSamplesFragment" />
+            android:id="@+id/action_LaunchFragment_to_DemonstrationsListFragment"
+            app:destination="@id/DemoSamplesListFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/ServersFragment"
-        android:name="io.edna.threads.demo.ui.fragments.server.ServersFragment"
+        android:name="io.edna.threads.demo.appCode.fragments.server.ServersFragment"
         android:label="@string/servers_fragment_label"
         tools:layout="@layout/fragment_servers"/>
 
     <fragment
+        android:id="@+id/DemoSamplesListFragment"
+        android:name="io.edna.threads.demo.appCode.fragments.demoSamplesList.DemoSamplesListFragment"
+        android:label="@string/demonstrations"
+        tools:layout="@layout/fragment_samples_list">
+
+        <action
+            android:id="@+id/action_DemoSamplesListFragment_to_DemoSamplesFragment"
+            app:destination="@id/DemoSamplesFragment" />
+
+    </fragment>
+
+    <fragment
         android:id="@+id/DemoSamplesFragment"
-        android:name="io.edna.threads.demo.ui.fragments.demoSamples.DemoSamplesFragment"
+        android:name="io.edna.threads.demo.appCode.fragments.demoSamplesFragment.DemoSamplesFragment"
         android:label="@string/demonstrations"
         tools:layout="@layout/fragment_samples"/>
 </navigation>

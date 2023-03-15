@@ -1,4 +1,4 @@
-package io.edna.threads.demo.utils
+package io.edna.threads.demo.appCode.business
 
 import androidx.annotation.MainThread
 import androidx.lifecycle.LifecycleOwner

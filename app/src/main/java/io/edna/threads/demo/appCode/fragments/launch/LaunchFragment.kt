@@ -1,4 +1,4 @@
-package io.edna.threads.demo.ui.fragments.launch
+package io.edna.threads.demo.appCode.fragments.launch
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,8 +8,8 @@ import androidx.fragment.app.Fragment
 import im.threads.ui.core.ThreadsLib
 import io.edna.threads.demo.BuildConfig
 import io.edna.threads.demo.R
+import io.edna.threads.demo.appCode.extenstions.inflateWithBinding
 import io.edna.threads.demo.databinding.FragmentLaunchBinding
-import io.edna.threads.demo.ui.extenstions.inflateWithBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class LaunchFragment : Fragment() {

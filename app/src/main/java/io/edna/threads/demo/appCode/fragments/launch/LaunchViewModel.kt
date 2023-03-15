@@ -1,4 +1,4 @@
-package io.edna.threads.demo.ui.fragments.launch
+package io.edna.threads.demo.appCode.fragments.launch
 
 import android.app.Activity
 import android.view.View
@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import io.edna.threads.demo.R
-import io.edna.threads.demo.utils.SingleLiveEvent
+import io.edna.threads.demo.appCode.business.SingleLiveEvent
 
 class LaunchViewModel : ViewModel() {
     val selectServerAction: SingleLiveEvent<String> = SingleLiveEvent()
@@ -19,7 +19,7 @@ class LaunchViewModel : ViewModel() {
         when (view.id) {
             R.id.serverButton -> navigationController.navigate(R.id.action_LaunchFragment_to_ServersFragment)
             R.id.userButton -> navigationController.navigate(R.id.action_LaunchFragment_to_ServersFragment)
-            R.id.demonstrations -> navigationController.navigate(R.id.action_LaunchFragment_to_DemonstrationsFragment)
+            R.id.demonstrations -> navigationController.navigate(R.id.action_LaunchFragment_to_DemonstrationsListFragment)
             R.id.settings -> Toast.makeText(
                 view.context,
                 view.context.getString(R.string.functional_not_support),

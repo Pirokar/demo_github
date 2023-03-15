@@ -1,7 +1,7 @@
-package io.edna.threads.demo.ui.adapters
+package io.edna.threads.demo.appCode.adapters.demoSamplesList
 
 import androidx.recyclerview.widget.DiffUtil
-import io.edna.threads.demo.ui.models.DemoSamplesListItem
+import io.edna.threads.demo.appCode.models.DemoSamplesListItem
 
 class DemoSamplesDiffCallback(
     private val oldList: List<DemoSamplesListItem>,
