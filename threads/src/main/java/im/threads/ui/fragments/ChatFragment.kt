@@ -441,7 +441,7 @@ class ChatFragment :
 
     private fun initRecording() {
         val recordButton = binding.recordButton
-        if (!style.voiceMessageEnabled || !config.getIsAttachmentsEnabled()) {
+        if (!style.voiceMessageEnabled) {
             recordButton.visibility = View.GONE
             return
         }
@@ -795,10 +795,7 @@ class ChatFragment :
     }
 
     private fun setRecordButtonVisibility(isInputEmpty: Boolean) {
-        val isButtonVisible = (
-            isInputEmpty && style.voiceMessageEnabled &&
-                config.getIsAttachmentsEnabled()
-            )
+        val isButtonVisible = (isInputEmpty && style.voiceMessageEnabled)
         binding.recordButton.visibility = if (isButtonVisible) View.VISIBLE else View.GONE
     }
 
