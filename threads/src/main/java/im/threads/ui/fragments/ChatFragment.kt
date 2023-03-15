@@ -153,7 +153,6 @@ import java.util.Locale
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 
-
 /**
  * Весь функционал чата находится здесь во фрагменте,
  * чтобы чат можно было встроить в приложене в навигацией на фрагментах
@@ -424,10 +423,12 @@ class ChatFragment :
         val recordButton = binding.recordButton
         if (!isRecordAudioPermissionGranted(requireContext())) {
             recordButton.isListenForRecord = false
-            recordButton.setOnRecordClickListener { v: View? ->
+            recordButton.setOnRecordClickListener {
                 if (style.arePermissionDescriptionDialogsEnabled) {
-                    showSafelyPermissionDescriptionDialog(PermissionDescriptionType.RECORD_AUDIO,
-                        REQUEST_PERMISSION_RECORD_AUDIO)
+                    showSafelyPermissionDescriptionDialog(
+                        PermissionDescriptionType.RECORD_AUDIO,
+                        REQUEST_PERMISSION_RECORD_AUDIO
+                    )
                 } else {
                     startRecordAudioPermissionActivity(REQUEST_PERMISSION_RECORD_AUDIO)
                 }
@@ -445,21 +446,8 @@ class ChatFragment :
             return
         }
         val recordView = binding.recordView
-        recordView.setRecordPermissionHandler { ThreadsPermissionChecker.isRecordAudioPermissionGranted(requireContext()) }
+        recordView.setRecordPermissionHandler { isRecordAudioPermissionGranted(requireContext()) }
         recordButton.setRecordView(recordView)
-        if (!ThreadsPermissionChecker.isRecordAudioPermissionGranted(requireContext())) {
-            recordButton.isListenForRecord = false
-            recordButton.setOnRecordClickListener { v: View? ->
-                if (style.arePermissionDescriptionDialogsEnabled) {
-                    showSafelyPermissionDescriptionDialog(
-                        PermissionDescriptionType.RECORD_AUDIO,
-                        REQUEST_PERMISSION_RECORD_AUDIO
-                    )
-                } else {
-                    startRecordAudioPermissionActivity(REQUEST_PERMISSION_RECORD_AUDIO)
-                }
-            }
-        }
         var drawable = AppCompatResources.getDrawable(
             requireContext(),
             style.threadsRecordButtonBackground

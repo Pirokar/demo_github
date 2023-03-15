@@ -177,7 +177,7 @@ class PermissionsActivity : AppCompatActivity() {
         private fun checkForMediaPermissions(context: Context, vararg permissions: String): Array<String> {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
                 permissions.contains(Manifest.permission.READ_EXTERNAL_STORAGE) &&
-                    context.applicationContext.applicationInfo.targetSdkVersion >= Build.VERSION_CODES.TIRAMISU
+                context.applicationContext.applicationInfo.targetSdkVersion >= Build.VERSION_CODES.TIRAMISU
             ) {
                 val list = permissions.toMutableList()
                 list.remove(Manifest.permission.READ_EXTERNAL_STORAGE)
