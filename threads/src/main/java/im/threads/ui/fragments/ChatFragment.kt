@@ -1707,12 +1707,16 @@ class ChatFragment :
                     if (!isInMessageSearchMode) {
                         binding.subtitle.visibility = View.VISIBLE
                     }
-                    if (!TextUtils.isEmpty(info!!.name) && info.name != "null") {
-                        binding.consultName.text = info.name
+                    if (info != null) {
+                        if (!TextUtils.isEmpty(info.name) && info.name != "null") {
+                            binding.consultName.text = info.name
+                        } else {
+                            binding.consultName.text = context.getString(R.string.ecc_unknown_operator)
+                        }
+                        setSubtitle(info, context)
                     } else {
                         binding.consultName.text = context.getString(R.string.ecc_unknown_operator)
                     }
-                    setSubtitle(info, context)
                 }
                 if (!resources.getBoolean(style.isChatSubtitleVisible)) {
                     binding.subtitle.visibility = View.GONE
