@@ -19,6 +19,7 @@ import im.threads.business.transport.TransportException;
 import im.threads.business.transport.models.Attachment;
 import im.threads.business.transport.models.AttachmentSettings;
 import im.threads.business.transport.threadsGate.responses.Status;
+import im.threads.ui.controllers.ChatController;
 import io.reactivex.Flowable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
@@ -58,74 +59,92 @@ public class ChatUpdateProcessor {
     }
 
     public void postAttachmentSettings(@NonNull AttachmentSettings attachmentSettings) {
+        checkSubscribers();
         attachmentSettingsProcessor.onNext(attachmentSettings);
     }
 
     public void postOutgoingMessageStatusChanged(@NonNull List<Status> statuses) {
+        checkSubscribers();
         outgoingMessageStatusChangedProcessor.onNext(statuses);
     }
 
     public void postIncomingMessageWasRead(@NonNull String messageId) {
+        checkSubscribers();
         incomingMessageReadProcessor.onNext(messageId);
     }
 
     public void postSpeechMessageUpdate(@NonNull SpeechMessageUpdate speechMessageUpdate) {
+        checkSubscribers();
         speechMessageUpdateProcessor.onNext(speechMessageUpdate);
     }
 
     public void postNewMessage(@NonNull ChatItem chatItem) {
+        checkSubscribers();
         newMessageProcessor.onNext(chatItem);
     }
 
     public void updateAttachments(@NonNull List<Attachment> attachments) {
+        checkSubscribers();
         updateAttachmentsProcessor.onNext(attachments);
     }
 
     public void postChatItemSendSuccess(@NonNull ChatItemProviderData chatItemProviderData) {
+        checkSubscribers();
         messageSendSuccessProcessor.onNext(chatItemProviderData);
     }
 
     public void postChatItemSendError(@NonNull ChatItemSendErrorModel sendErrorModel) {
+        checkSubscribers();
         messageSendErrorProcessor.onNext(sendErrorModel);
     }
 
     public void postRemoveChatItem(@NonNull ChatItemType chatItemType) {
+        checkSubscribers();
         removeChatItemProcessor.onNext(chatItemType);
     }
 
     public void postSurveySendSuccess(Survey survey) {
+        checkSubscribers();
         surveySendSuccessProcessor.onNext(survey);
     }
 
     public void postCampaignMessageReplySuccess(CampaignMessage campaignMessage) {
+        checkSubscribers();
         campaignMessageReplySuccessProcessor.onNext(campaignMessage);
     }
 
     public void postDeviceAddressChanged(String deviceAddress) {
+        checkSubscribers();
         deviceAddressChangedProcessor.onNext(deviceAddress);
     }
 
     public void postUserInputEnableChanged(InputFieldEnableModel enable) {
+        checkSubscribers();
         userInputEnableProcessor.onNext(enable);
     }
 
     public void postQuickRepliesChanged(QuickReplyItem quickReplies) {
+        checkSubscribers();
         quickRepliesProcessor.onNext(quickReplies);
     }
 
     public void postClientNotificationDisplayType(ClientNotificationDisplayType type) {
+        checkSubscribers();
         clientNotificationDisplayTypeProcessor.onNext(type);
     }
 
     public void postAttachAudioFile(Boolean attached) {
+        checkSubscribers();
         attachAudioFilesProcessor.onNext(attached);
     }
 
     public void postError(@NonNull TransportException error) {
+        checkSubscribers();
         errorProcessor.onNext(error);
     }
 
     public void postSocketResponseMap(@NonNull Map<String, Object> socketResponseMap) {
+        checkSubscribers();
         socketResponseMapProcessor.onNext(socketResponseMap);
     }
 
@@ -203,5 +222,9 @@ public class ChatUpdateProcessor {
 
     public FlowableProcessor<Map<String, Object>> getSocketResponseMapProcessor() {
         return socketResponseMapProcessor;
+    }
+
+    private void checkSubscribers() {
+        ChatController.getInstance().checkSubscribing();
     }
 }

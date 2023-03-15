@@ -198,6 +198,7 @@ class ChatFragment :
     private val config = Config.getInstance()
     var style: ChatStyle = config.getChatStyle()
         private set
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         info(ChatFragment::class.java.simpleName + " onCreateView.")
         val activity: Activity? = activity
