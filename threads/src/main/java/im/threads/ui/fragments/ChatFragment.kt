@@ -328,6 +328,13 @@ class ChatFragment :
         chatAdapter?.onDestroyView()
     }
 
+    fun setupStartSecondLevelScreen() {
+        resumeAfterSecondLevelScreen = true
+    }
+
+    fun isStartSecondLevelScreen(): Boolean {
+        return resumeAfterSecondLevelScreen
+    }
     val lastVisibleItemPosition: Int
         get() = if (isAdded) {
             mLayoutManager?.findLastVisibleItemPosition() ?: RecyclerView.NO_POSITION
@@ -1678,7 +1685,7 @@ class ChatFragment :
             if (oldAdapterSize == 0) {
                 scrollToPosition(chatAdapter.itemCount - 1, false)
             } else if (afterResume) {
-                if (newAdapterSize != oldAdapterSize) {
+                if (!isStartSecondLevelScreen() && newAdapterSize != oldAdapterSize) {
                     scrollToPosition(chatAdapter.itemCount - 1, false)
                 }
                 afterResume = false
@@ -1686,6 +1693,7 @@ class ChatFragment :
                 handler.postDelayed({ scrollToPosition(chatAdapter.itemCount - 1, false) }, 100)
                 afterResume = false
             }
+            resumeAfterSecondLevelScreen = false
             checkSearch()
         }
     }
@@ -2561,6 +2569,7 @@ class ChatFragment :
                 val activity: Activity? = activity
                 if (activity != null) {
                     chatController.onConsultChoose(activity, consultId)
+                    setupStartSecondLevelScreen()
                 }
             }
         }
@@ -2576,10 +2585,12 @@ class ChatFragment :
                 if (chatPhrase.sentState !== MessageStatus.FAILED) {
                     val activity: Activity? = activity
                     activity?.startActivity(getStartIntent(activity, chatPhrase.fileDescription))
+                    setupStartSecondLevelScreen()
                 }
             } else if (chatPhrase is ConsultPhrase) {
                 val activity: Activity? = activity
                 activity?.startActivity(getStartIntent(activity, chatPhrase.fileDescription))
+                setupStartSecondLevelScreen()
             }
         }
 
@@ -2652,6 +2663,7 @@ class ChatFragment :
         var isShown = false
             private set
         private var afterResume = false
+        private var resumeAfterSecondLevelScreen: Boolean = false
 
         @JvmStatic
         fun newInstance(@OpenWay from: Int): ChatFragment {
