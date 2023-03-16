@@ -9,11 +9,11 @@ class QuestionDTO {
     var text: String? = null
     var scale = 0
     var simple = false
-    var rate: Int = 0
+    var rate: Int? = null
     var phraseTimeStamp: Long = 0
 
     fun hasRate(): Boolean {
-        return rate != 0
+        return rate != null
     }
 
     fun generateCorrelationId() {
