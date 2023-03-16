@@ -33,7 +33,10 @@ public final class RatingStarsViewHolder extends BaseHolder {
     }
 
     public void bind(Survey survey, Rating.CallBackListener callBackListener) {
-        int rate = survey.getQuestions().get(0).getRate();
+        int rate = 0;
+        if (survey.getQuestions().get(0).getRate() != null) {
+            rate = survey.getQuestions().get(0).getRate();
+        }
         int scale = survey.getQuestions().get(0).getScale();
         rating.initRating(itemView.getContext(), rate, scale);
         askForRate.setText(survey.getQuestions().get(0).getText());
