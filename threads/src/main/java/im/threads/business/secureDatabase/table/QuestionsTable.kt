@@ -42,7 +42,7 @@ class QuestionsTable : Table() {
                     question.phraseTimeStamp = cursorGetLong(it, COLUMN_QUESTION_TIMESTAMP)
                     question.id = cursorGetLong(it, COLUMN_QUESTION_ID)
                     question.sendingId = cursorGetLong(it, COLUMN_QUESTION_SENDING_ID)
-                    question.isSimple = cursorGetBool(it, COLUMN_QUESTION_SIMPLE)
+                    question.simple = cursorGetBool(it, COLUMN_QUESTION_SIMPLE)
                     question.text = cursorGetString(it, COLUMN_QUESTION_TEXT)
                     question.scale = cursorGetInt(it, COLUMN_QUESTION_SCALE)
                     // TODO THREADS-3625. This is a workaround on rate = 0 is a negative answer in simple (binary) survey
@@ -90,7 +90,7 @@ class QuestionsTable : Table() {
                 }
 
                 questionCv.put(COLUMN_QUESTION_TEXT, it.text)
-                questionCv.put(COLUMN_QUESTION_SIMPLE, it.isSimple)
+                questionCv.put(COLUMN_QUESTION_SIMPLE, it.simple)
                 questionCv.put(COLUMN_QUESTION_TIMESTAMP, it.phraseTimeStamp)
 
                 sqlHelper.writableDatabase.insert(TABLE_QUESTIONS, null, questionCv)

@@ -8,7 +8,7 @@ class QuestionDTO {
     var sendingId: Long = 0
     var text: String? = null
     var scale = 0
-    var isSimple = false
+    var simple = false
     var rate: Int = 0
     var phraseTimeStamp: Long = 0
 

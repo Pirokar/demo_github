@@ -413,7 +413,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         } else if (o instanceof Survey && !((Survey) o).getQuestions().isEmpty()) {
             final Survey survey = (Survey) o;
             final QuestionDTO questionDTO = survey.getQuestions().get(0);
-            if (questionDTO.isSimple()) {
+            if (questionDTO.getSimple()) {
                 if (survey.isCompleted()) {
                     return TYPE_RATING_THUMBS_SENT;
                 } else {
