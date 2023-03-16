@@ -173,9 +173,8 @@ class ChatController private constructor() {
     fun onRatingClick(survey: Survey) {
         if (!surveyCompletionInProgress) {
             surveyCompletionInProgress = true
-            subscribeToSurveyCompletion()
         }
-        surveyCompletionProcessor.onNext(survey)
+        BaseConfig.instance.transport.sendRatingDone(survey)
     }
 
     fun onResolveThreadClick(approveResolve: Boolean) {
@@ -502,25 +501,6 @@ class ChatController private constructor() {
             compositeDisposable = CompositeDisposable()
         }
         return compositeDisposable?.add(event) == true
-    }
-
-    private fun subscribeToSurveyCompletion() {
-        subscribe(
-            Flowable.fromPublisher(surveyCompletionProcessor)
-                .throttleLast(
-                    BaseConfig.instance.surveyCompletionDelay.toLong(),
-                    TimeUnit.MILLISECONDS
-                )
-                .firstElement()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { survey: Survey? ->
-                        if (survey != null) {
-                            BaseConfig.instance.transport.sendRatingDone(survey)
-                        }
-                    }
-                ) { error: Throwable? -> error("subscribeToSurveyCompletion: ", error) }
-        )
     }
 
     fun setAllMessagesWereRead() {
@@ -1256,6 +1236,9 @@ class ChatController private constructor() {
      */
     private fun addMessage(chatItem: ChatItem) {
         info("addMessage: $chatItem")
+        if (chatItem is Survey) {
+            chatItem.questions.forEach { it.generateCorrelationId() }
+        }
         database.putChatItem(chatItem)
         UnreadMessagesController.INSTANCE.refreshUnreadMessagesCount()
         if (fragment != null) {
@@ -1326,7 +1309,7 @@ class ChatController private constructor() {
     private fun setSurveyStateSent(survey: Survey) {
         survey.sentState = MessageStatus.SENT
         survey.isDisplayMessage = true
-        fragment?.setSurveySentStatus(survey.sendingId, survey.sentState)
+        fragment?.setSurveySentStatus(survey)
         database.putChatItem(survey)
     }
 

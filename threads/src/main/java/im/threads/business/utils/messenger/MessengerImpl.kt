@@ -238,6 +238,7 @@ class MessengerImpl(private var compositeDisposable: CompositeDisposable?) : Mes
         }
     }
 
+    @Synchronized
     private fun proceedUnsentMessages() {
         if (unsentMessages.isNotEmpty() && !networkInteractor.hasNoInternet(context)) {
             synchronized(unsentMessages) {

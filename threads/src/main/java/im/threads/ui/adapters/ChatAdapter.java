@@ -97,6 +97,7 @@ import im.threads.ui.holders.UnreadMessageViewHolder;
 import im.threads.ui.holders.UserFileViewHolder;
 import im.threads.ui.holders.UserPhraseViewHolder;
 import im.threads.ui.holders.VoiceMessageBaseHolder;
+import im.threads.ui.holders.helper.SurveySplitterKt;
 import im.threads.ui.preferences.PreferencesJavaUI;
 import im.threads.ui.utils.ThreadRunnerKt;
 import im.threads.ui.views.VoiceTimeLabelFormatterKt;
@@ -412,7 +413,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         } else if (o instanceof Survey && !((Survey) o).getQuestions().isEmpty()) {
             final Survey survey = (Survey) o;
             final QuestionDTO questionDTO = survey.getQuestions().get(0);
-            if (questionDTO.isSimple()) {
+            if (questionDTO.getSimple()) {
                 if (survey.isCompleted()) {
                     return TYPE_RATING_THUMBS_SENT;
                 } else {
@@ -617,9 +618,10 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         return count;
     }
 
-    public void addItems(@NonNull final List<ChatItem> items) {
+    public void addItems(@NonNull List<ChatItem> items) {
         boolean withTyping = false;
         boolean withRequestResolveThread = false;
+        items = SurveySplitterKt.splitSurveyQuestions(items);
         for (final ChatItem ci : items) {
             if (ci instanceof ConsultTyping) {
                 withTyping = true;
@@ -713,19 +715,42 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
     }
 
-    public void changeStateOfSurvey(long sendingId, MessageStatus sentState) {
+    public void changeStateOfSurvey(Survey updatedSurvey) {
+        LoggerEdna.info("Updating survey state to \"" + updatedSurvey.getSentState().toString() + "\"," +
+                " sendingId: \"" + updatedSurvey.getSendingId() + "\"");
         for (final ChatItem cm : getList()) {
             if (cm instanceof Survey) {
                 final Survey survey = (Survey) cm;
-                if (sendingId == survey.getSendingId()) {
-                    LoggerEdna.info("changeStateOfMessageById: changing read state");
-                    ((Survey) cm).setSentState(sentState);
-                    notifyItemChangedOnUi(survey);
+                if (updatedSurvey.getSendingId() == survey.getSendingId()) {
+                    boolean questionsAreEmpty = survey.getQuestions() == null || survey.getQuestions().size() == 0;
+                    boolean questionsOfUpdatedAreEmpty = updatedSurvey.getQuestions() == null || updatedSurvey.getQuestions().size() == 0;
+
+                    if (questionsAreEmpty || questionsOfUpdatedAreEmpty) {
+                        changeSurveyState(cm, updatedSurvey.getSentState());
+                    } else {
+                        boolean breakUpperLoop = false;
+                        for (QuestionDTO updatableQuestion : updatedSurvey.getQuestions()) {
+                            if (breakUpperLoop) break;
+                            for (QuestionDTO questionToUpdate : survey.getQuestions()) {
+                                if (questionToUpdate.getId() == updatableQuestion.getId() &&
+                                        questionToUpdate.getCorrelationId().equals(updatableQuestion.getCorrelationId())) {
+                                    changeSurveyState(cm, updatedSurvey.getSentState());
+                                    breakUpperLoop = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
     }
 
+    private void changeSurveyState(ChatItem message, MessageStatus sentState) {
+        LoggerEdna.info("changeStateOfMessageById: changing read state");
+        ((Survey) message).setSentState(sentState);
+        notifyItemChangedOnUi(message);
+    }
     public void changeStateOfMessageByMessageId(
             String correlationId,
             final String backendMessageId,
@@ -1166,9 +1191,13 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         boolean isListSizeMoreThat1Element = list != null && list.size() > 1;
         boolean isPreviousItemSurvey = isListSizeMoreThat1Element &&
                 list.get(list.size() - 2) instanceof Survey;
+        boolean isLatestItemSurvey = isListSizeMoreThat1Element && list.get(list.size() - 1) instanceof Survey;
 
-        if (isPreviousItemSurvey) {
-            list.remove(list.size() - 2);
+        if (isPreviousItemSurvey && !isLatestItemSurvey) {
+            Survey item = (Survey)list.get(list.size() - 2);
+            if (!item.isCompleted()) {
+                list.remove(list.size() - 2);
+            }
         }
     }
 

@@ -1767,8 +1767,8 @@ class ChatFragment :
         chatAdapter?.changeStateOfMessageByMessageId(correlationId, backendMessageId, state)
     }
 
-    fun setSurveySentStatus(uuid: Long, sentState: MessageStatus?) {
-        chatAdapter?.changeStateOfSurvey(uuid, sentState)
+    fun setSurveySentStatus(survey: Survey) {
+        chatAdapter?.changeStateOfSurvey(survey)
     }
 
     private fun hideCopyControls() {

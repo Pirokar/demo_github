@@ -15,9 +15,6 @@ import im.threads.ui.widget.Rating;
  * ViewHolder для опросов с рейтингом
  */
 public final class RatingStarsViewHolder extends BaseHolder {
-
-    private View topSeparator;
-    private View bottomSeparator;
     private TextView askForRate;
     private Rating rating;
     private TextView thanksForRate;
@@ -28,13 +25,9 @@ public final class RatingStarsViewHolder extends BaseHolder {
                 null,
                 null
         );
-        topSeparator = itemView.findViewById(R.id.top_separator);
-        bottomSeparator = itemView.findViewById(R.id.bottom_separator);
         rating = itemView.findViewById(R.id.mark);
         askForRate = itemView.findViewById(R.id.ask_for_rate);
         thanksForRate = itemView.findViewById(R.id.thanks_for_rate);
-        topSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), getStyle().iconsAndSeparatorsColor));
-        bottomSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), getStyle().iconsAndSeparatorsColor));
         askForRate.setTextColor(ContextCompat.getColor(itemView.getContext(), getStyle().surveyTextColorResId));
         thanksForRate.setTextColor(ContextCompat.getColor(itemView.getContext(), getStyle().surveyTextColorResId));
     }

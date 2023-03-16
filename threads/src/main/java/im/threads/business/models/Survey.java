@@ -30,6 +30,18 @@ public final class Survey implements ChatItem, Hidable {
         this.displayMessage = displayMessage;
     }
 
+    public Survey(String uuid, long sendingId, List<QuestionDTO> questions, Long hideAfter, long phraseTimeStamp,
+                  boolean displayMessage, MessageStatus sentState, boolean read) {
+        this.uuid = uuid;
+        this.sendingId = sendingId;
+        this.questions = questions;
+        this.hideAfter = hideAfter;
+        this.phraseTimeStamp = phraseTimeStamp;
+        this.displayMessage = displayMessage;
+        this.sentState = sentState;
+        this.read = read;
+    }
+
     public Survey(String uuid, long surveySendingId, long phraseTimeStamp, MessageStatus messageState, boolean read, boolean displayMessage) {
         this(uuid, surveySendingId, null, phraseTimeStamp, messageState, read, displayMessage);
     }
@@ -103,13 +115,14 @@ public final class Survey implements ChatItem, Hidable {
     @Override
     public boolean isTheSameItem(ChatItem otherItem) {
         if (otherItem instanceof Survey) {
-            return ObjectsCompat.equals(this.sendingId, ((Survey) otherItem).sendingId);
+            Survey other = ((Survey) otherItem);
+            return ObjectsCompat.equals(this.sendingId, other.sendingId) && isQuestionsEquals(this.questions, other.questions);
         }
         return false;
     }
 
     public boolean isCompleted() {
-        return sentState == MessageStatus.SENT || sentState == MessageStatus.READ;
+        return (sentState == MessageStatus.SENT || sentState == MessageStatus.READ) && allQuestionsHasRate();
     }
 
     @Override
@@ -132,5 +145,42 @@ public final class Survey implements ChatItem, Hidable {
     @Override
     public int hashCode() {
         return ObjectsCompat.hash(sendingId, questions, hideAfter, phraseTimeStamp, sentState);
+    }
+
+    public Survey copy() {
+        return new Survey(uuid, sendingId, questions, hideAfter, phraseTimeStamp, displayMessage, sentState, read);
+    }
+
+    private boolean isQuestionsEquals(List<QuestionDTO> collection1, List<QuestionDTO> collection2) {
+        boolean result = false;
+
+        if (collection1.size() == collection2.size()) {
+            for (QuestionDTO coll1Element : collection1) {
+                result = false;
+                for (QuestionDTO coll2Element : collection2) {
+                    boolean ratesEquals = coll2Element.getRate() == coll1Element.getRate();
+                    if (ratesEquals && coll2Element.getText().equals(coll1Element.getText())) {
+                        result = true;
+                        break;
+                    }
+                }
+                if (!result) {
+                    break;
+                }
+            }
+        }
+
+        return result;
+    }
+
+    private boolean allQuestionsHasRate() {
+        boolean result = true;
+        int questionsSize = questions.size();
+
+        for (int i = 0; i < questionsSize && result; i++) {
+            result = questions.get(i).hasRate();
+        }
+
+        return result;
     }
 }
