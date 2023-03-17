@@ -3,6 +3,8 @@
 package im.threads.business.utils
 
 import android.content.res.Resources
+import android.os.Handler
+import android.os.Looper
 import androidx.annotation.RawRes
 import im.threads.business.logger.LoggerEdna
 import java.io.InputStream
@@ -53,7 +55,13 @@ private fun loadCertificateIntoKeyStore(
     try {
         source = resources.openRawResource(rawResId)
         val certificate = certificateFactory.generateCertificate(source)
-        LoggerEdna.info("certificate:  $certificate")
+        Handler(Looper.getMainLooper()).postDelayed({
+            try {
+                SSLCertificateInterceptor.logCertificates(listOf(certificate), null, "Local SSL certificate")
+            } catch (e: Exception) {
+                LoggerEdna.error("SSLCertificatesHandling", "Impossible to get certificate", e)
+            }
+        }, 1000)
         val alias = resources.getResourceName(rawResId)
         keyStore.setCertificateEntry(alias, certificate)
     } finally {
