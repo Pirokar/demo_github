@@ -67,6 +67,8 @@ class ConsultFileViewHolder(
     }
 
     init {
+        itemView.findViewById<View>(R.id.delimiter)
+            .setBackgroundColor(getColorInt(style.chatToolbarColorResId))
         itemView.findViewById<ViewGroup>(R.id.bubble).apply {
             background =
                 AppCompatResources.getDrawable(

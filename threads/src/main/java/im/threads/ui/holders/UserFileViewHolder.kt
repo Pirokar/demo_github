@@ -8,11 +8,11 @@ import android.view.View.OnLongClickListener
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
@@ -52,7 +52,7 @@ class UserFileViewHolder(
     private val errorTextView: TextView = itemView.findViewById(R.id.errorText)
     private val loader: ImageView = itemView.findViewById(R.id.loader)
     private val rootLayout: LinearLayout = itemView.findViewById(R.id.rootLayout)
-    private val bubbleLayout: RelativeLayout = itemView.findViewById<RelativeLayout>(R.id.bubble)
+    private val bubbleLayout: ConstraintLayout = itemView.findViewById(R.id.bubble)
 
     private val circularProgressButton =
         itemView.findViewById<CircularProgressButton>(R.id.buttonDownload).apply {
