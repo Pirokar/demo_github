@@ -1,5 +1,6 @@
 package im.threads.business.utils
 
+import im.threads.business.extensions.fullLogString
 import im.threads.business.logger.LoggerEdna
 import okhttp3.Handshake
 import okhttp3.Interceptor
@@ -23,31 +24,28 @@ class SSLCertificateInterceptor : Interceptor {
             }
             LoggerEdna.info("handshake success")
             certificates = handshake.peerCertificates
-            logCertificates(certificates, false)
+            logCertificates(certificates, null)
             return response
         } catch (e: Exception) {
-            LoggerEdna.error("<-- HTTP FAILED: $e")
-            logCertificates(certificates, true)
+            logCertificates(certificates, e)
             Thread.sleep(300)
             throw e
         }
     }
 
-    private fun logCertificates(certificates: List<Certificate>, isError: Boolean) {
+    private fun logCertificates(certificates: List<Certificate>, error: Exception?) {
         if (certificates.isEmpty()) {
-            if (isError) {
-                LoggerEdna.error("no peer certificates")
-            } else {
-                LoggerEdna.info("no peer certificates")
-            }
+            LoggerEdna.error("no peer certificates, list is empty")
+        } else if (error != null) {
+            LoggerEdna.error(error.fullLogString())
         } else {
-            certificates.forEach {
-                if (isError) {
-                    LoggerEdna.error("Server $it")
-                } else {
-                    LoggerEdna.info("Server $it")
-                }
+            val message = StringBuilder().apply {
+                append("Available certificates:\n")
             }
+            certificates.forEach {
+                message.append(it)
+            }
+            LoggerEdna.info(message.toString())
         }
     }
 }
