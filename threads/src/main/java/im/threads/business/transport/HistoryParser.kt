@@ -1,265 +1,270 @@
-package im.threads.business.transport;
+package im.threads.business.transport
 
-import android.text.TextUtils;
+import android.text.TextUtils
+import com.google.gson.JsonSyntaxException
+import im.threads.R
+import im.threads.business.config.BaseConfig
+import im.threads.business.formatters.ChatItemType
+import im.threads.business.formatters.ChatItemType.Companion.fromString
+import im.threads.business.formatters.SpeechStatus
+import im.threads.business.logger.LoggerEdna.error
+import im.threads.business.models.Attachment
+import im.threads.business.models.ChatItem
+import im.threads.business.models.ConsultConnectionMessage
+import im.threads.business.models.ConsultPhrase
+import im.threads.business.models.FileDescription
+import im.threads.business.models.MessageFromHistory
+import im.threads.business.models.MessageStatus
+import im.threads.business.models.Operator
+import im.threads.business.models.QuestionDTO
+import im.threads.business.models.Quote
+import im.threads.business.models.RequestResolveThread
+import im.threads.business.models.SimpleSystemMessage
+import im.threads.business.models.Survey
+import im.threads.business.models.UserPhrase
+import im.threads.business.rest.models.HistoryResponse
+import im.threads.business.serviceLocator.core.inject
+import im.threads.business.utils.DateHelper
+import java.util.ArrayList
+import java.util.Date
 
-import androidx.annotation.NonNull;
+object HistoryParser {
+    private val historyLoader: HistoryLoader by inject()
 
-import com.google.gson.JsonSyntaxException;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-
-import im.threads.R;
-import im.threads.business.config.BaseConfig;
-import im.threads.business.formatters.ChatItemType;
-import im.threads.business.formatters.SpeechStatus;
-import im.threads.business.logger.LoggerEdna;
-import im.threads.business.models.Attachment;
-import im.threads.business.models.ChatItem;
-import im.threads.business.models.ConsultConnectionMessage;
-import im.threads.business.models.ConsultPhrase;
-import im.threads.business.models.FileDescription;
-import im.threads.business.models.MessageFromHistory;
-import im.threads.business.models.MessageStatus;
-import im.threads.business.models.Operator;
-import im.threads.business.models.Optional;
-import im.threads.business.models.QuestionDTO;
-import im.threads.business.models.Quote;
-import im.threads.business.models.RequestResolveThread;
-import im.threads.business.models.SimpleSystemMessage;
-import im.threads.business.models.Survey;
-import im.threads.business.models.UserPhrase;
-import im.threads.business.rest.models.HistoryResponse;
-import im.threads.business.utils.DateHelper;
-
-public final class HistoryParser {
-    private HistoryParser() {
-    }
-
-    @NonNull
-    public static List<ChatItem> getChatItems(HistoryResponse response) {
-        List<ChatItem> list = new ArrayList<>();
+    fun getChatItems(response: HistoryResponse?): List<ChatItem> {
+        var list: List<ChatItem> = ArrayList()
         if (response != null) {
-            List<MessageFromHistory> responseList = response.getMessages();
+            val responseList = response.messages
             if (responseList != null) {
-                list = getChatItems(responseList);
-                HistoryLoader.INSTANCE.setupLastItemIdFromHistory(responseList);
+                list = getChatItems(responseList)
+                historyLoader.setupLastItemIdFromHistory(responseList)
             }
         }
-        return list;
+        return list
     }
 
-    private static List<ChatItem> getChatItems(final List<MessageFromHistory> messages) {
-        final List<ChatItem> out = new ArrayList<>();
+    private fun getChatItems(messages: List<MessageFromHistory?>): List<ChatItem> {
+        val out: MutableList<ChatItem> = ArrayList()
         try {
-            for (final MessageFromHistory message : messages) {
+            for (message in messages) {
                 if (message == null) {
-                    continue;
+                    continue
                 }
-                final String uuid = message.getUuid();
-                final long timeStamp = message.getTimeStamp();
-                final Operator operator = message.getOperator();
-                String name = null;
-                String photoUrl = null;
-                String operatorId = null;
-                boolean sex = false;
-                String orgUnit = null;
-                String role = null;
+                val uuid = message.uuid
+                val timeStamp: Long = message.timeStamp
+                val operator = message.operator
+                var name: String? = null
+                var photoUrl: String? = null
+                var operatorId: String? = null
+                var sex = false
+                var orgUnit: String? = null
+                var role: String? = null
                 if (operator != null) {
-                    name = operator.getAliasOrName();
-                    photoUrl = !TextUtils.isEmpty(operator.getPhotoUrl()) ? operator.getPhotoUrl() : null;
-                    operatorId = operator.getId() != null ? String.valueOf(operator.getId()) : null;
-                    sex = Operator.Gender.MALE.equals(operator.getGender());
-                    orgUnit = operator.getOrgUnit();
-                    role = operator.getRole();
+                    name = operator.aliasOrName
+                    photoUrl = if (!TextUtils.isEmpty(operator.photoUrl)) operator.photoUrl else null
+                    operatorId = if (operator.id != null) operator.id.toString() else null
+                    sex = Operator.Gender.MALE == operator.gender
+                    orgUnit = operator.orgUnit
+                    role = operator.role
                 }
-                ChatItemType type = ChatItemType.fromString(message.getType());
-                switch (type) {
-                    case THREAD_ENQUEUED:
-                    case AVERAGE_WAIT_TIME:
-                    case PARTING_AFTER_SURVEY:
-                    case THREAD_CLOSED:
-                    case THREAD_WILL_BE_REASSIGNED:
-                    case CLIENT_BLOCKED:
-                    case THREAD_IN_PROGRESS:
-                        out.add(getSystemMessageFromHistory(message));
-                        break;
-                    case OPERATOR_JOINED:
-                    case OPERATOR_LEFT:
-                        out.add(new ConsultConnectionMessage(uuid, operatorId,
-                                message.getType(), name, sex, timeStamp, photoUrl,
-                                null, null, orgUnit, role, message.isDisplay(),
-                                message.getText(), message.getThreadId()));
-                        break;
-                    case SURVEY:
-                        Survey survey = getSurveyFromJsonString(message.getText());
+                when (fromString(message.type)) {
+                    ChatItemType.THREAD_ENQUEUED, ChatItemType.AVERAGE_WAIT_TIME, ChatItemType.PARTING_AFTER_SURVEY,
+                    ChatItemType.THREAD_CLOSED, ChatItemType.THREAD_WILL_BE_REASSIGNED, ChatItemType.CLIENT_BLOCKED,
+                    ChatItemType.THREAD_IN_PROGRESS -> out.add(
+                        getSystemMessageFromHistory(message)
+                    )
+                    ChatItemType.OPERATOR_JOINED, ChatItemType.OPERATOR_LEFT -> out.add(
+                        ConsultConnectionMessage(
+                            uuid, operatorId,
+                            message.type, name, sex, timeStamp, photoUrl,
+                            null, null, orgUnit, role, message.isDisplay,
+                            message.text, message.threadId
+                        )
+                    )
+                    ChatItemType.SURVEY -> {
+                        val survey = getSurveyFromJsonString(message.text)
                         if (survey != null) {
-                            survey.setRead(message.isRead());
-                            survey.setPhraseTimeStamp(message.getTimeStamp());
-                            for (final QuestionDTO questionDTO : survey.getQuestions()) {
-                                questionDTO.setPhraseTimeStamp(message.getTimeStamp());
+                            survey.isRead = message.isRead
+                            survey.phraseTimeStamp = message.timeStamp
+                            for (questionDTO in survey.questions) {
+                                questionDTO.phraseTimeStamp = message.timeStamp
                             }
-                            out.add(survey);
+                            out.add(survey)
                         }
-                        break;
-                    case SURVEY_QUESTION_ANSWER:
-                        out.add(getCompletedSurveyFromHistory(message));
-                        break;
-                    case REQUEST_CLOSE_THREAD:
-                        out.add(new RequestResolveThread(uuid, message.getHideAfter(), timeStamp, message.getThreadId(), message.isRead()));
-                        break;
-                    default:
-                        String phraseText = "";
-                        if (message.getText() != null) {
-                            phraseText = message.getText();
-                        } else if (message.getSpeechText() != null) {
-                            phraseText = message.getSpeechText();
+                    }
+                    ChatItemType.SURVEY_QUESTION_ANSWER -> out.add(getCompletedSurveyFromHistory(message))
+                    ChatItemType.REQUEST_CLOSE_THREAD -> out.add(
+                        RequestResolveThread(
+                            uuid,
+                            message.hideAfter,
+                            timeStamp,
+                            message.threadId,
+                            message.isRead
+                        )
+                    )
+                    else -> {
+                        var phraseText: String? = ""
+                        if (message.text != null) {
+                            phraseText = message.text
+                        } else if (message.speechText != null) {
+                            phraseText = message.speechText
                         }
-                        final FileDescription fileDescription = message.getAttachments() != null ? fileDescriptionFromList(message.getAttachments()) : null;
+                        val fileDescription = if (message.attachments != null) fileDescriptionFromList(message.attachments) else null
                         if (fileDescription != null) {
-                            fileDescription.setFrom(name);
-                            fileDescription.setTimeStamp(timeStamp);
+                            fileDescription.from = name
+                            fileDescription.timeStamp = timeStamp
                         }
-                        final Quote quote = message.getQuotes() != null ? quoteFromList(message.getQuotes()) : null;
-                        if (quote != null && quote.getFileDescription() != null)
-                            quote.getFileDescription().setTimeStamp(timeStamp);
-                        if (message.getOperator() != null) {
+                        val quote = if (message.quotes != null) quoteFromList(message.quotes) else null
+                        quote?.fileDescription?.timeStamp = timeStamp
+                        if (message.operator != null) {
                             out.add(
-                                    new ConsultPhrase(
-                                            uuid,
-                                            fileDescription,
-                                            quote,
-                                            name,
-                                            phraseText,
-                                            message.getFormattedText(),
-                                            timeStamp,
-                                            operatorId,
-                                            photoUrl,
-                                            message.isRead(),
-                                            message.getOperator().getStatus(),
-                                            false,
-                                            message.getThreadId(),
-                                            message.getQuickReplies(),
-                                            message.getSettings() != null ? message.getSettings().isBlockInput() : null,
-                                            SpeechStatus.Companion.fromString(message.getSpeechStatus())
-                                    )
-                            );
+                                ConsultPhrase(
+                                    uuid,
+                                    fileDescription,
+                                    quote,
+                                    name,
+                                    phraseText,
+                                    message.formattedText,
+                                    timeStamp,
+                                    operatorId,
+                                    photoUrl,
+                                    message.isRead,
+                                    message.operator.status,
+                                    false,
+                                    message.threadId,
+                                    message.quickReplies,
+                                    if (message.settings != null) message.settings!!.isBlockInput else null,
+                                    SpeechStatus.fromString(message.speechStatus)
+                                )
+                            )
                         } else {
                             if (fileDescription != null) {
-                                fileDescription.setFrom(BaseConfig.instance.context.getString(R.string.ecc_I));
+                                fileDescription.from = BaseConfig.instance.context.getString(R.string.ecc_I)
                             }
-                            MessageStatus sentState = message.isRead() ? MessageStatus.READ : MessageStatus.SENT;
-                            UserPhrase userPhrase
-                                    = new UserPhrase(uuid, phraseText, quote, timeStamp, fileDescription, sentState, message.getThreadId());
-                            userPhrase.setRead(message.isRead());
-                            out.add(userPhrase);
+                            val sentState = if (message.isRead) MessageStatus.READ else MessageStatus.SENT
+                            val userPhrase =
+                                UserPhrase(uuid, phraseText, quote, timeStamp, fileDescription, sentState, message.threadId)
+                            userPhrase.isRead = message.isRead
+                            out.add(userPhrase)
                         }
+                    }
                 }
             }
-            Collections.sort(out, (ci1, ci2) -> Long.compare(ci1.getTimeStamp(), ci2.getTimeStamp()));
-        } catch (final Exception e) {
-            LoggerEdna.error("error while formatting: " + messages, e);
+            out.sortWith { ci1: ChatItem, ci2: ChatItem -> ci1.timeStamp.compareTo(ci2.timeStamp) }
+        } catch (e: Exception) {
+            error("error while formatting: $messages", e)
         }
-        return out;
+        return out
     }
 
-    private static Survey getSurveyFromJsonString(@NonNull String text) {
-        try {
-            Survey survey = BaseConfig.instance.gson.fromJson(text, Survey.class);
-            final long time = new Date().getTime();
-            survey.setPhraseTimeStamp(time);
-            survey.setSentState(MessageStatus.FAILED);
-            survey.setDisplayMessage(true);
-            for (final QuestionDTO questionDTO : survey.getQuestions()) {
-                questionDTO.setPhraseTimeStamp(time);
+    private fun getSurveyFromJsonString(text: String): Survey? {
+        return try {
+            val survey = BaseConfig.instance.gson.fromJson(text, Survey::class.java)
+            val time = Date().time
+            survey.phraseTimeStamp = time
+            survey.sentState = MessageStatus.FAILED
+            survey.isDisplayMessage = true
+            for (questionDTO in survey.questions) {
+                questionDTO.phraseTimeStamp = time
             }
-            return survey;
-        } catch (final JsonSyntaxException e) {
-            LoggerEdna.error("getSurveyFromJsonString", e);
-            return null;
+            survey
+        } catch (e: JsonSyntaxException) {
+            error("getSurveyFromJsonString", e)
+            null
         }
     }
 
-    private static Survey getCompletedSurveyFromHistory(MessageFromHistory message) {
-        Survey survey = new Survey(message.getUuid(), message.getSendingId(), message.getTimeStamp(), MessageStatus.READ, message.isRead(), message.isDisplay());
-        QuestionDTO question = new QuestionDTO();
-        question.setId(message.getQuestionId());
-        question.setPhraseTimeStamp(message.getTimeStamp());
-        question.setText(message.getText());
-        question.setRate(message.getRate());
-        question.setScale(message.getScale());
-        question.setSendingId(message.getSendingId());
-        question.setSimple(message.isSimple());
-        survey.setQuestions(Collections.singletonList(question));
-        return survey;
+    private fun getCompletedSurveyFromHistory(message: MessageFromHistory): Survey {
+        val survey = Survey(
+            message.uuid,
+            message.sendingId,
+            message.timeStamp,
+            MessageStatus.READ,
+            message.isRead,
+            message.isDisplay
+        )
+        val question = QuestionDTO()
+        question.id = message.questionId
+        question.phraseTimeStamp = message.timeStamp
+        question.text = message.text
+        question.rate = message.rate
+        question.scale = message.scale
+        question.sendingId = message.sendingId
+        question.simple = message.isSimple
+        survey.questions = listOf(question)
+        return survey
     }
 
-    private static SimpleSystemMessage getSystemMessageFromHistory(MessageFromHistory message) {
-        return new SimpleSystemMessage(message.getUuid(), message.getType(), message.getTimeStamp(), message.getText(), message.getThreadId());
+    private fun getSystemMessageFromHistory(message: MessageFromHistory): SimpleSystemMessage {
+        return SimpleSystemMessage(message.uuid, message.type, message.timeStamp, message.text, message.threadId)
     }
 
-    private static Quote quoteFromList(final List<MessageFromHistory> quotes) {
-        Quote quote = null;
-        if (quotes.size() > 0 && quotes.get(0) != null) {
-            MessageFromHistory quoteFromHistory = quotes.get(0);
-            FileDescription quoteFileDescription = null;
-            String quoteString = null;
-            String authorName;
-            String receivedDateString = quoteFromHistory.getReceivedDate();
-            long timestamp = receivedDateString == null || receivedDateString.isEmpty() ? System.currentTimeMillis() : DateHelper.getMessageTimestampFromDateString(receivedDateString);
-            if (quoteFromHistory.getText() != null) {
-                quoteString = quoteFromHistory.getText();
+    private fun quoteFromList(quotes: List<MessageFromHistory?>): Quote? {
+        var quote: Quote? = null
+        if (quotes.isNotEmpty() && quotes[0] != null) {
+            val quoteFromHistory = quotes[0]
+            var quoteFileDescription: FileDescription? = null
+            var quoteString: String? = null
+            val receivedDateString = quoteFromHistory!!.receivedDate
+            val timestamp =
+                if (receivedDateString == null || receivedDateString.isEmpty()) {
+                    System.currentTimeMillis()
+                } else {
+                    DateHelper.getMessageTimestampFromDateString(
+                        receivedDateString
+                    )
+                }
+            if (quoteFromHistory.text != null) {
+                quoteString = quoteFromHistory.text
             }
-            if ((quoteFromHistory.getAttachments() != null)
-                    && (quoteFromHistory.getAttachments().size() > 0
-                    && (quoteFromHistory.getAttachments().get(0).getResult() != null))) {
-                quoteFileDescription = fileDescriptionFromList(quoteFromHistory.getAttachments());
+            if (quoteFromHistory.attachments != null && quoteFromHistory.attachments.size > 0 &&
+                quoteFromHistory.attachments[0].result != null
+            ) {
+                quoteFileDescription = fileDescriptionFromList(quoteFromHistory.attachments)
             }
-            if (quoteFromHistory.getOperator() != null) {
-                authorName = quoteFromHistory.getOperator().getAliasOrName();
+            val authorName: String? = if (quoteFromHistory.operator != null) {
+                quoteFromHistory.operator.aliasOrName
             } else {
-                authorName = BaseConfig.instance.context.getString(R.string.ecc_I);
+                BaseConfig.instance.context.getString(R.string.ecc_I)
             }
             if (quoteString != null || quoteFileDescription != null) {
-                quote = new Quote(quoteFromHistory.getUuid(), authorName, quoteString, quoteFileDescription, timestamp);
+                quote = Quote(quoteFromHistory.uuid, authorName, quoteString, quoteFileDescription, timestamp)
             }
             if (quoteFileDescription != null) {
-                quoteFileDescription.setFrom(authorName);
+                quoteFileDescription.from = authorName
             }
         }
-        return quote;
+        return quote
     }
 
-    private static FileDescription fileDescriptionFromList(final List<Attachment> attachments) {
-        FileDescription fileDescription = null;
-        if (attachments.size() > 0) {
-            Attachment attachment = attachments.get(0);
+    private fun fileDescriptionFromList(attachments: List<Attachment?>): FileDescription? {
+        var fileDescription: FileDescription? = null
+        if (attachments.isNotEmpty()) {
+            val attachment = attachments[0]
             if (attachment != null) {
-                String incomingName = attachment.getName();
-                String mimeType = attachment.getType();
-                long size = 0;
-                Optional metaData = attachment.getOptional();
+                val incomingName = attachment.name
+                val mimeType = attachment.type
+                var size: Long = 0
+                val metaData = attachment.optional
                 if (metaData != null) {
-                    size = metaData.getSize();
+                    size = metaData.size
                 }
-                fileDescription = new FileDescription(
-                        null,
-                        null,
-                        size,
-                        0
-                );
-                fileDescription.setDownloadPath(attachment.getResult());
-                fileDescription.setIncomingName(incomingName);
-                fileDescription.setMimeType(mimeType);
-                fileDescription.setState(attachment.getState());
-                if (attachment.getErrorCode() != null) {
-                    fileDescription.setErrorCode(attachment.getErrorCodeState());
-                    fileDescription.setErrorMessage(attachment.getErrorMessage());
+                fileDescription = FileDescription(
+                    null,
+                    null,
+                    size,
+                    0
+                )
+                fileDescription.downloadPath = attachment.result
+                fileDescription.incomingName = incomingName
+                fileDescription.mimeType = mimeType
+                fileDescription.state = attachment.state
+                if (attachment.errorCode != null) {
+                    fileDescription.errorCode = attachment.getErrorCodeState()
+                    fileDescription.errorMessage = attachment.errorMessage
                 }
             }
         }
-        return fileDescription;
+        return fileDescription
     }
 }

@@ -16,7 +16,7 @@ import im.threads.business.preferences.PreferencesCoreKeys
 import im.threads.business.rest.queries.ThreadsApi
 import im.threads.business.secureDatabase.DatabaseHolder
 import im.threads.business.serviceLocator.core.inject
-import im.threads.business.transport.HistoryLoader.getHistorySync
+import im.threads.business.transport.HistoryLoader
 import im.threads.business.transport.HistoryParser
 import im.threads.business.utils.ConsultWriter
 import im.threads.business.utils.getErrorStringResByCode
@@ -49,6 +49,7 @@ class MessengerImpl(private var compositeDisposable: CompositeDisposable?) : Mes
     private val chatUpdateProcessor: ChatUpdateProcessor by inject()
     private val preferences: Preferences by inject()
     private val database: DatabaseHolder by inject()
+    private val historyLoader: HistoryLoader by inject()
 
     private var isViewActive = false
     var pageItemsCount = 100
@@ -96,7 +97,7 @@ class MessengerImpl(private var compositeDisposable: CompositeDisposable?) : Mes
                     isDownloadingMessages = true
                     debug(ThreadsApi.REST_TAG, "downloadMessagesTillEnd")
                     while (!isAllMessagesDownloaded) {
-                        val response = getHistorySync(lastMessageTimestamp, pageItemsCount)
+                        val response = historyLoader.getHistorySync(lastMessageTimestamp, pageItemsCount)
                         val serverItems = HistoryParser.getChatItems(response)
                         if (serverItems.isEmpty()) {
                             isAllMessagesDownloaded = true
