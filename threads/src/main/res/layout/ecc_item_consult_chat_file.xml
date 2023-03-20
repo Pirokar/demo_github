@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/rootLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                xmlns:tools="http://schemas.android.com/tools">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rootLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
     <ImageView
         android:id="@+id/consult_avatar"
         android:layout_width="@dimen/ecc_operator_photo_size"
         android:layout_height="@dimen/ecc_operator_photo_size"
         android:layout_alignBottom="@id/bubble"
-        tools:src="@drawable/ecc_operator_avatar_placeholder"
-        android:layout_marginStart="@dimen/ecc_margin_half"/>
+        android:layout_marginStart="@dimen/ecc_margin_half"
+        tools:src="@drawable/ecc_operator_avatar_placeholder" />
 
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/bubble"
         style="@style/consultBubble"
         android:layout_toEndOf="@+id/consult_avatar"
@@ -23,33 +23,38 @@
         <im.threads.ui.views.CircularProgressButton
             android:id="@+id/circ_button"
             style="@style/CircularProgressButtonStyle"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="@dimen/ecc_margin_half"
             android:layout_marginTop="@dimen/ecc_margin_half"
             android:layout_marginEnd="@dimen/ecc_margin_quarter"
             android:layout_marginBottom="@dimen/ecc_margin_three_fourth"
             android:background="@color/ecc_chat_background"
             app:completed_drawable="@drawable/ecc_ic_file_outline_24dp"
             app:in_progress_label="@drawable/ecc_ic_clear_36dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:start_download_label="@drawable/ecc_ic_vertical_align_bottom_18dp" />
 
         <ImageView
             android:id="@+id/loader"
             android:layout_width="42dp"
             android:layout_height="42dp"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="@dimen/ecc_margin_half"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ecc_im_loading_consult" />
 
         <View
             android:id="@+id/delimiter"
             android:layout_width="1dp"
-            android:layout_height="100dp"
-            android:layout_centerVertical="true"
+            android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/ecc_margin_quarter"
-            android:layout_toEndOf="@+id/loader"
-            android:background="@color/ecc_incoming_message_text" />
+            android:layout_marginTop="@dimen/ecc_margin_half"
+            android:layout_marginBottom="@dimen/ecc_margin_half"
+            android:background="@color/ecc_incoming_message_text"
+            android:minHeight="50dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/loader"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <im.threads.ui.widget.textView.BubbleMessageTextView
             android:id="@+id/header"
@@ -57,33 +62,34 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/ecc_margin_half"
             android:layout_marginTop="@dimen/ecc_margin_half"
-            android:layout_toEndOf="@+id/delimiter"
             android:textColor="@color/ecc_incoming_message_text"
-            tools:text="счет на оплатуrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr.pdf" />
+            app:layout_constraintStart_toEndOf="@+id/delimiter"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="счет на.pdf" />
 
         <im.threads.ui.widget.textView.BubbleMessageTextView
             android:id="@+id/file_size"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/header"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="@dimen/ecc_margin_half"
             android:layout_marginTop="@dimen/ecc_margin_half"
-            android:layout_toEndOf="@+id/delimiter"
             android:paddingBottom="@dimen/ecc_margin_half"
             android:textColor="@color/ecc_incoming_message_text"
+            app:layout_constraintStart_toEndOf="@+id/delimiter"
+            app:layout_constraintTop_toBottomOf="@+id/header"
             tools:text="1,2 mb" />
 
         <im.threads.ui.widget.textView.BubbleTimeTextView
             android:id="@+id/timestamp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/header"
-            android:layout_alignParentEnd="true"
             android:layout_marginTop="@dimen/ecc_margin_half"
             android:textColor="@color/ecc_operator_message_timestamp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             tools:text="10:19" />
-    </RelativeLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <im.threads.ui.widget.textView.BubbleTimeTextView
         android:id="@+id/errortext"
