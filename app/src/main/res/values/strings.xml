@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Edna ChatCenter</string>
+
+    <string name="login_to_account">Вход в аккаунт</string>
+    <string name="server">Сервер</string>
+    <string name="user">Пользователь</string>
+    <string name="login">Войти</string>
+    <string name="demonstrations_examples">Демонстрационные примеры</string>
+    <string name="functional_not_support">Функционал не поддерживается в текущей версии приложения.</string>
+
+
+
+    <string name="launch_fragment_label">Welcome screen</string>
+    <string name="servers_fragment_label">Select server screen</string>
+
+</resources>
