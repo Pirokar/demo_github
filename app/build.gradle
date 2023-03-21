@@ -62,8 +62,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    debugImplementation "im.threads:threads-debug:$version"
-    releaseImplementation "im.threads:threads-release:$version"
+    implementation project(':threads')
 
     implementation "androidx.core:core-ktx:$rootProject.androidXCoreVersion"
     implementation "org.jetbrains.kotlin:kotlin-reflect:$rootProject.kotlinReflect"
@@ -76,8 +75,6 @@ dependencies {
 
     // Koin main features for Android
     implementation "io.insert-koin:koin-android:$koin_version"
-    // For demo mode
-    implementation "com.squareup.okhttp3:mockwebserver:$okhttp_webserver_version"
 
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$rootProject.viewmodelVersion"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$rootProject.viewmodelVersion"

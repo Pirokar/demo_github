@@ -34,6 +34,7 @@ class EdnaThreadsApplication : Application() {
             .isDebugLoggingEnabled(true)
             .showAttachmentsButton()
             .enableLogging(loggerConfig)
+            .disableSSLPinning() as ConfigBuilder
 
         getTransportConfig(this).apply {
             configBuilder.serverBaseUrl(baseUrl)

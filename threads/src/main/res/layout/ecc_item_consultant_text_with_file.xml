@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rootLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/consultAvatar"
+        android:layout_width="@dimen/ecc_operator_photo_size"
+        android:layout_height="@dimen/ecc_operator_photo_size"
+        android:layout_alignBottom="@id/bubble"
+        android:layout_marginStart="@dimen/ecc_margin_half" />
+
+    <im.threads.ui.widget.textView.BubbleTimeTextView
+        android:id="@+id/errorText"
+        style="@style/timestamp"
+        android:layout_below="@+id/bubble"
+        android:layout_marginStart="@dimen/ecc_consultant_margin_right"
+        android:layout_marginTop="@dimen/ecc_margin_material"
+        android:textColor="@color/ecc_error_red_df0000"
+        android:textSize="@dimen/ecc_error_text_size"
+        android:visibility="gone"
+        tools:text="Some error text"
+        tools:visibility="visible" />
+
+    <LinearLayout
+        android:id="@+id/bubble"
+        style="@style/consultBubble"
+        android:layout_marginBottom="0dp"
+        android:layout_toEndOf="@+id/consultAvatar"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:id="@+id/imageRoot"
+            android:layout_width="@dimen/ecc_message_image_size"
+            android:layout_height="@dimen/ecc_message_image_size">
+
+            <FrameLayout
+                android:id="@+id/imageLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:adjustViewBounds="true" />
+
+                <ImageView
+                    android:id="@+id/loaderImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:padding="75dp"
+                    android:scaleType="fitCenter" />
+
+            </FrameLayout>
+
+            <ImageView
+                android:id="@+id/errorImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:minWidth="200dp"
+                android:minHeight="200dp"
+                android:visibility="gone"/>
+
+        </FrameLayout>
+
+        <LinearLayout
+            android:id="@+id/rightTextRow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/ecc_margin_quarter"
+            android:orientation="horizontal"
+            android:paddingTop="@dimen/ecc_margin_half">
+
+            <ImageView
+                android:id="@+id/fileImage"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="@dimen/ecc_margin_half"
+                android:layout_marginEnd="@dimen/ecc_margin_half"
+                android:layout_marginBottom="@dimen/ecc_margin_half"
+                android:visibility="gone" />
+
+            <im.threads.ui.views.CircularProgressButton
+                android:id="@+id/buttonDownload"
+                style="@style/CircularProgressButtonStyle" />
+
+            <View
+                android:id="@+id/delimiter"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="@dimen/ecc_margin_half"
+                android:layout_marginTop="@dimen/ecc_margin_half" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <im.threads.ui.widget.textView.QuoteAuthorTextView
+                    android:id="@+id/to"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/ecc_margin_half"
+                    android:layout_marginTop="2dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="@dimen/ecc_margin_material"
+                    android:textColor="@color/ecc_incoming_message_text"
+                    android:textStyle="bold"
+                    tools:text="Иван Петров" />
+
+                <im.threads.ui.widget.textView.QuoteMessageTextView
+                    android:id="@+id/fileSpecs"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/ecc_margin_half"
+                    android:layout_marginTop="2dp"
+                    android:ellipsize="end"
+                    android:maxLines="3"
+                    android:textColor="@color/ecc_incoming_message_text"
+                    tools:text="счет на оплату очень длинное название очень длинное название очень длинное название.pdf" />
+
+                <im.threads.ui.widget.textView.QuoteTimeTextView
+                    android:id="@+id/sendAt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/ecc_margin_half"
+                    android:layout_marginTop="2dp"
+                    android:textColor="@color/ecc_incoming_message_text"
+                    android:textSize="12sp"
+                    tools:text="отправлено 21 апр 2016" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/phraseFrame"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="5dp">
+
+            <im.threads.ui.widget.textView.BubbleMessageTextView
+                android:id="@+id/text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:lineSpacingMultiplier="1.25"
+                android:autoLink="none"
+                android:paddingTop="5dp"
+                android:textColor="@color/ecc_incoming_message_text"
+                android:textSize="16sp"
+                app:last_line_extra_padding_symbols="@dimen/ecc_last_line_extra_padding_symbols"
+                tools:text="text text text text google.com" />
+
+            <im.threads.ui.widget.textView.BubbleTimeTextView
+                android:id="@+id/timeStamp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:layout_marginTop="@dimen/ecc_margin_material"
+                android:textColor="@color/ecc_operator_message_timestamp"
+                tools:text="10:19" />
+
+        </FrameLayout>
+
+        <include layout="@layout/ecc_open_graph_layout"/>
+
+    </LinearLayout>
+</RelativeLayout>

@@ -21,4 +21,4 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "Edna ChatCenter"
-include ':app'
+include ':app', ':threads'

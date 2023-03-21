@@ -11,10 +11,11 @@ import org.koin.dsl.module
 
 val appModule = module {
     single { CurrentJsonProvider(get()) }
-    single { SamplesJsonProvider() }
+    single { SamplesJsonProvider(get()) }
     single { StringsProvider(get()) }
-    viewModel { LaunchViewModel() }
+    single { PreferencesProvider(get()) }
+    viewModel { LaunchViewModel(get()) }
     viewModel { ServerViewModel() }
-    viewModel { DemoSamplesViewModel(get()) }
+    viewModel { DemoSamplesViewModel(get(), get()) }
     viewModel { DemoSamplesListViewModel(get(), get(), get()) }
 }

@@ -3,15 +3,23 @@ package io.edna.threads.demo.appCode.fragments.launch
 import android.app.Activity
 import android.view.View
 import android.widget.Toast
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import io.edna.threads.demo.R
+import io.edna.threads.demo.appCode.business.PreferencesProvider
 import io.edna.threads.demo.appCode.business.SingleLiveEvent
 
-class LaunchViewModel : ViewModel() {
+class LaunchViewModel(private val preferencesProvider: PreferencesProvider) : ViewModel(), DefaultLifecycleObserver {
     val selectServerAction: SingleLiveEvent<String> = SingleLiveEvent()
     val selectUserAction: SingleLiveEvent<String> = SingleLiveEvent()
+
+    override fun onCreate(owner: LifecycleOwner) {
+        super.onCreate(owner)
+        preferencesProvider.cleanJsonOnPreferences()
+    }
 
     fun click(view: View) {
         val navigationController: NavController =

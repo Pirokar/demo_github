@@ -1,0 +1,479 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="inputTextObservable"
+            type="androidx.databinding.ObservableField&lt;String>" />
+    </data>
+
+    <im.threads.ui.views.InterceptTouchFrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:id="@+id/chat_root"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/ecc_chat_background">
+
+            <im.threads.ui.widget.CustomFontButton
+                android:id="@+id/search_more"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_below="@+id/toolbar"
+                android:layout_marginLeft="@dimen/ecc_margin_big"
+                android:layout_marginRight="@dimen/ecc_margin_big"
+                android:background="@android:color/transparent"
+                android:text="@string/ecc_search_more"
+                android:visibility="gone" />
+
+            <FrameLayout
+                android:id="@+id/chat_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_above="@+id/bottom_layout"
+                android:layout_below="@+id/toolbar"
+                android:layout_alignParentStart="true">
+
+                <im.threads.ui.views.MySwipeRefreshLayout
+                    android:id="@+id/swipe_refresh"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recycler"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:clipToPadding="false"
+                        android:paddingTop="4dp"
+                        android:paddingBottom="4dp" />
+
+                </im.threads.ui.views.MySwipeRefreshLayout>
+
+                <im.threads.ui.views.WelcomeScreen
+                    android:id="@+id/welcome"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+            </FrameLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/scroll_down_button_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/bottom_layout"
+                android:layout_alignParentRight="true"
+                android:layout_margin="@dimen/ecc_scroll_down_button_margin"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <ImageView
+                    android:id="@+id/scroll_down_button"
+                    android:layout_width="@dimen/ecc_scroll_down_button_width"
+                    android:layout_height="@dimen/ecc_scroll_down_button_height"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="4dp"
+                    android:layout_marginBottom="4dp"
+                    android:background="@drawable/ecc_scroll_down_background"
+                    android:elevation="@dimen/ecc_scroll_down_button_elevation"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ecc_scroll_down_icon" />
+
+                <View
+                    android:id="@+id/unread_msg_sticker"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:background="@drawable/ecc_circle_red"
+                    android:elevation="@dimen/ecc_scroll_down_button_elevation"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <im.threads.ui.widget.CustomFontTextView
+                    android:id="@+id/unread_msg_count"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:elevation="@dimen/ecc_scroll_down_button_elevation"
+                    android:gravity="center"
+                    android:textColor="@color/ecc_chat_unread_msg_count_text"
+                    android:textSize="@dimen/ecc_text_small"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/unread_msg_sticker"
+                    tools:text="1" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <LinearLayout
+                android:id="@+id/bottom_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:background="@color/ecc_input_background"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/quote_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="72dp"
+                    android:orientation="horizontal"
+                    android:visibility="gone"
+                    tools:visibility="visible">
+
+                    <ImageButton
+                        android:id="@+id/quote_past"
+                        android:layout_width="24dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="@dimen/ecc_activity_horizontal_margin"
+                        android:background="@null"
+                        app:srcCompat="@drawable/ecc_ic_reply_gray_24dp"
+                        tools:visibility="gone" />
+
+                    <ImageView
+                        android:id="@+id/quote_image"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:minWidth="1dp"
+                        android:padding="@dimen/ecc_margin_half"
+                        android:visibility="gone" />
+
+                    <ImageView
+                        android:id="@+id/quote_button_play_pause"
+                        android:layout_width="64dp"
+                        android:layout_height="match_parent"
+                        android:background="@null"
+                        android:scaleType="centerInside"
+                        android:visibility="gone"
+                        app:srcCompat="@drawable/ecc_voice_message_play"
+                        tools:tint="@color/colorAccent"
+                        tools:visibility="visible" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="@dimen/ecc_activity_horizontal_margin"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <com.google.android.material.slider.Slider
+                            android:id="@+id/quote_slider"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:theme="@style/ThemeOverlay.ChatCenter.Slider.Preview"
+                            android:visibility="gone" />
+
+                        <im.threads.ui.widget.textView.InputQuotedMessageAuthorTextView
+                            android:id="@+id/quote_header"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginBottom="4dp"
+                            android:textColor="@color/ecc_incoming_message_text"
+                            android:textSize="@dimen/ecc_text_medium"
+                            tools:text="title_title_title" />
+
+                        <im.threads.ui.widget.textView.InputQuotedMessageTextView
+                            android:id="@+id/quote_text"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:ellipsize="end"
+                            android:lines="1"
+                            android:textColor="@color/ecc_incoming_message_text"
+                            tools:text="text_text_text_text_text_text_text_text_text_text_text_text_text_text_text_text" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/quote_duration"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:textColor="@color/ecc_incoming_message_text"
+                        android:textSize="@dimen/ecc_text_medium"
+                        tools:text="00:00" />
+
+                    <ImageButton
+                        android:id="@+id/quote_clear"
+                        android:layout_width="64dp"
+                        android:layout_height="match_parent"
+                        android:background="@null"
+                        app:srcCompat="@drawable/ecc_ic_clear_36dp" />
+
+                </LinearLayout>
+
+                <View
+                    android:id="@+id/delimeter"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#e5e5e5"
+                    android:visibility="gone" />
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:id="@+id/input_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/ecc_input_background"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <ImageButton
+                            android:id="@+id/add_attachment"
+                            style="@style/Base.Widget.AppCompat.Button.Borderless"
+                            android:layout_width="60dp"
+                            android:layout_height="64dp"
+                            android:background="@android:color/transparent"
+                            app:srcCompat="@drawable/ecc_ic_attachment_button" />
+
+                        <im.threads.ui.widget.CustomFontEditText
+                            android:id="@+id/input_edit_view"
+                            style="@style/InputEditTextStyle"
+                            android:ellipsize="end"
+                            android:hint="@string/ecc_input_hint"
+                            android:inputType="textCapSentences|textMultiLine"
+                            android:maxLines="7"
+                            android:text="@={inputTextObservable}" />
+
+                        <ImageButton
+                            android:id="@+id/send_message"
+                            style="@style/Base.Widget.AppCompat.Button.Borderless"
+                            android:layout_width="64dp"
+                            android:layout_height="64dp"
+                            android:background="@android:color/transparent"
+                            app:srcCompat="@drawable/ecc_ic_send_button" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_margin="8dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <com.devlomi.record_view.RecordView
+                            android:id="@+id/record_view"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentBottom="true"
+                            android:layout_toLeftOf="@id/record_button"
+                            android:layout_weight="1"
+                            android:background="@color/ecc_input_background"
+                            android:visibility="invisible"
+                            app:counter_time_color="#ff0000"
+                            app:slide_to_cancel_arrow="@drawable/recv_ic_arrow"
+                            app:slide_to_cancel_arrow_color="#000000"
+                            app:slide_to_cancel_bounds="10dp"
+                            app:slide_to_cancel_margin_right="10dp"
+                            app:slide_to_cancel_text="Slide To Cancel" />
+
+                        <com.devlomi.record_view.RecordButton
+                            android:id="@+id/record_button"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:layout_alignParentBottom="true"
+                            android:background="@drawable/ecc_record_button_background"
+                            android:scaleType="centerInside"
+                            app:mic_icon="@drawable/ecc_record_button_icon" />
+
+                    </LinearLayout>
+
+                </FrameLayout>
+
+            </LinearLayout>
+
+            <View
+                android:id="@+id/toolbar_shadow"
+                android:layout_width="match_parent"
+                android:layout_height="63dp"
+                android:background="@drawable/ecc_toolbar_shadow" />
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/ecc_toolbar_height"
+                android:background="@color/ecc_chat_toolbar"
+                app:contentInsetStart="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageButton
+                        android:id="@+id/chat_back_button"
+                        android:layout_width="@dimen/ecc_toolbar_button_width"
+                        android:layout_height="match_parent"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:gravity="center"
+                        android:visibility="gone"
+                        app:srcCompat="@drawable/ecc_ic_arrow_back_24dp"
+                        tools:visibility="visible" />
+
+                    <LinearLayout
+                        android:id="@+id/copy_controls"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal"
+                        android:orientation="horizontal"
+                        android:visibility="gone">
+
+                        <ImageButton
+                            android:id="@+id/reply"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_marginStart="-60dp"
+                            android:background="@null"
+                            app:srcCompat="@drawable/ecc_ic_reply_24dp" />
+
+                        <ImageButton
+                            android:id="@+id/content_copy"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_marginStart="@dimen/ecc_margin_big"
+                            android:background="@null"
+                            app:srcCompat="@drawable/ecc_ic_content_copy_24dp" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/consult_title"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="@dimen/ecc_margin_half"
+                        android:layout_marginEnd="@dimen/ecc_margin_half"
+                        android:layout_marginTop="@dimen/ecc_margin_quarter"
+                        android:layout_marginBottom="@dimen/ecc_margin_quarter"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:orientation="vertical">
+
+                        <im.threads.ui.widget.textView.ToolbarTitleTextView
+                            android:id="@+id/consult_name"
+                            android:layout_width="match_parent"
+                            android:layout_height="26dp"
+                            android:ellipsize="end"
+                            android:gravity="center_vertical"
+                            android:lines="1"
+                            android:textColor="@color/ecc_chat_toolbar_text"
+                            android:textSize="@dimen/ecc_text_big"
+                            tools:text="@string/ecc_searching_operator" />
+
+                        <im.threads.ui.widget.textView.ToolbarSubtitleTextView
+                            android:id="@+id/subtitle"
+                            android:layout_width="match_parent"
+                            android:layout_height="22dp"
+                            android:ellipsize="end"
+                            android:gravity="center_vertical"
+                            android:maxLines="1"
+                            android:textColor="@color/ecc_chat_toolbar_text"
+                            android:textSize="@dimen/ecc_text_regular"
+                            android:visibility="gone" />
+
+                        <RelativeLayout
+                            android:id="@+id/search_lo"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:visibility="gone">
+
+                            <im.threads.ui.widget.CustomFontEditText
+                                android:id="@+id/search"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_alignParentStart="true"
+                                android:layout_alignParentTop="true"
+                                android:layout_toStartOf="@+id/search_up_ib"
+                                android:background="@null"
+                                android:hint="@string/ecc_search_messages"
+                                android:imeOptions="actionSearch"
+                                android:inputType="text"
+                                android:lines="1"
+                                android:textColor="@color/ecc_chat_toolbar_text"
+                                android:textColorHint="@color/ecc_chat_toolbar_hint"
+                                android:textCursorDrawable="@null"
+                                android:textSize="@dimen/ecc_text_big"
+                                android:visibility="visible" />
+
+                            <androidx.appcompat.widget.AppCompatImageButton
+                                android:id="@+id/search_down_ib"
+                                android:layout_width="36dp"
+                                android:layout_height="match_parent"
+                                android:layout_toStartOf="@+id/search_up_ib"
+                                android:alpha="0.5"
+                                app:backgroundTint="@android:color/transparent"
+                                app:srcCompat="@drawable/ecc_ic_expand_more_white_24dp" />
+
+                            <androidx.appcompat.widget.AppCompatImageButton
+                                android:id="@+id/search_up_ib"
+                                android:layout_width="36dp"
+                                android:layout_height="match_parent"
+                                android:layout_alignParentEnd="true"
+                                android:layout_marginEnd="@dimen/ecc_margin_half"
+                                android:alpha="0.5"
+                                app:backgroundTint="@android:color/transparent"
+                                app:srcCompat="@drawable/ecc_ic_expand_less_white_24dp" />
+
+                        </RelativeLayout>
+
+                    </LinearLayout>
+
+                    <ImageButton
+                        android:id="@+id/popup_menu_button"
+                        android:layout_width="@dimen/ecc_toolbar_button_width"
+                        android:layout_height="match_parent"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:gravity="center"
+                        app:srcCompat="@drawable/ecc_ic_more_vert_24dp" />
+
+                </LinearLayout>
+
+            </androidx.appcompat.widget.Toolbar>
+
+            <LinearLayout
+                android:id="@+id/fl_empty"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/toolbar"
+                android:layout_alignParentStart="true"
+                android:background="@color/ecc_empty_state_background"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <ProgressBar
+                    android:id="@+id/progress_bar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center" />
+
+                <TextView
+                    android:id="@+id/tv_empty_state_hint"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ecc_empty_state_hint"
+                    android:textColor="@color/ecc_empty_state_hint" />
+
+            </LinearLayout>
+
+        </RelativeLayout>
+    </im.threads.ui.views.InterceptTouchFrameLayout>
+</layout>

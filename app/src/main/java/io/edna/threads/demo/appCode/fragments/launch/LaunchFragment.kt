@@ -38,6 +38,7 @@ class LaunchFragment : Fragment() {
     private fun initObservers() {
         viewModel.selectServerAction.observe(viewLifecycleOwner) { checkLoginEnabled() }
         viewModel.selectUserAction.observe(viewLifecycleOwner) { checkLoginEnabled() }
+        viewLifecycleOwner.lifecycle.addObserver(viewModel)
     }
 
     private fun checkLoginEnabled() {
