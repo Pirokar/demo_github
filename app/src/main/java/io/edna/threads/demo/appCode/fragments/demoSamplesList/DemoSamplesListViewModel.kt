@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.edna.threads.demo.R
 import io.edna.threads.demo.appCode.business.StringsProvider
+import io.edna.threads.demo.appCode.business.VolatileLiveData
 import io.edna.threads.demo.appCode.business.mockJsonProvider.CurrentJsonProvider
 import io.edna.threads.demo.appCode.business.mockJsonProvider.SamplesJsonProvider
 import io.edna.threads.demo.appCode.models.DemoSamplesListItem
@@ -19,9 +20,7 @@ class DemoSamplesListViewModel(
 ) : ViewModel(), DefaultLifecycleObserver {
     private val mutableDemoSamplesLiveData = MutableLiveData<List<DemoSamplesListItem>>()
     val demoSamplesLiveData: LiveData<List<DemoSamplesListItem>> = mutableDemoSamplesLiveData
-
-    private val mutableNavigationLiveData = MutableLiveData<Int>()
-    val navigationLiveData = mutableNavigationLiveData
+    val navigationLiveData = VolatileLiveData<Int>()
 
     override fun onCreate(owner: LifecycleOwner) {
         super.onCreate(owner)
@@ -31,7 +30,7 @@ class DemoSamplesListViewModel(
     fun onItemClick(item: DemoSamplesListItem) {
         if (item is TEXT) {
             currentJsonProvider.saveCurrentJson(item.json)
-            mutableNavigationLiveData.value = R.id.action_DemoSamplesListFragment_to_DemoSamplesFragment
+            navigationLiveData.setValue(R.id.action_DemoSamplesListFragment_to_DemoSamplesFragment)
         }
     }
 
