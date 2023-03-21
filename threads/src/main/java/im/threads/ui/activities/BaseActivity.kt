@@ -13,12 +13,14 @@ import android.text.style.MetricAffectingSpan
 import android.text.style.TypefaceSpan
 import android.view.MotionEvent
 import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import im.threads.BuildConfig
 import im.threads.R
 import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.useractivity.UserActivityTimeProvider.getLastUserActivityTimeCounter
@@ -34,7 +36,17 @@ abstract class BaseActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         super.onCreate(savedInstanceState)
-
+        if (BuildConfig.DEBUG) {
+            try {
+                Config.getInstance()
+            } catch (ex: NullPointerException) {
+                Toast.makeText(
+                    this,
+                    "Config instance is not initialized. Called from business logic?",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
         calculateSizeOfScreen()
     }
 
