@@ -18,4 +18,7 @@
     <string name="images">Изображения</string>
     <string name="system_messages">Системные сообщения</string>
     <string name="chat_with_bot">Чат с ботом</string>
+
+    <string name="demo_alt_threads_contact_center">Демонстрация сообщений</string>
+    <string name="demo_alt_threads_operator_subtitle">Оператор Елена</string>
 </resources>

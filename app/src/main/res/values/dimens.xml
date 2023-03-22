@@ -15,4 +15,17 @@
     <dimen name="text_size_14">14sp</dimen>
     <dimen name="text_size_16">16sp</dimen>
     <dimen name="text_size_28">28sp</dimen>
+
+    <dimen name="alt_greenBubbleIncomingPaddingLeft">23dp</dimen>
+    <dimen name="alt_greenBubbleIncomingPaddingTop">8dp</dimen>
+    <dimen name="alt_greenBubbleIncomingPaddingRight">8dp</dimen>
+    <dimen name="alt_greenBubbleIncomingPaddingBottom">8dp</dimen>
+    <dimen name="alt_incomingImageLeftBorderSize">22dp</dimen>
+    <dimen name="alt_incomingImageTopBorderSize">12dp</dimen>
+    <dimen name="alt_incomingImageRightBorderSize">12dp</dimen>
+    <dimen name="alt_incomingImageBottomBorderSize">12dp</dimen>
+    <dimen name="alt_outgoingImageLeftBorderSize">12dp</dimen>
+    <dimen name="alt_outgoingImageTopBorderSize">12dp</dimen>
+    <dimen name="alt_outgoingImageRightBorderSize">18dp</dimen>
+    <dimen name="alt_outgoingImageBottomBorderSize">12dp</dimen>
 </resources>

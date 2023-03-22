@@ -1016,6 +1016,22 @@ public final class ChatStyle implements Serializable {
     }
 
     /**
+     * @param color цвет входящего баббла
+     */
+    public ChatStyle setIncomingMessageBubbleColor(@ColorRes final int color) {
+        this.incomingMessageBubbleColor = color;
+        return this;
+    }
+
+    /**
+     * @param color цвет исходящего баббла
+     */
+    public ChatStyle setOutgoingMessageBubbleColor(@ColorRes final int color) {
+        this.outgoingMessageBubbleColor = color;
+        return this;
+    }
+
+    /**
      * Default values:
      *
      * @param chatTitleTextResId               - R.string.threads_contact_center
@@ -1475,6 +1491,15 @@ public final class ChatStyle implements Serializable {
     }
 
     /**
+     *
+     * @param scrollDownIconResId иконка "стрелка вниз" для перехода к концу чата
+     */
+    public ChatStyle setScrollDownButtonIcon(@DrawableRes final int scrollDownIconResId) {
+        this.scrollDownIconResId = scrollDownIconResId;
+        return this;
+    }
+
+    /**
      * Default values:
      *
      * @param threadsSwipeRefreshColors - R.array.threads_swipe_refresh_colors
@@ -1507,6 +1532,14 @@ public final class ChatStyle implements Serializable {
         this.threadsRecordButtonIcon = threadsRecordButtonIcon;
         this.threadsRecordButtonIconColor = threadsRecordButtonIconColor;
         this.threadsRecordButtonSmallMicColor = threadsRecordButtonSmallMicColor;
+        return this;
+    }
+
+    /**
+     * @param threadsRecordButtonBackgroundColor Устанавливает цвет бэкраунда кнопки записи голосовых сообщений
+     */
+    public ChatStyle setRecordButtonBackgroundColor(@ColorRes final int threadsRecordButtonBackgroundColor) {
+        this.threadsRecordButtonBackgroundColor = threadsRecordButtonBackgroundColor;
         return this;
     }
 
