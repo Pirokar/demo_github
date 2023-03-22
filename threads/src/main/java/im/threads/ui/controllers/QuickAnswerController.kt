@@ -9,7 +9,7 @@ import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.UpcomingUserMessage
 import im.threads.business.secureDatabase.DatabaseHolder
 import im.threads.business.serviceLocator.core.inject
-import im.threads.business.transport.HistoryLoader.getHistorySync
+import im.threads.business.transport.HistoryLoader
 import im.threads.business.transport.HistoryParser
 import im.threads.ui.activities.QuickAnswerActivity
 import io.reactivex.Single
@@ -23,6 +23,7 @@ import io.reactivex.schedulers.Schedulers
 class QuickAnswerController : Fragment() {
     private var compositeDisposable: CompositeDisposable? = CompositeDisposable()
     private val database: DatabaseHolder by inject()
+    private val historyLoader: HistoryLoader by inject()
 
     fun onBind(activity: QuickAnswerActivity) {
         info("onBind in " + QuickAnswerController::class.java.simpleName)
@@ -30,7 +31,7 @@ class QuickAnswerController : Fragment() {
         compositeDisposable?.add(
             Single.fromCallable {
                 HistoryParser.getChatItems(
-                    getHistorySync(100, true)
+                    historyLoader.getHistorySync(100, true)
                 )
             }
                 .doOnSuccess { chatItems: List<ChatItem>? ->

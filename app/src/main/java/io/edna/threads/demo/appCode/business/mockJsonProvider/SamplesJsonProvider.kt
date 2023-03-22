@@ -8,7 +8,7 @@ import java.io.InputStream
 import java.io.InputStreamReader
 
 class SamplesJsonProvider(private val context: Context) {
-    fun getTextChatJson() = readTextFileFromRawResourceId(R.raw.text_json_file)
+    fun getTextChatJson() = readTextFileFromRawResourceId(R.raw.history_text_response)
 
     fun getConnectionErrorJson() = ""
 

@@ -1,5 +1,6 @@
 package im.threads.business.transport
 
+import android.content.Context
 import androidx.annotation.WorkerThread
 import com.google.gson.Gson
 import im.threads.business.config.BaseConfig
@@ -15,7 +16,7 @@ import retrofit2.Call
 import retrofit2.Response
 import java.io.IOException
 
-object HistoryLoader {
+class HistoryLoader(private val context: Context) {
     private var lastLoadedTimestamp: Long? = null
 
     /**
@@ -28,6 +29,11 @@ object HistoryLoader {
     @WorkerThread
     @Throws(Exception::class)
     fun getHistorySync(beforeTimestamp: Long?, count: Int?): HistoryResponse? {
+        val historyMock = getHistoryMock()
+        if (context.applicationInfo.packageName == "io.edna.threads.demo" && historyMock.isNotEmpty()) {
+            return Gson().fromJson(historyMock, HistoryResponse::class.java)
+        }
+
         var count = count
         val token = BaseConfig.instance.transport.getToken()
         if (count == null) {
@@ -101,5 +107,10 @@ object HistoryLoader {
             "Loading history done. Call is null = ${call == null}. Response: ${response?.raw()}." +
                 "Body: $responseBody"
         )
+    }
+
+    private fun getHistoryMock(): String {
+        val preferences = context.getSharedPreferences("ecc_demo_json_preference", Context.MODE_PRIVATE)
+        return preferences.getString("ecc_demo_json_preference_key", "") ?: ""
     }
 }
