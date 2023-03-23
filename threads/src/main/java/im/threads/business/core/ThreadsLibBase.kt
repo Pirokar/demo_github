@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import im.threads.BuildConfig
+import im.threads.business.AuthMethod
 import im.threads.business.UserInfoBuilder
 import im.threads.business.audio.audioConverter.AudioConverter
 import im.threads.business.audio.audioConverter.callback.ILoadCallback
@@ -92,6 +93,22 @@ open class ThreadsLibBase protected constructor(context: Context) {
      */
     fun setCampaignMessage(campaignMessage: CampaignMessage) {
         preferences.save(PreferencesCoreKeys.CAMPAIGN_MESSAGE, campaignMessage)
+    }
+
+    /**
+     * Запускает обновление подключений в соответствии с текущими данными и способами авторизации
+     *
+     */
+    fun updateAuthData(
+        authToken: String?,
+        authSchema: String?,
+        authMethod: AuthMethod = AuthMethod.HEADERS
+    ) {
+        preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)?.let {
+            it.setAuthData(authToken, authSchema, authMethod)
+            preferences.save(PreferencesCoreKeys.USER_INFO, it)
+        }
+        BaseConfig.instance.transport.buildTransport()
     }
 
     companion object {

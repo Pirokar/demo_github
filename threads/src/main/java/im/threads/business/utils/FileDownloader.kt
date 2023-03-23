@@ -1,6 +1,7 @@
 package im.threads.business.utils
 
 import android.content.Context
+import im.threads.business.AuthMethod
 import im.threads.business.UserInfoBuilder
 import im.threads.business.config.BaseConfig
 import im.threads.business.logger.LoggerEdna
@@ -60,12 +61,7 @@ class FileDownloader(
                 if (userInfo?.clientId != null) {
                     urlConnection.setRequestProperty("X-Ext-Client-ID", userInfo.clientId)
                 }
-                if (!userInfo?.authToken.isNullOrBlank()) {
-                    urlConnection.setRequestProperty("Authorization", userInfo?.authToken)
-                }
-                if (!userInfo?.authToken.isNullOrBlank()) {
-                    urlConnection.setRequestProperty("X-Auth-Schema", userInfo?.authToken)
-                }
+                addConnectionAuthHeaders(userInfo, urlConnection)
                 urlConnection.doOutput = false
                 urlConnection.useCaches = false
                 urlConnection.doInput = true
@@ -124,6 +120,24 @@ class FileDownloader(
 
     fun stop() {
         isStopped = true
+    }
+
+    private fun addConnectionAuthHeaders(userInfo: UserInfoBuilder?, urlConnection: HttpURLConnection) {
+        val authToken = userInfo?.authToken
+        val authSchema = userInfo?.authSchema
+
+        if (AuthMethod.fromString(userInfo?.authMethod) == AuthMethod.COOKIES) {
+            if (!authToken.isNullOrBlank()) {
+                urlConnection.setRequestProperty("Cookie", "Authorization=$authToken; X-Auth-Schema=$authSchema")
+            }
+        } else {
+            if (!authToken.isNullOrBlank()) {
+                urlConnection.setRequestProperty("Authorization", authToken)
+            }
+            if (!authSchema.isNullOrBlank()) {
+                urlConnection.setRequestProperty("X-Auth-Schema", authToken)
+            }
+        }
     }
 
     private fun getFileLength(urlConnection: HttpURLConnection): Long? {

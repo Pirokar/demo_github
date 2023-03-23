@@ -68,16 +68,16 @@ import java.util.concurrent.TimeUnit
 import javax.net.ssl.SSLSession
 
 class ThreadsGateTransport(
-    threadsGateUrl: String,
+    private val threadsGateUrl: String,
     private val threadsGateProviderUid: String,
-    isDebugLoggingEnabled: Boolean,
-    socketSettings: SocketClientSettings,
-    sslSocketFactoryConfig: SslSocketFactoryConfig? = null,
-    networkInterceptor: Interceptor?
+    private val isDebugLoggingEnabled: Boolean,
+    private val socketSettings: SocketClientSettings,
+    private val sslSocketFactoryConfig: SslSocketFactoryConfig? = null,
+    private val networkInterceptor: Interceptor?
 ) : Transport(), LifecycleObserver {
-    private val client: OkHttpClient
-    private val request: Request
-    private val listener: WebSocketListener
+    private lateinit var client: OkHttpClient
+    private lateinit var request: Request
+    private lateinit var listener: WebSocketListener
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
     private val messageInProcessIds: MutableList<String> = ArrayList()
     private val surveysInProcess: MutableMap<Long, Survey> = HashMap()
@@ -90,7 +90,9 @@ class ThreadsGateTransport(
     private val chatUpdateProcessor: ChatUpdateProcessor by inject()
     private val database: DatabaseHolder by inject()
 
-    init {
+    init { buildTransport() }
+
+    override fun buildTransport() {
         val httpClientBuilder = OkHttpClient.Builder()
             .addInterceptor(authInterceptor)
             .apply { networkInterceptor?.let { addInterceptor(it) } }
@@ -122,7 +124,6 @@ class ThreadsGateTransport(
         listener = WebSocketListener()
     }
 
-    override fun init() {}
     override fun sendRatingDone(survey: Survey) {
         if (survey.questions.isNotEmpty()) {
             val content = outgoingMessageCreator.createRatingDoneMessage(survey)

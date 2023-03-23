@@ -1,5 +1,6 @@
 package im.threads.business.imageLoading
 
+import im.threads.business.AuthMethod
 import im.threads.business.UserInfoBuilder
 import im.threads.business.models.SslSocketFactoryConfig
 import im.threads.business.preferences.Preferences
@@ -21,12 +22,7 @@ class ImageLoaderOkHttpProvider(private val preferences: Preferences) {
                 val builder = chain.request().newBuilder().apply {
                     val userInfo = preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)
                     userInfo?.clientId?.let { addHeader("X-Ext-Client-ID", it) }
-                    if (!userInfo?.authToken.isNullOrBlank()) {
-                        addHeader("Authorization", userInfo?.authToken!!)
-                    }
-                    if (!userInfo?.authSchema.isNullOrBlank()) {
-                        addHeader("X-Auth-Schema", userInfo?.authSchema!!)
-                    }
+                    addChainAuthHeaders(userInfo, this)
                 }
                 val newRequest: Request = builder.build()
                 chain.proceed(newRequest)
@@ -43,6 +39,24 @@ class ImageLoaderOkHttpProvider(private val preferences: Preferences) {
             httpClientBuilder.hostnameVerifier { hostname: String, session: SSLSession -> true }
         }
         okHttpClient = httpClientBuilder.build()
+    }
+
+    private fun addChainAuthHeaders(userInfo: UserInfoBuilder?, requestBuilder: Request.Builder) {
+        val authToken = userInfo?.authToken
+        val authSchema = userInfo?.authSchema
+
+        if (AuthMethod.fromString(userInfo?.authMethod) == AuthMethod.COOKIES) {
+            if (!authToken.isNullOrBlank()) {
+                requestBuilder.addHeader("Cookie", "Authorization=$authToken; X-Auth-Schema=$authSchema")
+            }
+        } else {
+            if (!authToken.isNullOrBlank()) {
+                requestBuilder.addHeader("Authorization", authToken)
+            }
+            if (!authSchema.isNullOrBlank()) {
+                requestBuilder.addHeader("X-Auth-Schema", authSchema)
+            }
+        }
     }
 
     companion object {
