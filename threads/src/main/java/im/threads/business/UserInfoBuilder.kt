@@ -10,7 +10,7 @@ class UserInfoBuilder(var clientId: String) {
         private set
     var authSchema: String? = null
         private set
-    var authMethod: String = AuthMethod.HEADERS.name.lowercase()
+    var authMethod: AuthMethod = AuthMethod.HEADERS
     var clientData: String? = null
         private set
     var clientIdSignature: String? = null
@@ -38,7 +38,7 @@ class UserInfoBuilder(var clientId: String) {
     ): UserInfoBuilder {
         this.authToken = authToken
         this.authSchema = authSchema
-        this.authMethod = authMethod.name.lowercase()
+        this.authMethod = authMethod
         return this
     }
 

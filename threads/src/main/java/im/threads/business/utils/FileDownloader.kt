@@ -1,12 +1,12 @@
 package im.threads.business.utils
 
 import android.content.Context
-import im.threads.business.AuthMethod
 import im.threads.business.UserInfoBuilder
 import im.threads.business.config.BaseConfig
 import im.threads.business.logger.LoggerEdna
 import im.threads.business.preferences.Preferences
 import im.threads.business.preferences.PreferencesCoreKeys
+import im.threads.business.transport.AuthHeadersProvider
 import java.io.BufferedInputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -25,7 +25,8 @@ class FileDownloader(
     private val fileName: String,
     private val ctx: Context,
     private val downloadListener: DownloadListener,
-    private val preferences: Preferences
+    private val preferences: Preferences,
+    private val authHeadersProvider: AuthHeadersProvider
 ) {
     private val outputFile: File = File(
         getDownloadDir(ctx),
@@ -61,7 +62,7 @@ class FileDownloader(
                 if (userInfo?.clientId != null) {
                     urlConnection.setRequestProperty("X-Ext-Client-ID", userInfo.clientId)
                 }
-                addConnectionAuthHeaders(userInfo, urlConnection)
+                authHeadersProvider.setHeadersToUrlConnection(userInfo, urlConnection)
                 urlConnection.doOutput = false
                 urlConnection.useCaches = false
                 urlConnection.doInput = true
@@ -120,24 +121,6 @@ class FileDownloader(
 
     fun stop() {
         isStopped = true
-    }
-
-    private fun addConnectionAuthHeaders(userInfo: UserInfoBuilder?, urlConnection: HttpURLConnection) {
-        val authToken = userInfo?.authToken
-        val authSchema = userInfo?.authSchema
-
-        if (AuthMethod.fromString(userInfo?.authMethod) == AuthMethod.COOKIES) {
-            if (!authToken.isNullOrBlank()) {
-                urlConnection.setRequestProperty("Cookie", "Authorization=$authToken; X-Auth-Schema=$authSchema")
-            }
-        } else {
-            if (!authToken.isNullOrBlank()) {
-                urlConnection.setRequestProperty("Authorization", authToken)
-            }
-            if (!authSchema.isNullOrBlank()) {
-                urlConnection.setRequestProperty("X-Auth-Schema", authToken)
-            }
-        }
     }
 
     private fun getFileLength(urlConnection: HttpURLConnection): Long? {
