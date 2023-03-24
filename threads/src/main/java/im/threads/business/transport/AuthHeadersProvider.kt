@@ -23,7 +23,7 @@ class AuthHeadersProvider {
                 return request
             }
 
-            requestBuilder.addHeader(authSchemaHeaderKey, authToken)
+            requestBuilder.addHeader(authorizationHeaderKey, authToken)
 
             if (!authSchema.isNullOrEmpty()) {
                 requestBuilder.addHeader(authSchemaHeaderKey, authSchema)
