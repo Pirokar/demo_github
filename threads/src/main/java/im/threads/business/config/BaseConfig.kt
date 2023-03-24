@@ -9,7 +9,6 @@ import im.threads.business.exceptions.MetaConfigurationException
 import im.threads.business.imageLoading.ImageLoaderOkHttpProvider
 import im.threads.business.logger.LoggerConfig
 import im.threads.business.models.SslSocketFactoryConfig
-import im.threads.business.preferences.Preferences
 import im.threads.business.rest.config.RequestConfig
 import im.threads.business.rest.config.SocketClientSettings
 import im.threads.business.serviceLocator.core.inject
@@ -68,7 +67,7 @@ open class BaseConfig(
         .registerTypeAdapter(Uri::class.java, UriDeserializer())
         .create()
 
-    private val preferences: Preferences by inject()
+    private val imageLoaderOkHttpProvider: ImageLoaderOkHttpProvider by inject()
 
     init {
         this.context = context.applicationContext
@@ -77,7 +76,7 @@ open class BaseConfig(
         transport = getTransport(threadsGateUrl, threadsGateProviderUid, requestConfig.socketClientSettings)
         this.serverBaseUrl = getServerBaseUrl(serverBaseUrl)
         this.datastoreUrl = getDatastoreUrl(datastoreUrl)
-        ImageLoaderOkHttpProvider(Preferences(context)).createOkHttpClient( // TODO: rewrite with SL and Kotlin
+        imageLoaderOkHttpProvider.createOkHttpClient(
             requestConfig.picassoHttpClientSettings,
             sslSocketFactoryConfig
         )
