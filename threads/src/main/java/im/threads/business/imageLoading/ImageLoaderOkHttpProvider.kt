@@ -1,15 +1,12 @@
 package im.threads.business.imageLoading
 
-import im.threads.business.AuthMethod
 import im.threads.business.UserInfoBuilder
 import im.threads.business.models.SslSocketFactoryConfig
 import im.threads.business.preferences.Preferences
 import im.threads.business.preferences.PreferencesCoreKeys
 import im.threads.business.rest.config.HttpClientSettings
-import im.threads.business.serviceLocator.core.get
 import im.threads.business.transport.AuthHeadersProvider
 import okhttp3.OkHttpClient
-import okhttp3.Request
 import java.util.concurrent.TimeUnit
 import javax.net.ssl.SSLSession
 
@@ -42,24 +39,6 @@ class ImageLoaderOkHttpProvider(
             httpClientBuilder.hostnameVerifier { hostname: String, session: SSLSession -> true }
         }
         okHttpClient = httpClientBuilder.build()
-    }
-
-    private fun addChainAuthHeaders(userInfo: UserInfoBuilder?, requestBuilder: Request.Builder) {
-        val authToken = userInfo?.authToken
-        val authSchema = userInfo?.authSchema
-
-        if (userInfo?.authMethod == AuthMethod.COOKIES) {
-            if (!authToken.isNullOrBlank()) {
-                requestBuilder.addHeader("Cookie", "Authorization=$authToken; X-Auth-Schema=$authSchema")
-            }
-        } else {
-            if (!authToken.isNullOrBlank()) {
-                requestBuilder.addHeader("Authorization", authToken)
-            }
-            if (!authSchema.isNullOrBlank()) {
-                requestBuilder.addHeader("X-Auth-Schema", authSchema)
-            }
-        }
     }
 
     companion object {
