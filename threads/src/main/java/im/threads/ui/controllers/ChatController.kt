@@ -406,6 +406,10 @@ class ChatController private constructor() {
         info("bindFragment: $chatFragment")
         val activity = chatFragment?.activity ?: return
 
+        if (HistoryLoader.getHistoryMock(appContext).isNotEmpty()) {
+            database.cleanDatabase()
+        }
+
         fragment = chatFragment
 
         chatFragment.showProgressBar()

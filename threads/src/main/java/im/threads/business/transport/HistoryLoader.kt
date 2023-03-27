@@ -29,7 +29,7 @@ class HistoryLoader(private val context: Context) {
     @WorkerThread
     @Throws(Exception::class)
     fun getHistorySync(beforeTimestamp: Long?, count: Int?): HistoryResponse? {
-        val historyMock = getHistoryMock()
+        val historyMock = getHistoryMock(context)
         if (context.applicationInfo.packageName == "io.edna.threads.demo" && historyMock.isNotEmpty()) {
             return Gson().fromJson(historyMock, HistoryResponse::class.java)
         }
@@ -109,8 +109,10 @@ class HistoryLoader(private val context: Context) {
         )
     }
 
-    private fun getHistoryMock(): String {
-        val preferences = context.getSharedPreferences("ecc_demo_json_preference", Context.MODE_PRIVATE)
-        return preferences.getString("ecc_demo_json_preference_key", "") ?: ""
+    companion object {
+        fun getHistoryMock(context: Context): String {
+            val preferences = context.getSharedPreferences("ecc_demo_json_preference", Context.MODE_PRIVATE)
+            return preferences.getString("ecc_demo_json_preference_key", "") ?: ""
+        }
     }
 }
