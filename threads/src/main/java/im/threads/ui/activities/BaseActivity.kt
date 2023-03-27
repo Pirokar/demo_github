@@ -5,6 +5,8 @@ import android.content.pm.ActivityInfo
 import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.AbsoluteSizeSpan
@@ -36,16 +38,16 @@ abstract class BaseActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         super.onCreate(savedInstanceState)
-        if (BuildConfig.DEBUG) {
-            try {
-                Config.getInstance()
-            } catch (ex: NullPointerException) {
-                Toast.makeText(
-                    this,
-                    "Config instance is not initialized. Called from business logic?",
-                    Toast.LENGTH_LONG
-                ).show()
-            }
+        if (BuildConfig.DEBUG && Config.isInstanceNull()) {
+            Toast.makeText(
+                this,
+                "Config instance is not initialized. Called from business logic?",
+                Toast.LENGTH_LONG
+            ).show()
+            Handler(Looper.myLooper()!!).postDelayed({
+                throw NullPointerException("Config instance is not initialized. Called from business logic?")
+            }, 500)
+            return
         }
         calculateSizeOfScreen()
     }
