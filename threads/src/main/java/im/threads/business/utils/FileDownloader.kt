@@ -9,10 +9,12 @@ import im.threads.business.preferences.PreferencesCoreKeys
 import im.threads.business.transport.AuthHeadersProvider
 import java.io.BufferedInputStream
 import java.io.File
+import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
+import java.net.URLConnection
 import javax.net.ssl.HttpsURLConnection
 import kotlin.math.floor
 
@@ -51,14 +53,16 @@ class FileDownloader(
             BaseConfig.instance.sslSocketFactoryConfig?.let {
                 HttpsURLConnection.setDefaultSSLSocketFactory(it.sslSocketFactory)
             }
-            val urlConnection = if (url.protocol.equals("https", ignoreCase = true)) {
+            val urlConnection = if (url.protocol.equals("file", ignoreCase = true)) {
+                url.openConnection()
+            } else if (url.protocol.equals("https", ignoreCase = true)) {
                 url.openConnection() as HttpsURLConnection
             } else {
                 url.openConnection() as HttpURLConnection
             }
             val userInfo = preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)
             try {
-                urlConnection.requestMethod = "GET"
+                (urlConnection as? HttpURLConnection)?.requestMethod = "GET"
                 if (userInfo?.clientId != null) {
                     urlConnection.setRequestProperty("X-Ext-Client-ID", userInfo.clientId)
                 }
@@ -73,9 +77,19 @@ class FileDownloader(
                     urlConnection.setHostnameVerifier { _, _ -> true }
                 }
 
-                val length = getFileLength(urlConnection)
+                var inputFile: File? = null
+                val length = if (urlConnection is HttpURLConnection) {
+                    getFileLength(urlConnection)
+                } else {
+                    inputFile = getFileFromFileUrl(urlConnection)
+                    inputFile?.length() ?: 0L
+                }
                 val fileOutputStream = FileOutputStream(outputFile)
-                val `in`: InputStream = BufferedInputStream(urlConnection.inputStream)
+                val `in`: InputStream = if (inputFile == null) {
+                    BufferedInputStream(urlConnection.inputStream)
+                } else {
+                    BufferedInputStream(FileInputStream(inputFile))
+                }
                 var tempLength: Int
                 var bytesRead: Long = 0
                 var lastReadTime = System.currentTimeMillis()
@@ -111,7 +125,7 @@ class FileDownloader(
                 LoggerEdna.error("1 ", e)
                 downloadListener.onFileDownloadError(e)
             } finally {
-                urlConnection.disconnect()
+                (urlConnection as? HttpURLConnection)?.disconnect()
             }
         } catch (e: Exception) {
             LoggerEdna.error("2 ", e)
@@ -134,6 +148,25 @@ class FileDownloader(
         }
         return null
     }
+
+    private fun getFileFromFileUrl(urlConnection: URLConnection): File? {
+        return try {
+            getFileFromAssets(urlConnection.url.path.split("/").last())
+        } catch (exc: NoSuchElementException) {
+            null
+        }
+    }
+
+    private fun getFileFromAssets(fileName: String): File = File(ctx.cacheDir, fileName)
+        .also {
+            if (!it.exists()) {
+                it.outputStream().use { cache ->
+                    ctx.assets.open("test_images/$fileName").use { inputStream ->
+                        inputStream.copyTo(cache)
+                    }
+                }
+            }
+        }
 
     interface DownloadListener {
         fun onProgress(progress: Double)
