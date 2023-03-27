@@ -44,7 +44,7 @@ abstract class BaseActivity : AppCompatActivity() {
                 "Config instance is not initialized. Called from business logic?",
                 Toast.LENGTH_LONG
             ).show()
-            Handler(Looper.myLooper()!!).postDelayed({
+            Handler(Looper.getMainLooper()).postDelayed({
                 throw NullPointerException("Config instance is not initialized. Called from business logic?")
             }, 500)
             return
