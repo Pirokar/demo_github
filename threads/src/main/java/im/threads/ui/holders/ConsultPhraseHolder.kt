@@ -16,6 +16,7 @@ import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
+import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import im.threads.R
 import im.threads.business.formatters.RussianFormatSymbols
@@ -36,7 +37,6 @@ import im.threads.business.utils.toFileSize
 import im.threads.ui.config.Config
 import im.threads.ui.utils.gone
 import im.threads.ui.utils.invisible
-import im.threads.ui.utils.isVisible
 import im.threads.ui.utils.visible
 import im.threads.ui.views.CircularProgressButton
 import im.threads.ui.widget.textView.BubbleMessageTextView
@@ -438,14 +438,15 @@ class ConsultPhraseHolder(
 
     private fun showAvatar(consultPhrase: ConsultPhrase) {
         if (consultPhrase.isAvatarVisible) {
-            consultAvatar.visible()
+            if (consultAvatar.isInvisible) consultAvatar.visible()
             consultPhrase.avatarPath?.let {
                 consultAvatar.loadImage(
                     FileUtils.convertRelativeUrlToAbsolute(consultPhrase.avatarPath),
                     listOf(ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.FIT_XY),
                     errorDrawableResId = R.drawable.ecc_operator_avatar_placeholder,
                     autoRotateWithExif = true,
-                    modifications = listOf(ImageModifications.CircleCropModification)
+                    modifications = listOf(ImageModifications.CircleCropModification),
+                    noPlaceholder = true
                 )
             } ?: run {
                 consultAvatar.setImageResource(style.defaultOperatorAvatar)

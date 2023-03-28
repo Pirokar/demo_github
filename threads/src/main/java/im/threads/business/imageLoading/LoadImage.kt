@@ -11,7 +11,8 @@ internal fun ImageView.loadImage(
     modifications: List<ImageModifications?>? = null,
     callback: ImageLoader.ImageLoaderCallback? = null,
     autoRotateWithExif: Boolean = false,
-    isExternalImage: Boolean = false
+    isExternalImage: Boolean = false,
+    noPlaceholder: Boolean = false
 ) {
     data?.let {
         val builder = when (data) {
@@ -23,6 +24,10 @@ internal fun ImageView.loadImage(
         builder?.let { builder ->
             if (isExternalImage) {
                 builder.disableEdnaSsl()
+            }
+
+            if (noPlaceholder) {
+                builder.noPlaceholder()
             }
 
             builder.scales(scales)

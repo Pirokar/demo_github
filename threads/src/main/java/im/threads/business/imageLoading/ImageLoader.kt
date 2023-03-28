@@ -148,6 +148,14 @@ class ImageLoader private constructor() {
     }
 
     /**
+     * Отключает плейхолдер. В некоторых случаях позволяет починить мерцание при загрузке
+     */
+    fun noPlaceholder(): ImageLoader {
+        config.noPlaceholder = true
+        return this
+    }
+
+    /**
      * Указывает контейнер, в который необходимо загрузить изображение
      * @param imageView целевой контейнер
      */
@@ -194,6 +202,7 @@ class ImageLoader private constructor() {
         var resizePair: Size? = null
         var resizeDimen: Size? = null
         var isOnlyScaleDown = false
+        var noPlaceholder = false
         var isAutoRotateWithExif = false
         var isImageUnderSsl = true
     }

@@ -12,6 +12,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
+import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import im.threads.R
 import im.threads.business.imageLoading.ImageLoader
@@ -205,13 +206,14 @@ class ImageFromConsultViewHolder(
 
     private fun showAvatar(consultPhrase: ConsultPhrase) {
         if (consultPhrase.isAvatarVisible) {
-            consultAvatar.visible()
+            if (consultAvatar.isInvisible) consultAvatar.visible()
             consultPhrase.avatarPath?.let {
                 consultAvatar.loadImage(
                     FileUtils.convertRelativeUrlToAbsolute(it),
                     listOf(ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.FIT_XY),
                     errorDrawableResId = R.drawable.ecc_operator_avatar_placeholder,
-                    modifications = listOf(ImageModifications.CircleCropModification)
+                    modifications = listOf(ImageModifications.CircleCropModification),
+                    noPlaceholder = true
                 )
             } ?: run {
                 consultAvatar.setImageResource(style.defaultOperatorAvatar)
