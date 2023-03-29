@@ -41,6 +41,7 @@ class DemoSamplesListViewModel(
                 TEXT(stringsProvider.connectionErrors, samplesJsonProvider.getConnectionErrorJson()),
                 TEXT(stringsProvider.voiceMessages, samplesJsonProvider.getVoicesChatJson()),
                 TEXT(stringsProvider.images, samplesJsonProvider.getImagesChatJson()),
+                TEXT(stringsProvider.files, samplesJsonProvider.getFilesChatJson()),
                 TEXT(stringsProvider.systemMessages, samplesJsonProvider.getSystemChatJson()),
                 TEXT(stringsProvider.chatWithBot, samplesJsonProvider.getChatBotJson())
             )

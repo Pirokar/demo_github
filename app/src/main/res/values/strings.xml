@@ -16,6 +16,7 @@
     <string name="connection_errors">Ошибки подключения</string>
     <string name="voice_messages">Голосовые сообщения</string>
     <string name="images">Изображения</string>
+    <string name="files">Файлы</string>
     <string name="system_messages">Системные сообщения</string>
     <string name="chat_with_bot">Чат с ботом</string>
 

@@ -16,6 +16,8 @@ class SamplesJsonProvider(private val context: Context) {
 
     fun getImagesChatJson() = readTextFileFromRawResourceId(R.raw.history_images_response)
 
+    fun getFilesChatJson() = readTextFileFromRawResourceId(R.raw.history_files_response)
+
     fun getSystemChatJson() = readTextFileFromRawResourceId(R.raw.history_system_response)
 
     fun getChatBotJson() = ""
