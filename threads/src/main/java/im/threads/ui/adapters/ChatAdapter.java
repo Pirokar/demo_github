@@ -1301,7 +1301,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             sortItemsByTimeStamp(items);
             removeAllSpacings(items);
             for (int i = 1; i < items.size(); i++) {
-                updateConsultAvatarIfNeed(items.get(i - 1), items.get(i));
+                updateConsultAvatarIfNeed(items, i - 1, i);
             }
             DuplicateMessagesRemover.removeDuplicateSystemMessages(items);
             insertSpacing(items);
@@ -1315,13 +1315,19 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             }
         }
 
-        private void updateConsultAvatarIfNeed(ChatItem firstItem, ChatItem lastItem) {
+        private void updateConsultAvatarIfNeed(List<ChatItem> list, int firstItemIdx, int lastItemIdx) {
+            ChatItem firstItem = list.get(firstItemIdx);
+            ChatItem lastItem = list.get(lastItemIdx);
             if (firstItem instanceof ConsultPhrase && lastItem instanceof ConsultPhrase) {
                 String lastItemOperatorId = ((ConsultPhrase) lastItem).getConsultId();
                 String firstItemOperatorId = ((ConsultPhrase) firstItem).getConsultId();
                 if (firstItemOperatorId != null && firstItemOperatorId.equals(lastItemOperatorId)) {
-                    ((ConsultPhrase) firstItem).setAvatarVisible(false);
-                    ((ConsultPhrase) lastItem).setAvatarVisible(true);
+                    ConsultPhrase newFirstItem = ((ConsultPhrase) firstItem).copy();
+                    ConsultPhrase newLastItem = ((ConsultPhrase) lastItem).copy();
+                    newFirstItem.setAvatarVisible(false);
+                    newLastItem.setAvatarVisible(true);
+                    list.set(firstItemIdx, newFirstItem);
+                    list.set(lastItemIdx, newLastItem);
                 }
             }
         }

@@ -106,7 +106,6 @@ import java.util.concurrent.TimeUnit
  */
 class ChatController private constructor() {
     val messageErrorProcessor = PublishSubject.create<Long>()
-    private val surveyCompletionProcessor = PublishProcessor.create<Survey>()
     private val chatUpdateProcessor: ChatUpdateProcessor by inject()
     private val database: DatabaseHolder by inject()
     private val consultWriter: ConsultWriter by inject()

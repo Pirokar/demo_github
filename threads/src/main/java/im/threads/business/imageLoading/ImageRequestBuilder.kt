@@ -45,6 +45,9 @@ class ImageRequestBuilder {
         if (config.isOnlyScaleDown) {
             builder?.onlyScaleDown()
         }
+        if (config.noPlaceholder) {
+            builder?.noPlaceholder()
+        }
         config.modifications?.let {
             builder?.transform(getTransformations(it.toList()))
         }
