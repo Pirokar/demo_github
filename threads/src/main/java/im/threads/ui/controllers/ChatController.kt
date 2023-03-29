@@ -88,6 +88,7 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
+import io.reactivex.processors.PublishProcessor
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import kotlinx.coroutines.CoroutineScope
@@ -1493,7 +1494,11 @@ class ChatController private constructor() {
         }
 
     private fun enableInputBySchedule(): Boolean {
-        return currentScheduleInfo?.isChatWorking == true || currentScheduleInfo?.isSendDuringInactive == true
+        return if (currentScheduleInfo == null) {
+            true
+        } else {
+            currentScheduleInfo?.isChatWorking == true || currentScheduleInfo?.isSendDuringInactive == true
+        }
     }
 
     private fun handleQuickReplies(chatItems: List<ChatItem>) {
