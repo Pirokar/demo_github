@@ -247,7 +247,7 @@
                             android:hint="@string/ecc_input_hint"
                             android:inputType="textCapSentences|textMultiLine"
                             android:maxLines="7"
-                            android:text="@={inputTextObservable}" />
+                            android:text="@={inputTextObservable}"/>
 
                         <ImageButton
                             android:id="@+id/send_message"
@@ -255,7 +255,8 @@
                             android:layout_width="64dp"
                             android:layout_height="64dp"
                             android:background="@android:color/transparent"
-                            app:srcCompat="@drawable/ecc_ic_send_button" />
+                            app:srcCompat="@drawable/ecc_ic_send_button"
+                            android:enabled="false"/>
 
                     </LinearLayout>
 
