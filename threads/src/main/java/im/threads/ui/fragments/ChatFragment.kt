@@ -220,8 +220,6 @@ class ChatFragment :
         setHasOptionsMenu(true)
         initController()
         setFragmentStyle()
-        initUserInputState()
-        initQuickReplies()
         initMediaPlayer()
         subscribeToFileDescription()
         isShown = true
@@ -591,32 +589,6 @@ class ChatFragment :
         )
         setFileDescription(fd)
         mQuoteLayoutHolder?.setVoice()
-    }
-
-    private fun initUserInputState() {
-        subscribe(
-            chatUpdateProcessor.processor.userInputEnableProcessor
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { enableModel: InputFieldEnableModel -> updateInputEnable(enableModel) }
-                ) { error: Throwable? -> error("initUserInputState ", error) }
-        )
-    }
-
-    private fun initQuickReplies() {
-        subscribe(
-            chatUpdateProcessor.processor.quickRepliesProcessor
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { quickReplies: QuickReplyItem? ->
-                        if (quickReplies == null || quickReplies.items.isEmpty()) {
-                            hideQuickReplies()
-                        } else {
-                            showQuickReplies(quickReplies)
-                        }
-                    }
-                ) { error: Throwable? -> error("initQuickReplies ", error) }
-        )
     }
 
     private fun initMediaPlayer() {
@@ -1966,7 +1938,7 @@ class ChatFragment :
         }
     }
 
-    private fun updateInputEnable(enableModel: InputFieldEnableModel) {
+    internal fun updateInputEnable(enableModel: InputFieldEnableModel) {
         isSendBlocked = !enableModel.isEnabledSendButton
         binding.sendMessage.isEnabled = enableModel.isEnabledSendButton &&
             (!TextUtils.isEmpty(binding.inputEditView.text) || hasAttachments())

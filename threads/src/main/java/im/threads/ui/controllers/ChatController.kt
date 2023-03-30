@@ -88,7 +88,6 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
-import io.reactivex.processors.PublishProcessor
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import kotlinx.coroutines.CoroutineScope
@@ -646,6 +645,7 @@ class ChatController private constructor() {
                             if (fragment != null) {
                                 fragment?.addChatItems(items)
                                 handleQuickReplies(items)
+                                handleInputAvailability(items)
                                 val info = pair.first
                                 if (info != null) {
                                     fragment?.setStateConsultConnected(info)
@@ -807,6 +807,7 @@ class ChatController private constructor() {
         subscribeForResendMessage()
         subscribeOnClientIdChange()
         subscribeOnMessageError()
+        subscribeToUserInputState()
     }
 
     fun checkSubscribing() {
@@ -829,6 +830,7 @@ class ChatController private constructor() {
         if (!chatUpdateProcessor.speechMessageUpdateProcessor.hasSubscribers()) subscribeSpeechMessageUpdated()
         if (!messenger.resendStream.hasObservers()) subscribeForResendMessage()
         if (!messageErrorProcessor.hasObservers()) subscribeOnMessageError()
+        if (!chatUpdateProcessor.userInputEnableProcessor.hasSubscribers()) subscribeToUserInputState()
     }
 
     private fun subscribeToTransportException() {
@@ -1024,8 +1026,7 @@ class ChatController private constructor() {
                             }
                         }
                         return@doOnNext
-                    }
-                    if (chatItem is ScheduleInfo) {
+                    } else if (chatItem is ScheduleInfo) {
                         currentScheduleInfo = chatItem
                         currentScheduleInfo?.calculateServerTimeDiff()
                         refreshUserInputState()
@@ -1034,17 +1035,16 @@ class ChatController private constructor() {
                             fragment?.removeSearching()
                             fragment?.setTitleStateDefault()
                         }
-                    }
-                    if (chatItem is ConsultConnectionMessage) {
+                    } else if (chatItem is ConsultConnectionMessage) {
                         processConsultConnectionMessage(chatItem)
-                    }
-                    if (chatItem is SearchingConsult) {
+                    } else if (chatItem is SearchingConsult) {
                         fragment?.setStateSearchingConsult()
                         consultWriter.isSearchingConsult = true
                         return@doOnNext
-                    }
-                    if (chatItem is SimpleSystemMessage) {
+                    } else if (chatItem is SimpleSystemMessage) {
                         processSimpleSystemMessage(chatItem)
+                    } else if (chatItem is ConsultPhrase) {
+                        refreshUserInputState(chatItem.isBlockInput)
                     }
                     addMessage(chatItem)
                 }
@@ -1164,6 +1164,11 @@ class ChatController private constructor() {
                 .subscribe(
                     { quickReplies: QuickReplyItem? ->
                         hasQuickReplies = quickReplies != null && quickReplies.items.isNotEmpty()
+                        if (hasQuickReplies) {
+                            fragment?.showQuickReplies(quickReplies)
+                        } else {
+                            fragment?.hideQuickReplies()
+                        }
                         refreshUserInputState()
                     }
                 ) { error: Throwable? -> error("subscribeToQuickReplies ", error) }
@@ -1468,13 +1473,13 @@ class ChatController private constructor() {
         }
     }
 
-    private fun refreshUserInputState() {
-        chatUpdateProcessor.postUserInputEnableChanged(
-            InputFieldEnableModel(
-                isInputFieldEnabled(),
-                isSendButtonEnabled
-            )
-        )
+    private fun refreshUserInputState(isInputBlockedFromMessage: Boolean? = null) {
+        val inputFieldEnableModel = if (isInputBlockedFromMessage == true) {
+            InputFieldEnableModel(isEnabledInputField = false, isEnabledSendButton = false)
+        } else {
+            InputFieldEnableModel(isInputFieldEnabled(), isSendButtonEnabled)
+        }
+        chatUpdateProcessor.postUserInputEnableChanged(inputFieldEnableModel)
     }
 
     private fun isInputFieldEnabled(): Boolean {
@@ -1520,6 +1525,14 @@ class ChatController private constructor() {
             }
         } else {
             hideQuickReplies()
+        }
+    }
+
+    private fun handleInputAvailability(chatItems: List<ChatItem>) {
+        (chatItems.lastOrNull { it is ConsultPhrase } as? ConsultPhrase)?.let { lastOperatorPhrase ->
+            if (lastOperatorPhrase.isBlockInput != null) {
+                refreshUserInputState(lastOperatorPhrase.isBlockInput)
+            }
         }
     }
 
@@ -1584,6 +1597,16 @@ class ChatController private constructor() {
                         fragment?.scrollToElementByIndex(lastVisibleItem)
                     }
                 }
+        )
+    }
+
+    private fun subscribeToUserInputState() {
+        subscribe(
+            chatUpdateProcessor.userInputEnableProcessor
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { enableModel: InputFieldEnableModel -> fragment?.updateInputEnable(enableModel) }
+                ) { error: Throwable? -> error("initUserInputState ", error) }
         )
     }
 
