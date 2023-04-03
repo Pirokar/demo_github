@@ -393,7 +393,18 @@ class UserPhraseViewHolder(
                         if (fileClickListener != null) {
                             fileImageButton.setOnClickListener(fileClickListener)
                         }
-                        fileImageButton.setProgress(if (it.fileUri != null) 100 else it.downloadProgress)
+                        val statusKey = "${it.incomingName}:${it.size}"
+                        val progress = if (it.fileUri != null) {
+                            100
+                        } else if (fileProgress[statusKey] != null && it.downloadProgress < fileProgress[statusKey]!!) {
+                            fileProgress[statusKey]
+                        } else {
+                            it.downloadProgress
+                        }
+                        fileImageButton.setProgress(progress ?: 100)
+                        if (progress != null) {
+                            fileProgress[statusKey] = progress
+                        }
                     }
                 }
             }
@@ -648,5 +659,9 @@ class UserPhraseViewHolder(
                 parentView.context.resources.getDimension(style.outgoingMessageTimeTextSize)
             timeStampTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
         }
+    }
+
+    companion object {
+        private val fileProgress: HashMap<String, Int> = HashMap()
     }
 }

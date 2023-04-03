@@ -2,8 +2,8 @@ package im.threads.business.models.enums
 
 enum class AttachmentStateEnum(val state: String) {
     ANY("ANY"),
-    READY("READY"),
     PENDING("PENDING"),
+    READY("READY"),
     ERROR("ERROR");
 
     companion object {
