@@ -50,7 +50,6 @@ import im.threads.business.models.UpcomingUserMessage
 import im.threads.business.models.UserPhrase
 import im.threads.business.preferences.Preferences
 import im.threads.business.preferences.PreferencesCoreKeys
-import im.threads.business.rest.models.ConfigResponse
 import im.threads.business.rest.models.SettingsResponse
 import im.threads.business.rest.queries.BackendApi.Companion.get
 import im.threads.business.rest.queries.ThreadsApi
@@ -632,7 +631,6 @@ class ChatController private constructor() {
                             BaseConfig.instance.transport.markMessagesAsRead(uuidList)
                         }
                     }
-                    config
                     Pair(response?.consultInfo, serverItems.size)
                 }
                     .subscribeOn(Schedulers.io())
@@ -658,7 +656,6 @@ class ChatController private constructor() {
                         if (fragment != null) {
                             fragment?.hideProgressBar()
                         }
-                        config
                         error(e)
                     }
             )
@@ -701,31 +698,6 @@ class ChatController private constructor() {
             )
         }
 
-    val config: Unit
-        get() {
-            subscribe(
-                Single.fromCallable {
-                    get().config()?.execute()
-                }
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                        { response: Response<ConfigResponse?>? ->
-                            val responseBody = response?.body()
-                            responseBody?.let {
-                                val info: ScheduleInfo? = getScheduleInfo(it.schedule?.content)
-                                if (fragment != null) {
-                                    fragment?.addChatItem(info)
-                                }
-                            }
-                        }
-                    ) { e: Throwable ->
-                        info("error on getting config : " + e.message)
-                        chatUpdateProcessor.postError(TransportException(e.message))
-                    }
-            )
-        }
-
     private fun getScheduleInfo(fullMessage: JsonObject?): ScheduleInfo? {
         return fullMessage?.get("content")?.let {
             val scheduleInfo = BaseConfig.instance.gson.fromJson(it, ScheduleInfo::class.java)
@@ -739,7 +711,9 @@ class ChatController private constructor() {
     }
 
     fun forceResend(userPhrase: UserPhrase?) {
-        messenger.forceResend(userPhrase!!)
+        if (isScheduleActive(currentScheduleInfo) && userPhrase != null) {
+            messenger.forceResend(userPhrase)
+        }
     }
 
     fun removeUserPhraseFromDatabaseAsync(userPhrase: UserPhrase) {
@@ -807,7 +781,6 @@ class ChatController private constructor() {
         subscribeForResendMessage()
         subscribeOnClientIdChange()
         subscribeOnMessageError()
-        subscribeToUserInputState()
     }
 
     fun checkSubscribing() {
@@ -830,7 +803,6 @@ class ChatController private constructor() {
         if (!chatUpdateProcessor.speechMessageUpdateProcessor.hasSubscribers()) subscribeSpeechMessageUpdated()
         if (!messenger.resendStream.hasObservers()) subscribeForResendMessage()
         if (!messageErrorProcessor.hasObservers()) subscribeOnMessageError()
-        if (!chatUpdateProcessor.userInputEnableProcessor.hasSubscribers()) subscribeToUserInputState()
     }
 
     private fun subscribeToTransportException() {
@@ -1035,6 +1007,7 @@ class ChatController private constructor() {
                             fragment?.removeSearching()
                             fragment?.setTitleStateDefault()
                         }
+                        fragment?.addChatItem(currentScheduleInfo)
                     } else if (chatItem is ConsultConnectionMessage) {
                         processConsultConnectionMessage(chatItem)
                     } else if (chatItem is SearchingConsult) {
@@ -1429,6 +1402,7 @@ class ChatController private constructor() {
     @MainThread
     private fun processConsultConnectionMessage(ccm: ConsultConnectionMessage) {
         if (ccm.type.equals(ChatItemType.OPERATOR_JOINED.name, ignoreCase = true)) {
+            refreshUserInputState(false)
             if (ccm.threadId != null) {
                 threadId = ccm.threadId ?: 0L
                 fragment?.setCurrentThreadId(ccm.threadId ?: 0L)
@@ -1459,6 +1433,9 @@ class ChatController private constructor() {
                 fragment?.setTitleStateDefault()
             }
         } else {
+            if (ChatItemType.ATTACHMENT_SETTINGS.name.equals(type, ignoreCase = true)) {
+                refreshUserInputState(false)
+            }
             if (systemMessage.threadId != null) {
                 threadId = systemMessage.threadId ?: 0L
                 fragment?.setCurrentThreadId(systemMessage.threadId ?: 0L)
@@ -1476,14 +1453,22 @@ class ChatController private constructor() {
     private fun refreshUserInputState(isInputBlockedFromMessage: Boolean? = null) {
         val inputFieldEnableModel = if (isInputBlockedFromMessage == true) {
             InputFieldEnableModel(isEnabledInputField = false, isEnabledSendButton = false)
+        } else if (isInputBlockedFromMessage == false) {
+            InputFieldEnableModel(isEnabledInputField = true, isEnabledSendButton = true)
         } else {
             InputFieldEnableModel(isInputFieldEnabled(), isSendButtonEnabled)
         }
-        chatUpdateProcessor.postUserInputEnableChanged(inputFieldEnableModel)
+        info("UserInputState_change. isInputBlockedFromMessage: $isInputBlockedFromMessage, $inputFieldEnableModel")
+        fragment?.updateInputEnable(inputFieldEnableModel)
+        fragment?.updateChatAvailabilityMessage(inputFieldEnableModel)
     }
 
     private fun isInputFieldEnabled(): Boolean {
-        val fileDescription = fragment?.fileDescription?.get()?.get()
+        val fileDescription = try {
+            fragment?.fileDescription?.get()?.get()
+        } catch (exc: NoSuchElementException) {
+            null
+        }
         return if (fileDescription != null && isVoiceMessage(fileDescription)) {
             false
         } else {
@@ -1502,8 +1487,12 @@ class ChatController private constructor() {
         return if (currentScheduleInfo == null) {
             true
         } else {
-            currentScheduleInfo?.isChatWorking == true || currentScheduleInfo?.isSendDuringInactive == true
+            isScheduleActive(currentScheduleInfo)
         }
+    }
+
+    private fun isScheduleActive(scheduleInfo: ScheduleInfo?): Boolean {
+        return scheduleInfo?.isChatWorking == true || scheduleInfo?.isSendDuringInactive == true
     }
 
     private fun handleQuickReplies(chatItems: List<ChatItem>) {
@@ -1600,16 +1589,6 @@ class ChatController private constructor() {
         )
     }
 
-    private fun subscribeToUserInputState() {
-        subscribe(
-            chatUpdateProcessor.userInputEnableProcessor
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { enableModel: InputFieldEnableModel -> fragment?.updateInputEnable(enableModel) }
-                ) { error: Throwable? -> error("initUserInputState ", error) }
-        )
-    }
-
     companion object {
         // Состояния консультанта
         const val CONSULT_STATE_FOUND = 1
@@ -1620,6 +1599,7 @@ class ChatController private constructor() {
         private var instance: ChatController? = null
 
         @JvmStatic
+        @Synchronized
         fun getInstance(): ChatController {
             val clientUseCase = ClientUseCase(Preferences(ContextHolder.context))
             if (instance == null) {

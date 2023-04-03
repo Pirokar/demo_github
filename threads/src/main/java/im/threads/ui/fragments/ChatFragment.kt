@@ -809,6 +809,11 @@ class ChatFragment :
     }
 
     private fun onSendButtonClick() {
+        if (isSendBlocked) {
+            show(requireContext(), requireContext().getString(R.string.ecc_message_were_unsent))
+            return
+        }
+
         val inputText = inputTextObservable.get()
         if (inputText == null || inputText.trim { it <= ' ' }.isEmpty() && getFileDescription() == null) {
             return
@@ -1946,6 +1951,12 @@ class ChatFragment :
         binding.addAttachment.isEnabled = enableModel.isEnabledInputField
         if (!enableModel.isEnabledInputField) {
             binding.inputEditView.hideKeyboard(100)
+        }
+    }
+
+    internal fun updateChatAvailabilityMessage(enableModel: InputFieldEnableModel) {
+        if (enableModel.isEnabledSendButton && enableModel.isEnabledInputField) {
+            chatAdapter?.removeSchedule(false)
         }
     }
 
