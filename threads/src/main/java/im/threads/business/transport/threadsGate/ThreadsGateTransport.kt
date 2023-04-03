@@ -237,7 +237,7 @@ class ThreadsGateTransport(
         important: Boolean = false,
         correlationId: String = UUID.randomUUID().toString(),
         tryOpeningWebSocket: Boolean = true,
-        sendInit: Boolean = true
+        sendInit: Boolean = false
     ) {
         LoggerEdna.info(
             "sendMessage: content = $content, important = $important, correlationId = $correlationId"

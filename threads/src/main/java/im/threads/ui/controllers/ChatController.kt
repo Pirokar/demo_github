@@ -1402,7 +1402,6 @@ class ChatController private constructor() {
     @MainThread
     private fun processConsultConnectionMessage(ccm: ConsultConnectionMessage) {
         if (ccm.type.equals(ChatItemType.OPERATOR_JOINED.name, ignoreCase = true)) {
-            refreshUserInputState(false)
             if (ccm.threadId != null) {
                 threadId = ccm.threadId ?: 0L
                 fragment?.setCurrentThreadId(ccm.threadId ?: 0L)
@@ -1433,9 +1432,6 @@ class ChatController private constructor() {
                 fragment?.setTitleStateDefault()
             }
         } else {
-            if (ChatItemType.ATTACHMENT_SETTINGS.name.equals(type, ignoreCase = true)) {
-                refreshUserInputState(false)
-            }
             if (systemMessage.threadId != null) {
                 threadId = systemMessage.threadId ?: 0L
                 fragment?.setCurrentThreadId(systemMessage.threadId ?: 0L)
@@ -1451,12 +1447,16 @@ class ChatController private constructor() {
     }
 
     private fun refreshUserInputState(isInputBlockedFromMessage: Boolean? = null) {
-        val inputFieldEnableModel = if (isInputBlockedFromMessage == true) {
-            InputFieldEnableModel(isEnabledInputField = false, isEnabledSendButton = false)
-        } else if (isInputBlockedFromMessage == false) {
-            InputFieldEnableModel(isEnabledInputField = true, isEnabledSendButton = true)
-        } else {
-            InputFieldEnableModel(isInputFieldEnabled(), isSendButtonEnabled)
+        val inputFieldEnableModel = when (isInputBlockedFromMessage) {
+            true -> {
+                InputFieldEnableModel(isEnabledInputField = false, isEnabledSendButton = false)
+            }
+            false -> {
+                InputFieldEnableModel(isEnabledInputField = true, isEnabledSendButton = true)
+            }
+            else -> {
+                InputFieldEnableModel(isInputFieldEnabled(), isSendButtonEnabled)
+            }
         }
         info("UserInputState_change. isInputBlockedFromMessage: $isInputBlockedFromMessage, $inputFieldEnableModel")
         fragment?.updateInputEnable(inputFieldEnableModel)
