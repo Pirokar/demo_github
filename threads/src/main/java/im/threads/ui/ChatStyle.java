@@ -101,6 +101,11 @@ public final class ChatStyle implements Serializable {
     public int outgoingMessageTextColor = R.color.ecc_outgoing_message_text;
 
     @ColorRes
+    public int quoteHeaderTextColor = R.color.ecc_incoming_message_text;
+    @ColorRes
+    public int quoteTextTextColor = R.color.ecc_incoming_message_text;
+
+    @ColorRes
     public int incomingMessageTimeColor = R.color.ecc_operator_message_timestamp;
     @ColorRes
     public int outgoingMessageTimeColor = R.color.ecc_user_message_timestamp;
@@ -1890,6 +1895,20 @@ public final class ChatStyle implements Serializable {
     ) {
         this.messageFailedIconResId = messageFailedIconResId;
         this.messageFailedIconColorResId = messageFailedIconColorResId;
+        return this;
+    }
+
+    /**
+     * Устанавливает цвет текста для цитат
+     * @param quoteHeaderTextColor - ресурс id цвета для автора цитаты. По умолчанию - R.color.ecc_incoming_message_text
+     * @param quoteTextTextColor - ресурс id цвета для текста цитаты. По умолчанию - R.color.ecc_incoming_message_text
+     */
+    public ChatStyle setQuoteTextColors(
+            @ColorRes int quoteHeaderTextColor,
+            @ColorRes int quoteTextTextColor
+    ) {
+        this.quoteHeaderTextColor = quoteHeaderTextColor;
+        this.quoteTextTextColor = quoteTextTextColor;
         return this;
     }
 }

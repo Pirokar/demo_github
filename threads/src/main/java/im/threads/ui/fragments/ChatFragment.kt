@@ -2381,7 +2381,8 @@ class ChatFragment :
                     ContextCompat.getColor(requireContext(), style.previewPlayPauseButtonColor),
                     PorterDuff.Mode.SRC_ATOP
                 )
-                binding.quoteHeader.setTextColor(ContextCompat.getColor(activity, style.incomingMessageTextColor))
+                binding.quoteHeader.setTextColor(ContextCompat.getColor(activity, style.quoteHeaderTextColor))
+                binding.quoteText.setTextColor(ContextCompat.getColor(activity, style.quoteTextTextColor))
                 binding.quoteClear.setOnClickListener { clear() }
                 binding.quoteButtonPlayPause.setOnClickListener {
                     if (fdMediaPlayer == null) {
