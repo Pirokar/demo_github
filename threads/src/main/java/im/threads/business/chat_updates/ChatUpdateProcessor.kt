@@ -5,6 +5,7 @@ import im.threads.business.models.CampaignMessage
 import im.threads.business.models.ChatItem
 import im.threads.business.models.ChatItemSendErrorModel
 import im.threads.business.models.ClientNotificationDisplayType
+import im.threads.business.models.FileDescription
 import im.threads.business.models.InputFieldEnableModel
 import im.threads.business.models.QuickReplyItem
 import im.threads.business.models.SpeechMessageUpdate
@@ -38,6 +39,7 @@ class ChatUpdateProcessor {
     val speechMessageUpdateProcessor: FlowableProcessor<SpeechMessageUpdate> = PublishProcessor.create()
     val attachAudioFilesProcessor: FlowableProcessor<Boolean> = PublishProcessor.create()
     val errorProcessor: FlowableProcessor<TransportException> = PublishProcessor.create()
+    val uploadResultProcessor: FlowableProcessor<FileDescription> = PublishProcessor.create()
 
     /**
      * Передаёт ответы от коллбэков сокетного соединения.
@@ -136,6 +138,11 @@ class ChatUpdateProcessor {
     fun postSocketResponseMap(socketResponseMap: Map<String, Any>) {
         checkSubscribers()
         socketResponseMapProcessor.onNext(socketResponseMap)
+    }
+
+    fun postUploadResult(uploadResult: FileDescription?) {
+        checkSubscribers()
+        uploadResultProcessor.onNext(uploadResult)
     }
 
     private fun checkSubscribers() {

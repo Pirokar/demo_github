@@ -54,7 +54,7 @@ import im.threads.R
 import im.threads.business.annotation.OpenWay
 import im.threads.business.audio.audioRecorder.AudioRecorder
 import im.threads.business.broadcastReceivers.ProgressReceiver
-import im.threads.business.chat_updates.ChatUpdateProcessorJavaGetter
+import im.threads.business.chat_updates.ChatUpdateProcessor
 import im.threads.business.config.BaseConfig
 import im.threads.business.extensions.withMainContext
 import im.threads.business.imageLoading.ImageLoader.Companion.get
@@ -87,6 +87,7 @@ import im.threads.business.models.SystemMessage
 import im.threads.business.models.UnreadMessages
 import im.threads.business.models.UpcomingUserMessage
 import im.threads.business.models.UserPhrase
+import im.threads.business.serviceLocator.core.inject
 import im.threads.business.useractivity.UserActivityTimeProvider.getLastUserActivityTimeCounter
 import im.threads.business.utils.Balloon.show
 import im.threads.business.utils.FileProviderHelper
@@ -172,7 +173,7 @@ class ChatFragment :
     val fileDescription = ObservableField(Optional.empty<FileDescription?>())
     private val mediaMetadataRetriever = MediaMetadataRetriever()
     private val audioConverter = ChatCenterAudioConverter()
-    private val chatUpdateProcessor = ChatUpdateProcessorJavaGetter()
+    private val chatUpdateProcessor: ChatUpdateProcessor by inject()
     private var fdMediaPlayer: FileDescriptionMediaPlayer? = null
     private val chatController: ChatController by lazy { ChatController.getInstance() }
     private var chatAdapter: ChatAdapter? = null
@@ -2421,7 +2422,7 @@ class ChatFragment :
                 fdMediaPlayer?.reset()
             }
             unChooseItem()
-            chatUpdateProcessor.processor.postAttachAudioFile(false)
+            chatUpdateProcessor.postAttachAudioFile(false)
         }
 
         fun setContent(header: String?, text: String, imagePath: Uri?, isFromFilePicker: Boolean) {
@@ -2468,7 +2469,7 @@ class ChatFragment :
             binding.quotePast.visibility = View.GONE
             formattedDuration = getFormattedDuration(getFileDescription())
             binding.quoteDuration.text = formattedDuration
-            chatUpdateProcessor.processor.postAttachAudioFile(true)
+            chatUpdateProcessor.postAttachAudioFile(true)
         }
 
         private fun init(maxValue: Int, progress: Int, isPlaying: Boolean) {
