@@ -323,7 +323,15 @@ class UserPhraseViewHolder(
             fileDescription = it
             subscribeForVoiceMessageDownloaded()
             rightTextDescription.text = getFileDescriptionText(it)
-            val isLoading = it.state == AttachmentStateEnum.PENDING || userPhrase.sentState == MessageStatus.SENDING
+            val statusKey = "${it.incomingName}:${it.size}"
+            val lastStatus = fileStatuses[statusKey]
+            val status = if (lastStatus != null && it.state < lastStatus) {
+                lastStatus
+            } else {
+                it.state
+            }
+            val isLoading = status == AttachmentStateEnum.PENDING || userPhrase.sentState == MessageStatus.SENDING
+            fileStatuses[statusKey] = status
             if (isVoiceMessage(it) && isLoading) {
                 startLoader()
             } else if (isLoading) {
@@ -393,7 +401,18 @@ class UserPhraseViewHolder(
                         if (fileClickListener != null) {
                             fileImageButton.setOnClickListener(fileClickListener)
                         }
-                        fileImageButton.setProgress(if (it.fileUri != null) 100 else it.downloadProgress)
+                        val statusKey = "${it.incomingName}:${it.size}"
+                        val progress = if (it.fileUri != null) {
+                            100
+                        } else if (fileProgress[statusKey] != null && it.downloadProgress < fileProgress[statusKey]!!) {
+                            fileProgress[statusKey]
+                        } else {
+                            it.downloadProgress
+                        }
+                        fileImageButton.setProgress(progress ?: 100)
+                        if (progress != null) {
+                            fileProgress[statusKey] = progress
+                        }
                     }
                 }
             }
@@ -648,5 +667,10 @@ class UserPhraseViewHolder(
                 parentView.context.resources.getDimension(style.outgoingMessageTimeTextSize)
             timeStampTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
         }
+    }
+
+    companion object {
+        private val fileProgress: HashMap<String, Int> = HashMap()
+        private val fileStatuses: HashMap<String, AttachmentStateEnum> = HashMap()
     }
 }

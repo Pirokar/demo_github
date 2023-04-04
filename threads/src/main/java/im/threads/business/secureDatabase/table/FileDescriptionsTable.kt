@@ -64,7 +64,7 @@ class FileDescriptionsTable : Table() {
             fd.mimeType = cursorGetString(c, COLUMN_FD_MIME_TYPE)
             fd.state = AttachmentStateEnum.READY
             cursorGetString(c, COLUMN_FD_ATTACHMENT_STATE)?.let {
-                fd.state = AttachmentStateEnum.attachmentStateEnumFromString(it)
+                fd.state = AttachmentStateEnum.fromString(it)
             }
             fd.errorCode = ErrorStateEnum.ANY
             cursorGetString(c, COLUMN_FD_ERROR_CODE)?.let {
@@ -152,7 +152,7 @@ class FileDescriptionsTable : Table() {
                 fd.downloadPath = cursorGetString(c, COLUMN_FD_URL)
                 fd.state = AttachmentStateEnum.READY
                 cursorGetString(c, COLUMN_FD_ATTACHMENT_STATE)?.let {
-                    fd.state = AttachmentStateEnum.attachmentStateEnumFromString(it)
+                    fd.state = AttachmentStateEnum.fromString(it)
                 }
                 fd.errorCode = ErrorStateEnum.ANY
                 cursorGetString(c, COLUMN_FD_ERROR_CODE)?.let {
