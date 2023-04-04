@@ -1188,27 +1188,21 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
     }
 
-    private void removeSurveyIfNotLatest(ArrayList<ChatItem> list) {
+    private synchronized void removeSurveyIfNotLatest(ArrayList<ChatItem> list) {
         boolean isListSizeMoreThat1Element = list != null && list.size() > 1;
         boolean isPreviousItemSurvey = isListSizeMoreThat1Element &&
                 list.get(list.size() - 2) instanceof Survey;
         boolean isLatestItemSurvey = isListSizeMoreThat1Element && list.get(list.size() - 1) instanceof Survey;
-
         if (isPreviousItemSurvey && !isLatestItemSurvey) {
-            Survey item = (Survey) list.get(list.size() - 2);
-            String surveyUuid = item.getUuid();
-            removeNotCompletedSurveyByUuid(list, surveyUuid, list.size() - 2);
-        }
-    }
-
-    private void removeNotCompletedSurveyByUuid(ArrayList<ChatItem> list, String surveyUuid, int position) {
-        if (position >= 0 && list.get(position) instanceof Survey) {
-            Survey item = (Survey) list.get(position);
-            if (!item.isCompleted()) {
-                list.remove(position);
-                removeNotCompletedSurveyByUuid(list, surveyUuid, position);
-            } else {
-                removeNotCompletedSurveyByUuid(list, surveyUuid, position - 1);
+            for (int i = list.size() - 2; i >= 0; i --) {
+                if (list.get(i) instanceof Survey) {
+                    Survey itemForDelete = (Survey) list.get(i);
+                    if (!itemForDelete.isCompleted()) {
+                        list.remove(i);
+                    }
+                } else {
+                    return;
+                }
             }
         }
     }
