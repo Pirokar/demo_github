@@ -48,6 +48,7 @@ import im.threads.business.models.Survey
 import im.threads.business.models.SystemMessage
 import im.threads.business.models.UpcomingUserMessage
 import im.threads.business.models.UserPhrase
+import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.preferences.Preferences
 import im.threads.business.preferences.PreferencesCoreKeys
 import im.threads.business.rest.models.ConfigResponse
@@ -88,7 +89,6 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
-import io.reactivex.processors.PublishProcessor
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import kotlinx.coroutines.CoroutineScope
@@ -149,6 +149,7 @@ class ChatController private constructor() {
     private var compositeDisposable: CompositeDisposable? = CompositeDisposable()
     private val messenger: Messenger = MessengerImpl(compositeDisposable)
     private val localUserMessages = ArrayList<UserPhrase>()
+    private val attachmentsHistory = HashMap<String, AttachmentStateEnum>()
 
     init {
         PreferencesMigrationUi(appContext).migrateNamedPreferences(ChatController::class.java.simpleName)
@@ -563,6 +564,7 @@ class ChatController private constructor() {
                             isAllMessagesDownloaded = true
                         }
                         parseHistoryItemsForSentStatus(serverItems)
+                        parseHistoryItemsForAttachmentStatus(serverItems)
                         messenger.saveMessages(serverItems)
                         processSystemMessages(serverItems)
                         if (fragment != null && isActive) {
@@ -624,6 +626,7 @@ class ChatController private constructor() {
                         isAllMessagesDownloaded = true
                     }
                     parseHistoryItemsForSentStatus(serverItems)
+                    parseHistoryItemsForAttachmentStatus(serverItems)
                     messenger.saveMessages(serverItems)
                     clearUnreadPush()
                     processSystemMessages(serverItems)
@@ -807,6 +810,7 @@ class ChatController private constructor() {
         subscribeForResendMessage()
         subscribeOnClientIdChange()
         subscribeOnMessageError()
+        subscribeOnFileUploadResult()
     }
 
     fun checkSubscribing() {
@@ -829,6 +833,7 @@ class ChatController private constructor() {
         if (!chatUpdateProcessor.speechMessageUpdateProcessor.hasSubscribers()) subscribeSpeechMessageUpdated()
         if (!messenger.resendStream.hasObservers()) subscribeForResendMessage()
         if (!messageErrorProcessor.hasObservers()) subscribeOnMessageError()
+        if (!chatUpdateProcessor.uploadResultProcessor.hasSubscribers()) subscribeOnFileUploadResult()
     }
 
     private fun subscribeToTransportException() {
@@ -1381,6 +1386,21 @@ class ChatController private constructor() {
             }
     }
 
+    private fun parseHistoryItemsForAttachmentStatus(items: List<ChatItem>) {
+        items
+            .filter { it is UserPhrase && it.fileDescription?.fileUri != null }
+            .map { it as UserPhrase }
+            .forEach { item ->
+                attachmentsHistory[item.fileDescription!!.fileUri!!.toString()]?.let { historyItem ->
+                    if (historyItem > item.fileDescription!!.state) {
+                        item.fileDescription?.state = historyItem
+                    } else {
+                        attachmentsHistory[item.fileDescription!!.fileUri!!.toString()] = item.fileDescription!!.state
+                    }
+                }
+            }
+    }
+
     private fun clearUnreadPush() {
         UnreadMessagesController.INSTANCE.clearUnreadPush()
     }
@@ -1583,6 +1603,17 @@ class ChatController private constructor() {
                     if (lastVisibleItem != null && items != null && items.last().timeStamp == items[lastVisibleItem].timeStamp) {
                         fragment?.scrollToElementByIndex(lastVisibleItem)
                     }
+                }
+        )
+    }
+
+    private fun subscribeOnFileUploadResult() {
+        subscribe(
+            chatUpdateProcessor.uploadResultProcessor
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { fileDescription ->
+                    fileDescription.fileUri?.let { attachmentsHistory[it.toString()] = fileDescription.state }
+                    fragment?.updateProgress(fileDescription)
                 }
         )
     }

@@ -2,17 +2,17 @@ package im.threads.business.models.enums
 
 enum class AttachmentStateEnum(val state: String) {
     ANY("ANY"),
-    READY("READY"),
     PENDING("PENDING"),
-    ERROR("ERROR");
+    ERROR("ERROR"),
+    READY("READY");
 
     companion object {
         @JvmStatic
-        fun attachmentStateEnumFromString(value: String): AttachmentStateEnum {
-            try {
-                return values().first() { it.state == value }
+        fun fromString(value: String): AttachmentStateEnum {
+            return try {
+                values().first() { it.state == value }
             } catch (e: NoSuchElementException) {
-                return READY
+                READY
             }
         }
     }

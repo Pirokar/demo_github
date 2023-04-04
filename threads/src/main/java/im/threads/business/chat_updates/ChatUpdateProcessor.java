@@ -10,6 +10,7 @@ import im.threads.business.models.CampaignMessage;
 import im.threads.business.models.ChatItem;
 import im.threads.business.models.ChatItemSendErrorModel;
 import im.threads.business.models.ClientNotificationDisplayType;
+import im.threads.business.models.FileDescription;
 import im.threads.business.models.InputFieldEnableModel;
 import im.threads.business.models.QuickReplyItem;
 import im.threads.business.models.SpeechMessageUpdate;
@@ -20,7 +21,6 @@ import im.threads.business.transport.models.Attachment;
 import im.threads.business.transport.models.AttachmentSettings;
 import im.threads.business.transport.threadsGate.responses.Status;
 import im.threads.ui.controllers.ChatController;
-import io.reactivex.Flowable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 
@@ -46,6 +46,7 @@ public class ChatUpdateProcessor {
     private final FlowableProcessor<SpeechMessageUpdate> speechMessageUpdateProcessor = PublishProcessor.create();
     private final FlowableProcessor<Boolean> attachAudioFilesProcessor = PublishProcessor.create();
     private final FlowableProcessor<TransportException> errorProcessor = PublishProcessor.create();
+    private final FlowableProcessor<FileDescription> uploadResultProcessor = PublishProcessor.create();
 
     /**
      * Передаёт ответы от коллбэков сокетного соединения.
@@ -146,6 +147,15 @@ public class ChatUpdateProcessor {
     public void postSocketResponseMap(@NonNull Map<String, Object> socketResponseMap) {
         checkSubscribers();
         socketResponseMapProcessor.onNext(socketResponseMap);
+    }
+
+    public void postUploadResult(@NonNull FileDescription uploadResult) {
+        checkSubscribers();
+        uploadResultProcessor.onNext(uploadResult);
+    }
+
+    public FlowableProcessor<FileDescription> getUploadResultProcessor() {
+        return uploadResultProcessor;
     }
 
     public FlowableProcessor<String> getTypingProcessor() {
