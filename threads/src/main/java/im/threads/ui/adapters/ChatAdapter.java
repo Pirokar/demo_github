@@ -1188,7 +1188,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
     }
 
-    private synchronized void removeSurveyIfNotLatest(ArrayList<ChatItem> list) {
+    private void removeSurveyIfNotLatest(ArrayList<ChatItem> list) {
         boolean isListSizeMoreThat1Element = list != null && list.size() > 1;
         boolean isPreviousItemSurvey = isListSizeMoreThat1Element &&
                 list.get(list.size() - 2) instanceof Survey;
