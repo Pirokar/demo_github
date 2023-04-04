@@ -5,14 +5,17 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.widget.ImageView
 import com.google.gson.Gson
+import im.threads.business.chat_updates.ChatUpdateProcessor
 import im.threads.business.config.BaseConfig
 import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.ErrorResponse
 import im.threads.business.models.FileDescription
 import im.threads.business.models.FileUploadResponse
+import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.rest.queries.DatastoreApi
 import im.threads.business.rest.queries.ThreadsApi
+import im.threads.business.serviceLocator.core.inject
 import im.threads.business.transport.InputStreamRequestBody
 import im.threads.business.utils.FileUtils.getFileName
 import im.threads.business.utils.FileUtils.getMimeType
@@ -39,7 +42,8 @@ fun postFile(fileDescription: FileDescription, clientId: String?): String? {
                 return sendFile(
                     it,
                     getMimeType(it),
-                    clientId
+                    clientId,
+                    fileDescription
                 )
             }
         }
@@ -50,7 +54,8 @@ fun postFile(fileDescription: FileDescription, clientId: String?): String? {
     throw NetworkErrorException()
 }
 
-private fun sendFile(uri: Uri, mimeType: String, token: String): String {
+private fun sendFile(uri: Uri, mimeType: String, token: String, fileDescription: FileDescription): String {
+    val chatUpdateProcessor: ChatUpdateProcessor by inject()
     val type = "file"
     val fileName = getFileName(uri)
     val fileRequestBody = getFileRequestBody(uri, mimeType)
@@ -68,10 +73,12 @@ private fun sendFile(uri: Uri, mimeType: String, token: String): String {
         showFileSentLog(it)
         if (it.isSuccessful) {
             response.body()?.let { fileUploadResponse ->
+                chatUpdateProcessor.postUploadResult(fileDescription.apply { state = AttachmentStateEnum.READY })
                 return fileUploadResponse.result
             }
         } else {
             response.errorBody()?.let { responseBody ->
+                chatUpdateProcessor.postUploadResult(fileDescription.apply { state = AttachmentStateEnum.ERROR })
                 val errorBody: ErrorResponse =
                     BaseConfig.instance.gson.fromJson(responseBody.string(), ErrorResponse::class.java)
                 if (!errorBody.message.isNullOrEmpty()) {

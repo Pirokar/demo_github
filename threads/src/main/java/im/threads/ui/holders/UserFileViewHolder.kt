@@ -204,7 +204,12 @@ class UserFileViewHolder(
         LoggerEdna.info("AttachmentState: ${fileDescription.state}")
         val statusKey = "${fileDescription.incomingName}:${fileDescription.size}"
         val lastStatus = fileStatuses[statusKey]
-        when (fileDescription.state) {
+        val status = if (lastStatus != null && fileDescription.state < lastStatus) {
+            lastStatus
+        } else {
+            fileDescription.state
+        }
+        when (status) {
             AttachmentStateEnum.ERROR -> {
                 showErrorLayout(fileDescription)
             }
@@ -212,13 +217,11 @@ class UserFileViewHolder(
                 showReadyView()
             }
             else -> {
-                if (lastStatus != null && lastStatus < fileDescription.state) {
-                    showPendingView()
-                }
+                showPendingView()
             }
         }
         circularProgressButton.setOnClickListener(buttonClickListener)
-        fileStatuses[statusKey] = fileDescription.state
+        fileStatuses[statusKey] = status
     }
 
     private fun showPendingView() {
@@ -244,14 +247,13 @@ class UserFileViewHolder(
     }
 
     private fun hideErrorLayout() {
-        showCircularProgressButton()
         errorTextView.gone()
     }
 
     private fun showCircularProgressButton() {
-        circularProgressButton.visible()
         val progress = if (fileDescription?.fileUri != null) 100 else fileDescription?.downloadProgress
         circularProgressButton.setProgress(progress ?: 100)
+        circularProgressButton.visible()
         loader.invisible()
     }
 
