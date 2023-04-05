@@ -237,7 +237,7 @@ class ThreadsGateTransport(
         important: Boolean = false,
         correlationId: String = UUID.randomUUID().toString(),
         tryOpeningWebSocket: Boolean = true,
-        sendInit: Boolean = true
+        sendInit: Boolean = false
     ) {
         LoggerEdna.info(
             "sendMessage: content = $content, important = $important, correlationId = $correlationId"
@@ -454,8 +454,9 @@ class ThreadsGateTransport(
                         when (ChatItemType.fromString(tokens[0])) {
                             ChatItemType.MESSAGE -> {
                                 if (campaignsInProcess.containsKey(tokens[1])) {
-                                    val campaignMessage = campaignsInProcess[tokens[1]]
-                                    chatUpdateProcessor.postCampaignMessageReplySuccess(campaignMessage)
+                                    campaignsInProcess[tokens[1]]?.let { campaignMessage ->
+                                        chatUpdateProcessor.postCampaignMessageReplySuccess(campaignMessage)
+                                    }
                                     campaignsInProcess.remove(tokens[1])
                                 }
                                 chatUpdateProcessor.postChatItemSendSuccess(
@@ -471,10 +472,11 @@ class ThreadsGateTransport(
                                 val questionSendingId = tokens[2]
                                 if (surveysInProcess.containsKey(sendingId)) {
                                     val survey = surveysInProcess[sendingId]
-                                    val copyToSend = survey?.copy()?.apply {
+                                    survey?.copy()?.apply {
                                         questions?.removeAll { it.correlationId != questionSendingId }
+                                    }?.let { copyToSend ->
+                                        chatUpdateProcessor.postSurveySendSuccess(copyToSend)
                                     }
-                                    chatUpdateProcessor.postSurveySendSuccess(copyToSend)
                                     survey?.questions?.toMutableList()?.let { questions ->
                                         questions.removeAll { it.correlationId == questionSendingId }
                                         if (questions.isEmpty()) {

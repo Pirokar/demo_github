@@ -24,8 +24,6 @@ import im.threads.business.chat_updates.ChatUpdateProcessor
 import im.threads.business.config.BaseConfig
 import im.threads.business.imageLoading.ImageLoader.Companion.get
 import im.threads.business.imageLoading.ImageModifications
-import im.threads.business.logger.LoggerEdna
-import im.threads.business.models.InputFieldEnableModel
 import im.threads.business.serviceLocator.core.inject
 import im.threads.business.useractivity.UserActivityTimeProvider.getLastUserActivityTimeCounter
 import im.threads.business.utils.FileUtils.convertRelativeUrlToAbsolute
@@ -33,7 +31,6 @@ import im.threads.ui.ChatStyle
 import im.threads.ui.activities.QuickAnswerActivity
 import im.threads.ui.config.Config.Companion.getInstance
 import im.threads.ui.utils.ColorsHelper
-import io.reactivex.android.schedulers.AndroidSchedulers
 
 class QuickAnswerFragment : BaseDialogFragment() {
     private var editText: EditText? = null
@@ -77,7 +74,6 @@ class QuickAnswerFragment : BaseDialogFragment() {
         editText?.setHintTextColor(getColorInt(style.chatMessageInputHintTextColor))
         editText?.layoutParams?.height = requireContext().resources.getDimension(style.inputHeight).toInt()
         editText?.background = AppCompatResources.getDrawable(requireContext(), style.inputBackground)
-        initUserInputState()
         return view
     }
 
@@ -144,23 +140,6 @@ class QuickAnswerFragment : BaseDialogFragment() {
     override fun onDestroy() {
         super.onDestroy()
         BaseConfig.instance.transport.setLifecycle(null)
-    }
-
-    private fun initUserInputState() {
-        subscribe(
-            chatUpdateProcessor.userInputEnableProcessor
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { enableModel: InputFieldEnableModel -> updateInputEnable(enableModel) }
-                ) { error -> LoggerEdna.error("initUserInputState ", error) }
-        )
-    }
-
-    private fun updateInputEnable(enableModel: InputFieldEnableModel) {
-        editText?.isEnabled = enableModel.isEnabledInputField
-        if (!enableModel.isEnabledInputField) {
-            showToast(requireContext().getString(R.string.ecc_message_sending_is_unavailable))
-        }
     }
 
     companion object {
