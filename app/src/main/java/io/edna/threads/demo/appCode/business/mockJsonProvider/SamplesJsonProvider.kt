@@ -12,7 +12,7 @@ class SamplesJsonProvider(private val context: Context) {
 
     fun getConnectionErrorJson() = ""
 
-    fun getVoicesChatJson() = ""
+    fun getVoicesChatJson() = readTextFileFromRawResourceId(R.raw.history_voice_response)
 
     fun getImagesChatJson() = readTextFileFromRawResourceId(R.raw.history_images_response)
 
