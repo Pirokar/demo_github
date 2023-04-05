@@ -50,7 +50,7 @@ class RatingThumbsSentViewHolder(parent: ViewGroup) : BaseHolder(
         } else {
             thumb.setImageResource(style.binarySurveyDislikeSelectedIconResId)
         }
-        thumb.setColorFilter(ContextCompat.getColor(itemView.context, style.outgoingMessageTextColor), PorterDuff.Mode.SRC_ATOP)
+        thumb.setColorFilter(ContextCompat.getColor(itemView.context, style.surveyFinalColorFilterResId), PorterDuff.Mode.SRC_ATOP)
         header.text = survey.questions[0].text
         timeStampTextView.text = sdf.format(Date(survey.timeStamp))
         val drawable: Drawable?
