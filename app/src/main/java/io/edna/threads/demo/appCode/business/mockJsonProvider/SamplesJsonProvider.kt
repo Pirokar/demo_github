@@ -20,7 +20,7 @@ class SamplesJsonProvider(private val context: Context) {
 
     fun getSystemChatJson() = readTextFileFromRawResourceId(R.raw.history_system_response)
 
-    fun getChatBotJson() = ""
+    fun getChatBotJson() = readTextFileFromRawResourceId(R.raw.history_bot_response)
 
     private fun readTextFileFromRawResourceId(resourceId: Int): String {
         var string: String? = ""
