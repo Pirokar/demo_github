@@ -9,7 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import im.threads.ui.fragments.ChatFragment
 import io.edna.threads.demo.R
-import io.edna.threads.demo.appCode.extenstions.inflateWithBinding
+import io.edna.threads.demo.appCode.extensions.inflateWithBinding
 import io.edna.threads.demo.databinding.FragmentSamplesBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 

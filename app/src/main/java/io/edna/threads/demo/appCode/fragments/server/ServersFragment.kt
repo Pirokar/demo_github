@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import io.edna.threads.demo.R
-import io.edna.threads.demo.appCode.extenstions.inflateWithBinding
+import io.edna.threads.demo.appCode.extensions.inflateWithBinding
 import io.edna.threads.demo.databinding.FragmentServersBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 

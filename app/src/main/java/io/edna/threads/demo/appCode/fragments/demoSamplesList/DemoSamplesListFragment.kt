@@ -9,7 +9,7 @@ import androidx.navigation.fragment.findNavController
 import io.edna.threads.demo.R
 import io.edna.threads.demo.appCode.adapters.demoSamplesList.DemoSamplesAdapter
 import io.edna.threads.demo.appCode.adapters.demoSamplesList.SampleListItemOnClick
-import io.edna.threads.demo.appCode.extenstions.inflateWithBinding
+import io.edna.threads.demo.appCode.extensions.inflateWithBinding
 import io.edna.threads.demo.appCode.models.DemoSamplesListItem
 import io.edna.threads.demo.databinding.FragmentSamplesListBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel

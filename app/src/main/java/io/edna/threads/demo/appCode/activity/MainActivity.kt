@@ -6,7 +6,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import io.edna.threads.demo.R
-import io.edna.threads.demo.appCode.extenstions.inflateWithBinding
+import io.edna.threads.demo.appCode.extensions.inflateWithBinding
 import io.edna.threads.demo.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {

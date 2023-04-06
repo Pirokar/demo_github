@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment
 import im.threads.ui.core.ThreadsLib
 import io.edna.threads.demo.BuildConfig
 import io.edna.threads.demo.R
-import io.edna.threads.demo.appCode.extenstions.inflateWithBinding
+import io.edna.threads.demo.appCode.extensions.inflateWithBinding
 import io.edna.threads.demo.databinding.FragmentLaunchBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 

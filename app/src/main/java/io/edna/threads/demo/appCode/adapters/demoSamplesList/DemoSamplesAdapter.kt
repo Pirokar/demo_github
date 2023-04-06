@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import io.edna.threads.demo.R
 import io.edna.threads.demo.appCode.business.ordinal
-import io.edna.threads.demo.appCode.extenstions.inflateWithBinding
+import io.edna.threads.demo.appCode.extensions.inflateWithBinding
 import io.edna.threads.demo.appCode.models.DemoSamplesListItem
 import io.edna.threads.demo.appCode.models.DemoSamplesListItem.DIVIDER
 import io.edna.threads.demo.appCode.models.DemoSamplesListItem.TEXT

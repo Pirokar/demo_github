@@ -62,7 +62,7 @@ ext {
     calligraphy3Version = '3.1.1'
     viewpumpVersion = '2.0.3'
 
-    viewmodelVersion = '2.5.1
+    viewmodelVersion = '2.5.1'
     koin_version = '3.2.0'
     okhttp_webserver_version = '4.10.0'
 
