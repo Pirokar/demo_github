@@ -1380,8 +1380,10 @@ class ChatController private constructor() {
         items
             .mapNotNull { it as? UserPhrase }
             .forEach { userPhrase ->
-                if (userPhrase.isRead) {
+                if (userPhrase.isRead && userPhrase.errorMock != true) {
                     userPhrase.sentState = MessageStatus.READ
+                } else if (userPhrase.errorMock == true) {
+                    userPhrase.sentState = MessageStatus.FAILED
                 } else if (userPhrase.sentState.ordinal < MessageStatus.DELIVERED.ordinal) {
                     userPhrase.sentState = MessageStatus.DELIVERED
                 }

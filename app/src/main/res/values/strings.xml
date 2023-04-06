@@ -13,7 +13,7 @@
     <string name="demonstrations">Демонстрации</string>
 
     <string name="text_messages">Текстовые сообщения</string>
-    <string name="connection_errors">Ошибки подключения</string>
+    <string name="connection_errors">Сообщения с ошибками</string>
     <string name="voice_messages">Голосовые сообщения</string>
     <string name="images">Изображения</string>
     <string name="files">Файлы</string>

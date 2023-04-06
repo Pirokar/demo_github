@@ -174,7 +174,7 @@ class UserPhraseViewHolder(
         isChosen: Boolean
     ) {
         timeStamp = userPhrase.timeStamp
-        showBubbleByCurrentStatus()
+        showBubbleByCurrentStatusOrErrorMock(userPhrase.errorMock)
         initTimeStampView(userPhrase)
         hideAll()
         setupPaddingsAndBorders(userPhrase.fileDescription)
@@ -581,9 +581,9 @@ class UserPhraseViewHolder(
         hideErrorText()
     }
 
-    private fun showBubbleByCurrentStatus() {
+    private fun showBubbleByCurrentStatusOrErrorMock(errorMock: Boolean?) {
         val previousStatus = statuses[timeStamp]
-        if (previousStatus == null || previousStatus != MessageStatus.FAILED) {
+        if ((previousStatus == null || previousStatus != MessageStatus.FAILED) && errorMock == true) {
             showNormalBubble()
         } else {
             showErrorBubble()

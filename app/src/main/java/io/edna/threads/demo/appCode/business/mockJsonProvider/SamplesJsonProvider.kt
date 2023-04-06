@@ -10,7 +10,7 @@ import java.io.InputStreamReader
 class SamplesJsonProvider(private val context: Context) {
     fun getTextChatJson() = readTextFileFromRawResourceId(R.raw.history_text_response)
 
-    fun getConnectionErrorJson() = ""
+    fun getConnectionErrorJson() = readTextFileFromRawResourceId(R.raw.history_errors_response)
 
     fun getVoicesChatJson() = readTextFileFromRawResourceId(R.raw.history_voice_response)
 
