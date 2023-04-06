@@ -10,10 +10,9 @@ data class ServerConfig(
     var datastoreUrl: String? = null,
     var serverBaseUrl: String? = null,
     var threadsGateUrl: String? = null,
-    var isFromApp: Boolean = false
+    var isFromApp: Boolean = false,
+    var isShowMenu: Boolean = false
 ) : Parcelable {
-
-    var isShowMenu = false
 
     override fun toString() = "$name, " +
         "$threadsGateProviderUid, " +
@@ -35,11 +34,13 @@ data class ServerConfig(
     }
 
     override fun equals(other: Any?): Boolean {
-        if (other is ServerConfig) return other.name == name &&
-            other.threadsGateProviderUid == threadsGateProviderUid &&
-            other.datastoreUrl == datastoreUrl &&
-            other.serverBaseUrl == serverBaseUrl &&
-            other.threadsGateUrl == threadsGateUrl
+        if (other is ServerConfig) {
+            return other.name == name &&
+                other.threadsGateProviderUid == threadsGateProviderUid &&
+                other.datastoreUrl == datastoreUrl &&
+                other.serverBaseUrl == serverBaseUrl &&
+                other.threadsGateUrl == threadsGateUrl
+        }
         return false
     }
 }

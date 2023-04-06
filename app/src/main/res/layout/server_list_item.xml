@@ -2,7 +2,6 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-
     <FrameLayout
         android:id="@+id/rootLayout"
         android:layout_width="match_parent"
@@ -10,7 +9,6 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/itemLayout"
-            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -21,6 +19,7 @@
                 android:layout_marginStart="@dimen/margin_16"
                 android:layout_marginTop="@dimen/margin_8"
                 android:layout_marginEnd="@dimen/margin_16"
+                android:contentDescription="@string/content_description_server_list_icon"
                 android:src="@drawable/ic_cloud"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -54,39 +53,32 @@
 
         <LinearLayout
             android:id="@+id/menuLayout"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#00ff00"
             android:orientation="horizontal"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:visibility="gone">
 
             <ImageView
                 android:id="@+id/editButton"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_gravity="center"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
                 android:layout_weight="1"
-                android:background="#007AFF"
+                android:background="@color/blue_color"
+                android:contentDescription="@string/content_description_edit_button"
                 android:padding="@dimen/margin_12"
                 android:src="@drawable/ic_edit" />
 
             <ImageView
                 android:id="@+id/deleteButton"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:layout_weight="1"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:background="#FF3B30"
+                android:background="@color/red_color"
+                android:contentDescription="@string/content_description_remove_button"
                 android:padding="@dimen/margin_12"
                 android:src="@drawable/ic_remove" />
-
         </LinearLayout>
-
-
     </FrameLayout>
 </layout>

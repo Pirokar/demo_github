@@ -1,7 +1,6 @@
 package io.edna.threads.demo.adapters.serverList
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -24,10 +23,22 @@ class ServerListAdapter(private val onItemClickListener: ServerListItemOnClickLi
 
     fun showMenu(position: Int) {
         for (i in list.indices) {
-            list[i].isShowMenu = false
+            if (list[i].isShowMenu) {
+                list[i].isShowMenu = false
+                notifyItemChanged(i)
+            }
         }
         list[position].isShowMenu = true
-        notifyDataSetChanged()
+        notifyItemChanged(position)
+    }
+
+    fun closeMenu() {
+        for (i in list.indices) {
+            if (list[i].isShowMenu) {
+                list[i].isShowMenu = false
+                notifyItemChanged(i)
+            }
+        }
     }
 
     fun isMenuShown(): Boolean {
@@ -37,13 +48,6 @@ class ServerListAdapter(private val onItemClickListener: ServerListItemOnClickLi
             }
         }
         return false
-    }
-
-    fun closeMenu() {
-        for (i in list.indices) {
-            list[i].isShowMenu = false
-        }
-        notifyDataSetChanged()
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -70,13 +74,15 @@ class ServerListAdapter(private val onItemClickListener: ServerListItemOnClickLi
             (list[position] as? ServerConfig)?.let { item ->
                 binding.name.text = item.name
                 binding.description.text = item.serverBaseUrl
-                binding.rootLayout.setOnClickListener { onItemClickListener.onClick(item) }
                 if (item.isShowMenu) {
                     binding.menuLayout.visible()
+                    binding.itemLayout.gone()
                     binding.editButton.setOnClickListener { onItemClickListener.onEditItem(item) }
                     binding.deleteButton.setOnClickListener { onItemClickListener.onRemoveItem(item) }
                 } else {
                     binding.menuLayout.gone()
+                    binding.itemLayout.visible()
+                    binding.rootLayout.setOnClickListener { onItemClickListener.onClick(item) }
                 }
             }
         }

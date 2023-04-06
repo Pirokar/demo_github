@@ -1,8 +1,5 @@
 package io.edna.threads.demo.ui.fragments.server
 
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
@@ -16,18 +13,17 @@ import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.RecyclerView
-import im.threads.business.logger.LoggerEdna
 import io.edna.threads.demo.R
 import io.edna.threads.demo.adapters.serverList.ServerListAdapter
 import io.edna.threads.demo.adapters.serverList.ServerListItemOnClickListener
 import io.edna.threads.demo.databinding.FragmentServersBinding
 import io.edna.threads.demo.models.ServerConfig
 import io.edna.threads.demo.ui.fragments.launch.LaunchFragment.Companion.SELECTED_SERVER_CONFIG_KEY
+import io.edna.threads.demo.utils.TouchHelper
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.parceler.Parcels
 
-class ServersFragment : Fragment(), ServerListItemOnClickListener {
+class ServersFragment : Fragment(), ServerListItemOnClickListener, TouchHelper.OnSwipeItemListener {
 
     private lateinit var binding: FragmentServersBinding
     private val viewModel: ServersViewModel by viewModel()
@@ -48,7 +44,7 @@ class ServersFragment : Fragment(), ServerListItemOnClickListener {
         super.onViewCreated(view, savedInstanceState)
         createAdapter()
         subscribeForData()
-        ItemTouchHelper(touchHelperCallback).attachToRecyclerView(binding.recyclerView)
+        initAdapter()
         viewLifecycleOwner.lifecycle.addObserver(viewModel)
         viewModel.copyServersFromFileIfNeed(activity)
     }
@@ -58,8 +54,40 @@ class ServersFragment : Fragment(), ServerListItemOnClickListener {
         clearResultListeners()
     }
 
+    override fun onSwiped(position: Int) {
+        adapter?.showMenu(position)
+    }
+
+    override fun onClick(item: ServerConfig) {
+        val args = Bundle()
+        args.putParcelable(SELECTED_SERVER_CONFIG_KEY, Parcels.wrap(item))
+        setFragmentResult(SELECTED_SERVER_CONFIG_KEY, args)
+        viewModel.backToLaunchScreen(activity)
+    }
+
+    override fun onEditItem(item: ServerConfig) {
+        adapter?.closeMenu()
+        val navigationController = activity?.findNavController(R.id.nav_host_fragment_content_main)
+        val args = Bundle()
+        args.putParcelable(SELECTED_SERVER_CONFIG_KEY, Parcels.wrap(item))
+        navigationController?.navigate(R.id.action_ServersFragment_to_AddServerFragment, args)
+    }
+
+    override fun onRemoveItem(item: ServerConfig) {
+        adapter?.closeMenu()
+        viewModel.removeConfig(activity, item)
+    }
+
+    private fun initAdapter() {
+        val touchHelper = TouchHelper(this)
+        ItemTouchHelper(touchHelper.touchHelperCallback).attachToRecyclerView(binding.recyclerView)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            binding.recyclerView.setOnScrollChangeListener { _, _, _, _, _ -> adapter?.closeMenu() }
+        }
+    }
+
     private fun clearResultListeners() {
-        clearFragmentResultListener(ServersFragment.SERVER_CONFIG_KEY)
+        clearFragmentResultListener(SERVER_CONFIG_KEY)
     }
 
     private fun setResultListeners() {
@@ -85,82 +113,6 @@ class ServersFragment : Fragment(), ServerListItemOnClickListener {
     private fun subscribeForData() {
         viewModel.serverConfigLiveData.observe(viewLifecycleOwner) { adapter?.addItems(it) }
     }
-
-    override fun onClick(item: ServerConfig) {
-        val args = Bundle()
-        args.putParcelable(SELECTED_SERVER_CONFIG_KEY, Parcels.wrap(item))
-        setFragmentResult(SELECTED_SERVER_CONFIG_KEY, args)
-        viewModel.backToLaunchScreen(activity)
-    }
-
-    override fun onEditItem(item: ServerConfig) {
-        val navigationController = activity?.findNavController(R.id.nav_host_fragment_content_main)
-        val args = Bundle()
-        args.putParcelable(SELECTED_SERVER_CONFIG_KEY, Parcels.wrap(item))
-        navigationController?.navigate(R.id.action_ServersFragment_to_AddServerFragment, args)
-    }
-
-    override fun onRemoveItem(item: ServerConfig) {
-        TODO("Not yet implemented")
-    }
-
-    var touchHelperCallback: ItemTouchHelper.SimpleCallback =
-        object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
-
-            private val background = ColorDrawable(Color.RED)
-
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean {
-                return false
-            }
-
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                LoggerEdna.error("SWIPE!!!!!!!")
-                adapter?.showMenu(viewHolder.adapterPosition)
-            }
-
-            override fun onChildDraw(
-                c: Canvas,
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                dX: Float,
-                dY: Float,
-                actionState: Int,
-                isCurrentlyActive: Boolean
-            ) {
-                super.onChildDraw(
-                    c,
-                    recyclerView,
-                    viewHolder,
-                    dX,
-                    dY,
-                    actionState,
-                    isCurrentlyActive
-                )
-                val itemView = viewHolder.itemView
-                if (dX > 0) {
-                    background.setBounds(
-                        itemView.left,
-                        itemView.top,
-                        itemView.left + dX.toInt(),
-                        itemView.bottom
-                    )
-                } else if (dX < 0) {
-                    background.setBounds(
-                        itemView.right + dX.toInt(),
-                        itemView.top,
-                        itemView.right,
-                        itemView.bottom
-                    )
-                } else {
-                    background.setBounds(0, 0, 0, 0)
-                }
-                background.draw(c)
-            }
-        }
 
     companion object {
         const val SERVER_CONFIG_KEY = "server_config_key"

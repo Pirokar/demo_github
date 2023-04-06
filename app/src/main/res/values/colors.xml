@@ -15,6 +15,9 @@
 
     <color name="blue_color">#007AFF</color>
     <color name="blue_color_lite">#0A84FF</color>
+    <color name="red_color">#FF3B30</color>
+
+
 
     <color name="info_text_color">#883C3C43</color>
 </resources>

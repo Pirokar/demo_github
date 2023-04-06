@@ -26,7 +26,7 @@ class AddServerViewModel : ViewModel(), DefaultLifecycleObserver, Observable {
     private var _enabledSaveButtonLiveData = MutableLiveData(false)
     var enabledSaveButtonLiveData: LiveData<Boolean> = _enabledSaveButtonLiveData
 
-    fun serSrcConfig(config: ServerConfig?) {
+    fun setSrcConfig(config: ServerConfig?) {
         config?.let {
             srcServerConfigLiveData.postValue(it)
             _serverConfigLiveData.postValue(it)

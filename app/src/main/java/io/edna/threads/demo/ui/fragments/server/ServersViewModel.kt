@@ -2,7 +2,6 @@ package io.edna.threads.demo.ui.fragments.server
 
 import android.app.Activity
 import android.content.Context
-import android.util.Log
 import android.view.View
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LiveData
@@ -55,12 +54,16 @@ class ServersViewModel : ViewModel(), DefaultLifecycleObserver {
         }
     }
 
+    fun removeConfig(context: Context?, config: ServerConfig) {
+        context?.let {
+            coroutineScope.launch {
+                removeServer(it, config)
+            }
+        }
+    }
+
     fun copyServersFromFileIfNeed(context: Context?) {
         context?.let {
-            Log.e(
-                "Tag",
-                "copyServersFromFileIfNeed()   " + PrefUtilsApp.getSavedAppVersion(it) + " ==? " + BuildConfig.VERSION_NAME
-            )
             if (PrefUtilsApp.getSavedAppVersion(it) != BuildConfig.VERSION_NAME) {
                 coroutineScope.launch {
                     copyServersFromFile(it)
@@ -71,13 +74,20 @@ class ServersViewModel : ViewModel(), DefaultLifecycleObserver {
         }
     }
 
+    private suspend fun removeServer(context: Context, config: ServerConfig) =
+        withContext(Dispatchers.IO) {
+            val srcServers = PrefUtilsApp.getAllServers(context)
+            val finalServers = removeServers(srcServers, config)
+            _serverListLiveData.postValue(finalServers)
+            PrefUtilsApp.saveServers(context, finalServers)
+        }
+
     private suspend fun addServer(context: Context, config: ServerConfig) =
         withContext(Dispatchers.IO) {
             val servers = PrefUtilsApp.getAllServers(context)
             _serverListLiveData.postValue(updateServers(servers, config))
             PrefUtilsApp.saveAppVersion(context, BuildConfig.VERSION_NAME)
             serverConfigLiveData.value?.let {
-                Log.e("Tag", "addServer()   " + it.toString())
                 PrefUtilsApp.saveServers(context, it)
             }
         }
@@ -88,14 +98,21 @@ class ServersViewModel : ViewModel(), DefaultLifecycleObserver {
         _serverListLiveData.postValue(updateOldServers(oldServers, newServers))
         PrefUtilsApp.saveAppVersion(context, BuildConfig.VERSION_NAME)
         serverConfigLiveData.value?.let {
-            Log.e("Tag", "copyServersFromFile()   " + it.toString())
             PrefUtilsApp.saveServers(context, it)
         }
     }
 
+    private fun removeServers(
+        serverList: ArrayList<ServerConfig>,
+        config: ServerConfig,
+    ): ArrayList<ServerConfig> {
+        serverList.remove(config)
+        return serverList
+    }
+
     private fun updateServers(
         serverList: ArrayList<ServerConfig>,
-        newServer: ServerConfig
+        newServer: ServerConfig,
     ): ArrayList<ServerConfig> {
         val serversMap = HashMap<String?, ServerConfig>()
         serverList.forEach {
@@ -107,7 +124,7 @@ class ServersViewModel : ViewModel(), DefaultLifecycleObserver {
 
     private fun updateOldServers(
         oldList: ArrayList<ServerConfig>,
-        newList: ArrayList<ServerConfig>
+        newList: ArrayList<ServerConfig>,
     ): ArrayList<ServerConfig> {
         val serversMap = HashMap<String?, ServerConfig>()
         oldList.forEach {
