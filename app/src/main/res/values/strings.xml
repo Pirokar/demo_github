@@ -8,9 +8,20 @@
     <string name="demonstrations_examples">Демонстрационные примеры</string>
     <string name="functional_not_support">Функционал не поддерживается в текущей версии приложения.</string>
 
-
+    <string name="servers">Серверы</string>
+    <string name="name">Name</string>
+    <string name="datastore_url">Datastore URL</string>
+    <string name="threads_gate_url">Threads Gate URL</string>
+    <string name="server_base_url">Server Base URL</string>
+    <string name="threads_gate_provider_uid">Threads Gate Provider Uid</string>
 
     <string name="launch_fragment_label">Welcome screen</string>
     <string name="servers_fragment_label">Select server screen</string>
+    <string name="add_server_fragment_label">Add server screen</string>
+
+
+
+
+    <string name="content_description_back_button">Кнопка назад</string>
 
 </resources>

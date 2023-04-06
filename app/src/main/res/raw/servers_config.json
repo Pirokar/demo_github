@@ -1,0 +1,16 @@
+[
+  {
+    "name": "Mobile 1",
+    "threadsGateProviderUid": "MOBILE1_93jLrvripZeDXSKJzdRfEu9QpMMvIe5LKKHQl",
+    "serverBaseUrl": "http://arm.mobile1.chc.dte/",
+    "datastoreUrl": "http://datastore.mobile1.chc.dte/",
+    "threadsGateUrl": "http://tg.mobile1.chc.dte/socket"
+  },
+  {
+    "name": "Mobile 3",
+    "threadsGateProviderUid": "MOBILE3_MMvIe5LKKHQlepr8vripZeDXSKJzdRfEu9Qp",
+    "serverBaseUrl": "http://arm.mobile3.chc.dte/",
+    "datastoreUrl": "http://datastore.mobile3.chc.dte/",
+    "threadsGateUrl": "http://tg.mobile3.chc.dte/gate/socket"
+  }
+]

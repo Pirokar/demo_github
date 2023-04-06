@@ -22,5 +22,34 @@
         android:label="@string/servers_fragment_label"
         tools:layout="@layout/fragment_servers">
 
+        <action
+            android:id="@+id/action_ServersFragment_to_LaunchFragment"
+            app:destination="@id/LaunchFragment" />
+
+        <action
+            android:id="@+id/action_ServersFragment_to_AddServerFragment"
+            app:destination="@id/AddServerFragment" />
+
     </fragment>
+
+    <fragment
+        android:id="@+id/AddServerFragment"
+        android:name="io.edna.threads.demo.ui.fragments.server.AddServerFragment"
+        android:label="@string/add_server_fragment_label"
+        tools:layout="@layout/fragment_add_server">
+
+        <argument
+            android:name="serverConfig"
+            app:argType="io.edna.threads.demo.models.ServerConfig" />
+
+        <action
+            android:id="@+id/action_AddServerFragment_back_to_ServersFragment"
+            app:destination="@id/ServersFragment" />
+
+        <action
+            android:id="@+id/action_AddServerFragment_to_ServersFragment"
+            app:destination="@id/ServersFragment" />
+
+    </fragment>
+
 </navigation>

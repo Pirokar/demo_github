@@ -51,4 +51,7 @@ ext {
 
     viewmodelVersion = '2.5.1'
     koin_version = '3.2.0'
+
+    retrofitVersion = '2.9.0'
+    parcelerVersion = '1.1.12'
 }
