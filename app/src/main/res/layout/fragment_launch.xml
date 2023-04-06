@@ -18,7 +18,7 @@
             android:id="@+id/logo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_16"
+            android:layout_marginTop="@dimen/login_screen_top_margin_small"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -28,8 +28,8 @@
             android:id="@+id/settings"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_26"
-            android:layout_marginEnd="@dimen/margin_26"
+            android:layout_marginTop="@dimen/login_screen_top_margin_medium"
+            android:layout_marginEnd="@dimen/login_screen_top_margin_medium"
             android:onClick="@{viewModel::click}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -38,7 +38,7 @@
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/title"
             style="@style/LogoTitleTextStyle"
-            android:layout_marginTop="@dimen/margin_24"
+            android:layout_marginTop="@dimen/login_screen_top_margin_medium"
             android:gravity="center_horizontal"
             android:text="@string/login_to_account"
             app:layout_constraintEnd_toEndOf="parent"
@@ -48,7 +48,7 @@
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/serverButton"
             style="@style/TextButtonsStyle"
-            android:layout_marginTop="@dimen/margin_40"
+            android:layout_marginTop="@dimen/login_screen_top_margin_large"
             android:gravity="center_vertical"
             android:onClick="@{viewModel::click}"
             android:text="@string/server"
@@ -59,7 +59,7 @@
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/userButton"
             style="@style/TextButtonsStyle"
-            android:layout_marginTop="@dimen/margin_16"
+            android:layout_marginTop="@dimen/login_screen_top_margin_small"
             android:drawableEnd="@drawable/ic_chevron_right"
             android:gravity="center_vertical"
             android:onClick="@{viewModel::click}"
@@ -71,7 +71,7 @@
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/login"
             style="@style/ButtonsStyle"
-            android:layout_marginTop="@dimen/margin_40"
+            android:layout_marginTop="@dimen/login_screen_top_margin_large"
             android:onClick="@{viewModel::click}"
             android:text="@string/login"
             app:layout_constraintEnd_toEndOf="parent"
@@ -91,11 +91,11 @@
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/about"
             style="@style/LogoTextStyle"
-            android:layout_marginTop="@dimen/margin_21"
+            android:layout_marginBottom="@dimen/login_screen_top_margin_medium"
             android:gravity="center_horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/demonstrations"
+            app:layout_constraintBottom_toBottomOf="parent"
             tools:text="Edna threads demo. v4.10.0" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
