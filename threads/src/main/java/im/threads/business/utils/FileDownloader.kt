@@ -161,7 +161,7 @@ class FileDownloader(
         .also {
             if (!it.exists()) {
                 it.outputStream().use { cache ->
-                    ctx.assets.open("test_images/$fileName").use { inputStream ->
+                    ctx.assets.open("test_files/$fileName").use { inputStream ->
                         inputStream.copyTo(cache)
                     }
                 }
