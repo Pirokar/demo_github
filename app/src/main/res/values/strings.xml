@@ -8,9 +8,18 @@
     <string name="demonstrations_examples">Демонстрационные примеры</string>
     <string name="functional_not_support">Функционал не поддерживается в текущей версии приложения.</string>
 
-
-
     <string name="launch_fragment_label">Welcome screen</string>
     <string name="servers_fragment_label">Select server screen</string>
+    <string name="demonstrations">Демонстрации</string>
 
+    <string name="text_messages">Текстовые сообщения</string>
+    <string name="connection_errors">Сообщения с ошибками</string>
+    <string name="voice_messages">Голосовые сообщения</string>
+    <string name="images">Изображения</string>
+    <string name="files">Файлы</string>
+    <string name="system_messages">Системные сообщения</string>
+    <string name="chat_with_bot">Чат с ботом</string>
+
+    <string name="demo_alt_threads_contact_center">Демонстрация сообщений</string>
+    <string name="demo_alt_threads_operator_subtitle">Оператор Елена</string>
 </resources>

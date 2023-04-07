@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:id="@+id/rootLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RelativeLayout
+                android:id="@+id/loaderLayoutRoot"
+                style="@style/userBubble"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:id="@+id/loaderLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/loader"
+                        android:layout_width="@dimen/ecc_operator_photo_size"
+                        android:layout_height="@dimen/ecc_operator_photo_size"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="@dimen/ecc_margin_material"
+                        android:layout_marginTop="@dimen/ecc_margin_material"
+                        android:layout_marginEnd="@dimen/ecc_margin_three_fourth"
+                        android:layout_marginBottom="@dimen/ecc_margin_material" />
+
+                    <View
+                        android:id="@+id/delimiter"
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="@dimen/ecc_margin_quarter"
+                        android:background="@color/ecc_outgoing_message_text" />
+
+                    <im.threads.ui.widget.textView.BubbleMessageTextView
+                        android:id="@+id/fileName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/ecc_margin_half"
+                        android:layout_marginTop="@dimen/ecc_margin_half"
+                        android:layout_marginBottom="@dimen/ecc_margin_big"
+                        android:ellipsize="end"
+                        android:maxLines="5"
+                        android:textColor="@color/ecc_outgoing_message_text"
+                        tools:text="ddddddddddddddd.pdf" />
+
+                </LinearLayout>
+
+                <im.threads.ui.widget.textView.BubbleTimeTextView
+                    android:id="@+id/timeStampLoading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginBottom="@dimen/ecc_margin_half"
+                    android:background="@drawable/ecc_timestamp_outgoing_underlayer"
+                    android:drawablePadding="@dimen/ecc_margin_half"
+                    android:paddingLeft="2dp"
+                    android:paddingRight="2dp"
+                    android:textColor="@color/ecc_outgoing_message_time"
+                    tools:text="10:19" />
+
+            </RelativeLayout>
+
+            <FrameLayout
+                android:id="@+id/imageLayout"
+                android:layout_width="@dimen/ecc_message_image_size"
+                android:layout_height="@dimen/ecc_message_image_size"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="@dimen/ecc_margin_quarter"
+                android:layout_marginBottom="@dimen/ecc_margin_quarter"
+                android:visibility="gone">
+
+                <FrameLayout
+                    android:id="@+id/imageBackground"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <ImageView
+                    android:id="@+id/image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:adjustViewBounds="true" />
+
+                <im.threads.ui.widget.textView.BubbleTimeTextView
+                    android:id="@+id/timeStamp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end|bottom"
+                    android:layout_marginEnd="@dimen/ecc_timeLabelMarginRight"
+                    android:layout_marginBottom="@dimen/ecc_timeLabelMarginBottom"
+                    android:background="@drawable/ecc_timestamp_outgoing_underlayer"
+                    android:drawablePadding="@dimen/ecc_margin_half"
+                    android:paddingLeft="2dp"
+                    android:paddingRight="2dp"
+                    android:textColor="@color/ecc_outgoing_message_time"
+                    tools:ignore="RelativeOverlap"
+                    tools:text="10:19" />
+
+            </FrameLayout>
+
+        </RelativeLayout>
+
+        <im.threads.ui.widget.textView.BubbleTimeTextView
+            android:id="@+id/errorText"
+            style="@style/timestamp"
+            android:layout_gravity="end"
+            android:layout_marginTop="@dimen/ecc_margin_quarter"
+            android:layout_marginEnd="@dimen/ecc_user_margin_right"
+            android:gravity="end"
+            android:textColor="@color/ecc_error_red_df0000"
+            android:textSize="@dimen/ecc_error_text_size"
+            android:visibility="gone"
+            tools:text="Some error text"
+            tools:visibility="visible" />
+
+    </LinearLayout>
+
+</FrameLayout>
