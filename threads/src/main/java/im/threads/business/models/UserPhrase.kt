@@ -22,6 +22,7 @@ class UserPhrase constructor(
     var isRead = false
     var campaignMessage: CampaignMessage? = null
     var backendMessageId: String? = null
+    var errorMock: Boolean? = null
 
     // для поиска сообщений в чате
     override var found = false

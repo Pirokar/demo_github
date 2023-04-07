@@ -37,6 +37,7 @@ public final class MessageFromHistory implements ChatItem {
     private Integer rate;
     private Integer scale;
     private boolean simple;
+    private Boolean errorMock;
 
     public String getUuid() {
         return uuid;
@@ -222,6 +223,12 @@ public final class MessageFromHistory implements ChatItem {
 
     public void setSimple(boolean simple) {
         this.simple = simple;
+    }
+
+    public Boolean getErrorMock() { return errorMock; }
+
+    public void setErrorMock(Boolean errorMock) {
+        this.errorMock = errorMock;
     }
 
     @Override

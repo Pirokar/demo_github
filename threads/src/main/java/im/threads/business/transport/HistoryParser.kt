@@ -135,17 +135,35 @@ object HistoryParser {
                                     message.quickReplies,
                                     if (message.settings != null) message.settings!!.isBlockInput else null,
                                     SpeechStatus.fromString(message.speechStatus)
-                                )
+                                ).apply {
+                                    errorMock = message.errorMock
+                                }
                             )
                         } else {
                             if (fileDescription != null) {
                                 fileDescription.from = BaseConfig.instance.context.getString(R.string.ecc_I)
                             }
-                            val sentState = if (message.isRead) MessageStatus.READ else MessageStatus.SENT
-                            val userPhrase =
-                                UserPhrase(uuid, phraseText, quote, timeStamp, fileDescription, sentState, message.threadId)
-                            userPhrase.isRead = message.isRead
-                            out.add(userPhrase)
+                            val sentState = if (message.errorMock == true) {
+                                MessageStatus.FAILED
+                            } else if (message.isRead) {
+                                MessageStatus.READ
+                            } else {
+                                MessageStatus.SENT
+                            }
+                            out.add(
+                                UserPhrase(
+                                    uuid,
+                                    phraseText,
+                                    quote,
+                                    timeStamp,
+                                    fileDescription,
+                                    sentState,
+                                    message.threadId
+                                ).apply {
+                                    errorMock = message.errorMock
+                                    isRead = message.isRead
+                                }
+                            )
                         }
                     }
                 }
