@@ -27,6 +27,7 @@ class ConsultPhrase constructor(
     var ogData: OGData? = null
     var ogUrl: String? = null
     var isAvatarVisible = true
+    var errorMock: Boolean? = null
 
     // для поиска сообщений в чате
     override var found = false

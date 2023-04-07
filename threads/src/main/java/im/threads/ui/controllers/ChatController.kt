@@ -57,7 +57,7 @@ import im.threads.business.rest.queries.ThreadsApi
 import im.threads.business.secureDatabase.DatabaseHolder
 import im.threads.business.serviceLocator.core.inject
 import im.threads.business.transport.ChatItemProviderData
-import im.threads.business.transport.HistoryLoader.getHistorySync
+import im.threads.business.transport.HistoryLoader
 import im.threads.business.transport.HistoryParser
 import im.threads.business.transport.TransportException
 import im.threads.business.transport.models.Attachment
@@ -111,6 +111,7 @@ class ChatController private constructor() {
     private val chatStyle = Config.getInstance().getChatStyle()
     private val appContext: Context by inject()
     private val preferences: Preferences by inject()
+    private val historyLoader: HistoryLoader by inject()
 
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
@@ -336,7 +337,7 @@ class ChatController private constructor() {
                     info(ThreadsApi.REST_TAG, "Requesting history items")
                     val count = BaseConfig.instance.historyLoadingCount
                     try {
-                        val response = getHistorySync(null, fromBeginning)
+                        val response = historyLoader.getHistorySync(null, fromBeginning)
                         var serverItems = HistoryParser.getChatItems(response)
                         serverItems = addLocalUserMessages(serverItems)
                         updateDoubleItems(serverItems as ArrayList<ChatItem>)
@@ -404,6 +405,10 @@ class ChatController private constructor() {
     fun bindFragment(chatFragment: ChatFragment?) {
         info("bindFragment: $chatFragment")
         val activity = chatFragment?.activity ?: return
+
+        if (HistoryLoader.getHistoryMock(appContext).isNotEmpty()) {
+            database.cleanDatabase()
+        }
 
         fragment = chatFragment
 
@@ -527,7 +532,7 @@ class ChatController private constructor() {
         info(ThreadsApi.REST_TAG, "Client id changed. Loading history.")
         cleanAll()
         fragment?.removeSearching()
-        val response = getHistorySync(null, true)
+        val response = historyLoader.getHistorySync(null, true)
         var serverItems = HistoryParser.getChatItems(response)
         serverItems = addLocalUserMessages(serverItems)
         parseHistoryItemsForSentStatus(serverItems)
@@ -554,7 +559,7 @@ class ChatController private constructor() {
                 subscribe(
                     Single.fromCallable {
                         val count = BaseConfig.instance.historyLoadingCount
-                        val response = getHistorySync(
+                        val response = historyLoader.getHistorySync(
                             count,
                             fromBeginning
                         )
@@ -616,7 +621,7 @@ class ChatController private constructor() {
                     if (count < database.getMessagesCount()) {
                         count = database.getMessagesCount()
                     }
-                    val response = getHistorySync(
+                    val response = historyLoader.getHistorySync(
                         count,
                         true
                     )
@@ -726,10 +731,11 @@ class ChatController private constructor() {
         }
     }
 
-    private fun addLocalUserMessages(serverItems: MutableList<ChatItem>): MutableList<ChatItem> {
+    private fun addLocalUserMessages(serverItems: List<ChatItem>): List<ChatItem> {
+        val items = serverItems.toMutableList()
         val localMessagesToDelete = java.util.ArrayList<UserPhrase>()
         for (localUserMessage in localUserMessages) {
-            for (serverItem in serverItems) {
+            for (serverItem in items) {
                 if (serverItem.isTheSameItem(localUserMessage)) {
                     localMessagesToDelete.add(localUserMessage)
                     break
@@ -739,8 +745,8 @@ class ChatController private constructor() {
         for (localMessageToDelete in localMessagesToDelete) {
             localUserMessages.remove(localMessageToDelete)
         }
-        serverItems.addAll(localUserMessages)
-        return serverItems
+        items.addAll(localUserMessages)
+        return items
     }
 
     private fun setLastAvatars(list: List<ChatItem>): List<ChatItem> {
@@ -1316,7 +1322,7 @@ class ChatController private constructor() {
             subscribe(
                 Single.fromCallable {
                     BaseConfig.instance.transport.sendInit()
-                    val response = getHistorySync(
+                    val response = historyLoader.getHistorySync(
                         null,
                         true
                     )
@@ -1357,8 +1363,10 @@ class ChatController private constructor() {
         items
             .mapNotNull { it as? UserPhrase }
             .forEach { userPhrase ->
-                if (userPhrase.isRead) {
+                if (userPhrase.isRead && userPhrase.errorMock != true) {
                     userPhrase.sentState = MessageStatus.READ
+                } else if (userPhrase.errorMock == true) {
+                    userPhrase.sentState = MessageStatus.FAILED
                 } else if (userPhrase.sentState.ordinal < MessageStatus.DELIVERED.ordinal) {
                     userPhrase.sentState = MessageStatus.DELIVERED
                 }

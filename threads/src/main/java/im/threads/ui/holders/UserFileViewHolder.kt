@@ -113,12 +113,7 @@ class UserFileViewHolder(
                 viewGroup.getChildAt(i).setOnLongClickListener(onLongClick)
                 viewGroup.getChildAt(i).setOnClickListener(rowClickListener)
             }
-            if (userPhrase.sentState == MessageStatus.FAILED) {
-                showErrorLayout(it)
-            } else {
-                updateFileView(it, buttonClickListener)
-            }
-
+            checkAttachmentError(it, buttonClickListener)
             rootLayout.setOnLongClickListener(onLongClick)
             changeHighlighting(isFilterVisible)
         }
@@ -186,6 +181,15 @@ class UserFileViewHolder(
             }
         timeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, rightDrawable, null)
         statuses[timeStamp] = messageStatus
+    }
+
+    private fun checkAttachmentError(fileDescription: FileDescription, onClickListener: View.OnClickListener) {
+        if (fileDescription.state == AttachmentStateEnum.ERROR) {
+            showErrorLayout(fileDescription)
+        } else {
+            hideErrorLayout()
+            updateFileView(fileDescription, onClickListener)
+        }
     }
 
     private fun getColoredDrawable(@DrawableRes res: Int, @ColorRes color: Int): Drawable? {
@@ -284,7 +288,6 @@ class UserFileViewHolder(
                 getColorInt(style.outgoingMessageBubbleColor),
                 BlendModeCompat.SRC_ATOP
             )
-        hideErrorLayout()
     }
 
     private fun showBubbleByCurrentStatus() {
