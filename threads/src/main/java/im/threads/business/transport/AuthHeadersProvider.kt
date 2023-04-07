@@ -3,7 +3,7 @@ package im.threads.business.transport
 import im.threads.business.AuthMethod
 import im.threads.business.UserInfoBuilder
 import okhttp3.Request
-import java.net.HttpURLConnection
+import java.net.URLConnection
 
 class AuthHeadersProvider {
     fun getRequestWithHeaders(userInfo: UserInfoBuilder?, request: Request): Request {
@@ -33,7 +33,7 @@ class AuthHeadersProvider {
         }
     }
 
-    fun setHeadersToUrlConnection(userInfo: UserInfoBuilder?, urlConnection: HttpURLConnection) {
+    fun setHeadersToUrlConnection(userInfo: UserInfoBuilder?, urlConnection: URLConnection) {
         val cookiesString = getCookiesString(userInfo)
 
         if (cookiesString.isNotEmpty()) {
