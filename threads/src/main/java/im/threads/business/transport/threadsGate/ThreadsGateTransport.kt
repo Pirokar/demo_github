@@ -68,16 +68,16 @@ import java.util.concurrent.TimeUnit
 import javax.net.ssl.SSLSession
 
 class ThreadsGateTransport(
-    threadsGateUrl: String,
+    private val threadsGateUrl: String,
     private val threadsGateProviderUid: String,
-    isDebugLoggingEnabled: Boolean,
-    socketSettings: SocketClientSettings,
-    sslSocketFactoryConfig: SslSocketFactoryConfig? = null,
-    networkInterceptor: Interceptor?
+    private val isDebugLoggingEnabled: Boolean,
+    private val socketSettings: SocketClientSettings,
+    private val sslSocketFactoryConfig: SslSocketFactoryConfig? = null,
+    private val networkInterceptor: Interceptor?
 ) : Transport(), LifecycleObserver {
-    private val client: OkHttpClient
-    private val request: Request
-    private val listener: WebSocketListener
+    private lateinit var client: OkHttpClient
+    private lateinit var request: Request
+    private lateinit var listener: WebSocketListener
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
     private val messageInProcessIds: MutableList<String> = ArrayList()
     private val surveysInProcess: MutableMap<Long, Survey> = HashMap()
@@ -90,7 +90,9 @@ class ThreadsGateTransport(
     private val chatUpdateProcessor: ChatUpdateProcessor by inject()
     private val database: DatabaseHolder by inject()
 
-    init {
+    init { buildTransport() }
+
+    override fun buildTransport() {
         val httpClientBuilder = OkHttpClient.Builder()
             .addInterceptor(authInterceptor)
             .apply { networkInterceptor?.let { addInterceptor(it) } }
@@ -122,7 +124,6 @@ class ThreadsGateTransport(
         listener = WebSocketListener()
     }
 
-    override fun init() {}
     override fun sendRatingDone(survey: Survey) {
         if (survey.questions.isNotEmpty()) {
             val content = outgoingMessageCreator.createRatingDoneMessage(survey)
@@ -236,7 +237,7 @@ class ThreadsGateTransport(
         important: Boolean = false,
         correlationId: String = UUID.randomUUID().toString(),
         tryOpeningWebSocket: Boolean = true,
-        sendInit: Boolean = true
+        sendInit: Boolean = false
     ) {
         LoggerEdna.info(
             "sendMessage: content = $content, important = $important, correlationId = $correlationId"
@@ -453,8 +454,9 @@ class ThreadsGateTransport(
                         when (ChatItemType.fromString(tokens[0])) {
                             ChatItemType.MESSAGE -> {
                                 if (campaignsInProcess.containsKey(tokens[1])) {
-                                    val campaignMessage = campaignsInProcess[tokens[1]]
-                                    chatUpdateProcessor.postCampaignMessageReplySuccess(campaignMessage)
+                                    campaignsInProcess[tokens[1]]?.let { campaignMessage ->
+                                        chatUpdateProcessor.postCampaignMessageReplySuccess(campaignMessage)
+                                    }
                                     campaignsInProcess.remove(tokens[1])
                                 }
                                 chatUpdateProcessor.postChatItemSendSuccess(
@@ -470,10 +472,11 @@ class ThreadsGateTransport(
                                 val questionSendingId = tokens[2]
                                 if (surveysInProcess.containsKey(sendingId)) {
                                     val survey = surveysInProcess[sendingId]
-                                    val copyToSend = survey?.copy()?.apply {
+                                    survey?.copy()?.apply {
                                         questions?.removeAll { it.correlationId != questionSendingId }
+                                    }?.let { copyToSend ->
+                                        chatUpdateProcessor.postSurveySendSuccess(copyToSend)
                                     }
-                                    chatUpdateProcessor.postSurveySendSuccess(copyToSend)
                                     survey?.questions?.toMutableList()?.let { questions ->
                                         questions.removeAll { it.correlationId == questionSendingId }
                                         if (questions.isEmpty()) {

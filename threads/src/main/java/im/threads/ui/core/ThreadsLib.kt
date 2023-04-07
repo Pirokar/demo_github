@@ -29,7 +29,7 @@ class ThreadsLib(context: Context) : ThreadsLibBase(context) {
         val userInfo = preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)
         val oldClientId = userInfo?.clientId
         val newClientId = userInfoBuilder.clientId
-        if (!newClientId.isNullOrEmpty() && newClientId != oldClientId) {
+        if (newClientId.isNotEmpty() && newClientId != oldClientId) {
             ChatController.getInstance().cleanAll()
         }
         super.initUser(userInfoBuilder)
@@ -65,10 +65,14 @@ class ThreadsLib(context: Context) : ThreadsLibBase(context) {
      * @return true, if message was successfully added to messaging queue, otherwise false
      */
     fun sendMessage(message: String?, file: File?): Boolean {
-        val fileUri = if (file != null) FileProviderHelper.getUriForFile(
-            Config.getInstance().context,
-            file
-        ) else null
+        val fileUri = if (file != null) {
+            FileProviderHelper.getUriForFile(
+                Config.getInstance().context,
+                file
+            )
+        } else {
+            null
+        }
         return sendMessage(message, fileUri)
     }
 
@@ -91,7 +95,11 @@ class ThreadsLib(context: Context) : ThreadsLibBase(context) {
                 )
             }
             val msg = UpcomingUserMessage(
-                fileDescription, null, null, message, false
+                fileDescription,
+                null,
+                null,
+                message,
+                false
             )
             chatController.onUserInput(msg)
             true

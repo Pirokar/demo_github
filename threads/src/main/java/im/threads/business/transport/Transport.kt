@@ -55,7 +55,7 @@ abstract class Transport {
         return compositeDisposable?.add(event) == true
     }
 
-    abstract fun init()
+    abstract fun buildTransport()
     abstract fun sendRatingDone(survey: Survey)
     abstract fun sendResolveThread(approveResolve: Boolean)
     abstract fun sendUserTying(input: String)

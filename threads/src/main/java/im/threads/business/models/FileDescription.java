@@ -28,7 +28,7 @@ public final class FileDescription implements Parcelable {
             long timeStamp = source.readLong();
             int progress = source.readInt();
             FileDescription fd = new FileDescription(from, filePath, size, timeStamp);
-            fd.setState(AttachmentStateEnum.attachmentStateEnumFromString(state));
+            fd.setState(AttachmentStateEnum.fromString(state));
             fd.setErrorCode(ErrorStateEnum.errorStateEnumFromString(errorCode));
             fd.setErrorMessage(errorMessage);
             fd.setIncomingName(incomingName);

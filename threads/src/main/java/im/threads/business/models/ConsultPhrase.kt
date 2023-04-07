@@ -52,7 +52,9 @@ class ConsultPhrase constructor(
     override fun isTheSameItem(otherItem: ChatItem?): Boolean {
         return if (otherItem is ConsultPhrase) {
             ObjectsCompat.equals(id, otherItem.id)
-        } else false
+        } else {
+            false
+        }
     }
 
     override fun equals(other: Any?): Boolean {
@@ -94,5 +96,15 @@ class ConsultPhrase constructor(
             ogUrl,
             threadId
         )
+    }
+
+    fun copy() = ConsultPhrase(
+        id, fileDescription, quote, consultName, phraseText, formattedPhrase, date, consultId, avatarPath,
+        isRead, status, sex, threadId, quickReplies, isBlockInput, speechStatus
+    ).also {
+        it.ogData = ogData
+        it.ogUrl = ogUrl
+        it.isAvatarVisible = isAvatarVisible
+        it.found = found
     }
 }

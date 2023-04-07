@@ -6,6 +6,7 @@ import im.threads.business.config.BaseConfig
 import im.threads.business.logger.LoggerEdna
 import im.threads.business.preferences.Preferences
 import im.threads.business.preferences.PreferencesCoreKeys
+import im.threads.business.transport.AuthHeadersProvider
 import java.io.BufferedInputStream
 import java.io.File
 import java.io.FileInputStream
@@ -26,7 +27,8 @@ class FileDownloader(
     private val fileName: String,
     private val ctx: Context,
     private val downloadListener: DownloadListener,
-    private val preferences: Preferences
+    private val preferences: Preferences,
+    private val authHeadersProvider: AuthHeadersProvider
 ) {
     private val outputFile: File = File(
         getDownloadDir(ctx),
@@ -64,12 +66,7 @@ class FileDownloader(
                 if (userInfo?.clientId != null) {
                     urlConnection.setRequestProperty("X-Ext-Client-ID", userInfo.clientId)
                 }
-                if (!userInfo?.authToken.isNullOrBlank()) {
-                    urlConnection.setRequestProperty("Authorization", userInfo?.authToken)
-                }
-                if (!userInfo?.authToken.isNullOrBlank()) {
-                    urlConnection.setRequestProperty("X-Auth-Schema", userInfo?.authToken)
-                }
+                authHeadersProvider.setHeadersToUrlConnection(userInfo, urlConnection)
                 urlConnection.doOutput = false
                 urlConnection.useCaches = false
                 urlConnection.doInput = true

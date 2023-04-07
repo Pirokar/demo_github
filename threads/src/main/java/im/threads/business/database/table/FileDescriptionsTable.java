@@ -82,7 +82,7 @@ public class FileDescriptionsTable extends Table {
             fd.setDownloadPath(cGetString(c, COLUMN_FD_URL));
             fd.setIncomingName(cGetString(c, COLUMN_FD_FILENAME));
             fd.setMimeType(cGetString(c, COLUMN_FD_MIME_TYPE));
-            fd.setState(AttachmentStateEnum.attachmentStateEnumFromString(cGetString(c, COLUMN_FD_ATTACHMENT_STATE)));
+            fd.setState(AttachmentStateEnum.fromString(cGetString(c, COLUMN_FD_ATTACHMENT_STATE)));
             fd.setErrorCode(ErrorStateEnum.errorStateEnumFromString(cGetString(c, COLUMN_FD_ERROR_CODE)));
             fd.setErrorMessage(cGetString(c, COLUMN_FD_ERROR_MESSAGE));
             fd.setMimeType(cGetString(c, COLUMN_FD_MIME_TYPE));
@@ -108,7 +108,7 @@ public class FileDescriptionsTable extends Table {
                 fd.setIncomingName(cGetString(c, COLUMN_FD_FILENAME));
                 fd.setMimeType(cGetString(c, COLUMN_FD_MIME_TYPE));
                 fd.setDownloadPath(cGetString(c, COLUMN_FD_URL));
-                fd.setState(AttachmentStateEnum.attachmentStateEnumFromString(cGetString(c, COLUMN_FD_ATTACHMENT_STATE)));
+                fd.setState(AttachmentStateEnum.fromString(cGetString(c, COLUMN_FD_ATTACHMENT_STATE)));
                 fd.setErrorCode(ErrorStateEnum.errorStateEnumFromString(cGetString(c, COLUMN_FD_ERROR_CODE)));
                 fd.setErrorMessage(cGetString(c, COLUMN_FD_ERROR_MESSAGE));
                 list.add(fd);

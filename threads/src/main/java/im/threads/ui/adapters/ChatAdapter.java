@@ -139,6 +139,9 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     @NonNull
     private final PublishSubject<Long> messageErrorProcessor;
     private final ChatMessagesOrderer chatMessagesOrderer;
+    private final SendingStatusObserver sendingStatusObserver = new SendingStatusObserver(
+            new WeakReference<>(this), 40000L
+    );
     @NonNull
     PublishSubject<ChatItem> highlightingStream = PublishSubject.create();
     @NonNull
@@ -154,9 +157,6 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private boolean ignorePlayerUpdates = false;
     @Nullable
     private VoiceMessageBaseHolder playingHolder = null;
-    private final SendingStatusObserver sendingStatusObserver = new SendingStatusObserver(
-            new WeakReference<>(this), 40000L
-    );
 
     public ChatAdapter(
             @NonNull Callback callback,
@@ -173,18 +173,6 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         clientNotificationDisplayType = preferences.getClientNotificationDisplayType();
         currentThreadId = preferences.getThreadId() == null ? 0L : preferences.getThreadId();
         chatMessagesOrderer = new ChatMessagesOrderer();
-    }
-
-    public void onResumeView() {
-        sendingStatusObserver.startObserving();
-    }
-
-    public void onPauseView() {
-        sendingStatusObserver.pauseObserving();
-    }
-
-    public void onDestroyView() {
-        sendingStatusObserver.finishObserving();
     }
 
     private static int getUnreadCount(final List<ChatItem> list) {
@@ -204,6 +192,18 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             }
         }
         return counter;
+    }
+
+    public void onResumeView() {
+        sendingStatusObserver.startObserving();
+    }
+
+    public void onPauseView() {
+        sendingStatusObserver.pauseObserving();
+    }
+
+    public void onDestroyView() {
+        sendingStatusObserver.finishObserving();
     }
 
     @Synchronized
@@ -751,6 +751,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         ((Survey) message).setSentState(sentState);
         notifyItemChangedOnUi(message);
     }
+
     public void changeStateOfMessageByMessageId(
             String correlationId,
             final String backendMessageId,
@@ -1192,11 +1193,16 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         boolean isPreviousItemSurvey = isListSizeMoreThat1Element &&
                 list.get(list.size() - 2) instanceof Survey;
         boolean isLatestItemSurvey = isListSizeMoreThat1Element && list.get(list.size() - 1) instanceof Survey;
-
         if (isPreviousItemSurvey && !isLatestItemSurvey) {
-            Survey item = (Survey)list.get(list.size() - 2);
-            if (!item.isCompleted()) {
-                list.remove(list.size() - 2);
+            for (int i = list.size() - 2; i >= 0; i --) {
+                if (list.get(i) instanceof Survey) {
+                    Survey itemForDelete = (Survey) list.get(i);
+                    if (!itemForDelete.isCompleted()) {
+                        list.remove(i);
+                    }
+                } else {
+                    return;
+                }
             }
         }
     }
@@ -1301,7 +1307,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             sortItemsByTimeStamp(items);
             removeAllSpacings(items);
             for (int i = 1; i < items.size(); i++) {
-                updateConsultAvatarIfNeed(items.get(i - 1), items.get(i));
+                updateConsultAvatarIfNeed(items, i - 1, i);
             }
             DuplicateMessagesRemover.removeDuplicateSystemMessages(items);
             insertSpacing(items);
@@ -1315,13 +1321,19 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             }
         }
 
-        private void updateConsultAvatarIfNeed(ChatItem firstItem, ChatItem lastItem) {
+        private void updateConsultAvatarIfNeed(List<ChatItem> list, int firstItemIdx, int lastItemIdx) {
+            ChatItem firstItem = list.get(firstItemIdx);
+            ChatItem lastItem = list.get(lastItemIdx);
             if (firstItem instanceof ConsultPhrase && lastItem instanceof ConsultPhrase) {
                 String lastItemOperatorId = ((ConsultPhrase) lastItem).getConsultId();
                 String firstItemOperatorId = ((ConsultPhrase) firstItem).getConsultId();
                 if (firstItemOperatorId != null && firstItemOperatorId.equals(lastItemOperatorId)) {
-                    ((ConsultPhrase) firstItem).setAvatarVisible(false);
-                    ((ConsultPhrase) lastItem).setAvatarVisible(true);
+                    ConsultPhrase newFirstItem = ((ConsultPhrase) firstItem).copy();
+                    ConsultPhrase newLastItem = ((ConsultPhrase) lastItem).copy();
+                    newFirstItem.setAvatarVisible(false);
+                    newLastItem.setAvatarVisible(true);
+                    list.set(firstItemIdx, newFirstItem);
+                    list.set(lastItemIdx, newLastItem);
                 }
             }
         }

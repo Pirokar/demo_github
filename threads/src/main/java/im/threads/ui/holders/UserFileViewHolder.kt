@@ -4,6 +4,7 @@ import android.graphics.drawable.Drawable
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.OnClickListener
 import android.view.View.OnLongClickListener
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -16,8 +17,8 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
-import androidx.core.view.isVisible
 import im.threads.R
+import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.ChatItem
 import im.threads.business.models.FileDescription
 import im.threads.business.models.MessageStatus
@@ -89,12 +90,14 @@ class UserFileViewHolder(
             arrayOf(fileHeaderTextView, fileSizeTextView),
             style.outgoingMessageTextColor
         )
+        loader.invisible()
+        circularProgressButton.invisible()
     }
 
     fun onBind(
         userPhrase: UserPhrase,
-        buttonClickListener: View.OnClickListener,
-        rowClickListener: View.OnClickListener,
+        buttonClickListener: OnClickListener,
+        rowClickListener: OnClickListener,
         onLongClick: OnLongClickListener,
         isFilterVisible: Boolean
     ) {
@@ -134,6 +137,7 @@ class UserFileViewHolder(
                     val previousStatus = statuses[timeStamp]
                     if (previousStatus == null || previousStatus != MessageStatus.FAILED) {
                         showNormalBubble()
+                        showPendingView()
                         getColoredDrawable(
                             style.messageSendingIconResId,
                             style.messageSendingIconColorResId
@@ -199,42 +203,67 @@ class UserFileViewHolder(
 
     private fun updateFileView(
         fileDescription: FileDescription,
-        buttonClickListener: View.OnClickListener
+        buttonClickListener: OnClickListener
     ) {
-        when (fileDescription.state) {
+        LoggerEdna.info("AttachmentState: ${fileDescription.state}")
+        val statusKey = "${fileDescription.incomingName}:${fileDescription.size}"
+        val lastStatus = fileStatuses[statusKey]
+        val status = if (lastStatus != null && fileDescription.state < lastStatus) {
+            lastStatus
+        } else {
+            fileDescription.state
+        }
+        when (status) {
             AttachmentStateEnum.ERROR -> {
                 showErrorLayout(fileDescription)
             }
-            AttachmentStateEnum.PENDING -> {
-                circularProgressButton.isVisible = false
-                loader.isVisible = true
-                errorTextView.isVisible = false
-                initAnimation(loader, false)
+            AttachmentStateEnum.READY -> {
+                showReadyView()
             }
             else -> {
-                loader.isVisible = false
-                errorTextView.isVisible = false
-                circularProgressButton.isVisible = true
-                circularProgressButton.setProgress(
-                    if (fileDescription.fileUri != null) 100 else fileDescription.downloadProgress
-                )
-                circularProgressButton.setOnClickListener(buttonClickListener)
+                showPendingView()
             }
         }
+        circularProgressButton.setOnClickListener(buttonClickListener)
+        fileStatuses[statusKey] = status
+    }
+
+    private fun showPendingView() {
+        showLoader()
+        errorTextView.gone()
+        initAnimation(loader, false)
+    }
+
+    private fun showReadyView() {
+        errorTextView.gone()
+        showCircularProgressButton()
+        circularProgressButton.setProgress(
+            if (fileDescription?.fileUri != null) 100 else fileDescription?.downloadProgress ?: 0
+        )
     }
 
     private fun showErrorLayout(fileDescription: FileDescription) {
-        loader.visible()
+        showLoader()
         errorTextView.visible()
-        circularProgressButton.invisible()
         loader.setImageResource(getErrorImageResByErrorCode(fileDescription.errorCode))
         val errorString = getString(getErrorStringResByErrorCode(fileDescription.errorCode))
         errorTextView.text = errorString
     }
 
     private fun hideErrorLayout() {
-        loader.gone()
         errorTextView.gone()
+    }
+
+    private fun showCircularProgressButton() {
+        val progress = if (fileDescription?.fileUri != null) 100 else fileDescription?.downloadProgress
+        circularProgressButton.setProgress(progress ?: 100)
+        circularProgressButton.visible()
+        loader.invisible()
+    }
+
+    private fun showLoader() {
+        circularProgressButton.invisible()
+        loader.visible()
     }
 
     private fun scrollToErrorIfAppearsFirstTime() {
@@ -268,5 +297,9 @@ class UserFileViewHolder(
         } else {
             showErrorBubble()
         }
+    }
+
+    companion object {
+        private val fileStatuses: HashMap<String, AttachmentStateEnum> = HashMap()
     }
 }

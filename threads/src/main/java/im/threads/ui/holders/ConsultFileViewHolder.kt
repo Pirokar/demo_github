@@ -13,6 +13,7 @@ import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import im.threads.R
 import im.threads.business.imageLoading.ImageModifications
@@ -148,7 +149,7 @@ class ConsultFileViewHolder(
         mCircularProgressButton.setOnClickListener(buttonClickListener)
         changeHighlighting(highlighted)
         if (consultPhrase.isAvatarVisible) {
-            mConsultAvatar.visibility = View.VISIBLE
+            if (mConsultAvatar.isInvisible) mConsultAvatar.visible()
             mConsultAvatar.setOnClickListener(onAvatarClickListener)
             mConsultAvatar.setImageResource(style.defaultOperatorAvatar)
             if (!TextUtils.isEmpty(consultPhrase.avatarPath)) {
@@ -157,7 +158,8 @@ class ConsultFileViewHolder(
                     listOf(ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.FIT_XY),
                     errorDrawableResId = R.drawable.ecc_operator_avatar_placeholder,
                     autoRotateWithExif = true,
-                    modifications = listOf(ImageModifications.CircleCropModification)
+                    modifications = listOf(ImageModifications.CircleCropModification),
+                    noPlaceholder = true
                 )
             }
         } else {

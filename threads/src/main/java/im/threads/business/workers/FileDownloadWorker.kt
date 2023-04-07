@@ -18,6 +18,7 @@ import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.preferences.Preferences
 import im.threads.business.secureDatabase.DatabaseHolder
 import im.threads.business.serviceLocator.core.inject
+import im.threads.business.transport.AuthHeadersProvider
 import im.threads.business.utils.FileDownloader
 import im.threads.business.utils.FileDownloader.DownloadListener
 import im.threads.business.utils.FileProviderHelper
@@ -32,6 +33,7 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
     private var runningDownloads = HashMap<FileDescription, FileDownloader>()
     private val preferences: Preferences by inject()
     private val database: DatabaseHolder by inject()
+    private val authHeadersProvider: AuthHeadersProvider by inject()
 
     override fun doWork(): Result {
         val data = inputData.getByteArray(FD_TAG)?.let { unmarshall(it) }
@@ -87,7 +89,8 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
                     e?.let { sendDownloadErrorBroadcast(fileDescription, e) }
                 }
             },
-            preferences
+            preferences,
+            authHeadersProvider
         )
 
         if (START_DOWNLOAD_FD_TAG == inputData.getString(START_DOWNLOAD_ACTION)) {

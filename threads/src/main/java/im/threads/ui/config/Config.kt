@@ -147,6 +147,11 @@ class Config(
             return instance!!
         }
 
+        @JvmStatic
+        fun isInstanceNull(): Boolean {
+            return instance == null
+        }
+
         fun setInstance(config: Config) {
             instance = config
         }

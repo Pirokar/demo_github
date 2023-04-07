@@ -54,7 +54,7 @@ import im.threads.R
 import im.threads.business.annotation.OpenWay
 import im.threads.business.audio.audioRecorder.AudioRecorder
 import im.threads.business.broadcastReceivers.ProgressReceiver
-import im.threads.business.chat_updates.ChatUpdateProcessorJavaGetter
+import im.threads.business.chat_updates.ChatUpdateProcessor
 import im.threads.business.config.BaseConfig
 import im.threads.business.extensions.withMainContext
 import im.threads.business.imageLoading.ImageLoader.Companion.get
@@ -87,6 +87,7 @@ import im.threads.business.models.SystemMessage
 import im.threads.business.models.UnreadMessages
 import im.threads.business.models.UpcomingUserMessage
 import im.threads.business.models.UserPhrase
+import im.threads.business.serviceLocator.core.inject
 import im.threads.business.useractivity.UserActivityTimeProvider.getLastUserActivityTimeCounter
 import im.threads.business.utils.Balloon.show
 import im.threads.business.utils.FileProviderHelper
@@ -172,7 +173,7 @@ class ChatFragment :
     val fileDescription = ObservableField(Optional.empty<FileDescription?>())
     private val mediaMetadataRetriever = MediaMetadataRetriever()
     private val audioConverter = ChatCenterAudioConverter()
-    private val chatUpdateProcessor = ChatUpdateProcessorJavaGetter()
+    private val chatUpdateProcessor: ChatUpdateProcessor by inject()
     private var fdMediaPlayer: FileDescriptionMediaPlayer? = null
     private val chatController: ChatController by lazy { ChatController.getInstance() }
     private var chatAdapter: ChatAdapter? = null
@@ -220,8 +221,6 @@ class ChatFragment :
         setHasOptionsMenu(true)
         initController()
         setFragmentStyle()
-        initUserInputState()
-        initQuickReplies()
         initMediaPlayer()
         subscribeToFileDescription()
         isShown = true
@@ -593,32 +592,6 @@ class ChatFragment :
         mQuoteLayoutHolder?.setVoice()
     }
 
-    private fun initUserInputState() {
-        subscribe(
-            chatUpdateProcessor.processor.userInputEnableProcessor
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { enableModel: InputFieldEnableModel -> updateInputEnable(enableModel) }
-                ) { error: Throwable? -> error("initUserInputState ", error) }
-        )
-    }
-
-    private fun initQuickReplies() {
-        subscribe(
-            chatUpdateProcessor.processor.quickRepliesProcessor
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { quickReplies: QuickReplyItem? ->
-                        if (quickReplies == null || quickReplies.items.isEmpty()) {
-                            hideQuickReplies()
-                        } else {
-                            showQuickReplies(quickReplies)
-                        }
-                    }
-                ) { error: Throwable? -> error("initQuickReplies ", error) }
-        )
-    }
-
     private fun initMediaPlayer() {
         fdMediaPlayer?.let { player ->
             player.updateProcessor
@@ -837,6 +810,11 @@ class ChatFragment :
     }
 
     private fun onSendButtonClick() {
+        if (isSendBlocked) {
+            show(requireContext(), requireContext().getString(R.string.ecc_message_were_unsent))
+            return
+        }
+
         val inputText = inputTextObservable.get()
         if (inputText == null || inputText.trim { it <= ' ' }.isEmpty() && getFileDescription() == null) {
             return
@@ -1966,7 +1944,7 @@ class ChatFragment :
         }
     }
 
-    private fun updateInputEnable(enableModel: InputFieldEnableModel) {
+    internal fun updateInputEnable(enableModel: InputFieldEnableModel) {
         isSendBlocked = !enableModel.isEnabledSendButton
         binding.sendMessage.isEnabled = enableModel.isEnabledSendButton &&
             (!TextUtils.isEmpty(binding.inputEditView.text) || hasAttachments())
@@ -1974,6 +1952,12 @@ class ChatFragment :
         binding.addAttachment.isEnabled = enableModel.isEnabledInputField
         if (!enableModel.isEnabledInputField) {
             binding.inputEditView.hideKeyboard(100)
+        }
+    }
+
+    internal fun updateChatAvailabilityMessage(enableModel: InputFieldEnableModel) {
+        if (enableModel.isEnabledSendButton && enableModel.isEnabledInputField) {
+            chatAdapter?.removeSchedule(false)
         }
     }
 
@@ -2381,7 +2365,8 @@ class ChatFragment :
                     ContextCompat.getColor(requireContext(), style.previewPlayPauseButtonColor),
                     PorterDuff.Mode.SRC_ATOP
                 )
-                binding.quoteHeader.setTextColor(ContextCompat.getColor(activity, style.incomingMessageTextColor))
+                binding.quoteHeader.setTextColor(ContextCompat.getColor(activity, style.quoteHeaderTextColor))
+                binding.quoteText.setTextColor(ContextCompat.getColor(activity, style.quoteTextTextColor))
                 binding.quoteClear.setOnClickListener { clear() }
                 binding.quoteButtonPlayPause.setOnClickListener {
                     if (fdMediaPlayer == null) {
@@ -2437,7 +2422,7 @@ class ChatFragment :
                 fdMediaPlayer?.reset()
             }
             unChooseItem()
-            chatUpdateProcessor.processor.postAttachAudioFile(false)
+            chatUpdateProcessor.postAttachAudioFile(false)
         }
 
         fun setContent(header: String?, text: String, imagePath: Uri?, isFromFilePicker: Boolean) {
@@ -2484,7 +2469,7 @@ class ChatFragment :
             binding.quotePast.visibility = View.GONE
             formattedDuration = getFormattedDuration(getFileDescription())
             binding.quoteDuration.text = formattedDuration
-            chatUpdateProcessor.processor.postAttachAudioFile(true)
+            chatUpdateProcessor.postAttachAudioFile(true)
         }
 
         private fun init(maxValue: Int, progress: Int, isPlaying: Boolean) {
