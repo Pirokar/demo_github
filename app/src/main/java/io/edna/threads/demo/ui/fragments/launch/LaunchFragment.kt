@@ -13,7 +13,7 @@ import im.threads.ui.core.ThreadsLib
 import io.edna.threads.demo.BuildConfig
 import io.edna.threads.demo.R
 import io.edna.threads.demo.databinding.FragmentLaunchBinding
-import io.edna.threads.demo.models.ServerConfig
+import io.edna.threads.demo.models.UserInfo
 import io.edna.threads.demo.ui.extenstions.inflateWithBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.parceler.Parcels
@@ -29,11 +29,11 @@ class LaunchFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         super.onCreate(savedInstanceState)
+        initObservers()
+        setResultListeners()
         binding = inflater.inflateWithBinding(container, R.layout.fragment_launch)
         binding.viewModel = viewModel
         initView()
-        initObservers()
-        setResultListeners()
         return binding.root
     }
 
@@ -48,21 +48,20 @@ class LaunchFragment : Fragment() {
     }
 
     private fun initObservers() {
-        viewModel.selectedServerConfigLiveData.observe(viewLifecycleOwner) { checkLoginEnabled() }
         viewModel.selectUserAction.observe(viewLifecycleOwner) { checkLoginEnabled() }
     }
 
     private fun setResultListeners() {
-        setFragmentResultListener(SELECTED_SERVER_CONFIG_KEY) { key, bundle ->
-            if (key == SELECTED_SERVER_CONFIG_KEY && bundle.containsKey(SELECTED_SERVER_CONFIG_KEY)) {
-                val config: ServerConfig? = if (Build.VERSION.SDK_INT >= 33) {
-                    Parcels.unwrap(bundle.getParcelable(SELECTED_SERVER_CONFIG_KEY, Parcelable::class.java))
+        setFragmentResultListener(SELECTED_USER_KEY) { key, bundle ->
+            if (key == SELECTED_USER_KEY && bundle.containsKey(SELECTED_USER_KEY)) {
+                val user: UserInfo? = if (Build.VERSION.SDK_INT >= 33) {
+                    Parcels.unwrap(bundle.getParcelable(SELECTED_USER_KEY, Parcelable::class.java))
                 } else {
-                    Parcels.unwrap(bundle.getParcelable(SELECTED_SERVER_CONFIG_KEY))
+                    Parcels.unwrap(bundle.getParcelable(SELECTED_USER_KEY))
                 }
-                config?.let {
+                user?.let {
                     if (it.isAllFieldsFilled()) {
-                        viewModel.setupServerConfig(it)
+                        viewModel.setupUser(it)
                     }
                 }
             }
@@ -70,7 +69,7 @@ class LaunchFragment : Fragment() {
     }
 
     private fun clearResultListeners() {
-        clearFragmentResultListener(SELECTED_SERVER_CONFIG_KEY)
+        clearFragmentResultListener(SELECTED_USER_KEY)
     }
 
     private fun checkLoginEnabled() {
@@ -85,6 +84,6 @@ class LaunchFragment : Fragment() {
     }
 
     companion object {
-        const val SELECTED_SERVER_CONFIG_KEY = "selected_server_config_key"
+        const val SELECTED_USER_KEY = "selected_user_key"
     }
 }

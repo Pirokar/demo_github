@@ -9,46 +9,39 @@
         android:id="@+id/LaunchFragment"
         android:name="io.edna.threads.demo.ui.fragments.launch.LaunchFragment"
         android:label="@string/launch_fragment_label"
-        tools:layout="@layout/fragment_servers">
+        tools:layout="@layout/fragment_launch">
 
         <action
-            android:id="@+id/action_LaunchFragment_to_ServersFragment"
-            app:destination="@id/ServersFragment" />
+            android:id="@+id/action_LaunchFragment_to_UserListFragment"
+            app:destination="@id/UserListFragment" />
+
     </fragment>
 
     <fragment
-        android:id="@+id/ServersFragment"
-        android:name="io.edna.threads.demo.ui.fragments.server.ServersFragment"
-        android:label="@string/servers_fragment_label"
-        tools:layout="@layout/fragment_servers">
+        android:id="@+id/UserListFragment"
+        android:name="io.edna.threads.demo.ui.fragments.user.UserListFragment"
+        android:label="@string/user_list_fragment_label"
+        tools:layout="@layout/fragment_user_list">
 
         <action
-            android:id="@+id/action_ServersFragment_to_LaunchFragment"
+            android:id="@+id/action_UserListFragment_to_LaunchFragment"
             app:destination="@id/LaunchFragment" />
 
         <action
-            android:id="@+id/action_ServersFragment_to_AddServerFragment"
-            app:destination="@id/AddServerFragment" />
+            android:id="@+id/action_UserListFragment_to_AddUserFragment"
+            app:destination="@id/AddUserFragment" />
 
     </fragment>
 
     <fragment
-        android:id="@+id/AddServerFragment"
-        android:name="io.edna.threads.demo.ui.fragments.server.AddServerFragment"
-        android:label="@string/add_server_fragment_label"
-        tools:layout="@layout/fragment_add_server">
-
-        <argument
-            android:name="serverConfig"
-            app:argType="io.edna.threads.demo.models.ServerConfig" />
+        android:id="@+id/AddUserFragment"
+        android:name="io.edna.threads.demo.ui.fragments.user.AddUserFragment"
+        android:label="@string/add_user_fragment_label"
+        tools:layout="@layout/fragment_add_user">
 
         <action
-            android:id="@+id/action_AddServerFragment_back_to_ServersFragment"
-            app:destination="@id/ServersFragment" />
-
-        <action
-            android:id="@+id/action_AddServerFragment_to_ServersFragment"
-            app:destination="@id/ServersFragment" />
+            android:id="@+id/action_AddUserFragment_to_UserListFragment"
+            app:destination="@id/UserListFragment" />
 
     </fragment>
 

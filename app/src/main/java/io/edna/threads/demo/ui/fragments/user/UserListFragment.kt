@@ -1,4 +1,4 @@
-package io.edna.threads.demo.ui.fragments.server
+package io.edna.threads.demo.ui.fragments.user
 
 import android.os.Build
 import android.os.Bundle
@@ -6,6 +6,7 @@ import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.clearFragmentResultListener
@@ -14,27 +15,27 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import io.edna.threads.demo.R
-import io.edna.threads.demo.adapters.serverList.ServerListAdapter
-import io.edna.threads.demo.adapters.serverList.ServerListItemOnClickListener
-import io.edna.threads.demo.databinding.FragmentServersBinding
-import io.edna.threads.demo.models.ServerConfig
-import io.edna.threads.demo.ui.fragments.launch.LaunchFragment.Companion.SELECTED_SERVER_CONFIG_KEY
+import io.edna.threads.demo.adapters.userList.UserListAdapter
+import io.edna.threads.demo.adapters.userList.UserListItemOnClickListener
+import io.edna.threads.demo.databinding.FragmentUserListBinding
+import io.edna.threads.demo.models.UserInfo
+import io.edna.threads.demo.ui.fragments.launch.LaunchFragment.Companion.SELECTED_USER_KEY
 import io.edna.threads.demo.utils.TouchHelper
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.parceler.Parcels
 
-class ServersFragment : Fragment(), ServerListItemOnClickListener, TouchHelper.OnSwipeItemListener {
+class UserListFragment : Fragment(), UserListItemOnClickListener, TouchHelper.OnSwipeItemListener {
 
-    private lateinit var binding: FragmentServersBinding
-    private val viewModel: ServersViewModel by viewModel()
-    private var adapter: ServerListAdapter? = null
+    private lateinit var binding: FragmentUserListBinding
+    private val viewModel: UserListViewModel by viewModel()
+    private var adapter: UserListAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_servers, container, false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_user_list, container, false)
         binding.viewModel = viewModel
         setResultListeners()
         return binding.root
@@ -46,7 +47,7 @@ class ServersFragment : Fragment(), ServerListItemOnClickListener, TouchHelper.O
         subscribeForData()
         initAdapter()
         viewLifecycleOwner.lifecycle.addObserver(viewModel)
-        viewModel.copyServersFromFileIfNeed(activity)
+        viewModel.loadUserList(activity)
     }
 
     override fun onDestroyView() {
@@ -58,24 +59,24 @@ class ServersFragment : Fragment(), ServerListItemOnClickListener, TouchHelper.O
         adapter?.showMenu(position)
     }
 
-    override fun onClick(item: ServerConfig) {
+    override fun onClick(item: UserInfo) {
         val args = Bundle()
-        args.putParcelable(SELECTED_SERVER_CONFIG_KEY, Parcels.wrap(item))
-        setFragmentResult(SELECTED_SERVER_CONFIG_KEY, args)
+        args.putParcelable(SELECTED_USER_KEY, Parcels.wrap(item))
+        setFragmentResult(SELECTED_USER_KEY, args)
         viewModel.backToLaunchScreen(activity)
     }
 
-    override fun onEditItem(item: ServerConfig) {
+    override fun onEditItem(item: UserInfo) {
         adapter?.closeMenu()
         val navigationController = activity?.findNavController(R.id.nav_host_fragment_content_main)
         val args = Bundle()
-        args.putParcelable(SELECTED_SERVER_CONFIG_KEY, Parcels.wrap(item))
-        navigationController?.navigate(R.id.action_ServersFragment_to_AddServerFragment, args)
+        args.putParcelable(USER_KEY, Parcels.wrap(item))
+        navigationController?.navigate(R.id.action_UserListFragment_to_AddUserFragment, args)
     }
 
-    override fun onRemoveItem(item: ServerConfig) {
+    override fun onRemoveItem(item: UserInfo) {
         adapter?.closeMenu()
-        viewModel.removeConfig(activity, item)
+        viewModel.removeUser(activity, item)
     }
 
     private fun initAdapter() {
@@ -87,34 +88,43 @@ class ServersFragment : Fragment(), ServerListItemOnClickListener, TouchHelper.O
     }
 
     private fun clearResultListeners() {
-        clearFragmentResultListener(SERVER_CONFIG_KEY)
+        clearFragmentResultListener(USER_KEY)
     }
 
     private fun setResultListeners() {
-        setFragmentResultListener(SERVER_CONFIG_KEY) { key, bundle ->
-            if (key == SERVER_CONFIG_KEY && bundle.containsKey(SERVER_CONFIG_KEY)) {
-                val config: ServerConfig? = if (Build.VERSION.SDK_INT >= 33) {
-                    Parcels.unwrap(bundle.getParcelable(SERVER_CONFIG_KEY, Parcelable::class.java))
+        setFragmentResultListener(USER_KEY) { key, bundle ->
+            if (key == USER_KEY && bundle.containsKey(USER_KEY)) {
+                val user: UserInfo? = if (Build.VERSION.SDK_INT >= 33) {
+                    Parcels.unwrap(bundle.getParcelable(USER_KEY, Parcelable::class.java))
                 } else {
-                    Parcels.unwrap(bundle.getParcelable(SERVER_CONFIG_KEY))
+                    Parcels.unwrap(bundle.getParcelable(USER_KEY))
                 }
-                config?.let {
-                    viewModel.addConfig(activity, it)
+                user?.let {
+                    viewModel.addUser(activity, it)
                 }
             }
         }
     }
 
     private fun createAdapter() = with(binding) {
-        adapter = ServerListAdapter(this@ServersFragment)
+        adapter = UserListAdapter(this@UserListFragment)
         recyclerView.adapter = adapter
     }
 
     private fun subscribeForData() {
-        viewModel.serverConfigLiveData.observe(viewLifecycleOwner) { adapter?.addItems(it) }
+        viewModel.userListLiveData.observe(viewLifecycleOwner) {
+            adapter?.addItems(it)
+            if (adapter?.itemCount == 0) {
+                binding.emptyView.isVisible = true
+                binding.recyclerView.isVisible = false
+            } else {
+                binding.emptyView.isVisible = false
+                binding.recyclerView.isVisible = true
+            }
+        }
     }
 
     companion object {
-        const val SERVER_CONFIG_KEY = "server_config_key"
+        const val USER_KEY = "user_key"
     }
 }

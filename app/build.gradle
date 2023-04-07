@@ -12,7 +12,7 @@ android {
         applicationId "io.edna.threads.demo"
         minSdk rootProject.minSdkVersion
         targetSdk rootProject.targetSdkVersion
-        versionName "1.0.0"
+        versionName "1.0.1"
         versionCode 1
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

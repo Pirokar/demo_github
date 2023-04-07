@@ -1,4 +1,4 @@
-package io.edna.threads.demo.adapters.serverList
+package io.edna.threads.demo.adapters.userList
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -7,18 +7,18 @@ import androidx.recyclerview.widget.RecyclerView
 import im.threads.ui.utils.gone
 import im.threads.ui.utils.visible
 import io.edna.threads.demo.R
-import io.edna.threads.demo.databinding.ServerListItemBinding
-import io.edna.threads.demo.models.ServerConfig
+import io.edna.threads.demo.databinding.UserListItemBinding
+import io.edna.threads.demo.models.UserInfo
 import io.edna.threads.demo.ui.extenstions.inflateWithBinding
 
-class ServerListAdapter(private val onItemClickListener: ServerListItemOnClickListener) :
+class UserListAdapter(private val onItemClickListener: UserListItemOnClickListener) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private val list: MutableList<ServerConfig> = mutableListOf()
+    private val list: MutableList<UserInfo> = mutableListOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        return ServerItemHolder(inflater.inflateWithBinding(parent, R.layout.server_list_item))
+        return UserItemHolder(inflater.inflateWithBinding(parent, R.layout.user_list_item))
     }
 
     fun showMenu(position: Int) {
@@ -51,29 +51,29 @@ class ServerListAdapter(private val onItemClickListener: ServerListItemOnClickLi
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        (holder as? ServerItemHolder)?.onBind(position)
+        (holder as? UserItemHolder)?.onBind(position)
     }
 
     override fun getItemCount() = list.count()
 
-    fun addItems(newItems: List<ServerConfig>) {
+    fun addItems(newItems: List<UserInfo>) {
         notifyDatasetChangedWithDiffUtil(newItems)
     }
 
-    private fun notifyDatasetChangedWithDiffUtil(newList: List<ServerConfig>) {
-        val diffResult = DiffUtil.calculateDiff(ServerListDiffCallback(list, newList))
+    private fun notifyDatasetChangedWithDiffUtil(newList: List<UserInfo>) {
+        val diffResult = DiffUtil.calculateDiff(UserListDiffCallback(list, newList))
         list.clear()
         list.addAll(newList)
         diffResult.dispatchUpdatesTo(this)
     }
 
-    private inner class ServerItemHolder(val binding: ServerListItemBinding) :
+    private inner class UserItemHolder(val binding: UserListItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun onBind(position: Int) {
-            (list[position] as? ServerConfig)?.let { item ->
-                binding.name.text = item.name
-                binding.description.text = item.serverBaseUrl
+            (list[position] as? UserInfo)?.let { item ->
+                binding.name.text = item.nickName
+                binding.userId.text = item.userId
                 if (item.isShowMenu) {
                     binding.menuLayout.visible()
                     binding.itemLayout.gone()

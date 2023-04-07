@@ -7,7 +7,7 @@
 
         <variable
             name="viewModel"
-            type="io.edna.threads.demo.ui.fragments.server.AddServerViewModel" />
+            type="io.edna.threads.demo.ui.fragments.user.AddUserViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -46,7 +46,7 @@
                 android:layout_weight="1"
                 android:ellipsize="end"
                 android:lines="1"
-                android:text="@string/server" />
+                android:text="@string/user" />
 
             <ImageView
                 android:id="@+id/okButton"
@@ -63,74 +63,32 @@
         </LinearLayout>
 
         <io.edna.threads.demo.ui.views.InputField
-            android:id="@+id/name"
+            android:id="@+id/nickName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_16"
             android:layout_marginTop="@dimen/margin_16"
             android:layout_marginEnd="@dimen/margin_16"
-            android:text="@{viewModel.serverConfigLiveData.name}"
-            app:hint="@string/name"
+            android:text="@{viewModel.userLiveData.nickName}"
+            app:hint="@string/nick_name"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/toolbar"
-            app:textChangedListener="@{viewModel.nameTextWatcher}" />
+            app:textChangedListener="@{viewModel.nickNameTextWatcher}" />
 
         <io.edna.threads.demo.ui.views.InputField
-            android:id="@+id/providerId"
+            android:id="@+id/userId"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_16"
             android:layout_marginTop="@dimen/margin_16"
             android:layout_marginEnd="@dimen/margin_16"
-            android:text="@{viewModel.serverConfigLiveData.threadsGateProviderUid}"
-            app:hint="@string/threads_gate_provider_uid"
+            android:text="@{viewModel.userLiveData.userId}"
+            app:hint="@string/user_id"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/name"
-            app:textChangedListener="@{viewModel.providerIdTextWatcher}" />
-
-        <io.edna.threads.demo.ui.views.InputField
-            android:id="@+id/baseUrl"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_16"
-            android:layout_marginTop="@dimen/margin_32"
-            android:layout_marginEnd="@dimen/margin_16"
-            android:text="@{viewModel.serverConfigLiveData.serverBaseUrl}"
-            app:hint="@string/server_base_url"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/providerId"
-            app:textChangedListener="@{viewModel.baseUrlTextWatcher}" />
-
-        <io.edna.threads.demo.ui.views.InputField
-            android:id="@+id/datastoreUrl"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_16"
-            android:layout_marginTop="@dimen/margin_16"
-            android:layout_marginEnd="@dimen/margin_16"
-            android:text="@{viewModel.serverConfigLiveData.datastoreUrl}"
-            app:hint="@string/datastore_url"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/baseUrl"
-            app:textChangedListener="@{viewModel.datastoreUrlTextWatcher}" />
-
-        <io.edna.threads.demo.ui.views.InputField
-            android:id="@+id/threadsGateUrl"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_16"
-            android:layout_marginTop="@dimen/margin_16"
-            android:layout_marginEnd="@dimen/margin_16"
-            android:text="@{viewModel.serverConfigLiveData.threadsGateUrl}"
-            app:hint="@string/threads_gate_url"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/datastoreUrl"
-            app:textChangedListener="@{viewModel.threadsGateUrlTextWatcher}" />
+            app:layout_constraintTop_toBottomOf="@+id/nickName"
+            app:textChangedListener="@{viewModel.userIdTextWatcher}" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

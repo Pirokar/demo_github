@@ -9,15 +9,23 @@
     <string name="functional_not_support">Функционал не поддерживается в текущей версии приложения.</string>
 
     <string name="servers">Серверы</string>
+    <string name="users">Пользователи</string>
     <string name="name">Name</string>
+    <string name="nick_name">Имя пользователя</string>
+    <string name="user_id">ID пользователя</string>
     <string name="datastore_url">Datastore URL</string>
     <string name="threads_gate_url">Threads Gate URL</string>
     <string name="server_base_url">Server Base URL</string>
     <string name="threads_gate_provider_uid">Threads Gate Provider Uid</string>
 
+    <string name="empty_user_list_text">Обязательно нужно больше пользователей.\nЧем больше - тем лучше.</string>
+
+
     <string name="launch_fragment_label">Welcome screen</string>
     <string name="servers_fragment_label">Select server screen</string>
     <string name="add_server_fragment_label">Add server screen</string>
+    <string name="user_list_fragment_label">Select user screen</string>
+    <string name="add_user_fragment_label">Add user screen</string>
 
 
 
@@ -28,5 +36,6 @@
     <string name="content_description_server_list_icon">Иконка элемента списка серверов</string>
     <string name="content_description_edit_button">Кнопка редактировать</string>
     <string name="content_description_remove_button">Кнопка удалить</string>
+    <string name="content_description_user_list_icon">Иконка элемента списка пользователей</string>
 
 </resources>

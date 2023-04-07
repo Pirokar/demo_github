@@ -1,11 +1,11 @@
-package io.edna.threads.demo.adapters.serverList
+package io.edna.threads.demo.adapters.userList
 
 import androidx.recyclerview.widget.DiffUtil
-import io.edna.threads.demo.models.ServerConfig
+import io.edna.threads.demo.models.UserInfo
 
-class ServerListDiffCallback(
-    private val oldList: List<ServerConfig>,
-    private val newList: List<ServerConfig>
+class UserListDiffCallback(
+    private val oldList: List<UserInfo>,
+    private val newList: List<UserInfo>
 ) : DiffUtil.Callback() {
 
     override fun getOldListSize() = oldList.size
