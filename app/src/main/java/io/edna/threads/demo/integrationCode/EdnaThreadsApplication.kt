@@ -65,7 +65,7 @@ class EdnaThreadsApplication : Application() {
             datastoreUrl = datastoreUrl,
             threadsGateUrl = threadsGateUrl,
             threadsGateProviderUid = threadsGateProviderUid,
-            isNewChatCenterApi
+            isNewChatCenterApi = isNewChatCenterApi
         )
     }
 
