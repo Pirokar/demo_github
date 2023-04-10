@@ -4,11 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import im.threads.ui.core.ThreadsLib
 import io.edna.threads.demo.BuildConfig
 import io.edna.threads.demo.R
 import io.edna.threads.demo.appCode.extensions.inflateWithBinding
+import io.edna.threads.demo.appCode.models.UiTheme
 import io.edna.threads.demo.databinding.FragmentLaunchBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -38,11 +40,27 @@ class LaunchFragment : Fragment() {
     private fun initObservers() {
         viewModel.selectServerAction.observe(viewLifecycleOwner) { checkLoginEnabled() }
         viewModel.selectUserAction.observe(viewLifecycleOwner) { checkLoginEnabled() }
+        viewModel.currentUiTheme.observe(viewLifecycleOwner) { setUiThemeDependentViews(it) }
         viewLifecycleOwner.lifecycle.addObserver(viewModel)
     }
 
     private fun checkLoginEnabled() {
         binding.login.isEnabled = true
+    }
+
+    private fun setUiThemeDependentViews(theme: UiTheme) = with(binding) {
+        context?.let { context ->
+            when (theme) {
+                UiTheme.LIGHT -> {
+                    title.setTextColor(ContextCompat.getColor(context, R.color.black_color))
+                    about.setTextColor(ContextCompat.getColor(context, R.color.info_text_color))
+                }
+                UiTheme.DARK -> {
+                    title.setTextColor(ContextCompat.getColor(context, R.color.white_color_fa))
+                    about.setTextColor(ContextCompat.getColor(context, R.color.gray_color_b7))
+                }
+            }
+        }
     }
 
     private fun generateAboutText(): String {
