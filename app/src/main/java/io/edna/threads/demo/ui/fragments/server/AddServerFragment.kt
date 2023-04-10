@@ -3,6 +3,7 @@ package io.edna.threads.demo.ui.fragments.server
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,9 +28,10 @@ class AddServerFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_add_server, container, false)
-        initData()
+        binding.lifecycleOwner = this
         binding.viewModel = viewModel
         subscribeForData()
+        initData()
         return binding.root
     }
 
@@ -46,13 +48,16 @@ class AddServerFragment : Fragment() {
     }
 
     private fun initData() {
+        Log.e("TAGGGGGG", "initData()  -  "+arguments)
         arguments?.let {
+            Log.e("TAGGGGGG", "initData()  it.containsKey(SERVER_CONFIG_KEY) -  "+it.containsKey(SERVER_CONFIG_KEY))
             if (it.containsKey(SERVER_CONFIG_KEY)) {
                 val config: ServerConfig? = if (Build.VERSION.SDK_INT >= 33) {
                     Parcels.unwrap(it.getParcelable(SERVER_CONFIG_KEY, Parcelable::class.java))
                 } else {
                     Parcels.unwrap(it.getParcelable(SERVER_CONFIG_KEY))
                 }
+                Log.e("TAGGGGGG", "initData() config -  "+config)
                 viewModel.setSrcConfig(config)
             }
         }

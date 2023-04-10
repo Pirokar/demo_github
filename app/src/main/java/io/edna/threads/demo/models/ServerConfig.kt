@@ -11,7 +11,7 @@ data class ServerConfig(
     var serverBaseUrl: String? = null,
     var threadsGateUrl: String? = null,
     var isFromApp: Boolean = false,
-    var isShowMenu: Boolean = false
+    var isShowMenu: Boolean = false,
 ) : Parcelable {
 
     override fun toString() = "$name, " +
@@ -27,6 +27,18 @@ data class ServerConfig(
             !datastoreUrl.isNullOrEmpty() &&
             !serverBaseUrl.isNullOrEmpty() &&
             !threadsGateUrl.isNullOrEmpty()
+    }
+
+    fun copy(): ServerConfig {
+        return ServerConfig(
+            name,
+            threadsGateProviderUid,
+            datastoreUrl,
+            serverBaseUrl,
+            threadsGateUrl,
+            isFromApp,
+            isShowMenu,
+        )
     }
 
     override fun hashCode(): Int {

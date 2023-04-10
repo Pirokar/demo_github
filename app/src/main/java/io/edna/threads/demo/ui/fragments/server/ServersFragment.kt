@@ -69,7 +69,7 @@ class ServersFragment : Fragment(), ServerListItemOnClickListener, TouchHelper.O
         adapter?.closeMenu()
         val navigationController = activity?.findNavController(R.id.nav_host_fragment_content_main)
         val args = Bundle()
-        args.putParcelable(SELECTED_SERVER_CONFIG_KEY, Parcels.wrap(item))
+        args.putParcelable(SERVER_CONFIG_KEY, Parcels.wrap(item))
         navigationController?.navigate(R.id.action_ServersFragment_to_AddServerFragment, args)
     }
 

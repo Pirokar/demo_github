@@ -2,6 +2,7 @@ package io.edna.threads.demo.ui.fragments.server
 
 import android.app.Activity
 import android.text.Editable
+import android.util.Log
 import android.view.View
 import androidx.databinding.Bindable
 import androidx.databinding.Observable
@@ -18,8 +19,8 @@ import io.edna.threads.demo.utils.AfterTextChangedTextWatcher
 
 class AddServerViewModel : ViewModel(), DefaultLifecycleObserver, Observable {
 
-    var srcServerConfigLiveData = MutableLiveData<ServerConfig>(null)
     var finalServerConfigLiveData = MutableLiveData<ServerConfig>(null)
+    private var srcServerConfigLiveData = MutableLiveData<ServerConfig>(null)
     private var _serverConfigLiveData = MutableLiveData(ServerConfig())
     var serverConfigLiveData: LiveData<ServerConfig> = _serverConfigLiveData
 
@@ -27,9 +28,10 @@ class AddServerViewModel : ViewModel(), DefaultLifecycleObserver, Observable {
     var enabledSaveButtonLiveData: LiveData<Boolean> = _enabledSaveButtonLiveData
 
     fun setSrcConfig(config: ServerConfig?) {
+        Log.e("TAGGGGGG", "etSrcConfig  -  "+config)
         config?.let {
             srcServerConfigLiveData.postValue(it)
-            _serverConfigLiveData.postValue(it)
+            _serverConfigLiveData.postValue(it.copy())
         }
     }
 
