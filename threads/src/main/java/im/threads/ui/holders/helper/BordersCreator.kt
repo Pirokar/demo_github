@@ -12,7 +12,7 @@ class BordersCreator(
     private val isIncomingMessage: Boolean
 ) {
     val sideSize: Int by lazy {
-        val percentage = Config.getInstance().getChatStyle().imageBubbleSize
+        val percentage = Config.getInstance().chatStyle.imageBubbleSize
         (Config.getInstance().screenSize.width * percentage).toInt()
     }
 
@@ -21,17 +21,17 @@ class BordersCreator(
             val res = context.resources
             val bordersSize = if (isIncomingMessage) {
                 BordersSize(
-                    res.getDimensionPixelSize(Config.getInstance().getChatStyle().incomingImageLeftBorderSize),
-                    res.getDimensionPixelSize(Config.getInstance().getChatStyle().incomingImageTopBorderSize),
-                    res.getDimensionPixelSize(Config.getInstance().getChatStyle().incomingImageRightBorderSize),
-                    res.getDimensionPixelSize(Config.getInstance().getChatStyle().incomingImageBottomBorderSize)
+                    res.getDimensionPixelSize(Config.getInstance().chatStyle.incomingImageLeftBorderSize),
+                    res.getDimensionPixelSize(Config.getInstance().chatStyle.incomingImageTopBorderSize),
+                    res.getDimensionPixelSize(Config.getInstance().chatStyle.incomingImageRightBorderSize),
+                    res.getDimensionPixelSize(Config.getInstance().chatStyle.incomingImageBottomBorderSize)
                 )
             } else {
                 BordersSize(
-                    res.getDimensionPixelSize(Config.getInstance().getChatStyle().outgoingImageLeftBorderSize),
-                    res.getDimensionPixelSize(Config.getInstance().getChatStyle().outgoingImageTopBorderSize),
-                    res.getDimensionPixelSize(Config.getInstance().getChatStyle().outgoingImageRightBorderSize),
-                    res.getDimensionPixelSize(Config.getInstance().getChatStyle().outgoingImageBottomBorderSize)
+                    res.getDimensionPixelSize(Config.getInstance().chatStyle.outgoingImageLeftBorderSize),
+                    res.getDimensionPixelSize(Config.getInstance().chatStyle.outgoingImageTopBorderSize),
+                    res.getDimensionPixelSize(Config.getInstance().chatStyle.outgoingImageRightBorderSize),
+                    res.getDimensionPixelSize(Config.getInstance().chatStyle.outgoingImageBottomBorderSize)
                 )
             }
             return bordersSize

@@ -215,7 +215,7 @@ class ImageFromUserViewHolder(
 
         if (fileDescription != null) {
             loader.setImageResource(getErrorImageResByErrorCode(fileDescription.errorCode))
-            ColorsHelper.setTint(itemView.context, loader, Config.getInstance().getChatStyle().messageNotSentErrorImageColor)
+            ColorsHelper.setTint(itemView.context, loader, Config.getInstance().chatStyle.messageNotSentErrorImageColor)
             fileName.text = FileUtils.getFileName(fileDescription)
             val errorString = getString(getErrorStringResByErrorCode(fileDescription.errorCode))
             errorText.text = errorString

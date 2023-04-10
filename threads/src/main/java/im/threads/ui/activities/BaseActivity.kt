@@ -89,7 +89,7 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     protected fun setTitle(text: String, titleTextView: TextView? = null) {
-        val style = Config.getInstance().getChatStyle()
+        val style = Config.getInstance().chatStyle
         val textColor = ContextCompat.getColor(this, style.chatToolbarTextColorResId)
         val fontSize = resources.getDimensionPixelSize(R.dimen.ecc_text_big)
         var typeface: Typeface? = null

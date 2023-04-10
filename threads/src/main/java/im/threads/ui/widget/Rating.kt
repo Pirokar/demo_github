@@ -13,7 +13,7 @@ import im.threads.ui.utils.ColorsHelper
 
 class Rating : LinearLayout {
 
-    private val style: ChatStyle = getInstance().getChatStyle()
+    private val style: ChatStyle = getInstance().chatStyle
     private var ratingCount = 0
     private var countStars: Int = 0
     private var viewsStar: ArrayList<View> = ArrayList()

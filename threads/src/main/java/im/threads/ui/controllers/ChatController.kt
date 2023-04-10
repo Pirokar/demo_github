@@ -108,7 +108,7 @@ class ChatController private constructor() {
     private val chatUpdateProcessor: ChatUpdateProcessor by inject()
     private val database: DatabaseHolder by inject()
     private val consultWriter: ConsultWriter by inject()
-    private val chatStyle = Config.getInstance().getChatStyle()
+    private val chatStyle = Config.getInstance().chatStyle
     private val appContext: Context by inject()
     private val preferences: Preferences by inject()
     private val historyLoader: HistoryLoader by inject()

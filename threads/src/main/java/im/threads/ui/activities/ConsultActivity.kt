@@ -52,14 +52,14 @@ internal open class ConsultActivity : BaseActivity() {
 
     private fun setStatusBarColor() {
         val statusBarColor = ContextCompat.getColor(baseContext, R.color.ecc_black_transparent)
-        val isStatusBarLight = resources.getBoolean(config.getChatStyle().windowLightStatusBarResId)
+        val isStatusBarLight = resources.getBoolean(config.chatStyle.windowLightStatusBarResId)
         super.setStatusBarColor(isStatusBarLight, statusBarColor)
     }
 
     private fun setConsultAvatar(consultInfo: ConsultInfo) = with(binding) {
         consultImage.background = AppCompatResources.getDrawable(
             this@ConsultActivity,
-            config.getChatStyle().defaultOperatorAvatar
+            config.chatStyle.defaultOperatorAvatar
         )
 
         var imagePath = consultInfo.photoUrl
@@ -83,7 +83,7 @@ internal open class ConsultActivity : BaseActivity() {
         toolbar.overflowIcon?.setColorFilter(
             ContextCompat.getColor(
                 baseContext,
-                config.getChatStyle().chatToolbarTextColorResId
+                config.chatStyle.chatToolbarTextColorResId
             )
         )
 

@@ -198,7 +198,7 @@ class ChatFragment :
     private var quickReplyItem: QuickReplyItem? = null
     private var previousChatItemsCount = 0
     private val config = Config.getInstance()
-    var style: ChatStyle = config.getChatStyle()
+    var style: ChatStyle = config.chatStyle
         private set
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -1032,7 +1032,7 @@ class ChatFragment :
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q || ThreadsPermissionChecker.isWriteExternalPermissionGranted(activity)
         info("isCameraGranted = $isCameraGranted isWriteGranted $isWriteGranted")
         if (isCameraGranted && isWriteGranted) {
-            if (config.getChatStyle().useExternalCameraApp) {
+            if (config.chatStyle.useExternalCameraApp) {
                 try {
                     val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                     externalCameraPhotoFile = createImageFile(activity)
@@ -1090,7 +1090,7 @@ class ChatFragment :
             val s = SpannableString(searchMenuItem.title)
             s.setSpan(ForegroundColorSpan(ContextCompat.getColor(activity, style.menuItemTextColorResId)), 0, s.length, 0)
             searchMenuItem.title = s
-            val searchEnabled = resources.getBoolean(config.getChatStyle().searchEnabled)
+            val searchEnabled = resources.getBoolean(config.chatStyle.searchEnabled)
             searchMenuItem.isVisible = searchEnabled
         }
         val filesAndMedia = menu.findItem(R.id.ecc_files_and_media)
@@ -2031,7 +2031,7 @@ class ChatFragment :
     }
 
     private val isPopupMenuEnabled: Boolean
-        get() = (resources.getBoolean(config.getChatStyle().searchEnabled) || config.filesAndMediaMenuItemEnabled)
+        get() = (resources.getBoolean(config.chatStyle.searchEnabled) || config.filesAndMediaMenuItemEnabled)
 
     private fun initToolbar() {
         val activity = activity ?: return
@@ -2078,7 +2078,7 @@ class ChatFragment :
     }
 
     private fun initToolbarTextPosition() {
-        val isToolbarTextCentered = Config.getInstance().getChatStyle().isToolbarTextCentered
+        val isToolbarTextCentered = Config.getInstance().chatStyle.isToolbarTextCentered
         val gravity = if (isToolbarTextCentered) Gravity.CENTER else Gravity.CENTER_VERTICAL
         if (isToolbarTextCentered) {
             val paddingTopBottom = 0
@@ -2571,7 +2571,7 @@ class ChatFragment :
         }
 
         override fun onConsultAvatarClick(consultId: String) {
-            if (config.getChatStyle().canShowSpecialistInfo) {
+            if (config.chatStyle.canShowSpecialistInfo) {
                 val activity: Activity? = activity
                 if (activity != null) {
                     chatController.onConsultChoose(activity, consultId)

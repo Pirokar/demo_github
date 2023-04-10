@@ -9,6 +9,7 @@ import im.threads.business.rest.config.RequestConfig
 import im.threads.business.serviceLocator.core.inject
 import im.threads.ui.ChatStyle
 import im.threads.ui.core.PendingIntentCreator
+import im.threads.ui.extensions.isDarkThemeOn
 import im.threads.ui.styles.StyleUseCase
 import im.threads.ui.styles.permissions.PermissionDescriptionDialogStyle
 import im.threads.ui.styles.permissions.PermissionDescriptionDialogStyle.Companion.getDefaultDialogStyle
@@ -27,7 +28,8 @@ class Config(
     val pendingIntentCreator: PendingIntentCreator,
     unreadMessagesCountListener: UnreadMessagesCountListener?,
     networkInterceptor: Interceptor?,
-    chatStyle: ChatStyle?,
+    lightTheme: ChatStyle?,
+    darkTheme: ChatStyle?,
     isDebugLoggingEnabled: Boolean,
     historyLoadingCount: Int,
     surveyCompletionDelay: Int,
@@ -42,8 +44,29 @@ class Config(
     historyLoadingCount, surveyCompletionDelay, requestConfig, isSSLPinningDisabled, notificationImportance,
     certificateRawResIds
 ) {
-    @Volatile
-    private var chatStyle: ChatStyle? = null
+    val chatStyle: ChatStyle
+        get() {
+            if (lightTheme == null && darkTheme == null) {
+                synchronized(ChatStyle::class.java) {
+                    styleUseCase.incomingStyle.apply {
+                        lightTheme = first
+                        darkTheme = second
+                    }
+                    if (lightTheme == null && darkTheme == null) {
+                        lightTheme = ChatStyle()
+                    }
+                }
+            }
+
+            return if (context.isDarkThemeOn() && darkTheme != null) {
+                darkTheme!!
+            } else {
+                lightTheme ?: darkTheme!!
+            }
+        }
+
+    var lightTheme: ChatStyle? = null
+    var darkTheme: ChatStyle? = null
 
     @Volatile
     private var storagePermissionDescriptionDialogStyle: PermissionDescriptionDialogStyle? = null
@@ -65,23 +88,8 @@ class Config(
 
     init {
         filesAndMediaMenuItemEnabled = MetadataUi.getFilesAndMediaMenuItemEnabled(this.context)
-        setChatStyle(chatStyle)
-    }
-
-    fun getChatStyle(): ChatStyle {
-        if (chatStyle == null) {
-            synchronized(ChatStyle::class.java) {
-                chatStyle = styleUseCase.incomingStyle ?: ChatStyle()
-            }
-        }
-        return chatStyle!!
-    }
-
-    fun setChatStyle(style: ChatStyle?) {
-        style?.let {
-            chatStyle = it
-            styleUseCase.setIncomingStyle(it)
-        }
+        lightTheme?.let { styleUseCase.setIncomingLightStyle(it) }
+        darkTheme?.let { styleUseCase.setIncomingDarkStyle(it) }
     }
 
     fun getStoragePermissionDescriptionDialogStyle(): PermissionDescriptionDialogStyle {

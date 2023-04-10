@@ -247,7 +247,7 @@ class UserPhraseViewHolder(
     }
 
     private fun setupPaddingsAndBorders(fileDescription: FileDescription?) = with(bubbleLayout) {
-        val chatStyle = Config.getInstance().getChatStyle()
+        val chatStyle = Config.getInstance().chatStyle
         val resources = context.resources
         val borderLeft = resources.getDimensionPixelSize(chatStyle.outgoingImageLeftBorderSize)
         val borderTop = resources.getDimensionPixelSize(chatStyle.outgoingImageTopBorderSize)
@@ -377,7 +377,7 @@ class UserPhraseViewHolder(
                                 }
                             })
                             .into(image)
-                        val chatStyle = Config.getInstance().getChatStyle()
+                        val chatStyle = Config.getInstance().chatStyle
                         val resources = context.resources
                         val paddingLeft = resources.getDimensionPixelSize(chatStyle.bubbleOutgoingPaddingLeft)
                         val paddingTop = resources.getDimensionPixelSize(chatStyle.bubbleOutgoingPaddingTop)
