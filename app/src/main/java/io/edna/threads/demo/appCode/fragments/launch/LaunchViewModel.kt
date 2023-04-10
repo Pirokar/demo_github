@@ -5,16 +5,20 @@ import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import io.edna.threads.demo.R
 import io.edna.threads.demo.appCode.business.PreferencesProvider
-import io.edna.threads.demo.appCode.business.SingleLiveEvent
+import io.edna.threads.demo.models.ServerConfig
 
-class LaunchViewModel(private val preferencesProvider: PreferencesProvider) : ViewModel(), DefaultLifecycleObserver {
-    val selectServerAction: SingleLiveEvent<String> = SingleLiveEvent()
-    val selectUserAction: SingleLiveEvent<String> = SingleLiveEvent()
+class LaunchViewModel(private val preferencesProvider: PreferencesProvider) :
+    ViewModel(),
+    DefaultLifecycleObserver {
+    private var _selectedServerLiveData = MutableLiveData(ServerConfig())
+    var selectedServerConfigLiveData: LiveData<ServerConfig> = _selectedServerLiveData
 
     override fun onCreate(owner: LifecycleOwner) {
         super.onCreate(owner)
@@ -35,5 +39,9 @@ class LaunchViewModel(private val preferencesProvider: PreferencesProvider) : Vi
             ).show()
             R.id.login -> {}
         }
+    }
+
+    fun setupServerConfig(config: ServerConfig) {
+        _selectedServerLiveData.postValue(config)
     }
 }

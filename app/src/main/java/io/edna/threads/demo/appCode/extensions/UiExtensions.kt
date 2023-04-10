@@ -6,7 +6,10 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 
-fun <T : ViewDataBinding> LayoutInflater.inflateWithBinding(viewGroup: ViewGroup?, layoutRes: Int): T {
+fun <T : ViewDataBinding> LayoutInflater.inflateWithBinding(
+    viewGroup: ViewGroup?,
+    layoutRes: Int
+): T {
     return DataBindingUtil.inflate(this, layoutRes, viewGroup, false)
 }
 
