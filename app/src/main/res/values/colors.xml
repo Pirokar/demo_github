@@ -15,15 +15,14 @@
     <color name="blue_color">#007AFF</color>
     <color name="blue_color_lite">#0A84FF</color>
     <color name="blue_color_dark">#004EA4</color>
-    <color name="toolbar_color">#1C1B1F</color>
 
     <color name="info_text_color">#883C3C43</color>
-    <color name="alt_threads_outgoing_bubble_color">@color/toolbar_color</color>
-    <color name="alt_threads_chat_toolbar">@color/toolbar_color</color>
+    <color name="alt_threads_outgoing_bubble_color">#505050</color>
+    <color name="alt_threads_chat_toolbar">#505050</color>
     <color name="alt_threads_chat_context_menu">@color/white_color_ec</color>
     <color name="alt_threads_chat_toolbar_text">@color/white_color_ec</color>
     <color name="alt_threads_chat_status_bar">#000000</color>
-    <color name="alt_threads_chat_toolbar_menu_item_light">@color/toolbar_color</color>
+    <color name="alt_threads_chat_toolbar_menu_item_light">#505050</color>
     <color name="alt_threads_chat_toolbar_menu_item_black">@color/white_color_ec</color>
     <color name="alt_threads_chat_toolbar_hint">@color/white_color_ec</color>
 
@@ -36,4 +35,16 @@
     <color name="light_outgoing_time_text">#9fa5a9</color>
     <color name="light_outgoing_image_time_background">#4D000000</color>
     <color name="light_links">#0000FF</color>
+
+    <!-- Dark theme colors -->
+    <color name="dark_outgoing_bubble">#183D2C</color>
+    <color name="dark_icons">#2A6E50</color>
+    <color name="dark_highlighting">#628676</color>
+    <color name="dark_toolbar">#1C1B1F</color>
+    <color name="dark_statusbar">#000000</color>
+    <color name="dark_outgoing_time_text">#9fa5a9</color>
+    <color name="dark_outgoing_image_time_background">#4D000000</color>
+    <color name="dark_links">#0000FF</color>
+    <color name="dark_chat_background">#505050</color>
+    <color name="dark_system_text">#f2f2f7</color>
 </resources>

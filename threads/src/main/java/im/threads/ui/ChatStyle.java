@@ -227,9 +227,6 @@ public final class ChatStyle implements Serializable {
     public int[] chatBodyIconsColorState = null;
 
     @ColorRes
-    public int chatSystemMessageTextColor = R.color.ecc_chat_connection_message;
-
-    @ColorRes
     public int iconsAndSeparatorsColor = R.color.ecc_icon_and_separators_color;
     @DrawableRes
     public int defaultOperatorAvatar = R.drawable.ecc_operator_avatar_placeholder;
@@ -1297,7 +1294,7 @@ public final class ChatStyle implements Serializable {
 
         this.imagePlaceholder = imagePlaceholder;
         this.chatBodyIconsTint = chatBodyIconsTint;
-        this.chatSystemMessageTextColor = chatSystemMessageTextColor;
+        this.systemMessageTextColorResId = chatSystemMessageTextColor;
 
         this.mediaAndFilesScreenBackgroundColor = mediaAndFilesScreenBackgroundColor;
         this.mediaAndFilesTextColor = mediaAndFilesTextColor;
@@ -1413,6 +1410,7 @@ public final class ChatStyle implements Serializable {
     }
 
     /**
+     * Устанавливает стили для отзывов. Можно передать null для значений, которые хотите оставить по умолчанию
      * Default values:
      *
      * @param binarySurveyLikeUnselectedIconResId    - R.drawable.threads_binary_survey_like_unselected
@@ -1426,26 +1424,26 @@ public final class ChatStyle implements Serializable {
      * @param surveyTextColorResId                   - R.color.threads_chat_system_message
      * @param surveyChoicesTextColorResId            - R.color.threads_survey_choices_text
      */
-    public ChatStyle setSurveyStyle(@DrawableRes final int binarySurveyLikeUnselectedIconResId,
-                                    @DrawableRes final int binarySurveyLikeSelectedIconResId,
-                                    @DrawableRes final int binarySurveyDislikeUnselectedIconResId,
-                                    @DrawableRes final int binarySurveyDislikeSelectedIconResId,
-                                    @DrawableRes final int optionsSurveyUnselectedIconResId,
-                                    @DrawableRes final int optionsSurveySelectedIconResId,
-                                    @ColorRes final int surveySelectedColorFilterResId,
-                                    @ColorRes final int surveyUnselectedColorFilterResId,
-                                    @ColorRes final int surveyTextColorResId,
-                                    @ColorRes int surveyChoicesTextColorResId) {
-        this.binarySurveyLikeUnselectedIconResId = binarySurveyLikeUnselectedIconResId;
-        this.binarySurveyLikeSelectedIconResId = binarySurveyLikeSelectedIconResId;
-        this.binarySurveyDislikeUnselectedIconResId = binarySurveyDislikeUnselectedIconResId;
-        this.binarySurveyDislikeSelectedIconResId = binarySurveyDislikeSelectedIconResId;
-        this.optionsSurveyUnselectedIconResId = optionsSurveyUnselectedIconResId;
-        this.optionsSurveySelectedIconResId = optionsSurveySelectedIconResId;
-        this.surveySelectedColorFilterResId = surveySelectedColorFilterResId;
-        this.surveyUnselectedColorFilterResId = surveyUnselectedColorFilterResId;
-        this.surveyTextColorResId = surveyTextColorResId;
-        this.surveyChoicesTextColorResId = surveyChoicesTextColorResId;
+    public ChatStyle setSurveyStyle(@DrawableRes final Integer binarySurveyLikeUnselectedIconResId,
+                                    @DrawableRes final Integer binarySurveyLikeSelectedIconResId,
+                                    @DrawableRes final Integer binarySurveyDislikeUnselectedIconResId,
+                                    @DrawableRes final Integer binarySurveyDislikeSelectedIconResId,
+                                    @DrawableRes final Integer optionsSurveyUnselectedIconResId,
+                                    @DrawableRes final Integer optionsSurveySelectedIconResId,
+                                    @ColorRes final Integer surveySelectedColorFilterResId,
+                                    @ColorRes final Integer surveyUnselectedColorFilterResId,
+                                    @ColorRes final Integer surveyTextColorResId,
+                                    @ColorRes Integer surveyChoicesTextColorResId) {
+        if (binarySurveyLikeUnselectedIconResId != null) this.binarySurveyLikeUnselectedIconResId = binarySurveyLikeUnselectedIconResId;
+        if (binarySurveyLikeSelectedIconResId != null) this.binarySurveyLikeSelectedIconResId = binarySurveyLikeSelectedIconResId;
+        if (binarySurveyDislikeUnselectedIconResId != null) this.binarySurveyDislikeUnselectedIconResId = binarySurveyDislikeUnselectedIconResId;
+        if (binarySurveyDislikeSelectedIconResId != null) this.binarySurveyDislikeSelectedIconResId = binarySurveyDislikeSelectedIconResId;
+        if (optionsSurveyUnselectedIconResId != null) this.optionsSurveyUnselectedIconResId = optionsSurveyUnselectedIconResId;
+        if (optionsSurveySelectedIconResId != null) this.optionsSurveySelectedIconResId = optionsSurveySelectedIconResId;
+        if (surveySelectedColorFilterResId != null) this.surveySelectedColorFilterResId = surveySelectedColorFilterResId;
+        if (surveyUnselectedColorFilterResId != null) this.surveyUnselectedColorFilterResId = surveyUnselectedColorFilterResId;
+        if (surveyTextColorResId != null) this.surveyTextColorResId = surveyTextColorResId;
+        if (surveyChoicesTextColorResId != null) this.surveyChoicesTextColorResId = surveyChoicesTextColorResId;
         return this;
     }
 
@@ -1524,6 +1522,7 @@ public final class ChatStyle implements Serializable {
     }
 
     /**
+     * Устанавливает стиль для системных сообщений. Можно передать null для значений, которые хотите оставить по умолчанию
      * Default values:
      *
      * @param systemMessageFont             - setSystemMessageFont(String path)
@@ -1535,18 +1534,18 @@ public final class ChatStyle implements Serializable {
      */
     public ChatStyle setSystemMessageStyle(
             final String systemMessageFont,
-            @DimenRes final int systemMessageTextSize,
-            @ColorRes final int systemMessageTextColorResId,
-            @DimenRes final int systemMessageLeftRightPadding,
-            final int systemMessageTextGravity,
-            @ColorRes final int systemMessageLinkColor
+            @DimenRes final Integer systemMessageTextSize,
+            @ColorRes final Integer systemMessageTextColorResId,
+            @DimenRes final Integer systemMessageLeftRightPadding,
+            final Integer systemMessageTextGravity,
+            @ColorRes final Integer systemMessageLinkColor
     ) {
-        this.systemMessageFont = systemMessageFont;
-        this.systemMessageTextSize = systemMessageTextSize;
-        this.systemMessageTextColorResId = systemMessageTextColorResId;
-        this.systemMessageLeftRightPadding = systemMessageLeftRightPadding;
-        this.systemMessageTextGravity = systemMessageTextGravity;
-        this.systemMessageLinkColor = systemMessageLinkColor;
+        if (systemMessageFont != null) this.systemMessageFont = systemMessageFont;
+        if (systemMessageTextSize != null) this.systemMessageTextSize = systemMessageTextSize;
+        if (systemMessageTextColorResId != null) this.systemMessageTextColorResId = systemMessageTextColorResId;
+        if (systemMessageLeftRightPadding != null) this.systemMessageLeftRightPadding = systemMessageLeftRightPadding;
+        if (systemMessageTextGravity != null) this.systemMessageTextGravity = systemMessageTextGravity;
+        if (systemMessageLinkColor != null) this.systemMessageLinkColor = systemMessageLinkColor;
         return this;
     }
 
