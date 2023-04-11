@@ -5,16 +5,19 @@ import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import io.edna.threads.demo.R
 import io.edna.threads.demo.appCode.business.PreferencesProvider
-import io.edna.threads.demo.appCode.business.SingleLiveEvent
+import io.edna.threads.demo.models.UserInfo
 
 class LaunchViewModel(private val preferencesProvider: PreferencesProvider) : ViewModel(), DefaultLifecycleObserver {
-    val selectServerAction: SingleLiveEvent<String> = SingleLiveEvent()
-    val selectUserAction: SingleLiveEvent<String> = SingleLiveEvent()
+
+    private var _selectedUserLiveData = MutableLiveData(UserInfo())
+    var selectedUserLiveData: LiveData<UserInfo> = _selectedUserLiveData
 
     override fun onCreate(owner: LifecycleOwner) {
         super.onCreate(owner)
@@ -26,14 +29,18 @@ class LaunchViewModel(private val preferencesProvider: PreferencesProvider) : Vi
             (view.context as Activity).findNavController(R.id.nav_host_fragment_content_main)
         when (view.id) {
             R.id.serverButton -> navigationController.navigate(R.id.action_LaunchFragment_to_ServersFragment)
-            R.id.userButton -> navigationController.navigate(R.id.action_LaunchFragment_to_ServersFragment)
             R.id.demonstrations -> navigationController.navigate(R.id.action_LaunchFragment_to_DemonstrationsListFragment)
+            R.id.userButton -> navigationController.navigate(R.id.action_LaunchFragment_to_UserListFragment)
             R.id.settings -> Toast.makeText(
                 view.context,
                 view.context.getString(R.string.functional_not_support),
-                Toast.LENGTH_LONG
+                Toast.LENGTH_LONG,
             ).show()
             R.id.login -> {}
         }
+    }
+
+    fun setupUser(user: UserInfo) {
+        _selectedUserLiveData.postValue(user)
     }
 }
