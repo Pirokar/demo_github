@@ -73,23 +73,34 @@ class EdnaThreadsApplication : Application() {
     }
 
     private fun getLightChatTheme() = getMainChatTheme().apply {
-        setConsultSearchingProgressColor(R.color.toolbar_color)
-        setChatBodyIconsTint(R.color.toolbar_color)
+        setConsultSearchingProgressColor(R.color.light_toolbar)
+        setChatBodyIconsTint(R.color.light_toolbar)
         setChatTitleStyle(
             R.string.demo_alt_threads_contact_center,
             R.string.demo_alt_threads_operator_subtitle,
-            R.color.alt_threads_chat_toolbar,
+            R.color.light_toolbar,
             R.color.alt_threads_chat_context_menu,
             R.color.alt_threads_chat_toolbar_text,
-            R.color.alt_threads_chat_status_bar,
+            R.color.light_statusbar,
             R.bool.alt_threads_chat_is_light_status_bar,
-            R.color.alt_threads_chat_toolbar_menu_item,
+            R.color.light_toolbar,
             R.color.alt_threads_chat_toolbar_hint,
             true
         )
-        setOutgoingMessageBubbleColor(R.color.alt_threads_outgoing_bubble_color)
-        setRecordButtonBackgroundColor(R.color.toolbar_color)
-        setScrollDownButtonIcon(R.drawable.alt_threads_scroll_down_icon)
+        setOutgoingMessageBubbleColor(R.color.light_outgoing_bubble)
+        setOutgoingMessageTextColor(R.color.black_color)
+        setOutgoingImageTimeBackgroundColor(R.color.light_outgoing_image_time_background)
+        setOutgoingMessageTimeColor(R.color.light_outgoing_time_text)
+        setRecordButtonBackgroundColor(R.color.light_toolbar)
+        setScrollDownButtonIcon(R.drawable.alt_threads_scroll_down_icon_light)
+        setMessageSendingResources(null, R.color.light_icons)
+        setMessageSentResources(null, R.color.light_icons)
+        setMessageDeliveredResources(null, R.color.light_icons)
+        setMessageReadResources(null, R.color.light_icons)
+        setMessageFailedResources(null, R.color.light_icons)
+        setChatHighlightingColor(R.color.light_highlighting)
+        setIncomingMessageLinkColor(R.color.light_links)
+        setOutgoingMessageLinkColor(R.color.light_links)
     }
 
     private fun getDarkChatTheme() = getMainChatTheme().apply {
@@ -103,13 +114,13 @@ class EdnaThreadsApplication : Application() {
             R.color.alt_threads_chat_toolbar_text,
             R.color.alt_threads_chat_status_bar,
             R.bool.alt_threads_chat_is_light_status_bar,
-            R.color.alt_threads_chat_toolbar_menu_item,
+            R.color.alt_threads_chat_toolbar_menu_item_black,
             R.color.alt_threads_chat_toolbar_hint,
             true
         )
         setOutgoingMessageBubbleColor(R.color.alt_threads_outgoing_bubble_color)
         setRecordButtonBackgroundColor(R.color.toolbar_color)
-        setScrollDownButtonIcon(R.drawable.alt_threads_scroll_down_icon)
+        setScrollDownButtonIcon(R.drawable.alt_threads_scroll_down_icon_black)
     }
 
     private fun getMainChatTheme(): ChatStyle {
