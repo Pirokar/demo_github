@@ -199,7 +199,7 @@ class UserFileViewHolder(
         val drawable = AppCompatResources.getDrawable(itemView.context, res)
         drawable?.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
             ContextCompat.getColor(itemView.context, color),
-            BlendModeCompat.SRC_ATOP,
+            BlendModeCompat.SRC_ATOP
         )
         return drawable
     }
@@ -241,7 +241,7 @@ class UserFileViewHolder(
         errorTextView.gone()
         showCircularProgressButton()
         circularProgressButton.setProgress(
-            if (fileDescription?.fileUri != null) 100 else fileDescription?.downloadProgress ?: 0,
+            if (fileDescription?.fileUri != null) 100 else fileDescription?.downloadProgress ?: 0
         )
     }
 
@@ -280,7 +280,7 @@ class UserFileViewHolder(
         bubbleLayout.background.colorFilter =
             BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
                 getColorInt(style.messageNotSentBubbleBackgroundColor),
-                BlendModeCompat.SRC_ATOP,
+                BlendModeCompat.SRC_ATOP
             )
         fileDescription?.let { showErrorLayout(it) }
     }
@@ -289,7 +289,7 @@ class UserFileViewHolder(
         bubbleLayout.background.colorFilter =
             BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
                 getColorInt(style.outgoingMessageBubbleColor),
-                BlendModeCompat.SRC_ATOP,
+                BlendModeCompat.SRC_ATOP
             )
     }
 
