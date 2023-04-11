@@ -24,6 +24,7 @@ import im.threads.business.models.FileDescription
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.ogParser.OpenGraphParser
 import im.threads.business.utils.FileUtils
+import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.utils.gone
 import im.threads.ui.utils.invisible
 import im.threads.ui.utils.visible
@@ -51,7 +52,9 @@ class ImageFromConsultViewHolder(
 
     private val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
 
-    private val errorTextView: TextView = itemView.findViewById(R.id.errorText)
+    private val errorTextView: TextView = itemView.findViewById<TextView?>(R.id.errorText).apply {
+        ColorsHelper.setTextColor(this, style.errorMessageTextColor)
+    }
     private val loaderLayout: LinearLayout = itemView.findViewById(R.id.loaderLayout)
     private val fileNameTextView: TextView = itemView.findViewById(R.id.fileName)
     private val loader: ImageView = itemView.findViewById(R.id.loader)

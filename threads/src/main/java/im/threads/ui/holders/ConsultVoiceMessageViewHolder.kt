@@ -26,6 +26,7 @@ import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.ogParser.OpenGraphParser
 import im.threads.business.utils.FileUtils
 import im.threads.business.utils.UrlUtils
+import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.utils.gone
 import im.threads.ui.utils.invisible
 import im.threads.ui.utils.visible
@@ -54,7 +55,9 @@ class ConsultVoiceMessageViewHolder(
     override var fileDescription: FileDescription? = null
     private var formattedDuration = ""
 
-    private val errorTextView: TextView = itemView.findViewById(R.id.errorText)
+    private val errorTextView: TextView = itemView.findViewById<TextView?>(R.id.errorText).apply {
+        ColorsHelper.setTextColor(this, style.errorMessageTextColor)
+    }
     private val loader: ImageView = itemView.findViewById(R.id.loader)
     private val rootLayout: ConstraintLayout = itemView.findViewById(R.id.rootLayout)
 

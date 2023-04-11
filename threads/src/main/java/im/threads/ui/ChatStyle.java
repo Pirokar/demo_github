@@ -101,6 +101,9 @@ public final class ChatStyle implements Serializable {
     public int outgoingMessageTextColor = R.color.ecc_outgoing_message_text;
 
     @ColorRes
+    public int errorMessageTextColor = R.color.ecc_error_red_df0000;
+
+    @ColorRes
     public int quoteHeaderTextColor = R.color.ecc_incoming_message_text;
     @ColorRes
     public int quoteTextTextColor = R.color.ecc_incoming_message_text;
@@ -1942,6 +1945,17 @@ public final class ChatStyle implements Serializable {
     ) {
         this.quoteHeaderTextColor = quoteHeaderTextColor;
         this.quoteTextTextColor = quoteTextTextColor;
+        return this;
+    }
+
+    /**
+     * Устанавливает цвета текста ошибки(под баблом)
+     * @param errorMessageTextColor - ресурс id цвета для текста ошибки. По умолчанию - R.color.ecc_error_red_df0000
+     */
+    public ChatStyle setErrorMessageTextColor(
+            @ColorRes int errorMessageTextColor
+    ) {
+        this.errorMessageTextColor = errorMessageTextColor;
         return this;
     }
 }

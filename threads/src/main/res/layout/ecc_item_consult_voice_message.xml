@@ -128,7 +128,6 @@
             app:layout_constraintStart_toStartOf="@id/voiceMessageConsultButtonPlayPause"
             app:layout_constraintEnd_toStartOf="@id/timeStamp"
             app:layout_constraintTop_toBottomOf="@id/voiceMessageConsultText"
-            android:textColor="@color/ecc_error_red_df0000"
             android:textSize="@dimen/ecc_error_text_size"
             android:visibility="gone"
             tools:text="Some error text"

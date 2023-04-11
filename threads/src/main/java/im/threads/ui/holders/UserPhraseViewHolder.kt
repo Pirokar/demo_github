@@ -42,6 +42,7 @@ import im.threads.business.utils.FileUtils.isVoiceMessage
 import im.threads.business.utils.UrlUtils
 import im.threads.business.utils.toFileSize
 import im.threads.ui.config.Config
+import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.utils.gone
 import im.threads.ui.utils.invisible
 import im.threads.ui.utils.isVisible
@@ -102,7 +103,9 @@ class UserPhraseViewHolder(
     private val ogDataLayout: ViewGroup = itemView.findViewById(R.id.ogDataLayout)
     private val slider: Slider = itemView.findViewById(R.id.voiceMessageUserSlider)
     private val fileSizeTextView: TextView = itemView.findViewById(R.id.fileSize)
-    private val errorText: TextView = itemView.findViewById(R.id.errorText)
+    private val errorText: TextView = itemView.findViewById<TextView?>(R.id.errorText).apply {
+        ColorsHelper.setTextColor(this, style.errorMessageTextColor)
+    }
     private val loader: ImageView = itemView.findViewById(R.id.loader)
     private val rightTextHeader: TextView = itemView.findViewById(R.id.to)
     private val rightTextTimeStamp: TextView = itemView.findViewById(R.id.sendAt)

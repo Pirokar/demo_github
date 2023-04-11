@@ -27,6 +27,7 @@ import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.ogParser.OpenGraphParser
 import im.threads.business.utils.FileUtils.getFileName
 import im.threads.business.utils.toFileSize
+import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.utils.gone
 import im.threads.ui.utils.invisible
 import im.threads.ui.utils.visible
@@ -52,7 +53,9 @@ class UserFileViewHolder(
 
     private val fileHeaderTextView: TextView = itemView.findViewById(R.id.header)
     private val fileSizeTextView: TextView = itemView.findViewById(R.id.fileSize)
-    private val errorTextView: TextView = itemView.findViewById(R.id.errorText)
+    private val errorTextView: TextView = itemView.findViewById<TextView?>(R.id.errorText).apply {
+        ColorsHelper.setTextColor(this, style.errorMessageTextColor)
+    }
     private val loader: ImageView = itemView.findViewById(R.id.loader)
     private val rootLayout: LinearLayout = itemView.findViewById(R.id.rootLayout)
     private val bubbleLayout: ConstraintLayout = itemView.findViewById(R.id.bubble)
@@ -196,7 +199,7 @@ class UserFileViewHolder(
         val drawable = AppCompatResources.getDrawable(itemView.context, res)
         drawable?.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
             ContextCompat.getColor(itemView.context, color),
-            BlendModeCompat.SRC_ATOP
+            BlendModeCompat.SRC_ATOP,
         )
         return drawable
     }
@@ -238,7 +241,7 @@ class UserFileViewHolder(
         errorTextView.gone()
         showCircularProgressButton()
         circularProgressButton.setProgress(
-            if (fileDescription?.fileUri != null) 100 else fileDescription?.downloadProgress ?: 0
+            if (fileDescription?.fileUri != null) 100 else fileDescription?.downloadProgress ?: 0,
         )
     }
 
@@ -277,7 +280,7 @@ class UserFileViewHolder(
         bubbleLayout.background.colorFilter =
             BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
                 getColorInt(style.messageNotSentBubbleBackgroundColor),
-                BlendModeCompat.SRC_ATOP
+                BlendModeCompat.SRC_ATOP,
             )
         fileDescription?.let { showErrorLayout(it) }
     }
@@ -286,7 +289,7 @@ class UserFileViewHolder(
         bubbleLayout.background.colorFilter =
             BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
                 getColorInt(style.outgoingMessageBubbleColor),
-                BlendModeCompat.SRC_ATOP
+                BlendModeCompat.SRC_ATOP,
             )
     }
 

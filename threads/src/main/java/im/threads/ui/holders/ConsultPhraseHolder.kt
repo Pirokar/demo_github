@@ -35,6 +35,7 @@ import im.threads.business.utils.FileUtils.isImage
 import im.threads.business.utils.UrlUtils
 import im.threads.business.utils.toFileSize
 import im.threads.ui.config.Config
+import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.utils.gone
 import im.threads.ui.utils.invisible
 import im.threads.ui.utils.visible
@@ -73,7 +74,9 @@ class ConsultPhraseHolder(
         itemView.findViewById<CircularProgressButton>(R.id.buttonDownload).apply {
             setBackgroundColorResId(style.chatBackgroundColor)
         }
-    private val errorTextView: TextView = itemView.findViewById(R.id.errorText)
+    private val errorTextView: TextView = itemView.findViewById<TextView?>(R.id.errorText).apply {
+        ColorsHelper.setTextColor(this, style.errorMessageTextColor)
+    }
     private val fileImage = itemView.findViewById<ImageView>(R.id.fileImage)
     private val rightTextHeader: TextView = itemView.findViewById(R.id.to)
     private val image: ImageView = itemView.findViewById(R.id.image)
@@ -134,7 +137,7 @@ class ConsultPhraseHolder(
                 rightTextDescription,
                 rightTextFileStamp
             ),
-            style.incomingMessageTextColor
+            style.incomingMessageTextColor,
         )
         setUpProgressButton(circularProgressButton)
     }
@@ -156,7 +159,7 @@ class ConsultPhraseHolder(
                 WeakReference(ogTimestamp),
                 WeakReference(timeStampTextView),
                 consultPhrase.phraseText
-            )
+            ),
         )
         viewUtils.setClickListener(itemView as ViewGroup, onRowLongClickListener)
         val timeText = timeStampSdf.format(Date(consultPhrase.timeStamp))
@@ -244,7 +247,7 @@ class ConsultPhraseHolder(
                     borderLeft,
                     0,
                     borderRight,
-                    resources.getDimensionPixelSize(style.bubbleIncomingPaddingBottom)
+                    resources.getDimensionPixelSize(style.bubbleIncomingPaddingBottom),
                 )
             }
             image.invalidate()
@@ -277,7 +280,7 @@ class ConsultPhraseHolder(
     private fun loadImage(
         imagePath: String?,
         imageClickListener: View.OnClickListener,
-        isExternalImage: Boolean = false
+        isExternalImage: Boolean = false,
     ) {
         hideErrorImage(imageLayout, errorImage)
         fileRow.gone()
@@ -326,8 +329,12 @@ class ConsultPhraseHolder(
         fileRow.visibility = View.VISIBLE
         fileImage.visibility = View.GONE
         circularProgressButton.visibility = View.GONE
-        rightTextHeader.text = if (quote.phraseOwnerTitle == null) itemView.context
-            .getString(R.string.ecc_I) else quote.phraseOwnerTitle
+        rightTextHeader.text = if (quote.phraseOwnerTitle == null) {
+            itemView.context
+                .getString(R.string.ecc_I)
+        } else {
+            quote.phraseOwnerTitle
+        }
         rightTextDescription.text = quote.text
         rightTextFileStamp.text = itemView.context
             .getString(R.string.ecc_sent_at, quoteSdf.format(Date(quote.timeStamp)))
@@ -343,7 +350,7 @@ class ConsultPhraseHolder(
                         quoteFileDescription.downloadPath,
                         listOf(ImageView.ScaleType.FIT_CENTER, ImageView.ScaleType.CENTER_CROP),
                         style.imagePlaceholder,
-                        autoRotateWithExif = true
+                        autoRotateWithExif = true,
                     )
                     fileImage.setOnClickListener(onQuoteClickListener)
                 } else {
@@ -430,7 +437,7 @@ class ConsultPhraseHolder(
             rightTextDescription.text = getFileDescriptionText(fileDescription)
             rightTextFileStamp.text = itemView.context.getString(
                 R.string.ecc_sent_at,
-                quoteSdf.format(Date(fileDescription.timeStamp))
+                quoteSdf.format(Date(fileDescription.timeStamp)),
             )
             circularProgressButton.setProgress(if (fileDescription.fileUri != null) 100 else fileDescription.downloadProgress)
         }
@@ -446,7 +453,7 @@ class ConsultPhraseHolder(
                     errorDrawableResId = R.drawable.ecc_operator_avatar_placeholder,
                     autoRotateWithExif = true,
                     modifications = listOf(ImageModifications.CircleCropModification),
-                    noPlaceholder = true
+                    noPlaceholder = true,
                 )
             } ?: run {
                 consultAvatar.setImageResource(style.defaultOperatorAvatar)
