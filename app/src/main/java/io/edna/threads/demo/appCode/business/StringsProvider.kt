@@ -11,4 +11,9 @@ class StringsProvider(private val context: Context) {
     val files = context.getString(R.string.files)
     val systemMessages = context.getString(R.string.system_messages)
     val chatWithBot = context.getString(R.string.chat_with_bot)
+    val selectTheme = context.getString(R.string.select_theme)
+    val defaultTheme = context.getString(R.string.default_theme)
+    val darkTheme = context.getString(R.string.dark_theme)
+    val lightTheme = context.getString(R.string.light_theme)
+    val ok = context.getString(R.string.ok)
 }
