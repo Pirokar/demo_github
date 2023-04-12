@@ -42,10 +42,10 @@ class LaunchFragment : BaseAppFragment<FragmentLaunchBinding>() {
     }
 
     private fun initObservers() {
-        viewModel.selectServerAction.observe(viewLifecycleOwner) { checkLoginEnabled() }
-        viewModel.selectUserAction.observe(viewLifecycleOwner) { checkLoginEnabled() }
-        viewModel.currentUiTheme.observe(viewLifecycleOwner) { setUiThemeDependentViews(it) }
-        viewModel.themeSelector.observe(viewLifecycleOwner) { showUiThemesSelector(it) }
+        viewModel.selectServerActionLiveData.observe(viewLifecycleOwner) { checkLoginEnabled() }
+        viewModel.selectUserActionLiveData.observe(viewLifecycleOwner) { checkLoginEnabled() }
+        viewModel.currentUiThemeLiveData.observe(viewLifecycleOwner) { setUiThemeDependentViews(it) }
+        viewModel.themeSelectorLiveData.observe(viewLifecycleOwner) { showUiThemesSelector(it) }
         viewLifecycleOwner.lifecycle.addObserver(viewModel)
     }
 
@@ -72,23 +72,20 @@ class LaunchFragment : BaseAppFragment<FragmentLaunchBinding>() {
 
     private fun showUiThemesSelector(theme: CurrentUiTheme) {
         context?.let { context ->
-            val alertDialog: AlertDialog.Builder = AlertDialog.Builder(context)
-            alertDialog.setTitle(stringsProvider.selectTheme)
+            val alertDialogBuilder: AlertDialog.Builder = AlertDialog.Builder(context)
+            var alertDialog: AlertDialog? = null
+            alertDialogBuilder.setTitle(stringsProvider.selectTheme)
             val items = arrayOf(stringsProvider.defaultTheme, stringsProvider.lightTheme, stringsProvider.darkTheme)
             val checkedItem = theme.value
-            alertDialog.setSingleChoiceItems(
+            alertDialogBuilder.setSingleChoiceItems(
                 items,
                 checkedItem
             ) { _, selectedIndex ->
                 viewModel.saveUserSelectedUiTheme(CurrentUiTheme.fromInt(selectedIndex))
+                alertDialog?.dismiss()
             }
-            alertDialog.setPositiveButton(stringsProvider.ok) { _, _ -> }
-            val dialog = alertDialog.create()
-            dialog.setOnShowListener {
-                dialog.getButton(AlertDialog.BUTTON_POSITIVE)
-                    .setTextColor(ContextCompat.getColor(context, R.color.logo_edna_color))
-            }
-            dialog.show()
+            alertDialog = alertDialogBuilder.create()
+            alertDialog?.show()
         }
     }
 

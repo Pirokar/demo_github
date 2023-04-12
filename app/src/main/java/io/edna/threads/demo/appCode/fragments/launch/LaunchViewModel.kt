@@ -2,6 +2,10 @@ package io.edna.threads.demo.appCode.fragments.launch
 
 import android.app.Activity
 import android.view.View
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO
+import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
@@ -24,10 +28,10 @@ class LaunchViewModel(
     private val preferencesProvider: PreferencesProvider,
     private val uiThemeProvider: UiThemeProvider
 ) : ViewModel(), DefaultLifecycleObserver {
-    val selectServerAction: SingleLiveEvent<String> = SingleLiveEvent()
-    val selectUserAction: SingleLiveEvent<String> = SingleLiveEvent()
-    val currentUiTheme: MutableLiveData<UiTheme> = MutableLiveData()
-    val themeSelector: VolatileLiveData<CurrentUiTheme> = VolatileLiveData()
+    val selectServerActionLiveData: SingleLiveEvent<String> = SingleLiveEvent()
+    val selectUserActionLiveData: SingleLiveEvent<String> = SingleLiveEvent()
+    val currentUiThemeLiveData: MutableLiveData<UiTheme> = MutableLiveData()
+    val themeSelectorLiveData: VolatileLiveData<CurrentUiTheme> = VolatileLiveData()
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
@@ -48,7 +52,7 @@ class LaunchViewModel(
             R.id.serverButton -> navigationController.navigate(R.id.action_LaunchFragment_to_ServersFragment)
             R.id.userButton -> navigationController.navigate(R.id.action_LaunchFragment_to_ServersFragment)
             R.id.demonstrations -> navigationController.navigate(R.id.action_LaunchFragment_to_DemonstrationsListFragment)
-            R.id.uiTheme -> themeSelector.postValue(ThreadsLib.getInstance().currentUiTheme)
+            R.id.uiTheme -> themeSelectorLiveData.postValue(ThreadsLib.getInstance().currentUiTheme)
             R.id.login -> {}
         }
     }
@@ -56,16 +60,29 @@ class LaunchViewModel(
     fun saveUserSelectedUiTheme(theme: CurrentUiTheme) {
         coroutineScope.launch {
             ThreadsLib.getInstance().currentUiTheme = theme
-            currentUiTheme.postValue(getCurrentUiTheme())
+            currentUiThemeLiveData.postValue(getCurrentUiTheme(theme))
+            applyCurrentUiTheme(theme)
+        }
+    }
+
+    private fun applyCurrentUiTheme(currentUiTheme: CurrentUiTheme) {
+        coroutineScope.launch(Dispatchers.Main) {
+            when (currentUiTheme) {
+                CurrentUiTheme.SYSTEM -> AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_FOLLOW_SYSTEM)
+                CurrentUiTheme.LIGHT -> AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_NO)
+                CurrentUiTheme.DARK -> AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_YES)
+            }
         }
     }
 
     private fun checkUiTheme() {
-        currentUiTheme.value = getCurrentUiTheme()
+        val uiTheme = ThreadsLib.getInstance().currentUiTheme
+        applyCurrentUiTheme(uiTheme)
+        currentUiThemeLiveData.value = getCurrentUiTheme(uiTheme)
     }
 
-    private fun getCurrentUiTheme(): UiTheme {
-        return when (ThreadsLib.getInstance().currentUiTheme) {
+    private fun getCurrentUiTheme(currentUiTheme: CurrentUiTheme): UiTheme {
+        return when (currentUiTheme) {
             CurrentUiTheme.LIGHT -> UiTheme.LIGHT
             CurrentUiTheme.DARK -> UiTheme.DARK
             CurrentUiTheme.SYSTEM -> {
