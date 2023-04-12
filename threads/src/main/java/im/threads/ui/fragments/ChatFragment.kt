@@ -444,7 +444,7 @@ class ChatFragment :
     private fun initRecording() {
         val recordButton = binding.recordButton
         if (!style.voiceMessageEnabled) {
-            recordButton.visibility = View.GONE
+            binding.recordLayout.visibility = View.GONE
             return
         }
         val recordView = binding.recordView
