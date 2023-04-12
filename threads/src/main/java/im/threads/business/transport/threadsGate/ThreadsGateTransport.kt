@@ -153,9 +153,10 @@ class ThreadsGateTransport(
         sendMessage(outgoingMessageCreator.createMessageTyping(input))
     }
 
-    override fun sendInit() {
+    override fun sendInit(forceRegistration: Boolean) {
         val deviceAddress = preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS)
-        if (!TextUtils.isEmpty(deviceAddress)) {
+        if (!deviceAddress.isNullOrBlank() || forceRegistration) {
+            if (deviceAddress.isNullOrBlank()) sendRegisterDevice()
             sendInitChatMessage(true)
             sendEnvironmentMessage(true)
         } else {
@@ -352,7 +353,7 @@ class ThreadsGateTransport(
     }
 
     @Synchronized
-    private fun closeWebSocket() {
+    override fun closeWebSocket() {
         webSocket?.apply {
             close(NORMAL_CLOSURE_STATUS, null)
         }

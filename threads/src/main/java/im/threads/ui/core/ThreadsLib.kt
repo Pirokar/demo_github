@@ -25,14 +25,14 @@ class ThreadsLib(context: Context) : ThreadsLibBase(context) {
         Config.getInstance()
     }
 
-    public override fun initUser(userInfoBuilder: UserInfoBuilder) {
+    public override fun initUser(userInfoBuilder: UserInfoBuilder, forceRegistration: Boolean) {
         val userInfo = preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)
         val oldClientId = userInfo?.clientId
         val newClientId = userInfoBuilder.clientId
         if (newClientId.isNotEmpty() && newClientId != oldClientId) {
             ChatController.getInstance().cleanAll()
         }
-        super.initUser(userInfoBuilder)
+        super.initUser(userInfoBuilder, forceRegistration)
         ChatController.getInstance().hideEmptyState()
         ChatController.getInstance().loadHistory()
     }

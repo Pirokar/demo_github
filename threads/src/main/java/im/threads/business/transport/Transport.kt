@@ -59,7 +59,8 @@ abstract class Transport {
     abstract fun sendRatingDone(survey: Survey)
     abstract fun sendResolveThread(approveResolve: Boolean)
     abstract fun sendUserTying(input: String)
-    abstract fun sendInit()
+    abstract fun sendInit(forceRegistration: Boolean)
+    abstract fun closeWebSocket()
     internal abstract fun updatePushToken()
 
     /**
