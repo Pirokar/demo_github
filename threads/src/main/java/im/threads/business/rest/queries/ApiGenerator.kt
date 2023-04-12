@@ -2,6 +2,7 @@ package im.threads.business.rest.queries
 
 import im.threads.R
 import im.threads.business.config.BaseConfig
+import im.threads.business.logger.NetworkLoggerInterceptor
 import im.threads.business.serviceLocator.core.inject
 import im.threads.business.transport.AuthInterceptor
 import im.threads.business.utils.AppInfoHelper
@@ -74,6 +75,7 @@ abstract class ApiGenerator protected constructor(
             )
             httpClientBuilder.hostnameVerifier { _: String?, _: SSLSession? -> true }
         }
+        httpClientBuilder.addInterceptor(NetworkLoggerInterceptor())
         return httpClientBuilder.build()
     }
 
