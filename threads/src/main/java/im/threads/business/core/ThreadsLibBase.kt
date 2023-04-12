@@ -27,6 +27,7 @@ import im.threads.business.useractivity.UserActivityTimeProvider.getLastUserActi
 import im.threads.business.useractivity.UserActivityTimeProvider.initializeLastUserActivity
 import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.preferences.PreferencesMigrationBase
+import im.threads.ui.fragments.ChatFragment
 import im.threads.ui.serviceLocator.uiSLModule
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.exceptions.UndeliverableException
@@ -67,10 +68,13 @@ open class ThreadsLibBase protected constructor(context: Context) {
     val socketResponseMapProcessor: FlowableProcessor<Map<String, Any>>
         get() = chatUpdateProcessor.socketResponseMapProcessor
 
-    protected open fun initUser(userInfoBuilder: UserInfoBuilder) {
+    protected open fun initUser(userInfoBuilder: UserInfoBuilder, forceRegistration: Boolean = false) {
         preferences.save(PreferencesCoreKeys.USER_INFO, userInfoBuilder)
         preferences.save(PreferencesCoreKeys.TAG_NEW_CLIENT_ID, userInfoBuilder.clientId)
-        BaseConfig.instance.transport.sendInit()
+        BaseConfig.instance.transport.sendInit(forceRegistration)
+        if (!ChatFragment.isShown && forceRegistration) {
+            BaseConfig.instance.transport.closeWebSocket()
+        }
     }
 
     /**
