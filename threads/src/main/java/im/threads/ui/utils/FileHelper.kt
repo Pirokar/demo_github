@@ -44,16 +44,11 @@ object FileHelper {
     }
 
     fun isFileExtensionsEmpty(): Boolean {
-        return attachmentSettings.fileExtensions == null || attachmentSettings.fileExtensions.isEmpty()
+        return attachmentSettings.fileExtensions.isNullOrEmpty()
     }
 
     fun isJpgAllow(): Boolean {
-        attachmentSettings.fileExtensions?.let {
-            if (it.contains("jpg")) {
-                return true
-            }
-        }
-        return false
+        return attachmentSettings.fileExtensions?.contains("jpg") == true
     }
 
     val maxAllowedFileSize: Long
