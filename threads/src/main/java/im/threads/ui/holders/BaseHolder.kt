@@ -113,7 +113,7 @@ abstract class BaseHolder internal constructor(
         }
     }
     val config: Config by lazy { Config.getInstance() }
-    val style = config.getChatStyle()
+    val style = config.chatStyle
 
     protected fun subscribe(event: Disposable): Boolean {
         if (compositeDisposable.isDisposed) {

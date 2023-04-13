@@ -31,7 +31,7 @@ public final class RequestResolveThreadViewHolder extends BaseHolder {
         denyRequest = itemView.findViewById(R.id.deny_request);
         topSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), getStyle().iconsAndSeparatorsColor));
         bottomSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), getStyle().iconsAndSeparatorsColor));
-        requestToResolveThread.setTextColor(ContextCompat.getColor(itemView.getContext(), getStyle().chatSystemMessageTextColor));
+        requestToResolveThread.setTextColor(ContextCompat.getColor(itemView.getContext(), getStyle().systemMessageTextColorResId));
         approveRequest.setTextColor(ContextCompat.getColor(itemView.getContext(), getStyle().surveyChoicesTextColorResId));
         denyRequest.setTextColor(ContextCompat.getColor(itemView.getContext(), getStyle().surveyChoicesTextColorResId));
         requestToResolveThread.setText(getStyle().requestToResolveThreadTextResId);

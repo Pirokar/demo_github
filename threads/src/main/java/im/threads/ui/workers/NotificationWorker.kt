@@ -207,34 +207,34 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
             NotificationCompat.Builder(context, CHANNEL_ID)
         val pushSmall = RemoteViews(context.packageName, R.layout.ecc_remote_push_small)
         val pushBig = RemoteViews(context.packageName, R.layout.ecc_remote_push_expanded)
-        builder.setContentTitle(context.getString(config.getChatStyle().defTitleResId))
+        builder.setContentTitle(context.getString(config.chatStyle.defTitleResId))
         builder.setGroup(GROUP_KEY_PUSH)
-        pushSmall.setTextViewText(R.id.title, context.getString(config.getChatStyle().defTitleResId))
-        pushBig.setTextViewText(R.id.title, context.getString(config.getChatStyle().defTitleResId))
+        pushSmall.setTextViewText(R.id.title, context.getString(config.chatStyle.defTitleResId))
+        pushBig.setTextViewText(R.id.title, context.getString(config.chatStyle.defTitleResId))
         pushSmall.setImageViewResource(R.id.icon_large_bg, R.drawable.ecc_ic_circle_40dp)
         pushBig.setImageViewResource(R.id.icon_large_bg, R.drawable.ecc_ic_circle_40dp)
-        builder.color = context.resources.getColor(config.getChatStyle().pushBackgroundColorResId)
+        builder.color = context.resources.getColor(config.chatStyle.pushBackgroundColorResId)
         pushSmall.setInt(
             R.id.icon_large_bg,
             "setColorFilter",
-            context.resources.getColor(config.getChatStyle().pushBackgroundColorResId)
+            context.resources.getColor(config.chatStyle.pushBackgroundColorResId)
         )
         pushBig.setInt(
             R.id.icon_large_bg,
             "setColorFilter",
-            context.resources.getColor(config.getChatStyle().pushBackgroundColorResId)
+            context.resources.getColor(config.chatStyle.pushBackgroundColorResId)
         )
         pushSmall.setInt(
             R.id.text,
             "setTextColor",
-            context.resources.getColor(config.getChatStyle().incomingMessageTextColor)
+            context.resources.getColor(config.chatStyle.incomingMessageTextColor)
         )
         pushBig.setInt(
             R.id.text,
             "setTextColor",
-            context.resources.getColor(config.getChatStyle().incomingMessageTextColor)
+            context.resources.getColor(config.chatStyle.incomingMessageTextColor)
         )
-        builder.setSmallIcon(config.getChatStyle().defPushIconResId)
+        builder.setSmallIcon(config.chatStyle.defPushIconResId)
         val unreadMessage = !message.isNullOrEmpty()
         if (unreadMessage) {
             val operatorUrl = inputData.getString(EXTRA_OPERATOR_URL)
@@ -244,10 +244,10 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
                     pushSmall,
                     pushBig
                 )
-                showPreNStyleSmallIcon(pushSmall, pushBig, config.getChatStyle())
+                showPreNStyleSmallIcon(pushSmall, pushBig, config.chatStyle)
             } else {
                 val icon =
-                    BitmapFactory.decodeResource(context.resources, config.getChatStyle().defPushIconResId)
+                    BitmapFactory.decodeResource(context.resources, config.chatStyle.defPushIconResId)
                 pushSmall.setImageViewBitmap(R.id.icon_large, icon)
                 pushBig.setImageViewBitmap(R.id.icon_large, icon)
                 pushSmall.setImageViewBitmap(R.id.icon_small_corner, null)
@@ -266,10 +266,10 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
                     pushSmall,
                     pushBig
                 )
-                showPreNStyleSmallIcon(pushSmall, pushBig, config.getChatStyle())
+                showPreNStyleSmallIcon(pushSmall, pushBig, config.chatStyle)
             } else {
                 val icon =
-                    BitmapFactory.decodeResource(context.resources, config.getChatStyle().defPushIconResId)
+                    BitmapFactory.decodeResource(context.resources, config.chatStyle.defPushIconResId)
                 pushSmall.setImageViewBitmap(R.id.icon_large, icon)
                 pushBig.setImageViewBitmap(R.id.icon_large, icon)
                 pushSmall.setImageViewBitmap(R.id.icon_small_corner, null)
@@ -403,14 +403,14 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
         builder.setContentIntent(getChatIntent(appMarker, config))
         builder.setShowWhen(true)
         builder.setGroup(GROUP_KEY_PUSH)
-        builder.color = context.getColor(config.getChatStyle().nougatPushAccentColorResId)
+        builder.color = context.getColor(config.chatStyle.nougatPushAccentColorResId)
 
         val unreadMessage = !message.isNullOrEmpty()
         if (unreadMessage) {
             avatarPath =
                 convertRelativeUrlToAbsolute(inputData.getString(EXTRA_OPERATOR_URL))
             builder.setContentText(message)
-            builder.setSmallIcon(config.getChatStyle().defPushIconResId)
+            builder.setSmallIcon(config.chatStyle.defPushIconResId)
             builder.addAction(
                 0,
                 context.getString(R.string.ecc_answer),
@@ -430,7 +430,7 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
                 )
             }
             if (!messageContent.hasImage && !messageContent.hasPlainFiles) {
-                builder.setSmallIcon(config.getChatStyle().defPushIconResId)
+                builder.setSmallIcon(config.chatStyle.defPushIconResId)
             } else if (messageContent.hasPlainFiles) {
                 builder.setSmallIcon(R.drawable.ecc_attach_file_grey_48x48)
             } else {
@@ -474,7 +474,7 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
             NotificationCompat.Builder(context, CHANNEL_ID)
         notificationBuilder.setContentTitle(context.getString(R.string.ecc_message_were_unsent))
         val pend = getChatIntent(appMarker, config)
-        val iconResId = config.getChatStyle().defPushIconResId
+        val iconResId = config.chatStyle.defPushIconResId
         notificationBuilder.setSmallIcon(iconResId)
         notificationBuilder.setContentIntent(pend)
         notificationBuilder.setAutoCancel(true)
@@ -490,7 +490,7 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
             NotificationCompat.Builder(context, CHANNEL_ID)
         notificationBuilder.setContentText(campaign)
         val pend = getChatIntent(null, config)
-        val iconResId = config.getChatStyle().defPushIconResId
+        val iconResId = config.chatStyle.defPushIconResId
         notificationBuilder.setSmallIcon(iconResId)
         notificationBuilder.setContentIntent(pend)
         notificationBuilder.setAutoCancel(true)

@@ -61,7 +61,7 @@ open class BaseImageHolder(
     }
 
     private fun applyImageStyle() {
-        val style = Config.getInstance().getChatStyle()
+        val style = Config.getInstance().chatStyle
 
         val background = if (isIncomingMessage) {
             style.incomingMessageBubbleBackground

@@ -23,7 +23,7 @@ class ConsultIsTypingViewHolderNew(parent: ViewGroup) : RecyclerView.ViewHolder(
 ) {
     private val config: Config by lazy { Config.getInstance() }
 
-    private val style: ChatStyle = config.getChatStyle()
+    private val style: ChatStyle = config.chatStyle
 
     private val mConsultAvatar = itemView.findViewById<ImageView>(R.id.image).apply {
         layoutParams.height =
@@ -39,7 +39,7 @@ class ConsultIsTypingViewHolderNew(parent: ViewGroup) : RecyclerView.ViewHolder(
             setTextColor(
                 ContextCompat.getColor(
                     itemView.context,
-                    style.chatSystemMessageTextColor
+                    style.systemMessageTextColorResId
                 )
             )
         }

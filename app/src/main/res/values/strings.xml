@@ -22,4 +22,10 @@
 
     <string name="demo_alt_threads_contact_center">Демонстрация сообщений</string>
     <string name="demo_alt_threads_operator_subtitle">Оператор Елена</string>
+
+    <string name="select_theme">Выберите тему</string>
+    <string name="default_theme">По умолчанию</string>
+    <string name="dark_theme">Темная</string>
+    <string name="light_theme">Светлая</string>
+    <string name="ok">OK</string>
 </resources>

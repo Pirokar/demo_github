@@ -57,11 +57,11 @@ class GalleryActivity : BaseActivity(), OnItemClick, OnGalleryItemClick {
     }
 
     private fun initStatusBar() {
-        val style = getInstance().getChatStyle()
+        val style = getInstance().chatStyle
         val statusBarColor = ContextCompat.getColor(this, style.chatStatusBarColorResId)
         val toolBarColor = ContextCompat.getColor(this, style.chatToolbarColorResId)
         val isStatusBarLight =
-            resources.getBoolean(getInstance().getChatStyle().windowLightStatusBarResId)
+            resources.getBoolean(getInstance().chatStyle.windowLightStatusBarResId)
         super.setStatusBarColor(isStatusBarLight, statusBarColor)
         val backButtonDrawable =
             AppCompatResources.getDrawable(this, R.drawable.ecc_ic_arrow_back_white_24dp)
@@ -86,7 +86,7 @@ class GalleryActivity : BaseActivity(), OnItemClick, OnGalleryItemClick {
     }
 
     private fun initToolbarTextPosition() {
-        val isToolbarTextCentered = getInstance().getChatStyle().isToolbarTextCentered
+        val isToolbarTextCentered = getInstance().chatStyle.isToolbarTextCentered
         val gravity = if (isToolbarTextCentered) Gravity.CENTER else Gravity.CENTER_VERTICAL
         binding.title.gravity = gravity
     }

@@ -37,8 +37,20 @@ class ThreadsLib(context: Context) : ThreadsLibBase(context) {
         ChatController.getInstance().loadHistory()
     }
 
-    fun applyChatStyle(chatStyle: ChatStyle?) {
-        config.setChatStyle(chatStyle)
+    /**
+     * Применяет настройки светлой темы
+     * @param lightTheme набор параметров для светлой темы. Передайте null, если хотите отключить светлую тему
+     */
+    fun applyLightTheme(lightTheme: ChatStyle?) {
+        config.lightTheme = lightTheme
+    }
+
+    /**
+     * Применяет настройки темной темы
+     * @param darkTheme набор параметров для темной темы. Передайте null, если хотите отключить темную тему
+     */
+    fun applyDarkTheme(darkTheme: ChatStyle?) {
+        config.darkTheme = darkTheme
     }
 
     fun applyStoragePermissionDescriptionDialogStyle(

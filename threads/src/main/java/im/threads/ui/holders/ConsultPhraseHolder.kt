@@ -211,7 +211,7 @@ class ConsultPhraseHolder(
     }
 
     private fun setupPaddingsAndBorders(fileDescription: FileDescription?) = with(bubbleLayout) {
-        val chatStyle = Config.getInstance().getChatStyle()
+        val chatStyle = Config.getInstance().chatStyle
         val resources = context.resources
         val borderLeft = resources.getDimensionPixelSize(chatStyle.incomingImageLeftBorderSize)
         val borderTop = resources.getDimensionPixelSize(chatStyle.incomingImageTopBorderSize)

@@ -14,7 +14,6 @@
             app:title="@string/demonstrations"
             app:navigationIcon="?attr/homeAsUpIndicator"
             app:titleTextColor="@color/white_color_ec"
-            android:background="@color/toolbar_color"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>

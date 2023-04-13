@@ -43,7 +43,7 @@ import java.util.Collections
 
 class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionClickListener {
     private lateinit var mViewPager: ViewPager
-    private var style = Config.getInstance().getChatStyle()
+    private var style = Config.getInstance().chatStyle
     private var collectionSize = 0
     private var files: ArrayList<FileDescription> = ArrayList()
     private var compositeDisposable: CompositeDisposable? = CompositeDisposable()
@@ -112,7 +112,7 @@ class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionCl
 
         super.setStatusBarColor(isStatusBarLight, statusBarColor)
         toolbar.setBackgroundColor(toolBarColor)
-        ColorsHelper.setTint(this, backBtn, config.getChatStyle().chatToolbarTextColorResId)
+        ColorsHelper.setTint(this, backBtn, config.chatStyle.chatToolbarTextColorResId)
         if (resources.getBoolean(style.isChatTitleShadowVisible)) {
             toolbarShadow.visible()
         } else {
@@ -165,7 +165,7 @@ class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionCl
 
     private fun initToolbarTextPosition() {
         val isToolbarTextCentered =
-            im.threads.ui.config.Config.getInstance().getChatStyle().isToolbarTextCentered
+            im.threads.ui.config.Config.getInstance().chatStyle.isToolbarTextCentered
         val gravity =
             if (isToolbarTextCentered) android.view.Gravity.CENTER else android.view.Gravity.CENTER_VERTICAL
         titleTextView.gravity = gravity

@@ -14,7 +14,8 @@ val appModule = module {
     single { SamplesJsonProvider(get()) }
     single { StringsProvider(get()) }
     single { PreferencesProvider(get()) }
-    viewModel { LaunchViewModel(get()) }
+    single { UiThemeProvider(get()) }
+    viewModel { LaunchViewModel(get(), get()) }
     viewModel { ServerViewModel() }
     viewModel { DemoSamplesViewModel(get(), get()) }
     viewModel { DemoSamplesListViewModel(get(), get(), get()) }

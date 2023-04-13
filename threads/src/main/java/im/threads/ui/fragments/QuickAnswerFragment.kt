@@ -37,7 +37,7 @@ class QuickAnswerFragment : BaseDialogFragment() {
     private val chatUpdateProcessor: ChatUpdateProcessor by inject()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val style = getInstance().getChatStyle()
+        val style = getInstance().chatStyle
         val view = inflater.inflate(R.layout.ecc_dialog_fast_answer, container, false)
         val consultNameTextView = view.findViewById<TextView>(R.id.consult_name)
         val textView = view.findViewById<TextView>(R.id.question)

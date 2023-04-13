@@ -15,7 +15,7 @@ object Balloon {
 
     @JvmStatic
     fun show(context: Context, message: String) {
-        if (getInstance().getChatStyle().isToastStylable && context is Activity) {
+        if (getInstance().chatStyle.isToastStylable && context is Activity) {
             showSnackbar(context, message)
         } else {
             Toast.makeText(context, message, Toast.LENGTH_LONG).show()
@@ -24,7 +24,7 @@ object Balloon {
 
     @JvmStatic
     private fun showSnackbar(context: Activity, messageString: String) {
-        val chatStyle = getInstance().getChatStyle()
+        val chatStyle = getInstance().chatStyle
         val inflater: LayoutInflater = context.layoutInflater
         val bar = Snackbar.make(context.window.decorView, messageString, Snackbar.LENGTH_LONG)
         val layout = bar.view as Snackbar.SnackbarLayout

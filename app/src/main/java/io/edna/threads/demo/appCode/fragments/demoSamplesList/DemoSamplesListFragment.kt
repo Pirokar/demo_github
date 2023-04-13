@@ -9,14 +9,12 @@ import androidx.navigation.fragment.findNavController
 import io.edna.threads.demo.R
 import io.edna.threads.demo.appCode.adapters.demoSamplesList.DemoSamplesAdapter
 import io.edna.threads.demo.appCode.adapters.demoSamplesList.SampleListItemOnClick
-import io.edna.threads.demo.appCode.extensions.inflateWithBinding
 import io.edna.threads.demo.appCode.fragments.BaseAppFragment
 import io.edna.threads.demo.appCode.models.DemoSamplesListItem
 import io.edna.threads.demo.databinding.FragmentSamplesListBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class DemoSamplesListFragment : BaseAppFragment(), SampleListItemOnClick {
-    private lateinit var binding: FragmentSamplesListBinding
+class DemoSamplesListFragment : BaseAppFragment<FragmentSamplesListBinding>(), SampleListItemOnClick {
     private val viewModel: DemoSamplesListViewModel by viewModel()
     private var adapter: DemoSamplesAdapter? = null
 
@@ -25,7 +23,7 @@ class DemoSamplesListFragment : BaseAppFragment(), SampleListItemOnClick {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = inflater.inflateWithBinding(container, R.layout.fragment_samples_list)
+        _binding = FragmentSamplesListBinding.inflate(inflater, container, false)
         return binding.root
     }
 

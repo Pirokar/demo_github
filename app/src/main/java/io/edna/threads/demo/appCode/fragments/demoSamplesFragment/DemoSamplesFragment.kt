@@ -10,12 +10,11 @@ import io.edna.threads.demo.appCode.fragments.BaseAppFragment
 import io.edna.threads.demo.databinding.FragmentSamplesBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class DemoSamplesFragment : BaseAppFragment() {
-    private lateinit var binding: FragmentSamplesBinding
+class DemoSamplesFragment : BaseAppFragment<FragmentSamplesBinding>() {
     private val viewModel: DemoSamplesViewModel by viewModel()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        binding = inflater.inflateWithBinding(container, R.layout.fragment_samples)
+        _binding = inflater.inflateWithBinding(container, R.layout.fragment_samples)
         return binding.root
     }
 

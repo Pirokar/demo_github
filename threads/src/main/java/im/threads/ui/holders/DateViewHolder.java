@@ -32,7 +32,7 @@ public final class DateViewHolder extends RecyclerView.ViewHolder {
         } else {
             sdf = new SimpleDateFormat("dd MMMM yyyy", Locale.getDefault());
         }
-        mTextView.setTextColor(ContextCompat.getColor(itemView.getContext(), style.chatSystemMessageTextColor));
+        mTextView.setTextColor(ContextCompat.getColor(itemView.getContext(), style.systemMessageTextColorResId));
     }
 
     public void onBind(long timeStamp) {

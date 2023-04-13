@@ -65,7 +65,7 @@ internal class FilesActivity : BaseActivity(), OnFileClick {
         initToolbar()
         setOnSearchClickAction()
         setOnSearchTextChanged()
-        setActivityStyle(config.getChatStyle())
+        setActivityStyle(config.chatStyle)
         subscribeForNewIntents()
         subscribeForDownloadProgress()
         requestFiles()
@@ -112,28 +112,28 @@ internal class FilesActivity : BaseActivity(), OnFileClick {
     }
 
     private fun setStatusBarColor() {
-        val statusBarColor = ContextCompat.getColor(baseContext, config.getChatStyle().mediaAndFilesStatusBarColorResId)
-        val isStatusBarLight = resources.getBoolean(config.getChatStyle().mediaAndFilesWindowLightStatusBarResId)
+        val statusBarColor = ContextCompat.getColor(baseContext, config.chatStyle.mediaAndFilesStatusBarColorResId)
+        val isStatusBarLight = resources.getBoolean(config.chatStyle.mediaAndFilesWindowLightStatusBarResId)
         super.setStatusBarColor(isStatusBarLight, statusBarColor)
     }
 
     private fun initToolbar() = with(binding) {
         setSupportActionBar(toolbar)
         toolbar.setNavigationOnClickListener { onBackPressed() }
-        val isShadowVisible = resources.getBoolean(config.getChatStyle().isChatTitleShadowVisible)
+        val isShadowVisible = resources.getBoolean(config.chatStyle.isChatTitleShadowVisible)
         toolbarShadow.visibility = if (isShadowVisible) View.VISIBLE else View.INVISIBLE
         if (!isShadowVisible) {
             val noElevation = 0f
             toolbar.elevation = noElevation
         }
-        ColorsHelper.setTint(this@FilesActivity, backButton, config.getChatStyle().chatToolbarTextColorResId)
-        title.setTextColor(ContextCompat.getColor(this@FilesActivity, config.getChatStyle().chatToolbarTextColorResId))
+        ColorsHelper.setTint(this@FilesActivity, backButton, config.chatStyle.chatToolbarTextColorResId)
+        title.setTextColor(ContextCompat.getColor(this@FilesActivity, config.chatStyle.chatToolbarTextColorResId))
         initToolbarTextPosition()
         setClickForBackBtn()
     }
 
     private fun initToolbarTextPosition() = with(binding) {
-        val isToolbarTextCentered = Config.getInstance().getChatStyle().isToolbarTextCentered
+        val isToolbarTextCentered = Config.getInstance().chatStyle.isToolbarTextCentered
         val gravity = if (isToolbarTextCentered) Gravity.CENTER else Gravity.CENTER_VERTICAL
         title.gravity = gravity
     }

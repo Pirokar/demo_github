@@ -15,8 +15,9 @@ import im.threads.ui.core.PendingIntentCreator
 import okhttp3.Interceptor
 
 class ConfigBuilder(context: Context) : BaseConfigBuilder(context) {
-    private var chatStyle: ChatStyle? = null
     private var isAttachmentsEnabled: Boolean? = null
+    private var lightTheme: ChatStyle? = null
+    private var darkTheme: ChatStyle? = null
 
     private var pendingIntentCreator: PendingIntentCreator =
         object : PendingIntentCreator {
@@ -99,8 +100,21 @@ class ConfigBuilder(context: Context) : BaseConfigBuilder(context) {
         return this
     }
 
-    fun applyChatStyle(chatStyle: ChatStyle): ConfigBuilder {
-        this.chatStyle = chatStyle
+    /**
+     * Применяет настройки светлой темы
+     * @param lightTheme набор параметров для светлой темы. Передайте null, если хотите отключить светлую тему
+     */
+    fun applyLightTheme(lightTheme: ChatStyle?): ConfigBuilder {
+        this.lightTheme = lightTheme
+        return this
+    }
+
+    /**
+     * Применяет настройки темной темы
+     * @param darkTheme набор параметров для темной темы. Передайте null, если хотите отключить темную тему
+     */
+    fun applyDarkTheme(darkTheme: ChatStyle?): ConfigBuilder {
+        this.darkTheme = darkTheme
         return this
     }
 
@@ -132,7 +146,8 @@ class ConfigBuilder(context: Context) : BaseConfigBuilder(context) {
             pendingIntentCreator,
             unreadMessagesCountListener,
             networkInterceptor,
-            chatStyle,
+            lightTheme,
+            darkTheme,
             isDebugLoggingEnabled,
             historyLoadingCount,
             surveyCompletionDelay,

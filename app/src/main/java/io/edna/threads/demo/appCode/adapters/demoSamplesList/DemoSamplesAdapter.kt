@@ -1,10 +1,13 @@
 package io.edna.threads.demo.appCode.adapters.demoSamplesList
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import io.edna.threads.demo.R
+import io.edna.threads.demo.appCode.business.UiThemeProvider
 import io.edna.threads.demo.appCode.business.ordinal
 import io.edna.threads.demo.appCode.extensions.inflateWithBinding
 import io.edna.threads.demo.appCode.models.DemoSamplesListItem
@@ -14,12 +17,16 @@ import io.edna.threads.demo.appCode.models.DemoSamplesListItem.TITLE
 import io.edna.threads.demo.databinding.HolderDemoSamplesTextBinding
 import io.edna.threads.demo.databinding.HolderDemoSamplesTitleBinding
 import io.edna.threads.demo.databinding.HolderHorizontalLineBinding
+import org.koin.java.KoinJavaComponent.inject
 
 class DemoSamplesAdapter(private val onItemClickListener: SampleListItemOnClick) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val list: MutableList<DemoSamplesListItem> = mutableListOf()
+    private val uiThemeProvider: UiThemeProvider by inject(UiThemeProvider::class.java)
+    private lateinit var context: Context
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
+        context = parent.context
         return when (viewType) {
             DIVIDER.ordinal() -> {
                 LineDividerHolder(inflater.inflateWithBinding(parent, R.layout.holder_horizontal_line))
@@ -71,6 +78,11 @@ class DemoSamplesAdapter(private val onItemClickListener: SampleListItemOnClick)
             (list[position] as? TEXT)?.let { item ->
                 binding.textTextView.apply {
                     text = item.text
+                    if (uiThemeProvider.isDarkThemeOn()) {
+                        setTextColor(ContextCompat.getColor(context, R.color.white_color_fa))
+                    } else {
+                        setTextColor(ContextCompat.getColor(context, R.color.black_color))
+                    }
                     setOnClickListener { onItemClickListener.onClick(item) }
                 }
             }

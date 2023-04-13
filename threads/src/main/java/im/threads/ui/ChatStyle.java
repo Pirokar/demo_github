@@ -227,9 +227,6 @@ public final class ChatStyle implements Serializable {
     public int[] chatBodyIconsColorState = null;
 
     @ColorRes
-    public int chatSystemMessageTextColor = R.color.ecc_chat_connection_message;
-
-    @ColorRes
     public int iconsAndSeparatorsColor = R.color.ecc_icon_and_separators_color;
     @DrawableRes
     public int defaultOperatorAvatar = R.drawable.ecc_operator_avatar_placeholder;
@@ -1108,7 +1105,96 @@ public final class ChatStyle implements Serializable {
         return this;
     }
 
-    //images history screen
+    /**
+     * Устанавливает значение цвета для текста входящего сообщения
+     * @param incomingMessageTextColor цвет для текста входящего сообщения
+     */
+    public ChatStyle setIncomingMessageTextColor(@ColorRes final int incomingMessageTextColor) {
+        this.incomingMessageTextColor = incomingMessageTextColor;
+        return this;
+    }
+
+    /**
+     * Устанавливает значение цвета для текста исходящего сообщения
+     * @param outgoingMessageTextColor цвет для текста исходящего сообщения
+     */
+    public ChatStyle setOutgoingMessageTextColor(@ColorRes final int outgoingMessageTextColor) {
+        this.outgoingMessageTextColor = outgoingMessageTextColor;
+        return this;
+    }
+
+    /**
+     * Устанавливает значение цвета для текста времени входящего сообщения
+     * @param incomingMessageTimeColor цвет для текста времени входящего сообщения
+     */
+    public ChatStyle setIncomingMessageTimeColor(@ColorRes final int incomingMessageTimeColor) {
+        this.incomingMessageTimeColor = incomingMessageTimeColor;
+        return this;
+    }
+
+    /**
+     * Устанавливает значение цвета для текста времени исходящего сообщения
+     * @param outgoingMessageTimeColor цвет для текста времени исходящего сообщения
+     */
+    public ChatStyle setOutgoingMessageTimeColor(@ColorRes final int outgoingMessageTimeColor) {
+        this.outgoingMessageTimeColor = outgoingMessageTimeColor;
+        return this;
+    }
+
+    /**
+     * Устанавливает цвет подложки для времени исходящего сообщения
+     * @param outgoingImageTimeBackgroundColor цвет подложки
+     */
+    public ChatStyle setOutgoingImageTimeBackgroundColor(@ColorRes final int outgoingImageTimeBackgroundColor) {
+        this.outgoingImageTimeBackgroundColor = outgoingImageTimeBackgroundColor;
+        return this;
+    }
+
+    /**
+     * Устанавливает цвет подложки для времени входящего сообщения
+     * @param incomingImageTimeBackgroundColor цвет подложки
+     */
+    public ChatStyle setIncomingImageTimeBackgroundColor(@ColorRes final int incomingImageTimeBackgroundColor) {
+        this.incomingImageTimeBackgroundColor = incomingImageTimeBackgroundColor;
+        return this;
+    }
+
+    /**
+     * Устанавливает цвет подсветки фона при выделении сообщения (долгий тап)
+     * @param chatHighlightingColor цвет подсветки фона
+     * @return
+     */
+    public ChatStyle setChatHighlightingColor(@ColorRes final int chatHighlightingColor) {
+        this.chatHighlightingColor = chatHighlightingColor;
+        return this;
+    }
+
+    /**
+     * Устанавливает цвет фона для чата
+     * @param chatBackgroundColor цвет фона для чата
+     */
+    public ChatStyle setChatBackgroundColor(@ColorRes final int chatBackgroundColor) {
+        this.chatBackgroundColor = chatBackgroundColor;
+        return this;
+    }
+
+    /**
+     * Устанавливает цвет текста ссылок во входящих сообщениях
+     * @param incomingMessageLinkColor цвет текста ссылок
+     */
+    public ChatStyle setIncomingMessageLinkColor(@ColorRes final int incomingMessageLinkColor) {
+        this.incomingMessageLinkColor = incomingMessageLinkColor;
+        return this;
+    }
+
+    /**
+     * Устанавливает цвет текста ссылок в исходящих сообщениях
+     * @param outgoingMessageLinkColor цвет текста ссылок
+     */
+    public ChatStyle setOutgoingMessageLinkColor(@ColorRes final int outgoingMessageLinkColor) {
+        this.outgoingMessageLinkColor = outgoingMessageLinkColor;
+        return this;
+    }
 
     /**
      * Default values:
@@ -1208,7 +1294,7 @@ public final class ChatStyle implements Serializable {
 
         this.imagePlaceholder = imagePlaceholder;
         this.chatBodyIconsTint = chatBodyIconsTint;
-        this.chatSystemMessageTextColor = chatSystemMessageTextColor;
+        this.systemMessageTextColorResId = chatSystemMessageTextColor;
 
         this.mediaAndFilesScreenBackgroundColor = mediaAndFilesScreenBackgroundColor;
         this.mediaAndFilesTextColor = mediaAndFilesTextColor;
@@ -1324,6 +1410,7 @@ public final class ChatStyle implements Serializable {
     }
 
     /**
+     * Устанавливает стили для отзывов. Можно передать null для значений, которые хотите оставить по умолчанию
      * Default values:
      *
      * @param binarySurveyLikeUnselectedIconResId    - R.drawable.threads_binary_survey_like_unselected
@@ -1337,26 +1424,26 @@ public final class ChatStyle implements Serializable {
      * @param surveyTextColorResId                   - R.color.threads_chat_system_message
      * @param surveyChoicesTextColorResId            - R.color.threads_survey_choices_text
      */
-    public ChatStyle setSurveyStyle(@DrawableRes final int binarySurveyLikeUnselectedIconResId,
-                                    @DrawableRes final int binarySurveyLikeSelectedIconResId,
-                                    @DrawableRes final int binarySurveyDislikeUnselectedIconResId,
-                                    @DrawableRes final int binarySurveyDislikeSelectedIconResId,
-                                    @DrawableRes final int optionsSurveyUnselectedIconResId,
-                                    @DrawableRes final int optionsSurveySelectedIconResId,
-                                    @ColorRes final int surveySelectedColorFilterResId,
-                                    @ColorRes final int surveyUnselectedColorFilterResId,
-                                    @ColorRes final int surveyTextColorResId,
-                                    @ColorRes int surveyChoicesTextColorResId) {
-        this.binarySurveyLikeUnselectedIconResId = binarySurveyLikeUnselectedIconResId;
-        this.binarySurveyLikeSelectedIconResId = binarySurveyLikeSelectedIconResId;
-        this.binarySurveyDislikeUnselectedIconResId = binarySurveyDislikeUnselectedIconResId;
-        this.binarySurveyDislikeSelectedIconResId = binarySurveyDislikeSelectedIconResId;
-        this.optionsSurveyUnselectedIconResId = optionsSurveyUnselectedIconResId;
-        this.optionsSurveySelectedIconResId = optionsSurveySelectedIconResId;
-        this.surveySelectedColorFilterResId = surveySelectedColorFilterResId;
-        this.surveyUnselectedColorFilterResId = surveyUnselectedColorFilterResId;
-        this.surveyTextColorResId = surveyTextColorResId;
-        this.surveyChoicesTextColorResId = surveyChoicesTextColorResId;
+    public ChatStyle setSurveyStyle(@DrawableRes final Integer binarySurveyLikeUnselectedIconResId,
+                                    @DrawableRes final Integer binarySurveyLikeSelectedIconResId,
+                                    @DrawableRes final Integer binarySurveyDislikeUnselectedIconResId,
+                                    @DrawableRes final Integer binarySurveyDislikeSelectedIconResId,
+                                    @DrawableRes final Integer optionsSurveyUnselectedIconResId,
+                                    @DrawableRes final Integer optionsSurveySelectedIconResId,
+                                    @ColorRes final Integer surveySelectedColorFilterResId,
+                                    @ColorRes final Integer surveyUnselectedColorFilterResId,
+                                    @ColorRes final Integer surveyTextColorResId,
+                                    @ColorRes Integer surveyChoicesTextColorResId) {
+        if (binarySurveyLikeUnselectedIconResId != null) this.binarySurveyLikeUnselectedIconResId = binarySurveyLikeUnselectedIconResId;
+        if (binarySurveyLikeSelectedIconResId != null) this.binarySurveyLikeSelectedIconResId = binarySurveyLikeSelectedIconResId;
+        if (binarySurveyDislikeUnselectedIconResId != null) this.binarySurveyDislikeUnselectedIconResId = binarySurveyDislikeUnselectedIconResId;
+        if (binarySurveyDislikeSelectedIconResId != null) this.binarySurveyDislikeSelectedIconResId = binarySurveyDislikeSelectedIconResId;
+        if (optionsSurveyUnselectedIconResId != null) this.optionsSurveyUnselectedIconResId = optionsSurveyUnselectedIconResId;
+        if (optionsSurveySelectedIconResId != null) this.optionsSurveySelectedIconResId = optionsSurveySelectedIconResId;
+        if (surveySelectedColorFilterResId != null) this.surveySelectedColorFilterResId = surveySelectedColorFilterResId;
+        if (surveyUnselectedColorFilterResId != null) this.surveyUnselectedColorFilterResId = surveyUnselectedColorFilterResId;
+        if (surveyTextColorResId != null) this.surveyTextColorResId = surveyTextColorResId;
+        if (surveyChoicesTextColorResId != null) this.surveyChoicesTextColorResId = surveyChoicesTextColorResId;
         return this;
     }
 
@@ -1435,6 +1522,7 @@ public final class ChatStyle implements Serializable {
     }
 
     /**
+     * Устанавливает стиль для системных сообщений. Можно передать null для значений, которые хотите оставить по умолчанию
      * Default values:
      *
      * @param systemMessageFont             - setSystemMessageFont(String path)
@@ -1446,18 +1534,18 @@ public final class ChatStyle implements Serializable {
      */
     public ChatStyle setSystemMessageStyle(
             final String systemMessageFont,
-            @DimenRes final int systemMessageTextSize,
-            @ColorRes final int systemMessageTextColorResId,
-            @DimenRes final int systemMessageLeftRightPadding,
-            final int systemMessageTextGravity,
-            @ColorRes final int systemMessageLinkColor
+            @DimenRes final Integer systemMessageTextSize,
+            @ColorRes final Integer systemMessageTextColorResId,
+            @DimenRes final Integer systemMessageLeftRightPadding,
+            final Integer systemMessageTextGravity,
+            @ColorRes final Integer systemMessageLinkColor
     ) {
-        this.systemMessageFont = systemMessageFont;
-        this.systemMessageTextSize = systemMessageTextSize;
-        this.systemMessageTextColorResId = systemMessageTextColorResId;
-        this.systemMessageLeftRightPadding = systemMessageLeftRightPadding;
-        this.systemMessageTextGravity = systemMessageTextGravity;
-        this.systemMessageLinkColor = systemMessageLinkColor;
+        if (systemMessageFont != null) this.systemMessageFont = systemMessageFont;
+        if (systemMessageTextSize != null) this.systemMessageTextSize = systemMessageTextSize;
+        if (systemMessageTextColorResId != null) this.systemMessageTextColorResId = systemMessageTextColorResId;
+        if (systemMessageLeftRightPadding != null) this.systemMessageLeftRightPadding = systemMessageLeftRightPadding;
+        if (systemMessageTextGravity != null) this.systemMessageTextGravity = systemMessageTextGravity;
+        if (systemMessageLinkColor != null) this.systemMessageLinkColor = systemMessageLinkColor;
         return this;
     }
 
@@ -1862,72 +1950,77 @@ public final class ChatStyle implements Serializable {
     }
 
     /**
-     * Устанавливает иконку и цвет для исходящего сообщения со статусом "sending"
-     * @param messageSendingIconResId - русурс id иконки. По умолчанию - R.drawable.ecc_message_image_sending
+     * Устанавливает иконку и цвет для исходящего сообщения со статусом "sending". Можно передать null для значения,
+     * таким образом изменив одно из значений
+     * @param messageSendingIconResId - ресурс id иконки. По умолчанию - R.drawable.ecc_message_image_sending
      * @param messageSendingIconColorResId - ресурс id цвета для иконки. По умолчанию - R.color.ecc_white
      */
     public ChatStyle setMessageSendingResources(
-            @DrawableRes int messageSendingIconResId,
-            @ColorRes int messageSendingIconColorResId
+            @DrawableRes Integer messageSendingIconResId,
+            @ColorRes Integer messageSendingIconColorResId
     ) {
-        this.messageSendingIconResId = messageSendingIconResId;
-        this.messageSendingIconColorResId = messageSendingIconColorResId;
+        if (messageSendingIconResId != null) this.messageSendingIconResId = messageSendingIconResId;
+        if (messageSendingIconColorResId != null) this.messageSendingIconColorResId = messageSendingIconColorResId;
         return this;
     }
 
     /**
-     * Устанавливает иконку и цвет для исходящего сообщения со статусом "sent"
-     * @param messageSentIconResId - русурс id иконки. По умолчанию - R.drawable.ecc_message_image_sending
+     * Устанавливает иконку и цвет для исходящего сообщения со статусом "sent". Можно передать null для значения,
+     * таким образом изменив одно из значений
+     * @param messageSentIconResId - ресурс id иконки. По умолчанию - R.drawable.ecc_message_image_sending
      * @param messageSentIconColorResId - ресурс id цвета для иконки. По умолчанию - R.color.ecc_white
      */
     public ChatStyle setMessageSentResources(
-            @DrawableRes int messageSentIconResId,
-            @ColorRes int messageSentIconColorResId
+            @DrawableRes Integer messageSentIconResId,
+            @ColorRes Integer messageSentIconColorResId
     ) {
-        this.messageSentIconResId = messageSentIconResId;
-        this.messageSentIconColorResId = messageSentIconColorResId;
+        if (messageSentIconResId != null) this.messageSentIconResId = messageSentIconResId;
+        if (messageSentIconColorResId != null) this.messageSentIconColorResId = messageSentIconColorResId;
         return this;
     }
 
     /**
-     * Устанавливает иконку и цвет для исходящего сообщения со статусом "delivered"
+     * Устанавливает иконку и цвет для исходящего сообщения со статусом "delivered". Можно передать null для значения,
+     * таким образом изменив одно из значений
      * @param messageDeliveredIconResId - русурс id иконки. По умолчанию - R.drawable.ecc_message_image_delivered
      * @param messageDeliveredIconColorResId - ресурс id цвета для иконки. По умолчанию - R.color.ecc_white
      */
     public ChatStyle setMessageDeliveredResources(
-            @DrawableRes int messageDeliveredIconResId,
-            @ColorRes int messageDeliveredIconColorResId
+            @DrawableRes Integer messageDeliveredIconResId,
+            @ColorRes Integer messageDeliveredIconColorResId
     ) {
-        this.messageDeliveredIconResId = messageDeliveredIconResId;
-        this.messageDeliveredIconColorResId = messageDeliveredIconColorResId;
+        if (messageDeliveredIconResId != null) this.messageDeliveredIconResId = messageDeliveredIconResId;
+        if (messageDeliveredIconColorResId != null) this.messageDeliveredIconColorResId = messageDeliveredIconColorResId;
         return this;
     }
 
     /**
-     * Устанавливает иконку и цвет для исходящего сообщения со статусом "read"
+     * Устанавливает иконку и цвет для исходящего сообщения со статусом "read". Можно передать null для значения,
+     * таким образом изменив одно из значений
      * @param messageReadIconResId - русурс id иконки. По умолчанию - R.drawable.ecc_image_message_read
      * @param messageReadIconColorResId - ресурс id цвета для иконки. По умолчанию - R.color.ecc_white
      */
     public ChatStyle setMessageReadResources(
-            @DrawableRes int messageReadIconResId,
-            @ColorRes int messageReadIconColorResId
+            @DrawableRes Integer messageReadIconResId,
+            @ColorRes Integer messageReadIconColorResId
     ) {
-        this.messageReadIconResId = messageReadIconResId;
-        this.messageReadIconColorResId = messageReadIconColorResId;
+        if (messageReadIconResId != null) this.messageReadIconResId = messageReadIconResId;
+        if (messageReadIconColorResId != null) this.messageReadIconColorResId = messageReadIconColorResId;
         return this;
     }
 
     /**
-     * Устанавливает иконку и цвет для исходящего сообщения со статусом "failed"
+     * Устанавливает иконку и цвет для исходящего сообщения со статусом "failed".  Можно передать null для значения,
+     * таким образом изменив одно из значений
      * @param messageFailedIconResId - русурс id иконки. По умолчанию - R.drawable.ecc_message_image_failed
      * @param messageFailedIconColorResId - ресурс id цвета для иконки. По умолчанию - R.color.ecc_white
      */
     public ChatStyle setMessageFailedResources(
-            @DrawableRes int messageFailedIconResId,
-            @ColorRes int messageFailedIconColorResId
+            @DrawableRes Integer messageFailedIconResId,
+            @ColorRes Integer messageFailedIconColorResId
     ) {
-        this.messageFailedIconResId = messageFailedIconResId;
-        this.messageFailedIconColorResId = messageFailedIconColorResId;
+        if (messageFailedIconResId != null) this.messageFailedIconResId = messageFailedIconResId;
+        if (messageFailedIconColorResId != null) this.messageFailedIconColorResId = messageFailedIconColorResId;
         return this;
     }
 
