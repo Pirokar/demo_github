@@ -82,7 +82,6 @@ dependencies {
     implementation "org.parceler:parceler-api:$rootProject.parcelerVersion"
     kapt "org.parceler:parceler:$rootProject.parcelerVersion"
 
-
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$rootProject.viewmodelVersion"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$rootProject.viewmodelVersion"
 

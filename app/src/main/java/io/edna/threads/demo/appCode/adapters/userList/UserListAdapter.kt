@@ -8,15 +8,15 @@ import im.threads.ui.utils.gone
 import im.threads.ui.utils.visible
 import io.edna.threads.demo.R
 import io.edna.threads.demo.appCode.extensions.inflateWithBinding
+import io.edna.threads.demo.appCode.models.UserInfo
 import io.edna.threads.demo.databinding.UserListItemBinding
-import io.edna.threads.demo.models.UserInfo
 
 class UserListAdapter(private val onItemClickListener: UserListItemOnClickListener) :
-    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    RecyclerView.Adapter<UserListAdapter.UserItemHolder>() {
 
     private val list: MutableList<UserInfo> = mutableListOf()
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserItemHolder {
         val inflater = LayoutInflater.from(parent.context)
         return UserItemHolder(inflater.inflateWithBinding(parent, R.layout.user_list_item))
     }
@@ -41,17 +41,8 @@ class UserListAdapter(private val onItemClickListener: UserListItemOnClickListen
         }
     }
 
-    fun isMenuShown(): Boolean {
-        for (i in list.indices) {
-            if (list[i].isShowMenu) {
-                return true
-            }
-        }
-        return false
-    }
-
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        (holder as? UserItemHolder)?.onBind(position)
+    override fun onBindViewHolder(holder: UserItemHolder, position: Int) {
+        holder.onBind(position)
     }
 
     override fun getItemCount() = list.count()
@@ -67,7 +58,7 @@ class UserListAdapter(private val onItemClickListener: UserListItemOnClickListen
         diffResult.dispatchUpdatesTo(this)
     }
 
-    private inner class UserItemHolder(val binding: UserListItemBinding) :
+    inner class UserItemHolder(private val binding: UserListItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun onBind(position: Int) {

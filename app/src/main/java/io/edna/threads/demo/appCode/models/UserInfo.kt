@@ -1,4 +1,4 @@
-package io.edna.threads.demo.models
+package io.edna.threads.demo.appCode.models
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
@@ -10,7 +10,7 @@ data class UserInfo(
     var isShowMenu: Boolean = false
 ) : Parcelable {
 
-    override fun toString() = "$nickName, $userId"
+    override fun toString() = "$nickName, $userId, $isShowMenu"
 
     fun isAllFieldsFilled(): Boolean {
         return !nickName.isNullOrEmpty() && !userId.isNullOrEmpty()

@@ -1,6 +1,9 @@
 package io.edna.threads.demo.appCode.fragments.user
 
 import android.app.Activity
+import android.os.Build
+import android.os.Bundle
+import android.os.Parcelable
 import android.text.Editable
 import android.view.View
 import androidx.databinding.Bindable
@@ -13,8 +16,9 @@ import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import io.edna.threads.demo.R
-import io.edna.threads.demo.models.UserInfo
-import io.edna.threads.demo.utils.AfterTextChangedTextWatcher
+import io.edna.threads.demo.appCode.business.AfterTextChangedTextWatcher
+import io.edna.threads.demo.appCode.models.UserInfo
+import org.parceler.Parcels
 
 class AddUserViewModel : ViewModel(), DefaultLifecycleObserver, Observable {
 
@@ -26,10 +30,19 @@ class AddUserViewModel : ViewModel(), DefaultLifecycleObserver, Observable {
     private var _enabledSaveButtonLiveData = MutableLiveData(false)
     var enabledSaveButtonLiveData: LiveData<Boolean> = _enabledSaveButtonLiveData
 
-    fun setSrcUser(config: UserInfo?) {
-        config?.let {
-            srcUserLiveData.postValue(it)
-            _userLiveData.postValue(it.clone())
+    fun initData(arguments: Bundle?) {
+        arguments?.let { bundle ->
+            if (bundle.containsKey(UserListFragment.USER_KEY)) {
+                val user: UserInfo? = if (Build.VERSION.SDK_INT >= 33) {
+                    Parcels.unwrap(bundle.getParcelable(UserListFragment.USER_KEY, Parcelable::class.java))
+                } else {
+                    Parcels.unwrap(bundle.getParcelable(UserListFragment.USER_KEY))
+                }
+                if (user != null) {
+                    srcUserLiveData.postValue(user!!)
+                    _userLiveData.postValue(user.clone())
+                }
+            }
         }
     }
 

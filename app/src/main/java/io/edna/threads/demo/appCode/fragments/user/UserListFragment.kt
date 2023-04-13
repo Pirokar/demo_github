@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.clearFragmentResultListener
 import androidx.fragment.app.setFragmentResult
@@ -19,8 +18,9 @@ import io.edna.threads.demo.appCode.adapters.userList.UserListAdapter
 import io.edna.threads.demo.appCode.adapters.userList.UserListItemOnClickListener
 import io.edna.threads.demo.appCode.fragments.launch.LaunchFragment.Companion.SELECTED_USER_KEY
 import io.edna.threads.demo.databinding.FragmentUserListBinding
-import io.edna.threads.demo.models.UserInfo
-import io.edna.threads.demo.utils.TouchHelper
+import io.edna.threads.demo.appCode.business.TouchHelper
+import io.edna.threads.demo.appCode.extensions.inflateWithBinding
+import io.edna.threads.demo.appCode.models.UserInfo
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.parceler.Parcels
 
@@ -35,7 +35,7 @@ class UserListFragment : Fragment(), UserListItemOnClickListener, TouchHelper.On
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_user_list, container, false)
+        binding = inflater.inflateWithBinding(container, R.layout.fragment_user_list)
         binding.viewModel = viewModel
         setResultListeners()
         return binding.root

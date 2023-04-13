@@ -57,6 +57,7 @@
                 android:layout_marginEnd="@dimen/margin_8"
                 android:contentDescription="@string/content_description_save_button"
                 android:onClick="@{viewModel::click}"
+                android:enabled="@{viewModel.enabledSaveButtonLiveData.booleanValue()}"
                 android:padding="@dimen/margin_12"
                 android:src="@drawable/ic_ok_selector" />
 

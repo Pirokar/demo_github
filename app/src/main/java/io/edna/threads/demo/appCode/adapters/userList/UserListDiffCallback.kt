@@ -1,7 +1,7 @@
 package io.edna.threads.demo.appCode.adapters.userList
 
 import androidx.recyclerview.widget.DiffUtil
-import io.edna.threads.demo.models.UserInfo
+import io.edna.threads.demo.appCode.models.UserInfo
 
 class UserListDiffCallback(
     private val oldList: List<UserInfo>,

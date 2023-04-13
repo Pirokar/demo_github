@@ -13,8 +13,8 @@ import im.threads.ui.core.ThreadsLib
 import io.edna.threads.demo.BuildConfig
 import io.edna.threads.demo.R
 import io.edna.threads.demo.appCode.extensions.inflateWithBinding
+import io.edna.threads.demo.appCode.models.UserInfo
 import io.edna.threads.demo.databinding.FragmentLaunchBinding
-import io.edna.threads.demo.models.UserInfo
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.parceler.Parcels
 
