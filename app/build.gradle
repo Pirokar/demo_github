@@ -1,6 +1,8 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
+    id 'kotlin-parcelize'
 }
 
 android {
@@ -75,6 +77,10 @@ dependencies {
 
     // Koin main features for Android
     implementation "io.insert-koin:koin-android:$koin_version"
+
+    implementation "com.squareup.retrofit2:converter-gson:$rootProject.retrofitVersion"
+    implementation "org.parceler:parceler-api:$rootProject.parcelerVersion"
+    kapt "org.parceler:parceler:$rootProject.parcelerVersion"
 
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$rootProject.viewmodelVersion"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$rootProject.viewmodelVersion"

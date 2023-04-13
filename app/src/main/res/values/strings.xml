@@ -11,6 +11,9 @@
     <string name="launch_fragment_label">Welcome screen</string>
     <string name="servers_fragment_label">Select server screen</string>
     <string name="demonstrations">Демонстрации</string>
+    <string name="add_server_fragment_label">Add server screen</string>
+    <string name="user_list_fragment_label">Select user screen</string>
+    <string name="add_user_fragment_label">Add user screen</string>
 
     <string name="text_messages">Текстовые сообщения</string>
     <string name="connection_errors">Сообщения с ошибками</string>
@@ -19,6 +22,26 @@
     <string name="files">Файлы</string>
     <string name="system_messages">Системные сообщения</string>
     <string name="chat_with_bot">Чат с ботом</string>
+
+    <string name="servers">Серверы</string>
+    <string name="users">Пользователи</string>
+    <string name="name">Name</string>
+    <string name="nick_name">Имя пользователя</string>
+    <string name="user_id">ID пользователя</string>
+    <string name="datastore_url">Datastore URL</string>
+    <string name="threads_gate_url">Threads Gate URL</string>
+    <string name="server_base_url">Server Base URL</string>
+    <string name="threads_gate_provider_uid">Threads Gate Provider Uid</string>
+
+    <string name="empty_user_list_text">Обязательно нужно больше пользователей.\nЧем больше - тем лучше.</string>
+
+    <string name="content_description_back_button">Кнопка назад</string>
+    <string name="content_description_save_button">Кнопка сохранить</string>
+    <string name="content_description_add_button">Кнопка добавить</string>
+    <string name="content_description_server_list_icon">Иконка элемента списка серверов</string>
+    <string name="content_description_edit_button">Кнопка редактировать</string>
+    <string name="content_description_remove_button">Кнопка удалить</string>
+    <string name="content_description_user_list_icon">Иконка элемента списка пользователей</string>
 
     <string name="demo_alt_threads_contact_center">Демонстрация сообщений</string>
     <string name="demo_alt_threads_operator_subtitle">Оператор Елена</string>

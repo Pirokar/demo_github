@@ -51,7 +51,7 @@
             android:layout_marginTop="@dimen/login_screen_top_margin_large"
             android:gravity="center_vertical"
             android:onClick="@{viewModel::click}"
-            android:text="@string/server"
+            android:hint="@string/server"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/title" />
@@ -63,7 +63,8 @@
             android:drawableEnd="@drawable/ic_chevron_right"
             android:gravity="center_vertical"
             android:onClick="@{viewModel::click}"
-            android:text="@string/user"
+            android:text="@{viewModel.selectedUserLiveData.nickName}"
+            android:hint="@string/user"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/serverButton" />
@@ -74,6 +75,7 @@
             android:layout_marginTop="@dimen/login_screen_top_margin_large"
             android:onClick="@{viewModel::click}"
             android:text="@string/login"
+            android:enabled="@{viewModel.enabledLoginButtonLiveData.booleanValue()}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/userButton" />
