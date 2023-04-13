@@ -6,13 +6,16 @@ import android.text.TextUtils
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
+import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import im.threads.business.UserInfoBuilder
 import im.threads.business.chat_updates.ChatUpdateProcessor
 import im.threads.business.config.BaseConfig
 import im.threads.business.formatters.ChatItemType
+import im.threads.business.formatters.JsonFormatter
 import im.threads.business.logger.LoggerEdna
+import im.threads.business.logger.NetworkLoggerInterceptor
 import im.threads.business.models.CampaignMessage
 import im.threads.business.models.ChatItem
 import im.threads.business.models.ChatItemSendErrorModel
@@ -89,6 +92,7 @@ class ThreadsGateTransport(
     private val authInterceptor: AuthInterceptor by inject()
     private val chatUpdateProcessor: ChatUpdateProcessor by inject()
     private val database: DatabaseHolder by inject()
+    private val jsonFormatter: JsonFormatter by inject()
 
     init { buildTransport() }
 
@@ -96,10 +100,10 @@ class ThreadsGateTransport(
         val httpClientBuilder = OkHttpClient.Builder()
             .addInterceptor(authInterceptor)
             .apply { networkInterceptor?.let { addInterceptor(it) } }
-            .pingInterval(socketSettings.resendPingIntervalMillis.toLong(), TimeUnit.MILLISECONDS)
-            .connectTimeout(socketSettings.connectTimeoutMillis.toLong(), TimeUnit.MILLISECONDS)
-            .readTimeout(socketSettings.readTimeoutMillis.toLong(), TimeUnit.MILLISECONDS)
-            .writeTimeout(socketSettings.writeTimeoutMillis.toLong(), TimeUnit.MILLISECONDS)
+            .pingInterval(socketSettings.resendPingIntervalMillis, TimeUnit.MILLISECONDS)
+            .connectTimeout(socketSettings.connectTimeoutMillis, TimeUnit.MILLISECONDS)
+            .readTimeout(socketSettings.readTimeoutMillis, TimeUnit.MILLISECONDS)
+            .writeTimeout(socketSettings.writeTimeoutMillis, TimeUnit.MILLISECONDS)
         if (isDebugLoggingEnabled) {
             httpClientBuilder.addInterceptor(
                 HttpLoggingInterceptor()
@@ -117,6 +121,7 @@ class ThreadsGateTransport(
             )
             httpClientBuilder.hostnameVerifier { _: String, _: SSLSession -> true }
         }
+        httpClientBuilder.addInterceptor(NetworkLoggerInterceptor())
         client = httpClientBuilder.build()
         request = Request.Builder()
             .url(threadsGateUrl)
@@ -261,8 +266,16 @@ class ThreadsGateTransport(
                 SendMessageRequest.Data(deviceAddress, content, important)
             )
         )
-        LoggerEdna.info("Sending : $text")
-        ws.send(text)
+        sendMessageWithWebsocket(text)
+    }
+
+    private fun sendMessageWithWebsocket(message: String?) {
+        if (message != null) {
+            val isSent = webSocket?.send(message)
+            LoggerEdna.info(
+                "[REST_WS] ☛ Sending message with WS. Is sent: $isSent. Message: ${jsonFormatter.jsonToPrettyFormat(message)}"
+            )
+        }
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
@@ -298,8 +311,7 @@ class ThreadsGateTransport(
         val text = BaseConfig.instance.gson.toJson(
             RegisterDeviceRequest(UUID.randomUUID().toString(), data)
         )
-        LoggerEdna.info("Sending : $text")
-        ws.send(text)
+        sendMessageWithWebsocket(text)
     }
 
     private fun getCloudToken(): String? {
@@ -412,11 +424,11 @@ class ThreadsGateTransport(
                 put(KEY_URL, response.request.url)
             }
             chatUpdateProcessor.postSocketResponseMap(socketResponseMap)
-            LoggerEdna.info("OnOpen : $response")
+            LoggerEdna.info("[REST_WS] ☚ On websocket open : $response")
         }
 
         override fun onMessage(webSocket: WebSocket, text: String) {
-            LoggerEdna.info("Receiving : $text")
+            LoggerEdna.info("[REST_WS] ☚ ${jsonFormatter.jsonToPrettyFormat(text)}")
             postSocketResponseMap(text)
             val response = BaseConfig.instance.gson.fromJson(text, BaseResponse::class.java)
             val action = response.action
@@ -504,7 +516,7 @@ class ThreadsGateTransport(
                     )
                 }
                 if (action == Action.GET_STATUSES) {
-                    LoggerEdna.info("Receiving GetStatusesData: ${response.data}")
+                    LoggerEdna.info("[REST_WS] ☚ Get statuses data: ${jsonFormatter.jsonToPrettyFormat(Gson().toJson(response.data))}")
                     val data = BaseConfig.instance.gson.fromJson(
                         response.data.toString(),
                         GetStatusesData::class.java
@@ -574,18 +586,18 @@ class ThreadsGateTransport(
         }
 
         override fun onMessage(webSocket: WebSocket, bytes: ByteString) {
-            LoggerEdna.info("Receiving bytes : " + bytes.hex())
+            LoggerEdna.info("[REST_WS] ☚ Receiving bytes: ${bytes.hex()}")
         }
 
         override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
             postSocketResponseMap(code, reason)
-            LoggerEdna.info("Closing : $code / $reason")
+            LoggerEdna.info("[REST_WS] ☚ Websocket closing: $code / $reason")
             webSocket.close(NORMAL_CLOSURE_STATUS, null)
         }
 
         override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
             postSocketResponseMap(code, reason)
-            LoggerEdna.info("OnClosed : $code / $reason")
+            LoggerEdna.info("[REST_WS] ☚ Websocket onClosed: $code / $reason")
         }
 
         private fun postSocketResponseMap(code: Int, reason: String) {
@@ -601,7 +613,7 @@ class ThreadsGateTransport(
         }
 
         override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
-            LoggerEdna.info("Error : " + t.message)
+            LoggerEdna.info("[REST_WS] ☚\u274C On Websocket error : ${t.message}")
             chatUpdateProcessor.postError(TransportException(t.message))
             synchronized(messageInProcessIds) {
                 coroutineScope.launch {

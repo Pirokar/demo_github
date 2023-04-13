@@ -1,8 +1,7 @@
 package im.threads.business.logger
 
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonParser
+import im.threads.business.formatters.JsonFormatter
+import im.threads.business.serviceLocator.core.inject
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
@@ -11,6 +10,8 @@ import okhttp3.ResponseBody.Companion.toResponseBody
 import okio.Buffer
 
 class NetworkLoggerInterceptor : Interceptor {
+    private val jsonFormatter: JsonFormatter by inject()
+
     override fun intercept(chain: Interceptor.Chain): Response {
         LoggerEdna.info(getRequestLog(chain))
 
@@ -38,7 +39,7 @@ class NetworkLoggerInterceptor : Interceptor {
     private fun getResponseLog(response: Response, responseBodyString: String) = StringBuilder().apply {
         append("☚ Response received for url: ${response.request.url}\n")
         append("☚ Request headers: ${response.request.headers}")
-        append("☚ Request body: ${jsonToPrettyFormat(responseBodyString)}\n")
+        append("☚ Request body: ${jsonFormatter.jsonToPrettyFormat(responseBodyString)}\n")
     }.toString()
 
     private fun bodyToString(request: Request): String? {
@@ -49,16 +50,6 @@ class NetworkLoggerInterceptor : Interceptor {
             buffer.readUtf8()
         } catch (e: Exception) {
             "no body"
-        }
-    }
-
-    private fun jsonToPrettyFormat(jsonString: String?): String {
-        return try {
-            val jsonObject = JsonParser.parseString(jsonString)
-            val gson: Gson = GsonBuilder().setPrettyPrinting().create()
-            gson.toJson(jsonObject)
-        } catch (exc: Exception) {
-            "Cannot create PrettyJson. Input json: $jsonString"
         }
     }
 }
