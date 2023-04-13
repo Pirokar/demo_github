@@ -52,9 +52,7 @@ class ImageFromConsultViewHolder(
 
     private val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
 
-    private val errorTextView: TextView = itemView.findViewById<TextView?>(R.id.errorText).apply {
-        ColorsHelper.setTextColor(this, style.errorMessageTextColor)
-    }
+    private val errorTextView: TextView = itemView.findViewById(R.id.errorText)
     private val loaderLayout: LinearLayout = itemView.findViewById(R.id.loaderLayout)
     private val fileNameTextView: TextView = itemView.findViewById(R.id.fileName)
     private val loader: ImageView = itemView.findViewById(R.id.loader)
@@ -87,6 +85,7 @@ class ImageFromConsultViewHolder(
     ) {
         subscribeForHighlighting(consultPhrase, itemView)
         applyBubbleLayoutStyle()
+        ColorsHelper.setTextColor(errorTextView, style.errorMessageTextColor)
         timeStampTextView.setOnClickListener(buttonClickListener)
         timeStampTextView.setOnLongClickListener(onLongClickListener)
         timeStampTextView.text = sdf.format(Date(consultPhrase.timeStamp))

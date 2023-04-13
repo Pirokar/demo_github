@@ -103,9 +103,7 @@ class UserPhraseViewHolder(
     private val ogDataLayout: ViewGroup = itemView.findViewById(R.id.ogDataLayout)
     private val slider: Slider = itemView.findViewById(R.id.voiceMessageUserSlider)
     private val fileSizeTextView: TextView = itemView.findViewById(R.id.fileSize)
-    private val errorText: TextView = itemView.findViewById<TextView?>(R.id.errorText).apply {
-        ColorsHelper.setTextColor(this, style.errorMessageTextColor)
-    }
+    private val errorText: TextView = itemView.findViewById(R.id.errorText)
     private val loader: ImageView = itemView.findViewById(R.id.loader)
     private val rightTextHeader: TextView = itemView.findViewById(R.id.to)
     private val rightTextTimeStamp: TextView = itemView.findViewById(R.id.sendAt)
@@ -160,6 +158,7 @@ class UserPhraseViewHolder(
             style.outgoingMessageTextColor
         )
         itemView.findViewById<View>(R.id.delimiter).setBackgroundColor(getColorInt(style.outgoingMessageTextColor))
+        ColorsHelper.setTextColor(errorText, style.errorMessageTextColor)
         setUpProgressButton(fileImageButton)
     }
 

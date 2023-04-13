@@ -48,9 +48,7 @@ class ConsultFileViewHolder(
         itemView.findViewById<CircularProgressButton>(R.id.circ_button).apply {
             setBackgroundColorResId(style.chatBackgroundColor)
         }
-    private val errorText: TextView = itemView.findViewById<TextView?>(R.id.errorText).apply {
-        ColorsHelper.setTextColor(this, style.errorMessageTextColor)
-    }
+    private val errorText: TextView = itemView.findViewById(R.id.errorText)
     private val loader: ImageView = itemView.findViewById(R.id.loader)
     private val mFileHeader: TextView = itemView.findViewById(R.id.header)
     private val mSizeTextView: TextView = itemView.findViewById(R.id.file_size)
@@ -87,6 +85,7 @@ class ConsultFileViewHolder(
             setLayoutMargins(true, this)
         }
         setTextColorToViews(arrayOf(mFileHeader, mSizeTextView), style.incomingMessageTextColor)
+        ColorsHelper.setTextColor(errorText, style.errorMessageTextColor)
         setUpProgressButton(mCircularProgressButton)
     }
 

@@ -74,9 +74,7 @@ class ConsultPhraseHolder(
         itemView.findViewById<CircularProgressButton>(R.id.buttonDownload).apply {
             setBackgroundColorResId(style.chatBackgroundColor)
         }
-    private val errorTextView: TextView = itemView.findViewById<TextView?>(R.id.errorText).apply {
-        ColorsHelper.setTextColor(this, style.errorMessageTextColor)
-    }
+    private val errorTextView: TextView = itemView.findViewById(R.id.errorText)
     private val fileImage = itemView.findViewById<ImageView>(R.id.fileImage)
     private val rightTextHeader: TextView = itemView.findViewById(R.id.to)
     private val image: ImageView = itemView.findViewById(R.id.image)
@@ -139,6 +137,7 @@ class ConsultPhraseHolder(
             ),
             style.incomingMessageTextColor
         )
+        ColorsHelper.setTextColor(errorTextView, style.errorMessageTextColor)
         setUpProgressButton(circularProgressButton)
     }
 

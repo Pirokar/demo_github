@@ -55,9 +55,7 @@ class ConsultVoiceMessageViewHolder(
     override var fileDescription: FileDescription? = null
     private var formattedDuration = ""
 
-    private val errorTextView: TextView = itemView.findViewById<TextView?>(R.id.errorText).apply {
-        ColorsHelper.setTextColor(this, style.errorMessageTextColor)
-    }
+    private val errorTextView: TextView = itemView.findViewById(R.id.errorText)
     private val loader: ImageView = itemView.findViewById(R.id.loader)
     private val rootLayout: ConstraintLayout = itemView.findViewById(R.id.rootLayout)
 
@@ -116,6 +114,7 @@ class ConsultVoiceMessageViewHolder(
             arrayOf(phraseTextView, fileSizeTextView, audioStatusTextView),
             style.incomingMessageTextColor
         )
+        ColorsHelper.setTextColor(errorTextView, style.errorMessageTextColor)
     }
 
     fun onBind(

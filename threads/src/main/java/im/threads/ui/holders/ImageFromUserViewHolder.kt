@@ -49,9 +49,7 @@ class ImageFromUserViewHolder(
     private var loadedUri: String? = null
 
     private val loaderLayoutRoot: RelativeLayout = itemView.findViewById(R.id.loaderLayoutRoot)
-    private val errorText: TextView = itemView.findViewById<TextView?>(R.id.errorText).apply {
-        ColorsHelper.setTextColor(this, style.errorMessageTextColor)
-    }
+    private val errorText: TextView = itemView.findViewById(R.id.errorText)
     private val fileName: TextView = itemView.findViewById(R.id.fileName)
     private val loader: ImageView = itemView.findViewById(R.id.loader)
     private val timeStampLoading: BubbleTimeTextView = itemView.findViewById(R.id.timeStampLoading)
@@ -62,6 +60,7 @@ class ImageFromUserViewHolder(
             style.outgoingMessageTextColor
         )
         loaderLayoutRoot.also { applyBubbleLayoutStyle(it) }
+        ColorsHelper.setTextColor(errorText, style.errorMessageTextColor)
     }
 
     fun onBind(

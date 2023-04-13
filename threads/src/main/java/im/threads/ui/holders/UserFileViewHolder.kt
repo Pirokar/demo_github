@@ -53,9 +53,7 @@ class UserFileViewHolder(
 
     private val fileHeaderTextView: TextView = itemView.findViewById(R.id.header)
     private val fileSizeTextView: TextView = itemView.findViewById(R.id.fileSize)
-    private val errorTextView: TextView = itemView.findViewById<TextView?>(R.id.errorText).apply {
-        ColorsHelper.setTextColor(this, style.errorMessageTextColor)
-    }
+    private val errorTextView: TextView = itemView.findViewById(R.id.errorText)
     private val loader: ImageView = itemView.findViewById(R.id.loader)
     private val rootLayout: LinearLayout = itemView.findViewById(R.id.rootLayout)
     private val bubbleLayout: ConstraintLayout = itemView.findViewById(R.id.bubble)
@@ -93,6 +91,7 @@ class UserFileViewHolder(
             arrayOf(fileHeaderTextView, fileSizeTextView),
             style.outgoingMessageTextColor
         )
+        ColorsHelper.setTextColor(errorTextView, style.errorMessageTextColor)
         loader.invisible()
         circularProgressButton.invisible()
     }
