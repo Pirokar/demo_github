@@ -75,7 +75,6 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_weight">1</item>
         <item name="android:background">@drawable/ecc_chat_input_background</item>
-        <item name="android:minHeight">@dimen/ecc_input_height</item>
         <item name="android:textColorHint">@color/ecc_input_hint</item>
         <item name="android:textColor">@color/ecc_input_text</item>
         <item name="android:paddingBottom">@dimen/ecc_margin_quarter</item>
