@@ -96,6 +96,66 @@ class AddUserViewModel : ViewModel(), DefaultLifecycleObserver, Observable {
         }
     }
 
+    @get:Bindable
+    val userDataTextWatcher = object : AfterTextChangedTextWatcher {
+        override fun afterTextChanged(s: Editable?) {
+            if (s != null) {
+                if (userLiveData.value?.userData != s.toString()) {
+                    userLiveData.value?.userData = s.toString()
+                    _userLiveData.postValue(userLiveData.value)
+                }
+            }
+        }
+    }
+
+    @get:Bindable
+    val appMarkerTextWatcher = object : AfterTextChangedTextWatcher {
+        override fun afterTextChanged(s: Editable?) {
+            if (s != null) {
+                if (userLiveData.value?.appMarker != s.toString()) {
+                    userLiveData.value?.appMarker = s.toString()
+                    _userLiveData.postValue(userLiveData.value)
+                }
+            }
+        }
+    }
+
+    @get:Bindable
+    val signatureTextWatcher = object : AfterTextChangedTextWatcher {
+        override fun afterTextChanged(s: Editable?) {
+            if (s != null) {
+                if (userLiveData.value?.signature != s.toString()) {
+                    userLiveData.value?.signature = s.toString()
+                    _userLiveData.postValue(userLiveData.value)
+                }
+            }
+        }
+    }
+
+    @get:Bindable
+    val authorizationHeaderTextWatcher = object : AfterTextChangedTextWatcher {
+        override fun afterTextChanged(s: Editable?) {
+            if (s != null) {
+                if (userLiveData.value?.authorizationHeader != s.toString()) {
+                    userLiveData.value?.authorizationHeader = s.toString()
+                    _userLiveData.postValue(userLiveData.value)
+                }
+            }
+        }
+    }
+
+    @get:Bindable
+    val xAuthSchemaHeaderTextWatcher = object : AfterTextChangedTextWatcher {
+        override fun afterTextChanged(s: Editable?) {
+            if (s != null) {
+                if (userLiveData.value?.xAuthSchemaHeader != s.toString()) {
+                    userLiveData.value?.xAuthSchemaHeader = s.toString()
+                    _userLiveData.postValue(userLiveData.value)
+                }
+            }
+        }
+    }
+
     override fun addOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback?) {}
     override fun removeOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback?) {}
 }

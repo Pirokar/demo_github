@@ -39,7 +39,7 @@ abstract class BaseAppFragment<T : ViewDataBinding> : Fragment() {
         _binding = null
     }
 
-    protected fun navigateUp() {
+    protected open fun navigateUp() {
         if (fragment?.onBackPressed() != false && isAdded) {
             findNavController().navigateUp()
         }

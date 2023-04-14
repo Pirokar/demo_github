@@ -91,5 +91,75 @@
             app:layout_constraintTop_toBottomOf="@+id/nickName"
             app:textChangedListener="@{viewModel.userIdTextWatcher}" />
 
+        <io.edna.threads.demo.appCode.views.InputField
+            android:id="@+id/userData"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_16"
+            android:layout_marginTop="@dimen/margin_16"
+            android:layout_marginEnd="@dimen/margin_16"
+            android:text="@{viewModel.userLiveData.userData}"
+            app:hint="@string/user_data"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/userId"
+            app:textChangedListener="@{viewModel.userDataTextWatcher}" />
+
+        <io.edna.threads.demo.appCode.views.InputField
+            android:id="@+id/appMarker"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_16"
+            android:layout_marginTop="@dimen/margin_16"
+            android:layout_marginEnd="@dimen/margin_16"
+            android:text="@{viewModel.userLiveData.appMarker}"
+            app:hint="@string/app_marker"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/userData"
+            app:textChangedListener="@{viewModel.appMarkerTextWatcher}" />
+
+        <io.edna.threads.demo.appCode.views.InputField
+            android:id="@+id/signature"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_16"
+            android:layout_marginTop="@dimen/margin_16"
+            android:layout_marginEnd="@dimen/margin_16"
+            android:text="@{viewModel.userLiveData.signature}"
+            app:hint="@string/signature"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/appMarker"
+            app:textChangedListener="@{viewModel.signatureTextWatcher}" />
+
+        <io.edna.threads.demo.appCode.views.InputField
+            android:id="@+id/authorizationHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_16"
+            android:layout_marginTop="@dimen/margin_16"
+            android:layout_marginEnd="@dimen/margin_16"
+            android:text="@{viewModel.userLiveData.authorizationHeader}"
+            app:hint="@string/authorization_header"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/signature"
+            app:textChangedListener="@{viewModel.authorizationHeaderTextWatcher}" />
+
+        <io.edna.threads.demo.appCode.views.InputField
+            android:id="@+id/xAuthSchemaHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_16"
+            android:layout_marginTop="@dimen/margin_16"
+            android:layout_marginEnd="@dimen/margin_16"
+            android:text="@{viewModel.userLiveData.xAuthSchemaHeader}"
+            app:hint="@string/x_auth_schema_header"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/authorizationHeader"
+            app:textChangedListener="@{viewModel.xAuthSchemaHeaderTextWatcher}" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

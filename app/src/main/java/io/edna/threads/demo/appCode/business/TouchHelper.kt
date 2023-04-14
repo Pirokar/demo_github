@@ -5,13 +5,20 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import org.koin.java.KoinJavaComponent
 
 class TouchHelper(listener: OnSwipeItemListener) {
+
+    private val uiThemeProvider: UiThemeProvider by KoinJavaComponent.inject(UiThemeProvider::class.java)
 
     var touchHelperCallback: ItemTouchHelper.SimpleCallback =
         object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
 
-            private val background = ColorDrawable(Color.WHITE)
+            private val background = if (uiThemeProvider.isDarkThemeOn()) {
+                ColorDrawable(Color.BLACK)
+            } else {
+                ColorDrawable(Color.WHITE)
+            }
 
             override fun onMove(
                 recyclerView: RecyclerView,

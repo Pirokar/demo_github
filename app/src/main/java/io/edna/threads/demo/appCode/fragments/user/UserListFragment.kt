@@ -6,42 +6,50 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.clearFragmentResultListener
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
+import im.threads.ui.utils.ColorsHelper
 import io.edna.threads.demo.R
 import io.edna.threads.demo.appCode.adapters.userList.UserListAdapter
 import io.edna.threads.demo.appCode.adapters.userList.UserListItemOnClickListener
 import io.edna.threads.demo.appCode.business.TouchHelper
+import io.edna.threads.demo.appCode.business.UiThemeProvider
 import io.edna.threads.demo.appCode.extensions.inflateWithBinding
+import io.edna.threads.demo.appCode.fragments.BaseAppFragment
 import io.edna.threads.demo.appCode.fragments.launch.LaunchFragment.Companion.SELECTED_USER_KEY
 import io.edna.threads.demo.appCode.models.UserInfo
 import io.edna.threads.demo.databinding.FragmentUserListBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.java.KoinJavaComponent
 import org.parceler.Parcels
 
-class UserListFragment : Fragment(), UserListItemOnClickListener, TouchHelper.OnSwipeItemListener {
+class UserListFragment :
+    BaseAppFragment<FragmentUserListBinding>(),
+    UserListItemOnClickListener,
+    TouchHelper.OnSwipeItemListener {
 
-    private lateinit var binding: FragmentUserListBinding
+    private val uiThemeProvider: UiThemeProvider by KoinJavaComponent.inject(UiThemeProvider::class.java)
     private val viewModel: UserListViewModel by viewModel()
     private var adapter: UserListAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?,
+        savedInstanceState: Bundle?
     ): View {
-        binding = inflater.inflateWithBinding(container, R.layout.fragment_user_list)
+        _binding = inflater.inflateWithBinding(container, R.layout.fragment_user_list)
         binding.viewModel = viewModel
+        initView()
         setResultListeners()
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        subscribeToGlobalBackClick()
         createAdapter()
         subscribeForData()
         initAdapter()
@@ -52,6 +60,14 @@ class UserListFragment : Fragment(), UserListItemOnClickListener, TouchHelper.On
     override fun onDestroyView() {
         super.onDestroyView()
         clearResultListeners()
+    }
+
+    override fun navigateUp() {
+        if (adapter != null && adapter!!.isMenuShown()) {
+            adapter?.closeMenu()
+        } else {
+            viewModel.backToLaunchScreen(activity)
+        }
     }
 
     override fun onSwiped(position: Int) {
@@ -76,6 +92,18 @@ class UserListFragment : Fragment(), UserListItemOnClickListener, TouchHelper.On
     override fun onRemoveItem(item: UserInfo) {
         adapter?.closeMenu()
         viewModel.removeUser(item)
+    }
+
+    private fun initView() {
+        binding.addUser.background = null
+        binding.addUser.setImageResource(R.drawable.ic_plus)
+        if (uiThemeProvider.isDarkThemeOn()) {
+            ColorsHelper.setTint(activity, binding.addUser, R.color.black_color)
+            binding.addUser.setBackgroundResource(R.drawable.buttons_bg_selector_dark)
+        } else {
+            ColorsHelper.setTint(activity, binding.addUser, R.color.white_color_fa)
+            binding.addUser.setBackgroundResource(R.drawable.buttons_bg_selector)
+        }
     }
 
     private fun initAdapter() {
@@ -110,6 +138,11 @@ class UserListFragment : Fragment(), UserListItemOnClickListener, TouchHelper.On
             } else {
                 binding.emptyView.isVisible = false
                 binding.recyclerView.isVisible = true
+            }
+        }
+        viewModel.backButtonCkickedLiveData.observe(viewLifecycleOwner) {
+            if (it) {
+                navigateUp()
             }
         }
     }

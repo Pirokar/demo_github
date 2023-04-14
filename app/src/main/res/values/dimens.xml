@@ -1,4 +1,5 @@
 <resources>
+    <dimen name="margin_2">2dp</dimen>
     <dimen name="margin_3">3dp</dimen>
     <dimen name="margin_5">5dp</dimen>
     <dimen name="margin_8">8dp</dimen>
@@ -17,6 +18,7 @@
 
     <dimen name="height_36">36dp</dimen>
     <dimen name="height_42">42dp</dimen>
+    <dimen name="height_50">50dp</dimen>
     <dimen name="height_56">56dp</dimen>
 
     <dimen name="text_size_12">12sp</dimen>

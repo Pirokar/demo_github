@@ -28,11 +28,14 @@ class UserListViewModel(
     private var _userListLiveData = MutableLiveData(ArrayList<UserInfo>())
     var userListLiveData: LiveData<ArrayList<UserInfo>> = _userListLiveData
 
+    private var _backButtonCkickedLiveData = MutableLiveData(false)
+    var backButtonCkickedLiveData: LiveData<Boolean> = _backButtonCkickedLiveData
+
     fun click(view: View) {
         val navigationController: NavController =
             (view.context as Activity).findNavController(R.id.nav_host_fragment_content_main)
         when (view.id) {
-            R.id.backButton -> navigationController.navigate(R.id.action_UserListFragment_to_LaunchFragment)
+            R.id.backButton -> _backButtonCkickedLiveData.postValue(true)
             R.id.addUser -> {
                 navigationController.navigate(R.id.action_UserListFragment_to_AddUserFragment)
             }
