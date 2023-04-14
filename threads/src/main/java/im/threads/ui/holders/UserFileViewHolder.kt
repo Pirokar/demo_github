@@ -90,6 +90,7 @@ class UserFileViewHolder(
             arrayOf(fileHeaderTextView, fileSizeTextView),
             style.outgoingMessageTextColor
         )
+        itemView.findViewById<View>(R.id.delimiter).setBackgroundColor(getColorInt(style.outgoingMessageTextColor))
         loader.invisible()
         circularProgressButton.invisible()
     }

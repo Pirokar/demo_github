@@ -75,6 +75,12 @@ class ImageFromConsultViewHolder(
         layoutParams.width = itemView.context.resources.getDimension(style.operatorAvatarSize).toInt()
     }
 
+    init {
+        itemView.findViewById<View>(R.id.delimiter)
+            .setBackgroundColor(getColorInt(style.chatToolbarColorResId))
+        setTextColorToViews(arrayOf(fileNameTextView), style.incomingMessageTextColor)
+    }
+
     fun onBind(
         consultPhrase: ConsultPhrase,
         highlighted: Boolean,
@@ -98,12 +104,8 @@ class ImageFromConsultViewHolder(
         showAvatar(consultPhrase)
         consultPhrase.fileDescription?.let {
             when (it.state) {
-                AttachmentStateEnum.PENDING -> {
-                    showLoaderLayout(it)
-                }
-                AttachmentStateEnum.ERROR -> {
-                    showErrorLayout(it)
-                }
+                AttachmentStateEnum.PENDING -> showLoaderLayout(it)
+                AttachmentStateEnum.ERROR -> showErrorLayout(it)
                 else -> {
                     showCommonLayout(it)
                     moveTimeToImageLayout()
