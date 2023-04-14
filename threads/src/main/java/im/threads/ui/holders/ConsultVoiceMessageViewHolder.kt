@@ -26,6 +26,7 @@ import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.ogParser.OpenGraphParser
 import im.threads.business.utils.FileUtils
 import im.threads.business.utils.UrlUtils
+import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.utils.gone
 import im.threads.ui.utils.invisible
 import im.threads.ui.utils.visible
@@ -113,6 +114,7 @@ class ConsultVoiceMessageViewHolder(
             arrayOf(phraseTextView, fileSizeTextView, audioStatusTextView),
             style.incomingMessageTextColor
         )
+        ColorsHelper.setTextColor(errorTextView, style.errorMessageTextColor)
     }
 
     fun onBind(

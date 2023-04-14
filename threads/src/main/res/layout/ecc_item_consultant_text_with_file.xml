@@ -19,7 +19,6 @@
         android:layout_below="@+id/bubble"
         android:layout_marginStart="@dimen/ecc_consultant_margin_right"
         android:layout_marginTop="@dimen/ecc_margin_material"
-        android:textColor="@color/ecc_error_red_df0000"
         android:textSize="@dimen/ecc_error_text_size"
         android:visibility="gone"
         tools:text="Some error text"

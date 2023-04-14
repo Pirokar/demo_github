@@ -248,7 +248,7 @@ public class ChatStyleBuilderHelper {
                         R.dimen.alt_input_field_margin_right,
                         R.dimen.alt_input_field_margin_bottom
                 )
-
+                .setErrorMessageTextColor(R.color.ecc_input_text)
                 .setOutgoingTimeTextSize(R.dimen.ecc_text_small)
                 .setIncomingTimeTextSize(R.dimen.ecc_text_big)
                 .setSearchEnabled(R.bool.alt_threads_chat_search_enabled)

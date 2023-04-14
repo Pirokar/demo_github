@@ -24,6 +24,7 @@ import im.threads.business.models.FileDescription
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.ogParser.OpenGraphParser
 import im.threads.business.utils.FileUtils
+import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.utils.gone
 import im.threads.ui.utils.invisible
 import im.threads.ui.utils.visible
@@ -84,6 +85,7 @@ class ImageFromConsultViewHolder(
     ) {
         subscribeForHighlighting(consultPhrase, itemView)
         applyBubbleLayoutStyle()
+        ColorsHelper.setTextColor(errorTextView, style.errorMessageTextColor)
         timeStampTextView.setOnClickListener(buttonClickListener)
         timeStampTextView.setOnLongClickListener(onLongClickListener)
         timeStampTextView.text = sdf.format(Date(consultPhrase.timeStamp))

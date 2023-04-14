@@ -92,14 +92,13 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <im.threads.ui.widget.textView.BubbleTimeTextView
-        android:id="@+id/errortext"
+        android:id="@+id/errorText"
         style="@style/timestamp"
         android:layout_below="@+id/bubble"
         android:layout_alignParentStart="true"
         android:layout_marginTop="@dimen/ecc_margin_half"
         android:paddingStart="60dp"
         android:paddingEnd="0dp"
-        android:textColor="#DF0000"
         android:textSize="@dimen/ecc_error_text_size"
         android:visibility="visible"
         tools:text="10:19" />

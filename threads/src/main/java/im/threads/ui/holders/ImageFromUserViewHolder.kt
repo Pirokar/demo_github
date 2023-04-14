@@ -60,6 +60,7 @@ class ImageFromUserViewHolder(
             style.outgoingMessageTextColor
         )
         loaderLayoutRoot.also { applyBubbleLayoutStyle(it) }
+        ColorsHelper.setTextColor(errorText, style.errorMessageTextColor)
     }
 
     fun onBind(

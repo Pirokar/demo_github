@@ -24,6 +24,7 @@ import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.ogParser.OpenGraphParser
 import im.threads.business.utils.FileUtils
 import im.threads.business.utils.toFileSize
+import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.utils.gone
 import im.threads.ui.utils.visible
 import im.threads.ui.views.CircularProgressButton
@@ -47,7 +48,7 @@ class ConsultFileViewHolder(
         itemView.findViewById<CircularProgressButton>(R.id.circ_button).apply {
             setBackgroundColorResId(style.chatBackgroundColor)
         }
-    private val errortext: TextView = itemView.findViewById(R.id.errortext)
+    private val errorText: TextView = itemView.findViewById(R.id.errorText)
     private val loader: ImageView = itemView.findViewById(R.id.loader)
     private val mFileHeader: TextView = itemView.findViewById(R.id.header)
     private val mSizeTextView: TextView = itemView.findViewById(R.id.file_size)
@@ -84,6 +85,7 @@ class ConsultFileViewHolder(
             setLayoutMargins(true, this)
         }
         setTextColorToViews(arrayOf(mFileHeader, mSizeTextView), style.incomingMessageTextColor)
+        ColorsHelper.setTextColor(errorText, style.errorMessageTextColor)
         setUpProgressButton(mCircularProgressButton)
     }
 
@@ -100,19 +102,19 @@ class ConsultFileViewHolder(
             if (fileDescription.state == AttachmentStateEnum.ERROR) {
                 mCircularProgressButton.visibility = View.INVISIBLE
                 loader.isVisible = true
-                errortext.isVisible = true
+                errorText.isVisible = true
                 loader.setImageResource(getErrorImageResByErrorCode(fileDescription.errorCode))
                 if (fileDescription.errorMessage.isNullOrEmpty()) {
-                    errortext.text =
+                    errorText.text =
                         config.context.getString(R.string.ecc_some_error_during_load_file)
                 } else {
-                    errortext.text = fileDescription.errorMessage
+                    errorText.text = fileDescription.errorMessage
                 }
             } else if (fileDescription.state == AttachmentStateEnum.PENDING) {
                 mCircularProgressButton.visibility = View.INVISIBLE
                 loader.setImageResource(R.drawable.ecc_im_loading_consult)
                 loader.isVisible = true
-                errortext.isVisible = false
+                errorText.isVisible = false
                 val rotate = RotateAnimation(
                     0f,
                     360f,
@@ -126,7 +128,7 @@ class ConsultFileViewHolder(
                 loader.setAnimation(rotate)
             } else {
                 loader.visibility = View.INVISIBLE
-                errortext.isVisible = false
+                errorText.isVisible = false
                 mCircularProgressButton.visibility = View.VISIBLE
                 mCircularProgressButton.setProgress(if (fileDescription.fileUri != null) 100 else fileDescription.downloadProgress)
             }

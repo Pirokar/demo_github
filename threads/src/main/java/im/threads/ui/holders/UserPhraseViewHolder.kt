@@ -42,6 +42,7 @@ import im.threads.business.utils.FileUtils.isVoiceMessage
 import im.threads.business.utils.UrlUtils
 import im.threads.business.utils.toFileSize
 import im.threads.ui.config.Config
+import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.utils.gone
 import im.threads.ui.utils.invisible
 import im.threads.ui.utils.isVisible
@@ -157,6 +158,7 @@ class UserPhraseViewHolder(
             style.outgoingMessageTextColor
         )
         itemView.findViewById<View>(R.id.delimiter).setBackgroundColor(getColorInt(style.outgoingMessageTextColor))
+        ColorsHelper.setTextColor(errorText, style.errorMessageTextColor)
         setUpProgressButton(fileImageButton)
     }
 
