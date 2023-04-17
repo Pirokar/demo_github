@@ -22,8 +22,8 @@ import io.edna.threads.demo.appCode.fragments.BaseAppFragment
 import io.edna.threads.demo.appCode.fragments.launch.LaunchFragment.Companion.SELECTED_USER_KEY
 import io.edna.threads.demo.appCode.models.UserInfo
 import io.edna.threads.demo.databinding.FragmentUserListBinding
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.koin.java.KoinJavaComponent
 import org.parceler.Parcels
 
 class UserListFragment :
@@ -31,7 +31,7 @@ class UserListFragment :
     UserListItemOnClickListener,
     TouchHelper.OnSwipeItemListener {
 
-    private val uiThemeProvider: UiThemeProvider by KoinJavaComponent.inject(UiThemeProvider::class.java)
+    private val uiThemeProvider: UiThemeProvider by inject()
     private val viewModel: UserListViewModel by viewModel()
     private var adapter: UserListAdapter? = null
 
@@ -63,7 +63,7 @@ class UserListFragment :
     }
 
     override fun navigateUp() {
-        if (adapter != null && adapter!!.isMenuShown()) {
+        if (adapter?.isMenuShown() == true) {
             adapter?.closeMenu()
         } else {
             viewModel.backToLaunchScreen(activity)
