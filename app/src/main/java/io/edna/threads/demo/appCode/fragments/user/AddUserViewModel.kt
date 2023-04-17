@@ -22,8 +22,8 @@ import org.parceler.Parcels
 
 class AddUserViewModel : ViewModel(), DefaultLifecycleObserver, Observable {
 
+    private var srcUserLiveData: UserInfo? = null
     var finalUserLiveData = MutableLiveData<UserInfo>(null)
-    private var srcUserLiveData = MutableLiveData<UserInfo?>(null)
     private var _userLiveData = MutableLiveData(UserInfo())
     var userLiveData: LiveData<UserInfo> = _userLiveData
 
@@ -39,7 +39,7 @@ class AddUserViewModel : ViewModel(), DefaultLifecycleObserver, Observable {
                     Parcels.unwrap(bundle.getParcelable(UserListFragment.USER_KEY))
                 }
                 if (user != null) {
-                    srcUserLiveData.postValue(user)
+                    srcUserLiveData = user
                     _userLiveData.postValue(user.clone())
                 }
             }
@@ -60,11 +60,11 @@ class AddUserViewModel : ViewModel(), DefaultLifecycleObserver, Observable {
 
     fun subscribeForData(lifecycleOwner: LifecycleOwner) {
         userLiveData.observe(lifecycleOwner) {
-            if (srcUserLiveData.value == null) {
+            if (srcUserLiveData == null) {
                 _enabledSaveButtonLiveData.postValue(it.isAllFieldsFilled())
             } else {
                 if (it.isAllFieldsFilled()) {
-                    _enabledSaveButtonLiveData.postValue(!it.equals(srcUserLiveData.value))
+                    _enabledSaveButtonLiveData.postValue(!it.equals(srcUserLiveData))
                 } else {
                     _enabledSaveButtonLiveData.postValue(false)
                 }
