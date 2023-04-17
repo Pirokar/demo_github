@@ -22,7 +22,7 @@ import org.parceler.Parcels
 
 class AddUserViewModel : ViewModel(), DefaultLifecycleObserver, Observable {
 
-    private var srcUserLiveData: UserInfo? = null
+    private var srcUser: UserInfo? = null
     var finalUserLiveData = MutableLiveData<UserInfo>(null)
     private var _userLiveData = MutableLiveData(UserInfo())
     var userLiveData: LiveData<UserInfo> = _userLiveData
@@ -31,15 +31,15 @@ class AddUserViewModel : ViewModel(), DefaultLifecycleObserver, Observable {
     var enabledSaveButtonLiveData: LiveData<Boolean> = _enabledSaveButtonLiveData
 
     fun initData(arguments: Bundle?) {
-        arguments?.let { bundle ->
-            if (bundle.containsKey(UserListFragment.USER_KEY)) {
+        if (arguments != null) {
+            if (arguments.containsKey(UserListFragment.USER_KEY)) {
                 val user: UserInfo? = if (Build.VERSION.SDK_INT >= 33) {
-                    Parcels.unwrap(bundle.getParcelable(UserListFragment.USER_KEY, Parcelable::class.java))
+                    Parcels.unwrap(arguments.getParcelable(UserListFragment.USER_KEY, Parcelable::class.java))
                 } else {
-                    Parcels.unwrap(bundle.getParcelable(UserListFragment.USER_KEY))
+                    Parcels.unwrap(arguments.getParcelable(UserListFragment.USER_KEY))
                 }
                 if (user != null) {
-                    srcUserLiveData = user
+                    srcUser = user
                     _userLiveData.postValue(user.clone())
                 }
             }
@@ -60,11 +60,11 @@ class AddUserViewModel : ViewModel(), DefaultLifecycleObserver, Observable {
 
     fun subscribeForData(lifecycleOwner: LifecycleOwner) {
         userLiveData.observe(lifecycleOwner) {
-            if (srcUserLiveData == null) {
+            if (srcUser == null) {
                 _enabledSaveButtonLiveData.postValue(it.isAllFieldsFilled())
             } else {
                 if (it.isAllFieldsFilled()) {
-                    _enabledSaveButtonLiveData.postValue(!it.equals(srcUserLiveData))
+                    _enabledSaveButtonLiveData.postValue(!it.equals(srcUser))
                 } else {
                     _enabledSaveButtonLiveData.postValue(false)
                 }

@@ -140,7 +140,7 @@ class UserListFragment :
                 binding.recyclerView.isVisible = true
             }
         }
-        viewModel.backButtonCkickedLiveData.observe(viewLifecycleOwner) {
+        viewModel.backButtonClickedLiveData.observe(viewLifecycleOwner) {
             if (it) {
                 navigateUp()
             }
