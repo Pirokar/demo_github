@@ -92,6 +92,7 @@ class UserFileViewHolder(
             style.outgoingMessageTextColor
         )
         ColorsHelper.setTextColor(errorTextView, style.errorMessageTextColor)
+        itemView.findViewById<View>(R.id.delimiter).setBackgroundColor(getColorInt(style.outgoingMessageTextColor))
         loader.invisible()
         circularProgressButton.invisible()
     }
