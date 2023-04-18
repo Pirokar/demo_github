@@ -89,6 +89,7 @@ import im.threads.business.models.UpcomingUserMessage
 import im.threads.business.models.UserPhrase
 import im.threads.business.serviceLocator.core.inject
 import im.threads.business.useractivity.UserActivityTimeProvider.getLastUserActivityTimeCounter
+import im.threads.business.utils.Balloon
 import im.threads.business.utils.Balloon.show
 import im.threads.business.utils.FileProviderHelper
 import im.threads.business.utils.FileUtils.canBeSent
@@ -127,6 +128,7 @@ import im.threads.ui.styles.permissions.PermissionDescriptionType
 import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.utils.FileHelper.isAllowedFileExtension
 import im.threads.ui.utils.FileHelper.isAllowedFileSize
+import im.threads.ui.utils.FileHelper.isFileExtensionsEmpty
 import im.threads.ui.utils.FileHelper.maxAllowedFileSize
 import im.threads.ui.utils.hideKeyboard
 import im.threads.ui.utils.isNotVisible
@@ -1503,6 +1505,10 @@ class ChatFragment :
     }
 
     private fun openBottomSheetAndGallery() {
+        if (isFileExtensionsEmpty()) {
+            activity?.let { show(it, getString(R.string.ecc_sending_files_not_allowed)) }
+            return
+        }
         val activity = activity ?: return
         if (ThreadsPermissionChecker.isReadExternalPermissionGranted(activity)) {
             setTitleStateCurrentOperatorConnected()

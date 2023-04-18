@@ -44,6 +44,7 @@
     <string name="ecc_I">I</string>
     <string name="ecc_download">Download</string>
     <string name="ecc_choose_file">Choose file to send</string>
+    <string name="ecc_sending_files_not_allowed">Sending files is not allowed</string>
     <string name="ecc_folder_up">Up</string>
     <string name="ecc_now_you_are_in_directory">Your are in </string>
     <string name="ecc_from">from</string>

@@ -16,6 +16,7 @@ import im.threads.business.transport.models.Attachment
 import im.threads.business.transport.models.AttachmentSettings
 import im.threads.business.transport.threadsGate.responses.Status
 import im.threads.ui.controllers.ChatController
+import im.threads.ui.utils.FileHelper.subscribeToAttachments
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 
@@ -51,6 +52,7 @@ class ChatUpdateProcessor {
     }
 
     fun postAttachmentSettings(attachmentSettings: AttachmentSettings) {
+        subscribeToAttachments()
         checkSubscribers()
         attachmentSettingsProcessor.onNext(attachmentSettings)
     }
