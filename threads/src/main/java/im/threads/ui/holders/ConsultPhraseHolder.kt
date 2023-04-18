@@ -277,6 +277,19 @@ class ConsultPhraseHolder(
     }
 
     private fun loadImage(
+        fileDescription: FileDescription,
+        imageClickListener: View.OnClickListener,
+        isExternalImage: Boolean = false
+    ) {
+        val fileUri = if (fileDescription.fileUri?.toString()?.isNotBlank() == true) {
+            fileDescription.fileUri.toString()
+        } else {
+            fileDescription.downloadPath
+        }
+        loadImage(fileUri, imageClickListener, isExternalImage)
+    }
+
+    private fun loadImage(
         imagePath: String?,
         imageClickListener: View.OnClickListener,
         isExternalImage: Boolean = false
@@ -418,7 +431,7 @@ class ConsultPhraseHolder(
         rotateAnim.cancel()
         val isStateReady = fileDescription.state == AttachmentStateEnum.READY
         if (isStateReady && isImage(fileDescription)) {
-            loadImage(fileDescription.downloadPath, imageClickListener)
+            loadImage(fileDescription, imageClickListener)
         } else if (!isStateReady && isImage(fileDescription)) {
             startLoaderAnimation()
         } else {
