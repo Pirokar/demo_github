@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'dev.testify'
 }
 
 android {
@@ -80,6 +81,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$rootProject.viewmodelVersion"
 
     testImplementation "junit:junit:$rootProject.testJunitVersion"
+    androidTestImplementation "androidx.test:runner:$rootProject.androidXTestVersion"
     androidTestImplementation "androidx.test.ext:junit:$rootProject.testJunitAndroidVersion"
-    androidTestImplementation "androidx.test.espresso:espresso-core:$rootProject.testExpressoVersion"
+    androidTestImplementation "androidx.test:rules:$rootProject.androidXTestVersion"
 }
