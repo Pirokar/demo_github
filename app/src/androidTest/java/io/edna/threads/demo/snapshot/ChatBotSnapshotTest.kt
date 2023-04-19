@@ -5,4 +5,4 @@ import io.edna.threads.demo.R
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class MainChatTextTest3 : SnapshotBaseTest(R.raw.snapshot_test_history_text_response_3)
+class ChatBotSnapshotTest : SnapshotBaseTest(R.raw.snapshot_test_history_system_response)
