@@ -13,10 +13,13 @@
     <color name="gray_color_f4">#f4f4f4</color>
     <color name="white_color_ec">#ececec</color>
     <color name="white_color_fa">#fafafa</color>
+    <color name="white_color">#ffffff</color>
 
     <color name="blue_color">#007AFF</color>
     <color name="blue_color_lite">#0A84FF</color>
     <color name="blue_color_dark">#004EA4</color>
+    <color name="toolbar_color">#1C1B1F</color>
+    <color name="red_color">#FF3B30</color>
 
     <color name="info_text_color">#883C3C43</color>
     <color name="alt_threads_outgoing_bubble_color">#505050</color>
