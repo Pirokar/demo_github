@@ -183,7 +183,7 @@ abstract class BaseHolder internal constructor(
         url: String? = null
     ) {
         if (phrase.formattedPhrase.isNullOrBlank()) {
-            textView.setText(phrase.phraseText, TextView.BufferType.NORMAL)
+            textView.setText(phrase.phraseText?.trimIndent()?.trim(), TextView.BufferType.NORMAL)
             setTextWithHighlighting(
                 textView,
                 style.incomingMarkdownConfiguration.isLinkUnderlined,
@@ -195,7 +195,7 @@ abstract class BaseHolder internal constructor(
                 it.setFormattedText(phrase.formattedPhrase, true)
             } ?: run {
                 setMovementMethod(textView)
-                textView.setText(phrase.phraseText, TextView.BufferType.NORMAL)
+                textView.setText(phrase.phraseText?.trimIndent()?.trim(), TextView.BufferType.NORMAL)
             }
         }
     }
