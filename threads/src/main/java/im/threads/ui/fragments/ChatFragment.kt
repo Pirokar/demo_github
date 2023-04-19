@@ -89,7 +89,6 @@ import im.threads.business.models.UpcomingUserMessage
 import im.threads.business.models.UserPhrase
 import im.threads.business.serviceLocator.core.inject
 import im.threads.business.useractivity.UserActivityTimeProvider.getLastUserActivityTimeCounter
-import im.threads.business.utils.Balloon
 import im.threads.business.utils.Balloon.show
 import im.threads.business.utils.FileProviderHelper
 import im.threads.business.utils.FileUtils.canBeSent
