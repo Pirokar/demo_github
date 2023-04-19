@@ -9,7 +9,7 @@ import okhttp3.ResponseBody
 import okhttp3.ResponseBody.Companion.toResponseBody
 import okio.Buffer
 
-class NetworkLoggerInterceptor : Interceptor {
+class NetworkLoggerInterceptor(private val isImage: Boolean = false) : Interceptor {
     private val jsonFormatter: JsonFormatter by inject()
 
     override fun intercept(chain: Interceptor.Chain): Response {
@@ -17,16 +17,23 @@ class NetworkLoggerInterceptor : Interceptor {
 
         val response = chain.proceed(chain.request())
 
-        val responseBody: ResponseBody? = response.body
-        val responseBodyString = response.body?.string() ?: ""
+        val newResponse = if (!isImage) {
+            val responseBody: ResponseBody? = response.body
+            val responseBodyString = response.body?.string() ?: ""
 
-        val newResponse = response.newBuilder()
-            .body(responseBodyString.toResponseBody(responseBody?.contentType()))
-            .build()
+            val newResponse = response.newBuilder()
+                .body(responseBodyString.toResponseBody(responseBody?.contentType()))
+                .build()
 
-        LoggerEdna.info(getResponseLog(response, responseBodyString))
+            LoggerEdna.info(getResponseLog(response, responseBodyString))
 
-        return newResponse
+            newResponse
+        } else {
+            LoggerEdna.info(getResponseLog(response, null))
+            null
+        }
+
+        return newResponse ?: response
     }
 
     private fun getRequestLog(chain: Interceptor.Chain) = StringBuilder().apply {
@@ -36,10 +43,12 @@ class NetworkLoggerInterceptor : Interceptor {
         append("☛ Request body: ${bodyToString(chain.request())}\n")
     }.toString()
 
-    private fun getResponseLog(response: Response, responseBodyString: String) = StringBuilder().apply {
-        append("☚ Response received for url: ${response.request.url}\n")
+    private fun getResponseLog(response: Response, responseBodyString: String?) = StringBuilder().apply {
+        append("☚ Response received for url: ${response.request.url}, code: ${response.code}\n")
         append("☚ Request headers: ${response.request.headers}")
-        append("☚ Request body: ${jsonFormatter.jsonToPrettyFormat(responseBodyString)}\n")
+        if (responseBodyString != null) {
+            append("☚ Request body: ${jsonFormatter.jsonToPrettyFormat(responseBodyString)}\n")
+        }
     }.toString()
 
     private fun bodyToString(request: Request): String? {

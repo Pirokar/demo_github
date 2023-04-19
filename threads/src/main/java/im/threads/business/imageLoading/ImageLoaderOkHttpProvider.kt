@@ -39,7 +39,7 @@ class ImageLoaderOkHttpProvider(
             )
             httpClientBuilder.hostnameVerifier { hostname: String, session: SSLSession -> true }
         }
-        httpClientBuilder.addInterceptor(NetworkLoggerInterceptor())
+        httpClientBuilder.addInterceptor(NetworkLoggerInterceptor(true))
         okHttpClient = httpClientBuilder.build()
     }
 
