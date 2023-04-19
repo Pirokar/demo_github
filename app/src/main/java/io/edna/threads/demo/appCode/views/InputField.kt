@@ -12,6 +12,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import com.google.android.material.textfield.TextInputEditText
 import io.edna.threads.demo.R
 import io.edna.threads.demo.R.styleable.InputField
@@ -24,6 +25,7 @@ class InputField : FrameLayout, View.OnFocusChangeListener, TextWatcher {
     private var isInFocus: Boolean = false
     private var textInputField: TextInputEditText
     private var hintText: AppCompatTextView
+    private var errorText: AppCompatTextView
     private var commonLayout: FrameLayout
 
     constructor(context: Context) : this(context, null)
@@ -51,6 +53,7 @@ class InputField : FrameLayout, View.OnFocusChangeListener, TextWatcher {
         LayoutInflater.from(context).inflate(R.layout.input_field, this, true)
         textInputField = findViewById(R.id.textInputField)
         hintText = findViewById(R.id.hintText)
+        errorText = findViewById(R.id.errorText)
         commonLayout = findViewById(R.id.commonLayout)
         textInputField.onFocusChangeListener = this
         textInputField.addTextChangedListener(this)
@@ -122,6 +125,7 @@ class InputField : FrameLayout, View.OnFocusChangeListener, TextWatcher {
         } else {
             hintToTop()
         }
+        textInputField.setSelection(textInputField.text?.length ?: 0)
     }
 
     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -135,6 +139,13 @@ class InputField : FrameLayout, View.OnFocusChangeListener, TextWatcher {
         inputMethodManager.showSoftInput(view, 0)
         view.requestFocus()
     }
+
+    var error: String?
+        get() = errorText.text.toString()
+        set(value) {
+            errorText.isVisible = !value.isNullOrEmpty()
+            errorText.text = value
+        }
 
     var hint: String?
         get() = hintText.text.toString()

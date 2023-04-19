@@ -3,5 +3,6 @@
     <declare-styleable name="InputField">
         <attr name="text" format="string" />
         <attr name="hint" format="string" />
+        <attr name="error" format="string" />
     </declare-styleable>
 </resources>

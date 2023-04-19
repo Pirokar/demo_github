@@ -32,7 +32,6 @@ class AddUserFragment : BaseAppFragment<FragmentAddUserBinding>() {
     }
 
     private fun subscribeForData() {
-        viewModel.subscribeForData(viewLifecycleOwner)
         viewModel.finalUserLiveData.observe(viewLifecycleOwner) {
             val args = Bundle()
             args.putParcelable(USER_KEY, Parcels.wrap(it))

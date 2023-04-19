@@ -1,6 +1,7 @@
 package io.edna.threads.demo.appCode.fragments.user
 
 import android.app.Activity
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
@@ -9,7 +10,6 @@ import android.view.View
 import androidx.databinding.Bindable
 import androidx.databinding.Observable
 import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -27,8 +27,11 @@ class AddUserViewModel : ViewModel(), DefaultLifecycleObserver, Observable {
     private var _userLiveData = MutableLiveData(UserInfo())
     var userLiveData: LiveData<UserInfo> = _userLiveData
 
-    private var _enabledSaveButtonLiveData = MutableLiveData(false)
-    var enabledSaveButtonLiveData: LiveData<Boolean> = _enabledSaveButtonLiveData
+    private var _errorStringForUserNameFieldLiveData = MutableLiveData<String?>(null)
+    var errorStringForUserNameFieldLiveData: LiveData<String?> = _errorStringForUserNameFieldLiveData
+
+    private var _errorStringForUserIdFieldLiveData = MutableLiveData<String?>(null)
+    var errorStringForUserIdFieldLiveData: LiveData<String?> = _errorStringForUserIdFieldLiveData
 
     fun initData(arguments: Bundle?) {
         if (arguments != null) {
@@ -52,22 +55,26 @@ class AddUserViewModel : ViewModel(), DefaultLifecycleObserver, Observable {
         when (view.id) {
             R.id.backButton -> navigationController.navigate(R.id.action_AddUserFragment_to_UserListFragment)
             R.id.okButton -> {
-                finalUserLiveData.postValue(userLiveData.value)
-                navigationController.navigate(R.id.action_AddUserFragment_to_UserListFragment)
+                if (userLiveData.value?.isAllFieldsFilled() == true) {
+                    finalUserLiveData.postValue(userLiveData.value)
+                    navigationController.navigate(R.id.action_AddUserFragment_to_UserListFragment)
+                } else {
+                    setupErrorFields(view.context, userLiveData.value)
+                }
             }
         }
     }
 
-    fun subscribeForData(lifecycleOwner: LifecycleOwner) {
-        userLiveData.observe(lifecycleOwner) {
-            if (srcUser == null) {
-                _enabledSaveButtonLiveData.postValue(it.isAllFieldsFilled())
-            } else {
-                if (it.isAllFieldsFilled()) {
-                    _enabledSaveButtonLiveData.postValue(!it.equals(srcUser))
-                } else {
-                    _enabledSaveButtonLiveData.postValue(false)
-                }
+    private fun setupErrorFields(context: Context, user: UserInfo?) {
+        if (user == null) {
+            _errorStringForUserNameFieldLiveData.postValue(context.getString(R.string.required_field))
+            _errorStringForUserIdFieldLiveData.postValue(context.getString(R.string.required_field))
+        } else {
+            if (user.userId.isNullOrEmpty()) {
+                _errorStringForUserIdFieldLiveData.postValue(context.getString(R.string.required_field))
+            }
+            if (user.nickName.isNullOrEmpty()) {
+                _errorStringForUserNameFieldLiveData.postValue(context.getString(R.string.required_field))
             }
         }
     }
@@ -80,6 +87,9 @@ class AddUserViewModel : ViewModel(), DefaultLifecycleObserver, Observable {
                     userLiveData.value?.nickName = s.toString()
                     _userLiveData.postValue(userLiveData.value)
                 }
+                if (s.isNotEmpty()) {
+                    _errorStringForUserNameFieldLiveData.postValue(null)
+                }
             }
         }
     }
@@ -91,6 +101,9 @@ class AddUserViewModel : ViewModel(), DefaultLifecycleObserver, Observable {
                 if (userLiveData.value?.userId != s.toString()) {
                     userLiveData.value?.userId = s.toString()
                     _userLiveData.postValue(userLiveData.value)
+                }
+                if (s.isNotEmpty()) {
+                    _errorStringForUserIdFieldLiveData.postValue(null)
                 }
             }
         }
