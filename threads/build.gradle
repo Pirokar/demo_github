@@ -135,6 +135,12 @@ afterEvaluate {
     }
 }
 
+configurations {
+    all {
+        exclude group: 'androidx.lifecycle', module: 'lifecycle-viewmodel-ktx'
+    }
+}
+
 dependencies {
 
     implementation "androidx.preference:preference-ktx:$rootProject.androidXPreferenceVersion"

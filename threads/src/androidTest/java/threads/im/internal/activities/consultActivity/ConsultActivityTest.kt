@@ -4,7 +4,8 @@ import android.content.Intent
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
-import im.threads.internal.activities.ConsultActivity
+import im.threads.business.models.ConsultInfo
+import im.threads.ui.activities.ConsultActivity
 import org.junit.Rule
 import org.junit.Test
 
@@ -14,9 +15,14 @@ class ConsultActivityTest : TestCase() {
     private val name = "Operator Alisa"
 
     private val intent = Intent(ApplicationProvider.getApplicationContext(), ConsultActivity::class.java).apply {
-        putExtra(ConsultActivity.imageUrlKey, avatarUrl)
-        putExtra(ConsultActivity.statusKey, status)
-        putExtra(ConsultActivity.titleKey, name)
+        putExtra(
+            ConsultActivity.consultInfoKey,
+            ConsultInfo(
+                photoUrl = avatarUrl,
+                status = status,
+                name = name
+            )
+        )
     }
 
     @get:Rule
