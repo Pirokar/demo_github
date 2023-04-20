@@ -1,6 +1,9 @@
 package io.edna.threads.demo.appCode.fragments.launch
 
 import android.app.Activity
+import android.os.Build
+import android.os.Bundle
+import android.os.Parcelable
 import android.view.View
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
@@ -8,6 +11,7 @@ import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO
 import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
@@ -16,24 +20,27 @@ import im.threads.business.models.enums.CurrentUiTheme
 import im.threads.ui.core.ThreadsLib
 import io.edna.threads.demo.R
 import io.edna.threads.demo.appCode.business.PreferencesProvider
-import io.edna.threads.demo.appCode.business.SingleLiveEvent
 import io.edna.threads.demo.appCode.business.UiThemeProvider
 import io.edna.threads.demo.appCode.business.VolatileLiveData
 import io.edna.threads.demo.appCode.models.UiTheme
+import io.edna.threads.demo.appCode.models.UserInfo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.parceler.Parcels
 
 class LaunchViewModel(
     private val preferencesProvider: PreferencesProvider,
     private val uiThemeProvider: UiThemeProvider
 ) : ViewModel(), DefaultLifecycleObserver {
-    val selectServerActionLiveData: SingleLiveEvent<String> = SingleLiveEvent()
-    val selectUserActionLiveData: SingleLiveEvent<String> = SingleLiveEvent()
     val currentUiThemeLiveData: MutableLiveData<UiTheme> = MutableLiveData()
     val themeSelectorLiveData: VolatileLiveData<CurrentUiTheme> = VolatileLiveData()
-
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
+    private var _selectedUserLiveData = MutableLiveData(UserInfo())
+    var selectedUserLiveData: LiveData<UserInfo> = _selectedUserLiveData
+
+    private var _enabledLoginButtonLiveData = MutableLiveData(false)
+    var enabledLoginButtonLiveData: LiveData<Boolean> = _enabledLoginButtonLiveData
 
     override fun onCreate(owner: LifecycleOwner) {
         super.onCreate(owner)
@@ -50,9 +57,9 @@ class LaunchViewModel(
             (view.context as Activity).findNavController(R.id.nav_host_fragment_content_main)
         when (view.id) {
             R.id.serverButton -> navigationController.navigate(R.id.action_LaunchFragment_to_ServersFragment)
-            R.id.userButton -> navigationController.navigate(R.id.action_LaunchFragment_to_ServersFragment)
             R.id.demonstrations -> navigationController.navigate(R.id.action_LaunchFragment_to_DemonstrationsListFragment)
             R.id.uiTheme -> themeSelectorLiveData.postValue(ThreadsLib.getInstance().currentUiTheme)
+            R.id.userButton -> navigationController.navigate(R.id.action_LaunchFragment_to_UserListFragment)
             R.id.login -> {}
         }
     }
@@ -92,6 +99,23 @@ class LaunchViewModel(
                     UiTheme.LIGHT
                 }
             }
+        }
+    }
+
+    fun callFragmentResultListener(key: String, bundle: Bundle) {
+        if (key == LaunchFragment.SELECTED_USER_KEY && bundle.containsKey(LaunchFragment.SELECTED_USER_KEY)) {
+            val user: UserInfo? = if (Build.VERSION.SDK_INT >= 33) {
+                Parcels.unwrap(bundle.getParcelable(LaunchFragment.SELECTED_USER_KEY, Parcelable::class.java))
+            } else {
+                Parcels.unwrap(bundle.getParcelable(LaunchFragment.SELECTED_USER_KEY))
+            }
+            _selectedUserLiveData.postValue(user)
+        }
+    }
+
+    fun subscribeForData(lifecycleOwner: LifecycleOwner) {
+        selectedUserLiveData.observe(lifecycleOwner) {
+            _enabledLoginButtonLiveData.postValue(it.isAllFieldsFilled())
         }
     }
 }

@@ -17,7 +17,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = inflateWithBinding(R.layout.activity_main)
-        findNavController(R.id.nav_host_fragment_content_main)
     }
 
     override fun onSupportNavigateUp(): Boolean {
