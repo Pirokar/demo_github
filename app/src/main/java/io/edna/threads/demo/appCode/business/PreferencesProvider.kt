@@ -2,6 +2,7 @@ package io.edna.threads.demo.appCode.business
 
 import android.content.Context
 import com.google.gson.Gson
+import io.edna.threads.demo.appCode.models.ServerConfig
 import io.edna.threads.demo.appCode.models.UserInfo
 
 class PreferencesProvider(private val context: Context) {
@@ -10,7 +11,7 @@ class PreferencesProvider(private val context: Context) {
             .getSharedPreferences(preferenceName, Context.MODE_PRIVATE)
             .edit()
             .putString(jsonPreferenceKey, json)
-            .commit()
+            .apply()
     }
 
     fun cleanJsonOnPreferences() {
@@ -18,7 +19,7 @@ class PreferencesProvider(private val context: Context) {
             .getSharedPreferences(preferenceName, Context.MODE_PRIVATE)
             .edit()
             .putString(jsonPreferenceKey, "")
-            .commit()
+            .apply()
     }
 
     fun saveUserList(value: ArrayList<UserInfo>) {
@@ -37,10 +38,39 @@ class PreferencesProvider(private val context: Context) {
         return list
     }
 
+    fun saveAppVersion(value: String) {
+        val prefsEditor = context.getSharedPreferences(PREF_SERVERS, Context.MODE_PRIVATE).edit()
+        prefsEditor.putString(PREF_APP_VERSION, value)
+        prefsEditor.apply()
+    }
+
+    fun getSavedAppVersion(): String {
+        return context.getSharedPreferences(PREF_SERVERS, Context.MODE_PRIVATE)
+            .getString(PREF_APP_VERSION, "1.0.0") ?: "1.0.0"
+    }
+
+    fun saveServers(value: ArrayList<ServerConfig>) {
+        val prefsEditor = context.getSharedPreferences(PREF_SERVERS, Context.MODE_PRIVATE).edit()
+        prefsEditor.putString(PREF_SERVERS_LIST, Gson().toJson(value))
+        prefsEditor.apply()
+    }
+
+    fun getAllServers(): ArrayList<ServerConfig> {
+        val configString = context.getSharedPreferences(PREF_SERVERS, Context.MODE_PRIVATE)
+            .getString(PREF_SERVERS_LIST, "[]") ?: "[]"
+        val userArray: Array<ServerConfig> =
+            Gson().fromJson(configString, Array<ServerConfig>::class.java)
+        val list: ArrayList<ServerConfig> = ArrayList()
+        list.addAll(userArray)
+        return list
+    }
+
     companion object {
         private const val preferenceName = "ecc_demo_json_preference"
         private const val jsonPreferenceKey = "ecc_demo_json_preference_key"
         private const val PREF_SERVERS = "SERVERS_PREFS"
         private const val PREF_USER_LIST = "USER_LIST_PREFS"
+        private const val PREF_SERVERS_LIST = "SERVERS_LIST_PREFS"
+        private const val PREF_APP_VERSION = "APP_VERSION"
     }
 }

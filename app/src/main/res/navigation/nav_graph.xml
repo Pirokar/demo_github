@@ -12,8 +12,8 @@
         tools:layout="@layout/fragment_launch">
 
         <action
-            android:id="@+id/action_LaunchFragment_to_ServersFragment"
-            app:destination="@id/ServersFragment" />
+            android:id="@+id/action_LaunchFragment_to_ServerListFragment"
+            app:destination="@id/ServerListFragment" />
 
         <action
             android:id="@+id/action_LaunchFragment_to_DemonstrationsListFragment"
@@ -26,10 +26,20 @@
     </fragment>
 
     <fragment
-        android:id="@+id/ServersFragment"
-        android:name="io.edna.threads.demo.appCode.fragments.server.ServersFragment"
+        android:id="@+id/ServerListFragment"
+        android:name="io.edna.threads.demo.appCode.fragments.server.ServerListFragment"
         android:label="@string/servers_fragment_label"
-        tools:layout="@layout/fragment_servers"/>
+        tools:layout="@layout/fragment_server_list">
+
+        <action
+            android:id="@+id/action_ServerListFragment_to_AddServerFragment"
+            app:destination="@id/AddServerFragment" />
+
+        <action
+            android:id="@+id/action_ServersFragment_to_LaunchFragment"
+            app:destination="@id/LaunchFragment" />
+
+    </fragment>
 
     <fragment
         android:id="@+id/DemoSamplesListFragment"
@@ -64,6 +74,17 @@
         <action
             android:id="@+id/action_UserListFragment_to_AddUserFragment"
             app:destination="@id/AddUserFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/AddServerFragment"
+        android:name="io.edna.threads.demo.appCode.fragments.server.AddServerFragment"
+        android:label="@string/add_server_fragment_label"
+        tools:layout="@layout/fragment_add_server">
+
+        <action
+            android:id="@+id/action_AddServerFragment_to_ServerListFragment"
+            app:destination="@id/ServerListFragment" />
 
     </fragment>
 

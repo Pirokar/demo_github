@@ -30,7 +30,6 @@
 
     <dimen name="toolbar_height">64sp</dimen>
     <dimen name="add_button_size">56dp</dimen>
-
     <dimen name="edittext_height">@dimen/height_56</dimen>
 
     <dimen name="login_screen_top_margin_small">@dimen/margin_16</dimen>

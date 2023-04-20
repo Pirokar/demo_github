@@ -22,6 +22,7 @@ import io.edna.threads.demo.R
 import io.edna.threads.demo.appCode.business.PreferencesProvider
 import io.edna.threads.demo.appCode.business.UiThemeProvider
 import io.edna.threads.demo.appCode.business.VolatileLiveData
+import io.edna.threads.demo.appCode.models.ServerConfig
 import io.edna.threads.demo.appCode.models.UiTheme
 import io.edna.threads.demo.appCode.models.UserInfo
 import kotlinx.coroutines.CoroutineScope
@@ -38,6 +39,8 @@ class LaunchViewModel(
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
     private var _selectedUserLiveData = MutableLiveData(UserInfo())
     var selectedUserLiveData: LiveData<UserInfo> = _selectedUserLiveData
+    private var _selectedServerLiveData = MutableLiveData(ServerConfig())
+    var selectedServerConfigLiveData: LiveData<ServerConfig> = _selectedServerLiveData
 
     private var _enabledLoginButtonLiveData = MutableLiveData(false)
     var enabledLoginButtonLiveData: LiveData<Boolean> = _enabledLoginButtonLiveData
@@ -56,7 +59,7 @@ class LaunchViewModel(
         val navigationController: NavController =
             (view.context as Activity).findNavController(R.id.nav_host_fragment_content_main)
         when (view.id) {
-            R.id.serverButton -> navigationController.navigate(R.id.action_LaunchFragment_to_ServersFragment)
+            R.id.serverButton -> navigationController.navigate(R.id.action_LaunchFragment_to_ServerListFragment)
             R.id.demonstrations -> navigationController.navigate(R.id.action_LaunchFragment_to_DemonstrationsListFragment)
             R.id.uiTheme -> themeSelectorLiveData.postValue(ThreadsLib.getInstance().currentUiTheme)
             R.id.userButton -> navigationController.navigate(R.id.action_LaunchFragment_to_UserListFragment)
@@ -110,6 +113,14 @@ class LaunchViewModel(
                 Parcels.unwrap(bundle.getParcelable(LaunchFragment.SELECTED_USER_KEY))
             }
             _selectedUserLiveData.postValue(user)
+        }
+        if (key == LaunchFragment.SELECTED_SERVER_CONFIG_KEY && bundle.containsKey(LaunchFragment.SELECTED_SERVER_CONFIG_KEY)) {
+            val server: ServerConfig? = if (Build.VERSION.SDK_INT >= 33) {
+                Parcels.unwrap(bundle.getParcelable(LaunchFragment.SELECTED_SERVER_CONFIG_KEY, Parcelable::class.java))
+            } else {
+                Parcels.unwrap(bundle.getParcelable(LaunchFragment.SELECTED_SERVER_CONFIG_KEY))
+            }
+            _selectedServerLiveData.postValue(server)
         }
     }
 
