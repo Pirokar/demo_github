@@ -14,6 +14,7 @@ internal fun saveJsonMock(resourceId: Int, rule: ScreenshotRule<TestChatActivity
     val context = InstrumentationRegistry.getInstrumentation().targetContext
     val inputStream: InputStream = context.resources.openRawResource(resourceId)
     val reader = BufferedReader(InputStreamReader(inputStream))
+
     while (true) {
         try {
             if (reader.readLine().also { string = it } == null) break
@@ -22,19 +23,9 @@ internal fun saveJsonMock(resourceId: Int, rule: ScreenshotRule<TestChatActivity
         }
         stringBuilder.append(string).append("\n")
     }
+
     inputStream.close()
     rule.addIntentExtras {
         it.putString(TestChatActivity.jsonMockExtraKey, stringBuilder.toString())
-    }
-}
-
-internal fun providePermissions() {
-    InstrumentationRegistry.getInstrumentation().uiAutomation.apply {
-        executeShellCommand("pm grant im.threads android.permission.READ_EXTERNAL_STORAGE")
-        executeShellCommand("pm grant im.threads android.permission.WRITE_EXTERNAL_STORAGE")
-        executeShellCommand("pm grant im.threads android.permission.READ_MEDIA_IMAGES")
-        executeShellCommand("pm grant im.threads android.permission.READ_MEDIA_VIDEO")
-        executeShellCommand("pm grant im.threads android.permission.READ_MEDIA_AUDIO")
-        executeShellCommand("pm grant im.threads android.permission.ACCESS_MEDIA_LOCATION")
     }
 }

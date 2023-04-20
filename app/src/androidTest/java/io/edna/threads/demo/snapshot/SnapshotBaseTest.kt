@@ -3,7 +3,6 @@ package io.edna.threads.demo.snapshot
 import dev.testify.ScreenshotRule
 import dev.testify.annotation.ScreenshotInstrumentation
 import io.edna.threads.demo.appCode.test.TestChatActivity
-import org.junit.Before
 import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
@@ -15,14 +14,9 @@ open class SnapshotBaseTest(private val jsonResourceId: Int) {
         saveJsonMock(jsonResourceId, this)
     }
 
-    @Before
-    fun before() {
-        providePermissions()
-    }
-
     @ScreenshotInstrumentation
     @Test
-    fun testChat() {
+    open fun testChat() {
         rule.assertSame()
     }
 }

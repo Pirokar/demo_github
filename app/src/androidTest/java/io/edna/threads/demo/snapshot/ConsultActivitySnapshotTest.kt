@@ -5,7 +5,6 @@ import dev.testify.ScreenshotRule
 import dev.testify.annotation.ScreenshotInstrumentation
 import im.threads.business.models.ConsultInfo
 import im.threads.ui.activities.ConsultActivity
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -28,11 +27,6 @@ class ConsultActivitySnapshotTest {
                 )
             )
         }
-    }
-
-    @Before
-    fun before() {
-        providePermissions()
     }
 
     @ScreenshotInstrumentation
