@@ -17,6 +17,8 @@ open class SnapshotBaseTest(private val jsonResourceId: Int) {
     @ScreenshotInstrumentation
     @Test
     open fun testChat() {
-        rule.assertSame()
+        rule.setEspressoActions {
+            Thread.sleep(2000)
+        }.assertSame()
     }
 }
