@@ -2,7 +2,7 @@ package threads.im.internal.activities.consultActivity
 
 import com.kaspersky.kaspresso.screens.KScreen
 import im.threads.R
-import im.threads.internal.activities.ConsultActivity
+import im.threads.ui.activities.ConsultActivity
 import io.github.kakaocup.kakao.image.KImageView
 import io.github.kakaocup.kakao.text.KTextView
 import io.github.kakaocup.kakao.toolbar.KToolbar

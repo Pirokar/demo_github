@@ -10,7 +10,8 @@
         android:id="@+id/bubble"
         style="@style/userBubble"
         android:gravity="center_vertical"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:tag="bubble">
 
         <TableRow
             android:id="@+id/quoteTextRow"

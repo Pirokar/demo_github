@@ -3,6 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
     id 'kotlin-parcelize'
+    id 'dev.testify'
 }
 
 android {
@@ -15,7 +16,7 @@ android {
         versionName "1.0.1"
         versionCode 1
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "io.edna.threads.demo.MockTestRunner"
     }
 
     signingConfigs {
@@ -86,6 +87,9 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$rootProject.viewmodelVersion"
 
     testImplementation "junit:junit:$rootProject.testJunitVersion"
+    androidTestImplementation "androidx.test:runner:$rootProject.androidXTestVersion"
     androidTestImplementation "androidx.test.ext:junit:$rootProject.testJunitAndroidVersion"
-    androidTestImplementation "androidx.test.espresso:espresso-core:$rootProject.testExpressoVersion"
+    androidTestImplementation "androidx.test:rules:$rootProject.androidXTestVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
+    androidTestImplementation "com.squareup.okhttp3:mockwebserver:4.10.0"
 }
