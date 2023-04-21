@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <variable
             name="inputTextObservable"
             type="androidx.databinding.ObservableField&lt;String>" />
@@ -238,7 +237,8 @@
                             android:layout_width="60dp"
                             android:layout_height="match_parent"
                             android:background="@android:color/transparent"
-                            app:srcCompat="@drawable/ecc_ic_attachment_button" />
+                            app:srcCompat="@drawable/ecc_ic_attachment_button"
+                            android:tag="add_attachment"/>
 
                         <im.threads.ui.widget.CustomFontEditText
                             android:id="@+id/input_edit_view"
@@ -342,6 +342,7 @@
                             android:layout_height="30dp"
                             android:layout_marginStart="-60dp"
                             android:background="@null"
+                            android:tag="replyIcon"
                             app:srcCompat="@drawable/ecc_ic_reply_24dp" />
 
                         <ImageButton

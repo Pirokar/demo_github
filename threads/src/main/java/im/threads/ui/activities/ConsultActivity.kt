@@ -19,7 +19,7 @@ import im.threads.databinding.EccActivityConsultPageBinding
 import im.threads.ui.config.Config
 import im.threads.ui.utils.setColorFilter
 
-internal open class ConsultActivity : BaseActivity() {
+open class ConsultActivity : BaseActivity() {
     private val binding: EccActivityConsultPageBinding by lazy {
         EccActivityConsultPageBinding.inflate(layoutInflater)
     }

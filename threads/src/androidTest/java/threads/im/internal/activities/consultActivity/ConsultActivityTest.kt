@@ -4,7 +4,10 @@ import android.content.Intent
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
-import im.threads.internal.activities.ConsultActivity
+import im.threads.business.models.ConsultInfo
+import im.threads.ui.activities.ConsultActivity
+import im.threads.ui.config.ConfigBuilder
+import im.threads.ui.core.ThreadsLib
 import org.junit.Rule
 import org.junit.Test
 
@@ -13,10 +16,31 @@ class ConsultActivityTest : TestCase() {
     private val status = "Active"
     private val name = "Operator Alisa"
 
+    init {
+        val configBuilder = ConfigBuilder(ApplicationProvider.getApplicationContext())
+            .surveyCompletionDelay(2000)
+            .historyLoadingCount(50)
+            .isDebugLoggingEnabled(true)
+            .showAttachmentsButton()
+            .disableSSLPinning()
+            .serverBaseUrl("http://ednatest.ru")
+            .datastoreUrl("http://ednatest.ru")
+            .threadsGateUrl("wss://ednatest.ru")
+            .threadsGateProviderUid("threadsGateProviderUid")
+            .setNewChatCenterApi()
+
+        ThreadsLib.init(configBuilder as ConfigBuilder)
+    }
+
     private val intent = Intent(ApplicationProvider.getApplicationContext(), ConsultActivity::class.java).apply {
-        putExtra(ConsultActivity.imageUrlKey, avatarUrl)
-        putExtra(ConsultActivity.statusKey, status)
-        putExtra(ConsultActivity.titleKey, name)
+        putExtra(
+            ConsultActivity.consultInfoKey,
+            ConsultInfo(
+                photoUrl = avatarUrl,
+                status = status,
+                name = name
+            )
+        )
     }
 
     @get:Rule
