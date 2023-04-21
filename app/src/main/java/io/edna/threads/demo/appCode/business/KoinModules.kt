@@ -5,7 +5,8 @@ import io.edna.threads.demo.appCode.business.mockJsonProvider.SamplesJsonProvide
 import io.edna.threads.demo.appCode.fragments.demoSamplesFragment.DemoSamplesViewModel
 import io.edna.threads.demo.appCode.fragments.demoSamplesList.DemoSamplesListViewModel
 import io.edna.threads.demo.appCode.fragments.launch.LaunchViewModel
-import io.edna.threads.demo.appCode.fragments.server.ServerViewModel
+import io.edna.threads.demo.appCode.fragments.server.AddServerViewModel
+import io.edna.threads.demo.appCode.fragments.server.ServerListViewModel
 import io.edna.threads.demo.appCode.fragments.user.AddUserViewModel
 import io.edna.threads.demo.appCode.fragments.user.UserListViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -18,9 +19,10 @@ val appModule = module {
     single { PreferencesProvider(get()) }
     single { UiThemeProvider(get()) }
     viewModel { LaunchViewModel(get(), get()) }
-    viewModel { ServerViewModel() }
     viewModel { UserListViewModel(get()) }
-    viewModel { AddUserViewModel() }
+    viewModel { AddUserViewModel(get()) }
+    viewModel { ServerListViewModel(get()) }
+    viewModel { AddServerViewModel(get()) }
     viewModel { DemoSamplesViewModel(get(), get()) }
     viewModel { DemoSamplesListViewModel(get(), get(), get()) }
 }

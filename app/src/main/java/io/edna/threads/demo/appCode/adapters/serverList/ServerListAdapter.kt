@@ -1,4 +1,4 @@
-package io.edna.threads.demo.appCode.adapters.userList
+package io.edna.threads.demo.appCode.adapters.serverList
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -11,19 +11,19 @@ import im.threads.ui.utils.visible
 import io.edna.threads.demo.R
 import io.edna.threads.demo.appCode.business.UiThemeProvider
 import io.edna.threads.demo.appCode.extensions.inflateWithBinding
-import io.edna.threads.demo.appCode.models.UserInfo
-import io.edna.threads.demo.databinding.UserListItemBinding
+import io.edna.threads.demo.appCode.models.ServerConfig
+import io.edna.threads.demo.databinding.ServerListItemBinding
 import org.koin.java.KoinJavaComponent.inject
 
-class UserListAdapter(private val onItemClickListener: UserListItemOnClickListener) :
-    RecyclerView.Adapter<UserListAdapter.UserItemHolder>() {
+class ServerListAdapter(private val onItemClickListener: ServerListItemOnClickListener) :
+    RecyclerView.Adapter<ServerListAdapter.ServerItemHolder>() {
 
     private val uiThemeProvider: UiThemeProvider by inject(UiThemeProvider::class.java)
-    private val list: MutableList<UserInfo> = mutableListOf()
+    private val list: MutableList<ServerConfig> = mutableListOf()
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserItemHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ServerItemHolder {
         val inflater = LayoutInflater.from(parent.context)
-        return UserItemHolder(inflater.inflateWithBinding(parent, R.layout.user_list_item))
+        return ServerItemHolder(inflater.inflateWithBinding(parent, R.layout.server_list_item))
     }
 
     fun showMenu(position: Int) {
@@ -55,37 +55,61 @@ class UserListAdapter(private val onItemClickListener: UserListItemOnClickListen
         return false
     }
 
-    override fun onBindViewHolder(holder: UserItemHolder, position: Int) {
+    override fun onBindViewHolder(holder: ServerItemHolder, position: Int) {
         holder.onBind(position)
     }
 
     override fun getItemCount() = list.count()
 
-    fun addItems(newItems: List<UserInfo>) {
+    fun addItems(newItems: List<ServerConfig>) {
         notifyDatasetChangedWithDiffUtil(newItems)
     }
 
-    private fun notifyDatasetChangedWithDiffUtil(newList: List<UserInfo>) {
-        val diffResult = DiffUtil.calculateDiff(UserListDiffCallback(list, newList))
+    private fun notifyDatasetChangedWithDiffUtil(newList: List<ServerConfig>) {
+        val diffResult = DiffUtil.calculateDiff(ServerListDiffCallback(list, newList))
         list.clear()
         list.addAll(newList)
         diffResult.dispatchUpdatesTo(this)
     }
 
-    inner class UserItemHolder(private val binding: UserListItemBinding) :
+    inner class ServerItemHolder(val binding: ServerListItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun onBind(position: Int) {
-            (list[position] as? UserInfo)?.let { item ->
-                binding.name.text = item.nickName
-                binding.userId.text = item.userId
+            (list[position] as? ServerConfig)?.let { item ->
+                binding.name.text = item.name
+                binding.description.text = item.serverBaseUrl
                 if (uiThemeProvider.isDarkThemeOn()) {
-                    binding.name.setTextColor(ContextCompat.getColor(binding.root.context, R.color.white_color_fa))
-                    binding.userId.setTextColor(ContextCompat.getColor(binding.root.context, R.color.white_color_fa))
-                    ColorsHelper.setTint(binding.root.context, binding.image, R.color.white_color_fa)
+                    binding.name.setTextColor(
+                        ContextCompat.getColor(
+                            binding.root.context,
+                            R.color.white_color_fa
+                        )
+                    )
+                    binding.description.setTextColor(
+                        ContextCompat.getColor(
+                            binding.root.context,
+                            R.color.white_color_fa
+                        )
+                    )
+                    ColorsHelper.setTint(
+                        binding.root.context,
+                        binding.image,
+                        R.color.white_color_fa
+                    )
                 } else {
-                    binding.name.setTextColor(ContextCompat.getColor(binding.root.context, R.color.black_color))
-                    binding.userId.setTextColor(ContextCompat.getColor(binding.root.context, R.color.black_color))
+                    binding.name.setTextColor(
+                        ContextCompat.getColor(
+                            binding.root.context,
+                            R.color.black_color
+                        )
+                    )
+                    binding.description.setTextColor(
+                        ContextCompat.getColor(
+                            binding.root.context,
+                            R.color.black_color
+                        )
+                    )
                     ColorsHelper.setTint(binding.root.context, binding.image, R.color.black_color)
                 }
                 if (item.isShowMenu) {

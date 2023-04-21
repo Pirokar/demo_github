@@ -26,6 +26,7 @@
     <string name="servers">Серверы</string>
     <string name="users">Пользователи</string>
     <string name="name">Name</string>
+    <string name="name_hint">* Name</string>
     <string name="nick_name">Имя пользователя</string>
     <string name="nick_name_hint">* Имя пользователя</string>
     <string name="user_id">ID пользователя</string>
@@ -39,8 +40,11 @@
     <string name="threads_gate_url">Threads Gate URL</string>
     <string name="server_base_url">Server Base URL</string>
     <string name="threads_gate_provider_uid">Threads Gate Provider Uid</string>
+    <string name="datastore_url_hint">* Datastore URL</string>
+    <string name="threads_gate_url_hint">* Threads Gate URL</string>
+    <string name="server_base_url_hint">* Server Base URL</string>
+    <string name="threads_gate_provider_uid_hint">* Threads Gate Provider Uid</string>
     <string name="required_field">Поле обязательное для заполнения</string>
-
     <string name="empty_user_list_text">Добавьте пользователя\nдля входа в чат</string>
 
     <string name="content_description_back_button">Кнопка назад</string>

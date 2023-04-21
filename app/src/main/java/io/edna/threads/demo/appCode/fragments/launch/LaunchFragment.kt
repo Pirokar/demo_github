@@ -61,10 +61,14 @@ class LaunchFragment : BaseAppFragment<FragmentLaunchBinding>() {
         setFragmentResultListener(SELECTED_USER_KEY) { key, bundle ->
             viewModel.callFragmentResultListener(key, bundle)
         }
+        setFragmentResultListener(SELECTED_SERVER_CONFIG_KEY) { key, bundle ->
+            viewModel.callFragmentResultListener(key, bundle)
+        }
     }
 
     private fun clearResultListeners() {
         clearFragmentResultListener(SELECTED_USER_KEY)
+        clearFragmentResultListener(SELECTED_SERVER_CONFIG_KEY)
     }
 
     private fun setUiThemeDependentViews(theme: UiTheme) = with(binding) {
@@ -126,5 +130,6 @@ class LaunchFragment : BaseAppFragment<FragmentLaunchBinding>() {
 
     companion object {
         const val SELECTED_USER_KEY = "selected_user_key"
+        const val SELECTED_SERVER_CONFIG_KEY = "selected_server_key"
     }
 }

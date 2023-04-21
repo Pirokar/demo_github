@@ -17,10 +17,13 @@ import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import io.edna.threads.demo.R
 import io.edna.threads.demo.appCode.business.AfterTextChangedTextWatcher
+import io.edna.threads.demo.appCode.business.StringsProvider
 import io.edna.threads.demo.appCode.models.UserInfo
 import org.parceler.Parcels
 
-class AddUserViewModel : ViewModel(), DefaultLifecycleObserver, Observable {
+class AddUserViewModel(
+    private val stringsProvider: StringsProvider
+) : ViewModel(), DefaultLifecycleObserver, Observable {
 
     private var srcUser: UserInfo? = null
     var finalUserLiveData = MutableLiveData<UserInfo>(null)
@@ -34,17 +37,15 @@ class AddUserViewModel : ViewModel(), DefaultLifecycleObserver, Observable {
     var errorStringForUserIdFieldLiveData: LiveData<String?> = _errorStringForUserIdFieldLiveData
 
     fun initData(arguments: Bundle?) {
-        if (arguments != null) {
-            if (arguments.containsKey(UserListFragment.USER_KEY)) {
-                val user: UserInfo? = if (Build.VERSION.SDK_INT >= 33) {
-                    Parcels.unwrap(arguments.getParcelable(UserListFragment.USER_KEY, Parcelable::class.java))
-                } else {
-                    Parcels.unwrap(arguments.getParcelable(UserListFragment.USER_KEY))
-                }
-                if (user != null) {
-                    srcUser = user
-                    _userLiveData.postValue(user.clone())
-                }
+        if (arguments != null && arguments.containsKey(UserListFragment.USER_KEY)) {
+            val user: UserInfo? = if (Build.VERSION.SDK_INT >= 33) {
+                Parcels.unwrap(arguments.getParcelable(UserListFragment.USER_KEY, Parcelable::class.java))
+            } else {
+                Parcels.unwrap(arguments.getParcelable(UserListFragment.USER_KEY))
+            }
+            if (user != null) {
+                srcUser = user
+                _userLiveData.postValue(user.clone())
             }
         }
     }
@@ -59,22 +60,22 @@ class AddUserViewModel : ViewModel(), DefaultLifecycleObserver, Observable {
                     finalUserLiveData.postValue(userLiveData.value)
                     navigationController.navigate(R.id.action_AddUserFragment_to_UserListFragment)
                 } else {
-                    setupErrorFields(view.context, userLiveData.value)
+                    setupErrorFields(userLiveData.value)
                 }
             }
         }
     }
 
-    private fun setupErrorFields(context: Context, user: UserInfo?) {
+    private fun setupErrorFields(user: UserInfo?) {
         if (user == null) {
-            _errorStringForUserNameFieldLiveData.postValue(context.getString(R.string.required_field))
-            _errorStringForUserIdFieldLiveData.postValue(context.getString(R.string.required_field))
+            _errorStringForUserNameFieldLiveData.postValue(stringsProvider.requiredField)
+            _errorStringForUserIdFieldLiveData.postValue(stringsProvider.requiredField)
         } else {
             if (user.userId.isNullOrEmpty()) {
-                _errorStringForUserIdFieldLiveData.postValue(context.getString(R.string.required_field))
+                _errorStringForUserIdFieldLiveData.postValue(stringsProvider.requiredField)
             }
             if (user.nickName.isNullOrEmpty()) {
-                _errorStringForUserNameFieldLiveData.postValue(context.getString(R.string.required_field))
+                _errorStringForUserNameFieldLiveData.postValue(stringsProvider.requiredField)
             }
         }
     }

@@ -22,6 +22,7 @@ import io.edna.threads.demo.R
 import io.edna.threads.demo.appCode.business.PreferencesProvider
 import io.edna.threads.demo.appCode.business.UiThemeProvider
 import io.edna.threads.demo.appCode.business.VolatileLiveData
+import io.edna.threads.demo.appCode.models.ServerConfig
 import io.edna.threads.demo.appCode.models.UiTheme
 import io.edna.threads.demo.appCode.models.UserInfo
 import kotlinx.coroutines.CoroutineScope
@@ -36,8 +37,12 @@ class LaunchViewModel(
     val currentUiThemeLiveData: MutableLiveData<UiTheme> = MutableLiveData()
     val themeSelectorLiveData: VolatileLiveData<CurrentUiTheme> = VolatileLiveData()
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
-    private var _selectedUserLiveData = MutableLiveData(UserInfo())
+
+    private var _selectedUserLiveData = MutableLiveData(preferencesProvider.getSelectedUser())
     var selectedUserLiveData: LiveData<UserInfo> = _selectedUserLiveData
+
+    private var _selectedServerLiveData = MutableLiveData(preferencesProvider.getSelectedServer())
+    var selectedServerConfigLiveData: LiveData<ServerConfig> = _selectedServerLiveData
 
     private var _enabledLoginButtonLiveData = MutableLiveData(false)
     var enabledLoginButtonLiveData: LiveData<Boolean> = _enabledLoginButtonLiveData
@@ -56,7 +61,7 @@ class LaunchViewModel(
         val navigationController: NavController =
             (view.context as Activity).findNavController(R.id.nav_host_fragment_content_main)
         when (view.id) {
-            R.id.serverButton -> navigationController.navigate(R.id.action_LaunchFragment_to_ServersFragment)
+            R.id.serverButton -> navigationController.navigate(R.id.action_LaunchFragment_to_ServerListFragment)
             R.id.demonstrations -> navigationController.navigate(R.id.action_LaunchFragment_to_DemonstrationsListFragment)
             R.id.uiTheme -> themeSelectorLiveData.postValue(ThreadsLib.getInstance().currentUiTheme)
             R.id.userButton -> navigationController.navigate(R.id.action_LaunchFragment_to_UserListFragment)
@@ -109,7 +114,21 @@ class LaunchViewModel(
             } else {
                 Parcels.unwrap(bundle.getParcelable(LaunchFragment.SELECTED_USER_KEY))
             }
-            _selectedUserLiveData.postValue(user)
+            if (user != null && user.isAllFieldsFilled()) {
+                _selectedUserLiveData.postValue(user)
+                preferencesProvider.saveSelectedUser(user)
+            }
+        }
+        if (key == LaunchFragment.SELECTED_SERVER_CONFIG_KEY && bundle.containsKey(LaunchFragment.SELECTED_SERVER_CONFIG_KEY)) {
+            val server: ServerConfig? = if (Build.VERSION.SDK_INT >= 33) {
+                Parcels.unwrap(bundle.getParcelable(LaunchFragment.SELECTED_SERVER_CONFIG_KEY, Parcelable::class.java))
+            } else {
+                Parcels.unwrap(bundle.getParcelable(LaunchFragment.SELECTED_SERVER_CONFIG_KEY))
+            }
+            if (server != null && server.isAllFieldsFilled()) {
+                _selectedServerLiveData.postValue(server)
+                preferencesProvider.saveSelectedServer(server)
+            }
         }
     }
 

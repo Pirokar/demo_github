@@ -30,13 +30,16 @@
 
     <dimen name="toolbar_height">64sp</dimen>
     <dimen name="add_button_size">56dp</dimen>
-
     <dimen name="edittext_height">@dimen/height_56</dimen>
 
     <dimen name="login_screen_top_margin_small">@dimen/margin_16</dimen>
     <dimen name="login_screen_top_margin_medium">@dimen/margin_24</dimen>
     <dimen name="login_screen_top_margin_large">@dimen/margin_40</dimen>
     <dimen name="login_screen_buttons_height">@dimen/height_56</dimen>
+
+    <dimen name="button_add_margins">@dimen/margin_20</dimen>
+    <dimen name="common_app_margins">@dimen/margin_16</dimen>
+
 
     <dimen name="alt_greenBubbleIncomingPaddingLeft">23dp</dimen>
     <dimen name="alt_greenBubbleIncomingPaddingTop">8dp</dimen>

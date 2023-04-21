@@ -51,6 +51,7 @@
             android:layout_marginTop="@dimen/login_screen_top_margin_large"
             android:gravity="center_vertical"
             android:onClick="@{viewModel::click}"
+            android:text="@{viewModel.selectedServerConfigLiveData.name}"
             android:hint="@string/server"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

@@ -16,4 +16,5 @@ class StringsProvider(private val context: Context) {
     val darkTheme = context.getString(R.string.dark_theme)
     val lightTheme = context.getString(R.string.light_theme)
     val ok = context.getString(R.string.ok)
+    val requiredField = context.getString(R.string.required_field)
 }
