@@ -22,7 +22,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.parceler.Parcels
 import java.io.BufferedReader
-import java.io.FileOutputStream
 import java.io.InputStream
 
 class ServerListViewModel(
@@ -108,7 +107,7 @@ class ServerListViewModel(
             preferencesProvider.saveServers(finalServers)
         }
 
-/*    private fun copyServersFromFile(context: Context) {
+    private fun copyServersFromFile(context: Context) {
         val newServers = readServersFromFile(context)
         val oldServers = preferencesProvider.getAllServers()
         val servers = updateOldServers(oldServers, newServers)
@@ -116,7 +115,6 @@ class ServerListViewModel(
         preferencesProvider.saveServers(servers)
         preferencesProvider.saveAppVersion(BuildConfig.VERSION_NAME)
     }
- */
 
     private fun removeServers(
         serverList: ArrayList<ServerConfig>,
@@ -152,7 +150,7 @@ class ServerListViewModel(
         return ArrayList(serversMap.values)
     }
 
-/*    private fun readServersFromFile(context: Context): ArrayList<ServerConfig> {
+    private fun readServersFromFile(context: Context): ArrayList<ServerConfig> {
         val inputStream: InputStream = context.resources.openRawResource(R.raw.servers_config)
         val content = StringBuilder()
         val reader = BufferedReader(inputStream.reader())
@@ -172,38 +170,4 @@ class ServerListViewModel(
         list.addAll(newServers)
         return list
     }
- */
-
-    private fun copyServersFromFile(context: Context) {
-        val `in`: InputStream = context.resources.openRawResource(R.raw.servers_config)
-        val out = FileOutputStream(context.filesDir.parent + "/shared_prefs/servers_config.xml")
-        val buff = ByteArray(1024)
-        var read = 0
-        try {
-            while (`in`.read(buff).also { read = it } > 0) {
-                out.write(buff, 0, read)
-            }
-        } finally {
-            `in`.close()
-            out.close()
-        }
-        preferencesProvider.applyServersFromFile(context)
-    }
-
-    fun getServers(): List<ServerConfig> {
-        return preferencesProvider
-            .getAllServers()
-            .map { Gson().fromJson<ServerConfig>(it.value) }
-    }
-
-/*
-    private fun fetchServerNames() {
-        currentServerName = getCurrentServer().name
-        servers = getServers()
-            .map { ServerMenuItem(it.name) }
-            .sortedBy { it.name.toString() }
-    }
-
- */
-
 }

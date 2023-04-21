@@ -2,12 +2,8 @@ package io.edna.threads.demo.appCode.business
 
 import android.content.Context
 import com.google.gson.Gson
-import im.threads.business.logger.LoggerEdna
-import io.edna.threads.demo.appCode.extensions.fromJson
-import io.edna.threads.demo.appCode.extensions.toJson
 import io.edna.threads.demo.appCode.models.ServerConfig
 import io.edna.threads.demo.appCode.models.UserInfo
-import java.io.File
 
 class PreferencesProvider(private val context: Context) {
     fun putJsonToPreferences(json: String) {
@@ -83,7 +79,7 @@ class PreferencesProvider(private val context: Context) {
         prefsEditor.apply()
     }
 
-    fun getAllServers1(): ArrayList<ServerConfig> {
+    fun getAllServers(): ArrayList<ServerConfig> {
         val configString = context.getSharedPreferences(PREF_DEMO, Context.MODE_PRIVATE)
             .getString(PREF_SERVERS_LIST, "[]") ?: "[]"
         val serverArray: Array<ServerConfig> =
@@ -92,61 +88,6 @@ class PreferencesProvider(private val context: Context) {
         list.addAll(serverArray)
         return list
     }
-
-
-
-
-
-
-
-    fun getAllServers(context: Context): Map<String, String> {
-        return getServersFrom(context, PREF_SERVERS_LIST)
-    }
-
-    fun applyServersFromFile(context: Context) {
-        val serversFromApp = getAllServers(context)
-            .map { Gson().fromJson<ServerConfig>(it.value) }
-            .filter { it.isFromApp }
-
-        val servers = getServersFrom(context, PREF_IMPORTED_FILE_SERVERS_NAME)
-            .map { Gson().fromJson<ServerConfig>(it.value) }
-            .toMutableList()
-        servers.addAll(serversFromApp)
-        val serversToSave = servers.associate { it.name to it.toJson() }
-        addServers(context, serversToSave, true)
-        deletePreferenceWithNameContains(context, PREF_IMPORTED_FILE_SERVERS_NAME)
-    }
-
-    fun addServers(context: Context, servers: Map<String?, String>, clearExisting: Boolean = false) {
-        val prefsEditor = context.getSharedPreferences(PREF_SERVERS_LIST, Context.MODE_PRIVATE).edit()
-        if (clearExisting) prefsEditor.clear()
-        servers.forEach { prefsEditor.putString(it.key, it.value) }
-        prefsEditor.commit()
-    }
-
-    private fun getServersFrom(context: Context, prefsName: String): Map<String, String> {
-        return context
-            .getSharedPreferences(prefsName, Context.MODE_PRIVATE)
-            .all as? Map<String, String> ?: HashMap()
-    }
-
-    private fun deletePreferenceWithNameContains(context: Context, nameContains: String) {
-        try {
-            val dir = File(context.filesDir.parent + "/shared_prefs/")
-            val children = dir.list()
-            if (children != null) {
-                for (child in children) {
-                    if (child.contains(nameContains)) {
-                        File(dir, child).delete()
-                    }
-                }
-            }
-        } catch (exception: Exception) {
-            LoggerEdna.error("Error when deleting preference file", exception)
-        }
-    }
-
-
 
     companion object {
         private const val preferenceName = "ecc_demo_json_preference"
@@ -157,7 +98,5 @@ class PreferencesProvider(private val context: Context) {
         private const val PREF_APP_VERSION = "APP_VERSION"
         private const val PREF_SELECTED_USER = "SELECTED_USER_PREFS"
         private const val PREF_SELECTED_SERVER = "SELECTED_SERVER_PREFS"
-
-        private const val PREF_IMPORTED_FILE_SERVERS_NAME = "servers_config"
     }
 }

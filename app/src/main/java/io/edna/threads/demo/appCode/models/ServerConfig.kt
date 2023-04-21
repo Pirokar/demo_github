@@ -12,9 +12,6 @@ data class ServerConfig(
     var threadsGateUrl: String? = null,
     var isFromApp: Boolean = false,
     var isShowMenu: Boolean = false,
-    val filesAndMediaMenuItemEnabled: Boolean = true,
-    val newChatCenterApi: Boolean = false,
-    val isSSLPinningDisabled: Boolean = false
 ) : Parcelable {
 
     override fun toString() = "$name, " +
@@ -23,10 +20,7 @@ data class ServerConfig(
         "$serverBaseUrl, " +
         "$threadsGateUrl, " +
         "$isFromApp, " +
-        "$isShowMenu" +
-        "$filesAndMediaMenuItemEnabled" +
-        "$newChatCenterApi" +
-        "$isSSLPinningDisabled"
+        "$isShowMenu"
 
     fun isAllFieldsFilled(): Boolean {
         return !name.isNullOrEmpty() &&
@@ -45,9 +39,6 @@ data class ServerConfig(
             threadsGateUrl,
             isFromApp,
             isShowMenu,
-            isSSLPinningDisabled,
-            newChatCenterApi,
-            filesAndMediaMenuItemEnabled
         )
     }
 
@@ -61,10 +52,7 @@ data class ServerConfig(
                 other.threadsGateProviderUid == threadsGateProviderUid &&
                 other.datastoreUrl == datastoreUrl &&
                 other.serverBaseUrl == serverBaseUrl &&
-                other.threadsGateUrl == threadsGateUrl &&
-                other.isSSLPinningDisabled == isSSLPinningDisabled &&
-                other.newChatCenterApi == newChatCenterApi &&
-                other.filesAndMediaMenuItemEnabled == filesAndMediaMenuItemEnabled
+                other.threadsGateUrl == threadsGateUrl
         }
         return false
     }
