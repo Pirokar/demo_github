@@ -13,12 +13,12 @@ import io.edna.threads.demo.appCode.business.UiThemeProvider
 import io.edna.threads.demo.appCode.extensions.inflateWithBinding
 import io.edna.threads.demo.appCode.models.UserInfo
 import io.edna.threads.demo.databinding.UserListItemBinding
-import org.koin.java.KoinJavaComponent
+import org.koin.java.KoinJavaComponent.inject
 
 class UserListAdapter(private val onItemClickListener: UserListItemOnClickListener) :
     RecyclerView.Adapter<UserListAdapter.UserItemHolder>() {
 
-    private val uiThemeProvider: UiThemeProvider by KoinJavaComponent.inject(UiThemeProvider::class.java)
+    private val uiThemeProvider: UiThemeProvider by inject(UiThemeProvider::class.java)
     private val list: MutableList<UserInfo> = mutableListOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserItemHolder {

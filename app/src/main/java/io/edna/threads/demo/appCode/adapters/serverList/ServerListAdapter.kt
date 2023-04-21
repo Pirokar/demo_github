@@ -13,12 +13,12 @@ import io.edna.threads.demo.appCode.business.UiThemeProvider
 import io.edna.threads.demo.appCode.extensions.inflateWithBinding
 import io.edna.threads.demo.appCode.models.ServerConfig
 import io.edna.threads.demo.databinding.ServerListItemBinding
-import org.koin.java.KoinJavaComponent
+import org.koin.java.KoinJavaComponent.inject
 
 class ServerListAdapter(private val onItemClickListener: ServerListItemOnClickListener) :
     RecyclerView.Adapter<ServerListAdapter.ServerItemHolder>() {
 
-    private val uiThemeProvider: UiThemeProvider by KoinJavaComponent.inject(UiThemeProvider::class.java)
+    private val uiThemeProvider: UiThemeProvider by inject(UiThemeProvider::class.java)
     private val list: MutableList<ServerConfig> = mutableListOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ServerItemHolder {

@@ -11,7 +11,7 @@ class PreferencesProvider(private val context: Context) {
             .getSharedPreferences(preferenceName, Context.MODE_PRIVATE)
             .edit()
             .putString(jsonPreferenceKey, json)
-            .apply()
+            .commit()
     }
 
     fun cleanJsonOnPreferences() {
@@ -19,7 +19,7 @@ class PreferencesProvider(private val context: Context) {
             .getSharedPreferences(preferenceName, Context.MODE_PRIVATE)
             .edit()
             .putString(jsonPreferenceKey, "")
-            .apply()
+            .commit()
     }
 
     fun saveUserList(value: ArrayList<UserInfo>) {

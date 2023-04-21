@@ -20,7 +20,7 @@ class AddServerFragment : BaseAppFragment<FragmentAddServerBinding>() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?,
+        savedInstanceState: Bundle?
     ): View {
         _binding = inflater.inflateWithBinding(container, R.layout.fragment_add_server)
         binding.lifecycleOwner = this

@@ -51,7 +51,7 @@ class ServerListViewModel(
         }
     }
 
-    fun addConfig(config: ServerConfig) {
+    private fun addConfig(config: ServerConfig) {
         coroutineScope.launch {
             addServer(config)
         }

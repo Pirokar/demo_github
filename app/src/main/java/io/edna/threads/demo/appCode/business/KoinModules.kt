@@ -20,9 +20,9 @@ val appModule = module {
     single { UiThemeProvider(get()) }
     viewModel { LaunchViewModel(get(), get()) }
     viewModel { UserListViewModel(get()) }
-    viewModel { AddUserViewModel() }
+    viewModel { AddUserViewModel(get()) }
     viewModel { ServerListViewModel(get()) }
-    viewModel { AddServerViewModel() }
+    viewModel { AddServerViewModel(get()) }
     viewModel { DemoSamplesViewModel(get(), get()) }
     viewModel { DemoSamplesListViewModel(get(), get(), get()) }
 }

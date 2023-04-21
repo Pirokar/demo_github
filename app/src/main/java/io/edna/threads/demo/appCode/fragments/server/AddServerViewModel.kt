@@ -1,7 +1,6 @@
 package io.edna.threads.demo.appCode.fragments.server
 
 import android.app.Activity
-import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
@@ -17,10 +16,13 @@ import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import io.edna.threads.demo.R
 import io.edna.threads.demo.appCode.business.AfterTextChangedTextWatcher
+import io.edna.threads.demo.appCode.business.StringsProvider
 import io.edna.threads.demo.appCode.models.ServerConfig
 import org.parceler.Parcels
 
-class AddServerViewModel : ViewModel(), DefaultLifecycleObserver, Observable {
+class AddServerViewModel(
+    private val stringsProvider: StringsProvider
+) : ViewModel(), DefaultLifecycleObserver, Observable {
 
     private var srcServerConfig: ServerConfig? = null
     private var _serverConfigLiveData = MutableLiveData(ServerConfig())
@@ -56,27 +58,25 @@ class AddServerViewModel : ViewModel(), DefaultLifecycleObserver, Observable {
                     finalServerConfigLiveData.postValue(serverConfigLiveData.value)
                     navigationController.navigate(R.id.action_AddServerFragment_to_ServerListFragment)
                 } else {
-                    setupErrorFields(view.context, serverConfigLiveData.value)
+                    setupErrorFields(serverConfigLiveData.value)
                 }
             }
         }
     }
 
     fun initData(arguments: Bundle?) {
-        if (arguments != null) {
-            if (arguments.containsKey(ServerListFragment.SERVER_CONFIG_KEY)) {
-                val config: ServerConfig? = if (Build.VERSION.SDK_INT >= 33) {
-                    Parcels.unwrap(
-                        arguments.getParcelable(
-                            ServerListFragment.SERVER_CONFIG_KEY,
-                            Parcelable::class.java
-                        ),
-                    )
-                } else {
-                    Parcels.unwrap(arguments.getParcelable(ServerListFragment.SERVER_CONFIG_KEY))
-                }
-                setSrcConfig(config)
+        if (arguments != null && arguments.containsKey(ServerListFragment.SERVER_CONFIG_KEY)) {
+            val config: ServerConfig? = if (Build.VERSION.SDK_INT >= 33) {
+                Parcels.unwrap(
+                    arguments.getParcelable(
+                        ServerListFragment.SERVER_CONFIG_KEY,
+                        Parcelable::class.java
+                    ),
+                )
+            } else {
+                Parcels.unwrap(arguments.getParcelable(ServerListFragment.SERVER_CONFIG_KEY))
             }
+            setSrcConfig(config)
         }
     }
 
@@ -87,29 +87,28 @@ class AddServerViewModel : ViewModel(), DefaultLifecycleObserver, Observable {
         }
     }
 
-    private fun setupErrorFields(context: Context, config: ServerConfig?) {
-        val errString = context.getString(R.string.required_field)
+    private fun setupErrorFields(config: ServerConfig?) {
         if (config == null) {
-            _errorStringForServerNameFieldLiveData.postValue(errString)
-            _errorStringForProviderIdFieldLiveData.postValue(errString)
-            _errorStringForBaseUrlFieldLiveData.postValue(errString)
-            _errorStringForDatastoreUrlFieldLiveData.postValue(errString)
-            _errorStringForThreadsGateUrlFieldLiveData.postValue(errString)
+            _errorStringForServerNameFieldLiveData.postValue(stringsProvider.requiredField)
+            _errorStringForProviderIdFieldLiveData.postValue(stringsProvider.requiredField)
+            _errorStringForBaseUrlFieldLiveData.postValue(stringsProvider.requiredField)
+            _errorStringForDatastoreUrlFieldLiveData.postValue(stringsProvider.requiredField)
+            _errorStringForThreadsGateUrlFieldLiveData.postValue(stringsProvider.requiredField)
         } else {
             if (config.name.isNullOrEmpty()) {
-                _errorStringForServerNameFieldLiveData.postValue(errString)
+                _errorStringForServerNameFieldLiveData.postValue(stringsProvider.requiredField)
             }
             if (config.threadsGateProviderUid.isNullOrEmpty()) {
-                _errorStringForProviderIdFieldLiveData.postValue(errString)
+                _errorStringForProviderIdFieldLiveData.postValue(stringsProvider.requiredField)
             }
             if (config.serverBaseUrl.isNullOrEmpty()) {
-                _errorStringForBaseUrlFieldLiveData.postValue(errString)
+                _errorStringForBaseUrlFieldLiveData.postValue(stringsProvider.requiredField)
             }
             if (config.datastoreUrl.isNullOrEmpty()) {
-                _errorStringForDatastoreUrlFieldLiveData.postValue(errString)
+                _errorStringForDatastoreUrlFieldLiveData.postValue(stringsProvider.requiredField)
             }
             if (config.threadsGateUrl.isNullOrEmpty()) {
-                _errorStringForThreadsGateUrlFieldLiveData.postValue(errString)
+                _errorStringForThreadsGateUrlFieldLiveData.postValue(stringsProvider.requiredField)
             }
         }
     }
