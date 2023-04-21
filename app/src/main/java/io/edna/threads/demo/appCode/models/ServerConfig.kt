@@ -12,15 +12,19 @@ data class ServerConfig(
     var threadsGateUrl: String? = null,
     var isFromApp: Boolean = false,
     var isShowMenu: Boolean = false,
+    var filesAndMediaMenuItemEnabled: Boolean = true,
+    var isSSLPinningDisabled: Boolean = true
 ) : Parcelable {
 
-    override fun toString() = "$name, " +
-        "$threadsGateProviderUid, " +
-        "$datastoreUrl, " +
-        "$serverBaseUrl, " +
-        "$threadsGateUrl, " +
-        "$isFromApp, " +
-        "$isShowMenu"
+    override fun toString() = "Server config:\n = $name, " +
+        "\nthreadsGateProviderUid = $threadsGateProviderUid, " +
+        "\ndatastoreUrl = $datastoreUrl, " +
+        "\nserverBaseUrl = $serverBaseUrl, " +
+        "\nthreadsGateUrl = $threadsGateUrl, " +
+        "\nisFromApp = $isFromApp, " +
+        "\nisShowMenu = $isShowMenu, " +
+        "\nfilesAndMediaMenuItemEnabled = $filesAndMediaMenuItemEnabled, " +
+        "\nisSSLPinningDisabled = $isSSLPinningDisabled"
 
     fun isAllFieldsFilled(): Boolean {
         return !name.isNullOrEmpty() &&
