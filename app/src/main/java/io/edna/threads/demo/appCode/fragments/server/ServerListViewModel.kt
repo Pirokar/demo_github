@@ -29,7 +29,7 @@ class ServerListViewModel(
 ) : ViewModel(), DefaultLifecycleObserver {
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
-    private var _serverListLiveData = MutableLiveData(ArrayList<ServerConfig>())
+    private var _serverListLiveData = MutableLiveData(preferencesProvider.getAllServers())
     var serverConfigLiveData: LiveData<ArrayList<ServerConfig>> = _serverListLiveData
 
     fun click(view: View) {
@@ -102,21 +102,18 @@ class ServerListViewModel(
     private fun addServer(config: ServerConfig) =
         coroutineScope.launch {
             val servers = preferencesProvider.getAllServers()
-            _serverListLiveData.postValue(updateServers(servers, config))
-            preferencesProvider.saveAppVersion(BuildConfig.VERSION_NAME)
-            serverConfigLiveData.value?.let {
-                preferencesProvider.saveServers(it)
-            }
+            val finalServers = updateServers(servers, config)
+            _serverListLiveData.postValue(finalServers)
+            preferencesProvider.saveServers(finalServers)
         }
 
     private fun copyServersFromFile(context: Context) {
         val newServers = readServersFromFile(context)
         val oldServers = preferencesProvider.getAllServers()
-        _serverListLiveData.postValue(updateOldServers(oldServers, newServers))
+        val servers = updateOldServers(oldServers, newServers)
+        _serverListLiveData.postValue(servers)
+        preferencesProvider.saveServers(servers)
         preferencesProvider.saveAppVersion(BuildConfig.VERSION_NAME)
-        serverConfigLiveData.value?.let {
-            preferencesProvider.saveServers(it)
-        }
     }
 
     private fun removeServers(

@@ -5,24 +5,24 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import io.edna.threads.demo.R
-import io.edna.threads.demo.appCode.extensions.inflateWithBinding
-import org.koin.androidx.viewmodel.ext.android.viewModel
 import androidx.fragment.app.clearFragmentResultListener
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import im.threads.ui.utils.ColorsHelper
+import io.edna.threads.demo.R
 import io.edna.threads.demo.appCode.adapters.serverList.ServerListAdapter
 import io.edna.threads.demo.appCode.adapters.serverList.ServerListItemOnClickListener
 import io.edna.threads.demo.appCode.business.TouchHelper
 import io.edna.threads.demo.appCode.business.UiThemeProvider
+import io.edna.threads.demo.appCode.extensions.inflateWithBinding
 import io.edna.threads.demo.appCode.fragments.BaseAppFragment
 import io.edna.threads.demo.appCode.fragments.launch.LaunchFragment.Companion.SELECTED_SERVER_CONFIG_KEY
-import io.edna.threads.demo.databinding.FragmentServerListBinding
 import io.edna.threads.demo.appCode.models.ServerConfig
+import io.edna.threads.demo.databinding.FragmentServerListBinding
 import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.parceler.Parcels
 
 class ServerListFragment :

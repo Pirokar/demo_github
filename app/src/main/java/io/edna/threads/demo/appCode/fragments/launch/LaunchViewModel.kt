@@ -37,9 +37,11 @@ class LaunchViewModel(
     val currentUiThemeLiveData: MutableLiveData<UiTheme> = MutableLiveData()
     val themeSelectorLiveData: VolatileLiveData<CurrentUiTheme> = VolatileLiveData()
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
-    private var _selectedUserLiveData = MutableLiveData(UserInfo())
+
+    private var _selectedUserLiveData = MutableLiveData(preferencesProvider.getSelectedUser())
     var selectedUserLiveData: LiveData<UserInfo> = _selectedUserLiveData
-    private var _selectedServerLiveData = MutableLiveData(ServerConfig())
+
+    private var _selectedServerLiveData = MutableLiveData(preferencesProvider.getSelectedServer())
     var selectedServerConfigLiveData: LiveData<ServerConfig> = _selectedServerLiveData
 
     private var _enabledLoginButtonLiveData = MutableLiveData(false)
@@ -112,7 +114,10 @@ class LaunchViewModel(
             } else {
                 Parcels.unwrap(bundle.getParcelable(LaunchFragment.SELECTED_USER_KEY))
             }
-            _selectedUserLiveData.postValue(user)
+            if (user != null && user.isAllFieldsFilled()) {
+                _selectedUserLiveData.postValue(user)
+                preferencesProvider.saveSelectedUser(user)
+            }
         }
         if (key == LaunchFragment.SELECTED_SERVER_CONFIG_KEY && bundle.containsKey(LaunchFragment.SELECTED_SERVER_CONFIG_KEY)) {
             val server: ServerConfig? = if (Build.VERSION.SDK_INT >= 33) {
@@ -120,7 +125,10 @@ class LaunchViewModel(
             } else {
                 Parcels.unwrap(bundle.getParcelable(LaunchFragment.SELECTED_SERVER_CONFIG_KEY))
             }
-            _selectedServerLiveData.postValue(server)
+            if (server != null && server.isAllFieldsFilled()) {
+                _selectedServerLiveData.postValue(server)
+                preferencesProvider.saveSelectedServer(server)
+            }
         }
     }
 
