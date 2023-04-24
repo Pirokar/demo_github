@@ -15,6 +15,7 @@ import im.threads.business.controllers.UnreadMessagesController
 import im.threads.business.logger.LoggerEdna
 import im.threads.business.logger.LoggerEdna.info
 import im.threads.business.models.CampaignMessage
+import im.threads.business.models.enums.CurrentUiTheme
 import im.threads.business.preferences.Preferences
 import im.threads.business.preferences.PreferencesCoreKeys
 import im.threads.business.rest.models.VersionsModel
@@ -61,6 +62,15 @@ open class ThreadsLibBase protected constructor(context: Context) {
     val isUserInitialized: Boolean get() {
         return clientUseCase.isClientIdNotEmpty()
     }
+
+    var currentUiTheme: CurrentUiTheme
+        get() {
+            val intValue = preferences.get(PreferencesCoreKeys.USER_SELECTED_UI_THEME_KEY, CurrentUiTheme.SYSTEM.value)
+            return CurrentUiTheme.fromInt(intValue)
+        }
+        set(value) {
+            preferences.save(PreferencesCoreKeys.USER_SELECTED_UI_THEME_KEY, value.value)
+        }
 
     /**
      * @return FlowableProcessor that emits responses from WebSocket connection
