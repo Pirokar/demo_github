@@ -6,7 +6,7 @@
     <data>
         <variable
             name="viewModel"
-            type="io.edna.threads.demo.appCode.fragments.launch.LaunchViewModel" />
+            type="io.edna.threads.demo.integrationCode.fragments.launch.LaunchViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

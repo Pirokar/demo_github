@@ -42,8 +42,8 @@ class RatingStarsSentViewHolder(parent: ViewGroup) : BaseHolder(
         mBubble.background.setColorFilter(ContextCompat.getColor(itemView.context, style.outgoingMessageBubbleColor))
         setTextColorToViews(arrayOf(mHeader, from, totalStarsCount), style.outgoingMessageTextColor)
         timeStampTextView.setTextColor(getColorInt(style.outgoingMessageTimeColor))
-        star.setColorFilter(ContextCompat.getColor(itemView.context, style.outgoingMessageTextColor), PorterDuff.Mode.SRC_ATOP)
         star.setImageResource(style.optionsSurveySelectedIconResId)
+        star.setColorFilter(ContextCompat.getColor(itemView.context, style.surveyFinalColorFilterResId), PorterDuff.Mode.SRC_ATOP)
     }
 
     fun bind(survey: Survey) {

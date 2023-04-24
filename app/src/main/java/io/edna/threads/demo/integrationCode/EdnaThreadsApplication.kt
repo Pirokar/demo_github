@@ -1,7 +1,6 @@
 package io.edna.threads.demo.integrationCode
 
 import android.app.Application
-import android.content.Context
 import im.threads.business.logger.LoggerConfig
 import im.threads.business.logger.LoggerRetentionPolicy
 import im.threads.business.markdown.MarkdownConfig
@@ -9,12 +8,15 @@ import im.threads.ui.ChatStyle
 import im.threads.ui.config.ConfigBuilder
 import im.threads.ui.core.ThreadsLib
 import io.edna.threads.demo.R
+import io.edna.threads.demo.appCode.business.ServersProvider
 import io.edna.threads.demo.appCode.business.appModule
+import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 import java.io.File
 
 class EdnaThreadsApplication : Application() {
+    private val serversProvider: ServersProvider by inject()
 
     override fun onCreate() {
         super.onCreate()
@@ -37,17 +39,14 @@ class EdnaThreadsApplication : Application() {
             .isDebugLoggingEnabled(true)
             .showAttachmentsButton()
             .enableLogging(loggerConfig)
+            .certificateRawResIds(listOf(R.raw.edna))
             .disableSSLPinning() as ConfigBuilder
 
-        getTransportConfig(this).apply {
-            configBuilder.serverBaseUrl(baseUrl)
-                .datastoreUrl(datastoreUrl)
-                .threadsGateUrl(threadsGateUrl)
-                .threadsGateProviderUid(threadsGateProviderUid)
-
-            if (isNewChatCenterApi) {
-                configBuilder.setNewChatCenterApi()
-            }
+        serversProvider.getSelectedServer()?.let { server ->
+            configBuilder.serverBaseUrl(server.serverBaseUrl)
+            configBuilder.datastoreUrl(server.datastoreUrl)
+            configBuilder.threadsGateUrl(server.threadsGateUrl)
+            configBuilder.threadsGateProviderUid(server.threadsGateProviderUid)
         }
 
         ThreadsLib.init(configBuilder)
@@ -57,26 +56,11 @@ class EdnaThreadsApplication : Application() {
         }
     }
 
-    private fun getTransportConfig(ctx: Context?): TransportConfig {
-        val baseUrl = "https://mobile4.dev.flex.mfms.ru"
-        val datastoreUrl = "https://mobile4.dev.flex.mfms.ru"
-        val threadsGateUrl = "ws://mobile4.dev.flex.mfms.ru/gate/socket"
-        val threadsGateProviderUid = "MOBILE4_HwZ9QhTihb2d8U3I17dBHy1NB9vA9XVkMz65"
-        val isNewChatCenterApi = true
-        return TransportConfig(
-            baseUrl = baseUrl,
-            datastoreUrl = datastoreUrl,
-            threadsGateUrl = threadsGateUrl,
-            threadsGateProviderUid = threadsGateProviderUid,
-            isNewChatCenterApi = isNewChatCenterApi
-        )
-    }
-
     private fun getLightChatTheme() = getMainChatTheme().apply {
         setConsultSearchingProgressColor(R.color.light_toolbar)
         setChatBodyIconsTint(R.color.light_toolbar)
         setChatTitleStyle(
-            R.string.demo_alt_threads_contact_center,
+            R.string.app_name,
             R.string.demo_alt_threads_operator_subtitle,
             R.color.light_toolbar,
             R.color.alt_threads_chat_context_menu,

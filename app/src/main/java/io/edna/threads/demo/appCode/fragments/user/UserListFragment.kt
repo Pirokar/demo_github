@@ -19,9 +19,9 @@ import io.edna.threads.demo.appCode.business.TouchHelper
 import io.edna.threads.demo.appCode.business.UiThemeProvider
 import io.edna.threads.demo.appCode.extensions.inflateWithBinding
 import io.edna.threads.demo.appCode.fragments.BaseAppFragment
-import io.edna.threads.demo.appCode.fragments.launch.LaunchFragment.Companion.SELECTED_USER_KEY
 import io.edna.threads.demo.appCode.models.UserInfo
 import io.edna.threads.demo.databinding.FragmentUserListBinding
+import io.edna.threads.demo.integrationCode.fragments.launch.LaunchFragment.Companion.SELECTED_USER_KEY
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.parceler.Parcels

@@ -12,20 +12,19 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
-import com.google.gson.Gson
 import io.edna.threads.demo.BuildConfig
 import io.edna.threads.demo.R
 import io.edna.threads.demo.appCode.business.PreferencesProvider
+import io.edna.threads.demo.appCode.business.ServersProvider
 import io.edna.threads.demo.appCode.models.ServerConfig
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.parceler.Parcels
-import java.io.BufferedReader
-import java.io.InputStream
 
 class ServerListViewModel(
-    private val preferencesProvider: PreferencesProvider
+    private val preferencesProvider: PreferencesProvider,
+    private val serversProvider: ServersProvider
 ) : ViewModel(), DefaultLifecycleObserver {
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
@@ -63,10 +62,10 @@ class ServerListViewModel(
         }
     }
 
-    fun copyServersFromFileIfNeed(context: Context) {
+    fun copyServersFromFileIfNeed() {
         if (preferencesProvider.getSavedAppVersion() != BuildConfig.VERSION_NAME) {
             coroutineScope.launch {
-                copyServersFromFile(context)
+                copyServersFromFile()
             }
         } else {
             _serverListLiveData.postValue(preferencesProvider.getAllServers())
@@ -107,12 +106,12 @@ class ServerListViewModel(
             preferencesProvider.saveServers(finalServers)
         }
 
-    private fun copyServersFromFile(context: Context) {
-        val newServers = readServersFromFile(context)
+    private fun copyServersFromFile() {
+        val newServers = serversProvider.readServersFromFile()
         val oldServers = preferencesProvider.getAllServers()
         val servers = updateOldServers(oldServers, newServers)
         _serverListLiveData.postValue(servers)
-        preferencesProvider.saveServers(servers)
+        serversProvider.saveServersToPreferences(servers)
         preferencesProvider.saveAppVersion(BuildConfig.VERSION_NAME)
     }
 
@@ -148,26 +147,5 @@ class ServerListViewModel(
             serversMap[it.name] = it
         }
         return ArrayList(serversMap.values)
-    }
-
-    private fun readServersFromFile(context: Context): ArrayList<ServerConfig> {
-        val inputStream: InputStream = context.resources.openRawResource(R.raw.servers_config)
-        val content = StringBuilder()
-        val reader = BufferedReader(inputStream.reader())
-        inputStream.use { stream ->
-            kotlin.runCatching {
-                var line = reader.readLine()
-                while (line != null) {
-                    content.append(line)
-                    line = reader.readLine()
-                }
-                stream.close()
-            }
-        }
-        val newServers: Array<ServerConfig> =
-            Gson().fromJson(content.toString(), Array<ServerConfig>::class.java)
-        val list: ArrayList<ServerConfig> = ArrayList()
-        list.addAll(newServers)
-        return list
     }
 }

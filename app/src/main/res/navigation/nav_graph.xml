@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/LaunchFragment"
-        android:name="io.edna.threads.demo.appCode.fragments.launch.LaunchFragment"
+        android:name="io.edna.threads.demo.integrationCode.fragments.launch.LaunchFragment"
         android:label="@string/launch_fragment_label"
         tools:layout="@layout/fragment_launch">
 
@@ -22,6 +22,10 @@
         <action
             android:id="@+id/action_LaunchFragment_to_UserListFragment"
             app:destination="@id/UserListFragment" />
+
+        <action
+            android:id="@+id/action_LaunchFragment_to_ChatAppFragment"
+            app:destination="@id/ChatAppFragment" />
 
     </fragment>
 
@@ -57,7 +61,15 @@
         android:id="@+id/DemoSamplesFragment"
         android:name="io.edna.threads.demo.appCode.fragments.demoSamplesFragment.DemoSamplesFragment"
         android:label="@string/demonstrations"
-        tools:layout="@layout/fragment_samples">
+        tools:layout="@layout/fragment_chat">
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/ChatAppFragment"
+        android:name="io.edna.threads.demo.integrationCode.fragments.chatFragment.ChatAppFragment"
+        android:label="@string/chat"
+        tools:layout="@layout/fragment_chat">
 
     </fragment>
 

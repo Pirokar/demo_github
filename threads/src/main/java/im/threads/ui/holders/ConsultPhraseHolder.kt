@@ -35,6 +35,7 @@ import im.threads.business.utils.FileUtils.isImage
 import im.threads.business.utils.UrlUtils
 import im.threads.business.utils.toFileSize
 import im.threads.ui.config.Config
+import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.utils.gone
 import im.threads.ui.utils.invisible
 import im.threads.ui.utils.visible
@@ -136,6 +137,7 @@ class ConsultPhraseHolder(
             ),
             style.incomingMessageTextColor
         )
+        ColorsHelper.setTextColor(errorTextView, style.errorMessageTextColor)
         setUpProgressButton(circularProgressButton)
     }
 
@@ -275,6 +277,19 @@ class ConsultPhraseHolder(
     }
 
     private fun loadImage(
+        fileDescription: FileDescription,
+        imageClickListener: View.OnClickListener,
+        isExternalImage: Boolean = false
+    ) {
+        val fileUri = if (fileDescription.fileUri?.toString()?.isNotBlank() == true) {
+            fileDescription.fileUri.toString()
+        } else {
+            fileDescription.downloadPath
+        }
+        loadImage(fileUri, imageClickListener, isExternalImage)
+    }
+
+    private fun loadImage(
         imagePath: String?,
         imageClickListener: View.OnClickListener,
         isExternalImage: Boolean = false
@@ -326,8 +341,12 @@ class ConsultPhraseHolder(
         fileRow.visibility = View.VISIBLE
         fileImage.visibility = View.GONE
         circularProgressButton.visibility = View.GONE
-        rightTextHeader.text = if (quote.phraseOwnerTitle == null) itemView.context
-            .getString(R.string.ecc_I) else quote.phraseOwnerTitle
+        rightTextHeader.text = if (quote.phraseOwnerTitle == null) {
+            itemView.context
+                .getString(R.string.ecc_I)
+        } else {
+            quote.phraseOwnerTitle
+        }
         rightTextDescription.text = quote.text
         rightTextFileStamp.text = itemView.context
             .getString(R.string.ecc_sent_at, quoteSdf.format(Date(quote.timeStamp)))
@@ -412,7 +431,7 @@ class ConsultPhraseHolder(
         rotateAnim.cancel()
         val isStateReady = fileDescription.state == AttachmentStateEnum.READY
         if (isStateReady && isImage(fileDescription)) {
-            loadImage(fileDescription.downloadPath, imageClickListener)
+            loadImage(fileDescription, imageClickListener)
         } else if (!isStateReady && isImage(fileDescription)) {
             startLoaderAnimation()
         } else {

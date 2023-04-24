@@ -25,14 +25,14 @@ class ThreadsLib(context: Context) : ThreadsLibBase(context) {
         Config.getInstance()
     }
 
-    public override fun initUser(userInfoBuilder: UserInfoBuilder) {
+    public override fun initUser(userInfoBuilder: UserInfoBuilder, forceRegistration: Boolean) {
         val userInfo = preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)
         val oldClientId = userInfo?.clientId
         val newClientId = userInfoBuilder.clientId
         if (newClientId.isNotEmpty() && newClientId != oldClientId) {
             ChatController.getInstance().cleanAll()
         }
-        super.initUser(userInfoBuilder)
+        super.initUser(userInfoBuilder, forceRegistration)
         ChatController.getInstance().hideEmptyState()
         ChatController.getInstance().loadHistory()
     }
@@ -137,6 +137,25 @@ class ThreadsLib(context: Context) : ThreadsLibBase(context) {
             }
 
             ThreadsLibBase.init(configBuilder)
+        }
+
+        /**
+         * Меняет параметры подключения к серверу. Применяются не null параметры
+         * @param baseUrl базовый url для основных бэкэнд запросов
+         * @param datastoreUrl базовый url для работы с файлами
+         * @param threadsGateUrl url вебсокета. Если не null,
+         * должен быть не null также и параметр threadsGateProviderUid
+         * @param threadsGateProviderUid uid для вебсокета. Если не null,
+         * должен быть не null также и параметр threadsGateUrl
+         */
+        @JvmStatic
+        fun changeServerSettings(
+            baseUrl: String? = null,
+            datastoreUrl: String? = null,
+            threadsGateUrl: String? = null,
+            threadsGateProviderUid: String? = null
+        ) {
+            ThreadsLibBase.changeServerSettings(baseUrl, datastoreUrl, threadsGateUrl, threadsGateProviderUid)
         }
 
         @JvmStatic

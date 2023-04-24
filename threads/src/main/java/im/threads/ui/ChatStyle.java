@@ -101,6 +101,9 @@ public final class ChatStyle implements Serializable {
     public int outgoingMessageTextColor = R.color.ecc_outgoing_message_text;
 
     @ColorRes
+    public int errorMessageTextColor = R.color.ecc_error_red_df0000;
+
+    @ColorRes
     public int quoteHeaderTextColor = R.color.ecc_incoming_message_text;
     @ColorRes
     public int quoteTextTextColor = R.color.ecc_incoming_message_text;
@@ -431,6 +434,8 @@ public final class ChatStyle implements Serializable {
     public int optionsSurveySelectedIconResId = R.drawable.ecc_options_survey_selected;
     @ColorRes
     public int surveySelectedColorFilterResId = R.color.ecc_survey_selected_icon_tint;
+    @ColorRes
+    public int surveyFinalColorFilterResId = R.color.ecc_outgoing_message_text;
     @ColorRes
     public int surveyUnselectedColorFilterResId = R.color.ecc_survey_unselected_icon_tint;
     @ColorRes
@@ -1450,6 +1455,46 @@ public final class ChatStyle implements Serializable {
     /**
      * Default values:
      *
+     * @param binarySurveyLikeUnselectedIconResId    - R.drawable.threads_binary_survey_like_unselected
+     * @param binarySurveyLikeSelectedIconResId      - R.drawable.threads_binary_survey_like_selected
+     * @param binarySurveyDislikeUnselectedIconResId - R.drawable.threads_binary_survey_dislike_unselected
+     * @param binarySurveyDislikeSelectedIconResId   - R.drawable.threads_binary_survey_dislike_selected
+     * @param optionsSurveyUnselectedIconResId       - R.drawable.threads_options_survey_unselected
+     * @param optionsSurveySelectedIconResId         - R.drawable.threads_options_survey_selected
+     * @param surveySelectedColorFilterResId         - R.color.threads_survey_selected_icon_tint
+     * @param surveyUnselectedColorFilterResId       - R.color.threads_survey_unselected_icon_tint
+     * @param surveyFinalColorFilterResId            - R.color.ecc_outgoing_message_text
+     * @param surveyTextColorResId                   - R.color.threads_chat_system_message
+     * @param surveyChoicesTextColorResId            - R.color.threads_survey_choices_text
+     */
+    public ChatStyle setSurveyStyle(@DrawableRes final int binarySurveyLikeUnselectedIconResId,
+                                    @DrawableRes final int binarySurveyLikeSelectedIconResId,
+                                    @DrawableRes final int binarySurveyDislikeUnselectedIconResId,
+                                    @DrawableRes final int binarySurveyDislikeSelectedIconResId,
+                                    @DrawableRes final int optionsSurveyUnselectedIconResId,
+                                    @DrawableRes final int optionsSurveySelectedIconResId,
+                                    @ColorRes final int surveySelectedColorFilterResId,
+                                    @ColorRes final int surveyUnselectedColorFilterResId,
+                                    @ColorRes final int surveyFinalColorFilterResId,
+                                    @ColorRes final int surveyTextColorResId,
+                                    @ColorRes int surveyChoicesTextColorResId) {
+        this.binarySurveyLikeUnselectedIconResId = binarySurveyLikeUnselectedIconResId;
+        this.binarySurveyLikeSelectedIconResId = binarySurveyLikeSelectedIconResId;
+        this.binarySurveyDislikeUnselectedIconResId = binarySurveyDislikeUnselectedIconResId;
+        this.binarySurveyDislikeSelectedIconResId = binarySurveyDislikeSelectedIconResId;
+        this.optionsSurveyUnselectedIconResId = optionsSurveyUnselectedIconResId;
+        this.optionsSurveySelectedIconResId = optionsSurveySelectedIconResId;
+        this.surveySelectedColorFilterResId = surveySelectedColorFilterResId;
+        this.surveyUnselectedColorFilterResId = surveyUnselectedColorFilterResId;
+        this.surveyFinalColorFilterResId = surveyFinalColorFilterResId;
+        this.surveyTextColorResId = surveyTextColorResId;
+        this.surveyChoicesTextColorResId = surveyChoicesTextColorResId;
+        return this;
+    }
+
+    /**
+     * Default values:
+     *
      * @param scheduleMessageIconResId      - R.drawable.threads_schedule_icon
      * @param scheduleMessageTextColorResId - R.color.threads_schedule_text
      */
@@ -2035,6 +2080,17 @@ public final class ChatStyle implements Serializable {
     ) {
         this.quoteHeaderTextColor = quoteHeaderTextColor;
         this.quoteTextTextColor = quoteTextTextColor;
+        return this;
+    }
+
+    /**
+     * Устанавливает цвета текста ошибки(под баблом)
+     * @param errorMessageTextColor - ресурс id цвета для текста ошибки. По умолчанию - R.color.ecc_error_red_df0000
+     */
+    public ChatStyle setErrorMessageTextColor(
+            @ColorRes int errorMessageTextColor
+    ) {
+        this.errorMessageTextColor = errorMessageTextColor;
         return this;
     }
 }

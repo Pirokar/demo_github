@@ -2,6 +2,7 @@ package im.threads.business.serviceLocator
 
 import im.threads.business.chat_updates.ChatUpdateProcessor
 import im.threads.business.core.ContextHolder
+import im.threads.business.formatters.JsonFormatter
 import im.threads.business.imageLoading.ImageLoaderOkHttpProvider
 import im.threads.business.preferences.Preferences
 import im.threads.business.secureDatabase.DatabaseHolder
@@ -31,4 +32,5 @@ val coreSLModule = module {
     factory { ChatUpdateProcessor() }
     factory<NetworkInteractor> { NetworkInteractorImpl() }
     factory { HistoryLoader(get()) }
+    factory { JsonFormatter() }
 }

@@ -20,6 +20,7 @@ import im.threads.ui.ChatStyle;
 import im.threads.R;
 import im.threads.ui.config.Config;
 import im.threads.ui.utils.ColorsHelper;
+import im.threads.ui.utils.FileHelper;
 import im.threads.ui.utils.ViewUtils;
 
 public final class BottomSheetView extends LinearLayout {
@@ -28,8 +29,8 @@ public final class BottomSheetView extends LinearLayout {
     private Button file;
     private Button gallery;
     private Button send;
-    private ChatStyle chatStyle = Config.getInstance().getChatStyle();
-    private ViewUtils viewUtils = new ViewUtils();
+    private final ChatStyle chatStyle = Config.getInstance().getChatStyle();
+    private final ViewUtils viewUtils = new ViewUtils();
 
     public BottomSheetView(Context context) {
         super(context);
@@ -94,6 +95,18 @@ public final class BottomSheetView extends LinearLayout {
                 buttonsListener.onSendClick();
             }
         });
+        if (FileHelper.INSTANCE.isFileExtensionsEmpty()) {
+            file.setVisibility(View.GONE);
+        } else {
+            file.setVisibility(View.VISIBLE);
+        }
+        if (FileHelper.INSTANCE.isJpgAllow()) {
+            camera.setVisibility(View.VISIBLE);
+            gallery.setVisibility(View.VISIBLE);
+        } else {
+            camera.setVisibility(View.GONE);
+            gallery.setVisibility(View.GONE);
+        }
         this.setBackgroundColor(getContext().getResources().getColor(android.R.color.white));
     }
 

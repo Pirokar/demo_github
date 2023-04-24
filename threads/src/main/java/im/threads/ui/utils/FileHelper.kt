@@ -8,6 +8,7 @@ import im.threads.business.preferences.Preferences
 import im.threads.business.serviceLocator.core.inject
 import im.threads.business.transport.models.AttachmentSettings
 import im.threads.ui.preferences.PreferencesUiKeys
+import io.reactivex.disposables.Disposable
 
 /**
  * Вспомогательный класс для работы с файлами
@@ -18,15 +19,22 @@ object FileHelper {
     private val preferences: Preferences by inject()
 
     private const val MEGABYTE = (1024 * 1024).toDouble()
+    private var disposable: Disposable? = null
 
     init {
-        chatUpdateProcessor.attachmentSettingsProcessor
-            .subscribe(
-                { receivedAttachmentSettings ->
-                    attachmentSettings = receivedAttachmentSettings.content
-                },
-                LoggerEdna::error
-            )
+        subscribeToAttachments()
+    }
+
+    fun subscribeToAttachments() {
+        if (disposable == null || disposable?.isDisposed == true) {
+            disposable = chatUpdateProcessor.attachmentSettingsProcessor
+                .subscribe(
+                    { receivedAttachmentSettings ->
+                        attachmentSettings = receivedAttachmentSettings.content
+                    },
+                    LoggerEdna::error
+                )
+        }
     }
 
     fun isAllowedFileSize(fileSize: Long): Boolean {
@@ -41,6 +49,14 @@ object FileHelper {
             }
         }
         return false
+    }
+
+    fun isFileExtensionsEmpty(): Boolean {
+        return attachmentSettings.fileExtensions.isNullOrEmpty()
+    }
+
+    fun isJpgAllow(): Boolean {
+        return attachmentSettings.fileExtensions?.contains("jpg") == true
     }
 
     val maxAllowedFileSize: Long

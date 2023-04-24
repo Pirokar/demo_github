@@ -127,6 +127,7 @@ import im.threads.ui.styles.permissions.PermissionDescriptionType
 import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.utils.FileHelper.isAllowedFileExtension
 import im.threads.ui.utils.FileHelper.isAllowedFileSize
+import im.threads.ui.utils.FileHelper.isFileExtensionsEmpty
 import im.threads.ui.utils.FileHelper.maxAllowedFileSize
 import im.threads.ui.utils.hideKeyboard
 import im.threads.ui.utils.isNotVisible
@@ -444,7 +445,7 @@ class ChatFragment :
     private fun initRecording() {
         val recordButton = binding.recordButton
         if (!style.voiceMessageEnabled) {
-            recordButton.visibility = View.GONE
+            binding.recordLayout.visibility = View.GONE
             return
         }
         val recordView = binding.recordView
@@ -1503,6 +1504,10 @@ class ChatFragment :
     }
 
     private fun openBottomSheetAndGallery() {
+        if (isFileExtensionsEmpty()) {
+            activity?.let { show(it, getString(R.string.ecc_sending_files_not_allowed)) }
+            return
+        }
         val activity = activity ?: return
         if (ThreadsPermissionChecker.isReadExternalPermissionGranted(activity)) {
             setTitleStateCurrentOperatorConnected()

@@ -55,10 +55,10 @@ class PreferencesProvider(private val context: Context) {
         prefsEditor.apply()
     }
 
-    fun getSelectedUser(): UserInfo {
+    fun getSelectedUser(): UserInfo? {
         val userString = context.getSharedPreferences(PREF_DEMO, Context.MODE_PRIVATE)
             .getString(PREF_SELECTED_USER, "")
-        return Gson().fromJson(userString, UserInfo::class.java) ?: UserInfo()
+        return Gson().fromJson(userString, UserInfo::class.java)
     }
 
     fun saveSelectedServer(value: ServerConfig) {
@@ -67,10 +67,10 @@ class PreferencesProvider(private val context: Context) {
         prefsEditor.apply()
     }
 
-    fun getSelectedServer(): ServerConfig {
+    fun getSelectedServer(): ServerConfig? {
         val serverString = context.getSharedPreferences(PREF_DEMO, Context.MODE_PRIVATE)
             .getString(PREF_SELECTED_SERVER, "")
-        return Gson().fromJson(serverString, ServerConfig::class.java) ?: ServerConfig()
+        return Gson().fromJson(serverString, ServerConfig::class.java)
     }
 
     fun saveServers(value: ArrayList<ServerConfig>) {

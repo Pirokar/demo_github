@@ -1321,7 +1321,7 @@ class ChatController private constructor() {
         if (fragment != null && !clientId.isNullOrBlank()) {
             subscribe(
                 Single.fromCallable {
-                    BaseConfig.instance.transport.sendInit()
+                    BaseConfig.instance.transport.sendInit(false)
                     val response = historyLoader.getHistorySync(
                         null,
                         true

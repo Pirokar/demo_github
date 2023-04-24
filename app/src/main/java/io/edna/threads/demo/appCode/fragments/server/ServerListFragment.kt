@@ -18,9 +18,9 @@ import io.edna.threads.demo.appCode.business.TouchHelper
 import io.edna.threads.demo.appCode.business.UiThemeProvider
 import io.edna.threads.demo.appCode.extensions.inflateWithBinding
 import io.edna.threads.demo.appCode.fragments.BaseAppFragment
-import io.edna.threads.demo.appCode.fragments.launch.LaunchFragment.Companion.SELECTED_SERVER_CONFIG_KEY
 import io.edna.threads.demo.appCode.models.ServerConfig
 import io.edna.threads.demo.databinding.FragmentServerListBinding
+import io.edna.threads.demo.integrationCode.fragments.launch.LaunchFragment.Companion.SELECTED_SERVER_CONFIG_KEY
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.parceler.Parcels
@@ -52,7 +52,7 @@ class ServerListFragment :
         subscribeForData()
         initAdapter()
         viewLifecycleOwner.lifecycle.addObserver(viewModel)
-        viewModel.copyServersFromFileIfNeed(requireActivity())
+        viewModel.copyServersFromFileIfNeed()
     }
 
     override fun onDestroyView() {

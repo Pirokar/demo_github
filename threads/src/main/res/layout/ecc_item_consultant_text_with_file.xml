@@ -19,7 +19,6 @@
         android:layout_below="@+id/bubble"
         android:layout_marginStart="@dimen/ecc_consultant_margin_right"
         android:layout_marginTop="@dimen/ecc_margin_material"
-        android:textColor="@color/ecc_error_red_df0000"
         android:textSize="@dimen/ecc_error_text_size"
         android:visibility="gone"
         tools:text="Some error text"
@@ -65,7 +64,7 @@
                 android:layout_gravity="center"
                 android:minWidth="200dp"
                 android:minHeight="200dp"
-                android:visibility="gone"/>
+                android:visibility="gone" />
 
         </FrameLayout>
 
@@ -83,7 +82,6 @@
                 android:layout_height="42dp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginTop="@dimen/ecc_margin_half"
-                android:layout_marginEnd="@dimen/ecc_margin_half"
                 android:layout_marginBottom="@dimen/ecc_margin_half"
                 android:visibility="gone" />
 
@@ -149,8 +147,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:lineSpacingMultiplier="1.25"
                 android:autoLink="none"
+                android:lineSpacingMultiplier="1.25"
                 android:paddingTop="5dp"
                 android:textColor="@color/ecc_incoming_message_text"
                 android:textSize="16sp"
@@ -168,7 +166,7 @@
 
         </FrameLayout>
 
-        <include layout="@layout/ecc_open_graph_layout"/>
+        <include layout="@layout/ecc_open_graph_layout" />
 
     </LinearLayout>
 </RelativeLayout>

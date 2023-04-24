@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <variable
             name="inputTextObservable"
             type="androidx.databinding.ObservableField&lt;String>" />
@@ -236,7 +235,7 @@
                             android:id="@+id/add_attachment"
                             style="@style/Base.Widget.AppCompat.Button.Borderless"
                             android:layout_width="60dp"
-                            android:layout_height="64dp"
+                            android:layout_height="match_parent"
                             android:background="@android:color/transparent"
                             app:srcCompat="@drawable/ecc_ic_attachment_button"
                             android:tag="add_attachment"/>
@@ -254,13 +253,14 @@
                             android:id="@+id/send_message"
                             style="@style/Base.Widget.AppCompat.Button.Borderless"
                             android:layout_width="64dp"
-                            android:layout_height="64dp"
+                            android:layout_height="match_parent"
                             android:background="@android:color/transparent"
                             app:srcCompat="@drawable/ecc_ic_send_button" />
 
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/recordLayout"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_margin="8dp"

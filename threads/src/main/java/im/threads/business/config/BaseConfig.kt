@@ -52,9 +52,9 @@ open class BaseConfig(
     val sslSocketFactoryConfig: SslSocketFactoryConfig?
 
     @JvmField
-    val transport: Transport
-    val serverBaseUrl: String
-    val datastoreUrl: String
+    var transport: Transport
+    var serverBaseUrl: String
+    var datastoreUrl: String
 
     /**
      * set history loading count
@@ -80,6 +80,10 @@ open class BaseConfig(
             requestConfig.picassoHttpClientSettings,
             sslSocketFactoryConfig
         )
+    }
+
+    internal fun updateTransport(threadsGateUrl: String, threadsGateProviderUid: String) {
+        transport = getTransport(threadsGateUrl, threadsGateProviderUid, requestConfig.socketClientSettings)
     }
 
     private fun getSslSocketFactoryConfig(certificateRawResIds: List<Int>?): SslSocketFactoryConfig? {

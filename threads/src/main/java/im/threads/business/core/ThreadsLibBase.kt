@@ -28,6 +28,7 @@ import im.threads.business.useractivity.UserActivityTimeProvider.getLastUserActi
 import im.threads.business.useractivity.UserActivityTimeProvider.initializeLastUserActivity
 import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.preferences.PreferencesMigrationBase
+import im.threads.ui.fragments.ChatFragment
 import im.threads.ui.serviceLocator.uiSLModule
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.exceptions.UndeliverableException
@@ -36,6 +37,7 @@ import io.reactivex.processors.FlowableProcessor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Suppress("unused")
@@ -77,10 +79,13 @@ open class ThreadsLibBase protected constructor(context: Context) {
     val socketResponseMapProcessor: FlowableProcessor<Map<String, Any>>
         get() = chatUpdateProcessor.socketResponseMapProcessor
 
-    protected open fun initUser(userInfoBuilder: UserInfoBuilder) {
+    protected open fun initUser(userInfoBuilder: UserInfoBuilder, forceRegistration: Boolean = false) {
         preferences.save(PreferencesCoreKeys.USER_INFO, userInfoBuilder)
         preferences.save(PreferencesCoreKeys.TAG_NEW_CLIENT_ID, userInfoBuilder.clientId)
-        BaseConfig.instance.transport.sendInit()
+        BaseConfig.instance.transport.sendInit(forceRegistration)
+        if (!ChatFragment.isShown && forceRegistration) {
+            BaseConfig.instance.transport.closeWebSocket()
+        }
     }
 
     /**
@@ -212,6 +217,37 @@ open class ThreadsLibBase protected constructor(context: Context) {
             showVersionsLog()
 
             info("Lib_init_time: ${System.currentTimeMillis() - startInitTime}ms")
+        }
+
+        /**
+         * Меняет параметры подключения к серверу. Применяются не null параметры
+         * @param baseUrl базовый url для основных бэкэнд запросов
+         * @param datastoreUrl базовый url для работы с файлами
+         * @param threadsGateUrl url вебсокета. Если не null,
+         * должен быть не null также и параметр threadsGateProviderUid
+         * @param threadsGateProviderUid uid для вебсокета. Если не null,
+         * должен быть не null также и параметр threadsGateUrl
+         */
+        @JvmStatic
+        fun changeServerSettings(
+            baseUrl: String? = null,
+            datastoreUrl: String? = null,
+            threadsGateUrl: String? = null,
+            threadsGateProviderUid: String? = null
+        ) {
+            try {
+                if (baseUrl != null) BaseConfig.instance.serverBaseUrl = baseUrl
+                if (datastoreUrl != null) BaseConfig.instance.datastoreUrl = datastoreUrl
+                if (threadsGateUrl != null && threadsGateProviderUid != null) {
+                    BaseConfig.instance.updateTransport(threadsGateUrl, threadsGateProviderUid)
+                }
+            } catch (exc: Exception) {
+                coroutineScope.launch {
+                    LoggerEdna.error(exc)
+                    delay(500)
+                    throw exc
+                }
+            }
         }
 
         @JvmStatic

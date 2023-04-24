@@ -24,6 +24,7 @@ import im.threads.business.models.FileDescription
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.ogParser.OpenGraphParser
 import im.threads.business.utils.FileUtils
+import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.utils.gone
 import im.threads.ui.utils.invisible
 import im.threads.ui.utils.visible
@@ -75,6 +76,12 @@ class ImageFromConsultViewHolder(
         layoutParams.width = itemView.context.resources.getDimension(style.operatorAvatarSize).toInt()
     }
 
+    init {
+        itemView.findViewById<View>(R.id.delimiter)
+            .setBackgroundColor(getColorInt(style.chatToolbarColorResId))
+        setTextColorToViews(arrayOf(fileNameTextView), style.incomingMessageTextColor)
+    }
+
     fun onBind(
         consultPhrase: ConsultPhrase,
         highlighted: Boolean,
@@ -84,6 +91,7 @@ class ImageFromConsultViewHolder(
     ) {
         subscribeForHighlighting(consultPhrase, itemView)
         applyBubbleLayoutStyle()
+        ColorsHelper.setTextColor(errorTextView, style.errorMessageTextColor)
         timeStampTextView.setOnClickListener(buttonClickListener)
         timeStampTextView.setOnLongClickListener(onLongClickListener)
         timeStampTextView.text = sdf.format(Date(consultPhrase.timeStamp))
@@ -98,12 +106,8 @@ class ImageFromConsultViewHolder(
         showAvatar(consultPhrase)
         consultPhrase.fileDescription?.let {
             when (it.state) {
-                AttachmentStateEnum.PENDING -> {
-                    showLoaderLayout(it)
-                }
-                AttachmentStateEnum.ERROR -> {
-                    showErrorLayout(it)
-                }
+                AttachmentStateEnum.PENDING -> showLoaderLayout(it)
+                AttachmentStateEnum.ERROR -> showErrorLayout(it)
                 else -> {
                     showCommonLayout(it)
                     moveTimeToImageLayout()

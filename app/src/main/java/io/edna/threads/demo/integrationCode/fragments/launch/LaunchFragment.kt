@@ -1,4 +1,4 @@
-package io.edna.threads.demo.appCode.fragments.launch
+package io.edna.threads.demo.integrationCode.fragments.launch
 
 import android.app.AlertDialog
 import android.os.Bundle

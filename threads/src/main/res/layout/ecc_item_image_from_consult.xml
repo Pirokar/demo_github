@@ -19,7 +19,7 @@
 
         <LinearLayout
             android:id="@+id/loaderLayout"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/ecc_margin_big"
             android:layout_toEndOf="@id/consultAvatar"
@@ -31,7 +31,6 @@
                 android:layout_width="@dimen/ecc_operator_photo_size"
                 android:layout_height="@dimen/ecc_operator_photo_size"
                 android:layout_gravity="center_vertical"
-                android:layout_marginStart="@dimen/ecc_margin_material"
                 android:layout_marginTop="@dimen/ecc_margin_material"
                 android:layout_marginEnd="@dimen/ecc_margin_three_fourth"
                 android:layout_marginBottom="@dimen/ecc_margin_material" />
@@ -48,7 +47,7 @@
                 android:id="@+id/fileName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/ecc_margin_three_fourth"
+                android:layout_marginStart="@dimen/ecc_margin_half"
                 android:layout_marginTop="@dimen/ecc_margin_half"
                 android:layout_marginEnd="@dimen/ecc_margin_half"
                 android:layout_marginBottom="@dimen/ecc_margin_half"
@@ -133,7 +132,6 @@
         android:id="@+id/errorText"
         style="@style/timestamp"
         android:layout_marginStart="@dimen/ecc_consultant_margin_right"
-        android:textColor="@color/ecc_error_red_df0000"
         android:textSize="@dimen/ecc_error_text_size"
         android:visibility="gone"
         tools:text="Some error text"

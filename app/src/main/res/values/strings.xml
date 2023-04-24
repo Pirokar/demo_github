@@ -11,6 +11,7 @@
     <string name="launch_fragment_label">Welcome screen</string>
     <string name="servers_fragment_label">Select server screen</string>
     <string name="demonstrations">Демонстрации</string>
+    <string name="chat">Чат</string>
     <string name="add_server_fragment_label">Add server screen</string>
     <string name="user_list_fragment_label">Select user screen</string>
     <string name="add_user_fragment_label">Add user screen</string>

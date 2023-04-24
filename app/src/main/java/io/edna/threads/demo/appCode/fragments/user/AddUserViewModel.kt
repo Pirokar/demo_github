@@ -1,7 +1,6 @@
 package io.edna.threads.demo.appCode.fragments.user
 
 import android.app.Activity
-import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable

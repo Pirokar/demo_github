@@ -1,6 +1,7 @@
 package im.threads.business.imageLoading
 
 import im.threads.business.UserInfoBuilder
+import im.threads.business.logger.NetworkLoggerInterceptor
 import im.threads.business.models.SslSocketFactoryConfig
 import im.threads.business.preferences.Preferences
 import im.threads.business.preferences.PreferencesCoreKeys
@@ -38,6 +39,7 @@ class ImageLoaderOkHttpProvider(
             )
             httpClientBuilder.hostnameVerifier { hostname: String, session: SSLSession -> true }
         }
+        httpClientBuilder.addInterceptor(NetworkLoggerInterceptor(true))
         okHttpClient = httpClientBuilder.build()
     }
 
