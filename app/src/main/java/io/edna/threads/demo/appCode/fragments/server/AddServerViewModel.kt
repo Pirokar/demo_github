@@ -71,7 +71,7 @@ class AddServerViewModel(
                     arguments.getParcelable(
                         ServerListFragment.SERVER_CONFIG_KEY,
                         Parcelable::class.java
-                    ),
+                    )
                 )
             } else {
                 Parcels.unwrap(arguments.getParcelable(ServerListFragment.SERVER_CONFIG_KEY))

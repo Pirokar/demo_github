@@ -42,7 +42,7 @@ data class ServerConfig(
             serverBaseUrl,
             threadsGateUrl,
             isFromApp,
-            isShowMenu,
+            isShowMenu
         )
     }
 

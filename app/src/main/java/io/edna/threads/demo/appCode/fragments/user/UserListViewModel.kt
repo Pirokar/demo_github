@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 import org.parceler.Parcels
 
 class UserListViewModel(
-    private val preferencesProvider: PreferencesProvider,
+    private val preferencesProvider: PreferencesProvider
 ) : ViewModel(), DefaultLifecycleObserver {
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
@@ -92,7 +92,7 @@ class UserListViewModel(
 
     private fun removeUser(
         userList: ArrayList<UserInfo>,
-        user: UserInfo,
+        user: UserInfo
     ): ArrayList<UserInfo> {
         userList.remove(user)
         return userList
@@ -100,7 +100,7 @@ class UserListViewModel(
 
     private fun updateUserList(
         userList: ArrayList<UserInfo>,
-        newUser: UserInfo,
+        newUser: UserInfo
     ): ArrayList<UserInfo> {
         val serversMap = HashMap<String?, UserInfo>()
         userList.forEach {

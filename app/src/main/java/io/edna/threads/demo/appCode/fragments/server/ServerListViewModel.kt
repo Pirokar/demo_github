@@ -117,7 +117,7 @@ class ServerListViewModel(
 
     private fun removeServers(
         serverList: ArrayList<ServerConfig>,
-        config: ServerConfig,
+        config: ServerConfig
     ): ArrayList<ServerConfig> {
         serverList.remove(config)
         return serverList
@@ -125,7 +125,7 @@ class ServerListViewModel(
 
     private fun updateServers(
         serverList: ArrayList<ServerConfig>,
-        newServer: ServerConfig,
+        newServer: ServerConfig
     ): ArrayList<ServerConfig> {
         val serversMap = HashMap<String?, ServerConfig>()
         serverList.forEach {
@@ -137,7 +137,7 @@ class ServerListViewModel(
 
     private fun updateOldServers(
         oldList: ArrayList<ServerConfig>,
-        newList: ArrayList<ServerConfig>,
+        newList: ArrayList<ServerConfig>
     ): ArrayList<ServerConfig> {
         val serversMap = HashMap<String?, ServerConfig>()
         oldList.forEach {

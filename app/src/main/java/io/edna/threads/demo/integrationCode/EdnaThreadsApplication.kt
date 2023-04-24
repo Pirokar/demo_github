@@ -123,7 +123,7 @@ class EdnaThreadsApplication : Application() {
             R.color.dark_system_text,
             null,
             null,
-            R.color.dark_links,
+            R.color.dark_links
         )
         setSurveyStyle(
             null,

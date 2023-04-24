@@ -28,7 +28,7 @@ class LaunchFragment : BaseAppFragment<FragmentLaunchBinding>() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?,
+        savedInstanceState: Bundle?
     ): View {
         super.onCreate(savedInstanceState)
         _binding = inflater.inflateWithBinding(container, R.layout.fragment_launch)

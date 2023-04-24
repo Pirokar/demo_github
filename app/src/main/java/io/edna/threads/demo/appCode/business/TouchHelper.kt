@@ -23,7 +23,7 @@ class TouchHelper(listener: OnSwipeItemListener) {
             override fun onMove(
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
             ): Boolean {
                 return false
             }
@@ -39,7 +39,7 @@ class TouchHelper(listener: OnSwipeItemListener) {
                 dX: Float,
                 dY: Float,
                 actionState: Int,
-                isCurrentlyActive: Boolean,
+                isCurrentlyActive: Boolean
             ) {
                 super.onChildDraw(
                     c,
@@ -48,7 +48,7 @@ class TouchHelper(listener: OnSwipeItemListener) {
                     dX,
                     dY,
                     actionState,
-                    isCurrentlyActive,
+                    isCurrentlyActive
                 )
                 val itemView = viewHolder.itemView
                 if (dX > 0) {
@@ -56,14 +56,14 @@ class TouchHelper(listener: OnSwipeItemListener) {
                         itemView.left,
                         itemView.top,
                         itemView.left + dX.toInt(),
-                        itemView.bottom,
+                        itemView.bottom
                     )
                 } else if (dX < 0) {
                     background.setBounds(
                         itemView.right + dX.toInt(),
                         itemView.top,
                         itemView.right,
-                        itemView.bottom,
+                        itemView.bottom
                     )
                 } else {
                     background.setBounds(0, 0, 0, 0)
