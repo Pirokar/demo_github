@@ -43,7 +43,9 @@ object FileUtils {
     fun generateFileName(fd: FileDescription): String {
         val prefix = if (fd.downloadPath != null) {
             UUID.nameUUIDFromBytes(fd.downloadPath?.toByteArray())
-        } else ""
+        } else {
+            ""
+        }
         val name = getFileName(fd)
         return "${prefix}_$name"
     }
@@ -134,7 +136,9 @@ object FileUtils {
         }
         return if (fd.fileUri != null) {
             getMimeType(fd.fileUri!!)
-        } else UNKNOWN_MIME_TYPE
+        } else {
+            UNKNOWN_MIME_TYPE
+        }
     }
 
     @JvmStatic
@@ -200,7 +204,15 @@ object FileUtils {
     fun convertRelativeUrlToAbsolute(relativeUrl: String?): String? {
         return if (TextUtils.isEmpty(relativeUrl) || relativeUrl!!.startsWith("http")) {
             relativeUrl
-        } else BaseConfig.instance.datastoreUrl + "files/" + relativeUrl
+        } else {
+            val datastoreUrl = BaseConfig.instance.datastoreUrl
+            val filesUrl = if (datastoreUrl.endsWith("/")) {
+                "${datastoreUrl}files"
+            } else {
+                "$datastoreUrl/files"
+            }
+            "$filesUrl/$relativeUrl"
+        }
     }
 
     @JvmStatic
@@ -233,9 +245,11 @@ object FileUtils {
         val extensionFromPath = getExtensionFromPath(fileDescription.incomingName)
         return if (extensionFromPath != UNKNOWN) {
             extensionFromPath
-        } else getExtensionFromPath(
-            fileDescription.downloadPath
-        )
+        } else {
+            getExtensionFromPath(
+                fileDescription.downloadPath
+            )
+        }
     }
 
     private fun getExtensionFromPath(path: String?): Int {
@@ -273,7 +287,9 @@ object FileUtils {
             extension.equals("xlt", ignoreCase = true)
         ) {
             OTHER_DOC_FORMATS
-        } else UNKNOWN
+        } else {
+            UNKNOWN
+        }
     }
 
     private fun getExtensionFromMimeType(mimeType: String): Int {
@@ -293,19 +309,19 @@ object FileUtils {
             .get()
             .load(uri.toString())
             .getBitmapSync(BaseConfig.instance.context)?.let { bitmap ->
-                val byteArrayOutputStream = ByteArrayOutputStream()
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
-                try {
-                    FileOutputStream(outputFile).use { fileOutputStream ->
-                        fileOutputStream.write(byteArrayOutputStream.toByteArray())
-                        fileOutputStream.flush()
-                        bitmap.recycle()
-                    }
-                } catch (e: IOException) {
-                    LoggerEdna.error("saveToFile", e)
+            val byteArrayOutputStream = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
+            try {
+                FileOutputStream(outputFile).use { fileOutputStream ->
+                    fileOutputStream.write(byteArrayOutputStream.toByteArray())
+                    fileOutputStream.flush()
                     bitmap.recycle()
                 }
+            } catch (e: IOException) {
+                LoggerEdna.error("saveToFile", e)
+                bitmap.recycle()
             }
+        }
     }
 
     @Throws(IOException::class)
@@ -315,21 +331,21 @@ object FileUtils {
             .get()
             .load(uri.toString())
             .getBitmapSync(BaseConfig.instance.context)?.let { bitmap ->
-                val byteArrayOutputStream = ByteArrayOutputStream()
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
-                try {
-                    resolver.openOutputStream(outputUri!!).use { fileOutputStream ->
-                        if (fileOutputStream != null) {
-                            fileOutputStream.write(byteArrayOutputStream.toByteArray())
-                            fileOutputStream.flush()
-                            bitmap.recycle()
-                        }
+            val byteArrayOutputStream = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
+            try {
+                resolver.openOutputStream(outputUri!!).use { fileOutputStream ->
+                    if (fileOutputStream != null) {
+                        fileOutputStream.write(byteArrayOutputStream.toByteArray())
+                        fileOutputStream.flush()
+                        bitmap.recycle()
                     }
-                } catch (e: IOException) {
-                    LoggerEdna.error("cannot get bitmap in saveToUri", e)
-                    bitmap.recycle()
                 }
+            } catch (e: IOException) {
+                LoggerEdna.error("cannot get bitmap in saveToUri", e)
+                bitmap.recycle()
             }
+        }
     }
 
     @JvmStatic
@@ -340,7 +356,9 @@ object FileUtils {
         val path = getFileNameFromMediaStore(context, contentUri)
         return if (path == null || !path.contains(".")) {
             null
-        } else path.substring(path.lastIndexOf(".") + 1)
+        } else {
+            path.substring(path.lastIndexOf(".") + 1)
+        }
     }
 
     @SuppressLint("NewApi")

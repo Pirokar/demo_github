@@ -26,15 +26,15 @@
   {
     "name": "Mobile 4",
     "threadsGateProviderUid": "MOBILE4_HwZ9QhTihb2d8U3I17dBHy1NB9vA9XVkMz65",
-    "serverBaseUrl": "https://mobile4.dev.flex.mfms.ru",
-    "datastoreUrl": "https://mobile4.dev.flex.mfms.ru",
+    "serverBaseUrl": "https://mobile4.dev.flex.mfms.ru/",
+    "datastoreUrl": "https://mobile4.dev.flex.mfms.ru/",
     "threadsGateUrl": "ws://mobile4.dev.flex.mfms.ru/gate/socket",
     "isSSLPinningDisabled": true
   },
   {
     "name": "Beta 3",
     "threadsGateProviderUid": "KtfvH538KBfjoMMY9Q9ha65CtWeMshQb6nBPhAY12SMH8",
-    "serverBaseUrl": "https://arm-beta3-ecc.edna.ru",
+    "serverBaseUrl": "https://arm-beta3-ecc.edna.ru/",
     "datastoreUrl": "https://arm.beta3.chc.dte/",
     "threadsGateUrl": "wss://arm-beta3-ecc.edna.ru/gate/socket",
     "isSSLPinningDisabled": true
@@ -42,7 +42,7 @@
   {
     "name": "GPB",
     "threadsGateProviderUid": "GPB-TEST_iT6VrvripZeDCCVJzdRfEu9QpMMvIe5L5KcEM",
-    "serverBaseUrl": "http://open-ig.gpb-test.chc.dte",
+    "serverBaseUrl": "http://open-ig.gpb-test.chc.dte/",
     "datastoreUrl": "http://open-ig.gpb-test.chc.dte/",
     "threadsGateUrl": "ws://open-ig.gpb-test.chc.dte/gate/socket",
     "isSSLPinningDisabled": true
@@ -58,7 +58,7 @@
   {
     "name": "Tg",
     "threadsGateProviderUid": "TG_OTNqTHJ2cmlwWmVEWFNLSnpkUmZFdTlRcE1NdkllNUxLS0hRbA",
-    "serverBaseUrl": "http://arm.tg.chc.dte",
+    "serverBaseUrl": "http://arm.tg.chc.dte/",
     "datastoreUrl": "http://datastore.tg.chc.dte/",
     "threadsGateUrl": "ws://tg.tg.chc.dte/gate/socket",
     "isSSLPinningDisabled": true
@@ -66,7 +66,7 @@
   {
     "name": "PROD",
     "threadsGateProviderUid": "YmV0YS1wcm9kLmVkbmEucnU7O2FuZHJvaWQ7OzIwMjIwMzI4",
-    "serverBaseUrl": "https://beta-prod.edna.ru",
+    "serverBaseUrl": "https://beta-prod.edna.ru/",
     "datastoreUrl": "https://beta-prod.edna.ru/",
     "threadsGateUrl": "wss://beta-prod.edna.ru/socket",
     "isSSLPinningDisabled": true
