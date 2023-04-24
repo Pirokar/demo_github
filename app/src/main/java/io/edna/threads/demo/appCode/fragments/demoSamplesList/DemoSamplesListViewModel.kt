@@ -5,6 +5,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import im.threads.ui.core.ThreadsLib
 import io.edna.threads.demo.R
 import io.edna.threads.demo.appCode.business.StringsProvider
 import io.edna.threads.demo.appCode.business.VolatileLiveData
@@ -25,6 +26,11 @@ class DemoSamplesListViewModel(
     override fun onCreate(owner: LifecycleOwner) {
         super.onCreate(owner)
         createData()
+    }
+
+    override fun onDestroy(owner: LifecycleOwner) {
+        super.onDestroy(owner)
+        ThreadsLib.getInstance().logoutClient()
     }
 
     fun onItemClick(item: DemoSamplesListItem) {

@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import im.threads.business.annotation.OpenWay
+import im.threads.ui.core.ThreadsLib
 import im.threads.ui.fragments.ChatFragment
 import io.edna.threads.demo.R
 import io.edna.threads.demo.appCode.extensions.inflateWithBinding
@@ -23,9 +24,15 @@ class ChatAppFragment : BaseAppFragment<FragmentChatBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        subscribeToGlobalBackClick()
         childFragmentManager
             .beginTransaction()
             .add(R.id.chatFragmentContainer, ChatFragment.newInstance(OpenWay.FROM_PUSH))
             .commit()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        ThreadsLib.getInstance().logoutClient()
     }
 }

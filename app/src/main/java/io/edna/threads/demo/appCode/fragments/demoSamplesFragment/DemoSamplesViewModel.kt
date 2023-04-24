@@ -5,6 +5,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import im.threads.business.annotation.OpenWay
+import im.threads.ui.core.ThreadsLib
 import im.threads.ui.fragments.ChatFragment
 import io.edna.threads.demo.appCode.business.PreferencesProvider
 import io.edna.threads.demo.appCode.business.SingleLiveEvent
@@ -26,6 +27,7 @@ class DemoSamplesViewModel(
     override fun onDestroy(owner: LifecycleOwner) {
         super.onDestroy(owner)
         preferencesProvider.cleanJsonOnPreferences()
+        ThreadsLib.getInstance().logoutClient()
     }
 
     private fun setJsonMock() {

@@ -21,6 +21,7 @@ import im.threads.business.preferences.PreferencesCoreKeys
 import im.threads.business.rest.models.VersionsModel
 import im.threads.business.rest.queries.BackendApi
 import im.threads.business.rest.queries.DatastoreApi
+import im.threads.business.secureDatabase.DatabaseHolder
 import im.threads.business.serviceLocator.core.inject
 import im.threads.business.serviceLocator.core.startEdnaLocator
 import im.threads.business.serviceLocator.coreSLModule
@@ -47,9 +48,12 @@ open class ThreadsLibBase protected constructor(context: Context) {
         startEdnaLocator { modules(coreSLModule, uiSLModule) }
     }
 
+    private val coroutineScope = CoroutineScope(Dispatchers.IO)
+
     val preferences: Preferences by inject()
     private val clientUseCase: ClientUseCase by inject()
     private val chatUpdateProcessor: ChatUpdateProcessor by inject()
+    private val database: DatabaseHolder by inject()
 
     /**
      * @return time in seconds since the last user activity
@@ -95,6 +99,7 @@ open class ThreadsLibBase protected constructor(context: Context) {
         val clientId = preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)?.clientId
         if (!clientId.isNullOrBlank()) {
             BaseConfig.instance.transport.sendClientOffline(clientId)
+            coroutineScope.launch { database.cleanDatabase() }
             preferences.save(PreferencesCoreKeys.USER_INFO, null, true)
             preferences.save(PreferencesCoreKeys.TAG_NEW_CLIENT_ID, "", true)
             preferences.save(PreferencesCoreKeys.THREAD_ID, -1L, true)
