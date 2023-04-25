@@ -144,7 +144,6 @@ class ConsultVoiceMessageViewHolder(
             for (i in 0 until viewGroup.childCount) {
                 viewGroup.getChildAt(i).setOnLongClickListener(onLongClick)
             }
-            it.state = AttachmentStateEnum.PENDING
             when (it.state) {
                 AttachmentStateEnum.PENDING -> showLoaderLayout(it)
                 AttachmentStateEnum.ERROR -> showErrorLayout(it)

@@ -93,7 +93,7 @@
                 android:id="@+id/delimiter"
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
-                android:layout_marginStart="@dimen/ecc_margin_half"
+                android:layout_marginStart="@dimen/ecc_margin_three_fourth"
                 android:layout_marginTop="@dimen/ecc_margin_half" />
 
             <LinearLayout
@@ -119,6 +119,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/ecc_margin_half"
                     android:layout_marginTop="2dp"
+                    android:layout_marginEnd="@dimen/ecc_margin_half"
                     android:ellipsize="end"
                     android:maxLines="3"
                     android:textColor="@color/ecc_incoming_message_text"
@@ -138,7 +139,7 @@
 
         <FrameLayout
             android:id="@+id/phraseFrame"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingBottom="5dp">
 
