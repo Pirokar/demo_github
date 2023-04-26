@@ -62,8 +62,10 @@
             android:layout_marginStart="@dimen/ecc_margin_three_fourth"
             android:layout_marginTop="@dimen/ecc_margin_half"
             android:textColor="@color/ecc_incoming_message_text"
+            app:layout_constrainedWidth="true"
             app:layout_constraintStart_toEndOf="@+id/delimiter"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             tools:text="счет на.pdf" />
 
         <im.threads.ui.widget.textView.BubbleMessageTextView
