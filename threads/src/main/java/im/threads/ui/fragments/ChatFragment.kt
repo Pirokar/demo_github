@@ -2231,6 +2231,7 @@ class ChatFragment :
                     binding.reply.setOnClickListener {
                         onReplyClick(chatPhrase, position)
                         hideBackButton()
+                        unChooseItem()
                     }
                 }
             } else {
