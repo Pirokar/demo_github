@@ -295,7 +295,7 @@
         android:layout_marginTop="@dimen/ecc_margin_half"
         android:gravity="end"
         android:paddingStart="0dp"
-        android:paddingEnd="@dimen/ecc_consultant_margin_right"
+        android:layout_marginEnd="@dimen/ecc_user_margin_right"
         android:textSize="@dimen/ecc_error_text_size"
         android:visibility="gone"
         tools:text="Some error text"
