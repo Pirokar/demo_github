@@ -16,15 +16,12 @@ import androidx.core.graphics.BlendModeCompat
 import com.google.android.material.slider.Slider
 import im.threads.R
 import im.threads.business.formatters.SpeechStatus
-import im.threads.business.imageLoading.ImageModifications
-import im.threads.business.imageLoading.loadImage
 import im.threads.business.media.FileDescriptionMediaPlayer
 import im.threads.business.models.ChatItem
 import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.FileDescription
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.ogParser.OpenGraphParser
-import im.threads.business.utils.FileUtils
 import im.threads.business.utils.UrlUtils
 import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.utils.gone
@@ -128,9 +125,7 @@ class ConsultVoiceMessageViewHolder(
         onSliderTouchListener: Slider.OnSliderTouchListener
     ) {
         subscribeForHighlighting(consultPhrase, rootLayout)
-        consultAvatar.setOnClickListener(onAvatarClickListener)
         checkText(consultPhrase)
-
         consultPhrase.fileDescription?.let {
             fileDescription = it
             subscribeForVoiceMessageDownloaded()
@@ -152,7 +147,7 @@ class ConsultVoiceMessageViewHolder(
             }
             fileSizeTextView.text = formattedDuration
             timeStampTextView.text = sdf.format(Date(consultPhrase.timeStamp))
-            showAvatar(consultPhrase)
+            showAvatar(consultAvatar, consultPhrase, onAvatarClickListener)
             changeHighlighting(highlighted)
         }
     }
@@ -164,24 +159,6 @@ class ConsultVoiceMessageViewHolder(
             highlightOperatorText(phraseTextView, consultPhrase, extractedLink?.link)
         } else {
             phraseTextView.gone()
-        }
-    }
-
-    private fun showAvatar(consultPhrase: ConsultPhrase) {
-        if (consultPhrase.isAvatarVisible) {
-            consultAvatar.visible()
-            consultPhrase.avatarPath?.let {
-                consultAvatar.loadImage(
-                    FileUtils.convertRelativeUrlToAbsolute(it),
-                    listOf(ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.FIT_XY),
-                    errorDrawableResId = R.drawable.ecc_operator_avatar_placeholder,
-                    modifications = listOf(ImageModifications.CircleCropModification)
-                )
-            } ?: run {
-                consultAvatar.setImageResource(style.defaultOperatorAvatar)
-            }
-        } else {
-            consultAvatar.invisible()
         }
     }
 
