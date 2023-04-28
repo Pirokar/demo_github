@@ -16,7 +16,6 @@ import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
-import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import im.threads.R
 import im.threads.business.formatters.RussianFormatSymbols
@@ -37,7 +36,6 @@ import im.threads.business.utils.toFileSize
 import im.threads.ui.config.Config
 import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.utils.gone
-import im.threads.ui.utils.invisible
 import im.threads.ui.utils.visible
 import im.threads.ui.views.CircularProgressButton
 import im.threads.ui.widget.textView.BubbleMessageTextView
@@ -198,9 +196,7 @@ class ConsultPhraseHolder(
                 }
             }
         }
-
-        consultAvatar.setOnClickListener(onAvatarClickListener)
-        showAvatar(consultPhrase)
+        showAvatar(consultAvatar, consultPhrase, onAvatarClickListener)
         changeHighlighting(highlighted)
         if (consultPhrase.fileDescription != null || consultPhrase.quote != null) {
             phraseFrame.layoutParams.width = FrameLayout.LayoutParams.MATCH_PARENT
@@ -300,27 +296,31 @@ class ConsultPhraseHolder(
         image.visible()
         imageRoot.visible()
         image.setOnClickListener(imageClickListener)
-        startLoaderAnimation()
-        val loadConfig = ImageLoader
-            .get()
-            .load(imagePath)
-            .autoRotateWithExif(true)
-            .scales(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP)
-            .modifications(maskedTransformation)
-            .callback(object : ImageLoader.ImageLoaderCallback {
-                override fun onImageLoaded() {
-                    stopLoaderAnimation()
-                }
+        if (!imagePath.isNullOrEmpty()) {
+            startLoaderAnimation()
+            val loadConfig = ImageLoader
+                .get()
+                .load(imagePath)
+                .autoRotateWithExif(true)
+                .scales(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP)
+                .modifications(maskedTransformation)
+                .callback(object : ImageLoader.ImageLoaderCallback {
+                    override fun onImageLoaded() {
+                        stopLoaderAnimation()
+                    }
 
-                override fun onImageLoadError() {
-                    showErrorImage(imageLayout, errorImage)
-                    stopLoaderAnimation()
-                }
-            })
-        if (isExternalImage) {
-            loadConfig.disableEdnaSsl()
+                    override fun onImageLoadError() {
+                        showErrorImage(imageLayout, errorImage)
+                        stopLoaderAnimation()
+                    }
+                })
+            if (isExternalImage) {
+                loadConfig.disableEdnaSsl()
+            }
+            loadConfig.into(image)
+        } else {
+            image.setImageResource(style.imagePlaceholder)
         }
-        loadConfig.into(image)
     }
 
     private fun showPhrase(
@@ -358,12 +358,17 @@ class ConsultPhraseHolder(
             } else {
                 if (isImage(quote.fileDescription)) {
                     fileImage.visibility = View.VISIBLE
-                    fileImage.loadImage(
-                        quoteFileDescription.downloadPath,
-                        listOf(ImageView.ScaleType.FIT_CENTER, ImageView.ScaleType.CENTER_CROP),
-                        style.imagePlaceholder,
-                        autoRotateWithExif = true
-                    )
+                    val fileUri = quoteFileDescription.fileUri?.toString() ?: quoteFileDescription.downloadPath
+                    if (!fileUri.isNullOrEmpty()) {
+                        fileImage.loadImage(
+                            quoteFileDescription.downloadPath,
+                            listOf(ImageView.ScaleType.FIT_CENTER, ImageView.ScaleType.CENTER_CROP),
+                            style.imagePlaceholder,
+                            autoRotateWithExif = true
+                        )
+                    } else {
+                        fileImage.setImageResource(style.imagePlaceholder)
+                    }
                     fileImage.setOnClickListener(onQuoteClickListener)
                 } else {
                     circularProgressButton.visibility = View.VISIBLE
@@ -452,26 +457,6 @@ class ConsultPhraseHolder(
                 quoteSdf.format(Date(fileDescription.timeStamp))
             )
             circularProgressButton.setProgress(if (fileDescription.fileUri != null) 100 else fileDescription.downloadProgress)
-        }
-    }
-
-    private fun showAvatar(consultPhrase: ConsultPhrase) {
-        if (consultPhrase.isAvatarVisible) {
-            if (consultAvatar.isInvisible) consultAvatar.visible()
-            consultPhrase.avatarPath?.let {
-                consultAvatar.loadImage(
-                    FileUtils.convertRelativeUrlToAbsolute(consultPhrase.avatarPath),
-                    listOf(ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.FIT_XY),
-                    errorDrawableResId = R.drawable.ecc_operator_avatar_placeholder,
-                    autoRotateWithExif = true,
-                    modifications = listOf(ImageModifications.CircleCropModification),
-                    noPlaceholder = true
-                )
-            } ?: run {
-                consultAvatar.setImageResource(style.defaultOperatorAvatar)
-            }
-        } else {
-            consultAvatar.invisible()
         }
     }
 }

@@ -1,6 +1,5 @@
 package im.threads.ui.holders
 
-import android.text.TextUtils
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -13,11 +12,8 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
-import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import im.threads.R
-import im.threads.business.imageLoading.ImageModifications
-import im.threads.business.imageLoading.loadImage
 import im.threads.business.models.ChatItem
 import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.FileDescription
@@ -95,7 +91,7 @@ class ConsultFileViewHolder(
         }
         mCircularProgressButton.setOnClickListener(buttonClickListener)
         changeHighlighting(highlighted)
-        showAvatar(consultPhrase, onAvatarClickListener)
+        showAvatar(mConsultAvatar, consultPhrase, onAvatarClickListener)
     }
 
     private fun applyBubbleLayoutStyle() {
@@ -155,29 +151,6 @@ class ConsultFileViewHolder(
             errorText.text = config.context.getString(R.string.ecc_some_error_during_load_file)
         } else {
             errorText.text = fileDescription.errorMessage
-        }
-    }
-
-    private fun showAvatar(
-        consultPhrase: ConsultPhrase,
-        onAvatarClickListener: View.OnClickListener
-    ) {
-        if (consultPhrase.isAvatarVisible) {
-            if (mConsultAvatar.isInvisible) mConsultAvatar.visible()
-            mConsultAvatar.setOnClickListener(onAvatarClickListener)
-            mConsultAvatar.setImageResource(style.defaultOperatorAvatar)
-            if (!TextUtils.isEmpty(consultPhrase.avatarPath)) {
-                mConsultAvatar.loadImage(
-                    FileUtils.convertRelativeUrlToAbsolute(consultPhrase.avatarPath),
-                    listOf(ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.FIT_XY),
-                    errorDrawableResId = R.drawable.ecc_operator_avatar_placeholder,
-                    autoRotateWithExif = true,
-                    modifications = listOf(ImageModifications.CircleCropModification),
-                    noPlaceholder = true
-                )
-            }
-        } else {
-            mConsultAvatar.visibility = View.INVISIBLE
         }
     }
 }
