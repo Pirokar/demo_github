@@ -46,19 +46,31 @@ class SendingStatusObserver(private val chatAdapterRef: WeakReference<ChatAdapte
                             chatAdapterRef.get()?.list?.let { list ->
                                 val indexesToUpdate = ArrayList<Int>()
                                 list.indices.forEach { index ->
-                                    (list[index] as? UserPhrase)?.let { item ->
-                                        val thisTime = Date().time
-                                        val notDeliveredStatus = item.sentState == MessageStatus.SENDING ||
-                                            item.sentState == MessageStatus.SENT
-                                        if (notDeliveredStatus && thisTime - item.timeStamp > interval) {
-                                            val failedStatus = MessageStatus.FAILED
-                                            database.setStateOfUserPhraseByCorrelationId(item.id, failedStatus)
-                                            item.sentState = failedStatus
-                                            indexesToUpdate.add(index)
-                                            withContext(Dispatchers.Main) {
-                                                chatUpdateProcessor.postOutgoingMessageStatusChanged(
-                                                    listOf(Status(item.id, item.backendMessageId, MessageStatus.FAILED))
+                                    if (index < list.size) {
+                                        (list[index] as? UserPhrase)?.let { item ->
+                                            val thisTime = Date().time
+                                            val notDeliveredStatus =
+                                                item.sentState == MessageStatus.SENDING ||
+                                                    item.sentState == MessageStatus.SENT
+                                            if (notDeliveredStatus && thisTime - item.timeStamp > interval) {
+                                                val failedStatus = MessageStatus.FAILED
+                                                database.setStateOfUserPhraseByCorrelationId(
+                                                    item.id,
+                                                    failedStatus
                                                 )
+                                                item.sentState = failedStatus
+                                                indexesToUpdate.add(index)
+                                                withContext(Dispatchers.Main) {
+                                                    chatUpdateProcessor.postOutgoingMessageStatusChanged(
+                                                        listOf(
+                                                            Status(
+                                                                item.id,
+                                                                item.backendMessageId,
+                                                                MessageStatus.FAILED
+                                                            )
+                                                        )
+                                                    )
+                                                }
                                             }
                                         }
                                     }
