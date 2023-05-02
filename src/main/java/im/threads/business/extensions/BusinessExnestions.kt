@@ -6,7 +6,7 @@ import kotlinx.coroutines.withContext
 import java.io.PrintWriter
 import java.io.StringWriter
 
-suspend fun <T> CoroutineScope.withMainContext(block: CoroutineScope.() -> T) = withContext(Dispatchers.Main, block)
+suspend fun <T> withMainContext(block: CoroutineScope.() -> T) = withContext(Dispatchers.Main, block)
 
 fun Exception.fullLogString(): String {
     val stringWriter = StringWriter()
