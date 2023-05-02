@@ -17,7 +17,6 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
-import androidx.core.view.isInvisible
 import androidx.recyclerview.widget.RecyclerView
 import im.threads.R
 import im.threads.business.imageLoading.ImageLoader
@@ -558,21 +557,15 @@ abstract class BaseHolder internal constructor(
         val resources = itemView.context.resources
         val layoutParams = layout.layoutParams as ViewGroup.MarginLayoutParams
         if (isIncomingMessage) {
-            layoutParams.marginStart =
-                resources.getDimensionPixelSize(style.bubbleIncomingMarginLeft)
-            layoutParams.marginEnd =
-                resources.getDimensionPixelSize(style.bubbleIncomingMarginRight)
+            layoutParams.marginStart = resources.getDimensionPixelSize(style.bubbleIncomingMarginLeft)
+            layoutParams.marginEnd = resources.getDimensionPixelSize(style.bubbleIncomingMarginRight)
             layoutParams.topMargin = resources.getDimensionPixelSize(style.bubbleIncomingMarginTop)
-            layoutParams.bottomMargin =
-                resources.getDimensionPixelSize(style.bubbleIncomingMarginBottom)
+            layoutParams.bottomMargin = resources.getDimensionPixelSize(style.bubbleIncomingMarginBottom)
         } else {
-            layoutParams.marginStart =
-                resources.getDimensionPixelSize(style.bubbleOutgoingMarginLeft)
-            layoutParams.marginEnd =
-                resources.getDimensionPixelSize(style.bubbleOutgoingMarginRight)
+            layoutParams.marginStart = resources.getDimensionPixelSize(style.bubbleOutgoingMarginLeft)
+            layoutParams.marginEnd = resources.getDimensionPixelSize(style.bubbleOutgoingMarginRight)
             layoutParams.topMargin = resources.getDimensionPixelSize(style.bubbleOutgoingMarginTop)
-            layoutParams.bottomMargin =
-                resources.getDimensionPixelSize(style.bubbleOutgoingMarginBottom)
+            layoutParams.bottomMargin = resources.getDimensionPixelSize(style.bubbleOutgoingMarginBottom)
         }
         layout.layoutParams = layoutParams
         layout.invalidate()
@@ -586,20 +579,16 @@ abstract class BaseHolder internal constructor(
     ) {
         consultAvatar.setOnClickListener(onAvatarClickListener)
         if (consultPhrase.isAvatarVisible) {
-            if (consultAvatar.isInvisible) consultAvatar.visible()
-            consultPhrase.avatarPath?.let {
-                if (it.isNotEmpty()) {
-                    consultAvatar.loadImage(
-                        FileUtils.convertRelativeUrlToAbsolute(it),
-                        listOf(ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.FIT_XY),
-                        errorDrawableResId = R.drawable.ecc_operator_avatar_placeholder,
-                        modifications = listOf(ImageModifications.CircleCropModification),
-                        noPlaceholder = true
-                    )
-                } else {
-                    consultAvatar.setImageResource(style.defaultOperatorAvatar)
-                }
-            } ?: run {
+            consultAvatar.visible()
+            if (!consultPhrase.avatarPath.isNullOrEmpty()) {
+                consultAvatar.loadImage(
+                    FileUtils.convertRelativeUrlToAbsolute(consultPhrase.avatarPath),
+                    listOf(ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.FIT_XY),
+                    errorDrawableResId = R.drawable.ecc_operator_avatar_placeholder,
+                    modifications = listOf(ImageModifications.CircleCropModification),
+                    noPlaceholder = true
+                )
+            } else {
                 consultAvatar.setImageResource(style.defaultOperatorAvatar)
             }
         } else {
