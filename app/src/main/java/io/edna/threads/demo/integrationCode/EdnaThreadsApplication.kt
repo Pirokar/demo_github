@@ -47,6 +47,7 @@ class EdnaThreadsApplication : Application() {
             configBuilder.datastoreUrl(server.datastoreUrl)
             configBuilder.threadsGateUrl(server.threadsGateUrl)
             configBuilder.threadsGateProviderUid(server.threadsGateProviderUid)
+            configBuilder.setNewChatCenterApi()
         }
 
         ThreadsLib.init(configBuilder)
