@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <integer name="ecc_max_count_attached_images">10</integer>
-    <integer name="ecc_max_count_attached_images_final">20</integer>
-</resources>

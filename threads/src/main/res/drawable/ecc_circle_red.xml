@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="oval">
-    <size
-        android:width="@dimen/ecc_margin_half"
-        android:height="@dimen/ecc_margin_half" />
-    <solid android:color="@color/ecc_chat_unread_msg_sticker_background" />
-</shape>
