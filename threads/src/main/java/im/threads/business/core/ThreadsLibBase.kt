@@ -28,6 +28,7 @@ import im.threads.business.useractivity.UserActivityTimeProvider.getLastUserActi
 import im.threads.business.useractivity.UserActivityTimeProvider.initializeLastUserActivity
 import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.preferences.PreferencesMigrationBase
+import im.threads.ui.controllers.ChatController
 import im.threads.ui.fragments.ChatFragment
 import im.threads.ui.serviceLocator.uiSLModule
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -100,6 +101,7 @@ open class ThreadsLibBase protected constructor(context: Context) {
         } else {
             info("clientId must not be empty")
         }
+        ChatController.getInstance().cleanAll()
     }
 
     /**
