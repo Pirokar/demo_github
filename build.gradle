@@ -1,27 +1,203 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+    id 'kotlin-parcelize'
+    id 'kotlin-kapt'
+    id 'maven-publish'
+    id 'kotlin-allopen'
+}
 
-buildscript {
-    repositories {
-        google()
-        jcenter()
-        
+Properties properties = new Properties()
+if (rootProject.file("local.properties").exists()) {
+    properties.load(rootProject.file("local.properties").newDataInputStream())
+}
+def mavenProdUser = properties.getProperty('mavenProdUser')
+def mavenProdPass = properties.getProperty('mavenProdPass')
+
+android {
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:3.3.1'
-        
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
+    kotlinOptions {
+        jvmTarget = '11'
+    }
+    compileSdk 33
+
+    lintOptions {
+        disable 'InvalidPackage'
+        abortOnError false
+    }
+
+    buildFeatures {
+        dataBinding = true
+    }
+
+    defaultConfig {
+        minSdk 21
+        targetSdk 31
+
+        vectorDrawables.useSupportLibrary = true
+
+        ndk {
+            abiFilters "armeabi", "armeabi-v7a", "x86", "x86_64", "arm64_v8a"
+        }
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            buildConfigField "String", "VERSION_NAME", "\"${version}\""
+            consumerProguardFiles 'proguard-rules.pro'
+        }
+        debug {
+            buildConfigField "String", "VERSION_NAME", "\"${version}\""
+            consumerProguardFiles 'proguard-rules.pro'
+        }
+    }
+
+    packagingOptions {
+        pickFirst 'lib/arm64-v8a/libsqlcipher.so'
+        pickFirst 'lib/armeabi/libsqlcipher.so'
+        pickFirst 'lib/armeabi-v7a/libsqlcipher.so'
+        pickFirst 'lib/x86/libsqlcipher.so'
+        pickFirst 'lib/x86_64/libsqlcipher.so'
+        jniLibs {
+            useLegacyPackaging = true
+        }
+    }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
+
+    buildFeatures {
+        viewBinding = true
     }
 }
 
-allprojects {
-    repositories {
-        google()
-        jcenter()
-        
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                artifact "build/outputs/aar/threads-release.aar"
+                groupId = 'im.threads'
+                artifactId = 'threads-release'
+                version = "${version}"
+                pom.withXml {
+                    def dependenciesNode = asNode().appendNode('dependencies')
+                    configurations.implementation.allDependencies.each {
+                        def dependencyNode = dependenciesNode.appendNode('dependency')
+                        dependencyNode.appendNode('groupId', it.group)
+                        dependencyNode.appendNode('artifactId', it.name)
+                        dependencyNode.appendNode('version', it.version)
+                        dependencyNode.appendNode('scope', 'runtime')
+                    }
+                }
+            }
+            debug(MavenPublication) {
+                artifact "build/outputs/aar/threads-debug.aar"
+                groupId = 'im.threads'
+                artifactId = 'threads-debug'
+                version = "${version}"
+                pom.withXml {
+                    def dependenciesNode = asNode().appendNode('dependencies')
+                    configurations.implementation.allDependencies.each {
+                        def dependencyNode = dependenciesNode.appendNode('dependency')
+                        dependencyNode.appendNode('groupId', it.group)
+                        dependencyNode.appendNode('artifactId', it.name)
+                        dependencyNode.appendNode('version', it.version)
+                        dependencyNode.appendNode('scope', 'runtime')
+                    }
+                }
+            }
+        }
+
+        repositories {
+            maven {
+                if ("$version".contains('SNAPSHOT')) {
+                    // dev
+                    url 'https://maven-pub.edna.ru/repository/maven-snapshots'
+                } else {
+                    // release
+                    url 'https://maven-pub.edna.ru/repository/maven-releases'
+                }
+                credentials {
+                    username "$mavenProdUser"
+                    password "$mavenProdPass"
+                }
+            }
+        }
     }
 }
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
+configurations {
+    all {
+        exclude group: 'androidx.lifecycle', module: 'lifecycle-viewmodel-ktx'
+    }
+}
+
+dependencies {
+
+    implementation "androidx.preference:preference-ktx:$rootProject.androidXPreferenceVersion"
+    implementation "androidx.core:core-ktx:$rootProject.androidXCoreVersion"
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:$rootProject.androidXSwiperefreshlayout"
+    implementation "com.google.android.material:material:$rootProject.materialComponentsVersion"
+
+    implementation "com.squareup.retrofit2:retrofit:$rootProject.retrofitVersion"
+    implementation "com.squareup.retrofit2:converter-gson:$rootProject.retrofitVersion"
+
+    implementation "com.squareup.okhttp3:logging-interceptor:$rootProject.okhttpVersion"
+
+    implementation "io.reactivex.rxjava2:rxjava:$rootProject.rxjava2Version"
+    implementation "io.reactivex.rxjava2:rxandroid:$rootProject.rxAndroidVersion"
+    implementation "com.annimon:stream:$rootProject.streamVersion"
+
+    implementation "com.google.code.gson:gson:$rootProject.gsonVersion"
+    implementation "com.squareup.picasso:picasso:$rootProject.picasso_version"
+
+    implementation "com.github.3llomi:RecordView:$rootProject.recordViewVersion"
+    implementation "com.writingminds:FFmpegAndroid:$ffmpeg"
+
+    implementation "com.google.firebase:firebase-messaging:$fcmVersion"
+
+    implementation "com.google.android.flexbox:flexbox:$flexboxVersion"
+
+    implementation "androidx.work:work-runtime-ktx:$work_version"
+
+    implementation "net.zetetic:sqlcipher-android:$sqlcipher_version"
+    implementation "androidx.sqlite:sqlite:$sqlite_version"
+
+    //For encrypted preferences
+    implementation "com.google.crypto.tink:tink-android:$crypto_tink"
+
+    //Markwon
+    implementation "io.noties.markwon:core:$markwonVersion"
+    implementation "io.noties.markwon:ext-strikethrough:$markwonVersion"
+    implementation "io.noties.markwon:image:$markwonVersion"
+
+    //Html parsing
+    implementation 'org.jsoup:jsoup:1.15.2'
+
+    //Tests
+    testImplementation "org.robolectric:robolectric:$rootProject.robolectricVersion"
+    testImplementation "androidx.test.ext:junit:$rootProject.androidXJunitVersion"
+    testImplementation "org.mockito:mockito-core:$rootProject.mockitoVersion"
+    testImplementation group: 'org.mockito', name: 'mockito-inline', version: rootProject.mockitoInlineVersion
+    testImplementation "com.github.tomakehurst:wiremock-jre8:$webserver_version"
+    androidTestImplementation "com.squareup.okhttp3:mockwebserver:$okhttp_webserver_version"
+    androidTestImplementation "androidx.test.ext:junit-ktx:$test_ext"
+    androidTestImplementation "com.kaspersky.android-components:kaspresso:$kaspresso_version"
+    androidTestImplementation "androidx.test:runner:$rootProject.androidXTestVersion"
+    androidTestImplementation "androidx.test:rules:$rootProject.androidXTestVersion"
+    androidTestImplementation "org.mockito:mockito-core:$rootProject.mockitoVersion"
+    androidTestImplementation "org.mockito:mockito-android:$rootProject.mockitoVersion"
+}
+
+allOpen {
+    annotation('im.threads.annotation.OpenClass')
 }
