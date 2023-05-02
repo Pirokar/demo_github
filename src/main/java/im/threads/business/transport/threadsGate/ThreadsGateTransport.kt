@@ -28,6 +28,7 @@ import im.threads.business.models.UserPhrase
 import im.threads.business.preferences.Preferences
 import im.threads.business.preferences.PreferencesCoreKeys
 import im.threads.business.rest.config.SocketClientSettings
+import im.threads.business.rest.queries.ThreadsApi
 import im.threads.business.secureDatabase.DatabaseHolder
 import im.threads.business.serviceLocator.core.inject
 import im.threads.business.transport.AuthInterceptor
@@ -257,6 +258,7 @@ class ThreadsGateTransport(
         val ws = webSocket ?: return
         val clientId = preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)?.clientId
         val deviceAddress = preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS)
+        val messageId = content.get(MessageAttributes.UUID)?.asString
         if (sendInit && !clientId.isNullOrBlank() && !deviceAddress.isNullOrBlank()) {
             sendInitChatMessage(false)
             sendEnvironmentMessage(false)
@@ -264,7 +266,7 @@ class ThreadsGateTransport(
         val text = BaseConfig.instance.gson.toJson(
             SendMessageRequest(
                 correlationId,
-                SendMessageRequest.Data(deviceAddress, content, important)
+                SendMessageRequest.Data(deviceAddress, messageId, content, important)
             )
         )
         sendMessageWithWebsocket(text)
@@ -289,11 +291,11 @@ class ThreadsGateTransport(
     }
 
     private fun sendRegisterDevice() {
-        val ws = webSocket ?: return
+        val userInfo = preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)
+        val clientId = userInfo?.clientId
         val deviceModel = getSimpleDeviceName()
         val deviceName = getDeviceName()
         val deviceAddress = preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS)
-        val clientId = preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)?.clientId
         val data = RegisterDeviceRequest.Data(
             AppInfoHelper.getAppId(),
             AppInfoHelper.getAppVersion(),
@@ -307,7 +309,8 @@ class ThreadsGateTransport(
             if (!TextUtils.isEmpty(deviceName)) deviceName else deviceModel,
             deviceModel,
             deviceAddress,
-            clientId
+            clientId,
+            ThreadsApi.API_VERSION
         )
         val text = BaseConfig.instance.gson.toJson(
             RegisterDeviceRequest(UUID.randomUUID().toString(), data)

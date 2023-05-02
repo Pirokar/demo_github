@@ -22,4 +22,5 @@ object MessageAttributes {
     const val SKILL_ID = "skillId"
     const val EXPIRED_AT = "expiredAt"
     const val COORDINATES = "coordinates"
+    const val AUTHORIZED = "authorized"
 }
