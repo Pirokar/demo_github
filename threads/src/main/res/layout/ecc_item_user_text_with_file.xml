@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rootLayout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:id="@+id/bubble"
+        style="@style/userBubble"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:tag="bubble">
+
+        <TableRow
+            android:id="@+id/quoteTextRow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start">
+
+            <ImageView
+                android:id="@+id/quoteImage"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="@dimen/ecc_margin_half"
+                android:layout_marginBottom="@dimen/ecc_margin_half"
+                android:visibility="gone" />
+
+            <View
+                android:id="@+id/quoteDelimiter"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="@dimen/ecc_margin_quarter"
+                android:layout_marginTop="@dimen/ecc_margin_quarter"
+                android:background="@android:color/white" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingStart="0dp"
+                android:paddingEnd="2dp">
+
+                <im.threads.ui.widget.textView.QuoteAuthorTextView
+                    android:id="@+id/quoteTo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/ecc_margin_half"
+                    android:layout_marginTop="2dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="80dp"
+                    android:textColor="@color/ecc_outgoing_message_text"
+                    android:textStyle="bold"
+                    tools:text="Иван Петров" />
+
+                <im.threads.ui.widget.textView.QuoteMessageTextView
+                    android:id="@+id/quoteFileSpecs"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/ecc_margin_half"
+                    android:layout_marginTop="2dp"
+                    android:ellipsize="end"
+                    android:maxLines="3"
+                    android:textColor="@color/ecc_outgoing_message_text"
+                    tools:text="счет на оплату 1,2mb 436666666666364" />
+
+                <im.threads.ui.widget.textView.QuoteTimeTextView
+                    android:id="@+id/quoteSendAt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/ecc_margin_half"
+                    android:layout_marginTop="2dp"
+                    android:textColor="@color/ecc_outgoing_message_text"
+                    android:textSize="12sp"
+                    tools:text="отправлено 21 апр 2016" />
+            </LinearLayout>
+        </TableRow>
+
+        <FrameLayout
+            android:id="@+id/imageRoot"
+            android:layout_width="@dimen/ecc_message_image_size"
+            android:layout_height="@dimen/ecc_message_image_size"
+            android:layout_gravity="center_horizontal">
+
+            <FrameLayout
+                android:id="@+id/imageLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+
+            </FrameLayout>
+
+            <ImageView
+                android:id="@+id/errorImage"
+                android:layout_width="match_parent"
+                android:layout_height="240dp"
+                android:layout_marginTop="@dimen/ecc_margin_quarter"
+                android:visibility="gone"
+                android:minWidth="240dp" />
+
+        </FrameLayout>
+
+        <TableRow
+            android:id="@+id/rightTextRow"
+            android:layout_width="@dimen/ecc_message_image_size"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginBottom="@dimen/ecc_margin_quarter"
+            android:visibility="gone"
+            android:paddingTop="@dimen/ecc_margin_quarter"
+            tools:visibility="visible">
+
+            <im.threads.ui.views.CircularProgressButton
+                android:id="@+id/buttonDownload"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="@dimen/ecc_margin_half"
+                android:layout_marginBottom="@dimen/ecc_margin_half"
+                android:background="@drawable/ecc_ic_file_outline_24dp"
+                android:visibility="gone"
+                app:completed_drawable="@drawable/ecc_ic_file_outline_24dp"
+                app:in_progress_label="@drawable/ecc_ic_clear_36dp"
+                app:start_download_label="@drawable/ecc_ic_vertical_align_bottom_18dp" />
+
+            <ImageView
+                android:id="@+id/loader"
+                android:layout_width="@dimen/ecc_operator_photo_size"
+                android:layout_height="@dimen/ecc_operator_photo_size"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="@dimen/ecc_margin_material"
+                android:layout_marginTop="@dimen/ecc_margin_material"
+                android:layout_marginEnd="@dimen/ecc_margin_three_fourth"
+                android:layout_marginBottom="@dimen/ecc_margin_material"
+                android:visibility="gone" />
+
+            <View
+                android:id="@+id/delimiter"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="@dimen/ecc_margin_quarter"
+                android:layout_marginTop="@dimen/ecc_margin_quarter"
+                android:background="@android:color/white" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingStart="0dp"
+                android:paddingEnd="2dp">
+
+                <im.threads.ui.widget.textView.QuoteAuthorTextView
+                    android:id="@+id/to"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/ecc_margin_half"
+                    android:layout_marginTop="2dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="@dimen/ecc_margin_half"
+                    android:textColor="@color/ecc_outgoing_message_text"
+                    android:textStyle="bold"
+                    tools:text="Иван Петров" />
+
+                <im.threads.ui.widget.textView.QuoteMessageTextView
+                    android:id="@+id/fileSpecs"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/ecc_margin_half"
+                    android:layout_marginTop="2dp"
+                    android:ellipsize="end"
+                    android:maxLines="3"
+                    android:textColor="@color/ecc_outgoing_message_text"
+                    tools:text="счет на оплату 1,2mb 436666666666364" />
+
+                <im.threads.ui.widget.textView.QuoteTimeTextView
+                    android:id="@+id/sendAt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/ecc_margin_half"
+                    android:layout_marginTop="2dp"
+                    android:textColor="@color/ecc_outgoing_message_text"
+                    android:textSize="12sp"
+                    tools:text="отправлено 21 апр 2016" />
+            </LinearLayout>
+        </TableRow>
+
+        <FrameLayout
+            android:id="@+id/phraseFrame"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <im.threads.ui.widget.textView.BubbleMessageTextView
+                android:id="@+id/text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:lineSpacingMultiplier="1.25"
+                android:paddingTop="5dp"
+                android:paddingBottom="@dimen/ecc_margin_half"
+                android:textColor="@color/ecc_outgoing_message_text"
+                android:textSize="16sp"
+                app:last_line_extra_padding_symbols="@dimen/ecc_last_line_extra_padding_symbols"
+                tools:text="user text google.com" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/voiceMessage"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-5dp"
+                android:layout_marginEnd="-12dp"
+                android:paddingStart="0dp"
+                android:paddingEnd="0dp">
+
+                <ImageButton
+                    android:id="@+id/voiceMessageUserButtonPlayPause"
+                    android:layout_width="@dimen/ecc_file_icon_size"
+                    android:layout_height="@dimen/ecc_file_icon_size"
+                    android:background="@null"
+                    android:scaleType="fitXY"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ecc_voice_message_play"
+                    android:contentDescription="@string/ecc_play_button" />
+
+                <com.google.android.material.slider.Slider
+                    android:id="@+id/voiceMessageUserSlider"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:theme="@style/ThemeOverlay.ChatCenter.Slider.User"
+                    android:layout_marginTop="-11dp"
+                    app:thumbRadius="@dimen/ecc_thumb_size"
+                    app:haloRadius="@dimen/ecc_halo_radius"
+                    app:layout_constraintStart_toEndOf="@+id/voiceMessageUserButtonPlayPause"
+                    app:layout_constraintTop_toTopOf="@id/voiceMessageUserButtonPlayPause"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+                <im.threads.ui.widget.textView.BubbleMessageTextView
+                    android:id="@+id/fileSize"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:textSize="@dimen/ecc_text_small"
+                    android:layout_marginTop="-11dp"
+                    android:layout_marginStart="@dimen/ecc_margin_half"
+                    android:textColor="@color/ecc_outgoing_message_text"
+                    app:layout_constraintStart_toStartOf="@+id/voiceMessageUserSlider"
+                    app:layout_constraintTop_toBottomOf="@+id/voiceMessageUserSlider"
+                    tools:text="1:20" />
+
+                <im.threads.ui.widget.textView.BubbleTimeTextView
+                    android:id="@+id/voiceTimeStamp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="@id/fileSize"
+                    app:layout_constraintEnd_toEndOf="@id/voiceMessageUserSlider"
+                    android:drawablePadding="@dimen/ecc_margin_half"
+                    android:paddingStart="@dimen/ecc_margin_half"
+                    android:layout_marginTop="@dimen/ecc_margin_quarter"
+                    android:layout_marginEnd="@dimen/ecc_margin_three_fourth"
+                    android:paddingEnd="0dp"
+                    android:textColor="@color/ecc_user_message_timestamp"
+                    tools:text="10:19" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <im.threads.ui.widget.textView.BubbleTimeTextView
+                android:id="@+id/timeStamp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:drawablePadding="@dimen/ecc_margin_half"
+                android:paddingStart="@dimen/ecc_margin_quarter"
+                android:paddingEnd="0dp"
+                android:layout_marginBottom="3dp"
+                android:textColor="@color/ecc_user_message_timestamp"
+                tools:text="10:19" />
+
+        </FrameLayout>
+
+        <include layout="@layout/ecc_open_graph_layout"/>
+    </LinearLayout>
+
+    <im.threads.ui.widget.textView.BubbleTimeTextView
+        android:id="@+id/errorText"
+        style="@style/timestamp"
+        android:layout_below="@+id/bubble"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="@dimen/ecc_margin_half"
+        android:gravity="end"
+        android:paddingStart="0dp"
+        android:paddingEnd="@dimen/ecc_consultant_margin_right"
+        android:textSize="@dimen/ecc_error_text_size"
+        android:visibility="gone"
+        tools:text="Some error text"
+        tools:visibility="visible" />
+</RelativeLayout>
