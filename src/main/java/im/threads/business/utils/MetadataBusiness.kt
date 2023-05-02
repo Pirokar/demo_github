@@ -17,7 +17,9 @@ object MetadataBusiness {
         val metaData = getMetaData(context)
         return if (metaData != null && metaData.containsKey(DATASTORE_URL)) {
             metaData.getString(DATASTORE_URL)
-        } else null
+        } else {
+            null
+        }
     }
 
     @JvmStatic
@@ -25,7 +27,9 @@ object MetadataBusiness {
         val metaData = getMetaData(context)
         return if (metaData != null && metaData.containsKey(SERVER_BASE_URL)) {
             metaData.getString(SERVER_BASE_URL)
-        } else null
+        } else {
+            null
+        }
     }
 
     @JvmStatic
@@ -33,7 +37,9 @@ object MetadataBusiness {
         val metaData = getMetaData(context)
         return if (metaData != null && metaData.containsKey(THREADS_GATE_URL)) {
             metaData.getString(THREADS_GATE_URL)
-        } else null
+        } else {
+            null
+        }
     }
 
     @JvmStatic
@@ -41,7 +47,9 @@ object MetadataBusiness {
         val metaData = getMetaData(context)
         return if (metaData != null && metaData.containsKey(THREADS_GATE_PROVIDER_UID)) {
             metaData.getString(THREADS_GATE_PROVIDER_UID)
-        } else null
+        } else {
+            null
+        }
     }
 
     @JvmStatic
@@ -49,7 +57,9 @@ object MetadataBusiness {
         val metaData = getMetaData(context)
         return if (metaData != null && metaData.containsKey(NEW_CHAT_CENTER_API)) {
             metaData.getBoolean(NEW_CHAT_CENTER_API)
-        } else false
+        } else {
+            false
+        }
     }
 
     fun getMetaData(context: Context): Bundle? {

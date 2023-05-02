@@ -1,7 +1,7 @@
 package im.threads.ui.utils
 
 import android.annotation.SuppressLint
-import im.threads.business.chat_updates.ChatUpdateProcessor
+import im.threads.business.chatUpdates.ChatUpdateProcessor
 import im.threads.business.config.BaseConfig
 import im.threads.business.logger.LoggerEdna
 import im.threads.business.preferences.Preferences

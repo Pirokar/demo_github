@@ -453,15 +453,19 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
     }
 
     private fun getBitmapFromUrl(url: String?): Bitmap? {
-        return if (url.isNullOrEmpty()) null else try {
-            ImageLoader
-                .get()
-                .load(url)
-                .modifications(ImageModifications.CircleCropModification)
-                .getBitmapSync(context)
-        } catch (e: IOException) {
-            LoggerEdna.error("getBitmapFromUrl", e)
+        return if (url.isNullOrEmpty()) {
             null
+        } else {
+            try {
+                ImageLoader
+                    .get()
+                    .load(url)
+                    .modifications(ImageModifications.CircleCropModification)
+                    .getBitmapSync(context)
+            } catch (e: IOException) {
+                LoggerEdna.error("getBitmapFromUrl", e)
+                null
+            }
         }
     }
 

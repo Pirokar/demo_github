@@ -1,7 +1,7 @@
 package im.threads.business.utils.messenger
 
 import im.threads.business.UserInfoBuilder
-import im.threads.business.chat_updates.ChatUpdateProcessor
+import im.threads.business.chatUpdates.ChatUpdateProcessor
 import im.threads.business.config.BaseConfig
 import im.threads.business.logger.LoggerEdna.debug
 import im.threads.business.logger.LoggerEdna.error

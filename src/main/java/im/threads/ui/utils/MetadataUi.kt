@@ -12,7 +12,9 @@ object MetadataUi {
         val metaData = MetadataBusiness.getMetaData(context)
         return if (metaData != null && metaData.containsKey(ATTACHMENT_ENABLED)) {
             metaData.getBoolean(ATTACHMENT_ENABLED)
-        } else null
+        } else {
+            null
+        }
     }
 
     @JvmStatic
@@ -20,6 +22,8 @@ object MetadataUi {
         val metaData = MetadataBusiness.getMetaData(context)
         return if (metaData != null && metaData.containsKey(FILES_AND_MEDIA_MENU_ITEM_ENABLED)) {
             metaData.getBoolean(FILES_AND_MEDIA_MENU_ITEM_ENABLED)
-        } else true
+        } else {
+            true
+        }
     }
 }

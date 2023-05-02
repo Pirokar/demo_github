@@ -8,7 +8,7 @@ import im.threads.business.AuthMethod
 import im.threads.business.UserInfoBuilder
 import im.threads.business.audio.audioConverter.AudioConverter
 import im.threads.business.audio.audioConverter.callback.ILoadCallback
-import im.threads.business.chat_updates.ChatUpdateProcessor
+import im.threads.business.chatUpdates.ChatUpdateProcessor
 import im.threads.business.config.BaseConfig
 import im.threads.business.config.BaseConfigBuilder
 import im.threads.business.controllers.UnreadMessagesController

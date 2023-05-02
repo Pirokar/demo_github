@@ -54,7 +54,7 @@ import im.threads.R
 import im.threads.business.annotation.OpenWay
 import im.threads.business.audio.audioRecorder.AudioRecorder
 import im.threads.business.broadcastReceivers.ProgressReceiver
-import im.threads.business.chat_updates.ChatUpdateProcessor
+import im.threads.business.chatUpdates.ChatUpdateProcessor
 import im.threads.business.config.BaseConfig
 import im.threads.business.extensions.withMainContext
 import im.threads.business.imageLoading.ImageLoader.Companion.get
@@ -1602,7 +1602,7 @@ class ChatFragment :
      */
     private fun scrollDelayedOnNewMessageReceived(
         isUserPhrase: Boolean,
-        isLastMessageVisible: Boolean,
+        isLastMessageVisible: Boolean
     ) {
         if (!isNewMessageUpdateTimeoutOn) {
             isNewMessageUpdateTimeoutOn = true
@@ -2331,7 +2331,7 @@ class ChatFragment :
     }
 
     private fun showSafelyCameraPermissionDescriptionDialog(
-        cameraPermissions: List<String>,
+        cameraPermissions: List<String>
     ) {
         if (permissionDescriptionAlertDialogFragment == null) {
             this.cameraPermissions = cameraPermissions
@@ -2341,7 +2341,7 @@ class ChatFragment :
 
     private fun showSafelyPermissionDescriptionDialog(
         type: PermissionDescriptionType,
-        requestCode: Int,
+        requestCode: Int
     ) {
         if (permissionDescriptionAlertDialogFragment == null) {
             showPermissionDescriptionDialog(type, requestCode)
@@ -2350,7 +2350,7 @@ class ChatFragment :
 
     private fun showPermissionDescriptionDialog(
         type: PermissionDescriptionType,
-        requestCode: Int,
+        requestCode: Int
     ) {
         permissionDescriptionAlertDialogFragment = newInstance(type, requestCode)
         permissionDescriptionAlertDialogFragment?.show(

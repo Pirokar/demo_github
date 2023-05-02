@@ -5,7 +5,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.widget.ImageView
 import com.google.gson.Gson
-import im.threads.business.chat_updates.ChatUpdateProcessor
+import im.threads.business.chatUpdates.ChatUpdateProcessor
 import im.threads.business.config.BaseConfig
 import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.logger.LoggerEdna

@@ -1,6 +1,6 @@
 package im.threads.ui.adapters.utils
 
-import im.threads.business.chat_updates.ChatUpdateProcessor
+import im.threads.business.chatUpdates.ChatUpdateProcessor
 import im.threads.business.models.MessageStatus
 import im.threads.business.models.UserPhrase
 import im.threads.business.secureDatabase.DatabaseHolder

@@ -1,6 +1,6 @@
 package im.threads.business.serviceLocator
 
-import im.threads.business.chat_updates.ChatUpdateProcessor
+import im.threads.business.chatUpdates.ChatUpdateProcessor
 import im.threads.business.core.ContextHolder
 import im.threads.business.formatters.JsonFormatter
 import im.threads.business.imageLoading.ImageLoaderOkHttpProvider

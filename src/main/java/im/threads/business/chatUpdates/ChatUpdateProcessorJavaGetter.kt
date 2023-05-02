@@ -1,4 +1,4 @@
-package im.threads.business.chat_updates // ktlint-disable package-name
+package im.threads.business.chatUpdates // ktlint-disable package-name
 
 import im.threads.business.serviceLocator.core.inject
 

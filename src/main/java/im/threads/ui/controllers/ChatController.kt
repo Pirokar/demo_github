@@ -13,7 +13,7 @@ import com.google.gson.JsonObject
 import im.threads.R
 import im.threads.business.UserInfoBuilder
 import im.threads.business.broadcastReceivers.ProgressReceiver
-import im.threads.business.chat_updates.ChatUpdateProcessor
+import im.threads.business.chatUpdates.ChatUpdateProcessor
 import im.threads.business.config.BaseConfig
 import im.threads.business.controllers.UnreadMessagesController
 import im.threads.business.core.ContextHolder

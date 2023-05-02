@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import im.threads.business.chat_updates.ChatUpdateProcessorJavaGetter;
+import im.threads.business.chatUpdates.ChatUpdateProcessorJavaGetter;
 import im.threads.business.config.BaseConfig;
 import im.threads.business.formatters.ChatItemType;
 import im.threads.business.formatters.SpeechStatus;

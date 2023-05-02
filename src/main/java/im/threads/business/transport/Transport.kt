@@ -1,7 +1,7 @@
 package im.threads.business.transport
 
 import androidx.lifecycle.Lifecycle
-import im.threads.business.chat_updates.ChatUpdateProcessor
+import im.threads.business.chatUpdates.ChatUpdateProcessor
 import im.threads.business.logger.LoggerEdna.info
 import im.threads.business.models.ConsultInfo
 import im.threads.business.models.Survey

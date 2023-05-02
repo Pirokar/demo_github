@@ -15,10 +15,14 @@ class Quote(
         if (this === other) return true
         if (other == null || javaClass != other.javaClass) return false
         val quote = other as Quote
-        return if (!ObjectsCompat.equals(text, quote.text)) false else ObjectsCompat.equals(
-            fileDescription,
-            quote.fileDescription
-        )
+        return if (!ObjectsCompat.equals(text, quote.text)) {
+            false
+        } else {
+            ObjectsCompat.equals(
+                fileDescription,
+                quote.fileDescription
+            )
+        }
     }
 
     override fun hashCode(): Int {

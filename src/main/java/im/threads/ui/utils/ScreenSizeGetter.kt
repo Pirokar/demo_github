@@ -14,9 +14,13 @@ import androidx.annotation.RequiresApi
 
 class ScreenSizeGetter {
     private val api: Api =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) ApiLevel30()
-        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) ApiLevel23()
-        else Api()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            ApiLevel30()
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            ApiLevel23()
+        } else {
+            Api()
+        }
 
     /**
      * Returns screen size in pixels.

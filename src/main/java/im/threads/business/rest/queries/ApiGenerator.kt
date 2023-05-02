@@ -1,5 +1,7 @@
 package im.threads.business.rest.queries
 
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import im.threads.R
 import im.threads.business.config.BaseConfig
 import im.threads.business.logger.NetworkLoggerInterceptor
@@ -83,9 +85,13 @@ abstract class ApiGenerator protected constructor(
     }
 
     private fun init() {
+        val gson: Gson = GsonBuilder()
+            .setLenient()
+            .create()
+
         apiBuild = Retrofit.Builder()
             .baseUrl("http://nourl.com")
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .client(createOkHttpClient())
             .build()
         createThreadsApi()

@@ -1,4 +1,4 @@
-package im.threads.business.chat_updates
+package im.threads.business.chatUpdates
 
 import im.threads.business.formatters.ChatItemType
 import im.threads.business.models.CampaignMessage

@@ -67,7 +67,9 @@ internal class FilesAndMediaAdapter(
             TYPE_DATE_ROW
         } else if (list[position] is FileAndMediaItem) {
             TYPE_FILE_AND_MEDIA_ROW
-        } else super.getItemViewType(position)
+        } else {
+            super.getItemViewType(position)
+        }
     }
 
     /**
@@ -181,9 +183,13 @@ internal class FilesAndMediaAdapter(
             result.add(
                 FileAndMediaItem(
                     fd,
-                    if (fd.fileUri != null) getFileName(
-                        fd.fileUri!!
-                    ) else ""
+                    if (fd.fileUri != null) {
+                        getFileName(
+                            fd.fileUri!!
+                        )
+                    } else {
+                        ""
+                    }
                 )
             )
         }
@@ -194,9 +200,13 @@ internal class FilesAndMediaAdapter(
                 result.add(
                     FileAndMediaItem(
                         fd,
-                        if (fd.fileUri != null) getFileName(
-                            fd.fileUri!!
-                        ) else ""
+                        if (fd.fileUri != null) {
+                            getFileName(
+                                fd.fileUri!!
+                            )
+                        } else {
+                            ""
+                        }
                     )
                 )
                 if (current[Calendar.DAY_OF_YEAR] != prev[Calendar.DAY_OF_YEAR]) {
