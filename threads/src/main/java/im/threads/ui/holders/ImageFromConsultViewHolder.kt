@@ -12,18 +12,15 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
-import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import im.threads.R
 import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.imageLoading.ImageModifications
-import im.threads.business.imageLoading.loadImage
 import im.threads.business.models.ChatItem
 import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.FileDescription
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.ogParser.OpenGraphParser
-import im.threads.business.utils.FileUtils
 import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.utils.gone
 import im.threads.ui.utils.invisible
@@ -100,10 +97,9 @@ class ImageFromConsultViewHolder(
         timeStampLoader.text = sdf.format(Date(consultPhrase.timeStamp))
         rootLayout.setOnClickListener(buttonClickListener)
         rootLayout.setOnLongClickListener(onLongClickListener)
-        consultAvatar.setOnClickListener(onAvatarClickListener)
         image.setOnClickListener(buttonClickListener)
         image.setOnLongClickListener(onLongClickListener)
-        showAvatar(consultPhrase)
+        showAvatar(consultAvatar, consultPhrase, onAvatarClickListener)
         consultPhrase.fileDescription?.let {
             when (it.state) {
                 AttachmentStateEnum.PENDING -> showLoaderLayout(it)
@@ -185,45 +181,30 @@ class ImageFromConsultViewHolder(
         }
         val isStateReady = fileDescription.state == AttachmentStateEnum.READY
         if (isStateReady && fileUri != null && !fileDescription.isDownloadError) {
-            showLoadImageAnimation()
-            ImageLoader.get()
-                .load(fileUri)
-                .autoRotateWithExif(true)
-                .errorDrawableResourceId(style.imagePlaceholder)
-                .scales(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP)
-                .modifications(maskedTransformation)
-                .callback(object : ImageLoader.ImageLoaderCallback {
-                    override fun onImageLoaded() {
-                        stopLoadImageAnimation()
-                    }
+            if (fileUri.isNotEmpty()) {
+                showLoadImageAnimation()
+                ImageLoader.get()
+                    .load(fileUri)
+                    .autoRotateWithExif(true)
+                    .errorDrawableResourceId(style.imagePlaceholder)
+                    .scales(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP)
+                    .modifications(maskedTransformation)
+                    .callback(object : ImageLoader.ImageLoaderCallback {
+                        override fun onImageLoaded() {
+                            stopLoadImageAnimation()
+                        }
 
-                    override fun onImageLoadError() {
-                        stopLoadImageAnimation()
-                    }
-                })
-                .into(image)
+                        override fun onImageLoadError() {
+                            stopLoadImageAnimation()
+                        }
+                    })
+                    .into(image)
+            } else {
+                image.setImageResource(style.imagePlaceholder)
+            }
         } else {
             stopLoadImageAnimation()
             image.setImageResource(style.imagePlaceholder)
-        }
-    }
-
-    private fun showAvatar(consultPhrase: ConsultPhrase) {
-        if (consultPhrase.isAvatarVisible) {
-            if (consultAvatar.isInvisible) consultAvatar.visible()
-            consultPhrase.avatarPath?.let {
-                consultAvatar.loadImage(
-                    FileUtils.convertRelativeUrlToAbsolute(it),
-                    listOf(ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.FIT_XY),
-                    errorDrawableResId = R.drawable.ecc_operator_avatar_placeholder,
-                    modifications = listOf(ImageModifications.CircleCropModification),
-                    noPlaceholder = true
-                )
-            } ?: run {
-                consultAvatar.setImageResource(style.defaultOperatorAvatar)
-            }
-        } else {
-            consultAvatar.invisible()
         }
     }
 }
