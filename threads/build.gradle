@@ -127,8 +127,8 @@ afterEvaluate {
                     url 'https://maven-pub.edna.ru/repository/maven-releases'
                 }
                 credentials {
-                    username "$mavenProdUser"
-                    password "$mavenProdPass"
+                    username "ecc-android-bot"
+                    password "C80gPicuB7RZZ6XDF4yiYw"
                 }
             }
         }
