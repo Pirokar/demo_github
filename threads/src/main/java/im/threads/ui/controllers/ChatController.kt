@@ -413,9 +413,7 @@ class ChatController private constructor() {
         fragment = chatFragment
 
         chatFragment.showProgressBar()
-        if (fragment?.isStartSecondLevelScreen() == true) {
-            loadItemsFromDB()
-        }
+        loadItemsFromDB()
         if (consultWriter.isSearchingConsult) {
             chatFragment.setStateSearchingConsult()
         }
