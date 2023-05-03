@@ -165,6 +165,7 @@ class ThreadsGateTransport(
             if (deviceAddress.isNullOrBlank()) sendRegisterDevice()
             sendInitChatMessage(true)
             sendEnvironmentMessage(true)
+            saveInitUserId()
         } else {
             openWebSocket()
         }
@@ -416,6 +417,12 @@ class ThreadsGateTransport(
             model
         } else {
             "${manufacturer.capitalize()} $model"
+        }
+    }
+
+    private fun saveInitUserId() {
+        preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)?.clientId?.let { userId ->
+            preferences.save(PreferencesCoreKeys.INIT_SENT_LAST_USER_ID, userId, true)
         }
     }
 

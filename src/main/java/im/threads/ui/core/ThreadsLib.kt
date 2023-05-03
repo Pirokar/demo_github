@@ -18,23 +18,25 @@ import im.threads.ui.config.ConfigBuilder
 import im.threads.ui.controllers.ChatController
 import im.threads.ui.styles.permissions.PermissionDescriptionDialogStyle
 import im.threads.ui.utils.preferences.PreferencesMigrationUi
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import java.io.File
 
 class ThreadsLib(context: Context) : ThreadsLibBase(context) {
+    private val coroutineScope = CoroutineScope(Dispatchers.IO)
     private val config by lazy {
         Config.getInstance()
     }
 
+    /**
+     * Инициализирует пользователя синхронно и загружает его историю в фоновом потоке
+     * (изменения истории сообщений применяются в потоке UI)
+     * @param userInfoBuilder данные о пользователе
+     * @param forceRegistration открывает сокет, отправляет данные о регистрации, закрывает сокет
+     */
     public override fun initUser(userInfoBuilder: UserInfoBuilder, forceRegistration: Boolean) {
-        val userInfo = preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)
-        val oldClientId = userInfo?.clientId
-        val newClientId = userInfoBuilder.clientId
-        if (newClientId.isNotEmpty() && newClientId != oldClientId) {
-            ChatController.getInstance().cleanAll()
-        }
         super.initUser(userInfoBuilder, forceRegistration)
-        ChatController.getInstance().hideEmptyState()
-        ChatController.getInstance().loadHistory()
+        ChatController.getInstance().loadHistory(applyUiChanges = false)
     }
 
     /**

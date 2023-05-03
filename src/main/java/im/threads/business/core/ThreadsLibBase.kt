@@ -87,8 +87,8 @@ open class ThreadsLibBase protected constructor(context: Context) {
     protected open fun initUser(userInfoBuilder: UserInfoBuilder, forceRegistration: Boolean = false) {
         preferences.save(PreferencesCoreKeys.USER_INFO, userInfoBuilder)
         preferences.save(PreferencesCoreKeys.TAG_NEW_CLIENT_ID, userInfoBuilder.clientId)
-        BaseConfig.instance.transport.sendInit(forceRegistration)
         if (!ChatFragment.isShown && forceRegistration) {
+            BaseConfig.instance.transport.sendInit(true)
             BaseConfig.instance.transport.closeWebSocket()
         }
     }
