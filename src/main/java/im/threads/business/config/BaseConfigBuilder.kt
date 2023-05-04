@@ -1,166 +1,138 @@
-package im.threads.business.config;
+package im.threads.business.config
 
-import android.app.NotificationManager;
-import android.content.Context;
-import android.os.Build;
+import android.app.NotificationManager
+import android.content.Context
+import android.os.Build
+import androidx.annotation.RequiresApi
+import im.threads.business.core.UnreadMessagesCountListener
+import im.threads.business.logger.LoggerConfig
+import im.threads.business.rest.config.RequestConfig
+import okhttp3.Interceptor
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-
-import java.util.Collections;
-import java.util.List;
-
-import im.threads.business.core.UnreadMessagesCountListener;
-import im.threads.business.logger.LoggerConfig;
-import im.threads.business.rest.config.RequestConfig;
-import okhttp3.Interceptor;
-
-public class BaseConfigBuilder {
-    @NonNull
-    public Context context;
-
-    @Nullable
-    protected UnreadMessagesCountListener unreadMessagesCountListener = null;
-
-    protected boolean isDebugLoggingEnabled = true;
-
-    protected int historyLoadingCount = 50;
-
-    protected int surveyCompletionDelay = 2000;
-
-    @Nullable
-    protected String serverBaseUrl = null;
-    @Nullable
-    protected String datastoreUrl = null;
-    @Nullable
-    protected String threadsGateUrl = null;
-    @Nullable
-    protected String threadsGateProviderUid = null;
-    @Nullable
-    protected Interceptor networkInterceptor = null;
-    @Nullable
-    protected Boolean isNewChatCenterApi = false;
-    @Nullable
-    protected LoggerConfig loggerConfig = null;
-
-    protected RequestConfig requestConfig = new RequestConfig();
-    protected List<Integer> certificateRawResIds = Collections.emptyList();
-    protected Boolean isSslPinningDisabled = false;
+open class BaseConfigBuilder(var context: Context) {
+    protected var unreadMessagesCountListener: UnreadMessagesCountListener? = null
+    protected var isDebugLoggingEnabled = true
+    protected var historyLoadingCount = 50
+    protected var surveyCompletionDelay = 2000
+    protected var serverBaseUrl: String? = null
+    protected var datastoreUrl: String? = null
+    protected var threadsGateUrl: String? = null
+    protected var threadsGateProviderUid: String? = null
+    protected var networkInterceptor: Interceptor? = null
+    protected var isNewChatCenterApi: Boolean? = false
+    protected var loggerConfig: LoggerConfig? = null
+    protected var requestConfig = RequestConfig()
+    protected var certificateRawResIds = emptyList<Int>()
+    protected var isSslPinningDisabled = false
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    protected int notificationImportance = NotificationManager.IMPORTANCE_DEFAULT;
-
-    public BaseConfigBuilder(@NonNull Context context) {
-        this.context = context;
+    protected var notificationImportance = NotificationManager.IMPORTANCE_DEFAULT
+    open fun serverBaseUrl(serverBaseUrl: String?): BaseConfigBuilder? {
+        this.serverBaseUrl = serverBaseUrl
+        return this
     }
 
-    public BaseConfigBuilder serverBaseUrl(String serverBaseUrl) {
-        this.serverBaseUrl = serverBaseUrl;
-        return this;
+    open fun datastoreUrl(datastoreUrl: String?): BaseConfigBuilder? {
+        this.datastoreUrl = datastoreUrl
+        return this
     }
 
-    public BaseConfigBuilder datastoreUrl(String datastoreUrl) {
-        this.datastoreUrl = datastoreUrl;
-        return this;
+    open fun threadsGateUrl(threadsGateUrl: String?): BaseConfigBuilder? {
+        this.threadsGateUrl = threadsGateUrl
+        return this
     }
 
-    public BaseConfigBuilder threadsGateUrl(String threadsGateUrl) {
-        this.threadsGateUrl = threadsGateUrl;
-        return this;
+    open fun threadsGateProviderUid(threadsGateProviderUid: String?): BaseConfigBuilder? {
+        this.threadsGateProviderUid = threadsGateProviderUid
+        return this
     }
 
-    public BaseConfigBuilder threadsGateProviderUid(String threadsGateProviderUid) {
-        this.threadsGateProviderUid = threadsGateProviderUid;
-        return this;
+    open fun unreadMessagesCountListener(unreadMessagesCountListener: UnreadMessagesCountListener?): BaseConfigBuilder? {
+        this.unreadMessagesCountListener = unreadMessagesCountListener
+        return this
     }
 
-    public BaseConfigBuilder unreadMessagesCountListener(UnreadMessagesCountListener unreadMessagesCountListener) {
-        this.unreadMessagesCountListener = unreadMessagesCountListener;
-        return this;
+    open fun isDebugLoggingEnabled(isDebugLoggingEnabled: Boolean): BaseConfigBuilder? {
+        this.isDebugLoggingEnabled = isDebugLoggingEnabled
+        return this
     }
 
-    public BaseConfigBuilder isDebugLoggingEnabled(boolean isDebugLoggingEnabled) {
-        this.isDebugLoggingEnabled = isDebugLoggingEnabled;
-        return this;
+    open fun historyLoadingCount(historyLoadingCount: Int): BaseConfigBuilder? {
+        this.historyLoadingCount = historyLoadingCount
+        return this
     }
 
-    public BaseConfigBuilder historyLoadingCount(final int historyLoadingCount) {
-        this.historyLoadingCount = historyLoadingCount;
-        return this;
+    open fun surveyCompletionDelay(surveyCompletionDelay: Int): BaseConfigBuilder? {
+        this.surveyCompletionDelay = surveyCompletionDelay
+        return this
     }
 
-    public BaseConfigBuilder surveyCompletionDelay(final int surveyCompletionDelay) {
-        this.surveyCompletionDelay = surveyCompletionDelay;
-        return this;
+    open fun requestConfig(requestConfig: RequestConfig): BaseConfigBuilder? {
+        this.requestConfig = requestConfig
+        return this
     }
 
-    public BaseConfigBuilder requestConfig(final RequestConfig requestConfig) {
-        this.requestConfig = requestConfig;
-        return this;
-    }
-
-    public BaseConfigBuilder certificateRawResIds(final List<Integer> certificateRawResIds) {
-        this.certificateRawResIds = certificateRawResIds;
-        return this;
+    open fun certificateRawResIds(certificateRawResIds: List<Int>): BaseConfigBuilder? {
+        this.certificateRawResIds = certificateRawResIds
+        return this
     }
 
     /**
      * Выключает SSL pinning, даже если передан сертификат
      */
-    public BaseConfigBuilder disableSSLPinning() {
-        this.isSslPinningDisabled = true;
-        return this;
+    fun disableSSLPinning(): BaseConfigBuilder {
+        isSslPinningDisabled = true
+        return this
     }
 
-    public BaseConfigBuilder networkInterceptor(Interceptor interceptor) {
-        this.networkInterceptor = interceptor;
-        return this;
+    open fun networkInterceptor(interceptor: Interceptor?): BaseConfigBuilder? {
+        networkInterceptor = interceptor
+        return this
     }
 
-    public BaseConfigBuilder setNewChatCenterApi() {
-        this.isNewChatCenterApi = true;
-        return this;
+    open fun setNewChatCenterApi(): BaseConfigBuilder? {
+        isNewChatCenterApi = true
+        return this
     }
 
-    public BaseConfigBuilder enableLogging(LoggerConfig config) {
-        this.loggerConfig = config;
-        return this;
+    open fun enableLogging(config: LoggerConfig?): BaseConfigBuilder? {
+        loggerConfig = config
+        return this
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    public BaseConfigBuilder setNotificationImportance(int importance) {
-        this.notificationImportance = importance;
-        return this;
+    open fun setNotificationImportance(importance: Int): BaseConfigBuilder? {
+        notificationImportance = importance
+        return this
     }
 
-    protected int getNotificationLevel() {
-        int notificationLevel = 0;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            notificationLevel = notificationImportance;
+    protected val notificationLevel: Int
+        get() {
+            var notificationLevel = 0
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                notificationLevel = notificationImportance
+            }
+            return notificationLevel
         }
 
-        return notificationLevel;
-    }
-
-    public BaseConfig build() {
-        return new BaseConfig(
-                context,
-                serverBaseUrl,
-                datastoreUrl,
-                threadsGateUrl,
-                threadsGateProviderUid,
-                isNewChatCenterApi,
-                loggerConfig,
-                unreadMessagesCountListener,
-                networkInterceptor,
-                isDebugLoggingEnabled,
-                historyLoadingCount,
-                surveyCompletionDelay,
-                requestConfig,
-                isSslPinningDisabled,
-                getNotificationLevel(),
-                certificateRawResIds
-        );
+    open fun build(): BaseConfig {
+        return BaseConfig(
+            context,
+            serverBaseUrl,
+            datastoreUrl,
+            threadsGateUrl,
+            threadsGateProviderUid,
+            isNewChatCenterApi,
+            loggerConfig,
+            unreadMessagesCountListener,
+            networkInterceptor,
+            isDebugLoggingEnabled,
+            historyLoadingCount,
+            surveyCompletionDelay,
+            requestConfig,
+            isSslPinningDisabled,
+            notificationLevel,
+            certificateRawResIds
+        )
     }
 }

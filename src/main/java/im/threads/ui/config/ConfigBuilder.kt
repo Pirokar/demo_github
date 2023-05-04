@@ -80,12 +80,12 @@ class ConfigBuilder(context: Context) : BaseConfigBuilder(context) {
         return this
     }
 
-    override fun requestConfig(requestConfig: RequestConfig?): ConfigBuilder {
+    override fun requestConfig(requestConfig: RequestConfig): ConfigBuilder {
         super.requestConfig(requestConfig)
         return this
     }
 
-    override fun certificateRawResIds(certificateRawResIds: List<Int?>?): ConfigBuilder {
+    override fun certificateRawResIds(certificateRawResIds: List<Int>): ConfigBuilder {
         super.certificateRawResIds(certificateRawResIds)
         return this
     }
