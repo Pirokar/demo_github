@@ -159,6 +159,8 @@ class ChatController private constructor() {
 
     fun onViewStart() {
         messenger.onViewStart()
+        checkEmptyStateVisibility()
+        checkForSendInit()
     }
 
     fun onViewStop() {
@@ -417,9 +419,6 @@ class ChatController private constructor() {
         if (consultWriter.isSearchingConsult) {
             chatFragment.setStateSearchingConsult()
         }
-        if (!ThreadsLibBase.getInstance().isUserInitialized) {
-            chatFragment.showEmptyState()
-        }
         subscribe(
             Single.fromCallable {
                 val historyLoadingCount = BaseConfig.instance.historyLoadingCount
@@ -464,6 +463,23 @@ class ChatController private constructor() {
             }
         }
         fragment = null
+    }
+
+    private fun checkEmptyStateVisibility() {
+        if (!ThreadsLibBase.getInstance().isUserInitialized) {
+            fragment?.showEmptyState()
+        } else {
+            fragment?.hideEmptyState()
+        }
+    }
+
+    private fun checkForSendInit() {
+        preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)?.clientId?.let { currentUserId ->
+            val lastUserIdWithSendInit = preferences.get<String>(PreferencesCoreKeys.INIT_SENT_LAST_USER_ID)
+            if (currentUserId != lastUserIdWithSendInit) {
+                BaseConfig.instance.transport.sendInit(false)
+            }
+        }
     }
 
     private fun loadItemsFromDB() {
@@ -545,7 +561,7 @@ class ChatController private constructor() {
         return setLastAvatars(serverItems)
     }
 
-    fun loadHistory(fromBeginning: Boolean) {
+    fun loadHistory(fromBeginning: Boolean = true, applyUiChanges: Boolean = true) {
         if (isAllMessagesDownloaded) {
             return
         }
@@ -558,20 +574,24 @@ class ChatController private constructor() {
                 isDownloadingMessages = true
                 subscribe(
                     Single.fromCallable {
-                        val count = BaseConfig.instance.historyLoadingCount
+                        var count = BaseConfig.instance.historyLoadingCount
+                        if (count < database.getMessagesCount()) {
+                            count = database.getMessagesCount()
+                        }
                         val response = historyLoader.getHistorySync(
                             count,
                             fromBeginning
                         )
                         val serverItems = HistoryParser.getChatItems(response)
-                        if (serverItems.size == 0) {
+                        if (serverItems.isEmpty()) {
                             isAllMessagesDownloaded = true
                         }
                         parseHistoryItemsForSentStatus(serverItems)
                         parseHistoryItemsForAttachmentStatus(serverItems)
                         messenger.saveMessages(serverItems)
+                        clearUnreadPush()
                         processSystemMessages(serverItems)
-                        if (fragment != null && isActive) {
+                        if (fragment != null && isActive && !fragment!!.isStartSecondLevelScreen()) {
                             val uuidList: List<String?> = database.getUnreadMessagesUuid()
                             if (uuidList.isNotEmpty()) {
                                 BaseConfig.instance.transport.markMessagesAsRead(uuidList)
@@ -582,94 +602,35 @@ class ChatController private constructor() {
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                            { _: Pair<ConsultInfo?, Int?> ->
-                                if (fragment != null) {
-                                    val items = database.getChatItems(0, -1)
-                                    fragment?.addHistoryChatItems(items)
-                                    fragment?.hideProgressBar()
-                                }
+                            { pair: Pair<ConsultInfo?, Int?> ->
                                 isDownloadingMessages = false
+                                if (applyUiChanges) {
+                                    val serverCount = if (pair.second == null) 0 else pair.second!!
+                                    val items =
+                                        setLastAvatars(database.getChatItems(0, serverCount))
+                                    if (fragment != null) {
+                                        fragment?.addChatItems(items)
+                                        handleQuickReplies(items)
+                                        handleInputAvailability(items)
+                                        val info = pair.first
+                                        if (info != null) {
+                                            fragment?.setStateConsultConnected(info)
+                                        }
+                                        fragment?.hideProgressBar()
+                                    }
+                                }
                             }
                         ) { e: Throwable? ->
+                            isDownloadingMessages = false
                             if (fragment != null) {
                                 fragment?.hideProgressBar()
                             }
                             error(e)
-                            isDownloadingMessages = false
                         }
                 )
             } else {
                 info(ThreadsApi.REST_TAG, "Loading history cancelled. isDownloadingMessages = true")
             }
-        }
-    }
-
-    fun loadHistory() {
-        if (isAllMessagesDownloaded) {
-            return
-        }
-
-        if (!isDownloadingMessages) {
-            info(
-                ThreadsApi.REST_TAG,
-                "Loading history from ${ChatController::class.java.simpleName}"
-            )
-            isDownloadingMessages = true
-            subscribe(
-                Single.fromCallable {
-                    var count = BaseConfig.instance.historyLoadingCount
-                    if (count < database.getMessagesCount()) {
-                        count = database.getMessagesCount()
-                    }
-                    val response = historyLoader.getHistorySync(
-                        count,
-                        true
-                    )
-                    val serverItems = HistoryParser.getChatItems(response)
-                    if (serverItems.size == 0) {
-                        isAllMessagesDownloaded = true
-                    }
-                    parseHistoryItemsForSentStatus(serverItems)
-                    parseHistoryItemsForAttachmentStatus(serverItems)
-                    messenger.saveMessages(serverItems)
-                    clearUnreadPush()
-                    processSystemMessages(serverItems)
-                    if (fragment != null && isActive && !fragment!!.isStartSecondLevelScreen()) {
-                        val uuidList: List<String?> = database.getUnreadMessagesUuid()
-                        if (uuidList.isNotEmpty()) {
-                            BaseConfig.instance.transport.markMessagesAsRead(uuidList)
-                        }
-                    }
-                    Pair(response?.consultInfo, serverItems.size)
-                }
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                        { pair: Pair<ConsultInfo?, Int?> ->
-                            isDownloadingMessages = false
-                            val serverCount = if (pair.second == null) 0 else pair.second!!
-                            val items = setLastAvatars(database.getChatItems(0, serverCount))
-                            if (fragment != null) {
-                                fragment?.addChatItems(items)
-                                handleQuickReplies(items)
-                                handleInputAvailability(items)
-                                val info = pair.first
-                                if (info != null) {
-                                    fragment?.setStateConsultConnected(info)
-                                }
-                                fragment?.hideProgressBar()
-                            }
-                        }
-                    ) { e: Throwable? ->
-                        isDownloadingMessages = false
-                        if (fragment != null) {
-                            fragment?.hideProgressBar()
-                        }
-                        error(e)
-                    }
-            )
-        } else {
-            info(ThreadsApi.REST_TAG, "Loading history cancelled. isDownloadingMessages = true")
         }
     }
 

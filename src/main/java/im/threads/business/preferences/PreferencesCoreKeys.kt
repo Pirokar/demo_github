@@ -22,6 +22,7 @@ object PreferencesCoreKeys {
     val ENCRYPTED_STORE_NAME = "im.threads.internal.utils.EncryptedPrefStore"
     val DATABASE_PASSWORD = "DATABASE_PASSWORD"
     val USER_SELECTED_UI_THEME_KEY = "USER_SELECTED_UI_THEME_KEY"
+    val INIT_SENT_LAST_USER_ID = "INIT_SENT_LAST_USER_ID"
 
     val allPrefKeys = mutableListOf(
         LAST_COPY_TEXT,
@@ -37,6 +38,7 @@ object PreferencesCoreKeys {
         STORE_NAME,
         ENCRYPTED_STORE_NAME,
         DATABASE_PASSWORD,
-        USER_SELECTED_UI_THEME_KEY
+        USER_SELECTED_UI_THEME_KEY,
+        INIT_SENT_LAST_USER_ID
     ).apply { addAll(migrationKeys.list) }
 }
