@@ -1,6 +1,5 @@
 package im.threads.business.utils.messenger
 
-import im.threads.business.UserInfoBuilder
 import im.threads.business.chatUpdates.ChatUpdateProcessor
 import im.threads.business.config.BaseConfig
 import im.threads.business.logger.LoggerEdna.debug
@@ -12,12 +11,12 @@ import im.threads.business.models.ConsultInfo
 import im.threads.business.models.MessageStatus
 import im.threads.business.models.UserPhrase
 import im.threads.business.preferences.Preferences
-import im.threads.business.preferences.PreferencesCoreKeys
 import im.threads.business.rest.queries.ThreadsApi
 import im.threads.business.secureDatabase.DatabaseHolder
 import im.threads.business.serviceLocator.core.inject
 import im.threads.business.transport.HistoryLoader
 import im.threads.business.transport.HistoryParser
+import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.ConsultWriter
 import im.threads.business.utils.getErrorStringResByCode
 import im.threads.business.utils.internet.NetworkInteractor
@@ -36,7 +35,10 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
-class MessengerImpl(private var compositeDisposable: CompositeDisposable?) : Messenger {
+class MessengerImpl(
+    private var compositeDisposable: CompositeDisposable?,
+    private val clientUseCase: ClientUseCase
+) : Messenger {
     private val context = BaseConfig.instance.context
     private val transport = BaseConfig.instance.transport
     private var isDownloadingMessages = false
@@ -201,7 +203,7 @@ class MessengerImpl(private var compositeDisposable: CompositeDisposable?) : Mes
             Completable.fromAction {
                 var filePath: String? = null
                 var quoteFilePath: String? = null
-                val clientId = preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)?.clientId
+                val clientId = clientUseCase.getUserInfo()?.clientId
                 if (fileDescription != null) {
                     filePath = postFile(fileDescription, clientId)
                 }

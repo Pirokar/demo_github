@@ -9,7 +9,8 @@ import im.threads.business.core.ThreadsLibBase
 import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.FileDescription
 import im.threads.business.models.UpcomingUserMessage
-import im.threads.business.preferences.PreferencesCoreKeys
+import im.threads.business.serviceLocator.core.inject
+import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.FileProviderHelper
 import im.threads.business.utils.FileUtils.getFileSize
 import im.threads.ui.ChatStyle
@@ -24,9 +25,8 @@ import java.io.File
 
 class ThreadsLib(context: Context) : ThreadsLibBase(context) {
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
-    private val config by lazy {
-        Config.getInstance()
-    }
+    private val config by lazy { Config.getInstance() }
+    private val clientUseCase: ClientUseCase by inject()
 
     /**
      * Инициализирует пользователя синхронно и загружает его историю в фоновом потоке
@@ -97,7 +97,7 @@ class ThreadsLib(context: Context) : ThreadsLibBase(context) {
      */
     fun sendMessage(message: String?, fileUri: Uri?): Boolean {
         val chatController = ChatController.getInstance()
-        val clientId = preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)?.clientId
+        val clientId = clientUseCase.getUserInfo()?.clientId
         return if (!clientId.isNullOrBlank()) {
             var fileDescription: FileDescription? = null
             if (fileUri != null) {

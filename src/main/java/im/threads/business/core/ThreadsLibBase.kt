@@ -85,8 +85,7 @@ open class ThreadsLibBase protected constructor(context: Context) {
         get() = chatUpdateProcessor.socketResponseMapProcessor
 
     protected open fun initUser(userInfoBuilder: UserInfoBuilder, forceRegistration: Boolean = false) {
-        preferences.save(PreferencesCoreKeys.USER_INFO, userInfoBuilder)
-        preferences.save(PreferencesCoreKeys.TAG_NEW_CLIENT_ID, userInfoBuilder.clientId)
+        clientUseCase.saveUserInfo(userInfoBuilder)
         if (!ChatFragment.isShown && forceRegistration) {
             BaseConfig.instance.transport.sendInit(true)
             BaseConfig.instance.transport.closeWebSocket()
@@ -97,12 +96,11 @@ open class ThreadsLibBase protected constructor(context: Context) {
      * Used to stop receiving messages for user
      */
     fun logoutClient() {
-        val clientId = preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)?.clientId
+        val clientId = clientUseCase.getUserInfo()?.clientId
         if (!clientId.isNullOrBlank()) {
             BaseConfig.instance.transport.sendClientOffline(clientId)
             coroutineScope.launch { database.cleanDatabase() }
-            preferences.save(PreferencesCoreKeys.USER_INFO, null, true)
-            preferences.save(PreferencesCoreKeys.TAG_NEW_CLIENT_ID, "", true)
+            clientUseCase.saveUserInfo(null)
             preferences.save(PreferencesCoreKeys.THREAD_ID, -1L, true)
         } else {
             info("clientId must not be empty")
@@ -126,9 +124,9 @@ open class ThreadsLibBase protected constructor(context: Context) {
         authSchema: String?,
         authMethod: AuthMethod = AuthMethod.HEADERS
     ) {
-        preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)?.let {
+        clientUseCase.getUserInfo()?.let {
             it.setAuthData(authToken, authSchema, authMethod)
-            preferences.save(PreferencesCoreKeys.USER_INFO, it)
+            clientUseCase.saveUserInfo(it)
         }
         BaseConfig.instance.transport.buildTransport()
     }

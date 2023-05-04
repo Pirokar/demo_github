@@ -9,7 +9,6 @@ import androidx.lifecycle.OnLifecycleEvent
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
-import im.threads.business.UserInfoBuilder
 import im.threads.business.chatUpdates.ChatUpdateProcessor
 import im.threads.business.config.BaseConfig
 import im.threads.business.formatters.ChatItemType
@@ -50,6 +49,7 @@ import im.threads.business.transport.threadsGate.responses.RegisterDeviceData
 import im.threads.business.transport.threadsGate.responses.SendMessageData
 import im.threads.business.transport.threadsGate.responses.Status
 import im.threads.business.utils.AppInfoHelper
+import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.DeviceInfoHelper
 import im.threads.business.utils.SSLCertificateInterceptor
 import kotlinx.coroutines.CoroutineScope
@@ -94,6 +94,7 @@ class ThreadsGateTransport(
     private val chatUpdateProcessor: ChatUpdateProcessor by inject()
     private val database: DatabaseHolder by inject()
     private val jsonFormatter: JsonFormatter by inject()
+    private val clientUseCase: ClientUseCase by inject()
 
     init { buildTransport() }
 
@@ -221,7 +222,7 @@ class ThreadsGateTransport(
     }
 
     override fun getToken(): String {
-        val userInfo = preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)
+        val userInfo = clientUseCase.getUserInfo()
         val deviceAddress = preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS)
         return (
             (if (userInfo?.clientIdSignature.isNullOrEmpty()) deviceAddress else userInfo?.clientIdSignature) +
@@ -257,7 +258,7 @@ class ThreadsGateTransport(
             openWebSocket()
         }
         val ws = webSocket ?: return
-        val clientId = preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)?.clientId
+        val clientId = clientUseCase.getUserInfo()?.clientId
         val deviceAddress = preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS)
         val messageId = content.get(MessageAttributes.UUID)?.asString
         if (sendInit && !clientId.isNullOrBlank() && !deviceAddress.isNullOrBlank()) {
@@ -292,7 +293,7 @@ class ThreadsGateTransport(
     }
 
     private fun sendRegisterDevice() {
-        val userInfo = preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)
+        val userInfo = clientUseCase.getUserInfo()
         val clientId = userInfo?.clientId
         val deviceModel = getSimpleDeviceName()
         val deviceName = getDeviceName()
@@ -421,7 +422,7 @@ class ThreadsGateTransport(
     }
 
     private fun saveInitUserId() {
-        preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)?.clientId?.let { userId ->
+        clientUseCase.getUserInfo()?.clientId?.let { userId ->
             preferences.save(PreferencesCoreKeys.INIT_SENT_LAST_USER_ID, userId, true)
         }
     }
