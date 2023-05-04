@@ -9,7 +9,6 @@ import com.squareup.picasso.Picasso
 import com.squareup.picasso.RequestCreator
 import com.squareup.picasso.Transformation
 import im.threads.business.config.BaseConfig
-import im.threads.business.logger.LoggerEdna
 import java.util.concurrent.Executors
 
 class ImageRequestBuilder {

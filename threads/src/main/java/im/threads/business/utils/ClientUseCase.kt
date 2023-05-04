@@ -1,7 +1,6 @@
 package im.threads.business.utils
 
 import im.threads.business.UserInfoBuilder
-import im.threads.business.logger.LoggerEdna
 import im.threads.business.preferences.Preferences
 
 /**
