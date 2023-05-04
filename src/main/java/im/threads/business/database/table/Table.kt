@@ -1,38 +1,49 @@
-package im.threads.business.database.table;
+package im.threads.business.database.table
 
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
+import android.database.Cursor
+import android.database.sqlite.SQLiteDatabase
+import android.database.sqlite.SQLiteOpenHelper
 
-import androidx.annotation.Nullable;
+abstract class Table {
+    abstract fun createTable(db: SQLiteDatabase)
+    abstract fun upgradeTable(db: SQLiteDatabase, oldVersion: Int, newVersion: Int)
+    abstract fun cleanTable(sqlHelper: SQLiteOpenHelper)
 
-public abstract class Table {
+    companion object {
+        fun cIsNull(c: Cursor, columnName: String?): Boolean {
+            val index = c.getColumnIndex(columnName)
+            return index < 0 || c.isNull(index)
+        }
 
-    public abstract void createTable(SQLiteDatabase db);
+        fun cGetBool(c: Cursor, columnName: String?): Boolean {
+            return cGetInt(c, columnName) == 1
+        }
 
-    public abstract void upgradeTable(SQLiteDatabase db, int oldVersion, int newVersion);
+        fun cGetString(c: Cursor, columnName: String?): String? {
+            val index = c.getColumnIndex(columnName)
+            return if (index < 0 || cIsNull(c, columnName)) {
+                null
+            } else {
+                c.getString(index)
+            }
+        }
 
-    public abstract void cleanTable(SQLiteOpenHelper sqlHelper);
+        fun cGetLong(c: Cursor, columnName: String?): Long {
+            val index = c.getColumnIndex(columnName)
+            return if (index < 0) {
+                0
+            } else {
+                c.getLong(index)
+            }
+        }
 
-    static boolean cIsNull(Cursor c, String columnName) {
-        return c.isNull(c.getColumnIndex(columnName));
+        fun cGetInt(c: Cursor, columnName: String?): Int {
+            val index = c.getColumnIndex(columnName)
+            return if (index < 0 || cIsNull(c, columnName)) {
+                0
+            } else {
+                c.getInt(index)
+            }
+        }
     }
-
-    static boolean cGetBool(Cursor c, String columnName) {
-        return cGetInt(c, columnName) == 1;
-    }
-
-    @Nullable
-    static String cGetString(Cursor c, String columnName) {
-        return cIsNull(c, columnName) ? null : c.getString(c.getColumnIndex(columnName));
-    }
-
-    static long cGetLong(Cursor c, String columnName) {
-        return c.getLong(c.getColumnIndex(columnName));
-    }
-
-    static int cGetInt(Cursor c, String columnName) {
-        return cIsNull(c, columnName) ? 0 : c.getInt(c.getColumnIndex(columnName));
-    }
-
 }

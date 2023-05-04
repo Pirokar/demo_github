@@ -1,65 +1,77 @@
-package im.threads.business.database.table;
+package im.threads.business.database.table
 
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteDatabase
+import android.database.sqlite.SQLiteOpenHelper
+import im.threads.business.models.QuickReply
 
-import java.util.ArrayList;
-import java.util.List;
-
-import im.threads.business.models.QuickReply;
-
-public class QuickRepliesTable extends Table {
-
-    private static final String TABLE_QUICK_REPLIES = "TABLE_QUICK_REPLIES";
-    private static final String COLUMN_QUICK_REPLIES_ID = "COLUMN_ID";
-    private static final String COLUMN_QUICK_REPLIES_SERVER_ID = "COLUMN_SERVER_ID";
-    private static final String COLUMN_QUICK_REPLIES_MESSAGE_UUID = "COLUMN_MESSAGE_UUID";
-    private static final String COLUMN_QUICK_REPLIES_TYPE = "COLUMN_TYPE";
-    private static final String COLUMN_QUICK_REPLIES_TEXT = "COLUMN_TEXT";
-    private static final String COLUMN_QUICK_REPLIES_IMAGE_URL = "COLUMN_IMAGE_URL";
-    private static final String COLUMN_QUICK_REPLIES_URL = "COLUMN_URL";
-
-    @Override
-    public void createTable(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE " + TABLE_QUICK_REPLIES + "("
-                + COLUMN_QUICK_REPLIES_ID + " integer primary key autoincrement, "
-                + COLUMN_QUICK_REPLIES_SERVER_ID + " integer, "
-                + COLUMN_QUICK_REPLIES_MESSAGE_UUID + " string, "
-                + COLUMN_QUICK_REPLIES_TYPE + " text, "
-                + COLUMN_QUICK_REPLIES_TEXT + " text, "
-                + COLUMN_QUICK_REPLIES_IMAGE_URL + " text, "
-                + COLUMN_QUICK_REPLIES_URL + " text "
-                + ")");
+class QuickRepliesTable : Table() {
+    override fun createTable(db: SQLiteDatabase) {
+        db.execSQL(
+            "CREATE TABLE " + TABLE_QUICK_REPLIES + "(" +
+                COLUMN_QUICK_REPLIES_ID + " integer primary key autoincrement, " +
+                COLUMN_QUICK_REPLIES_SERVER_ID + " integer, " +
+                COLUMN_QUICK_REPLIES_MESSAGE_UUID + " string, " +
+                COLUMN_QUICK_REPLIES_TYPE + " text, " +
+                COLUMN_QUICK_REPLIES_TEXT + " text, " +
+                COLUMN_QUICK_REPLIES_IMAGE_URL + " text, " +
+                COLUMN_QUICK_REPLIES_URL + " text " +
+                ")"
+        )
     }
 
-    @Override
-    public void upgradeTable(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_QUICK_REPLIES);
+    override fun upgradeTable(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_QUICK_REPLIES")
     }
 
-    @Override
-    public void cleanTable(SQLiteOpenHelper sqlHelper) {
-        sqlHelper.getWritableDatabase().execSQL("delete from " + TABLE_QUICK_REPLIES);
+    override fun cleanTable(sqlHelper: SQLiteOpenHelper) {
+        sqlHelper.writableDatabase.execSQL("delete from $TABLE_QUICK_REPLIES")
     }
 
-    public List<QuickReply> getQuickReplies(SQLiteOpenHelper sqlHelper, String messageUUID) {
-        List<QuickReply> items = new ArrayList<>();
-        String query = "select * from " + TABLE_QUICK_REPLIES + " where " + COLUMN_QUICK_REPLIES_MESSAGE_UUID + " = ?";
-        try (Cursor c = sqlHelper.getWritableDatabase().rawQuery(query, new String[]{String.valueOf(messageUUID)})) {
-            if (c.getCount() == 0) {
-                return items;
+    fun getQuickReplies(sqlHelper: SQLiteOpenHelper, messageUUID: String?): List<QuickReply> {
+        val items: MutableList<QuickReply> = ArrayList()
+        val query = "select * from $TABLE_QUICK_REPLIES where $COLUMN_QUICK_REPLIES_MESSAGE_UUID = ?"
+        sqlHelper.writableDatabase.rawQuery(query, arrayOf(messageUUID)).use { c ->
+            if (c.count == 0) {
+                return items
             }
-            for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
-                QuickReply quickReply = new QuickReply();
-                quickReply.setId(cGetInt(c, COLUMN_QUICK_REPLIES_SERVER_ID));
-                quickReply.setType(cGetString(c, COLUMN_QUICK_REPLIES_TYPE));
-                quickReply.setText(cGetString(c, COLUMN_QUICK_REPLIES_TEXT));
-                quickReply.setImageUrl(cGetString(c, COLUMN_QUICK_REPLIES_IMAGE_URL));
-                quickReply.setUrl(cGetString(c, COLUMN_QUICK_REPLIES_URL));
-                items.add(quickReply);
+            c.moveToFirst()
+            while (!c.isAfterLast) {
+                val quickReply = QuickReply()
+                quickReply.id = cGetInt(
+                    c,
+                    COLUMN_QUICK_REPLIES_SERVER_ID
+                )
+                quickReply.type = cGetString(
+                    c,
+                    COLUMN_QUICK_REPLIES_TYPE
+                )
+                quickReply.text = cGetString(
+                    c,
+                    COLUMN_QUICK_REPLIES_TEXT
+                )
+                quickReply.imageUrl = cGetString(
+                    c,
+                    COLUMN_QUICK_REPLIES_IMAGE_URL
+                )
+                quickReply.url = cGetString(
+                    c,
+                    COLUMN_QUICK_REPLIES_URL
+                )
+                items.add(quickReply)
+                c.moveToNext()
             }
-            return items;
+            return items
         }
+    }
+
+    companion object {
+        private const val TABLE_QUICK_REPLIES = "TABLE_QUICK_REPLIES"
+        private const val COLUMN_QUICK_REPLIES_ID = "COLUMN_ID"
+        private const val COLUMN_QUICK_REPLIES_SERVER_ID = "COLUMN_SERVER_ID"
+        private const val COLUMN_QUICK_REPLIES_MESSAGE_UUID = "COLUMN_MESSAGE_UUID"
+        private const val COLUMN_QUICK_REPLIES_TYPE = "COLUMN_TYPE"
+        private const val COLUMN_QUICK_REPLIES_TEXT = "COLUMN_TEXT"
+        private const val COLUMN_QUICK_REPLIES_IMAGE_URL = "COLUMN_IMAGE_URL"
+        private const val COLUMN_QUICK_REPLIES_URL = "COLUMN_URL"
     }
 }
