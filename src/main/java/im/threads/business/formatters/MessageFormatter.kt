@@ -1,263 +1,262 @@
-package im.threads.business.formatters;
+package im.threads.business.formatters
 
-import android.content.Context;
-import android.os.Parcel;
-import android.os.Parcelable;
-import android.text.TextUtils;
+import android.content.Context
+import android.os.Parcel
+import android.os.Parcelable
+import android.os.Parcelable.Creator
+import android.text.TextUtils
+import androidx.core.util.ObjectsCompat
+import im.threads.R
+import im.threads.business.models.ChatItem
+import im.threads.business.models.ConsultConnectionMessage
+import im.threads.business.models.ConsultPhrase
+import im.threads.business.models.SimpleSystemMessage
+import im.threads.business.models.Survey
+import im.threads.business.utils.FileUtils.isImage
 
-import androidx.annotation.NonNull;
-import androidx.core.util.ObjectsCompat;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import im.threads.R;
-import im.threads.business.models.ChatItem;
-import im.threads.business.models.ConsultConnectionMessage;
-import im.threads.business.models.ConsultPhrase;
-import im.threads.business.models.FileDescription;
-import im.threads.business.models.QuestionDTO;
-import im.threads.business.models.SimpleSystemMessage;
-import im.threads.business.models.Survey;
-import im.threads.business.utils.FileUtils;
-
-public final class MessageFormatter {
-
-    private MessageFormatter() {
-    }
-
-    public static MessageContent parseMessageContent(Context ctx, List<ChatItem> chatItems) {
-        int imagesCount = 0;
-        int plainFilesCount = 0;
-        String avatarPath = null;
-        String imagePath = null;
-        String phrase = "";
-        boolean sex = false;
-        String docName = "";
-        String consultName = null;
-        boolean isNeedAnswer = false;
-        List<ChatItem> unreadMessages = new ArrayList<>();
-        for (ChatItem ci : chatItems) {
-            if (ci instanceof ConsultConnectionMessage || ci instanceof ConsultPhrase || ci instanceof SimpleSystemMessage || ci instanceof Survey) {
-                unreadMessages.add(ci);
+object MessageFormatter {
+    fun parseMessageContent(ctx: Context, chatItems: List<ChatItem?>): MessageContent {
+        var imagesCount = 0
+        var plainFilesCount = 0
+        var avatarPath: String? = null
+        var imagePath: String? = null
+        var phrase = ""
+        var sex = false
+        var docName = ""
+        var consultName: String? = null
+        var isNeedAnswer = false
+        val unreadMessages: MutableList<ChatItem> = ArrayList()
+        for (ci in chatItems) {
+            if (ci is ConsultConnectionMessage || ci is ConsultPhrase || ci is SimpleSystemMessage || ci is Survey) {
+                unreadMessages.add(ci)
             }
         }
-        for (ChatItem ci : unreadMessages) {
-            if (ci instanceof ConsultConnectionMessage) {
-                ConsultConnectionMessage ccm = (ConsultConnectionMessage) ci;
-                consultName = ccm.getName();
-                phrase = ccm.getText();
-                sex = ccm.getSex();
-                avatarPath = ((ConsultConnectionMessage) ci).getAvatarPath();
+        for (ci in unreadMessages) {
+            if (ci is ConsultConnectionMessage) {
+                val ccm = ci
+                consultName = ccm.name
+                phrase = ccm.text
+                sex = ccm.sex
+                avatarPath = ci.avatarPath
             }
-            if (ci instanceof SimpleSystemMessage) {
-                SimpleSystemMessage ccm = (SimpleSystemMessage) ci;
-                phrase = ccm.getText();
+            if (ci is SimpleSystemMessage) {
+                phrase = ci.text
             }
-            if (ci instanceof ConsultPhrase) {
-                ConsultPhrase consultPhrase = (ConsultPhrase) ci;
-                isNeedAnswer = true;
-                if (!TextUtils.isEmpty(consultPhrase.getPhraseText())) {
-                    phrase = consultPhrase.getPhraseText();
+            if (ci is ConsultPhrase) {
+                isNeedAnswer = true
+                if (!TextUtils.isEmpty(ci.phraseText)) {
+                    phrase = ci.phraseText ?: ""
                 }
-                sex = consultPhrase.getSex();
-                if (consultPhrase.getConsultName() != null) {
-                    consultName = consultPhrase.getConsultName();
+                sex = ci.sex
+                if (ci.consultName != null) {
+                    consultName = ci.consultName
                 }
-                if (consultPhrase.getFileDescription() != null) {
-                    FileDescription fileDescription = consultPhrase.getFileDescription();
-                    if (FileUtils.isImage(fileDescription)) {
-                        imagesCount++;
-                        imagePath = fileDescription.getDownloadPath();
+                if (ci.fileDescription != null) {
+                    val fileDescription = ci.fileDescription
+                    if (isImage(fileDescription)) {
+                        imagesCount++
+                        imagePath = fileDescription!!.downloadPath
                     } else {
-                        plainFilesCount++;
-                        docName = fileDescription.getIncomingName();
+                        plainFilesCount++
+                        docName = fileDescription!!.incomingName
                     }
                 }
-                if (consultPhrase.getQuote() != null && consultPhrase.getQuote().getFileDescription() != null) {
-                    FileDescription fileDescription = consultPhrase.getQuote().getFileDescription();
-                    if (FileUtils.isImage(fileDescription)) {
-                        imagesCount++;
-                        imagePath = fileDescription.getDownloadPath();
+                if (ci.quote?.fileDescription != null) {
+                    val fileDescription = ci.quote.fileDescription
+                    if (isImage(fileDescription)) {
+                        imagesCount++
+                        imagePath = fileDescription!!.downloadPath
                     } else {
-                        plainFilesCount++;
-                        docName = fileDescription.getIncomingName();
+                        plainFilesCount++
+                        docName = fileDescription!!.incomingName
                     }
                 }
-                avatarPath = consultPhrase.getAvatarPath();
+                avatarPath = ci.avatarPath
             }
-            if (ci instanceof Survey) {
-                Survey ccm = (Survey) ci;
-                final List<QuestionDTO> questions = ccm.getQuestions();
-                if (questions != null && questions.size() > 0) {
-                    phrase = questions.get(0).getText();
+            if (ci is Survey) {
+                val questions = ci.questions
+                if (questions != null && questions.size > 0) {
+                    phrase = questions[0].text ?: ""
                 }
             }
         }
-        String titleText = consultName;
+        var titleText = consultName
         if (plainFilesCount != 0) {
-            String send = sex ? ctx.getString(R.string.ecc_send_male) : ctx.getString(R.string.ecc_send_female);
-            titleText = consultName + " " + send + " ";
-            int total = plainFilesCount + imagesCount;
-            titleText += ctx.getResources().getQuantityString(R.plurals.ecc_files, total, total);
+            val send =
+                if (sex) ctx.getString(R.string.ecc_send_male) else ctx.getString(R.string.ecc_send_female)
+            titleText = "$consultName $send "
+            val total = plainFilesCount + imagesCount
+            titleText += ctx.resources.getQuantityString(R.plurals.ecc_files, total, total)
             if (TextUtils.isEmpty(phrase)) {
-                if (total == 1) {
-                    phrase = docName;
+                phrase = if (total == 1) {
+                    docName
                 } else {
-                    phrase = ctx.getString(R.string.ecc_touch_to_download);
+                    ctx.getString(R.string.ecc_touch_to_download)
                 }
             }
         } else if (imagesCount != 0) {
-            String send = sex ? ctx.getString(R.string.ecc_send_male) : ctx.getString(R.string.ecc_send_female);
-            titleText = consultName + " " + send + " " +
-                    ctx.getResources().getQuantityString(R.plurals.ecc_images, imagesCount, imagesCount);
-            if (TextUtils.isEmpty(phrase)) {
-                phrase = ctx.getString(R.string.ecc_touch_to_look);
-            }
-        } else if (unreadMessages.size() > 1) {
-            titleText = ctx.getResources().getQuantityString(R.plurals.ecc_new_messages, unreadMessages.size(), unreadMessages.size());
-        }
-        return new MessageContent(
-                titleText,
-                phrase != null ? phrase : "",
-                !TextUtils.isEmpty(avatarPath),
-                imagesCount != 0,
-                plainFilesCount != 0,
+            val send =
+                if (sex) ctx.getString(R.string.ecc_send_male) else ctx.getString(R.string.ecc_send_female)
+            titleText = "$consultName $send " + ctx.resources.getQuantityString(
+                R.plurals.ecc_images,
                 imagesCount,
-                unreadMessages.size(),
-                avatarPath,
-                imagePath,
-                consultName,
-                isNeedAnswer
-        );
+                imagesCount
+            )
+            if (TextUtils.isEmpty(phrase)) {
+                phrase = ctx.getString(R.string.ecc_touch_to_look)
+            }
+        } else if (unreadMessages.size > 1) {
+            titleText = ctx.resources.getQuantityString(
+                R.plurals.ecc_new_messages,
+                unreadMessages.size,
+                unreadMessages.size
+            )
+        }
+        return MessageContent(
+            titleText,
+            phrase ?: "",
+            !TextUtils.isEmpty(avatarPath),
+            imagesCount != 0,
+            plainFilesCount != 0,
+            imagesCount,
+            unreadMessages.size,
+            avatarPath,
+            imagePath,
+            consultName,
+            isNeedAnswer
+        )
     }
 
-    public static class MessageContent implements Parcelable {
-        public static final Creator<MessageContent> CREATOR = new Creator<MessageContent>() {
-            @Override
-            public MessageContent createFromParcel(Parcel in) {
-                return new MessageContent(in);
-            }
+    class MessageContent : Parcelable {
+        val titleText: String?
+        val contentText: String
+        val hasAvatar: Boolean
+        val hasImage: Boolean
+        val hasPlainFiles: Boolean
+        val imagesCount: Int
+        val phrasesCount: Int
+        val avatarPath: String?
+        val lastImagePath: String?
+        val consultName: String?
+        val isNeedAnswer: Boolean
 
-            @Override
-            public MessageContent[] newArray(int size) {
-                return new MessageContent[size];
-            }
-        };
-        public final String titleText;
-        @NonNull
-        public final String contentText;
-        public final boolean hasAvatar;
-        public final boolean hasImage;
-        public final boolean hasPlainFiles;
-        public final int imagesCount;
-        public final int phrasesCount;
-        public final String avatarPath;
-        public final String lastImagePath;
-        public final String consultName;
-        public final boolean isNeedAnswer;
-
-        MessageContent(
-                String titleText,
-                @NonNull String contentText,
-                boolean hasAvatar,
-                boolean hasImage,
-                boolean hasPlainFiles,
-                int imagesCount,
-                int phrasesCount,
-                String avatarPath,
-                String lastImagePath,
-                String consultName,
-                boolean isNeedAnswer) {
-            this.titleText = titleText;
-            this.contentText = contentText;
-            this.hasAvatar = hasAvatar;
-            this.hasImage = hasImage;
-            this.imagesCount = imagesCount;
-            this.phrasesCount = phrasesCount;
-            this.hasPlainFiles = hasPlainFiles;
-            this.avatarPath = avatarPath;
-            this.lastImagePath = lastImagePath;
-            this.consultName = consultName;
-            this.isNeedAnswer = isNeedAnswer;
+        internal constructor(
+            titleText: String?,
+            contentText: String,
+            hasAvatar: Boolean,
+            hasImage: Boolean,
+            hasPlainFiles: Boolean,
+            imagesCount: Int,
+            phrasesCount: Int,
+            avatarPath: String?,
+            lastImagePath: String?,
+            consultName: String?,
+            isNeedAnswer: Boolean
+        ) {
+            this.titleText = titleText
+            this.contentText = contentText
+            this.hasAvatar = hasAvatar
+            this.hasImage = hasImage
+            this.imagesCount = imagesCount
+            this.phrasesCount = phrasesCount
+            this.hasPlainFiles = hasPlainFiles
+            this.avatarPath = avatarPath
+            this.lastImagePath = lastImagePath
+            this.consultName = consultName
+            this.isNeedAnswer = isNeedAnswer
         }
 
-        protected MessageContent(Parcel in) {
-            titleText = in.readString();
-            contentText = in.readString();
-            hasAvatar = in.readByte() != 0;
-            hasImage = in.readByte() != 0;
-            hasPlainFiles = in.readByte() != 0;
-            imagesCount = in.readInt();
-            phrasesCount = in.readInt();
-            avatarPath = in.readString();
-            lastImagePath = in.readString();
-            consultName = in.readString();
-            isNeedAnswer = in.readByte() != 0;
+        protected constructor(`in`: Parcel) {
+            titleText = `in`.readString()
+            contentText = `in`.readString()!!
+            hasAvatar = `in`.readByte().toInt() != 0
+            hasImage = `in`.readByte().toInt() != 0
+            hasPlainFiles = `in`.readByte().toInt() != 0
+            imagesCount = `in`.readInt()
+            phrasesCount = `in`.readInt()
+            avatarPath = `in`.readString()
+            lastImagePath = `in`.readString()
+            consultName = `in`.readString()
+            isNeedAnswer = `in`.readByte().toInt() != 0
         }
 
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) {
-                return true;
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
             }
-            if (o == null || getClass() != o.getClass()) {
-                return false;
+            if (other == null || javaClass != other.javaClass) {
+                return false
             }
-            MessageContent that = (MessageContent) o;
-            return hasAvatar == that.hasAvatar &&
-                    hasImage == that.hasImage &&
-                    imagesCount == that.imagesCount &&
-                    phrasesCount == that.phrasesCount &&
-                    hasPlainFiles == that.hasPlainFiles &&
-                    isNeedAnswer == that.isNeedAnswer &&
-                    ObjectsCompat.equals(titleText, that.titleText) &&
-                    ObjectsCompat.equals(contentText, that.contentText) &&
-                    ObjectsCompat.equals(avatarPath, that.avatarPath) &&
-                    ObjectsCompat.equals(lastImagePath, that.lastImagePath) &&
-                    ObjectsCompat.equals(consultName, that.consultName);
+            val that = other as MessageContent
+            return hasAvatar == that.hasAvatar && hasImage == that.hasImage && imagesCount == that.imagesCount && phrasesCount == that.phrasesCount && hasPlainFiles == that.hasPlainFiles && isNeedAnswer == that.isNeedAnswer &&
+                ObjectsCompat.equals(titleText, that.titleText) &&
+                ObjectsCompat.equals(contentText, that.contentText) &&
+                ObjectsCompat.equals(avatarPath, that.avatarPath) &&
+                ObjectsCompat.equals(lastImagePath, that.lastImagePath) &&
+                ObjectsCompat.equals(consultName, that.consultName)
         }
 
-        @Override
-        public int hashCode() {
-            return ObjectsCompat.hash(titleText, contentText, hasAvatar, hasImage, imagesCount, phrasesCount, hasPlainFiles, avatarPath, lastImagePath, consultName, isNeedAnswer);
+        override fun hashCode(): Int {
+            return ObjectsCompat.hash(
+                titleText,
+                contentText,
+                hasAvatar,
+                hasImage,
+                imagesCount,
+                phrasesCount,
+                hasPlainFiles,
+                avatarPath,
+                lastImagePath,
+                consultName,
+                isNeedAnswer
+            )
         }
 
-        @Override
-        public String toString() {
+        override fun toString(): String {
             return "MessageContent{" +
-                    "titleText='" + titleText + '\'' +
-                    ", contentText='" + contentText + '\'' +
-                    ", hasAvatar=" + hasAvatar +
-                    ", hasImage=" + hasImage +
-                    ", hasPlainFiles=" + hasPlainFiles +
-                    ", imagesCount=" + imagesCount +
-                    ", phrasesCount=" + phrasesCount +
-                    ", avatarPath='" + avatarPath + '\'' +
-                    ", lastImagePath='" + lastImagePath + '\'' +
-                    ", consultName='" + consultName + '\'' +
-                    ", isNeedAnswer=" + isNeedAnswer +
-                    '}';
+                "titleText='" + titleText + '\'' +
+                ", contentText='" + contentText + '\'' +
+                ", hasAvatar=" + hasAvatar +
+                ", hasImage=" + hasImage +
+                ", hasPlainFiles=" + hasPlainFiles +
+                ", imagesCount=" + imagesCount +
+                ", phrasesCount=" + phrasesCount +
+                ", avatarPath='" + avatarPath + '\'' +
+                ", lastImagePath='" + lastImagePath + '\'' +
+                ", consultName='" + consultName + '\'' +
+                ", isNeedAnswer=" + isNeedAnswer +
+                '}'
         }
 
-        @Override
-        public int describeContents() {
-            return 0;
+        override fun describeContents(): Int {
+            return 0
         }
 
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            dest.writeString(titleText);
-            dest.writeString(contentText);
-            dest.writeByte((byte) (hasAvatar ? 1 : 0));
-            dest.writeByte((byte) (hasImage ? 1 : 0));
-            dest.writeByte((byte) (hasPlainFiles ? 1 : 0));
-            dest.writeInt(imagesCount);
-            dest.writeInt(phrasesCount);
-            dest.writeString(avatarPath);
-            dest.writeString(lastImagePath);
-            dest.writeString(consultName);
-            dest.writeByte((byte) (isNeedAnswer ? 1 : 0));
+        override fun writeToParcel(dest: Parcel, flags: Int) {
+            dest.writeString(titleText)
+            dest.writeString(contentText)
+            dest.writeByte((if (hasAvatar) 1 else 0).toByte())
+            dest.writeByte((if (hasImage) 1 else 0).toByte())
+            dest.writeByte((if (hasPlainFiles) 1 else 0).toByte())
+            dest.writeInt(imagesCount)
+            dest.writeInt(phrasesCount)
+            dest.writeString(avatarPath)
+            dest.writeString(lastImagePath)
+            dest.writeString(consultName)
+            dest.writeByte((if (isNeedAnswer) 1 else 0).toByte())
+        }
+
+        companion object {
+            @JvmField
+            val CREATOR: Creator<MessageContent> = object : Creator<MessageContent> {
+                override fun createFromParcel(`in`: Parcel): MessageContent {
+                    return MessageContent(`in`)
+                }
+
+                override fun newArray(size: Int): Array<MessageContent?> {
+                    return arrayOfNulls(size)
+                }
+            }
         }
     }
 }
