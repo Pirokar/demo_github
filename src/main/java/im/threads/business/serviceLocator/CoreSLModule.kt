@@ -24,10 +24,10 @@ val coreSLModule = module {
     factory { Preferences(get()) }
     factory { DatabaseHolder(get()) }
     factory { AuthHeadersProvider() }
-    factory { ImageLoaderOkHttpProvider(get(), get()) }
-    factory { OutgoingMessageCreator(get()) }
+    factory { ImageLoaderOkHttpProvider(get(), get(), get()) }
+    factory { OutgoingMessageCreator(get(), get()) }
     factory { ClientUseCase(get()) }
-    factory { AuthInterceptor(get(), get()) }
+    factory { AuthInterceptor(get(), get(), get()) }
     factory { ConsultWriter(get()) }
     factory { ChatUpdateProcessor() }
     factory<NetworkInteractor> { NetworkInteractorImpl() }

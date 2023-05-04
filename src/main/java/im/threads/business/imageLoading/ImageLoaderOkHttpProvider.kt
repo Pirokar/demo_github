@@ -1,19 +1,19 @@
 package im.threads.business.imageLoading
 
-import im.threads.business.UserInfoBuilder
 import im.threads.business.logger.NetworkLoggerInterceptor
 import im.threads.business.models.SslSocketFactoryConfig
 import im.threads.business.preferences.Preferences
-import im.threads.business.preferences.PreferencesCoreKeys
 import im.threads.business.rest.config.HttpClientSettings
 import im.threads.business.transport.AuthHeadersProvider
+import im.threads.business.utils.ClientUseCase
 import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit
 import javax.net.ssl.SSLSession
 
 class ImageLoaderOkHttpProvider(
     private val preferences: Preferences,
-    private val authHeadersProvider: AuthHeadersProvider
+    private val authHeadersProvider: AuthHeadersProvider,
+    private val clientUseCase: ClientUseCase
 ) {
     fun createOkHttpClient(
         httpClientSettings: HttpClientSettings,
@@ -21,7 +21,7 @@ class ImageLoaderOkHttpProvider(
     ) {
         val httpClientBuilder = OkHttpClient.Builder()
             .addInterceptor { chain ->
-                val userInfo = preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)
+                val userInfo = clientUseCase.getUserInfo()
                 val builder = chain.request().newBuilder().apply {
                     userInfo?.clientId?.let { addHeader("X-Ext-Client-ID", it) }
                 }

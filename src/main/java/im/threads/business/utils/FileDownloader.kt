@@ -1,11 +1,10 @@
 package im.threads.business.utils
 
 import android.content.Context
-import im.threads.business.UserInfoBuilder
 import im.threads.business.config.BaseConfig
 import im.threads.business.logger.LoggerEdna
 import im.threads.business.preferences.Preferences
-import im.threads.business.preferences.PreferencesCoreKeys
+import im.threads.business.serviceLocator.core.inject
 import im.threads.business.transport.AuthHeadersProvider
 import java.io.BufferedInputStream
 import java.io.File
@@ -30,6 +29,8 @@ class FileDownloader(
     private val preferences: Preferences,
     private val authHeadersProvider: AuthHeadersProvider
 ) {
+    private val clientUseCase: ClientUseCase by inject()
+
     private val outputFile: File = File(
         getDownloadDir(ctx),
         fileName
@@ -60,7 +61,7 @@ class FileDownloader(
             } else {
                 url.openConnection() as HttpURLConnection
             }
-            val userInfo = preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)
+            val userInfo = clientUseCase.getUserInfo()
             try {
                 (urlConnection as? HttpURLConnection)?.requestMethod = "GET"
                 if (userInfo?.clientId != null) {
