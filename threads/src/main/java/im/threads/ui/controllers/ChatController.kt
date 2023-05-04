@@ -112,6 +112,7 @@ class ChatController private constructor() {
     private val appContext: Context by inject()
     private val preferences: Preferences by inject()
     private val historyLoader: HistoryLoader by inject()
+    private val clientUseCase: ClientUseCase by inject()
 
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
@@ -147,7 +148,7 @@ class ChatController private constructor() {
     // Если пользователь не ответил на вопрос (quickReply), то блокируем поле ввода
     private var inputEnabledDuringQuickReplies = chatStyle.inputEnabledDuringQuickReplies
     private var compositeDisposable: CompositeDisposable? = CompositeDisposable()
-    private val messenger: Messenger = MessengerImpl(compositeDisposable)
+    private val messenger: Messenger = MessengerImpl(compositeDisposable, clientUseCase)
     private val localUserMessages = ArrayList<UserPhrase>()
     private val attachmentsHistory = HashMap<String, AttachmentStateEnum>()
 
@@ -1317,7 +1318,7 @@ class ChatController private constructor() {
 
     private fun onDeviceAddressChanged() {
         info(ThreadsApi.REST_TAG, "onDeviceAddressChanged. Loading history.")
-        val clientId = preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)?.clientId
+        val clientId = clientUseCase.getUserInfo()?.clientId
         if (fragment != null && !clientId.isNullOrBlank()) {
             subscribe(
                 Single.fromCallable {
@@ -1580,8 +1581,8 @@ class ChatController private constructor() {
     private fun subscribeOnClientIdChange() {
         instance?.subscribe(
             Single.fromCallable {
-                val userInfo = preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)
-                val newClientId = preferences.get<String>(PreferencesCoreKeys.TAG_NEW_CLIENT_ID)
+                val userInfo = clientUseCase.getUserInfo()
+                val newClientId = clientUseCase.getTagNewClientId()
                 val oldClientId = userInfo?.clientId
                 if (!newClientId.isNullOrEmpty() && newClientId != oldClientId) {
                     instance?.onClientIdChanged() ?: ArrayList()

@@ -1,12 +1,13 @@
 package im.threads.business.preferences
 
+import im.threads.business.utils.ClientUseCase
+
 /**
  * Ключи для Preferences уровня Core
  */
 object PreferencesCoreKeys {
     private val migrationKeys = PrefKeysForMigration()
 
-    val TAG_NEW_CLIENT_ID = "TAG_NEW_CLIENT_ID"
     val LAST_COPY_TEXT = "LAST_COPY_TEXT"
     val DEVICE_ADDRESS = "DEVICE_ADDRESS"
     val FCM_TOKEN = "FCM_TOKEN"
@@ -17,7 +18,6 @@ object PreferencesCoreKeys {
     val FILE_DESCRIPTION_DRAFT = "FILE_DESCRIPTION_DRAFT"
     val CAMPAIGN_MESSAGE = "CAMPAIGN_MESSAGE"
     val UNREAD_PUSH_COUNT = "UNREAD_PUSH_COUNT"
-    val USER_INFO = "USER_INFO"
     val STORE_NAME = "im.threads.internal.utils.PrefStore"
     val ENCRYPTED_STORE_NAME = "im.threads.internal.utils.EncryptedPrefStore"
     val DATABASE_PASSWORD = "DATABASE_PASSWORD"
@@ -32,6 +32,7 @@ object PreferencesCoreKeys {
         THREAD_ID,
         FILE_DESCRIPTION_DRAFT,
         CAMPAIGN_MESSAGE,
+        ClientUseCase.USER_INFO_PREFS_KEY,
         UNREAD_PUSH_COUNT,
         STORE_NAME,
         ENCRYPTED_STORE_NAME,
