@@ -1,18 +1,10 @@
-package im.threads.business.database;
+package im.threads.business.database
 
-import androidx.annotation.NonNull;
+import im.threads.business.models.ChatItem
+import im.threads.business.models.FileDescription
 
-import java.util.List;
-
-import im.threads.business.models.ChatItem;
-import im.threads.business.models.FileDescription;
-
-public interface DBHelper {
-
-    void cleanDatabase();
-
-    @NonNull
-    List<ChatItem> getChatItems(int offset, int limit);
-
-    List<FileDescription> getAllFileDescriptions();
+interface DBHelper {
+    fun cleanDatabase()
+    fun getChatItems(offset: Int, limit: Int): List<ChatItem?>
+    val allFileDescriptions: List<FileDescription?>?
 }

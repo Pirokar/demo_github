@@ -5,7 +5,7 @@ import androidx.test.core.app.ApplicationProvider
 import im.threads.business.UserInfoBuilder
 import im.threads.business.preferences.PrefKeysForMigration
 import im.threads.business.preferences.Preferences
-import im.threads.business.preferences.PreferencesCoreKeys
+import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.preferences.PreferencesMigrationBase
 import org.junit.After
 import org.junit.Test
@@ -88,6 +88,7 @@ class PreferencesTest {
 
     @Test
     fun whenOldUserInfoExist_thenTestMigration() {
+        val clientUseCase = ClientUseCase(preferences)
         val migrationKeys = PrefKeysForMigration()
         val value = "testValue"
         val booleanValue = true
@@ -111,7 +112,7 @@ class PreferencesTest {
 
         val migration = PreferencesMigrationBase(context)
         migration.migrateUserInfo()
-        val migratedResult = preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)
+        val migratedResult = clientUseCase.getUserInfo()
         assert(migratedResult?.equals(resultObject) == true)
     }
 

@@ -61,6 +61,15 @@ class ClientUseCase(private val preferences: Preferences) {
      */
     fun getTagNewClientId() = tagNewClientId ?: preferences.get(TAG_NEW_CLIENT_ID_PREFS_KEY)
 
+    /**
+     * Сохраняет данные о новом clientId
+     * @param tag новый clientId
+     */
+    fun saveTagNewClientId(tag: String?) {
+        tagNewClientId = tag
+        preferences.save(tag ?: "", TAG_NEW_CLIENT_ID_PREFS_KEY)
+    }
+
     companion object {
         const val USER_INFO_PREFS_KEY = "USER_INFO"
         const val TAG_NEW_CLIENT_ID_PREFS_KEY = "TAG_NEW_CLIENT_ID"

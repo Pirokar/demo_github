@@ -1,39 +1,30 @@
-package im.threads.business.database;
+package im.threads.business.database
 
-import androidx.annotation.NonNull;
+import im.threads.business.config.BaseConfig
+import im.threads.business.models.ChatItem
+import im.threads.business.models.FileDescription
+import io.reactivex.Single
+import io.reactivex.schedulers.Schedulers
 
-import java.util.List;
+class DatabaseHolder private constructor() {
+    private val mMyOpenHelper: ThreadsDbHelper = ThreadsDbHelper(BaseConfig.instance.context)
 
-import im.threads.business.config.BaseConfig;
-import im.threads.business.models.ChatItem;
-import im.threads.business.models.FileDescription;
-import io.reactivex.Single;
-import io.reactivex.schedulers.Schedulers;
-
-public final class DatabaseHolder {
-
-    private static DatabaseHolder instance;
-    private final ThreadsDbHelper mMyOpenHelper;
-
-    private DatabaseHolder() {
-        mMyOpenHelper = new ThreadsDbHelper(BaseConfig.instance.context);
+    fun getChatItems(offset: Int, limit: Int): List<ChatItem> {
+        return mMyOpenHelper.getChatItems(offset, limit)
     }
 
-    @NonNull
-    public static DatabaseHolder getInstance() {
-        if (instance == null) {
-            instance = new DatabaseHolder();
-        }
-        return instance;
-    }
+    val allFileDescriptions: Single<List<FileDescription>>
+        get() = Single.fromCallable { mMyOpenHelper.allFileDescriptions }
+            .subscribeOn(Schedulers.io())
 
-    @NonNull
-    public List<ChatItem> getChatItems(int offset, int limit) {
-        return mMyOpenHelper.getChatItems(offset, limit);
-    }
-
-    public Single<List<FileDescription>> getAllFileDescriptions() {
-        return Single.fromCallable(mMyOpenHelper::getAllFileDescriptions)
-                .subscribeOn(Schedulers.io());
+    companion object {
+        var instance: DatabaseHolder? = null
+            get() {
+                if (field == null) {
+                    field = DatabaseHolder()
+                }
+                return field
+            }
+            private set
     }
 }

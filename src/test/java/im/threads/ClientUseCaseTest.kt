@@ -2,7 +2,6 @@ package im.threads
 
 import androidx.test.core.app.ApplicationProvider
 import im.threads.business.preferences.Preferences
-import im.threads.business.preferences.PreferencesCoreKeys
 import im.threads.business.utils.ClientUseCase
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -17,10 +16,10 @@ class ClientUseCaseTest {
     fun givenNewUserId_whenInitClientId_thenUserIdChanged() {
         val testClientId = "testClientId123"
 
-        preferences.save(PreferencesCoreKeys.TAG_NEW_CLIENT_ID, testClientId)
+        clientUseCase.saveTagNewClientId(testClientId)
         clientUseCase.initClientId()
 
-        val currentClientId = preferences.get<String>(PreferencesCoreKeys.TAG_NEW_CLIENT_ID)
+        val currentClientId = clientUseCase.getTagNewClientId()
         check(currentClientId == testClientId)
     }
 }
