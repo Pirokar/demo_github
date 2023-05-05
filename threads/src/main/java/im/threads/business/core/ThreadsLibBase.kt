@@ -30,6 +30,7 @@ import im.threads.business.utils.preferences.PreferencesMigrationBase
 import im.threads.ui.controllers.ChatController
 import im.threads.ui.fragments.ChatFragment
 import im.threads.ui.serviceLocator.uiSLModule
+import im.threads.ui.utils.InitialisationConstants
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.exceptions.UndeliverableException
 import io.reactivex.plugins.RxJavaPlugins
@@ -69,7 +70,7 @@ open class ThreadsLibBase protected constructor(context: Context) {
     val socketResponseMapProcessor: FlowableProcessor<Map<String, Any>>
         get() = chatUpdateProcessor.socketResponseMapProcessor
 
-    protected open fun initUser(userInfoBuilder: UserInfoBuilder, forceRegistration: Boolean = false) {
+    protected open fun initUser(userInfoBuilder: UserInfoBuilder, forceRegistration: Boolean = false, callback: () -> Unit) {
         clientUseCase.saveUserInfo(userInfoBuilder)
         BaseConfig.instance.transport.sendInit(forceRegistration)
         if (!ChatFragment.isShown && forceRegistration) {
@@ -81,14 +82,16 @@ open class ThreadsLibBase protected constructor(context: Context) {
      * Used to stop receiving messages for user
      */
     fun logoutClient() {
+        InitialisationConstants.onLogout()
+
         val clientId = clientUseCase.getUserInfo()?.clientId
         if (!clientId.isNullOrBlank()) {
             BaseConfig.instance.transport.sendClientOffline(clientId)
-            clientUseCase.saveUserInfo(null)
-            preferences.save(PreferencesCoreKeys.THREAD_ID, -1L, true)
         } else {
             info("clientId must not be empty")
         }
+        clientUseCase.saveUserInfo(null)
+        preferences.save(PreferencesCoreKeys.THREAD_ID, -1L, true)
         ChatController.getInstance().cleanAll()
     }
 

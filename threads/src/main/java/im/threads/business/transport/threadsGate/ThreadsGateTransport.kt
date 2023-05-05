@@ -51,6 +51,7 @@ import im.threads.business.utils.AppInfoHelper
 import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.DeviceInfoHelper
 import im.threads.business.utils.SSLCertificateInterceptor
+import im.threads.ui.utils.InitialisationConstants
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -163,8 +164,8 @@ class ThreadsGateTransport(
         val deviceAddress = preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS)
         if (!deviceAddress.isNullOrBlank() || forceRegistration) {
             if (deviceAddress.isNullOrBlank()) sendRegisterDevice()
-            sendInitChatMessage(true)
-            sendEnvironmentMessage(true)
+            InitialisationConstants.isInitChatSent = sendInitChatMessage(true)
+            InitialisationConstants.isEnvironmentMessageSent = sendEnvironmentMessage(true)
         } else {
             openWebSocket()
         }
@@ -182,7 +183,7 @@ class ThreadsGateTransport(
         consultInfo: ConsultInfo?,
         filePath: String?,
         quoteFilePath: String?
-    ) {
+    ): Boolean {
         LoggerEdna.info(
             "sendMessage: userPhrase = $userPhrase, consultInfo = $consultInfo, filePath = $filePath, quoteFilePath = $quoteFilePath"
         )
@@ -195,7 +196,7 @@ class ThreadsGateTransport(
             quoteFilePath,
             filePath
         )
-        sendMessage(
+        return sendMessage(
             content,
             true,
             ChatItemType.MESSAGE.name + CORRELATION_ID_DIVIDER + userPhrase.id
@@ -245,7 +246,7 @@ class ThreadsGateTransport(
         correlationId: String = UUID.randomUUID().toString(),
         tryOpeningWebSocket: Boolean = true,
         sendInit: Boolean = false
-    ) {
+    ): Boolean {
         LoggerEdna.info(
             "sendMessage: content = $content, important = $important, correlationId = $correlationId"
         )
@@ -255,7 +256,7 @@ class ThreadsGateTransport(
         if (webSocket == null && tryOpeningWebSocket) {
             openWebSocket()
         }
-        val ws = webSocket ?: return
+        val ws = webSocket ?: return false
         val clientId = clientUseCase.getUserInfo()?.clientId
         val deviceAddress = preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS)
         if (sendInit && !clientId.isNullOrBlank() && !deviceAddress.isNullOrBlank()) {
@@ -268,16 +269,19 @@ class ThreadsGateTransport(
                 SendMessageRequest.Data(deviceAddress, content, important)
             )
         )
-        sendMessageWithWebsocket(text)
+        return sendMessageWithWebsocket(text)
     }
 
-    private fun sendMessageWithWebsocket(message: String?) {
+    private fun sendMessageWithWebsocket(message: String?): Boolean {
+        var isSent = false
         if (message != null) {
-            val isSent = webSocket?.send(message)
+            isSent = webSocket?.send(message) ?: false
             LoggerEdna.info(
                 "[REST_WS] ☛ Sending message with WS. Is sent: $isSent. Message: ${jsonFormatter.jsonToPrettyFormat(message)}"
             )
         }
+
+        return isSent
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
@@ -334,16 +338,16 @@ class ThreadsGateTransport(
         return deviceUid
     }
 
-    private fun sendInitChatMessage(tryOpeningWebSocket: Boolean) {
-        sendMessage(
+    private fun sendInitChatMessage(tryOpeningWebSocket: Boolean): Boolean {
+        return sendMessage(
             content = outgoingMessageCreator.createInitChatMessage(),
             tryOpeningWebSocket = tryOpeningWebSocket,
             sendInit = false
         )
     }
 
-    private fun sendEnvironmentMessage(tryOpeningWebSocket: Boolean) {
-        sendMessage(
+    private fun sendEnvironmentMessage(tryOpeningWebSocket: Boolean): Boolean {
+        return sendMessage(
             outgoingMessageCreator.createEnvironmentMessage(
                 DeviceInfoHelper.getLocale(BaseConfig.instance.context)
             ),
@@ -446,6 +450,7 @@ class ThreadsGateTransport(
                 chatUpdateProcessor.postError(TransportException(errorMessage))
             } else if (action != null) {
                 if (action == Action.REGISTER_DEVICE) {
+                    InitialisationConstants.isDeviceRegistered = true
                     val data = BaseConfig.instance.gson.fromJson(
                         response.data.toString(),
                         RegisterDeviceData::class.java

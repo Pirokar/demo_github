@@ -18,23 +18,56 @@ import im.threads.ui.config.Config
 import im.threads.ui.config.ConfigBuilder
 import im.threads.ui.controllers.ChatController
 import im.threads.ui.styles.permissions.PermissionDescriptionDialogStyle
+import im.threads.ui.utils.InitialisationConstants
 import im.threads.ui.utils.preferences.PreferencesMigrationUi
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 
 class ThreadsLib(context: Context) : ThreadsLibBase(context) {
     private val config by lazy { Config.getInstance() }
     private val clientUseCase: ClientUseCase by inject()
+    private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
-    public override fun initUser(userInfoBuilder: UserInfoBuilder, forceRegistration: Boolean) {
-        val userInfo = clientUseCase.getUserInfo()
-        val oldClientId = userInfo?.clientId
-        val newClientId = userInfoBuilder.clientId
-        if (newClientId.isNotEmpty() && newClientId != oldClientId) {
-            ChatController.getInstance().cleanAll()
+    /**
+     * Инициализирует пользователя синхронно и загружает его историю в фоновом потоке
+     * (изменения истории сообщений применяются в потоке UI)
+     * @param userInfoBuilder данные о пользователе
+     * @param forceRegistration открывает сокет, отправляет данные о регистрации, закрывает сокет
+     * @param callback вызывается, когда пользователь инициализирован и загружена его история
+     */
+    public override fun initUser(userInfoBuilder: UserInfoBuilder, forceRegistration: Boolean, callback: () -> Unit) {
+        super.initUser(userInfoBuilder, forceRegistration, callback)
+
+        coroutineScope.launch {
+            val timeToDelay = 100L
+            InitialisationConstants.isLogoutHappened = false
+            while (!InitialisationConstants.isChatReady()) {
+                delay(timeToDelay)
+            }
+            ChatController.getInstance().loadHistory(applyUiChanges = false)
+            while (!InitialisationConstants.isChatReadyAndHistoryLoaded()) {
+                delay(timeToDelay)
+            }
+            withContext(Dispatchers.Main) {
+                callback()
+            }
         }
-        super.initUser(userInfoBuilder, forceRegistration)
-        ChatController.getInstance().hideEmptyState()
-        ChatController.getInstance().loadHistory()
+    }
+
+    /**
+     * Инициализирует пользователя синхронно и загружает его историю в фоновом потоке
+     * (изменения истории сообщений применяются в потоке UI)
+     * @param userInfoBuilder данные о пользователе
+     * @param forceRegistration открывает сокет, отправляет данные о регистрации, закрывает сокет
+     */
+    public fun initUser(userInfoBuilder: UserInfoBuilder, forceRegistration: Boolean) {
+        super.initUser(userInfoBuilder, forceRegistration) {}
+        ChatController.getInstance().loadHistory(applyUiChanges = false)
     }
 
     fun applyChatStyle(chatStyle: ChatStyle?) {
