@@ -24,12 +24,9 @@
     <string name="ecc_cancel">Отмена</string>
     <string name="ecc_search_photos">Поиск изображений…</string>
     <string name="ecc_nothing_found">Ничего не найдено</string>
-    <string name="ecc_press">Нажмите</string>
-    <string name="ecc_to_photo">для фото</string>
     <string name="ecc_no_cameras_detected">На устройстве отсутствует камера</string>
     <string name="ecc_camera_could_not_start_error">Не удалось запустить приложение камеры</string>
     <string name="ecc_back_camera_could_not_start_error">Не удалось запустить тыльную камеру.</string>
-    <string name="ecc_retake">Переснять</string>
     <string name="ecc_consult">Консультант</string>
     <string name="ecc_bot">Бот</string>
     <string name="ecc_operator">Оператор</string>
