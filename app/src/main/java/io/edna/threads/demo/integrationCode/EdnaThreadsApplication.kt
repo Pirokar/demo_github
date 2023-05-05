@@ -145,7 +145,6 @@ class EdnaThreadsApplication : Application() {
             .setDefaultFontBold(LATO_BOLD_FONT_PATH)
             .setDefaultFontLight(LATO_LIGHT_FONT_PATH)
             .setDefaultFontRegular(LATO_REGULAR_FONT_PATH)
-            .setUseExternalCameraApp(true)
             .setScrollChatToEndIfUserTyping(false)
 
         val markdownConfig = MarkdownConfig()
