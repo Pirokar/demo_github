@@ -29,11 +29,8 @@
     <string name="ecc_on_your_device">on your device</string>
     <string name="ecc_cancel">Cancel</string>
     <string name="ecc_nothing_found">Nothing found</string>
-    <string name="ecc_press">Press</string>
-    <string name="ecc_to_photo">to take photo</string>
     <string name="ecc_no_cameras_detected">Your device doesn\'t have a camera</string>
     <string name="ecc_back_camera_could_not_start_error">Failed to start the rear camera.</string>
-    <string name="ecc_retake">Retake</string>
     <string name="ecc_consult">Consultant</string>
     <string name="ecc_bot">Bot</string>
     <string name="ecc_operator">Operator</string>
