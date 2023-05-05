@@ -502,8 +502,6 @@ public final class ChatStyle implements Serializable {
     // set can show specialist info
     public boolean canShowSpecialistInfo = true;
 
-    public boolean useExternalCameraApp = true;
-
     public boolean voiceMessageEnabled = false;
 
     // specify fonts
@@ -672,11 +670,6 @@ public final class ChatStyle implements Serializable {
 
     public ChatStyle setCanShowSpecialistInfo(final boolean show) {
         this.canShowSpecialistInfo = show;
-        return this;
-    }
-
-    public ChatStyle setUseExternalCameraApp(final boolean useExternal) {
-        this.useExternalCameraApp = useExternal;
         return this;
     }
 

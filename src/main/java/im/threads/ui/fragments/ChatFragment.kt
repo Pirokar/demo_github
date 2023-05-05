@@ -109,7 +109,6 @@ import im.threads.business.utils.getDuration
 import im.threads.business.utils.isLastCopyText
 import im.threads.databinding.EccFragmentChatBinding
 import im.threads.ui.ChatStyle
-import im.threads.ui.activities.CameraActivity
 import im.threads.ui.activities.ChatActivity
 import im.threads.ui.activities.GalleryActivity
 import im.threads.ui.activities.GalleryActivity.Companion.getStartIntent
@@ -124,6 +123,7 @@ import im.threads.ui.fragments.PermissionDescriptionAlertFragment.OnAllowPermiss
 import im.threads.ui.holders.BaseHolder.Companion.statuses
 import im.threads.ui.permissions.PermissionsActivity
 import im.threads.ui.styles.permissions.PermissionDescriptionType
+import im.threads.ui.utils.CameraConstants
 import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.utils.FileHelper.isAllowedFileExtension
 import im.threads.ui.utils.FileHelper.isAllowedFileSize
@@ -1033,22 +1033,17 @@ class ChatFragment :
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q || ThreadsPermissionChecker.isWriteExternalPermissionGranted(activity)
         info("isCameraGranted = $isCameraGranted isWriteGranted $isWriteGranted")
         if (isCameraGranted && isWriteGranted) {
-            if (config.chatStyle.useExternalCameraApp) {
-                try {
-                    val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                    externalCameraPhotoFile = createImageFile(activity)
-                    val photoUri = FileProviderHelper.getUriForFile(activity, externalCameraPhotoFile!!)
-                    debug("Image File uri resolved: $photoUri")
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
-                    grantPermissionsForImageUri(activity, intent, photoUri)
-                    startActivityForResult(intent, REQUEST_EXTERNAL_CAMERA_PHOTO)
-                } catch (e: IllegalArgumentException) {
-                    error("Could not start external camera", e)
-                    show(requireContext(), requireContext().getString(R.string.ecc_camera_could_not_start_error))
-                }
-            } else {
-                setBottomStateDefault()
-                startActivityForResult(CameraActivity.getStartIntent(activity), REQUEST_CODE_PHOTO)
+            try {
+                val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                externalCameraPhotoFile = createImageFile(activity)
+                val photoUri = FileProviderHelper.getUriForFile(activity, externalCameraPhotoFile!!)
+                debug("Image File uri resolved: $photoUri")
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
+                grantPermissionsForImageUri(activity, intent, photoUri)
+                startActivityForResult(intent, REQUEST_EXTERNAL_CAMERA_PHOTO)
+            } catch (e: IllegalArgumentException) {
+                error("Could not start external camera", e)
+                show(requireContext(), requireContext().getString(R.string.ecc_camera_could_not_start_error))
             }
         } else {
             val permissions = ArrayList<String>()
@@ -1479,7 +1474,7 @@ class ChatFragment :
     }
 
     private fun onPhotoResult(data: Intent) {
-        val imageExtra = data.getStringExtra(CameraActivity.IMAGE_EXTRA)
+        val imageExtra = data.getStringExtra(CameraConstants.IMAGE_EXTRA)
         if (imageExtra != null) {
             val file = File(imageExtra)
             val fileDescription = FileDescription(
