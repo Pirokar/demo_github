@@ -120,6 +120,8 @@ class FileDownloader(
 
                 if (!isStopped) {
                     downloadListener.onComplete(outputFile)
+                } else {
+                    LoggerEdna.debug("Download stopped.")
                 }
             } catch (e: Exception) {
                 LoggerEdna.error("1 ", e)
