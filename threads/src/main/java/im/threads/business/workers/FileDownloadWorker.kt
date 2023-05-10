@@ -155,23 +155,12 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
             "im.threads.business.workers.FileDownloadWorker.START_DOWNLOAD_WITH_NO_STOP"
 
         @JvmStatic
-        fun startDownloadFD(context: Context, fileDescription: FileDescription) {
+        @Synchronized
+        fun startDownload(context: Context, fileDescription: FileDescription, isDownloadNonstop: Boolean = false) {
             LoggerEdna.debug("Start download")
+            val downloadKey = if (isDownloadNonstop) START_DOWNLOAD_WITH_NO_STOP else START_DOWNLOAD_FD_TAG
             val inputData = Data.Builder()
-                .putString(START_DOWNLOAD_ACTION, START_DOWNLOAD_FD_TAG)
-                .putByteArray(FD_TAG, marshall(fileDescription))
-            val workRequest = OneTimeWorkRequestBuilder<FileDownloadWorker>()
-                .setInputData(inputData.build())
-                .build()
-            WorkManager.getInstance(context)
-                .enqueueUniqueWork(WORKER_NAME + fileDescription.downloadPath, ExistingWorkPolicy.KEEP, workRequest)
-        }
-
-        @JvmStatic
-        fun startDownloadWithNoStop(context: Context, fileDescription: FileDescription) {
-            LoggerEdna.debug("Start download")
-            val inputData = Data.Builder()
-                .putString(START_DOWNLOAD_ACTION, START_DOWNLOAD_WITH_NO_STOP)
+                .putString(START_DOWNLOAD_ACTION, downloadKey)
                 .putByteArray(FD_TAG, marshall(fileDescription))
             val workRequest = OneTimeWorkRequestBuilder<FileDownloadWorker>()
                 .setInputData(inputData.build())
