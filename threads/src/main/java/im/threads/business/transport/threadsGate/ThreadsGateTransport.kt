@@ -15,15 +15,7 @@ import im.threads.business.formatters.ChatItemType
 import im.threads.business.formatters.JsonFormatter
 import im.threads.business.logger.LoggerEdna
 import im.threads.business.logger.NetworkLoggerInterceptor
-import im.threads.business.models.CampaignMessage
-import im.threads.business.models.ChatItem
-import im.threads.business.models.ChatItemSendErrorModel
-import im.threads.business.models.ConsultInfo
-import im.threads.business.models.MessageStatus
-import im.threads.business.models.SpeechMessageUpdate
-import im.threads.business.models.SslSocketFactoryConfig
-import im.threads.business.models.Survey
-import im.threads.business.models.UserPhrase
+import im.threads.business.models.*
 import im.threads.business.preferences.Preferences
 import im.threads.business.preferences.PreferencesCoreKeys
 import im.threads.business.rest.config.SocketClientSettings
@@ -83,6 +75,7 @@ class ThreadsGateTransport(
     private lateinit var client: OkHttpClient
     private lateinit var request: Request
     private lateinit var listener: WebSocketListener
+    private var location: LatLng? = null
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
     private val messageInProcessIds: MutableList<String> = ArrayList()
     private val surveysInProcess: MutableMap<Long, Survey> = HashMap()
@@ -213,12 +206,17 @@ class ThreadsGateTransport(
     }
 
     override fun updateLocation(latitude: Double, longitude: Double) {
-        val content = outgoingMessageCreator.createMessageUpdateLocation(
-            latitude,
-            longitude,
-            DeviceInfoHelper.getLocale(BaseConfig.instance.context)
-        )
-        sendMessage(content, sendInit = false)
+        val deviceAddress = preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS)
+        if (deviceAddress.isNullOrEmpty()) {
+            location = LatLng(latitude, longitude)
+        } else {
+            val content = outgoingMessageCreator.createMessageUpdateLocation(
+                latitude,
+                longitude,
+                DeviceInfoHelper.getLocale(BaseConfig.instance.context)
+            )
+            sendMessage(content, sendInit = false)
+        }
     }
 
     override fun getToken(): String {
@@ -459,6 +457,7 @@ class ThreadsGateTransport(
                     LoggerEdna.info("Saving device address")
                     preferences.save(PreferencesCoreKeys.DEVICE_ADDRESS, data.deviceAddress)
                     chatUpdateProcessor.postDeviceAddressChanged(data.deviceAddress)
+                    location?.let { updateLocation(it.latitude, it.longitude) }
                 }
                 if (action == Action.SEND_MESSAGE) {
                     val data = BaseConfig.instance.gson.fromJson(
