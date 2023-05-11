@@ -38,15 +38,20 @@ class NetworkLoggerInterceptor(private val isImage: Boolean = false) : Intercept
 
     private fun getRequestLog(chain: Interceptor.Chain) = StringBuilder().apply {
         append("[REST] ☛ Request url: ${chain.request().url}\n")
-        append("☛ Request connection: ${chain.connection()}\n")
+        if (chain.connection().toString().isNotBlank()) {
+            append("☛ Request connection: ${chain.connection()}\n")
+        }
         append("☛ Request headers: ${chain.request().headers}")
-        append("☛ Request body: ${bodyToString(chain.request())}\n")
+        val body = bodyToString(chain.request())
+        if (!body.isNullOrBlank()) {
+            append("☛ Request body: $body\n")
+        }
     }.toString()
 
     private fun getResponseLog(response: Response, responseBodyString: String?) = StringBuilder().apply {
         append("☚ Response received for url: ${response.request.url}, code: ${response.code}\n")
         append("☚ Request headers: ${response.request.headers}")
-        if (responseBodyString != null) {
+        if (!responseBodyString.isNullOrBlank()) {
             append("☚ Request body: ${jsonFormatter.jsonToPrettyFormat(responseBodyString)}\n")
         }
     }.toString()
@@ -58,7 +63,7 @@ class NetworkLoggerInterceptor(private val isImage: Boolean = false) : Intercept
             copy.body!!.writeTo(buffer)
             buffer.readUtf8()
         } catch (e: Exception) {
-            "no body"
+            null
         }
     }
 }

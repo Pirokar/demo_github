@@ -187,9 +187,6 @@ class ChatController private constructor() {
     }
 
     fun onUserInput(upcomingUserMessage: UpcomingUserMessage) {
-        info("onUserInput: $upcomingUserMessage")
-        // If user has written a message while the request to resolve the thread is visible
-        // we should make invisible the resolve request
         removeResolveRequest()
         // If user has written a message while the active survey is visible
         // we should make invisible the survey
@@ -333,7 +330,6 @@ class ChatController private constructor() {
         return Observable
             .fromCallable {
                 if (instance?.fragment != null && ThreadsLibBase.getInstance().isUserInitialized) {
-                    info(ThreadsApi.REST_TAG, "Requesting history items")
                     val count = BaseConfig.instance.historyLoadingCount
                     try {
                         val response = historyLoader.getHistorySync(null, fromBeginning)
@@ -550,10 +546,6 @@ class ChatController private constructor() {
         }
         synchronized(this) {
             if (!isDownloadingMessages) {
-                info(
-                    ThreadsApi.REST_TAG,
-                    "Loading history from ${ChatController::class.java.simpleName}"
-                )
                 isDownloadingMessages = true
                 subscribe(
                     Single.fromCallable {
@@ -609,10 +601,6 @@ class ChatController private constructor() {
         }
 
         if (!isDownloadingMessages) {
-            info(
-                ThreadsApi.REST_TAG,
-                "Loading history from ${ChatController::class.java.simpleName}"
-            )
             isDownloadingMessages = true
             subscribe(
                 Single.fromCallable {
@@ -684,7 +672,6 @@ class ChatController private constructor() {
                         { response: Response<SettingsResponse?>? ->
                             val responseBody = response?.body()
                             if (responseBody != null) {
-                                info("getting settings : $responseBody")
                                 val clientNotificationType =
                                     responseBody.clientNotificationDisplayType
                                 if (clientNotificationType != null && clientNotificationType.isNotEmpty()) {
@@ -879,10 +866,6 @@ class ChatController private constructor() {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                     { status: Status ->
-                        info(
-                            "Received new status: ${status.status.name}, correlationId: ${status.correlationId}," +
-                                " messageId: ${status.messageId}"
-                        )
                         sentStatus(status)
                     }
                 ) { error: Throwable? ->
@@ -1191,23 +1174,17 @@ class ChatController private constructor() {
     }
 
     private fun removeResolveRequest() {
-        info("removeResolveRequest")
         subscribe(
             database.setOldRequestResolveThreadDisplayMessageToFalse()
-                .subscribe(
-                    { info("removeResolveRequest") }
-                ) { obj: Throwable -> obj.message }
+                .subscribe({}) { obj: Throwable -> obj.message }
         )
         fragment?.removeResolveRequest()
     }
 
     private fun removeActiveSurvey() {
-        info("removeActiveSurvey")
         subscribe(
             database.setNotSentSurveyDisplayMessageToFalse()
-                .subscribe(
-                    { info("setOldSurveyDisplayMessageToFalse") }
-                ) { obj: Throwable -> obj.message }
+                .subscribe({}) { obj: Throwable -> obj.message }
         )
         fragment?.let { chatFragment ->
             activeSurvey?.sendingId?.let { chatFragment.removeSurvey(it) }
@@ -1215,7 +1192,6 @@ class ChatController private constructor() {
     }
 
     private fun resetActiveSurvey() {
-        info("resetActiveSurvey")
         activeSurvey = null
     }
 
@@ -1223,7 +1199,6 @@ class ChatController private constructor() {
      *  Вызывается когда получено новое сообщение из канала (TG/PUSH)
      */
     private fun addMessage(chatItem: ChatItem) {
-        info("addMessage: $chatItem")
         if (chatItem is Survey) {
             chatItem.questions.forEach { it.generateCorrelationId() }
         }
@@ -1278,7 +1253,7 @@ class ChatController private constructor() {
     }
 
     fun cleanAll() {
-        info("cleanAll: ")
+        info("cleanAll!")
         isAllMessagesDownloaded = false
         messenger.clearSendQueue()
         database.cleanDatabase()
