@@ -187,9 +187,6 @@ class ThreadsGateTransport(
         filePath: String?,
         quoteFilePath: String?
     ): Boolean {
-        LoggerEdna.info(
-            "sendMessage: userPhrase = $userPhrase, consultInfo = $consultInfo, filePath = $filePath, quoteFilePath = $quoteFilePath"
-        )
         userPhrase.campaignMessage?.let {
             campaignsInProcess[userPhrase.id] = it
         }
@@ -255,9 +252,6 @@ class ThreadsGateTransport(
         tryOpeningWebSocket: Boolean = true,
         sendInit: Boolean = false
     ): Boolean {
-        LoggerEdna.info(
-            "sendMessage: content = $content, important = $important, correlationId = $correlationId"
-        )
         synchronized(messageInProcessIds) {
             messageInProcessIds.add(correlationId)
         }
@@ -439,7 +433,6 @@ class ThreadsGateTransport(
                 put(KEY_URL, response.request.url)
             }
             chatUpdateProcessor.postSocketResponseMap(socketResponseMap)
-            LoggerEdna.info("[REST_WS] ☚ On websocket open : $response")
         }
 
         override fun onMessage(webSocket: WebSocket, text: String) {
@@ -528,7 +521,6 @@ class ThreadsGateTransport(
                     )
                 }
                 if (action == Action.GET_STATUSES) {
-                    LoggerEdna.info("[REST_WS] ☚ Get statuses data: ${jsonFormatter.jsonToPrettyFormat(Gson().toJson(response.data))}")
                     val data = BaseConfig.instance.gson.fromJson(
                         response.data.toString(),
                         GetStatusesData::class.java
@@ -611,7 +603,7 @@ class ThreadsGateTransport(
             postSocketResponseMap(code, reason)
             preferences.save("", PreferencesCoreKeys.DEVICE_ADDRESS)
             this@ThreadsGateTransport.webSocket = null
-            LoggerEdna.info("[REST_WS] ☚ Websocket onClosed: $code / $reason")
+            LoggerEdna.info("[REST_WS] ☚ Websocket closed: $code / $reason")
         }
 
         private fun postSocketResponseMap(code: Int, reason: String) {
