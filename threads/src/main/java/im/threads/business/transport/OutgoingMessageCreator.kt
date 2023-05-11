@@ -10,6 +10,7 @@ import im.threads.business.models.FileDescription
 import im.threads.business.models.Survey
 import im.threads.business.models.UserPhrase
 import im.threads.business.preferences.Preferences
+import im.threads.business.preferences.PreferencesCoreKeys
 import im.threads.business.rest.queries.ThreadsApi
 import im.threads.business.utils.AppInfoHelper
 import im.threads.business.utils.ClientUseCase
@@ -28,17 +29,20 @@ class OutgoingMessageCreator(
     fun createInitChatMessage(): JsonObject {
         val jsonObject = JsonObject()
         val userInfo = clientUseCase.getUserInfo()
+        val deviceAddress = preferences.get(PreferencesCoreKeys.DEVICE_ADDRESS, "")
         jsonObject.apply {
             addProperty(MessageAttributes.CLIENT_ID, userInfo?.clientId)
             addProperty(MessageAttributes.TYPE, ChatItemType.INIT_CHAT.name)
             addProperty(MessageAttributes.DATA, userInfo?.clientData)
             addProperty(MessageAttributes.APP_MARKER_KEY, userInfo?.appMarker)
+            addProperty(MessageAttributes.DEVICE_ADDRESS, deviceAddress)
         }
         return jsonObject
     }
 
     fun createEnvironmentMessage(locale: String): JsonObject {
         val userInfo = clientUseCase.getUserInfo()
+        val deviceAddress = preferences.get(PreferencesCoreKeys.DEVICE_ADDRESS, "")
         val jsonObject = JsonObject().apply {
             addProperty("name", userInfo?.userName)
             addProperty(MessageAttributes.CLIENT_ID, userInfo?.clientId)
@@ -56,17 +60,20 @@ class OutgoingMessageCreator(
             addProperty("clientLocale", locale)
             addProperty("chatApiVersion", ThreadsApi.API_VERSION)
             addProperty(MessageAttributes.TYPE, ChatItemType.CLIENT_INFO.name)
+            addProperty(MessageAttributes.DEVICE_ADDRESS, deviceAddress)
         }
         return jsonObject
     }
 
     fun createMessageTyping(input: String?): JsonObject {
         val userInfo = clientUseCase.getUserInfo()
+        val deviceAddress = preferences.get(PreferencesCoreKeys.DEVICE_ADDRESS) ?: ""
         val jsonObject = JsonObject().apply {
             addProperty(MessageAttributes.CLIENT_ID, userInfo?.clientId)
             addProperty(MessageAttributes.TYPE, ChatItemType.TYPING.name)
             addProperty(MessageAttributes.TYPING_DRAFT, input)
             addProperty(MessageAttributes.APP_MARKER_KEY, userInfo?.appMarker)
+            addProperty(MessageAttributes.DEVICE_ADDRESS, deviceAddress)
         }
         return jsonObject
     }
@@ -156,11 +163,13 @@ class OutgoingMessageCreator(
         val fileDescription = userPhrase.fileDescription
         val campaignMessage = userPhrase.campaignMessage
         val userInfo = clientUseCase.getUserInfo()
+        val deviceAddress = preferences.get(PreferencesCoreKeys.DEVICE_ADDRESS) ?: ""
         val formattedMessage = JsonObject().apply {
             addProperty(MessageAttributes.UUID, userPhrase.id)
             addProperty(MessageAttributes.CLIENT_ID, userInfo?.clientId)
             addProperty(MessageAttributes.TEXT, phrase ?: "")
             addProperty(MessageAttributes.APP_MARKER_KEY, userInfo?.appMarker)
+            addProperty(MessageAttributes.DEVICE_ADDRESS, deviceAddress)
         }
         val quotes = JsonArray().apply {
             campaignMessage?.let {

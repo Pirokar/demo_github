@@ -21,6 +21,7 @@ object PreferencesCoreKeys {
     val STORE_NAME = "im.threads.internal.utils.PrefStore"
     val ENCRYPTED_STORE_NAME = "im.threads.internal.utils.EncryptedPrefStore"
     val DATABASE_PASSWORD = "DATABASE_PASSWORD"
+    val LOGOUT_HAPPENED = "LOGOUT_HAPPENED"
 
     val allPrefKeys = mutableListOf(
         LAST_COPY_TEXT,
@@ -36,6 +37,7 @@ object PreferencesCoreKeys {
         UNREAD_PUSH_COUNT,
         STORE_NAME,
         ENCRYPTED_STORE_NAME,
-        DATABASE_PASSWORD
+        DATABASE_PASSWORD,
+        LOGOUT_HAPPENED
     ).apply { addAll(migrationKeys.list) }
 }

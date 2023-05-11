@@ -91,7 +91,6 @@ open class ThreadsLibBase protected constructor(context: Context) {
             info("clientId must not be empty")
         }
         clientUseCase.saveUserInfo(null)
-        preferences.save(PreferencesCoreKeys.THREAD_ID, -1L, true)
         ChatController.getInstance().cleanAll()
     }
 

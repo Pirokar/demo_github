@@ -54,6 +54,7 @@ class ThreadsLib(context: Context) : ThreadsLibBase(context) {
                 delay(timeToDelay)
             }
             withContext(Dispatchers.Main) {
+                LoggerEdna.info("User is initialized")
                 callback()
             }
         }

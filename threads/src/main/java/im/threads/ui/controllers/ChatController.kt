@@ -1229,14 +1229,14 @@ class ChatController private constructor() {
         info("cleanAll: ")
         isAllMessagesDownloaded = false
         messenger.clearSendQueue()
-        database.cleanDatabase()
         fragment?.cleanChat()
         threadId = -1L
         consultWriter.setCurrentConsultLeft()
         consultWriter.isSearchingConsult = false
         removePushNotification()
-        preferences.sharedPreferences.edit().clear().commit()
         UnreadMessagesController.INSTANCE.refreshUnreadMessagesCount()
+        preferences.sharedPreferences.edit().clear().commit()
+        database.cleanDatabase()
     }
 
     private fun removePushNotification() {
@@ -1299,6 +1299,7 @@ class ChatController private constructor() {
                     ) { obj: Throwable -> obj.message }
             )
         } else {
+            BaseConfig.instance.transport.sendInit(false)
             info(
                 ThreadsApi.REST_TAG,
                 "Loading history cancelled in onDeviceAddressChanged. " +

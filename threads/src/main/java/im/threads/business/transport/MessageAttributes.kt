@@ -9,6 +9,7 @@ object MessageAttributes {
     const val CLIENT_ID_ENCRYPTED = "clientIdIsEncrypted"
     const val TEXT = "text"
     const val DATA = "data"
+    const val DEVICE_ADDRESS = "deviceAddress"
     const val TYPING_DRAFT = "draft"
     const val QUOTES = "quotes"
     const val ATTACHMENTS = "attachments"

@@ -162,12 +162,13 @@ class ThreadsGateTransport(
 
     override fun sendInit(forceRegistration: Boolean) {
         val deviceAddress = preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS)
-        if (!deviceAddress.isNullOrBlank() || forceRegistration) {
-            if (deviceAddress.isNullOrBlank()) sendRegisterDevice()
-            InitialisationConstants.isInitChatSent = sendInitChatMessage(true)
-            InitialisationConstants.isEnvironmentMessageSent = sendEnvironmentMessage(true)
-        } else {
-            openWebSocket()
+        openWebSocket()
+        if (deviceAddress.isNullOrBlank() || forceRegistration) {
+            sendRegisterDevice()
+        }
+        if (!deviceAddress.isNullOrBlank()) {
+            sendInitChatMessage(true)
+            sendEnvironmentMessage(true)
         }
     }
 
@@ -289,7 +290,6 @@ class ThreadsGateTransport(
     private fun openWebSocket() {
         if (webSocket == null) {
             webSocket = client.newWebSocket(request, listener)
-            sendRegisterDevice()
         }
     }
 
@@ -449,19 +449,14 @@ class ThreadsGateTransport(
                 }
                 chatUpdateProcessor.postError(TransportException(errorMessage))
             } else if (action != null) {
-                if (action == Action.REGISTER_DEVICE) {
-                    InitialisationConstants.isDeviceRegistered = true
+                if (action == Action.REGISTER_DEVICE && !InitialisationConstants.isLogoutHappened) {
                     val data = BaseConfig.instance.gson.fromJson(
                         response.data.toString(),
                         RegisterDeviceData::class.java
                     )
-                    val initialRegistration = preferences
-                        .get<String>(PreferencesCoreKeys.DEVICE_ADDRESS).isNullOrBlank()
+                    LoggerEdna.info("Saving device address")
                     preferences.save(PreferencesCoreKeys.DEVICE_ADDRESS, data.deviceAddress)
-                    if (initialRegistration) {
-                        sendInitChatMessage(false)
-                        sendEnvironmentMessage(false)
-                    }
+                    chatUpdateProcessor.postDeviceAddressChanged(data.deviceAddress)
                 }
                 if (action == Action.SEND_MESSAGE) {
                     val data = BaseConfig.instance.gson.fromJson(
