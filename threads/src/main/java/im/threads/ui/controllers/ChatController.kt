@@ -70,8 +70,7 @@ import im.threads.business.utils.FileUtils.isImage
 import im.threads.business.utils.FileUtils.isVoiceMessage
 import im.threads.business.utils.messenger.Messenger
 import im.threads.business.utils.messenger.MessengerImpl
-import im.threads.business.workers.FileDownloadWorker.Companion.startDownloadFD
-import im.threads.business.workers.FileDownloadWorker.Companion.startDownloadWithNoStop
+import im.threads.business.workers.FileDownloadWorker.Companion.startDownload
 import im.threads.ui.activities.ConsultActivity.Companion.startActivity
 import im.threads.ui.activities.ImagesActivity.Companion.getStartIntent
 import im.threads.ui.config.Config
@@ -257,7 +256,7 @@ class ChatController private constructor() {
             val activity: Activity? = fragment?.activity
             if (activity != null) {
                 if (fileDescription.fileUri == null) {
-                    startDownloadFD(activity, fileDescription)
+                    startDownload(activity, fileDescription)
                 } else if (isImage(fileDescription)) {
                     fragment?.setupStartSecondLevelScreen()
                     activity.startActivity(getStartIntent(activity, fileDescription))
@@ -365,7 +364,7 @@ class ChatController private constructor() {
         if (fragment?.isAdded == true) {
             fragment?.activity?.let {
                 if (fileDescription != null) {
-                    startDownloadWithNoStop(it, fileDescription)
+                    startDownload(it, fileDescription, true)
                 }
             }
         }
