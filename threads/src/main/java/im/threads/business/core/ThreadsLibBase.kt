@@ -92,6 +92,7 @@ open class ThreadsLibBase protected constructor(context: Context) {
         } else {
             info("clientId must not be empty")
         }
+        BaseConfig.instance.transport.closeWebSocket()
         clientUseCase.saveUserInfo(null)
         ChatController.getInstance().cleanAll()
     }

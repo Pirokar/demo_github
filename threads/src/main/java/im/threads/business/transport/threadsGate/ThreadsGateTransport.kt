@@ -15,7 +15,16 @@ import im.threads.business.formatters.ChatItemType
 import im.threads.business.formatters.JsonFormatter
 import im.threads.business.logger.LoggerEdna
 import im.threads.business.logger.NetworkLoggerInterceptor
-import im.threads.business.models.*
+import im.threads.business.models.CampaignMessage
+import im.threads.business.models.ChatItem
+import im.threads.business.models.ChatItemSendErrorModel
+import im.threads.business.models.ConsultInfo
+import im.threads.business.models.LatLng
+import im.threads.business.models.MessageStatus
+import im.threads.business.models.SpeechMessageUpdate
+import im.threads.business.models.SslSocketFactoryConfig
+import im.threads.business.models.Survey
+import im.threads.business.models.UserPhrase
 import im.threads.business.preferences.Preferences
 import im.threads.business.preferences.PreferencesCoreKeys
 import im.threads.business.rest.config.SocketClientSettings
