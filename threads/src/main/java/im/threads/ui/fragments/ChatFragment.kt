@@ -1553,7 +1553,6 @@ class ChatFragment :
     }
 
     fun addChatItem(item: ChatItem?) {
-        info("addChatItem: $item")
         val layoutManager = binding.recycler.layoutManager as LinearLayoutManager? ?: return
         if (item == null) {
             return
