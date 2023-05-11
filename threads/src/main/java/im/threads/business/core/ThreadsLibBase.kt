@@ -23,6 +23,8 @@ import im.threads.business.rest.queries.DatastoreApi
 import im.threads.business.serviceLocator.core.inject
 import im.threads.business.serviceLocator.core.startEdnaLocator
 import im.threads.business.serviceLocator.coreSLModule
+import im.threads.business.state.ChatState
+import im.threads.business.state.InitialisationConstants
 import im.threads.business.useractivity.UserActivityTimeProvider.getLastUserActivityTimeCounter
 import im.threads.business.useractivity.UserActivityTimeProvider.initializeLastUserActivity
 import im.threads.business.utils.ClientUseCase
@@ -30,7 +32,6 @@ import im.threads.business.utils.preferences.PreferencesMigrationBase
 import im.threads.ui.controllers.ChatController
 import im.threads.ui.fragments.ChatFragment
 import im.threads.ui.serviceLocator.uiSLModule
-import im.threads.ui.utils.InitialisationConstants
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.exceptions.UndeliverableException
 import io.reactivex.plugins.RxJavaPlugins
@@ -71,6 +72,7 @@ open class ThreadsLibBase protected constructor(context: Context) {
         get() = chatUpdateProcessor.socketResponseMapProcessor
 
     protected open fun initUser(userInfoBuilder: UserInfoBuilder, forceRegistration: Boolean = false, callback: () -> Unit) {
+        InitialisationConstants.chatState = ChatState.INIT_USER
         clientUseCase.saveUserInfo(userInfoBuilder)
         BaseConfig.instance.transport.sendInit(forceRegistration)
         if (!ChatFragment.isShown && forceRegistration) {

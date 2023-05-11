@@ -29,6 +29,8 @@ import im.threads.business.preferences.PreferencesCoreKeys
 import im.threads.business.rest.config.SocketClientSettings
 import im.threads.business.secureDatabase.DatabaseHolder
 import im.threads.business.serviceLocator.core.inject
+import im.threads.business.state.ChatState
+import im.threads.business.state.InitialisationConstants
 import im.threads.business.transport.AuthInterceptor
 import im.threads.business.transport.ChatItemProviderData
 import im.threads.business.transport.MessageAttributes
@@ -51,7 +53,6 @@ import im.threads.business.utils.AppInfoHelper
 import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.DeviceInfoHelper
 import im.threads.business.utils.SSLCertificateInterceptor
-import im.threads.ui.utils.InitialisationConstants
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -162,13 +163,12 @@ class ThreadsGateTransport(
 
     override fun sendInit(forceRegistration: Boolean) {
         val deviceAddress = preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS)
-        openWebSocket()
-        if (deviceAddress.isNullOrBlank() || forceRegistration) {
-            sendRegisterDevice()
-        }
-        if (!deviceAddress.isNullOrBlank()) {
+        if (!deviceAddress.isNullOrBlank() || forceRegistration) {
+            if (deviceAddress.isNullOrBlank()) sendRegisterDevice()
             sendInitChatMessage(true)
             sendEnvironmentMessage(true)
+        } else {
+            openWebSocket()
         }
     }
 
@@ -290,6 +290,7 @@ class ThreadsGateTransport(
     private fun openWebSocket() {
         if (webSocket == null) {
             webSocket = client.newWebSocket(request, listener)
+            sendRegisterDevice()
         }
     }
 
@@ -363,7 +364,8 @@ class ThreadsGateTransport(
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     private fun closeWebSocketIfNeeded() {
         if (messageInProcessIds.isEmpty() &&
-            (lifecycle?.currentState?.isAtLeast(Lifecycle.State.STARTED)?.not() != false)
+            lifecycle?.currentState?.isAtLeast(Lifecycle.State.STARTED)?.not() != false &&
+            InitialisationConstants.chatState == ChatState.ANDROID_CHAT_LIFECYCLE
         ) {
             closeWebSocket()
         }
@@ -449,7 +451,7 @@ class ThreadsGateTransport(
                 }
                 chatUpdateProcessor.postError(TransportException(errorMessage))
             } else if (action != null) {
-                if (action == Action.REGISTER_DEVICE && !InitialisationConstants.isLogoutHappened) {
+                if (action == Action.REGISTER_DEVICE && InitialisationConstants.chatState > ChatState.LOGGED_OUT) {
                     val data = BaseConfig.instance.gson.fromJson(
                         response.data.toString(),
                         RegisterDeviceData::class.java
@@ -599,6 +601,8 @@ class ThreadsGateTransport(
 
         override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
             postSocketResponseMap(code, reason)
+            preferences.save("", PreferencesCoreKeys.DEVICE_ADDRESS)
+            this@ThreadsGateTransport.webSocket = null
             LoggerEdna.info("[REST_WS] ☚ Websocket onClosed: $code / $reason")
         }
 

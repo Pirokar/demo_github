@@ -10,6 +10,7 @@ import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.FileDescription
 import im.threads.business.models.UpcomingUserMessage
 import im.threads.business.serviceLocator.core.inject
+import im.threads.business.state.InitialisationConstants
 import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.FileProviderHelper
 import im.threads.business.utils.FileUtils.getFileSize
@@ -18,11 +19,9 @@ import im.threads.ui.config.Config
 import im.threads.ui.config.ConfigBuilder
 import im.threads.ui.controllers.ChatController
 import im.threads.ui.styles.permissions.PermissionDescriptionDialogStyle
-import im.threads.ui.utils.InitialisationConstants
 import im.threads.ui.utils.preferences.PreferencesMigrationUi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -45,7 +44,6 @@ class ThreadsLib(context: Context) : ThreadsLibBase(context) {
 
         coroutineScope.launch {
             val timeToDelay = 100L
-            InitialisationConstants.isLogoutHappened = false
             while (!InitialisationConstants.isChatReady()) {
                 delay(timeToDelay)
             }

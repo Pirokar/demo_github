@@ -55,6 +55,8 @@ import im.threads.business.rest.queries.BackendApi.Companion.get
 import im.threads.business.rest.queries.ThreadsApi
 import im.threads.business.secureDatabase.DatabaseHolder
 import im.threads.business.serviceLocator.core.inject
+import im.threads.business.state.ChatState
+import im.threads.business.state.InitialisationConstants
 import im.threads.business.transport.ChatItemProviderData
 import im.threads.business.transport.HistoryLoader
 import im.threads.business.transport.HistoryParser
@@ -75,7 +77,6 @@ import im.threads.ui.activities.ImagesActivity.Companion.getStartIntent
 import im.threads.ui.config.Config
 import im.threads.ui.fragments.ChatFragment
 import im.threads.ui.preferences.PreferencesUiKeys
-import im.threads.ui.utils.InitialisationConstants
 import im.threads.ui.utils.preferences.PreferencesMigrationUi
 import im.threads.ui.utils.runOnUiThread
 import im.threads.ui.workers.NotificationWorker.Companion.removeNotification
@@ -159,6 +160,7 @@ class ChatController private constructor() {
 
     fun onViewStart() {
         messenger.onViewStart()
+        InitialisationConstants.chatState = ChatState.ANDROID_CHAT_LIFECYCLE
     }
 
     fun onViewStop() {

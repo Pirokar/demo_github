@@ -1,4 +1,4 @@
-package im.threads.ui.utils
+package im.threads.business.state
 
 import im.threads.business.preferences.Preferences
 import im.threads.business.preferences.PreferencesCoreKeys
@@ -8,12 +8,12 @@ class InitialisationConstants {
     companion object {
         private val preferences: Preferences by inject()
 
-        var isLogoutHappened: Boolean
+        var chatState: ChatState
             get() {
-                return preferences.get(PreferencesCoreKeys.LOGOUT_HAPPENED, true) ?: true
+                return preferences.get(PreferencesCoreKeys.CHAT_STATE, ChatState.LOGGED_OUT) ?: ChatState.LOGGED_OUT
             }
             set(value) {
-                preferences.save(PreferencesCoreKeys.LOGOUT_HAPPENED, value)
+                preferences.save(PreferencesCoreKeys.CHAT_STATE, value)
             }
         var isHistoryLoaded = false
         private val isDeviceRegistered: Boolean
@@ -22,12 +22,12 @@ class InitialisationConstants {
             }
 
         fun onLogout() {
-            isLogoutHappened = true
+            chatState = ChatState.LOGGED_OUT
             isHistoryLoaded = false
         }
 
         fun isChatReady(): Boolean {
-            return !isLogoutHappened && isDeviceRegistered
+            return chatState > ChatState.LOGGED_OUT && isDeviceRegistered
         }
 
         fun isChatReadyAndHistoryLoaded(): Boolean {
