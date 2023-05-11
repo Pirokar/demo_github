@@ -250,7 +250,7 @@ class ThreadsGateTransport(
         if (webSocket == null && tryOpeningWebSocket) {
             openWebSocket()
         }
-        val ws = webSocket ?: return
+        webSocket ?: return
         val clientId = clientUseCase.getUserInfo()?.clientId
         val deviceAddress = preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS)
         val messageId = content.get(MessageAttributes.UUID)?.asString

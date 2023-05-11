@@ -5,15 +5,12 @@ import androidx.annotation.WorkerThread
 import com.google.gson.Gson
 import im.threads.business.config.BaseConfig
 import im.threads.business.logger.LoggerEdna.error
-import im.threads.business.logger.LoggerEdna.info
 import im.threads.business.models.MessageFromHistory
 import im.threads.business.rest.models.HistoryResponse
 import im.threads.business.rest.queries.BackendApi.Companion.get
 import im.threads.business.rest.queries.ThreadsApi
 import im.threads.business.utils.AppInfoHelper
 import im.threads.business.utils.DateHelper
-import retrofit2.Call
-import retrofit2.Response
 import java.io.IOException
 
 class HistoryLoader(private val context: Context) {
@@ -47,17 +44,9 @@ class HistoryLoader(private val context: Context) {
                 DateHelper.getMessageDateStringFromTimestamp(beforeTimestamp)
             }
 
-            showStartLoadingHistoryLog(token, beforeDate, count)
-
-            val call = threadsApi.history(token, beforeDate, count, AppInfoHelper.getLibVersion())
-            val response = call?.execute()
-            val body = response?.body()
-
-            showHistoryLoadedLog(call, response, body)
-
-            body
+            threadsApi.history(token, beforeDate, count, AppInfoHelper.getLibVersion())?.execute()?.body()
         } else {
-            error(ThreadsApi.REST_TAG, "Loading history - token is empty!")
+            error(ThreadsApi.REST_TAG, "Error when loading history - token is empty!")
             throw IOException()
         }
     }
@@ -79,34 +68,6 @@ class HistoryLoader(private val context: Context) {
         if (!list.isNullOrEmpty()) {
             lastLoadedTimestamp = list[0].timeStamp
         }
-    }
-
-    private fun showStartLoadingHistoryLog(token: String, beforeDate: String?, count: Int?) {
-        info(
-            ThreadsApi.REST_TAG,
-            "Loading history. token: $token, beforeDate: $beforeDate, count: $count," +
-                " version: ${AppInfoHelper.getLibVersion()}, chatApiVersion: ${ThreadsApi.API_VERSION}," +
-                " isNewChatCenterApi: ${BaseConfig.instance.newChatCenterApi}"
-        )
-    }
-
-    private fun showHistoryLoadedLog(
-        call: Call<HistoryResponse?>?,
-        response: Response<HistoryResponse?>?,
-        body: HistoryResponse?
-    ) {
-        val responseBody = try {
-            Gson().toJson(body)
-        } catch (exc: Exception) {
-            val error = response?.errorBody()?.string() ?: "no error message"
-            "Loading history - error when getting response body. Error message: $error.\n" +
-                "Exception: $exc"
-        }
-        info(
-            ThreadsApi.REST_TAG,
-            "Loading history done. Call is null = ${call == null}. Response: ${response?.raw()}." +
-                "Body: $responseBody"
-        )
     }
 
     companion object {

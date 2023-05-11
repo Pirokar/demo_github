@@ -716,8 +716,6 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     public void changeStateOfSurvey(Survey updatedSurvey) {
-        LoggerEdna.info("Updating survey state to \"" + updatedSurvey.getSentState().toString() + "\"," +
-                " sendingId: \"" + updatedSurvey.getSendingId() + "\"");
         for (final ChatItem cm : getList()) {
             if (cm instanceof Survey) {
                 final Survey survey = (Survey) cm;
@@ -747,7 +745,6 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     private void changeSurveyState(ChatItem message, MessageStatus sentState) {
-        LoggerEdna.info("changeStateOfMessageById: changing read state");
         ((Survey) message).setSentState(sentState);
         notifyItemChangedOnUi(message);
     }
@@ -767,19 +764,12 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                         correlationId = split[1];
                     }
                 }
-                LoggerEdna.info(
-                        "changeStateOfMessageById: UserPhrase text: " + up.getPhraseText() + ", MessageStatus: " + status.name() +
-                                ", correlationMessageId - " + correlationId
-                                + ", backendMessageId - " + backendMessageId + ", up.getId() - " + up.getId()
-                                + ", up.getBackendMessageId() - " + up.getBackendMessageId()
-                );
 
                 if (ObjectsCompat.equals(correlationId, up.getId()) || ObjectsCompat.equals(backendMessageId, up.getBackendMessageId())) {
                     if (backendMessageId != null) {
                         ((UserPhrase) cm).setBackendMessageId(backendMessageId);
                     }
                     if (up.getSentState().ordinal() <= status.ordinal()) {
-                        LoggerEdna.info("changeStateOfMessageById: changing message state to " + status.name());
                         ((UserPhrase) cm).setSentState(status);
                         notifyItemChangedOnUi(cm);
                     }

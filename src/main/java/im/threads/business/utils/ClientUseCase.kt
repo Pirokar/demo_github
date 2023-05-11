@@ -15,7 +15,6 @@ class ClientUseCase(private val preferences: Preferences) {
         val userInfo = ramUserInfo ?: preferences.get(USER_INFO_PREFS_KEY)
         val newClientId = tagNewClientId ?: preferences.get(TAG_NEW_CLIENT_ID_PREFS_KEY)
         val oldClientId = userInfo?.clientId
-        LoggerEdna.info("getInstance newClientId = $newClientId, oldClientId = $oldClientId")
 
         val isClientHasNotChanged = newClientId == oldClientId
         if (isClientHasNotChanged) {
