@@ -151,13 +151,14 @@ class MainActivity : AppCompatActivity(), EditCardDialogActionsListener, YesNoDi
         currentCard.userId
         ThreadsLib.getInstance().initUser(
             UserInfoBuilder(currentCard.userId)
-                .setAuthData(currentCard.authToken, currentCard.authSchema)
+                .setAuthData(currentCard.authToken, currentCard.authSchema, AuthMethod.COOKIES)
                 .setClientData(currentCard.clientData)
                 .setClientIdSignature(currentCard.clientIdSignature)
                 .setAppMarker(currentCard.appMarker)
-        )
-        applyChatStyles()
-        startActivity(Intent(this, ChatActivity::class.java))
+        ) {
+            applyChatStyles()
+            startActivity(Intent(this, ChatActivity::class.java))
+        }
     }
 
     fun navigateToChatActivity() {
@@ -227,17 +228,24 @@ class MainActivity : AppCompatActivity(), EditCardDialogActionsListener, YesNoDi
                     .setClientData(currentCard.clientData)
                     .setClientIdSignature(currentCard.clientIdSignature)
                     .setAppMarker(currentCard.appMarker)
-            )
+            ) {
+                startBottomNavigationActivity(currentCard)
+            }
+        } else {
+            startBottomNavigationActivity(currentCard)
         }
+    }
+
+    private fun startBottomNavigationActivity(card: Card) {
         startActivity(
             BottomNavigationActivity.createIntent(
                 this,
-                currentCard.appMarker,
-                currentCard.userId,
-                currentCard.clientData,
-                currentCard.clientIdSignature,
-                currentCard.authToken,
-                currentCard.authSchema,
+                card.appMarker,
+                card.userId,
+                card.clientData,
+                card.clientIdSignature,
+                card.authToken,
+                card.authSchema,
                 AuthMethod.HEADERS.toString(),
                 getTheme(this)
             )

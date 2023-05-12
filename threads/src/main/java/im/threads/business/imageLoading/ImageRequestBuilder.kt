@@ -9,7 +9,6 @@ import com.squareup.picasso.Picasso
 import com.squareup.picasso.RequestCreator
 import com.squareup.picasso.Transformation
 import im.threads.business.config.BaseConfig
-import im.threads.business.logger.LoggerEdna
 import java.util.concurrent.Executors
 
 class ImageRequestBuilder {
@@ -21,7 +20,8 @@ class ImageRequestBuilder {
     ): RequestCreator? {
         var builder: RequestCreator? = null
         config.url?.let {
-            builder = getLoader(config).load(it)
+            val url = it.ifEmpty { "https://noednaurl.com" }
+            builder = getLoader(config).load(url)
 
             if (config.isAutoRotateWithExif) {
                 builder!!.rotate(getRightAngleImage(it))
@@ -142,7 +142,6 @@ class ImageRequestBuilder {
                 else -> 90f
             }
         } catch (e: java.lang.Exception) {
-            LoggerEdna.error("Try getting right angle image error: $e")
             0f
         }
     }

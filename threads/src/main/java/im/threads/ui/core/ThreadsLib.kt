@@ -9,7 +9,9 @@ import im.threads.business.core.ThreadsLibBase
 import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.FileDescription
 import im.threads.business.models.UpcomingUserMessage
-import im.threads.business.preferences.PreferencesCoreKeys
+import im.threads.business.serviceLocator.core.inject
+import im.threads.business.state.InitialisationConstants
+import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.FileProviderHelper
 import im.threads.business.utils.FileUtils.getFileSize
 import im.threads.ui.ChatStyle
@@ -18,23 +20,53 @@ import im.threads.ui.config.ConfigBuilder
 import im.threads.ui.controllers.ChatController
 import im.threads.ui.styles.permissions.PermissionDescriptionDialogStyle
 import im.threads.ui.utils.preferences.PreferencesMigrationUi
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 
 class ThreadsLib(context: Context) : ThreadsLibBase(context) {
-    private val config by lazy {
-        Config.getInstance()
+    private val config by lazy { Config.getInstance() }
+    private val clientUseCase: ClientUseCase by inject()
+    private val coroutineScope = CoroutineScope(Dispatchers.IO)
+
+    /**
+     * Инициализирует пользователя синхронно и загружает его историю в фоновом потоке
+     * (изменения истории сообщений применяются в потоке UI)
+     * @param userInfoBuilder данные о пользователе
+     * @param forceRegistration открывает сокет, отправляет данные о регистрации, закрывает сокет
+     * @param callback вызывается, когда пользователь инициализирован и загружена его история
+     */
+    public override fun initUser(userInfoBuilder: UserInfoBuilder, forceRegistration: Boolean, callback: () -> Unit) {
+        super.initUser(userInfoBuilder, forceRegistration, callback)
+
+        coroutineScope.launch {
+            val timeToDelay = 100L
+            while (!InitialisationConstants.isChatReady()) {
+                delay(timeToDelay)
+            }
+            ChatController.getInstance().loadHistory(applyUiChanges = false)
+            while (!InitialisationConstants.isChatReadyAndHistoryLoaded()) {
+                delay(timeToDelay)
+            }
+            withContext(Dispatchers.Main) {
+                LoggerEdna.info("User is initialized")
+                callback()
+            }
+        }
     }
 
-    public override fun initUser(userInfoBuilder: UserInfoBuilder, forceRegistration: Boolean) {
-        val userInfo = preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)
-        val oldClientId = userInfo?.clientId
-        val newClientId = userInfoBuilder.clientId
-        if (newClientId.isNotEmpty() && newClientId != oldClientId) {
-            ChatController.getInstance().cleanAll()
-        }
-        super.initUser(userInfoBuilder, forceRegistration)
-        ChatController.getInstance().hideEmptyState()
-        ChatController.getInstance().loadHistory()
+    /**
+     * Инициализирует пользователя синхронно и загружает его историю в фоновом потоке
+     * (изменения истории сообщений применяются в потоке UI)
+     * @param userInfoBuilder данные о пользователе
+     * @param forceRegistration открывает сокет, отправляет данные о регистрации, закрывает сокет
+     */
+    public fun initUser(userInfoBuilder: UserInfoBuilder, forceRegistration: Boolean) {
+        super.initUser(userInfoBuilder, forceRegistration) {}
+        ChatController.getInstance().loadHistory(applyUiChanges = false)
     }
 
     fun applyChatStyle(chatStyle: ChatStyle?) {
@@ -83,7 +115,7 @@ class ThreadsLib(context: Context) : ThreadsLibBase(context) {
      */
     fun sendMessage(message: String?, fileUri: Uri?): Boolean {
         val chatController = ChatController.getInstance()
-        val clientId = preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)?.clientId
+        val clientId = clientUseCase.getUserInfo()?.clientId
         return if (!clientId.isNullOrBlank()) {
             var fileDescription: FileDescription? = null
             if (fileUri != null) {

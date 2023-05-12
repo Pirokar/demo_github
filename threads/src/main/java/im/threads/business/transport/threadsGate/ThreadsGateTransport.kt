@@ -8,7 +8,6 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
-import im.threads.business.UserInfoBuilder
 import im.threads.business.chat_updates.ChatUpdateProcessor
 import im.threads.business.config.BaseConfig
 import im.threads.business.formatters.ChatItemType
@@ -31,6 +30,8 @@ import im.threads.business.rest.config.SocketClientSettings
 import im.threads.business.rest.queries.ThreadsApi
 import im.threads.business.secureDatabase.DatabaseHolder
 import im.threads.business.serviceLocator.core.inject
+import im.threads.business.state.ChatState
+import im.threads.business.state.InitialisationConstants
 import im.threads.business.transport.AuthInterceptor
 import im.threads.business.transport.ChatItemProviderData
 import im.threads.business.transport.MessageAttributes
@@ -50,6 +51,7 @@ import im.threads.business.transport.threadsGate.responses.RegisterDeviceData
 import im.threads.business.transport.threadsGate.responses.SendMessageData
 import im.threads.business.transport.threadsGate.responses.Status
 import im.threads.business.utils.AppInfoHelper
+import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.DeviceInfoHelper
 import im.threads.business.utils.SSLCertificateInterceptor
 import kotlinx.coroutines.CoroutineScope
@@ -95,6 +97,7 @@ class ThreadsGateTransport(
     private val chatUpdateProcessor: ChatUpdateProcessor by inject()
     private val database: DatabaseHolder by inject()
     private val jsonFormatter: JsonFormatter by inject()
+    private val clientUseCase: ClientUseCase by inject()
 
     init { buildTransport() }
 
@@ -183,7 +186,7 @@ class ThreadsGateTransport(
         consultInfo: ConsultInfo?,
         filePath: String?,
         quoteFilePath: String?
-    ) {
+    ): Boolean {
         userPhrase.campaignMessage?.let {
             campaignsInProcess[userPhrase.id] = it
         }
@@ -193,7 +196,7 @@ class ThreadsGateTransport(
             quoteFilePath,
             filePath
         )
-        sendMessage(
+        return sendMessage(
             content,
             true,
             ChatItemType.MESSAGE.name + CORRELATION_ID_DIVIDER + userPhrase.id
@@ -223,7 +226,7 @@ class ThreadsGateTransport(
     }
 
     override fun getToken(): String {
-        val userInfo = preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)
+        val userInfo = clientUseCase.getUserInfo()
         val deviceAddress = preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS)
         return (
             (if (userInfo?.clientIdSignature.isNullOrEmpty()) deviceAddress else userInfo?.clientIdSignature) +
@@ -248,15 +251,15 @@ class ThreadsGateTransport(
         correlationId: String = UUID.randomUUID().toString(),
         tryOpeningWebSocket: Boolean = true,
         sendInit: Boolean = false
-    ) {
+    ): Boolean {
         synchronized(messageInProcessIds) {
             messageInProcessIds.add(correlationId)
         }
         if (webSocket == null && tryOpeningWebSocket) {
             openWebSocket()
         }
-        webSocket ?: return
-        val clientId = preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)?.clientId
+        webSocket ?: return false
+        val clientId = clientUseCase.getUserInfo()?.clientId
         val deviceAddress = preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS)
         val messageId = content.get(MessageAttributes.UUID)?.asString
         if (sendInit && !clientId.isNullOrBlank() && !deviceAddress.isNullOrBlank()) {
@@ -269,16 +272,19 @@ class ThreadsGateTransport(
                 SendMessageRequest.Data(deviceAddress, messageId, content, important)
             )
         )
-        sendMessageWithWebsocket(text)
+        return sendMessageWithWebsocket(text)
     }
 
-    private fun sendMessageWithWebsocket(message: String?) {
+    private fun sendMessageWithWebsocket(message: String?): Boolean {
+        var isSent = false
         if (message != null) {
-            val isSent = webSocket?.send(message)
+            isSent = webSocket?.send(message) ?: false
             LoggerEdna.info(
                 "[REST_WS] ☛ Sending message with WS. Is sent: $isSent. Message: ${jsonFormatter.jsonToPrettyFormat(message)}"
             )
         }
+
+        return isSent
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
@@ -291,11 +297,11 @@ class ThreadsGateTransport(
     }
 
     private fun sendRegisterDevice() {
-        val userInfo = preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)
-        val clientId = userInfo?.clientId
+        val ws = webSocket ?: return
         val deviceModel = getSimpleDeviceName()
         val deviceName = getDeviceName()
         val deviceAddress = preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS)
+        val clientId = clientUseCase.getUserInfo()?.clientId
         val data = RegisterDeviceRequest.Data(
             AppInfoHelper.getAppId(),
             AppInfoHelper.getAppVersion(),
@@ -336,16 +342,16 @@ class ThreadsGateTransport(
         return deviceUid
     }
 
-    private fun sendInitChatMessage(tryOpeningWebSocket: Boolean) {
-        sendMessage(
+    private fun sendInitChatMessage(tryOpeningWebSocket: Boolean): Boolean {
+        return sendMessage(
             content = outgoingMessageCreator.createInitChatMessage(),
             tryOpeningWebSocket = tryOpeningWebSocket,
             sendInit = false
         )
     }
 
-    private fun sendEnvironmentMessage(tryOpeningWebSocket: Boolean) {
-        sendMessage(
+    private fun sendEnvironmentMessage(tryOpeningWebSocket: Boolean): Boolean {
+        return sendMessage(
             outgoingMessageCreator.createEnvironmentMessage(
                 DeviceInfoHelper.getLocale(BaseConfig.instance.context)
             ),
@@ -361,7 +367,8 @@ class ThreadsGateTransport(
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     private fun closeWebSocketIfNeeded() {
         if (messageInProcessIds.isEmpty() &&
-            (lifecycle?.currentState?.isAtLeast(Lifecycle.State.STARTED)?.not() != false)
+            lifecycle?.currentState?.isAtLeast(Lifecycle.State.STARTED)?.not() != false &&
+            InitialisationConstants.chatState == ChatState.ANDROID_CHAT_LIFECYCLE
         ) {
             closeWebSocket()
         }
@@ -446,21 +453,15 @@ class ThreadsGateTransport(
                 }
                 chatUpdateProcessor.postError(TransportException(errorMessage))
             } else if (action != null) {
-                if (action == Action.REGISTER_DEVICE) {
+                if (action == Action.REGISTER_DEVICE && InitialisationConstants.chatState > ChatState.LOGGED_OUT) {
                     val data = BaseConfig.instance.gson.fromJson(
                         response.data.toString(),
                         RegisterDeviceData::class.java
                     )
-                    val initialRegistration = preferences
-                        .get<String>(PreferencesCoreKeys.DEVICE_ADDRESS).isNullOrBlank()
+                    LoggerEdna.info("Saving device address")
                     preferences.save(PreferencesCoreKeys.DEVICE_ADDRESS, data.deviceAddress)
-                    if (initialRegistration) {
-                        sendInitChatMessage(false)
-                        sendEnvironmentMessage(false)
-                    }
-                    location?.let {
-                        updateLocation(it.latitude, it.longitude)
-                    }
+                    chatUpdateProcessor.postDeviceAddressChanged(data.deviceAddress)
+                    location?.let { updateLocation(it.latitude, it.longitude) }
                 }
                 if (action == Action.SEND_MESSAGE) {
                     val data = BaseConfig.instance.gson.fromJson(
@@ -602,6 +603,8 @@ class ThreadsGateTransport(
 
         override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
             postSocketResponseMap(code, reason)
+            preferences.save("", PreferencesCoreKeys.DEVICE_ADDRESS)
+            this@ThreadsGateTransport.webSocket = null
             LoggerEdna.info("[REST_WS] ☚ Websocket closed: $code / $reason")
         }
 
