@@ -264,15 +264,15 @@ class ImageFromUserViewHolder(
         loaderLayoutRoot.isVisible = false
         rotateAnim.cancel()
         showNormalBubble()
-
         if (fileDescription != null) {
             val isDownloadError = fileDescription.isDownloadError
             val uri = fileDescription.fileUri
             val path = fileDescription.downloadPath
-            if ((uri != null || path != null) && !isDownloadError) {
+            val fileUri = uri?.toString() ?: path
+            if (!fileUri.isNullOrEmpty() && !isDownloadError) {
                 ImageLoader.get()
                     .autoRotateWithExif(true)
-                    .load(uri?.toString() ?: path)
+                    .load(fileUri)
                     .scales(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP)
                     .modifications(maskedTransformation)
                     .errorDrawableResourceId(style.imagePlaceholder)

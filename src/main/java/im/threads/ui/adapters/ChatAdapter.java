@@ -871,7 +871,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         if (holder.getFileDescription().getFileUri() == null) {
             fdMediaPlayer.setClickedDownloadPath(holder.getFileDescription().getDownloadPath());
             holder.startLoader();
-            FileDownloadWorker.startDownloadFD(ctx, holder.getFileDescription());
+            FileDownloadWorker.startDownload(ctx, holder.getFileDescription(), false);
         } else {
             fdMediaPlayer.clearClickedDownloadPath();
             holder.stopLoader();

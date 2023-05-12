@@ -55,6 +55,8 @@ import im.threads.business.rest.queries.BackendApi.Companion.get
 import im.threads.business.rest.queries.ThreadsApi
 import im.threads.business.secureDatabase.DatabaseHolder
 import im.threads.business.serviceLocator.core.inject
+import im.threads.business.state.ChatState
+import im.threads.business.state.InitialisationConstants
 import im.threads.business.transport.ChatItemProviderData
 import im.threads.business.transport.HistoryLoader
 import im.threads.business.transport.HistoryParser
@@ -69,8 +71,7 @@ import im.threads.business.utils.FileUtils.isImage
 import im.threads.business.utils.FileUtils.isVoiceMessage
 import im.threads.business.utils.messenger.Messenger
 import im.threads.business.utils.messenger.MessengerImpl
-import im.threads.business.workers.FileDownloadWorker.Companion.startDownloadFD
-import im.threads.business.workers.FileDownloadWorker.Companion.startDownloadWithNoStop
+import im.threads.business.workers.FileDownloadWorker.Companion.startDownload
 import im.threads.ui.activities.ConsultActivity.Companion.startActivity
 import im.threads.ui.activities.ImagesActivity.Companion.getStartIntent
 import im.threads.ui.config.Config
@@ -159,6 +160,7 @@ class ChatController private constructor() {
 
     fun onViewStart() {
         messenger.onViewStart()
+        InitialisationConstants.chatState = ChatState.ANDROID_CHAT_LIFECYCLE
         checkEmptyStateVisibility()
         checkForSendInit()
     }
@@ -256,7 +258,7 @@ class ChatController private constructor() {
             val activity: Activity? = fragment?.activity
             if (activity != null) {
                 if (fileDescription.fileUri == null) {
-                    startDownloadFD(activity, fileDescription)
+                    startDownload(activity, fileDescription)
                 } else if (isImage(fileDescription)) {
                     fragment?.setupStartSecondLevelScreen()
                     activity.startActivity(getStartIntent(activity, fileDescription))
@@ -363,7 +365,7 @@ class ChatController private constructor() {
         if (fragment?.isAdded == true) {
             fragment?.activity?.let {
                 if (fileDescription != null) {
-                    startDownloadWithNoStop(it, fileDescription)
+                    startDownload(it, fileDescription, true)
                 }
             }
         }
@@ -1222,13 +1224,14 @@ class ChatController private constructor() {
         info("cleanAll!")
         isAllMessagesDownloaded = false
         messenger.clearSendQueue()
-        database.cleanDatabase()
         fragment?.cleanChat()
         threadId = -1L
         consultWriter.setCurrentConsultLeft()
         consultWriter.isSearchingConsult = false
         removePushNotification()
         UnreadMessagesController.INSTANCE.refreshUnreadMessagesCount()
+        preferences.sharedPreferences.edit().clear().commit()
+        database.cleanDatabase()
     }
 
     private fun removePushNotification() {
@@ -1291,6 +1294,7 @@ class ChatController private constructor() {
                     ) { obj: Throwable -> obj.message }
             )
         } else {
+            BaseConfig.instance.transport.sendInit(false)
             info(
                 ThreadsApi.REST_TAG,
                 "Loading history cancelled in onDeviceAddressChanged. " +

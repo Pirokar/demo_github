@@ -461,7 +461,7 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
                     .modifications(ImageModifications.CircleCropModification)
                     .getBitmapSync(context)
             } catch (e: IOException) {
-                LoggerEdna.error("getBitmapFromUrl", e)
+                LoggerEdna.error("getBitmapFromUrl: $e")
                 null
             }
         }

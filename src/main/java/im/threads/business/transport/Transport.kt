@@ -66,7 +66,7 @@ abstract class Transport {
     /**
      * TODO THREADS-6292: this method can potentially lead to messages stuck in STATE_SENDING
      */
-    abstract fun sendMessage(userPhrase: UserPhrase, consultInfo: ConsultInfo?, filePath: String?, quoteFilePath: String?)
+    abstract fun sendMessage(userPhrase: UserPhrase, consultInfo: ConsultInfo?, filePath: String?, quoteFilePath: String?): Boolean
     abstract fun sendClientOffline(clientId: String)
     abstract fun updateLocation(latitude: Double, longitude: Double)
     abstract fun getToken(): String

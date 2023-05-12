@@ -1,7 +1,6 @@
 package im.threads.business.utils
 
 import im.threads.business.UserInfoBuilder
-import im.threads.business.logger.LoggerEdna
 import im.threads.business.preferences.Preferences
 
 /**
@@ -13,7 +12,7 @@ class ClientUseCase(private val preferences: Preferences) {
      */
     fun initClientId() {
         val userInfo = ramUserInfo ?: preferences.get(USER_INFO_PREFS_KEY)
-        val newClientId = tagNewClientId ?: preferences.get(TAG_NEW_CLIENT_ID_PREFS_KEY)
+        val newClientId = tagNewClientId ?: preferences.get<String>(TAG_NEW_CLIENT_ID_PREFS_KEY)
         val oldClientId = userInfo?.clientId
 
         val isClientHasNotChanged = newClientId == oldClientId

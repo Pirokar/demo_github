@@ -16,7 +16,7 @@ import im.threads.business.models.FileDescription
 import im.threads.business.secureDatabase.DatabaseHolder
 import im.threads.business.utils.FileUtils.getMimeType
 import im.threads.business.utils.FileUtils.isImage
-import im.threads.business.workers.FileDownloadWorker.Companion.startDownloadFD
+import im.threads.business.workers.FileDownloadWorker.Companion.startDownload
 import im.threads.ui.activities.ImagesActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -129,7 +129,7 @@ internal class FilesViewModel(
      */
     fun onDownloadFileClick(fileDescription: FileDescription?) {
         val downloadPath = fileDescription?.fileUri?.toString() ?: fileDescription?.downloadPath
-        downloadPath?.let { startDownloadFD(context, fileDescription!!) }
+        downloadPath?.let { startDownload(context, fileDescription!!) }
     }
 
     private fun onFilesReceived(list: List<FileDescription?>?) {

@@ -148,8 +148,4 @@ class ChatUpdateProcessor {
     private fun checkSubscribers() {
         ChatController.getInstance().checkSubscribing()
     }
-
-    companion object {
-        private val instance: ChatUpdateProcessor? = null
-    }
 }

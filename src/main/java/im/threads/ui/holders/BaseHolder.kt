@@ -20,6 +20,7 @@ import androidx.core.graphics.BlendModeCompat
 import androidx.recyclerview.widget.RecyclerView
 import im.threads.R
 import im.threads.business.imageLoading.ImageLoader
+import im.threads.business.imageLoading.ImageModifications
 import im.threads.business.imageLoading.loadImage
 import im.threads.business.logger.LoggerEdna
 import im.threads.business.markdown.LinkifyLinksHighlighter
@@ -32,6 +33,7 @@ import im.threads.business.models.enums.ErrorStateEnum
 import im.threads.business.ogParser.OGData
 import im.threads.business.ogParser.OGDataContent
 import im.threads.business.ogParser.OpenGraphParser
+import im.threads.business.utils.FileUtils
 import im.threads.business.utils.UrlUtils
 import im.threads.ui.config.Config
 import im.threads.ui.utils.ColorsHelper
@@ -91,6 +93,7 @@ abstract class BaseHolder internal constructor(
 
     /**
      * Подписывается на уведомления о новом подсвеченном элементе
+     *
      * @param chatItem новый подсвеченный элемент
      */
     fun subscribeForHighlighting(chatItem: ChatItem, vararg viewsToHighlight: View) {
@@ -112,6 +115,7 @@ abstract class BaseHolder internal constructor(
             )
         }
     }
+
     val config: Config by lazy { Config.getInstance() }
     val style = config.chatStyle
 
@@ -154,7 +158,9 @@ abstract class BaseHolder internal constructor(
 
     /**
      * Меняет подсветку бэкраунда при выделении
-     * @param isHighlighted информация о том, должен ли быть подсвечен бэкграунд у сообщения
+     *
+     * @param isHighlighted информация о том, должен ли быть подсвечен
+     *     бэкграунд у сообщения
      */
     open fun changeHighlighting(isHighlighted: Boolean) {
         val views = viewsToHighlight ?: arrayOf(itemView.rootView)
@@ -171,9 +177,11 @@ abstract class BaseHolder internal constructor(
     }
 
     /**
-     * Подсчвечивает ссылки, email, номера телефонов.
-     * Если поле formattedText внутри phrase не будет пустым, производится форматирование текста.
-     * @param textView вью, где необходимо произвести обработку - подсветку, форматирование
+     * Подсчвечивает ссылки, email, номера телефонов. Если поле formattedText
+     * внутри phrase не будет пустым, производится форматирование текста.
+     *
+     * @param textView вью, где необходимо произвести обработку - подсветку,
+     *     форматирование
      * @param phrase данные для отображение во вью
      * @param url url, содержащийся в сообщении (если известен)
      */
@@ -202,6 +210,7 @@ abstract class BaseHolder internal constructor(
 
     /**
      * Подсчвечивает ссылки, email, номера телефонов.
+     *
      * @param textView вью, где необходимо произвести подсветку
      * @param phrase текст для отображение во вью
      * @param url url, содержащийся в сообщении (если известен)
@@ -221,6 +230,7 @@ abstract class BaseHolder internal constructor(
 
     /**
      * Возвращает нужный ресурс [Drawable] в зависимости от кода ошибки
+     *
      * @param code код ошибки
      */
     protected fun getErrorImageResByErrorCode(code: ErrorStateEnum) = when (code) {
@@ -231,7 +241,9 @@ abstract class BaseHolder internal constructor(
     }
 
     /**
-     * Возвращает нужный текстовый ресурс [StringRes] в зависимости от кода ошибки
+     * Возвращает нужный текстовый ресурс [StringRes] в зависимости от кода
+     * ошибки
+     *
      * @param code код ошибки
      */
     protected fun getErrorStringResByErrorCode(code: ErrorStateEnum) = when (code) {
@@ -242,7 +254,9 @@ abstract class BaseHolder internal constructor(
     }
 
     /**
-     * Прячет лэйаут изображения, отображает картинку с ошибкой и присваивает ей ресурс ошибки из стилей
+     * Прячет лэйаут изображения, отображает картинку с ошибкой и присваивает
+     * ей ресурс ошибки из стилей
+     *
      * @param imageLayout - контейнер с изображением
      * @param errorImage - картинка с ошибкой
      */
@@ -254,6 +268,7 @@ abstract class BaseHolder internal constructor(
 
     /**
      * Прячет изображение с ошибкой, отображает картинку
+     *
      * @param imageLayout - контейнер с изображением
      * @param errorImage - картинка с ошибкой
      */
@@ -360,26 +375,30 @@ abstract class BaseHolder internal constructor(
                     timeStampView.setTextColor(getColorInt(style.incomingImageTimeColor))
                 }
                 if (style.incomingMessageTimeTextSize != 0) {
-                    timeStampView.textSize = itemView.context.resources.getDimension(style.incomingMessageTimeTextSize)
+                    timeStampView.textSize =
+                        itemView.context.resources.getDimension(style.incomingMessageTimeTextSize)
                 }
                 if (style.incomingImageTimeBackgroundColor != 0 && timeStampView.background != null) {
-                    timeStampView.background.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
-                        getColorInt(style.incomingImageTimeBackgroundColor),
-                        BlendModeCompat.SRC_ATOP
-                    )
+                    timeStampView.background.colorFilter =
+                        BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
+                            getColorInt(style.incomingImageTimeBackgroundColor),
+                            BlendModeCompat.SRC_ATOP
+                        )
                 }
             } else {
                 if (style.outgoingImageTimeColor != 0) {
                     timeStampView.setTextColor(getColorInt(style.outgoingImageTimeColor))
                 }
                 if (style.outgoingMessageTimeTextSize != 0) {
-                    timeStampView.textSize = itemView.context.resources.getDimension(style.outgoingMessageTimeTextSize)
+                    timeStampView.textSize =
+                        itemView.context.resources.getDimension(style.outgoingMessageTimeTextSize)
                 }
                 if (style.outgoingImageTimeBackgroundColor != 0) {
-                    timeStampView.background.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
-                        getColorInt(style.outgoingImageTimeBackgroundColor),
-                        BlendModeCompat.SRC_ATOP
-                    )
+                    timeStampView.background.colorFilter =
+                        BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
+                            getColorInt(style.outgoingImageTimeBackgroundColor),
+                            BlendModeCompat.SRC_ATOP
+                        )
                 }
             }
         }
@@ -551,6 +570,30 @@ abstract class BaseHolder internal constructor(
         layout.layoutParams = layoutParams
         layout.invalidate()
         layout.requestLayout()
+    }
+
+    protected fun showAvatar(
+        consultAvatar: ImageView,
+        consultPhrase: ConsultPhrase,
+        onAvatarClickListener: View.OnClickListener
+    ) {
+        consultAvatar.setOnClickListener(onAvatarClickListener)
+        if (consultPhrase.isAvatarVisible) {
+            consultAvatar.visible()
+            if (!consultPhrase.avatarPath.isNullOrEmpty()) {
+                consultAvatar.loadImage(
+                    FileUtils.convertRelativeUrlToAbsolute(consultPhrase.avatarPath),
+                    listOf(ImageView.ScaleType.CENTER_CROP, ImageView.ScaleType.FIT_XY),
+                    errorDrawableResId = R.drawable.ecc_operator_avatar_placeholder,
+                    modifications = listOf(ImageModifications.CircleCropModification),
+                    noPlaceholder = true
+                )
+            } else {
+                consultAvatar.setImageResource(style.defaultOperatorAvatar)
+            }
+        } else {
+            consultAvatar.invisible()
+        }
     }
 
     companion object {

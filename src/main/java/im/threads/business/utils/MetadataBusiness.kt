@@ -70,7 +70,7 @@ object MetadataBusiness {
             )
             ai.metaData
         } catch (e: PackageManager.NameNotFoundException) {
-            error("Failed to load self applicationInfo - that's really weird. ", e)
+            error("Failed to load self applicationInfo - that's really weird. $e")
             null
         }
     }

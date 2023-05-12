@@ -676,7 +676,9 @@ class ChatFragment :
                     if (style.scrollChatToEndIfUserTyping) {
                         chatAdapter?.itemCount?.let { scrollToPosition(it - 1, false) }
                     } else {
-                        binding.recycler.smoothScrollBy(0, oldBottom - bottom)
+                        if (isAdded) {
+                            binding.recycler.smoothScrollBy(0, oldBottom - bottom)
+                        }
                     }
                 }, 100)
             }
@@ -1601,7 +1603,7 @@ class ChatFragment :
         if (!isNewMessageUpdateTimeoutOn) {
             isNewMessageUpdateTimeoutOn = true
             handler.postDelayed({
-                if (!isInMessageSearchMode) {
+                if (!isInMessageSearchMode && isAdded && chatAdapter != null) {
                     val itemCount = chatAdapter!!.itemCount
                     if (isLastMessageVisible || isUserPhrase) {
                         scrollToPosition(itemCount - 1, false)
@@ -1614,7 +1616,7 @@ class ChatFragment :
 
     private fun scrollToPosition(itemCount: Int, smooth: Boolean) {
         info("scrollToPosition: $itemCount")
-        if (itemCount >= 0) {
+        if (itemCount >= 0 && isAdded) {
             if (smooth) {
                 binding.recycler.smoothScrollToPosition(itemCount)
             } else {
@@ -1820,7 +1822,7 @@ class ChatFragment :
             return
         }
         handler.post {
-            if (fdMediaPlayer == null || chatAdapterCallback == null) { return@post }
+            if (!isAdded || fdMediaPlayer == null || chatAdapterCallback == null) { return@post }
             chatAdapter = ChatAdapter(
                 chatAdapterCallback!!,
                 fdMediaPlayer!!,
@@ -1893,14 +1895,14 @@ class ChatFragment :
     }
 
     private fun setTitleStateSearchingConsult() {
-        if (isInMessageSearchMode) {
+        if (isInMessageSearchMode || !isAdded) {
             return
         }
         binding.subtitle.visibility = View.GONE
         binding.consultName.visibility = View.VISIBLE
         binding.searchLo.visibility = View.GONE
         binding.search.setText("")
-        if (isAdded && !resources.getBoolean(style.fixedChatTitle)) {
+        if (!resources.getBoolean(style.fixedChatTitle)) {
             binding.consultName.text = requireContext().getString(R.string.ecc_searching_operator)
         }
     }
@@ -2018,8 +2020,10 @@ class ChatFragment :
                     val cp = list[i] as ConsultPhrase
                     if (firstUnreadUuid.equals(cp.id, ignoreCase = true)) {
                         handler.post {
-                            if (!isInMessageSearchMode) {
-                                binding.recycler.post { layoutManager.scrollToPositionWithOffset(i - 1, 0) }
+                            if (isAdded && !isInMessageSearchMode) {
+                                binding.recycler.post {
+                                    layoutManager.scrollToPositionWithOffset(i - 1, 0)
+                                }
                             }
                         }
                         break
@@ -2225,6 +2229,7 @@ class ChatFragment :
                     binding.reply.setOnClickListener {
                         onReplyClick(chatPhrase, position)
                         hideBackButton()
+                        unChooseItem()
                     }
                 }
             } else {

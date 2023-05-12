@@ -8,12 +8,14 @@ import im.threads.business.logger.LoggerEdna
 import im.threads.business.preferences.PrefKeysForMigration
 import im.threads.business.preferences.Preferences
 import im.threads.business.preferences.PreferencesCoreKeys
+import im.threads.business.serviceLocator.core.inject
 import im.threads.business.utils.ClientUseCase
 import java.io.File
 
 open class PreferencesMigrationBase(
     private val context: Context
 ) : Preferences(context) {
+    private val clientUseCase: ClientUseCase by inject()
     protected open val keys = PreferencesCoreKeys.allPrefKeys
 
     fun migrateMainSharedPreferences() {

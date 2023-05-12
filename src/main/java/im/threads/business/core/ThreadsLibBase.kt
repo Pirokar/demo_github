@@ -25,6 +25,8 @@ import im.threads.business.secureDatabase.DatabaseHolder
 import im.threads.business.serviceLocator.core.inject
 import im.threads.business.serviceLocator.core.startEdnaLocator
 import im.threads.business.serviceLocator.coreSLModule
+import im.threads.business.state.ChatState
+import im.threads.business.state.InitialisationConstants
 import im.threads.business.useractivity.UserActivityTimeProvider.getLastUserActivityTimeCounter
 import im.threads.business.useractivity.UserActivityTimeProvider.initializeLastUserActivity
 import im.threads.business.utils.ClientUseCase
@@ -84,7 +86,8 @@ open class ThreadsLibBase protected constructor(context: Context) {
     val socketResponseMapProcessor: FlowableProcessor<Map<String, Any>>
         get() = chatUpdateProcessor.socketResponseMapProcessor
 
-    protected open fun initUser(userInfoBuilder: UserInfoBuilder, forceRegistration: Boolean = false) {
+    protected open fun initUser(userInfoBuilder: UserInfoBuilder, forceRegistration: Boolean = false, callback: () -> Unit) {
+        InitialisationConstants.chatState = ChatState.INIT_USER
         clientUseCase.saveUserInfo(userInfoBuilder)
         if (!ChatFragment.isShown && forceRegistration) {
             BaseConfig.instance.transport.sendInit(true)
@@ -96,15 +99,17 @@ open class ThreadsLibBase protected constructor(context: Context) {
      * Used to stop receiving messages for user
      */
     fun logoutClient() {
+        InitialisationConstants.onLogout()
+
         val clientId = clientUseCase.getUserInfo()?.clientId
         if (!clientId.isNullOrBlank()) {
             BaseConfig.instance.transport.sendClientOffline(clientId)
             coroutineScope.launch { database.cleanDatabase() }
-            clientUseCase.saveUserInfo(null)
-            preferences.save(PreferencesCoreKeys.THREAD_ID, -1L, true)
         } else {
             info("clientId must not be empty")
         }
+        BaseConfig.instance.transport.closeWebSocket()
+        clientUseCase.saveUserInfo(null)
         ChatController.getInstance().cleanAll()
     }
 

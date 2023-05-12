@@ -368,17 +368,21 @@ class UserPhraseViewHolder(
                         } else {
                             it.fileUri.toString()
                         }
-                        get()
-                            .load(downloadPath)
-                            .autoRotateWithExif(true)
-                            .scales(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP)
-                            .modifications(maskedTransformation)
-                            .callback(object : ImageLoader.ImageLoaderCallback {
-                                override fun onImageLoadError() {
-                                    showErrorImage(imageLayout, errorImage)
-                                }
-                            })
-                            .into(image)
+                        if (!downloadPath.isNullOrEmpty()) {
+                            get()
+                                .load(downloadPath)
+                                .autoRotateWithExif(true)
+                                .scales(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP)
+                                .modifications(maskedTransformation)
+                                .callback(object : ImageLoader.ImageLoaderCallback {
+                                    override fun onImageLoadError() {
+                                        showErrorImage(imageLayout, errorImage)
+                                    }
+                                })
+                                .into(image)
+                        } else {
+                            image.setImageResource(style.imagePlaceholder)
+                        }
                         val chatStyle = Config.getInstance().chatStyle
                         val resources = context.resources
                         val paddingLeft = resources.getDimensionPixelSize(chatStyle.bubbleOutgoingPaddingLeft)
@@ -440,12 +444,16 @@ class UserPhraseViewHolder(
                 } else if (it.downloadPath != null) {
                     downloadPath = it.downloadPath
                 }
-                get()
-                    .autoRotateWithExif(true)
-                    .load(downloadPath)
-                    .scales(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP)
-                    .errorDrawableResourceId(style.imagePlaceholder)
-                    .into(quoteImage)
+                if (!downloadPath.isNullOrEmpty()) {
+                    get()
+                        .autoRotateWithExif(true)
+                        .load(downloadPath)
+                        .scales(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP)
+                        .errorDrawableResourceId(style.imagePlaceholder)
+                        .into(quoteImage)
+                } else {
+                    quoteImage.setImageResource(style.imagePlaceholder)
+                }
                 if (onQuoteClickListener != null) {
                     quoteImage.setOnClickListener(onQuoteClickListener)
                 }

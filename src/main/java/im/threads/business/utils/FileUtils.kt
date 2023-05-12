@@ -221,7 +221,7 @@ object FileUtils {
             context.contentResolver.openInputStream(uri)
                 .use { inputStream -> return inputStream != null && inputStream.read() != -1 }
         } catch (e: IOException) {
-            LoggerEdna.error("file can't be sent", e)
+            LoggerEdna.error("file can't be sent. $e")
             return false
         }
     }
@@ -309,19 +309,19 @@ object FileUtils {
             .get()
             .load(uri.toString())
             .getBitmapSync(BaseConfig.instance.context)?.let { bitmap ->
-            val byteArrayOutputStream = ByteArrayOutputStream()
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
-            try {
-                FileOutputStream(outputFile).use { fileOutputStream ->
-                    fileOutputStream.write(byteArrayOutputStream.toByteArray())
-                    fileOutputStream.flush()
+                val byteArrayOutputStream = ByteArrayOutputStream()
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
+                try {
+                    FileOutputStream(outputFile).use { fileOutputStream ->
+                        fileOutputStream.write(byteArrayOutputStream.toByteArray())
+                        fileOutputStream.flush()
+                        bitmap.recycle()
+                    }
+                } catch (e: IOException) {
+                    LoggerEdna.error("saveToFile error: $e")
                     bitmap.recycle()
                 }
-            } catch (e: IOException) {
-                LoggerEdna.error("saveToFile", e)
-                bitmap.recycle()
             }
-        }
     }
 
     @Throws(IOException::class)
@@ -331,21 +331,21 @@ object FileUtils {
             .get()
             .load(uri.toString())
             .getBitmapSync(BaseConfig.instance.context)?.let { bitmap ->
-            val byteArrayOutputStream = ByteArrayOutputStream()
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
-            try {
-                resolver.openOutputStream(outputUri!!).use { fileOutputStream ->
-                    if (fileOutputStream != null) {
-                        fileOutputStream.write(byteArrayOutputStream.toByteArray())
-                        fileOutputStream.flush()
-                        bitmap.recycle()
+                val byteArrayOutputStream = ByteArrayOutputStream()
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
+                try {
+                    resolver.openOutputStream(outputUri!!).use { fileOutputStream ->
+                        if (fileOutputStream != null) {
+                            fileOutputStream.write(byteArrayOutputStream.toByteArray())
+                            fileOutputStream.flush()
+                            bitmap.recycle()
+                        }
                     }
+                } catch (e: IOException) {
+                    LoggerEdna.error("cannot get bitmap in saveToUri: $e")
+                    bitmap.recycle()
                 }
-            } catch (e: IOException) {
-                LoggerEdna.error("cannot get bitmap in saveToUri", e)
-                bitmap.recycle()
             }
-        }
     }
 
     @JvmStatic
