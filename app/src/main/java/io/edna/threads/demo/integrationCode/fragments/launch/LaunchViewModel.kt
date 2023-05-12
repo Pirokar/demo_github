@@ -102,7 +102,8 @@ class LaunchViewModel(
                     .setAuthData(user.authorizationHeader, user.xAuthSchemaHeader)
                     .setClientData(user.userData)
                     .setClientIdSignature(user.signature)
-                    .setAppMarker(user.appMarker)
+                    .setAppMarker(user.appMarker),
+                false
             )
             navigationController.navigate(R.id.action_LaunchFragment_to_ChatAppFragment)
         }
