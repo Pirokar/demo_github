@@ -246,7 +246,7 @@ class MainActivity : AppCompatActivity(), EditCardDialogActionsListener, YesNoDi
                 card.clientIdSignature,
                 card.authToken,
                 card.authSchema,
-                AuthMethod.COOKIES.toString(),
+                AuthMethod.HEADERS.toString(),
                 getTheme(this)
             )
         )
@@ -280,7 +280,7 @@ class MainActivity : AppCompatActivity(), EditCardDialogActionsListener, YesNoDi
             pushClientCard?.clientIdSignature,
             pushClientCard?.authToken,
             pushClientCard?.authSchema,
-            AuthMethod.COOKIES.toString(),
+            AuthMethod.HEADERS.toString(),
             getTheme(this)
         )
     }

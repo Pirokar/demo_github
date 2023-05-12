@@ -139,7 +139,7 @@ class ThreadsDemoApplication : MultiDexApplication() {
                         clientIdSignature,
                         authToken,
                         authSchema,
-                        AuthMethod.COOKIES.toString(),
+                        AuthMethod.HEADERS.toString(),
                         getTheme(context)
                     )
                 }
