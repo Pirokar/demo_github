@@ -155,7 +155,7 @@ private fun compressImage(uri: Uri?): File? {
                 return downsizedImageFile
             }
         } catch (e: IOException) {
-            LoggerEdna.error("downsizeImage", e)
+            LoggerEdna.error("downsizeImage error: $e")
             it.recycle()
             downsizedImageFile.delete()
             return null

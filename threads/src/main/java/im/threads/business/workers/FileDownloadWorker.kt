@@ -83,7 +83,7 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
                 }
 
                 override fun onFileDownloadError(e: Exception?) {
-                    LoggerEdna.error("error while downloading file ", e)
+                    LoggerEdna.error("error while downloading file: $e")
                     fileDescription.downloadProgress = 0
                     database.updateFileDescription(fileDescription)
                     e?.let { sendDownloadErrorBroadcast(fileDescription, e) }
