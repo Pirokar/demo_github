@@ -209,7 +209,7 @@ object FileUtils {
             context.contentResolver.openInputStream(uri)
                 .use { inputStream -> return inputStream != null && inputStream.read() != -1 }
         } catch (e: IOException) {
-            LoggerEdna.error("file can't be sent", e)
+            LoggerEdna.error("file can't be sent. $e")
             return false
         }
     }
@@ -302,7 +302,7 @@ object FileUtils {
                         bitmap.recycle()
                     }
                 } catch (e: IOException) {
-                    LoggerEdna.error("saveToFile", e)
+                    LoggerEdna.error("saveToFile error: $e")
                     bitmap.recycle()
                 }
             }
@@ -326,7 +326,7 @@ object FileUtils {
                         }
                     }
                 } catch (e: IOException) {
-                    LoggerEdna.error("cannot get bitmap in saveToUri", e)
+                    LoggerEdna.error("cannot get bitmap in saveToUri: $e")
                     bitmap.recycle()
                 }
             }

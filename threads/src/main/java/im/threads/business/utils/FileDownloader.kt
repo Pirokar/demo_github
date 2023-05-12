@@ -125,13 +125,13 @@ class FileDownloader(
                     LoggerEdna.debug("Download stopped.")
                 }
             } catch (e: Exception) {
-                LoggerEdna.error("1 ", e)
+                LoggerEdna.error("First catch called: $e.")
                 downloadListener.onFileDownloadError(e)
             } finally {
                 (urlConnection as? HttpURLConnection)?.disconnect()
             }
         } catch (e: Exception) {
-            LoggerEdna.error("2 ", e)
+            LoggerEdna.error("Second catch called: $e")
             downloadListener.onFileDownloadError(e)
         }
     }
@@ -147,7 +147,7 @@ class FileDownloader(
                 return values[0]?.toLong()
             }
         } catch (e: Exception) {
-            LoggerEdna.error("download", e)
+            LoggerEdna.error("download. getFileLength() error: $e")
         }
         return null
     }

@@ -9,6 +9,7 @@ import com.squareup.picasso.Picasso
 import com.squareup.picasso.RequestCreator
 import com.squareup.picasso.Transformation
 import im.threads.business.config.BaseConfig
+import im.threads.business.logger.LoggerEdna
 import java.util.concurrent.Executors
 
 class ImageRequestBuilder {
@@ -142,7 +143,7 @@ class ImageRequestBuilder {
                 else -> 90f
             }
         } catch (e: java.lang.Exception) {
-            e.printStackTrace()
+            LoggerEdna.error("Try getting right angle image error: $e")
             0f
         }
     }
