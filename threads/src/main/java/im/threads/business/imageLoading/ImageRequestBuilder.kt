@@ -20,7 +20,8 @@ class ImageRequestBuilder {
     ): RequestCreator? {
         var builder: RequestCreator? = null
         config.url?.let {
-            builder = getLoader(config).load(it)
+            val url = it.ifEmpty { "https://nourl.com" }
+            builder = getLoader(config).load(url)
 
             if (config.isAutoRotateWithExif) {
                 builder!!.rotate(getRightAngleImage(it))
