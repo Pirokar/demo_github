@@ -11,7 +11,6 @@ import androidx.core.util.Consumer
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.gson.JsonObject
 import im.threads.R
-import im.threads.business.UserInfoBuilder
 import im.threads.business.broadcastReceivers.ProgressReceiver
 import im.threads.business.chat_updates.ChatUpdateProcessor
 import im.threads.business.config.BaseConfig
@@ -56,6 +55,8 @@ import im.threads.business.rest.queries.BackendApi.Companion.get
 import im.threads.business.rest.queries.ThreadsApi
 import im.threads.business.secureDatabase.DatabaseHolder
 import im.threads.business.serviceLocator.core.inject
+import im.threads.business.state.ChatState
+import im.threads.business.state.InitialisationConstants
 import im.threads.business.transport.ChatItemProviderData
 import im.threads.business.transport.HistoryLoader
 import im.threads.business.transport.HistoryParser
@@ -111,6 +112,7 @@ class ChatController private constructor() {
     private val appContext: Context by inject()
     private val preferences: Preferences by inject()
     private val historyLoader: HistoryLoader by inject()
+    private val clientUseCase: ClientUseCase by inject()
 
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
@@ -146,7 +148,7 @@ class ChatController private constructor() {
     // Если пользователь не ответил на вопрос (quickReply), то блокируем поле ввода
     private var inputEnabledDuringQuickReplies = chatStyle.inputEnabledDuringQuickReplies
     private var compositeDisposable: CompositeDisposable? = CompositeDisposable()
-    private val messenger: Messenger = MessengerImpl(compositeDisposable)
+    private val messenger: Messenger = MessengerImpl(compositeDisposable, clientUseCase)
     private val localUserMessages = ArrayList<UserPhrase>()
     private val attachmentsHistory = HashMap<String, AttachmentStateEnum>()
 
@@ -158,6 +160,7 @@ class ChatController private constructor() {
 
     fun onViewStart() {
         messenger.onViewStart()
+        InitialisationConstants.chatState = ChatState.ANDROID_CHAT_LIFECYCLE
     }
 
     fun onViewStop() {
@@ -540,7 +543,7 @@ class ChatController private constructor() {
         return setLastAvatars(serverItems)
     }
 
-    fun loadHistory(fromBeginning: Boolean) {
+    fun loadHistory(fromBeginning: Boolean = true, applyUiChanges: Boolean = true) {
         if (isAllMessagesDownloaded) {
             return
         }
@@ -549,20 +552,24 @@ class ChatController private constructor() {
                 isDownloadingMessages = true
                 subscribe(
                     Single.fromCallable {
-                        val count = BaseConfig.instance.historyLoadingCount
+                        var count = BaseConfig.instance.historyLoadingCount
+                        if (count < database.getMessagesCount()) {
+                            count = database.getMessagesCount()
+                        }
                         val response = historyLoader.getHistorySync(
                             count,
                             fromBeginning
                         )
                         val serverItems = HistoryParser.getChatItems(response)
-                        if (serverItems.size == 0) {
+                        if (serverItems.isEmpty()) {
                             isAllMessagesDownloaded = true
                         }
                         parseHistoryItemsForSentStatus(serverItems)
                         parseHistoryItemsForAttachmentStatus(serverItems)
                         messenger.saveMessages(serverItems)
+                        clearUnreadPush()
                         processSystemMessages(serverItems)
-                        if (fragment != null && isActive) {
+                        if (fragment != null && isActive && !fragment!!.isStartSecondLevelScreen()) {
                             val uuidList: List<String?> = database.getUnreadMessagesUuid()
                             if (uuidList.isNotEmpty()) {
                                 BaseConfig.instance.transport.markMessagesAsRead(uuidList)
@@ -573,20 +580,31 @@ class ChatController private constructor() {
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                            { _: Pair<ConsultInfo?, Int?> ->
-                                if (fragment != null) {
-                                    val items = database.getChatItems(0, -1)
-                                    fragment?.addHistoryChatItems(items)
-                                    fragment?.hideProgressBar()
-                                }
+                            { pair: Pair<ConsultInfo?, Int?> ->
+                                InitialisationConstants.isHistoryLoaded = true
                                 isDownloadingMessages = false
+                                if (applyUiChanges) {
+                                    val serverCount = if (pair.second == null) 0 else pair.second!!
+                                    val items =
+                                        setLastAvatars(database.getChatItems(0, serverCount))
+                                    if (fragment != null) {
+                                        fragment?.addChatItems(items)
+                                        handleQuickReplies(items)
+                                        handleInputAvailability(items)
+                                        val info = pair.first
+                                        if (info != null) {
+                                            fragment?.setStateConsultConnected(info)
+                                        }
+                                        fragment?.hideProgressBar()
+                                    }
+                                }
                             }
                         ) { e: Throwable? ->
+                            isDownloadingMessages = false
                             if (fragment != null) {
                                 fragment?.hideProgressBar()
                             }
                             error(e)
-                            isDownloadingMessages = false
                         }
                 )
             } else {
@@ -1256,13 +1274,14 @@ class ChatController private constructor() {
         info("cleanAll!")
         isAllMessagesDownloaded = false
         messenger.clearSendQueue()
-        database.cleanDatabase()
         fragment?.cleanChat()
         threadId = -1L
         consultWriter.setCurrentConsultLeft()
         consultWriter.isSearchingConsult = false
         removePushNotification()
         UnreadMessagesController.INSTANCE.refreshUnreadMessagesCount()
+        preferences.sharedPreferences.edit().clear().commit()
+        database.cleanDatabase()
     }
 
     private fun removePushNotification() {
@@ -1291,7 +1310,7 @@ class ChatController private constructor() {
 
     private fun onDeviceAddressChanged() {
         info(ThreadsApi.REST_TAG, "onDeviceAddressChanged. Loading history.")
-        val clientId = preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)?.clientId
+        val clientId = clientUseCase.getUserInfo()?.clientId
         if (fragment != null && !clientId.isNullOrBlank()) {
             subscribe(
                 Single.fromCallable {
@@ -1325,6 +1344,7 @@ class ChatController private constructor() {
                     ) { obj: Throwable -> obj.message }
             )
         } else {
+            BaseConfig.instance.transport.sendInit(false)
             info(
                 ThreadsApi.REST_TAG,
                 "Loading history cancelled in onDeviceAddressChanged. " +
@@ -1554,8 +1574,8 @@ class ChatController private constructor() {
     private fun subscribeOnClientIdChange() {
         instance?.subscribe(
             Single.fromCallable {
-                val userInfo = preferences.get<UserInfoBuilder>(PreferencesCoreKeys.USER_INFO)
-                val newClientId = preferences.get<String>(PreferencesCoreKeys.TAG_NEW_CLIENT_ID)
+                val userInfo = clientUseCase.getUserInfo()
+                val newClientId = clientUseCase.getTagNewClientId()
                 val oldClientId = userInfo?.clientId
                 if (!newClientId.isNullOrEmpty() && newClientId != oldClientId) {
                     instance?.onClientIdChanged() ?: ArrayList()

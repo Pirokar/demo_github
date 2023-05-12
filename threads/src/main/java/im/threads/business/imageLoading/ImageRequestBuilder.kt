@@ -21,7 +21,8 @@ class ImageRequestBuilder {
     ): RequestCreator? {
         var builder: RequestCreator? = null
         config.url?.let {
-            builder = getLoader(config).load(it)
+            val url = it.ifEmpty { "https://noednaurl.com" }
+            builder = getLoader(config).load(url)
 
             if (config.isAutoRotateWithExif) {
                 builder!!.rotate(getRightAngleImage(it))
@@ -142,7 +143,6 @@ class ImageRequestBuilder {
                 else -> 90f
             }
         } catch (e: java.lang.Exception) {
-            LoggerEdna.error("Try getting right angle image error: $e")
             0f
         }
     }
