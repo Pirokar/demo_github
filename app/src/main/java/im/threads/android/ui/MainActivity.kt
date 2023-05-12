@@ -37,16 +37,13 @@ import im.threads.android.utils.PrefUtilsApp.getTheme
 import im.threads.android.utils.PrefUtilsApp.storeCards
 import im.threads.business.AuthMethod
 import im.threads.business.UserInfoBuilder
-import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.CampaignMessage
 import im.threads.business.utils.Balloon
 import im.threads.ui.activities.ChatActivity
 import im.threads.ui.core.ThreadsLib
 import im.threads.ui.styles.permissions.PermissionDescriptionType
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
 import org.koin.android.ext.android.inject
 import java.util.Date
 
@@ -145,7 +142,6 @@ class MainActivity : AppCompatActivity(), EditCardDialogActionsListener, YesNoDi
 
     /** Пример открытия чата в виде Активности */
     private fun goToChatActivity() {
-        subscribeOnSocketResponses()
         locationManager?.startLocationUpdates()
         val currentCard = currentCard
         if (currentCard == null) {
@@ -218,7 +214,6 @@ class MainActivity : AppCompatActivity(), EditCardDialogActionsListener, YesNoDi
 
     /** Пример открытия чата в виде фрагмента */
     fun navigateToBottomNavigationActivity() {
-        subscribeOnSocketResponses()
         val currentCard = currentCard
         if (currentCard == null) {
             displayError(R.string.demo_error_empty_user)
@@ -249,21 +244,6 @@ class MainActivity : AppCompatActivity(), EditCardDialogActionsListener, YesNoDi
         )
     }
 
-    private fun subscribeOnSocketResponses() {
-        if (!::socketResponseDisposable.isInitialized || socketResponseDisposable.isDisposed) {
-            socketResponseDisposable = ThreadsLib.getInstance().socketResponseMapProcessor
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .onBackpressureDrop()
-                .subscribe({ responseMap ->
-                    LoggerEdna.info(TAG_SOCKET_RESPONSE, responseMap.toString())
-                }, { error ->
-                    LoggerEdna.error(TAG_SOCKET_RESPONSE, error.message, error)
-                })
-            compositeDisposable.add(socketResponseDisposable)
-        }
-    }
-
     fun showEditCardDialog() {
         EditCardDialog.open(this)
     }
@@ -276,7 +256,7 @@ class MainActivity : AppCompatActivity(), EditCardDialogActionsListener, YesNoDi
         val clientCards: List<Card> = getCards(this)
         var pushClientCard: Card? = null
         for (clientCard in clientCards) {
-            if (appMarker.lowercase().equals(clientCard.appMarker)) {
+            if (appMarker.lowercase() == clientCard.appMarker) {
                 pushClientCard = clientCard
             }
         }

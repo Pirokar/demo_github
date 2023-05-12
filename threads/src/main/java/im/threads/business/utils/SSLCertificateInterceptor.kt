@@ -22,7 +22,6 @@ class SSLCertificateInterceptor : Interceptor {
                 LoggerEdna.info(tag, "no handshake")
                 return response
             }
-            LoggerEdna.info(tag, "handshake success")
             certificates = handshake.peerCertificates
             logCertificates(certificates, null, "Peer (remote) certificates")
             return response

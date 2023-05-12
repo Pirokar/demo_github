@@ -52,8 +52,6 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
     private var notificationChannel: NotificationChannel? = null
 
     override fun doWork(): Result {
-        LoggerEdna.info("doWork")
-
         return (Config.getInstance()).let { config ->
             val systemService = context.getSystemService(Context.NOTIFICATION_SERVICE)
             val notificationManager: NotificationManager
