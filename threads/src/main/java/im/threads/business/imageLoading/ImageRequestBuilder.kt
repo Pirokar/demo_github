@@ -21,7 +21,7 @@ class ImageRequestBuilder {
     ): RequestCreator? {
         var builder: RequestCreator? = null
         config.url?.let {
-            val url = it.ifEmpty { "https://nourl.com" }
+            val url = it.ifEmpty { "https://noednaurl.com" }
             builder = getLoader(config).load(url)
 
             if (config.isAutoRotateWithExif) {
