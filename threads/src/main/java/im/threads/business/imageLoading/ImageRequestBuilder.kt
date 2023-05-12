@@ -143,7 +143,6 @@ class ImageRequestBuilder {
                 else -> 90f
             }
         } catch (e: java.lang.Exception) {
-            LoggerEdna.error("Try getting right angle image error: $e")
             0f
         }
     }
