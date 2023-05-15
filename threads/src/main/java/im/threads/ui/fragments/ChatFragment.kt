@@ -1326,6 +1326,9 @@ class ChatFragment :
                     }
                 }
             }
+            if(first == -1 && last == -1) {
+                chatAdapter?.removeHighlight()
+            }
             chatAdapter?.let {
                 it.addItems(data)
                 if (highlightedItem != null) {
@@ -1333,6 +1336,8 @@ class ChatFragment :
                     scrollToPosition(it.setItemHighlighted(highlightedItem), true)
                 }
             }
+        } else {
+            chatAdapter?.removeHighlight()
         }
     }
 
