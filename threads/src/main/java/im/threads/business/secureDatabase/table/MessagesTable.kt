@@ -223,6 +223,8 @@ class MessagesTable(
             return true
         }
         if (chatItem is ConsultPhrase) {
+            val item = getChatItemByCorrelationId(sqlHelper, chatItem.id) as? ConsultPhrase
+            chatItem.isRead = if (item?.isRead == true) true else chatItem.isRead
             insertOrUpdateMessage(sqlHelper, getConsultPhraseCV(chatItem))
             chatItem.fileDescription?.let {
                 isFileDownloaded(it)?.let { uri ->
