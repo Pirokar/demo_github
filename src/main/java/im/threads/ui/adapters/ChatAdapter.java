@@ -175,25 +175,6 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         chatMessagesOrderer = new ChatMessagesOrderer();
     }
 
-    private static int getUnreadCount(final List<ChatItem> list) {
-        int counter = 0;
-        for (final ChatItem ci : list) {
-            if (ci instanceof ConsultPhrase) {
-                final ConsultPhrase cp = ((ConsultPhrase) ci);
-                if (!cp.isRead()) {
-                    counter++;
-                }
-            }
-            if (ci instanceof Survey) {
-                final Survey survey = (Survey) ci;
-                if (!survey.isRead()) {
-                    counter++;
-                }
-            }
-        }
-        return counter;
-    }
-
     public void onResumeView() {
         sendingStatusObserver.startObserving();
     }
@@ -683,10 +664,6 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 }
             }
         }
-    }
-
-    public int getUnreadCount() {
-        return getUnreadCount(getList());
     }
 
     public boolean hasSchedule() {

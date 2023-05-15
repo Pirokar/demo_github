@@ -309,6 +309,18 @@ class ChatController private constructor() {
         updateServerItemsBySendingItems(serverItems, getSendingItems())
     }
 
+    fun getUnreadMessagesCount() = database.getUnreadMessagesCount()
+
+    fun setMessageAsRead(item: ChatItem?, async: Boolean = true) {
+        if (item is ConsultPhrase) {
+            if (async) {
+                coroutineScope.launch(Dispatchers.IO) { database.setMessageWasRead(item.id) }
+            } else {
+                database.setMessageWasRead(item.id)
+            }
+        }
+    }
+
     private fun getSendingItems(): ArrayList<UserPhrase> {
         return database.getSendingChatItems() as ArrayList<UserPhrase>
     }
