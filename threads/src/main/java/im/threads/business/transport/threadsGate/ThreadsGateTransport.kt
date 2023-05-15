@@ -268,7 +268,7 @@ class ThreadsGateTransport(
         val text = BaseConfig.instance.gson.toJson(
             SendMessageRequest(
                 correlationId,
-                SendMessageRequest.Data(deviceAddress, messageId, content, important)
+                SendMessageRequest.Data(deviceAddress, content, important)
             )
         )
         return sendMessageWithWebsocket(text)
