@@ -1,7 +1,6 @@
 package io.edna.threads.demo.appCode.business
 
 import android.content.Context
-import android.util.Log
 import io.edna.threads.demo.appCode.models.ServerConfig
 import org.json.JSONObject
 import java.io.BufferedReader
@@ -25,7 +24,6 @@ class ServersProvider(
                 stream.close()
             }
         }
-        Log.i("ServersContent", content.toString())
         val jsonArray = JSONObject(content.toString()).getJSONArray("servers")
         val servers = ArrayList<ServerConfig>(jsonArray.length())
         for (i in 0 until jsonArray.length()) {
