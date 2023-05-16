@@ -695,7 +695,7 @@ class ChatFragment :
                     if (itemCount - 1 - lastVisibleItemPosition > INVISIBLE_MESSAGES_COUNT) {
                         if (binding.scrollDownButtonContainer.visibility != View.VISIBLE) {
                             binding.scrollDownButtonContainer.visibility = View.VISIBLE
-                            showUnreadMessagesCount(chatAdapter?.unreadCount ?: 0)
+                            showUnreadMessagesCount(chatController.getUnreadMessagesCount())
                         }
                     } else {
                         binding.scrollDownButtonContainer.visibility = View.GONE
@@ -720,7 +720,7 @@ class ChatFragment :
                         binding.scrollDownButtonContainer.isNotVisible()
                     ) {
                         binding.scrollDownButtonContainer.visible()
-                        showUnreadMessagesCount(chatAdapter?.unreadCount ?: 0)
+                        showUnreadMessagesCount(chatController.getUnreadMessagesCount())
                     } else {
                         binding.scrollDownButtonContainer.visibility = View.GONE
                         recyclerView.post { setMessagesAsRead() }
@@ -733,7 +733,7 @@ class ChatFragment :
         })
         binding.scrollDownButtonContainer.setOnClickListener {
             showUnreadMessagesCount(0)
-            val unreadCount = chatAdapter?.unreadCount ?: 0
+            val unreadCount = chatController.getUnreadMessagesCount()
             if (unreadCount > 0) {
                 scrollToNewMessages()
             } else {
@@ -1326,6 +1326,9 @@ class ChatFragment :
                     }
                 }
             }
+            if(first == -1 && last == -1) {
+                chatAdapter?.removeHighlight()
+            }
             chatAdapter?.let {
                 it.addItems(data)
                 if (highlightedItem != null) {
@@ -1333,6 +1336,8 @@ class ChatFragment :
                     scrollToPosition(it.setItemHighlighted(highlightedItem), true)
                 }
             }
+        } else {
+            chatAdapter?.removeHighlight()
         }
     }
 
@@ -1559,7 +1564,10 @@ class ChatFragment :
                 < INVISIBLE_MESSAGES_COUNT
             )
         if (item is ConsultPhrase) {
-            item.isRead = isLastMessageVisible && isResumed && !isInMessageSearchMode
+            item.isRead = (isLastMessageVisible && isResumed && !isInMessageSearchMode)
+            if (item.isRead) {
+                chatController.setMessageAsRead(item)
+            }
             chatAdapter?.setAvatar(item.consultId, item.avatarPath)
         }
         if (needsAddMessage(item)) {
@@ -1567,7 +1575,7 @@ class ChatFragment :
             chatAdapter?.addItems(listOf(item))
             if (!isLastMessageVisible) {
                 binding.scrollDownButtonContainer.visibility = View.VISIBLE
-                showUnreadMessagesCount(chatAdapter?.unreadCount ?: 0)
+                showUnreadMessagesCount(chatController.getUnreadMessagesCount())
             }
             scrollDelayedOnNewMessageReceived(item is UserPhrase, isLastMessageVisible)
         } else if (needsModifyImage(item)) {
