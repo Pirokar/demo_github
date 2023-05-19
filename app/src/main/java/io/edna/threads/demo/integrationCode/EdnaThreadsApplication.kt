@@ -8,6 +8,9 @@ import im.threads.business.markdown.MarkdownConfig
 import im.threads.ui.ChatStyle
 import im.threads.ui.config.ConfigBuilder
 import im.threads.ui.core.ThreadsLib
+import im.threads.ui.newInterface.settings.ChatTheme
+import im.threads.ui.newInterface.settings.theme.ChatColors
+import im.threads.ui.newInterface.settings.theme.ChatImages
 import io.edna.threads.demo.BuildConfig
 import io.edna.threads.demo.R
 import io.edna.threads.demo.appCode.business.ServersProvider
@@ -30,6 +33,34 @@ class EdnaThreadsApplication : Application() {
 
         FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(!BuildConfig.DEBUG)
 
+        // Example of the new config
+
+        val colors = ChatColors(
+            main = R.color.alt_green,
+            chatBackground = R.color.alt_threads_attachments_background,
+            title = R.color.alt_black,
+            incomingText = R.color.alt_green,
+            incomingTimeText = R.color.alt_green,
+            outgoingText = R.color.alt_white,
+            incomingBubble = R.color.alt_white,
+            outgoingBubble = R.color.alt_green,
+            toolbarText = R.color.white_color
+        )
+        val images = ChatImages(
+            backBtn = R.drawable.alt_ic_arrow_back_24dp
+        )
+        val chatTheme = ChatTheme(this, colors, images).apply {
+            components.inputTextField = components.inputTextField.copy(
+                textColor = R.color.alt_blue,
+                hintColor = R.color.alt_blue_transparent
+            )
+            /*flows.chatFlow.navigationBar.backButton = IconButtonChatComponent(
+                this@ThreadsDemoApplication,
+                colors,
+                images
+            )[IconButtonEnum.REPLY]*/
+        }
+
         val loggerConfig = LoggerConfig.Builder(this)
             .logToFile()
             .dir(File(this.filesDir, "logs"))
@@ -40,6 +71,8 @@ class EdnaThreadsApplication : Application() {
         val configBuilder = ConfigBuilder(this)
             .surveyCompletionDelay(2000)
             .historyLoadingCount(50)
+            .applyLightTheme(chatTheme)
+            .applyChatStyle(getMainChatTheme())
             .isDebugLoggingEnabled(true)
             .showAttachmentsButton()
             .enableLogging(loggerConfig)
@@ -55,10 +88,6 @@ class EdnaThreadsApplication : Application() {
         }
 
         ThreadsLib.init(configBuilder)
-        ThreadsLib.getInstance().apply {
-            applyLightTheme(getLightChatTheme())
-            applyDarkTheme(getDarkChatTheme())
-        }
     }
 
     private fun getLightChatTheme() = getMainChatTheme().apply {
@@ -142,24 +171,10 @@ class EdnaThreadsApplication : Application() {
             R.color.dark_system_text,
             R.color.dark_system_text
         )
-        setDownloadButtonTintResId(im.threads.R.color.ecc_white)
-        setDownloadButtonBackgroundTintResId(R.color.dark_links)
-        setChatErrorScreenStyle(
-            null,
-            null,
-            R.color.white_color,
-            null,
-            null,
-            null,
-            null
-        )
     }
 
     private fun getMainChatTheme(): ChatStyle {
         val chatStyle = ChatStyle()
-            .setDefaultFontBold(LATO_BOLD_FONT_PATH)
-            .setDefaultFontLight(LATO_LIGHT_FONT_PATH)
-            .setDefaultFontRegular(LATO_REGULAR_FONT_PATH)
             .setScrollChatToEndIfUserTyping(false)
 
         val markdownConfig = MarkdownConfig()
@@ -190,10 +205,6 @@ class EdnaThreadsApplication : Application() {
                 R.dimen.alt_outgoingImageRightBorderSize,
                 R.dimen.alt_outgoingImageBottomBorderSize
             )
-            .setIncomingImageMask(R.drawable.alt_thread_incoming_image_mask)
-            .setOutgoingImageMask(R.drawable.alt_thread_outgoing_image_mask)
-            .setOutgoingBubbleMask(R.drawable.alt_thread_outgoing_bubble)
-            .setIncomingBubbleMask(R.drawable.alt_thread_incoming_bubble)
 
         return chatStyle
     }

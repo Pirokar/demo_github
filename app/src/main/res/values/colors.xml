@@ -52,4 +52,11 @@
     <color name="dark_links">#0000FF</color>
     <color name="dark_chat_background">#505050</color>
     <color name="dark_system_text">#f2f2f7</color>
+
+    <color name="alt_threads_attachments_background">@color/ecc_blue_grey_607d8b</color>
+    <color name="alt_black">#000000</color>
+    <color name="alt_white">#ffffff</color>
+    <color name="alt_green">#83B144</color>
+    <color name="alt_blue">#3299de</color>
+    <color name="alt_blue_transparent">#303299de</color>
 </resources>
