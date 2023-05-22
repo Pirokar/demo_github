@@ -1560,8 +1560,7 @@ class ChatFragment :
             return
         }
         val isLastMessageVisible = (
-            chatAdapter!!.itemCount - 1 - layoutManager.findLastVisibleItemPosition()
-                < INVISIBLE_MESSAGES_COUNT
+            chatAdapter!!.itemCount - 1 - layoutManager.findLastVisibleItemPosition() < INVISIBLE_MESSAGES_COUNT
             )
         if (item is ConsultPhrase) {
             item.isRead = (isLastMessageVisible && isResumed && !isInMessageSearchMode)
@@ -2332,6 +2331,8 @@ class ChatFragment :
     fun showBalloon(message: String?) {
         show(requireContext(), message!!)
     }
+
+    internal fun getDisplayedMessagesCount() = chatAdapter?.itemCount ?: 0
 
     override fun acceptConvertedFile(convertedFile: File) {
         addVoiceMessagePreview(convertedFile)

@@ -397,7 +397,7 @@ class ChatController private constructor() {
     }
 
     val isNeedToShowWelcome: Boolean
-        get() = database.getMessagesCount() == 0
+        get() = database.getMessagesCount() == 0 && fragment?.getDisplayedMessagesCount() == 0
 
     val stateOfConsult: Int
         get() = if (consultWriter.isSearchingConsult) {
@@ -603,24 +603,22 @@ class ChatController private constructor() {
                                 BaseConfig.instance.transport.markMessagesAsRead(uuidList)
                             }
                         }
-                        Pair(response?.consultInfo, serverItems.size)
+                        Pair(response?.consultInfo, serverItems)
                     }
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                            { pair: Pair<ConsultInfo?, Int?> ->
+                            { pair: Pair<ConsultInfo?, List<ChatItem>> ->
                                 isDownloadingMessages = false
                                 if (applyUiChanges) {
-                                    val serverCount = if (pair.second == null) 0 else pair.second!!
-                                    val items =
-                                        setLastAvatars(database.getChatItems(0, serverCount))
+                                    val (consultInfo, serverItems) = pair
+                                    val items = setLastAvatars(serverItems)
                                     if (fragment != null) {
                                         fragment?.addChatItems(items)
                                         handleQuickReplies(items)
                                         handleInputAvailability(items)
-                                        val info = pair.first
-                                        if (info != null) {
-                                            fragment?.setStateConsultConnected(info)
+                                        if (consultInfo != null) {
+                                            fragment?.setStateConsultConnected(consultInfo)
                                         }
                                         fragment?.hideProgressBar()
                                     }
