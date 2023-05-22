@@ -107,6 +107,8 @@ class UserPhraseViewHolder(
     private val loader: ImageView = itemView.findViewById(R.id.loader)
     private val rightTextHeader: TextView = itemView.findViewById(R.id.to)
     private val rightTextTimeStamp: TextView = itemView.findViewById(R.id.sendAt)
+    private val fileImageButton: CircularProgressButton = itemView.findViewById(R.id.buttonDownload)
+    override val voiceMessage: ViewGroup = itemView.findViewById(R.id.voiceMessage)
 
     private val bubbleLayout: ViewGroup = itemView.findViewById<ViewGroup>(R.id.bubble).apply {
         background =
@@ -125,11 +127,6 @@ class UserPhraseViewHolder(
             setLinkTextColor(getColorInt(style.outgoingMessageLinkColor))
         }
 
-    private val fileImageButton: CircularProgressButton =
-        itemView.findViewById<CircularProgressButton>(R.id.buttonDownload).apply {
-            setBackgroundColorResId(style.outgoingMessageTextColor)
-        }
-
     override val buttonPlayPause: ImageView =
         itemView.findViewById<ImageView>(R.id.voiceMessageUserButtonPlayPause).apply {
             drawable.colorFilter =
@@ -138,8 +135,6 @@ class UserPhraseViewHolder(
                     BlendModeCompat.SRC_ATOP
                 )
         }
-
-    override val voiceMessage: ViewGroup = itemView.findViewById(R.id.voiceMessage)
 
     private lateinit var timeStampTextView: BubbleTimeTextView
 

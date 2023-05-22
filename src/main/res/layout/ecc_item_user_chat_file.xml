@@ -35,10 +35,6 @@
                 android:id="@+id/buttonDownload"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/ecc_ic_file_outline_24dp"
-                app:completed_drawable="@drawable/ecc_ic_file_outline_24dp"
-                app:in_progress_label="@drawable/ecc_ic_clear_36dp"
-                app:start_download_label="@drawable/ecc_ic_vertical_align_bottom_18dp"
                 android:visibility="invisible"/>
 
             <ImageView

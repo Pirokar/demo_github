@@ -278,6 +278,8 @@ public final class ChatStyle implements Serializable {
     @ColorRes
     public int downloadButtonTintResId = R.color.ecc_green_83b144;
     @ColorRes
+    public int downloadButtonBackgroundTintResId = R.color.ecc_white;
+    @ColorRes
     public int loaderTintResId = R.color.ecc_green_83b144;
     @DrawableRes
     public int startDownloadIconResId = R.drawable.ecc_ic_vertical_align_bottom_18dp;
@@ -972,6 +974,11 @@ public final class ChatStyle implements Serializable {
 
     public ChatStyle setDownloadButtonTintResId(@ColorRes final int downloadButtonTintResId) {
         this.downloadButtonTintResId = downloadButtonTintResId;
+        return this;
+    }
+
+    public ChatStyle setDownloadButtonBackgroundTintResId(@ColorRes final int downloadButtonBackgroundTintResId) {
+        this.downloadButtonBackgroundTintResId = downloadButtonBackgroundTintResId;
         return this;
     }
 
