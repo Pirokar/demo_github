@@ -15,7 +15,8 @@ data class SocketClientSettings(
     var resendPingIntervalMillis: Long = 10_000,
     var connectTimeoutMillis: Long = 10_000,
     var readTimeoutMillis: Long = 10_000,
-    var writeTimeoutMillis: Long = 10_000
+    var writeTimeoutMillis: Long = 10_000,
+    var sendIntervalMillis: Long = 40_000
 )
 
 data class HttpClientSettings(
