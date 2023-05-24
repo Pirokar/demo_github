@@ -140,7 +140,8 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private final PublishSubject<Long> messageErrorProcessor;
     private final ChatMessagesOrderer chatMessagesOrderer;
     private final SendingStatusObserver sendingStatusObserver = new SendingStatusObserver(
-            new WeakReference<>(this), 40000L
+            new WeakReference<>(this),
+            Config.getInstance().getRequestConfig().getSocketClientSettings().getResendIntervalMillis()
     );
     @NonNull
     PublishSubject<ChatItem> highlightingStream = PublishSubject.create();
