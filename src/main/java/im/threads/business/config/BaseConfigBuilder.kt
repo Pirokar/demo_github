@@ -23,7 +23,6 @@ open class BaseConfigBuilder(var context: Context) {
     protected var loggerConfig: LoggerConfig? = null
     protected var requestConfig = RequestConfig()
     protected var trustedSSLCertificates = emptyList<Int>()
-//    protected var isSslPinningDisabled = false
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     protected var notificationImportance = NotificationManager.IMPORTANCE_DEFAULT
@@ -123,7 +122,6 @@ open class BaseConfigBuilder(var context: Context) {
             surveyCompletionDelay,
             requestConfig,
             trustedSSLCertificates.isNullOrEmpty(),
-//            isSslPinningDisabled,
             notificationLevel,
             trustedSSLCertificates
         )
