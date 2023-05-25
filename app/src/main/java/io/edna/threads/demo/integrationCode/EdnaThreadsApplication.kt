@@ -38,8 +38,8 @@ class EdnaThreadsApplication : Application() {
             this,
             colors = ChatColors(
                 main = R.color.alt_green,
-                consultSearchingProgress = R.color.light_toolbar,
-                bodyIconsTint = R.color.light_toolbar,
+                consultSearchingProgress = R.color.alt_green,
+                bodyIconsTint = R.color.alt_green,
                 title = R.color.alt_threads_chat_toolbar_text,
                 incomingText = R.color.alt_green,
                 incomingTimeText = R.color.alt_green,
@@ -47,17 +47,19 @@ class EdnaThreadsApplication : Application() {
                 incomingBubble = R.color.alt_white,
                 outgoingBubble = R.color.alt_green,
                 toolbarText = R.color.white_color,
-                voiceBtnBackgroundColor = R.color.light_toolbar,
+                voiceBtnBackgroundColor = R.color.alt_green,
                 outgoingImageTimeBackgroundColor = R.color.light_outgoing_time_text,
-                messageSendingStatus = R.color.light_icons,
-                messageSentStatus = R.color.light_icons,
-                messageDeliveredStatus = R.color.light_icons,
-                messageReadStatus = R.color.light_icons,
-                messageFailedStatus = R.color.light_icons,
+                messageSendingStatus = R.color.alt_white,
+                messageSentStatus = R.color.alt_white,
+                messageDeliveredStatus = R.color.alt_white,
+                messageReadStatus = R.color.alt_white,
+                messageFailedStatus = R.color.alt_white,
                 messageHighlightingColor = R.color.light_highlighting,
                 incomingLink = R.color.light_links,
                 outgoingLink = R.color.light_links,
-                statusBar = R.color.light_statusbar
+                toolbar = R.color.alt_green,
+                statusBar = R.color.light_statusbar,
+                menuItem = R.color.alt_green
             ),
             images = ChatImages(
                 backBtn = R.drawable.alt_ic_arrow_back_24dp,
@@ -104,7 +106,7 @@ class EdnaThreadsApplication : Application() {
                 statusBar = R.color.alt_threads_chat_status_bar,
                 toolbarContextMenu = R.color.alt_threads_chat_context_menu,
                 menuItem = R.color.alt_threads_chat_toolbar_menu_item_black,
-                toolbarHintText = R.color.alt_threads_chat_toolbar_hint,
+                searchHintColor = R.color.alt_threads_chat_toolbar_hint,
                 systemMessage = R.color.dark_system_text
             ),
             images = ChatImages(
