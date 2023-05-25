@@ -74,7 +74,6 @@ import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.ConsultRole
 import im.threads.business.models.ConsultRole.Companion.consultRoleFromString
 import im.threads.business.models.ConsultTyping
-import im.threads.business.models.DateRow
 import im.threads.business.models.FileDescription
 import im.threads.business.models.InputFieldEnableModel
 import im.threads.business.models.MessageStatus
@@ -726,6 +725,7 @@ class ChatFragment :
                         recyclerView.post { setMessagesAsRead() }
                     }
                     if (firstVisibleItemPosition == 0) {
+                        binding.swipeRefresh.isRefreshing = true
                         chatController.loadHistory(false)
                     }
                 }
@@ -875,7 +875,7 @@ class ChatFragment :
     private fun afterRefresh(result: List<ChatItem>) {
         chatAdapter?.let {
             val itemsBefore = it.itemCount
-            chatAdapter?.addItems(result)
+            chatAdapter?.addItems(result, true)
             scrollToPosition(it.itemCount - itemsBefore, true)
         }
 
@@ -1330,7 +1330,7 @@ class ChatFragment :
                 chatAdapter?.removeHighlight()
             }
             chatAdapter?.let {
-                it.addItems(data)
+                it.addItems(data, true)
                 if (highlightedItem != null) {
                     chatAdapter?.removeHighlight()
                     scrollToPosition(it.setItemHighlighted(highlightedItem), true)
@@ -1571,7 +1571,7 @@ class ChatFragment :
         }
         if (needsAddMessage(item)) {
             welcomeScreenVisibility(false)
-            chatAdapter?.addItems(listOf(item))
+            chatAdapter?.addItems(listOf(item), true)
             if (!isLastMessageVisible) {
                 binding.scrollDownButtonContainer.visibility = View.VISIBLE
                 showUnreadMessagesCount(chatController.getUnreadMessagesCount())
@@ -1659,46 +1659,40 @@ class ChatFragment :
         }
     }
 
-    fun addHistoryChatItems(list: List<ChatItem?>) {
-        if (list.filterNotNull().isEmpty()) {
-            return
-        }
-        val layoutManager = binding.recycler.layoutManager as LinearLayoutManager?
-        var firstVisibleItemPosition = layoutManager!!.findFirstVisibleItemPosition()
-        chatAdapter?.let {
-            if (it.list[firstVisibleItemPosition] is DateRow) {
-                firstVisibleItemPosition += 1
-            }
-            val timeStamp = it.list[firstVisibleItemPosition].timeStamp
-            chatAdapter!!.addItems(list)
-            val newPosition = it.getPositionByTimeStamp(timeStamp)
-            scrollToPosition(newPosition, false)
-        }
-    }
-
     fun addChatItems(list: List<ChatItem?>) {
         if (list.isEmpty()) {
             return
         }
         chatAdapter?.let { chatAdapter ->
             val oldAdapterSize = chatAdapter.list.size
-            welcomeScreenVisibility(false)
-            chatAdapter.addItems(list)
+            val isBottomItemsVisible = chatAdapter.itemCount - 1 - lastVisibleItemPosition < INVISIBLE_MESSAGES_COUNT
             val layoutManager = binding.recycler.layoutManager as LinearLayoutManager?
             if (layoutManager == null || list.size == 1 && list[0] is ConsultTyping || isInMessageSearchMode) {
                 return
             }
+            welcomeScreenVisibility(false)
+            val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
+            val lastVisibleItemTimestamp = if (lastVisibleItemPosition >= 0) {
+                chatAdapter.list[lastVisibleItemPosition].timeStamp
+            } else {
+                null
+            }
+            chatAdapter.addItems(list, isBottomItemsVisible)
             val newAdapterSize = chatAdapter.list.size
             if (oldAdapterSize == 0) {
                 scrollToPosition(chatAdapter.itemCount - 1, false)
             } else if (afterResume) {
-                if (!isStartSecondLevelScreen() && newAdapterSize != oldAdapterSize) {
+                if (!isStartSecondLevelScreen() && isBottomItemsVisible && newAdapterSize != oldAdapterSize) {
                     scrollToPosition(chatAdapter.itemCount - 1, false)
+                } else if (lastVisibleItemTimestamp != null) {
+                    layoutManager.scrollToPosition(chatAdapter.getPositionByTimeStamp(lastVisibleItemTimestamp))
                 }
                 afterResume = false
-            } else if (newAdapterSize > oldAdapterSize) {
+            } else if (isBottomItemsVisible && newAdapterSize > oldAdapterSize) {
                 handler.postDelayed({ scrollToPosition(chatAdapter.itemCount - 1, false) }, 100)
                 afterResume = false
+            } else if (lastVisibleItemTimestamp != null) {
+                layoutManager.scrollToPosition(chatAdapter.getPositionByTimeStamp(lastVisibleItemTimestamp))
             }
             resumeAfterSecondLevelScreen = false
             checkSearch()
@@ -2326,6 +2320,7 @@ class ChatFragment :
     fun hideProgressBar() {
         welcomeScreenVisibility(chatController.isNeedToShowWelcome)
         binding.flEmpty.visibility = View.GONE
+        binding.swipeRefresh.isRefreshing = false
     }
 
     fun showBalloon(message: String?) {
@@ -2566,7 +2561,7 @@ class ChatFragment :
                 chatController.downloadMessagesTillEnd()
                     .observeOn(AndroidSchedulers.mainThread())
                     .map<List<ChatItem?>?> { list: List<ChatItem?>? ->
-                        if (list != null) chatAdapter?.addItems(list)
+                        if (list != null) chatAdapter?.addItems(list, true)
                         val itemHighlightedIndex = chatAdapter?.setItemHighlighted(quote.uuid) ?: -1
                         if (itemHighlightedIndex != -1) scrollToPosition(itemHighlightedIndex, true)
                         list
@@ -2577,7 +2572,7 @@ class ChatFragment :
                     .subscribe(
                         { list: List<ChatItem?>? ->
                             chatAdapter?.removeHighlight()
-                            if (list != null) chatAdapter!!.addItems(list)
+                            if (list != null) chatAdapter?.addItems(list, true)
                         }
                     ) { obj: Throwable -> obj.message }
             )
