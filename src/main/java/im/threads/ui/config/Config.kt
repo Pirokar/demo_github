@@ -36,15 +36,14 @@ class Config(
     historyLoadingCount: Int,
     surveyCompletionDelay: Int,
     requestConfig: RequestConfig,
-    isSSLPinningDisabled: Boolean,
-    certificateRawResIds: List<Int>?,
+    trustedSSLCertificate: List<Int>?,
     notificationImportance: Int,
     private val isAttachmentsEnabled: Boolean?
 ) : BaseConfig(
     context, serverBaseUrl, datastoreUrl, threadsGateUrl, threadsGateProviderUid,
     isNewChatCenterApi, loggerConfig, unreadMessagesCountListener, networkInterceptor, isDebugLoggingEnabled,
-    historyLoadingCount, surveyCompletionDelay, requestConfig, isSSLPinningDisabled, notificationImportance,
-    certificateRawResIds
+    historyLoadingCount, surveyCompletionDelay, requestConfig, trustedSSLCertificate.isNullOrEmpty(), notificationImportance,
+    trustedSSLCertificate
 ) {
     val chatStyle: ChatStyle
         get() {

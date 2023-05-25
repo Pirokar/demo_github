@@ -178,15 +178,23 @@ class ThreadsLib(context: Context) : ThreadsLibBase(context) {
          * должен быть не null также и параметр threadsGateProviderUid
          * @param threadsGateProviderUid uid для вебсокета. Если не null,
          * должен быть не null также и параметр threadsGateUrl
+         * @param trustedSSLCertificates список id сертификатов
          */
         @JvmStatic
         fun changeServerSettings(
             baseUrl: String? = null,
             datastoreUrl: String? = null,
             threadsGateUrl: String? = null,
-            threadsGateProviderUid: String? = null
+            threadsGateProviderUid: String? = null,
+            trustedSSLCertificates: List<Int>?
         ) {
-            ThreadsLibBase.changeServerSettings(baseUrl, datastoreUrl, threadsGateUrl, threadsGateProviderUid)
+            ThreadsLibBase.changeServerSettings(
+                baseUrl,
+                datastoreUrl,
+                threadsGateUrl,
+                threadsGateProviderUid,
+                trustedSSLCertificates
+            )
         }
 
         @JvmStatic

@@ -33,14 +33,14 @@ fun getX509TrustManager(trustManagers: Array<TrustManager>): X509TrustManager =
 
 fun createTlsPinningKeyStore(
     resources: Resources,
-    certificateRawResIds: List<Int>
+    trustedSSLCertificates: List<Int>
 ): KeyStore {
     val certificateFactory = CertificateFactory.getInstance(CERTIFICATE_FORMAT)
     val keyStore = KeyStore.getInstance(KeyStore.getDefaultType())
     keyStore.load(null, null)
 
-    for (certificateRawResId in certificateRawResIds) {
-        loadCertificateIntoKeyStore(certificateFactory, keyStore, resources, certificateRawResId)
+    for (trustedSSLCertificate in trustedSSLCertificates) {
+        loadCertificateIntoKeyStore(certificateFactory, keyStore, resources, trustedSSLCertificate)
     }
     return keyStore
 }

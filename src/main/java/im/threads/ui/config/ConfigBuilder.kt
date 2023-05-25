@@ -85,8 +85,8 @@ class ConfigBuilder(context: Context) : BaseConfigBuilder(context) {
         return this
     }
 
-    override fun certificateRawResIds(certificateRawResIds: List<Int>): ConfigBuilder {
-        super.certificateRawResIds(certificateRawResIds)
+    override fun trustedSSLCertificates(trustedSSLCertificates: List<Int>): ConfigBuilder {
+        super.trustedSSLCertificates(trustedSSLCertificates)
         return this
     }
 
@@ -152,8 +152,7 @@ class ConfigBuilder(context: Context) : BaseConfigBuilder(context) {
             historyLoadingCount,
             surveyCompletionDelay,
             requestConfig,
-            isSslPinningDisabled,
-            certificateRawResIds,
+            trustedSSLCertificates,
             notificationLevel,
             isAttachmentsEnabled
         )

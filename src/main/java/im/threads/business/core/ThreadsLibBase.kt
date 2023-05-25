@@ -237,20 +237,24 @@ open class ThreadsLibBase protected constructor(context: Context) {
          * должен быть не null также и параметр threadsGateProviderUid
          * @param threadsGateProviderUid uid для вебсокета. Если не null,
          * должен быть не null также и параметр threadsGateUrl
+         * @param trustedSSLCertificates список id сертификатов
          */
         @JvmStatic
         fun changeServerSettings(
             baseUrl: String? = null,
             datastoreUrl: String? = null,
             threadsGateUrl: String? = null,
-            threadsGateProviderUid: String? = null
+            threadsGateProviderUid: String? = null,
+            trustedSSLCertificates: List<Int>?
         ) {
             try {
                 if (baseUrl != null) BaseConfig.instance.serverBaseUrl = baseUrl
                 if (datastoreUrl != null) BaseConfig.instance.datastoreUrl = datastoreUrl
                 if (threadsGateUrl != null && threadsGateProviderUid != null) {
-                    BaseConfig.instance.updateTransport(threadsGateUrl, threadsGateProviderUid)
+                    BaseConfig.instance.updateTransport(threadsGateUrl, threadsGateProviderUid, trustedSSLCertificates)
                 }
+                BackendApi.init(BaseConfig.instance)
+                DatastoreApi.init(BaseConfig.instance)
             } catch (exc: Exception) {
                 coroutineScope.launch {
                     LoggerEdna.error(exc)

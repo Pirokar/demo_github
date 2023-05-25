@@ -46,10 +46,10 @@ open class BaseConfig(
     val requestConfig: RequestConfig,
     val isSSLPinningDisabled: Boolean,
     val notificationImportance: Int,
-    certificateRawResIds: List<Int>?
+    var trustedSSLCertificates: List<Int>?
 ) {
     @JvmField val context: Context
-    val sslSocketFactoryConfig: SslSocketFactoryConfig?
+    var sslSocketFactoryConfig: SslSocketFactoryConfig?
 
     @JvmField
     var transport: Transport
@@ -72,7 +72,7 @@ open class BaseConfig(
     init {
         this.context = context.applicationContext
         newChatCenterApi = getIsNewChatCenterApi(isNewChatCenterApi)
-        sslSocketFactoryConfig = getSslSocketFactoryConfig(certificateRawResIds)
+        sslSocketFactoryConfig = getSslSocketFactoryConfig(trustedSSLCertificates)
         transport = getTransport(threadsGateUrl, threadsGateProviderUid, requestConfig.socketClientSettings)
         this.serverBaseUrl = getServerBaseUrl(serverBaseUrl)
         this.datastoreUrl = getDatastoreUrl(datastoreUrl)
@@ -82,15 +82,25 @@ open class BaseConfig(
         )
     }
 
-    internal fun updateTransport(threadsGateUrl: String, threadsGateProviderUid: String) {
+    internal fun updateTransport(
+        threadsGateUrl: String,
+        threadsGateProviderUid: String,
+        trustedSSLCertificates: List<Int>?
+    ) {
+        this.trustedSSLCertificates = trustedSSLCertificates
+        sslSocketFactoryConfig = getSslSocketFactoryConfig(trustedSSLCertificates)
+        imageLoaderOkHttpProvider.createOkHttpClient(
+            requestConfig.picassoHttpClientSettings,
+            sslSocketFactoryConfig
+        )
         transport = getTransport(threadsGateUrl, threadsGateProviderUid, requestConfig.socketClientSettings)
     }
 
-    private fun getSslSocketFactoryConfig(certificateRawResIds: List<Int>?): SslSocketFactoryConfig? {
-        if (certificateRawResIds == null || certificateRawResIds.isEmpty()) return null
+    private fun getSslSocketFactoryConfig(trustedSSLCertificates: List<Int>?): SslSocketFactoryConfig? {
+        if (trustedSSLCertificates == null || trustedSSLCertificates.isEmpty()) return null
         val keyStore = createTlsPinningKeyStore(
             context.resources,
-            certificateRawResIds
+            trustedSSLCertificates
         )
 
         @SuppressLint("CustomX509TrustManager", "TrustAllX509TrustManager")
