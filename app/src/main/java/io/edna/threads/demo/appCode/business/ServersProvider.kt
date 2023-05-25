@@ -1,5 +1,6 @@
 package io.edna.threads.demo.appCode.business
 
+import android.annotation.SuppressLint
 import android.content.Context
 import io.edna.threads.demo.appCode.models.ServerConfig
 import org.json.JSONObject
@@ -10,6 +11,7 @@ class ServersProvider(
     private val context: Context,
     private val preferences: PreferencesProvider
 ) {
+    @SuppressLint("DiscouragedApi")
     fun readServersFromFile(): ArrayList<ServerConfig> {
         val inputStream: InputStream = context.assets.open("servers_config.json")
         val content = StringBuilder()
@@ -35,7 +37,19 @@ class ServersProvider(
                     datastoreUrl = jsonObj.getString("datastoreUrl"),
                     serverBaseUrl = jsonObj.getString("serverBaseUrl"),
                     threadsGateUrl = jsonObj.getString("threadsGateUrl"),
-                    isSSLPinningDisabled = jsonObj.getBoolean("isSSLPinningDisabled")
+                    trustedSSLCertificates = if (jsonObj.has("trustedSSLCertificates")) {
+                        val certificates = ArrayList<Int>()
+                        for (j in 0 until jsonObj.getJSONArray("trustedSSLCertificates").length()) {
+                            val certName = jsonObj.getJSONArray("trustedSSLCertificates").get(j).toString()
+                            val certId: Int = context.resources.getIdentifier(certName, "raw", context.packageName)
+                            if (certId > 0) {
+                                certificates.add(certId)
+                            }
+                        }
+                        certificates
+                    } else {
+                        null
+                    }
                 )
             )
         }

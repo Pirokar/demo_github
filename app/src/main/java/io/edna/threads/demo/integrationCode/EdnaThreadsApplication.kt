@@ -39,8 +39,6 @@ class EdnaThreadsApplication : Application() {
             .isDebugLoggingEnabled(true)
             .showAttachmentsButton()
             .enableLogging(loggerConfig)
-            .certificateRawResIds(listOf(R.raw.edna))
-            .disableSSLPinning() as ConfigBuilder
 
         serversProvider.getSelectedServer()?.let { server ->
             configBuilder.serverBaseUrl(server.serverBaseUrl)
