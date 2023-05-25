@@ -134,7 +134,7 @@ class ChatController private constructor() {
     private var seeker = ChatMessageSeeker()
     private var lastFancySearchDate: Long = 0
     private var lastSearchQuery: String? = ""
-    private var isAllMessagesDownloaded = false
+    internal var isAllMessagesDownloaded = false
     private var isDownloadingMessages = false
     var firstUnreadUuidId: String? = null
         private set
@@ -573,6 +573,7 @@ class ChatController private constructor() {
 
     fun loadHistory(fromBeginning: Boolean = true, applyUiChanges: Boolean = true) {
         if (isAllMessagesDownloaded) {
+            fragment?.hideProgressBar()
             return
         }
         synchronized(this) {

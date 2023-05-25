@@ -170,7 +170,7 @@ class ChatFragment :
     private val handler = Handler(Looper.getMainLooper())
     private val fileNameDateFormat = SimpleDateFormat("dd.MM.yyyy.HH:mm:ss.S", Locale.getDefault())
     private val inputTextObservable = ObservableField("")
-    val fileDescription = ObservableField(Optional.empty<FileDescription?>())
+    internal val fileDescription = ObservableField(Optional.empty<FileDescription?>())
     private val mediaMetadataRetriever = MediaMetadataRetriever()
     private val audioConverter = ChatCenterAudioConverter()
     private val chatUpdateProcessor: ChatUpdateProcessor by inject()
@@ -330,7 +330,7 @@ class ChatFragment :
     fun isStartSecondLevelScreen(): Boolean {
         return resumeAfterSecondLevelScreen
     }
-    val lastVisibleItemPosition: Int
+    internal val lastVisibleItemPosition: Int
         get() = if (isAdded) {
             mLayoutManager?.findLastVisibleItemPosition() ?: RecyclerView.NO_POSITION
         } else {
@@ -724,7 +724,7 @@ class ChatFragment :
                         binding.scrollDownButtonContainer.visibility = View.GONE
                         recyclerView.post { setMessagesAsRead() }
                     }
-                    if (firstVisibleItemPosition == 0) {
+                    if (firstVisibleItemPosition == 0 && !chatController.isAllMessagesDownloaded) {
                         binding.swipeRefresh.isRefreshing = true
                         chatController.loadHistory(false)
                     }
