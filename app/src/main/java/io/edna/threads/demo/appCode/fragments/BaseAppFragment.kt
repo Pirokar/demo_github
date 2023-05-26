@@ -71,9 +71,9 @@ abstract class BaseAppFragment<T : ViewBinding>(
             }
 
             if (context.isDarkThemeOn()) {
-                toolbar?.setBackgroundColor(ContextCompat.getColor(context, R.color.dark_toolbar))
+                toolbar?.setBackgroundColor(ContextCompat.getColor(context, R.color.dark_main))
             } else {
-                toolbar?.setBackgroundColor(ContextCompat.getColor(context, R.color.light_toolbar))
+                toolbar?.setBackgroundColor(ContextCompat.getColor(context, R.color.light_main))
             }
         }
     }
