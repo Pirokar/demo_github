@@ -29,9 +29,5 @@ class InitialisationConstants {
         fun isChatReady(): Boolean {
             return chatState > ChatState.LOGGED_OUT && isDeviceRegistered
         }
-
-        fun isChatReadyAndHistoryLoaded(): Boolean {
-            return isChatReady() && isHistoryLoaded
-        }
     }
 }

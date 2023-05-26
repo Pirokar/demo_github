@@ -39,20 +39,27 @@ class ThreadsLib(context: Context) : ThreadsLibBase(context) {
      * @param forceRegistration открывает сокет, отправляет данные о регистрации, закрывает сокет
      * @param callback вызывается, когда пользователь инициализирован и загружена его история
      */
-    public override fun initUser(userInfoBuilder: UserInfoBuilder, forceRegistration: Boolean, callback: () -> Unit) {
+    public override fun initUser(
+        userInfoBuilder: UserInfoBuilder,
+        forceRegistration: Boolean,
+        callback: (isAuthorized: Boolean) -> Unit
+    ) {
         super.initUser(userInfoBuilder, forceRegistration, callback)
         coroutineScope.launch {
+            val waitingStartTime = System.currentTimeMillis()
             val timeToDelay = 100L
             while (!InitialisationConstants.isChatReady()) {
+                if (isInitUserTimeout(waitingStartTime, callback)) return@launch
                 delay(timeToDelay)
             }
             ChatController.getInstance().loadHistory(applyUiChanges = false)
-            while (!InitialisationConstants.isChatReadyAndHistoryLoaded()) {
+            while (!InitialisationConstants.isHistoryLoaded) {
+                if (isInitUserTimeout(waitingStartTime, callback)) return@launch
                 delay(timeToDelay)
             }
             withContext(Dispatchers.Main) {
                 LoggerEdna.info("User is initialized")
-                callback()
+                callback(true)
             }
         }
     }
@@ -63,7 +70,7 @@ class ThreadsLib(context: Context) : ThreadsLibBase(context) {
      * @param userInfoBuilder данные о пользователе
      * @param forceRegistration открывает сокет, отправляет данные о регистрации, закрывает сокет
      */
-    public fun initUser(userInfoBuilder: UserInfoBuilder, forceRegistration: Boolean) {
+    fun initUser(userInfoBuilder: UserInfoBuilder, forceRegistration: Boolean) {
         super.initUser(userInfoBuilder, forceRegistration) {}
         ChatController.getInstance().loadHistory(applyUiChanges = false)
     }
@@ -199,6 +206,20 @@ class ThreadsLib(context: Context) : ThreadsLibBase(context) {
         private fun createLibInstance(context: Context) {
             check(libInstance == null) { "ThreadsLib has already been initialized" }
             setLibraryInstance(ThreadsLib(context))
+        }
+
+        private fun isInitUserTimeout(waitingStartTime: Long, callback: (isAuthorized: Boolean) -> Unit): Boolean {
+            val timeout = try {
+                BaseConfig.instance.requestConfig.socketClientSettings.connectTimeoutMillis
+            } catch (exc: Exception) {
+                10000L
+            }
+            return if (System.currentTimeMillis() - waitingStartTime > timeout) {
+                callback(false)
+                true
+            } else {
+                false
+            }
         }
     }
 }
