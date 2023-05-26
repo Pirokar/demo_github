@@ -343,13 +343,13 @@ class ChatController private constructor() {
         serverItems.addAll(sendingItems)
     }
 
-    fun requestItems(currentItemsCount: Int, fromBeginning: Boolean): Observable<List<ChatItem>>? {
+    fun requestItems(itemsCountToGet: Int): Observable<List<ChatItem>>? {
         return Observable
             .fromCallable {
                 if (instance?.fragment != null && ThreadsLibBase.getInstance().isUserInitialized) {
                     val count = BaseConfig.instance.historyLoadingCount
                     try {
-                        val response = historyLoader.getHistorySync(null, fromBeginning)
+                        val response = historyLoader.getHistorySync(itemsCountToGet, false)
                         var serverItems = HistoryParser.getChatItems(response)
                         serverItems = addLocalUserMessages(serverItems)
                         updateDoubleItems(serverItems as ArrayList<ChatItem>)
@@ -362,7 +362,7 @@ class ChatController private constructor() {
                         error(ThreadsApi.REST_TAG, "Requesting history items error", e)
                         return@fromCallable setLastAvatars(
                             database.getChatItems(
-                                currentItemsCount,
+                                itemsCountToGet,
                                 count
                             )
                         )

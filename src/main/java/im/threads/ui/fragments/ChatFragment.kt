@@ -862,7 +862,7 @@ class ChatFragment :
     }
 
     private fun onRefresh() {
-        val disposable = chatController.requestItems(BaseConfig.instance.historyLoadingCount, true)
+        val disposable = chatController.requestItems(BaseConfig.instance.historyLoadingCount)
             ?.delay(500, TimeUnit.MILLISECONDS)
             ?.observeOn(AndroidSchedulers.mainThread())
             ?.subscribe({ result: List<ChatItem> -> afterRefresh(result) }) { onError: Throwable? -> error("onRefresh ", onError) }
