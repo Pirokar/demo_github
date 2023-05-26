@@ -609,6 +609,7 @@ class ChatController private constructor() {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                             { pair: Pair<ConsultInfo?, List<ChatItem>> ->
+                                InitialisationConstants.isHistoryLoaded = true
                                 isDownloadingMessages = false
                                 if (applyUiChanges) {
                                     val (consultInfo, serverItems) = pair
