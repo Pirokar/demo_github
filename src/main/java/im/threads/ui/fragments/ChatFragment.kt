@@ -385,6 +385,8 @@ class ChatFragment :
         binding.recycler.adapter = chatAdapter
         binding.searchDownIb.alpha = DISABLED_ALPHA
         binding.searchUpIb.alpha = DISABLED_ALPHA
+        binding.searchDownIb.isEnabled = false
+        binding.searchUpIb.isEnabled = false
     }
 
     private fun initInputLayout(activity: Activity) {
@@ -1274,6 +1276,8 @@ class ChatFragment :
             chatAdapter?.removeHighlight()
             binding.searchUpIb.alpha = DISABLED_ALPHA
             binding.searchDownIb.alpha = DISABLED_ALPHA
+            binding.searchDownIb.isEnabled = false
+            binding.searchUpIb.isEnabled = false
             return
         }
         onSearch(request, forward)
@@ -1313,14 +1317,18 @@ class ChatFragment :
                         // для поиска - если можно перемещаться, подсвечиваем
                         if (first != -1 && i > first) {
                             binding.searchUpIb.alpha = ENABLED_ALPHA
+                            binding.searchUpIb.isEnabled = true
                         } else {
                             binding.searchUpIb.alpha = DISABLED_ALPHA
+                            binding.searchUpIb.isEnabled = false
                         }
                         // для поиска - если можно перемещаться, подсвечиваем
                         if (last != -1 && i < last) {
                             binding.searchDownIb.alpha = ENABLED_ALPHA
+                            binding.searchDownIb.isEnabled = true
                         } else {
                             binding.searchDownIb.alpha = DISABLED_ALPHA
+                            binding.searchDownIb.isEnabled = false
                         }
                         break
                     }
