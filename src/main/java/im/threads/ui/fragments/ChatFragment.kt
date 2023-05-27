@@ -2232,6 +2232,11 @@ class ChatFragment :
         binding.copyControls.visibility = View.VISIBLE
         binding.consultName.visibility = View.GONE
         binding.subtitle.visibility = View.GONE
+        if (chatPhrase.phraseText.isNullOrEmpty()) {
+            binding.contentCopy.visibility = View.GONE
+        } else {
+            binding.contentCopy.visibility = View.VISIBLE
+        }
         if (binding.chatBackButton.visibility == View.GONE) {
             binding.chatBackButton.visibility = View.VISIBLE
         }
