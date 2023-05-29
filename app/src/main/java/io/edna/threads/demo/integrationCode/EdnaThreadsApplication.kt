@@ -43,6 +43,7 @@ class EdnaThreadsApplication : Application() {
                 title = R.color.alt_threads_chat_toolbar_text,
                 incomingText = R.color.black_color,
                 incomingTimeText = R.color.light_time_text,
+                outgoingTimeText = R.color.light_time_text,
                 outgoingText = R.color.black_color,
                 incomingBubble = R.color.alt_white,
                 outgoingBubble = R.color.light_outgoing_bubble,
