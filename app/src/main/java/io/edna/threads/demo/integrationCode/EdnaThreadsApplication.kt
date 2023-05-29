@@ -109,7 +109,10 @@ class EdnaThreadsApplication : Application() {
                 toolbarContextMenu = R.color.alt_threads_chat_context_menu,
                 menuItem = R.color.alt_threads_chat_toolbar_menu_item_black,
                 searchHintColor = R.color.alt_threads_chat_toolbar_hint,
-                systemMessage = R.color.dark_system_text
+                systemMessage = R.color.dark_system_text,
+                mediaAndFilesTextColor = R.color.dark_system_text,
+                welcomeScreenTitleText = R.color.dark_system_text,
+                welcomeScreenSubtitleText = R.color.dark_system_text
             ),
             images = ChatImages(
                 backBtn = R.drawable.alt_ic_arrow_back_24dp,
