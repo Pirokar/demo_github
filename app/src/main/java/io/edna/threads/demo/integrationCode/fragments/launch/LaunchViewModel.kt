@@ -96,7 +96,8 @@ class LaunchViewModel(
                 serverConfig.datastoreUrl,
                 serverConfig.threadsGateUrl,
                 serverConfig.threadsGateProviderUid,
-                serverConfig.trustedSSLCertificates
+                serverConfig.trustedSSLCertificates,
+                serverConfig.allowUntrustedSSLCertificate
             )
             ThreadsLib.getInstance().initUser(
                 UserInfoBuilder(user?.userId!!)

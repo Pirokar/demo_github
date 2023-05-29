@@ -19,7 +19,8 @@
       "threadsGateProviderUid": "MOBILE3_MMvIe5LKKHQlepr8vripZeDXSKJzdRfEu9Qp",
       "serverBaseUrl": "http://arm.mobile3.chc.dte/",
       "datastoreUrl": "http://datastore.mobile3.chc.dte/",
-      "threadsGateUrl": "http://tg.mobile3.chc.dte/gate/socket"
+      "threadsGateUrl": "http://tg.mobile3.chc.dte/gate/socket",
+      "allowUntrustedSSLCertificate": true
     },
     {
       "name": "Mobile 4",

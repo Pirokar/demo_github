@@ -13,7 +13,8 @@ data class ServerConfig(
     var isFromApp: Boolean = false,
     var isShowMenu: Boolean = false,
     var filesAndMediaMenuItemEnabled: Boolean = true,
-    var trustedSSLCertificates: List<Int>? = null
+    var trustedSSLCertificates: List<Int>? = null,
+    var allowUntrustedSSLCertificate: Boolean = false
 ) : Parcelable {
 
     override fun toString() = "Server config:\n = $name, " +
@@ -24,7 +25,8 @@ data class ServerConfig(
         "\nisFromApp = $isFromApp, " +
         "\nisShowMenu = $isShowMenu, " +
         "\nfilesAndMediaMenuItemEnabled = $filesAndMediaMenuItemEnabled, " +
-        "\ntrustedSSLCertificates = $trustedSSLCertificates"
+        "\ntrustedSSLCertificates = $trustedSSLCertificates, " +
+        "\nallowUntrustedSSLCertificate = $allowUntrustedSSLCertificate"
 
     fun isAllFieldsFilled(): Boolean {
         return !name.isNullOrEmpty() &&
@@ -44,7 +46,8 @@ data class ServerConfig(
             isFromApp,
             isShowMenu,
             filesAndMediaMenuItemEnabled,
-            trustedSSLCertificates
+            trustedSSLCertificates,
+            allowUntrustedSSLCertificate
         )
     }
 

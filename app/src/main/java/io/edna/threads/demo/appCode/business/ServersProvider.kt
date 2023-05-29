@@ -49,6 +49,11 @@ class ServersProvider(
                         certificates
                     } else {
                         null
+                    },
+                    allowUntrustedSSLCertificate = if (jsonObj.has("allowUntrustedSSLCertificate")) {
+                        jsonObj.getBoolean("allowUntrustedSSLCertificate")
+                    } else {
+                        false
                     }
                 )
             )

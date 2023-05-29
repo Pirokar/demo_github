@@ -45,6 +45,8 @@ class EdnaThreadsApplication : Application() {
             configBuilder.datastoreUrl(server.datastoreUrl)
             configBuilder.threadsGateUrl(server.threadsGateUrl)
             configBuilder.threadsGateProviderUid(server.threadsGateProviderUid)
+            configBuilder.trustedSSLCertificates(server.trustedSSLCertificates)
+            configBuilder.allowUntrustedSSLCertificates(server.allowUntrustedSSLCertificate)
             configBuilder.setNewChatCenterApi()
         }
 
