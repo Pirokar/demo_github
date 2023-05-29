@@ -41,10 +41,7 @@ class ConsultFileViewHolder(
 ) {
     private val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
 
-    private val mCircularProgressButton =
-        itemView.findViewById<CircularProgressButton>(R.id.circ_button).apply {
-            setBackgroundColorResId(style.chatBackgroundColor)
-        }
+    private val mCircularProgressButton: CircularProgressButton = itemView.findViewById(R.id.circ_button)
     private val errorText: TextView = itemView.findViewById(R.id.errorText)
     private val loader: ImageView = itemView.findViewById(R.id.loader)
     private val mFileHeader: TextView = itemView.findViewById(R.id.header)

@@ -105,15 +105,14 @@ public final class FileAndMediaViewHolder extends BaseHolder {
     }
 
     private void setUpDownloadButton(CircularProgressButton button) {
-        int downloadButtonTintResId = getStyle().chatBodyIconsTint == 0 ?
-                getStyle().downloadButtonTintResId : getStyle().chatBodyIconsTint;
-
+        int downloadButtonTintResId = getStyle().downloadButtonTintResId;
         Drawable startDownload = setUpDrawable(getStyle().startDownloadIconResId, downloadButtonTintResId);
         Drawable inProgress = setUpDrawable(getStyle().inProgressIconResId, downloadButtonTintResId);
         Drawable completed = setUpDrawable(getStyle().completedIconResId, downloadButtonTintResId);
         button.setStartDownloadDrawable(startDownload);
         button.setInProgress(inProgress);
         button.setCompletedDrawable(completed);
+        button.setBackgroundColorResId(getStyle().downloadButtonBackgroundTintResId);
     }
 
     private Drawable setUpDrawable(int iconResId, int colorRes) {

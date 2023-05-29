@@ -21,11 +21,7 @@
             android:layout_width="64dp"
             android:layout_height="match_parent"
             android:padding="@dimen/ecc_margin_half"
-            android:scaleType="centerInside"
-            android:background="@color/ecc_chat_background"
-            app:completed_drawable="@drawable/ecc_ic_file_outline_24dp"
-            app:in_progress_label="@drawable/ecc_ic_clear_36dp"
-            app:start_download_label="@drawable/ecc_ic_vertical_align_bottom_18dp" />
+            android:scaleType="centerInside" />
 
         <ImageButton
             android:id="@+id/file_button"
