@@ -238,6 +238,7 @@ open class ThreadsLibBase protected constructor(context: Context) {
          * @param threadsGateProviderUid uid для вебсокета. Если не null,
          * должен быть не null также и параметр threadsGateUrl
          * @param trustedSSLCertificates список id сертификатов
+         * @param allowUntrustedSSLCertificate флаг разрешать ли использовать непроверенные сертификаты
          */
         @JvmStatic
         fun changeServerSettings(
@@ -245,9 +246,11 @@ open class ThreadsLibBase protected constructor(context: Context) {
             datastoreUrl: String? = null,
             threadsGateUrl: String? = null,
             threadsGateProviderUid: String? = null,
-            trustedSSLCertificates: List<Int>?
+            trustedSSLCertificates: List<Int>?,
+            allowUntrustedSSLCertificate: Boolean
         ) {
             try {
+                BaseConfig.instance.allowUntrustedSSLCertificate = allowUntrustedSSLCertificate
                 if (baseUrl != null) BaseConfig.instance.serverBaseUrl = baseUrl
                 if (datastoreUrl != null) BaseConfig.instance.datastoreUrl = datastoreUrl
                 if (threadsGateUrl != null && threadsGateProviderUid != null) {

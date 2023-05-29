@@ -85,7 +85,7 @@ class ConfigBuilder(context: Context) : BaseConfigBuilder(context) {
         return this
     }
 
-    override fun trustedSSLCertificates(trustedSSLCertificates: List<Int>): ConfigBuilder {
+    override fun trustedSSLCertificates(trustedSSLCertificates: List<Int>?): ConfigBuilder {
         super.trustedSSLCertificates(trustedSSLCertificates)
         return this
     }
@@ -153,6 +153,7 @@ class ConfigBuilder(context: Context) : BaseConfigBuilder(context) {
             surveyCompletionDelay,
             requestConfig,
             trustedSSLCertificates,
+            allowUntrustedSSLCertificate,
             notificationLevel,
             isAttachmentsEnabled
         )

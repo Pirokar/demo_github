@@ -186,14 +186,16 @@ class ThreadsLib(context: Context) : ThreadsLibBase(context) {
             datastoreUrl: String? = null,
             threadsGateUrl: String? = null,
             threadsGateProviderUid: String? = null,
-            trustedSSLCertificates: List<Int>?
+            trustedSSLCertificates: List<Int>?,
+            allowUntrustedSSLCertificate: Boolean
         ) {
             ThreadsLibBase.changeServerSettings(
                 baseUrl,
                 datastoreUrl,
                 threadsGateUrl,
                 threadsGateProviderUid,
-                trustedSSLCertificates
+                trustedSSLCertificates,
+                allowUntrustedSSLCertificate
             )
         }
 

@@ -44,9 +44,9 @@ open class BaseConfig(
     val historyLoadingCount: Int,
     val surveyCompletionDelay: Int,
     val requestConfig: RequestConfig,
-    val isSSLPinningDisabled: Boolean,
     val notificationImportance: Int,
-    var trustedSSLCertificates: List<Int>?
+    var trustedSSLCertificates: List<Int>?,
+    var allowUntrustedSSLCertificate: Boolean
 ) {
     @JvmField val context: Context
     var sslSocketFactoryConfig: SslSocketFactoryConfig?
@@ -97,14 +97,15 @@ open class BaseConfig(
     }
 
     private fun getSslSocketFactoryConfig(trustedSSLCertificates: List<Int>?): SslSocketFactoryConfig? {
-        if (trustedSSLCertificates == null || trustedSSLCertificates.isEmpty()) return null
+        if (trustedSSLCertificates.isNullOrEmpty()) return null
+
         val keyStore = createTlsPinningKeyStore(
             context.resources,
             trustedSSLCertificates
         )
 
         @SuppressLint("CustomX509TrustManager", "TrustAllX509TrustManager")
-        val trustManagers = if (isSSLPinningDisabled) {
+        val trustManagers = if (allowUntrustedSSLCertificate) {
             arrayOf<TrustManager>(object : X509TrustManager {
                 @SuppressLint("TrustAllX509TrustManager")
                 override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {}
@@ -119,7 +120,6 @@ open class BaseConfig(
         } else {
             getTrustManagers(keyStore)
         }
-
         val trustManager = getX509TrustManager(trustManagers)
         val sslSocketFactory = createTlsPinningSocketFactory(trustManagers)
         return SslSocketFactoryConfig(sslSocketFactory, trustManager)

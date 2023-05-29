@@ -23,6 +23,7 @@ open class BaseConfigBuilder(var context: Context) {
     protected var loggerConfig: LoggerConfig? = null
     protected var requestConfig = RequestConfig()
     protected var trustedSSLCertificates = emptyList<Int>()
+    protected var allowUntrustedSSLCertificate = false
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     protected var notificationImportance = NotificationManager.IMPORTANCE_DEFAULT
@@ -71,8 +72,17 @@ open class BaseConfigBuilder(var context: Context) {
         return this
     }
 
-    open fun trustedSSLCertificates(trustedSSLCertificates: List<Int>): BaseConfigBuilder? {
-        this.trustedSSLCertificates = trustedSSLCertificates
+    open fun trustedSSLCertificates(trustedSSLCertificates: List<Int>?): BaseConfigBuilder? {
+        if (trustedSSLCertificates.isNullOrEmpty()) {
+            this.trustedSSLCertificates = emptyList()
+        } else {
+            this.trustedSSLCertificates = trustedSSLCertificates
+        }
+        return this
+    }
+
+    open fun allowUntrustedSSLCertificates(allowUntrustedSSLCertificate: Boolean): BaseConfigBuilder? {
+        this.allowUntrustedSSLCertificate = allowUntrustedSSLCertificate
         return this
     }
 
@@ -121,9 +131,9 @@ open class BaseConfigBuilder(var context: Context) {
             historyLoadingCount,
             surveyCompletionDelay,
             requestConfig,
-            trustedSSLCertificates.isNullOrEmpty(),
             notificationLevel,
-            trustedSSLCertificates
+            trustedSSLCertificates,
+            allowUntrustedSSLCertificate
         )
     }
 }
