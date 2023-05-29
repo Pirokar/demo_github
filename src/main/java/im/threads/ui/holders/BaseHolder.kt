@@ -189,11 +189,6 @@ abstract class BaseHolder internal constructor(
     ) {
         if (phrase.formattedPhrase.isNullOrBlank()) {
             textView.setText(phrase.phraseText?.trimIndent(), TextView.BufferType.NORMAL)
-            setTextWithHighlighting(
-                textView,
-                style.incomingMarkdownConfiguration.isLinkUnderlined,
-                url
-            )
         } else {
             (textView as? BubbleMessageTextView)?.let {
                 setMovementMethod(it)
@@ -203,6 +198,11 @@ abstract class BaseHolder internal constructor(
                 textView.setText(phrase.phraseText?.trimIndent(), TextView.BufferType.NORMAL)
             }
         }
+        setTextWithHighlighting(
+            textView,
+            style.incomingMarkdownConfiguration.isLinkUnderlined,
+            url
+        )
     }
 
     /**
