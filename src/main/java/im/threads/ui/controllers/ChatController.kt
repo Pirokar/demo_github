@@ -134,7 +134,7 @@ class ChatController private constructor() {
     private var seeker = ChatMessageSeeker()
     private var lastFancySearchDate: Long = 0
     private var lastSearchQuery: String? = ""
-    private var isAllMessagesDownloaded = false
+    internal var isAllMessagesDownloaded = false
     private var isDownloadingMessages = false
     var firstUnreadUuidId: String? = null
         private set
@@ -309,6 +309,18 @@ class ChatController private constructor() {
         updateServerItemsBySendingItems(serverItems, getSendingItems())
     }
 
+    fun getUnreadMessagesCount() = database.getUnreadMessagesCount()
+
+    fun setMessageAsRead(item: ChatItem?, async: Boolean = true) {
+        if (item is ConsultPhrase) {
+            if (async) {
+                coroutineScope.launch(Dispatchers.IO) { database.setMessageWasRead(item.id) }
+            } else {
+                database.setMessageWasRead(item.id)
+            }
+        }
+    }
+
     private fun getSendingItems(): ArrayList<UserPhrase> {
         return database.getSendingChatItems() as ArrayList<UserPhrase>
     }
@@ -331,13 +343,13 @@ class ChatController private constructor() {
         serverItems.addAll(sendingItems)
     }
 
-    fun requestItems(currentItemsCount: Int, fromBeginning: Boolean): Observable<List<ChatItem>>? {
+    fun requestItems(itemsCountToGet: Int): Observable<List<ChatItem>>? {
         return Observable
             .fromCallable {
                 if (instance?.fragment != null && ThreadsLibBase.getInstance().isUserInitialized) {
                     val count = BaseConfig.instance.historyLoadingCount
                     try {
-                        val response = historyLoader.getHistorySync(null, fromBeginning)
+                        val response = historyLoader.getHistorySync(itemsCountToGet, false)
                         var serverItems = HistoryParser.getChatItems(response)
                         serverItems = addLocalUserMessages(serverItems)
                         updateDoubleItems(serverItems as ArrayList<ChatItem>)
@@ -347,10 +359,11 @@ class ChatController private constructor() {
                         processSystemMessages(serverItems)
                         return@fromCallable setLastAvatars(serverItems)
                     } catch (e: Exception) {
+                        fragment?.hideProgressBar()
                         error(ThreadsApi.REST_TAG, "Requesting history items error", e)
                         return@fromCallable setLastAvatars(
                             database.getChatItems(
-                                currentItemsCount,
+                                itemsCountToGet,
                                 count
                             )
                         )
@@ -385,7 +398,7 @@ class ChatController private constructor() {
     }
 
     val isNeedToShowWelcome: Boolean
-        get() = database.getMessagesCount() == 0
+        get() = database.getMessagesCount() == 0 && fragment?.getDisplayedMessagesCount() == 0
 
     val stateOfConsult: Int
         get() = if (consultWriter.isSearchingConsult) {
@@ -561,6 +574,7 @@ class ChatController private constructor() {
 
     fun loadHistory(fromBeginning: Boolean = true, applyUiChanges: Boolean = true) {
         if (isAllMessagesDownloaded) {
+            fragment?.hideProgressBar()
             return
         }
         synchronized(this) {
@@ -591,24 +605,23 @@ class ChatController private constructor() {
                                 BaseConfig.instance.transport.markMessagesAsRead(uuidList)
                             }
                         }
-                        Pair(response?.consultInfo, serverItems.size)
+                        Pair(response?.consultInfo, serverItems)
                     }
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                            { pair: Pair<ConsultInfo?, Int?> ->
+                            { pair: Pair<ConsultInfo?, List<ChatItem>> ->
+                                InitialisationConstants.isHistoryLoaded = true
                                 isDownloadingMessages = false
                                 if (applyUiChanges) {
-                                    val serverCount = if (pair.second == null) 0 else pair.second!!
-                                    val items =
-                                        setLastAvatars(database.getChatItems(0, serverCount))
+                                    val (consultInfo, serverItems) = pair
+                                    val items = setLastAvatars(serverItems)
                                     if (fragment != null) {
                                         fragment?.addChatItems(items)
                                         handleQuickReplies(items)
                                         handleInputAvailability(items)
-                                        val info = pair.first
-                                        if (info != null) {
-                                            fragment?.setStateConsultConnected(info)
+                                        if (consultInfo != null) {
+                                            fragment?.setStateConsultConnected(consultInfo)
                                         }
                                         fragment?.hideProgressBar()
                                     }

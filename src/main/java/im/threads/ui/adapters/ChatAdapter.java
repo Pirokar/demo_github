@@ -140,7 +140,8 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private final PublishSubject<Long> messageErrorProcessor;
     private final ChatMessagesOrderer chatMessagesOrderer;
     private final SendingStatusObserver sendingStatusObserver = new SendingStatusObserver(
-            new WeakReference<>(this), 40000L
+            new WeakReference<>(this),
+            Config.getInstance().getRequestConfig().getSocketClientSettings().getResendIntervalMillis()
     );
     @NonNull
     PublishSubject<ChatItem> highlightingStream = PublishSubject.create();
@@ -173,25 +174,6 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         clientNotificationDisplayType = preferences.getClientNotificationDisplayType();
         currentThreadId = preferences.getThreadId() == null ? 0L : preferences.getThreadId();
         chatMessagesOrderer = new ChatMessagesOrderer();
-    }
-
-    private static int getUnreadCount(final List<ChatItem> list) {
-        int counter = 0;
-        for (final ChatItem ci : list) {
-            if (ci instanceof ConsultPhrase) {
-                final ConsultPhrase cp = ((ConsultPhrase) ci);
-                if (!cp.isRead()) {
-                    counter++;
-                }
-            }
-            if (ci instanceof Survey) {
-                final Survey survey = (Survey) ci;
-                if (!survey.isRead()) {
-                    counter++;
-                }
-            }
-        }
-        return counter;
     }
 
     public void onResumeView() {
@@ -292,74 +274,56 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
         if (holder instanceof SystemMessageViewHolder) {
             bindSystemMessageVH((SystemMessageViewHolder) holder, (SystemMessage) getList().get(position));
-        }
-        if (holder instanceof ConsultPhraseHolder) {
+        } else if (holder instanceof ConsultPhraseHolder) {
             ConsultPhrase phrase = (ConsultPhrase) getList().get(position);
             bindConsultPhraseVH((ConsultPhraseHolder) holder, phrase);
             updateReadStateForConsultPhrase(phrase);
-        }
-        if (holder instanceof UserPhraseViewHolder) {
+        } else if (holder instanceof UserPhraseViewHolder) {
             bindUserPhraseVH((UserPhraseViewHolder) holder, (UserPhrase) getList().get(position));
-        }
-        if (holder instanceof DateViewHolder) {
+        } else if (holder instanceof DateViewHolder) {
             ((DateViewHolder) holder).onBind(getList().get(position).getTimeStamp());
-        }
-        if (holder instanceof ConsultIsTypingViewHolderNew) {
+        } else if (holder instanceof ConsultIsTypingViewHolderNew) {
             bindConsultIsTypingVH((ConsultIsTypingViewHolderNew) holder);
-        }
-        if (holder instanceof SpaceViewHolder) {
+        } else if (holder instanceof SpaceViewHolder) {
             final Space space = (Space) getList().get(position);
             ((SpaceViewHolder) holder).onBind((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, space.getHeight(), ctx.getResources().getDisplayMetrics()));
-        }
-        if (holder instanceof ImageFromConsultViewHolder) {
+        } else if (holder instanceof ImageFromConsultViewHolder) {
             ConsultPhrase phrase = (ConsultPhrase) getList().get(position);
             bindImageFromConsultVH((ImageFromConsultViewHolder) holder, phrase);
             updateReadStateForConsultPhrase(phrase);
-        }
-        if (holder instanceof ImageFromUserViewHolder) {
+        } else if (holder instanceof ImageFromUserViewHolder) {
             bindImageFromUserVH((ImageFromUserViewHolder) holder, (UserPhrase) getList().get(position));
-        }
-        if (holder instanceof UserFileViewHolder) {
+        } else if (holder instanceof UserFileViewHolder) {
             bindFileFromUserVH((UserFileViewHolder) holder, (UserPhrase) getList().get(position));
-        }
-        if (holder instanceof ConsultFileViewHolder) {
+        } else if (holder instanceof ConsultFileViewHolder) {
             ConsultPhrase phrase = (ConsultPhrase) getList().get(position);
             bindFileFromConsultVH((ConsultFileViewHolder) holder, phrase);
             updateReadStateForConsultPhrase(phrase);
-        }
-        if (holder instanceof UnreadMessageViewHolder) {
+        } else if (holder instanceof UnreadMessageViewHolder) {
             ((UnreadMessageViewHolder) holder).onBind((UnreadMessages) getList().get(holder.getAdapterPosition()));
-        }
-        if (holder instanceof ScheduleInfoViewHolder) {
+        } else if (holder instanceof ScheduleInfoViewHolder) {
             ((ScheduleInfoViewHolder) holder).bind((ScheduleInfo) getList().get(holder.getAdapterPosition()));
-        }
-        if (holder instanceof RatingThumbsViewHolder) {
+        } else if (holder instanceof RatingThumbsViewHolder) {
             final Survey survey = (Survey) getList().get(holder.getAdapterPosition());
             ((RatingThumbsViewHolder) holder).bind(survey, mCallback);
-        }
-        if (holder instanceof RatingThumbsSentViewHolder) {
+        } else if (holder instanceof RatingThumbsSentViewHolder) {
             final Survey survey = (Survey) getList().get(holder.getAdapterPosition());
             ((RatingThumbsSentViewHolder) holder).bind(survey);
-        }
-        if (holder instanceof RatingStarsViewHolder) {
+        } else if (holder instanceof RatingStarsViewHolder) {
             final Survey survey = (Survey) getList().get(holder.getAdapterPosition());
             ((RatingStarsViewHolder) holder).bind(
                     survey,
                     ratingCount -> mCallback.onRatingClick(survey, ratingCount)
             );
-        }
-        if (holder instanceof RatingStarsSentViewHolder) {
+        } else if (holder instanceof RatingStarsSentViewHolder) {
             ((RatingStarsSentViewHolder) holder).bind((Survey) getList().get(holder.getAdapterPosition()));
-        }
-        if (holder instanceof RequestResolveThreadViewHolder) {
+        } else if (holder instanceof RequestResolveThreadViewHolder) {
             ((RequestResolveThreadViewHolder) holder).bind(mCallback);
-        }
-        if (holder instanceof ConsultVoiceMessageViewHolder) {
+        } else if (holder instanceof ConsultVoiceMessageViewHolder) {
             ConsultPhrase phrase = (ConsultPhrase) getList().get(position);
             bindVoiceMessageFromConsultVH((ConsultVoiceMessageViewHolder) holder, phrase);
             updateReadStateForConsultPhrase(phrase);
-        }
-        if (holder instanceof QuickRepliesViewHolder) {
+        } else if (holder instanceof QuickRepliesViewHolder) {
             ((QuickRepliesViewHolder) holder).bind((QuickReplyItem) getList().get(position), mCallback);
         }
     }
@@ -608,17 +572,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
     }
 
-    public int getCurrentItemCount() {
-        int count = 0;
-        for (final ChatItem item : getList()) {
-            if (item instanceof UserPhrase || item instanceof ConsultPhrase || item instanceof SystemMessage || item instanceof Survey) {
-                count++;
-            }
-        }
-        return count;
-    }
-
-    public void addItems(@NonNull List<ChatItem> items) {
+    public void addItems(@NonNull List<ChatItem> items, boolean withAnimation) {
         boolean withTyping = false;
         boolean withRequestResolveThread = false;
         items = SurveySplitterKt.splitSurveyQuestions(items);
@@ -645,7 +599,13 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
         ArrayList<ChatItem> newList = new ArrayList<>(getList());
         chatMessagesOrderer.addAndOrder(newList, items, clientNotificationDisplayType, currentThreadId);
-        notifyDatasetChangedWithDiffUtil(newList);
+        if (withAnimation) {
+            notifyDatasetChangedWithDiffUtil(newList);
+        } else {
+            getList().clear();
+            getList().addAll(newList);
+            notifyDataSetChanged();
+        }
     }
 
     public void notifyDatasetChangedWithDiffUtil(ArrayList<ChatItem> newList) {
@@ -683,10 +643,6 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 }
             }
         }
-    }
-
-    public int getUnreadCount() {
-        return getUnreadCount(getList());
     }
 
     public boolean hasSchedule() {
@@ -1096,12 +1052,12 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     public void setClientNotificationDisplayType(ClientNotificationDisplayType type) {
         this.clientNotificationDisplayType = type;
-        addItems(new ArrayList<>());
+        addItems(new ArrayList<>(), true);
     }
 
     public void setCurrentThreadId(long threadId) {
         this.currentThreadId = threadId;
-        addItems(new ArrayList<>());
+        addItems(new ArrayList<>(), true);
     }
 
     public void playerUpdate() {

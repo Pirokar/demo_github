@@ -74,7 +74,6 @@ import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.ConsultRole
 import im.threads.business.models.ConsultRole.Companion.consultRoleFromString
 import im.threads.business.models.ConsultTyping
-import im.threads.business.models.DateRow
 import im.threads.business.models.FileDescription
 import im.threads.business.models.InputFieldEnableModel
 import im.threads.business.models.MessageStatus
@@ -171,7 +170,7 @@ class ChatFragment :
     private val handler = Handler(Looper.getMainLooper())
     private val fileNameDateFormat = SimpleDateFormat("dd.MM.yyyy.HH:mm:ss.S", Locale.getDefault())
     private val inputTextObservable = ObservableField("")
-    val fileDescription = ObservableField(Optional.empty<FileDescription?>())
+    internal val fileDescription = ObservableField(Optional.empty<FileDescription?>())
     private val mediaMetadataRetriever = MediaMetadataRetriever()
     private val audioConverter = ChatCenterAudioConverter()
     private val chatUpdateProcessor: ChatUpdateProcessor by inject()
@@ -331,7 +330,7 @@ class ChatFragment :
     fun isStartSecondLevelScreen(): Boolean {
         return resumeAfterSecondLevelScreen
     }
-    val lastVisibleItemPosition: Int
+    internal val lastVisibleItemPosition: Int
         get() = if (isAdded) {
             mLayoutManager?.findLastVisibleItemPosition() ?: RecyclerView.NO_POSITION
         } else {
@@ -385,6 +384,8 @@ class ChatFragment :
         binding.recycler.adapter = chatAdapter
         binding.searchDownIb.alpha = DISABLED_ALPHA
         binding.searchUpIb.alpha = DISABLED_ALPHA
+        binding.searchDownIb.isEnabled = false
+        binding.searchUpIb.isEnabled = false
     }
 
     private fun initInputLayout(activity: Activity) {
@@ -695,7 +696,7 @@ class ChatFragment :
                     if (itemCount - 1 - lastVisibleItemPosition > INVISIBLE_MESSAGES_COUNT) {
                         if (binding.scrollDownButtonContainer.visibility != View.VISIBLE) {
                             binding.scrollDownButtonContainer.visibility = View.VISIBLE
-                            showUnreadMessagesCount(chatAdapter?.unreadCount ?: 0)
+                            showUnreadMessagesCount(chatController.getUnreadMessagesCount())
                         }
                     } else {
                         binding.scrollDownButtonContainer.visibility = View.GONE
@@ -720,12 +721,13 @@ class ChatFragment :
                         binding.scrollDownButtonContainer.isNotVisible()
                     ) {
                         binding.scrollDownButtonContainer.visible()
-                        showUnreadMessagesCount(chatAdapter?.unreadCount ?: 0)
+                        showUnreadMessagesCount(chatController.getUnreadMessagesCount())
                     } else {
                         binding.scrollDownButtonContainer.visibility = View.GONE
                         recyclerView.post { setMessagesAsRead() }
                     }
-                    if (firstVisibleItemPosition == 0) {
+                    if (firstVisibleItemPosition == 0 && !chatController.isAllMessagesDownloaded) {
+                        binding.swipeRefresh.isRefreshing = true
                         chatController.loadHistory(false)
                     }
                 }
@@ -733,7 +735,7 @@ class ChatFragment :
         })
         binding.scrollDownButtonContainer.setOnClickListener {
             showUnreadMessagesCount(0)
-            val unreadCount = chatAdapter?.unreadCount ?: 0
+            val unreadCount = chatController.getUnreadMessagesCount()
             if (unreadCount > 0) {
                 scrollToNewMessages()
             } else {
@@ -862,7 +864,7 @@ class ChatFragment :
     }
 
     private fun onRefresh() {
-        val disposable = chatController.requestItems(BaseConfig.instance.historyLoadingCount, true)
+        val disposable = chatController.requestItems(BaseConfig.instance.historyLoadingCount)
             ?.delay(500, TimeUnit.MILLISECONDS)
             ?.observeOn(AndroidSchedulers.mainThread())
             ?.subscribe({ result: List<ChatItem> -> afterRefresh(result) }) { onError: Throwable? -> error("onRefresh ", onError) }
@@ -875,7 +877,7 @@ class ChatFragment :
     private fun afterRefresh(result: List<ChatItem>) {
         chatAdapter?.let {
             val itemsBefore = it.itemCount
-            chatAdapter?.addItems(result)
+            chatAdapter?.addItems(result, true)
             scrollToPosition(it.itemCount - itemsBefore, true)
         }
 
@@ -1274,6 +1276,8 @@ class ChatFragment :
             chatAdapter?.removeHighlight()
             binding.searchUpIb.alpha = DISABLED_ALPHA
             binding.searchDownIb.alpha = DISABLED_ALPHA
+            binding.searchDownIb.isEnabled = false
+            binding.searchUpIb.isEnabled = false
             return
         }
         onSearch(request, forward)
@@ -1313,26 +1317,35 @@ class ChatFragment :
                         // для поиска - если можно перемещаться, подсвечиваем
                         if (first != -1 && i > first) {
                             binding.searchUpIb.alpha = ENABLED_ALPHA
+                            binding.searchUpIb.isEnabled = true
                         } else {
                             binding.searchUpIb.alpha = DISABLED_ALPHA
+                            binding.searchUpIb.isEnabled = false
                         }
                         // для поиска - если можно перемещаться, подсвечиваем
                         if (last != -1 && i < last) {
                             binding.searchDownIb.alpha = ENABLED_ALPHA
+                            binding.searchDownIb.isEnabled = true
                         } else {
                             binding.searchDownIb.alpha = DISABLED_ALPHA
+                            binding.searchDownIb.isEnabled = false
                         }
                         break
                     }
                 }
             }
+            if (first == -1 && last == -1) {
+                chatAdapter?.removeHighlight()
+            }
             chatAdapter?.let {
-                it.addItems(data)
+                it.addItems(data, true)
                 if (highlightedItem != null) {
                     chatAdapter?.removeHighlight()
                     scrollToPosition(it.setItemHighlighted(highlightedItem), true)
                 }
             }
+        } else {
+            chatAdapter?.removeHighlight()
         }
     }
 
@@ -1555,19 +1568,21 @@ class ChatFragment :
             return
         }
         val isLastMessageVisible = (
-            chatAdapter!!.itemCount - 1 - layoutManager.findLastVisibleItemPosition()
-                < INVISIBLE_MESSAGES_COUNT
+            chatAdapter!!.itemCount - 1 - layoutManager.findLastVisibleItemPosition() < INVISIBLE_MESSAGES_COUNT
             )
         if (item is ConsultPhrase) {
-            item.isRead = isLastMessageVisible && isResumed && !isInMessageSearchMode
+            item.isRead = (isLastMessageVisible && isResumed && !isInMessageSearchMode)
+            if (item.isRead) {
+                chatController.setMessageAsRead(item)
+            }
             chatAdapter?.setAvatar(item.consultId, item.avatarPath)
         }
         if (needsAddMessage(item)) {
             welcomeScreenVisibility(false)
-            chatAdapter?.addItems(listOf(item))
+            chatAdapter?.addItems(listOf(item), true)
             if (!isLastMessageVisible) {
                 binding.scrollDownButtonContainer.visibility = View.VISIBLE
-                showUnreadMessagesCount(chatAdapter?.unreadCount ?: 0)
+                showUnreadMessagesCount(chatController.getUnreadMessagesCount())
             }
             scrollDelayedOnNewMessageReceived(item is UserPhrase, isLastMessageVisible)
         } else if (needsModifyImage(item)) {
@@ -1652,46 +1667,40 @@ class ChatFragment :
         }
     }
 
-    fun addHistoryChatItems(list: List<ChatItem?>) {
-        if (list.filterNotNull().isEmpty()) {
-            return
-        }
-        val layoutManager = binding.recycler.layoutManager as LinearLayoutManager?
-        var firstVisibleItemPosition = layoutManager!!.findFirstVisibleItemPosition()
-        chatAdapter?.let {
-            if (it.list[firstVisibleItemPosition] is DateRow) {
-                firstVisibleItemPosition += 1
-            }
-            val timeStamp = it.list[firstVisibleItemPosition].timeStamp
-            chatAdapter!!.addItems(list)
-            val newPosition = it.getPositionByTimeStamp(timeStamp)
-            scrollToPosition(newPosition, false)
-        }
-    }
-
     fun addChatItems(list: List<ChatItem?>) {
         if (list.isEmpty()) {
             return
         }
         chatAdapter?.let { chatAdapter ->
             val oldAdapterSize = chatAdapter.list.size
-            welcomeScreenVisibility(false)
-            chatAdapter.addItems(list)
+            val isBottomItemsVisible = chatAdapter.itemCount - 1 - lastVisibleItemPosition < INVISIBLE_MESSAGES_COUNT
             val layoutManager = binding.recycler.layoutManager as LinearLayoutManager?
             if (layoutManager == null || list.size == 1 && list[0] is ConsultTyping || isInMessageSearchMode) {
                 return
             }
+            welcomeScreenVisibility(false)
+            val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
+            val lastVisibleItemTimestamp = if (lastVisibleItemPosition >= 0) {
+                chatAdapter.list[lastVisibleItemPosition].timeStamp
+            } else {
+                null
+            }
+            chatAdapter.addItems(list, isBottomItemsVisible)
             val newAdapterSize = chatAdapter.list.size
             if (oldAdapterSize == 0) {
                 scrollToPosition(chatAdapter.itemCount - 1, false)
             } else if (afterResume) {
-                if (!isStartSecondLevelScreen() && newAdapterSize != oldAdapterSize) {
+                if (!isStartSecondLevelScreen() && isBottomItemsVisible && newAdapterSize != oldAdapterSize) {
                     scrollToPosition(chatAdapter.itemCount - 1, false)
+                } else if (lastVisibleItemTimestamp != null) {
+                    layoutManager.scrollToPosition(chatAdapter.getPositionByTimeStamp(lastVisibleItemTimestamp))
                 }
                 afterResume = false
-            } else if (newAdapterSize > oldAdapterSize) {
+            } else if (isBottomItemsVisible && newAdapterSize > oldAdapterSize) {
                 handler.postDelayed({ scrollToPosition(chatAdapter.itemCount - 1, false) }, 100)
                 afterResume = false
+            } else if (lastVisibleItemTimestamp != null) {
+                layoutManager.scrollToPosition(chatAdapter.getPositionByTimeStamp(lastVisibleItemTimestamp))
             }
             resumeAfterSecondLevelScreen = false
             checkSearch()
@@ -2217,6 +2226,11 @@ class ChatFragment :
         binding.copyControls.visibility = View.VISIBLE
         binding.consultName.visibility = View.GONE
         binding.subtitle.visibility = View.GONE
+        if (chatPhrase.phraseText.isNullOrEmpty()) {
+            binding.contentCopy.visibility = View.GONE
+        } else {
+            binding.contentCopy.visibility = View.VISIBLE
+        }
         if (binding.chatBackButton.visibility == View.GONE) {
             binding.chatBackButton.visibility = View.VISIBLE
         }
@@ -2319,11 +2333,14 @@ class ChatFragment :
     fun hideProgressBar() {
         welcomeScreenVisibility(chatController.isNeedToShowWelcome)
         binding.flEmpty.visibility = View.GONE
+        binding.swipeRefresh.isRefreshing = false
     }
 
     fun showBalloon(message: String?) {
         show(requireContext(), message!!)
     }
+
+    internal fun getDisplayedMessagesCount() = chatAdapter?.itemCount ?: 0
 
     override fun acceptConvertedFile(convertedFile: File) {
         addVoiceMessagePreview(convertedFile)
@@ -2557,7 +2574,7 @@ class ChatFragment :
                 chatController.downloadMessagesTillEnd()
                     .observeOn(AndroidSchedulers.mainThread())
                     .map<List<ChatItem?>?> { list: List<ChatItem?>? ->
-                        if (list != null) chatAdapter?.addItems(list)
+                        if (list != null) chatAdapter?.addItems(list, true)
                         val itemHighlightedIndex = chatAdapter?.setItemHighlighted(quote.uuid) ?: -1
                         if (itemHighlightedIndex != -1) scrollToPosition(itemHighlightedIndex, true)
                         list
@@ -2568,7 +2585,7 @@ class ChatFragment :
                     .subscribe(
                         { list: List<ChatItem?>? ->
                             chatAdapter?.removeHighlight()
-                            if (list != null) chatAdapter!!.addItems(list)
+                            if (list != null) chatAdapter?.addItems(list, true)
                         }
                     ) { obj: Throwable -> obj.message }
             )

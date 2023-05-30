@@ -402,7 +402,7 @@
                                 android:layout_height="match_parent"
                                 android:layout_alignParentStart="true"
                                 android:layout_alignParentTop="true"
-                                android:layout_toStartOf="@+id/search_up_ib"
+                                android:layout_toStartOf="@+id/search_down_ib"
                                 android:background="@null"
                                 android:hint="@string/ecc_search_messages"
                                 android:imeOptions="actionSearch"

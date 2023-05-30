@@ -68,10 +68,7 @@ class ConsultPhraseHolder(
     }
 
     private val fileRow: View = itemView.findViewById(R.id.rightTextRow)
-    private val circularProgressButton =
-        itemView.findViewById<CircularProgressButton>(R.id.buttonDownload).apply {
-            setBackgroundColorResId(style.chatBackgroundColor)
-        }
+    private val circularProgressButton: CircularProgressButton = itemView.findViewById(R.id.buttonDownload)
     private val errorTextView: TextView = itemView.findViewById(R.id.errorText)
     private val fileImage = itemView.findViewById<ImageView>(R.id.fileImage)
     private val rightTextHeader: TextView = itemView.findViewById(R.id.to)

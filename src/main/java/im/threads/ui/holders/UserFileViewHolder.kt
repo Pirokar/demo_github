@@ -58,12 +58,7 @@ class UserFileViewHolder(
     private val rootLayout: LinearLayout = itemView.findViewById(R.id.rootLayout)
     private val bubbleLayout: ConstraintLayout = itemView.findViewById(R.id.bubble)
 
-    private val circularProgressButton =
-        itemView.findViewById<CircularProgressButton>(R.id.buttonDownload).apply {
-            setBackgroundColorResId(style.outgoingMessageTextColor)
-            setUpProgressButton(this)
-        }
-
+    private val circularProgressButton: CircularProgressButton = itemView.findViewById(R.id.buttonDownload)
     private val timeStampTextView = itemView.findViewById<TextView>(R.id.timeStamp).apply {
         setTextColor(getColorInt(style.outgoingImageTimeColor))
         val timeColorBg = getColorInt(style.outgoingImageTimeBackgroundColor)
@@ -93,6 +88,7 @@ class UserFileViewHolder(
         )
         ColorsHelper.setTextColor(errorTextView, style.errorMessageTextColor)
         itemView.findViewById<View>(R.id.delimiter).setBackgroundColor(getColorInt(style.outgoingMessageTextColor))
+        setUpProgressButton(circularProgressButton)
         loader.invisible()
         circularProgressButton.invisible()
     }

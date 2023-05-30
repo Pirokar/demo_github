@@ -86,11 +86,15 @@ open class ThreadsLibBase protected constructor(context: Context) {
     val socketResponseMapProcessor: FlowableProcessor<Map<String, Any>>
         get() = chatUpdateProcessor.socketResponseMapProcessor
 
-    protected open fun initUser(userInfoBuilder: UserInfoBuilder, forceRegistration: Boolean = false, callback: () -> Unit) {
+    protected open fun initUser(
+        userInfoBuilder: UserInfoBuilder,
+        forceRegistration: Boolean = false,
+        callback: (isAuthorized: Boolean) -> Unit
+    ) {
         InitialisationConstants.chatState = ChatState.INIT_USER
         clientUseCase.saveUserInfo(userInfoBuilder)
+        BaseConfig.instance.transport.sendInit(forceRegistration)
         if (!ChatFragment.isShown && forceRegistration) {
-            BaseConfig.instance.transport.sendInit(true)
             BaseConfig.instance.transport.closeWebSocket()
         }
     }

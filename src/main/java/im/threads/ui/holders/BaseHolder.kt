@@ -139,17 +139,14 @@ abstract class BaseHolder internal constructor(
 
     fun setUpProgressButton(button: CircularProgressButton) {
         val chatStyle = style
-        val downloadButtonTintResId = if (chatStyle.chatBodyIconsTint == 0) {
-            chatStyle.downloadButtonTintResId
-        } else {
-            chatStyle.chatBodyIconsTint
-        }
+        val downloadButtonTintResId = chatStyle.downloadButtonTintResId
         val startDownload = setUpDrawable(chatStyle.startDownloadIconResId, downloadButtonTintResId)
         val inProgress = setUpDrawable(chatStyle.inProgressIconResId, downloadButtonTintResId)
         val completed = setUpDrawable(chatStyle.completedIconResId, downloadButtonTintResId)
         button.setStartDownloadDrawable(startDownload)
         button.setInProgress(inProgress)
         button.setCompletedDrawable(completed)
+        button.setBackgroundColorResId(style.downloadButtonBackgroundTintResId)
     }
 
     fun onClear() {
@@ -192,11 +189,6 @@ abstract class BaseHolder internal constructor(
     ) {
         if (phrase.formattedPhrase.isNullOrBlank()) {
             textView.setText(phrase.phraseText?.trimIndent(), TextView.BufferType.NORMAL)
-            setTextWithHighlighting(
-                textView,
-                style.incomingMarkdownConfiguration.isLinkUnderlined,
-                url
-            )
         } else {
             (textView as? BubbleMessageTextView)?.let {
                 setMovementMethod(it)
@@ -206,6 +198,11 @@ abstract class BaseHolder internal constructor(
                 textView.setText(phrase.phraseText?.trimIndent(), TextView.BufferType.NORMAL)
             }
         }
+        setTextWithHighlighting(
+            textView,
+            style.incomingMarkdownConfiguration.isLinkUnderlined,
+            url
+        )
     }
 
     /**
