@@ -1,181 +1,122 @@
-package im.threads.business.models;
+package im.threads.business.models
 
-import androidx.core.util.ObjectsCompat;
+import androidx.core.util.ObjectsCompat
+import com.google.gson.annotations.SerializedName
 
-import com.google.gson.annotations.SerializedName;
+class ConsultConnectionMessage : ConsultChatPhrase, ChatItem, SystemMessage {
+    val connectionType: String?
+    val name: String?
+    val sex: Boolean
+    val status: String?
+    val uuid: String?
+    val title: String?
+    val orgUnit: String?
+    val role: String?
+    private val text: String?
+    override val threadId: Long
+    override val timeStamp: Long
 
-public final class ConsultConnectionMessage extends ConsultChatPhrase implements ChatItem, SystemMessage {
-
-    private final String type;
-    private final String name;
-    private final boolean sex;
-    private final long date;
-    private final String status;
-    private final String uuid; //This this a mfms messageId required for read status updates
-    private final String title;
-    private final String orgUnit;
-    private final String role;
     @SerializedName("display")
-    private final boolean displayMessage;
-    private final String text;
-    private final Long threadId;
+    val isDisplayMessage: Boolean
 
     /**
      * Используется в старой БД.
      */
-    @Deprecated
-    public ConsultConnectionMessage(
-            String uuid,
-            String consultId,
-            String type,
-            String name,
-            boolean sex,
-            long date,
-            String avatarPath,
-            String status,
-            String title,
-            String orgUnit,
-            boolean displayMessage,
-            String text,
-            Long threadId
-    ) {
-        super(avatarPath, consultId);
-        this.uuid = uuid;
-        this.type = type;
-        this.name = name;
-        this.sex = sex;
-        this.date = date;
-        this.status = status;
-        this.title = title;
-        this.orgUnit = orgUnit;
-        this.role = null;
-        this.displayMessage = displayMessage;
-        this.text = text;
-        this.threadId = threadId;
+    @Deprecated("")
+    constructor(
+        uuid: String?,
+        consultId: String?,
+        type: String?,
+        name: String?,
+        sex: Boolean,
+        date: Long,
+        avatarPath: String?,
+        status: String?,
+        title: String?,
+        orgUnit: String?,
+        displayMessage: Boolean,
+        text: String?,
+        threadId: Long
+    ) : super(avatarPath, consultId) {
+        this.uuid = uuid
+        connectionType = type
+        this.name = name
+        this.sex = sex
+        timeStamp = date
+        this.status = status
+        this.title = title
+        this.orgUnit = orgUnit
+        role = null
+        isDisplayMessage = displayMessage
+        this.text = text
+        this.threadId = threadId
     }
 
-    public ConsultConnectionMessage(
-            String uuid,
-            String consultId,
-            String type,
-            String name,
-            boolean sex,
-            long date,
-            String avatarPath,
-            String status,
-            String title,
-            String orgUnit,
-            String role,
-            boolean displayMessage,
-            String text,
-            Long threadId
-    ) {
-        super(avatarPath, consultId);
-        this.uuid = uuid;
-        this.type = type;
-        this.name = name;
-        this.sex = sex;
-        this.date = date;
-        this.status = status;
-        this.title = title;
-        this.orgUnit = orgUnit;
-        this.role = role;
-        this.displayMessage = displayMessage;
-        this.text = text;
-        this.threadId = threadId;
+    constructor(
+        uuid: String?,
+        consultId: String?,
+        type: String?,
+        name: String?,
+        sex: Boolean,
+        date: Long,
+        avatarPath: String?,
+        status: String?,
+        title: String?,
+        orgUnit: String?,
+        role: String?,
+        displayMessage: Boolean,
+        text: String?,
+        threadId: Long
+    ) : super(avatarPath, consultId) {
+        this.uuid = uuid
+        connectionType = type
+        this.name = name
+        this.sex = sex
+        timeStamp = date
+        this.status = status
+        this.title = title
+        this.orgUnit = orgUnit
+        this.role = role
+        isDisplayMessage = displayMessage
+        this.text = text
+        this.threadId = threadId
     }
 
-    public String getUuid() {
-        return uuid;
+    override fun getType(): String {
+        return connectionType ?: ""
     }
 
-    public String getName() {
-        return name;
+    override fun getText(): String {
+        return text ?: ""
     }
 
-    public boolean getSex() {
-        return sex;
-    }
-
-    @Override
-    public long getTimeStamp() {
-        return date;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getOrgUnit() {
-        return orgUnit;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public String getConnectionType() {
-        return type;
-    }
-
-    public boolean isSex() {
-        return sex;
-    }
-
-    public long getDate() {
-        return date;
-    }
-
-    public boolean isDisplayMessage() {
-        return displayMessage;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    @Override
-    public boolean isTheSameItem(ChatItem otherItem) {
-        if (otherItem instanceof ConsultConnectionMessage) {
-            return ObjectsCompat.equals(this.uuid, ((ConsultConnectionMessage) otherItem).uuid);
+    override fun isTheSameItem(otherItem: ChatItem?): Boolean {
+        return if (otherItem is ConsultConnectionMessage) {
+            ObjectsCompat.equals(uuid, otherItem.uuid)
+        } else {
+            false
         }
-        return false;
     }
 
-    @Override
-    public Long getThreadId() {
-        return threadId;
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || javaClass != other.javaClass) return false
+        val that = other as ConsultConnectionMessage
+        return sex == that.sex && timeStamp == that.timeStamp && isDisplayMessage == that.isDisplayMessage &&
+            ObjectsCompat.equals(uuid, that.uuid) &&
+            ObjectsCompat.equals(connectionType, that.connectionType) &&
+            ObjectsCompat.equals(name, that.name) &&
+            ObjectsCompat.equals(status, that.status) &&
+            ObjectsCompat.equals(title, that.title) &&
+            ObjectsCompat.equals(orgUnit, that.orgUnit) &&
+            ObjectsCompat.equals(role, that.role) &&
+            ObjectsCompat.equals(text, that.text)
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ConsultConnectionMessage that = (ConsultConnectionMessage) o;
-        return sex == that.sex &&
-                date == that.date &&
-                displayMessage == that.displayMessage &&
-                ObjectsCompat.equals(uuid, that.uuid) &&
-                ObjectsCompat.equals(type, that.type) &&
-                ObjectsCompat.equals(name, that.name) &&
-                ObjectsCompat.equals(status, that.status) &&
-                ObjectsCompat.equals(title, that.title) &&
-                ObjectsCompat.equals(orgUnit, that.orgUnit) &&
-                ObjectsCompat.equals(role, that.role) &&
-                ObjectsCompat.equals(text, that.text);
-    }
-
-    @Override
-    public int hashCode() {
-        return ObjectsCompat.hash(uuid, type, name, sex, date, status,
-                title, orgUnit, role, displayMessage, text);
+    override fun hashCode(): Int {
+        return ObjectsCompat.hash(
+            uuid, connectionType, name, sex, timeStamp, status,
+            title, orgUnit, role, isDisplayMessage, text
+        )
     }
 }

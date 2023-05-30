@@ -78,7 +78,7 @@ object HistoryParser {
                             uuid, operatorId,
                             message.type, name, sex, timeStamp, photoUrl,
                             null, null, orgUnit, role, message.isDisplay,
-                            message.text, message.threadId
+                            message.text, message.threadId ?: 0L
                         )
                     )
                     ChatItemType.SURVEY -> {
