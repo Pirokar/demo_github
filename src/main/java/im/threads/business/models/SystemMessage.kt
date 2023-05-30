@@ -1,6 +1,6 @@
-package im.threads.business.models;
+package im.threads.business.models
 
-public interface SystemMessage {
-    String getText();
-    String getType();
+interface SystemMessage {
+    fun getText(): String
+    fun getType(): String
 }

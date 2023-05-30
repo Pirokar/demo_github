@@ -9,9 +9,9 @@ fun List<ChatItem>.splitSurveyQuestions(): List<ChatItem> {
         if (item !is Survey) {
             newItems.add(item)
         } else {
-            item.questions.forEach { question ->
+            item.questions?.forEach { question ->
                 val newItem = item.copy()
-                newItem.questions = listOf(question)
+                newItem.questions = arrayListOf(question)
                 newItems.add(newItem)
             }
         }

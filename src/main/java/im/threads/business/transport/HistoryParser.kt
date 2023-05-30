@@ -85,9 +85,10 @@ object HistoryParser {
                         val survey = getSurveyFromJsonString(message.text ?: "")
                         if (survey != null) {
                             survey.isRead = message.isRead
-                            survey.phraseTimeStamp = message.timeStamp
-                            for (questionDTO in survey.questions) {
-                                questionDTO.phraseTimeStamp = message.timeStamp
+                            survey.timeStamp = message.timeStamp
+
+                            survey.questions?.indices?.forEach { index ->
+                                survey.questions!![index].phraseTimeStamp = message.timeStamp
                             }
                             out.add(survey)
                         }
@@ -96,9 +97,9 @@ object HistoryParser {
                     ChatItemType.REQUEST_CLOSE_THREAD -> out.add(
                         RequestResolveThread(
                             uuid,
-                            message.hideAfter,
+                            message.hideAfter ?: 0,
                             timeStamp,
-                            message.threadId,
+                            message.threadId ?: 0,
                             message.isRead
                         )
                     )
@@ -179,11 +180,13 @@ object HistoryParser {
         return try {
             val survey = BaseConfig.instance.gson.fromJson(text, Survey::class.java)
             val time = Date().time
-            survey.phraseTimeStamp = time
+            survey.timeStamp = time
             survey.sentState = MessageStatus.FAILED
             survey.isDisplayMessage = true
-            for (questionDTO in survey.questions) {
-                questionDTO.phraseTimeStamp = time
+            if (survey.questions != null) {
+                for (questionDTO in survey.questions!!) {
+                    questionDTO.phraseTimeStamp = time
+                }
             }
             survey
         } catch (e: JsonSyntaxException) {
@@ -209,12 +212,12 @@ object HistoryParser {
         question.scale = message.scale ?: 0
         question.sendingId = message.sendingId ?: 0
         question.simple = message.isSimple
-        survey.questions = listOf(question)
+        survey.questions = arrayListOf(question)
         return survey
     }
 
     private fun getSystemMessageFromHistory(message: MessageFromHistory): SimpleSystemMessage {
-        return SimpleSystemMessage(message.uuid, message.type, message.timeStamp, message.text, message.threadId)
+        return SimpleSystemMessage(message.uuid, message.type, message.timeStamp, message.text, message.threadId ?: 0)
     }
 
     private fun quoteFromList(quotes: List<MessageFromHistory?>): Quote? {
@@ -262,7 +265,7 @@ object HistoryParser {
                 var size: Long = 0
                 val metaData = attachment.optional
                 if (metaData != null) {
-                    size = metaData.size
+                    size = metaData.size ?: 0
                 }
                 fileDescription = FileDescription(
                     null,

@@ -9,7 +9,6 @@ import android.net.ConnectivityManager
 import androidx.annotation.MainThread
 import androidx.core.util.Consumer
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.google.gson.JsonObject
 import im.threads.R
 import im.threads.business.broadcastReceivers.ProgressReceiver
 import im.threads.business.chatUpdates.ChatUpdateProcessor
@@ -95,7 +94,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import retrofit2.Response
-import java.util.Date
 import java.util.concurrent.TimeUnit
 
 /**
@@ -674,14 +672,6 @@ class ChatController private constructor() {
             )
         }
 
-    private fun getScheduleInfo(fullMessage: JsonObject?): ScheduleInfo? {
-        return fullMessage?.get("content")?.let {
-            val scheduleInfo = BaseConfig.instance.gson.fromJson(it, ScheduleInfo::class.java)
-            scheduleInfo.date = Date().time
-            scheduleInfo
-        }
-    }
-
     fun downloadMessagesTillEnd(): Single<List<ChatItem>> {
         return messenger.downloadMessagesTillEnd()
     }
@@ -958,47 +948,59 @@ class ChatController private constructor() {
             Flowable.fromPublisher(chatUpdateProcessor.newMessageProcessor)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext { chatItem: ChatItem ->
-                    if (chatItem is MessageRead) {
-                        val readMessagesIds = chatItem.messageId
-                        for (readId in readMessagesIds) {
-                            val databaseItem = database.getChatItemByCorrelationId(readId)
-                            (databaseItem as UserPhrase?)?.let { userPhrase ->
-                                userPhrase.id?.let {
-                                    info("Sending read status to update processor. CorrelationId: $it")
-                                    if (!chatUpdateProcessor.outgoingMessageStatusChangedProcessor.hasSubscribers()) {
-                                        subscribeToOutgoingMessageStatusChanged()
+                    when (chatItem) {
+                        is MessageRead -> {
+                            val readMessagesIds = chatItem.messageId
+                            for (readId in readMessagesIds) {
+                                val databaseItem = database.getChatItemByCorrelationId(readId)
+                                (databaseItem as UserPhrase?)?.let { userPhrase ->
+                                    userPhrase.id?.let {
+                                        info("Sending read status to update processor. CorrelationId: $it")
+                                        if (!chatUpdateProcessor.outgoingMessageStatusChangedProcessor.hasSubscribers()) {
+                                            subscribeToOutgoingMessageStatusChanged()
+                                        }
+                                        chatUpdateProcessor.postOutgoingMessageStatusChanged(listOf(Status(it, status = MessageStatus.READ)))
                                     }
-                                    chatUpdateProcessor.postOutgoingMessageStatusChanged(listOf(Status(it, status = MessageStatus.READ)))
                                 }
                             }
+                            return@doOnNext
                         }
-                        return@doOnNext
-                    } else if (chatItem is ScheduleInfo) {
-                        currentScheduleInfo = chatItem
-                        currentScheduleInfo?.calculateServerTimeDiff()
-                        refreshUserInputState()
-                        if (!isChatWorking) {
-                            consultWriter.isSearchingConsult = false
-                            fragment?.removeSearching()
-                            fragment?.setTitleStateDefault()
+
+                        is ScheduleInfo -> {
+                            currentScheduleInfo = chatItem
+                            currentScheduleInfo?.calculateServerTimeDiff()
+                            refreshUserInputState()
+                            if (!isChatWorking) {
+                                consultWriter.isSearchingConsult = false
+                                fragment?.removeSearching()
+                                fragment?.setTitleStateDefault()
+                            }
+                            fragment?.addChatItem(currentScheduleInfo)
                         }
-                        fragment?.addChatItem(currentScheduleInfo)
-                    } else if (chatItem is ConsultConnectionMessage) {
-                        processConsultConnectionMessage(chatItem)
-                    } else if (chatItem is SearchingConsult) {
-                        fragment?.setStateSearchingConsult()
-                        consultWriter.isSearchingConsult = true
-                        return@doOnNext
-                    } else if (chatItem is SimpleSystemMessage) {
-                        processSimpleSystemMessage(chatItem)
-                    } else if (chatItem is ConsultPhrase) {
-                        refreshUserInputState(chatItem.isBlockInput)
+
+                        is ConsultConnectionMessage -> {
+                            processConsultConnectionMessage(chatItem)
+                        }
+
+                        is SearchingConsult -> {
+                            fragment?.setStateSearchingConsult()
+                            consultWriter.isSearchingConsult = true
+                            return@doOnNext
+                        }
+
+                        is SimpleSystemMessage -> {
+                            processSimpleSystemMessage(chatItem)
+                        }
+
+                        is ConsultPhrase -> {
+                            refreshUserInputState(chatItem.isBlockInput)
+                        }
                     }
                     addMessage(chatItem)
                 }
                 .filter { chatItem: ChatItem? -> chatItem is Hidable }
                 .map { chatItem: ChatItem -> chatItem as Hidable }
-                .delay { item: Hidable -> Flowable.timer(item.hideAfter, TimeUnit.SECONDS) }
+                .delay { item: Hidable -> Flowable.timer(item.hideAfter ?: 0, TimeUnit.SECONDS) }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                     { hidable: Hidable? ->
@@ -1181,7 +1183,7 @@ class ChatController private constructor() {
      */
     private fun addMessage(chatItem: ChatItem) {
         if (chatItem is Survey) {
-            chatItem.questions.forEach { it.generateCorrelationId() }
+            chatItem.questions?.forEach { it.generateCorrelationId() }
         }
         database.putChatItem(chatItem)
         UnreadMessagesController.INSTANCE.refreshUnreadMessagesCount()
@@ -1224,7 +1226,7 @@ class ChatController private constructor() {
         // или новое расписание в котором сейчас чат работает
         // - нужно удалить расписание из чата
         if (chatItem is ConsultPhrase ||
-            chatItem is ConsultConnectionMessage && ChatItemType.OPERATOR_JOINED.name == chatItem.type ||
+            chatItem is ConsultConnectionMessage && ChatItemType.OPERATOR_JOINED.name == chatItem.getType() ||
             chatItem is ScheduleInfo && chatItem.isChatWorking
         ) {
             if (fragment?.isAdded == true) {
@@ -1358,7 +1360,7 @@ class ChatController private constructor() {
             if (chatItem is SystemMessage) {
                 val threadId = chatItem.threadId
                 if (threadId != null && threadId >= threadId) {
-                    val type = (chatItem as SystemMessage).type
+                    val type = (chatItem as SystemMessage).getType()
                     if (ChatItemType.OPERATOR_JOINED.toString().equals(type, ignoreCase = true) ||
                         ChatItemType.THREAD_ENQUEUED.toString().equals(type, ignoreCase = true) ||
                         ChatItemType.THREAD_WILL_BE_REASSIGNED.toString()
@@ -1387,11 +1389,9 @@ class ChatController private constructor() {
 
     @MainThread
     private fun processConsultConnectionMessage(ccm: ConsultConnectionMessage) {
-        if (ccm.type.equals(ChatItemType.OPERATOR_JOINED.name, ignoreCase = true)) {
-            if (ccm.threadId != null) {
-                threadId = ccm.threadId ?: 0L
-                fragment?.setCurrentThreadId(ccm.threadId ?: 0L)
-            }
+        if (ccm.getType().equals(ChatItemType.OPERATOR_JOINED.name, ignoreCase = true)) {
+            threadId = ccm.threadId
+            fragment?.setCurrentThreadId(ccm.threadId)
             consultWriter.isSearchingConsult = false
             consultWriter.setCurrentConsultInfo(ccm)
             fragment?.setStateConsultConnected(
@@ -1409,7 +1409,7 @@ class ChatController private constructor() {
 
     @MainThread
     private fun processSimpleSystemMessage(systemMessage: SimpleSystemMessage) {
-        val type = systemMessage.type
+        val type = systemMessage.getType()
         if (ChatItemType.THREAD_CLOSED.name.equals(type, ignoreCase = true)) {
             threadId = -1L
             removeResolveRequest()
@@ -1418,10 +1418,8 @@ class ChatController private constructor() {
                 fragment?.setTitleStateDefault()
             }
         } else {
-            if (systemMessage.threadId != null) {
-                threadId = systemMessage.threadId ?: 0L
-                fragment?.setCurrentThreadId(systemMessage.threadId ?: 0L)
-            }
+            threadId = systemMessage.threadId
+            fragment?.setCurrentThreadId(systemMessage.threadId)
             if (ChatItemType.THREAD_ENQUEUED.name.equals(type, ignoreCase = true) ||
                 ChatItemType.THREAD_WILL_BE_REASSIGNED.name.equals(type, ignoreCase = true) ||
                 ChatItemType.AVERAGE_WAIT_TIME.name.equals(type, ignoreCase = true)

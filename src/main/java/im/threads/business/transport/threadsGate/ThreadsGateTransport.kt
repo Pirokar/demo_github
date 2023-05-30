@@ -135,10 +135,10 @@ class ThreadsGateTransport(
     }
 
     override fun sendRatingDone(survey: Survey) {
-        if (survey.questions.isNotEmpty()) {
+        if (!survey.questions.isNullOrEmpty()) {
             val content = outgoingMessageCreator.createRatingDoneMessage(survey)
             val firstPartOfCorrelationId = "${ChatItemType.SURVEY_QUESTION_ANSWER.name}$CORRELATION_ID_DIVIDER"
-            val secondPartOfCorrelationId = "${survey.sendingId}$CORRELATION_ID_DIVIDER${survey.questions.first().correlationId}"
+            val secondPartOfCorrelationId = "${survey.sendingId}$CORRELATION_ID_DIVIDER${survey.questions?.first()?.correlationId}"
             val correlationId = "$firstPartOfCorrelationId$secondPartOfCorrelationId"
             surveysInProcess[survey.sendingId] = survey
             sendMessage(content, true, correlationId)
@@ -508,7 +508,7 @@ class ThreadsGateTransport(
                                         if (questions.isEmpty()) {
                                             surveysInProcess.remove(sendingId)
                                         } else {
-                                            surveysInProcess[sendingId]?.questions = questions
+                                            surveysInProcess[sendingId]?.questions = ArrayList(questions)
                                         }
                                     } ?: surveysInProcess.remove(sendingId)
                                 }

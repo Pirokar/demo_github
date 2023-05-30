@@ -44,14 +44,15 @@ class RatingThumbsSentViewHolder(parent: ViewGroup) : BaseHolder(
         if (survey.isRead) {
             survey.sentState = MessageStatus.READ
         }
-        val rate = survey.questions[0].rate
+        val firstQuestion = survey.questions?.first()
+        val rate = firstQuestion?.rate
         if (rate == 1) {
             thumb.setImageResource(style.binarySurveyLikeSelectedIconResId)
         } else {
             thumb.setImageResource(style.binarySurveyDislikeSelectedIconResId)
         }
         thumb.setColorFilter(ContextCompat.getColor(itemView.context, style.surveyFinalColorFilterResId), PorterDuff.Mode.SRC_ATOP)
-        header.text = survey.questions[0].text
+        header.text = firstQuestion?.text
         timeStampTextView.text = sdf.format(Date(survey.timeStamp))
         val drawable: Drawable?
         when (survey.sentState ?: MessageStatus.FAILED) {

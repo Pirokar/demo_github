@@ -50,12 +50,13 @@ class RatingStarsSentViewHolder(parent: ViewGroup) : BaseHolder(
         if (survey.isRead) {
             survey.sentState = MessageStatus.READ
         }
-        val rate = survey.questions[0].rate
-        val scale = survey.questions[0].scale
+        val firstQuestion = survey.questions?.first()
+        val rate = firstQuestion?.rate
+        val scale = firstQuestion?.scale
         rateStarsCount.text = rate.toString()
         totalStarsCount.text = scale.toString()
         timeStampTextView.text = sdf.format(Date(survey.timeStamp))
-        mHeader.text = survey.questions[0].text
+        mHeader.text = firstQuestion?.text
         val drawable: Drawable?
         when (survey.sentState ?: MessageStatus.FAILED) {
             MessageStatus.SENDING -> {

@@ -4,6 +4,7 @@ import androidx.annotation.Nullable;
 
 import com.google.gson.JsonObject;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -145,10 +146,11 @@ public final class MessageParser {
         SurveyContent content = BaseConfig.instance.gson.fromJson(fullMessage, SurveyContent.class);
         Survey survey = BaseConfig.instance.gson.fromJson(content.getText(), Survey.class);
         survey.setUuid(content.getUuid());
-        survey.setPhraseTimeStamp(sentAt);
+        survey.setTimeStamp(sentAt);
         survey.setSentState(MessageStatus.FAILED);
         survey.setDisplayMessage(true);
         survey.setRead(false);
+        ArrayList questions = survey.getQuestions();
         for (final QuestionDTO questionDTO : survey.getQuestions()) {
             questionDTO.setPhraseTimeStamp(sentAt);
         }

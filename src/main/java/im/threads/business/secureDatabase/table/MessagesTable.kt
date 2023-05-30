@@ -285,7 +285,7 @@ class MessagesTable(
             insertOrUpdateSurvey(sqlHelper, chatItem)
         }
         if (chatItem is RequestResolveThread) {
-            setOldRequestResolveThreadDisplayMessageToFalse(sqlHelper, chatItem.uuid)
+            setOldRequestResolveThreadDisplayMessageToFalse(sqlHelper, chatItem.uuid ?: "")
             insertOrUpdateMessage(sqlHelper, getRequestResolveThreadCV(chatItem))
             return true
         }
@@ -653,7 +653,7 @@ class MessagesTable(
             cursorGetBool(c, COLUMN_IS_READ),
             cursorGetBool(c, COLUMN_DISPLAY_MESSAGE)
         )
-        survey.questions = questionsTable.getQuestions(sqlHelper, surveySendingId)
+        survey.questions = ArrayList(questionsTable.getQuestions(sqlHelper, surveySendingId))
         return survey
     }
 
@@ -718,7 +718,7 @@ class MessagesTable(
         cv.put(COLUMN_CONSULT_ROLE, consultConnectionMessage.role)
         cv.put(COLUMN_MESSAGE_CORRELATION_ID, consultConnectionMessage.uuid)
         cv.put(COLUMN_DISPLAY_MESSAGE, consultConnectionMessage.isDisplayMessage)
-        cv.put(COLUMN_PHRASE, consultConnectionMessage.text)
+        cv.put(COLUMN_PHRASE, consultConnectionMessage.getText())
         cv.put(COLUMN_THREAD_ID, consultConnectionMessage.threadId)
         return cv
     }
@@ -727,9 +727,9 @@ class MessagesTable(
         val cv = ContentValues()
         cv.put(COLUMN_MESSAGE_CORRELATION_ID, simpleSystemMessage.uuid)
         cv.put(COLUMN_MESSAGE_TYPE, MessageType.SYSTEM_MESSAGE.ordinal)
-        cv.put(COLUMN_CONNECTION_TYPE, simpleSystemMessage.type)
+        cv.put(COLUMN_CONNECTION_TYPE, simpleSystemMessage.getType())
         cv.put(COLUMN_TIMESTAMP, simpleSystemMessage.timeStamp)
-        cv.put(COLUMN_PHRASE, simpleSystemMessage.text)
+        cv.put(COLUMN_PHRASE, simpleSystemMessage.getText())
         cv.put(COLUMN_THREAD_ID, simpleSystemMessage.threadId)
         return cv
     }
@@ -828,7 +828,7 @@ class MessagesTable(
                     .insert(TABLE_MESSAGES, null, cv)
             }
         }
-        questionsTable.putQuestions(sqlHelper, survey.questions, survey.sendingId)
+        questionsTable.putQuestions(sqlHelper, survey.questions ?: arrayListOf(), survey.sendingId)
     }
 
     private fun setNotSentSurveyDisplayMessageToFalse(

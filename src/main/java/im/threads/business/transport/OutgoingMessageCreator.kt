@@ -87,9 +87,11 @@ class OutgoingMessageCreator(
             addProperty(MessageAttributes.CLIENT_ID, userInfo?.clientId)
             addProperty(MessageAttributes.TYPE, ChatItemType.SURVEY_QUESTION_ANSWER.name)
             addProperty("sendingId", survey.sendingId)
-            addProperty("questionId", survey.questions[0].id)
-            addProperty("rate", survey.questions[0].rate)
-            addProperty("text", survey.questions[0].text)
+            if (!survey.questions.isNullOrEmpty()) {
+                addProperty("questionId", survey.questions!![0].id)
+                addProperty("rate", survey.questions!![0].rate)
+                addProperty("text", survey.questions!![0].text)
+            }
             addProperty(MessageAttributes.APP_MARKER_KEY, userInfo?.appMarker)
             addProperty(MessageAttributes.AUTHORIZED, true)
         }

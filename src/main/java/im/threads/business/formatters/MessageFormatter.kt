@@ -35,12 +35,12 @@ object MessageFormatter {
             if (ci is ConsultConnectionMessage) {
                 val ccm = ci
                 consultName = ccm.name
-                phrase = ccm.text
+                phrase = ccm.getText()
                 sex = ccm.sex
                 avatarPath = ci.avatarPath
             }
             if (ci is SimpleSystemMessage) {
-                phrase = ci.text
+                phrase = ci.getText()
             }
             if (ci is ConsultPhrase) {
                 isNeedAnswer = true

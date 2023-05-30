@@ -2628,8 +2628,8 @@ class ChatFragment :
         override fun onSystemMessageClick(systemMessage: SystemMessage) {}
         override fun onRatingClick(survey: Survey, rating: Int) {
             val activity: Activity? = activity
-            if (activity != null) {
-                survey.questions[0].rate = rating
+            if (activity != null && !survey.questions.isNullOrEmpty()) {
+                survey.questions!![0].rate = rating
                 chatController.onRatingClick(survey)
             }
         }
@@ -2649,8 +2649,8 @@ class ChatFragment :
                         null,
                         null,
                         null,
-                        quickReply.text.trim { it <= ' ' },
-                        quickReply.text.isLastCopyText()
+                        quickReply.text?.trim { it <= ' ' },
+                        quickReply.text?.isLastCopyText() ?: false
                     )
                 ),
                 false
