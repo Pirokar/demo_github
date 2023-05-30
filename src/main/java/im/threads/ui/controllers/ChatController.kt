@@ -134,7 +134,7 @@ class ChatController private constructor() {
     private var seeker = ChatMessageSeeker()
     private var lastFancySearchDate: Long = 0
     private var lastSearchQuery: String? = ""
-    private var isAllMessagesDownloaded = false
+    internal var isAllMessagesDownloaded = false
     private var isDownloadingMessages = false
     var firstUnreadUuidId: String? = null
         private set
@@ -343,13 +343,13 @@ class ChatController private constructor() {
         serverItems.addAll(sendingItems)
     }
 
-    fun requestItems(currentItemsCount: Int, fromBeginning: Boolean): Observable<List<ChatItem>>? {
+    fun requestItems(itemsCountToGet: Int): Observable<List<ChatItem>>? {
         return Observable
             .fromCallable {
                 if (instance?.fragment != null && ThreadsLibBase.getInstance().isUserInitialized) {
                     val count = BaseConfig.instance.historyLoadingCount
                     try {
-                        val response = historyLoader.getHistorySync(null, fromBeginning)
+                        val response = historyLoader.getHistorySync(itemsCountToGet, false)
                         var serverItems = HistoryParser.getChatItems(response)
                         serverItems = addLocalUserMessages(serverItems)
                         updateDoubleItems(serverItems as ArrayList<ChatItem>)
@@ -359,10 +359,11 @@ class ChatController private constructor() {
                         processSystemMessages(serverItems)
                         return@fromCallable setLastAvatars(serverItems)
                     } catch (e: Exception) {
+                        fragment?.hideProgressBar()
                         error(ThreadsApi.REST_TAG, "Requesting history items error", e)
                         return@fromCallable setLastAvatars(
                             database.getChatItems(
-                                currentItemsCount,
+                                itemsCountToGet,
                                 count
                             )
                         )
@@ -573,6 +574,7 @@ class ChatController private constructor() {
 
     fun loadHistory(fromBeginning: Boolean = true, applyUiChanges: Boolean = true) {
         if (isAllMessagesDownloaded) {
+            fragment?.hideProgressBar()
             return
         }
         synchronized(this) {
