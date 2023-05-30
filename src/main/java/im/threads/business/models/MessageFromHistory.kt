@@ -1,274 +1,97 @@
-package im.threads.business.models;
+package im.threads.business.models
 
-import androidx.annotation.Nullable;
-import androidx.core.util.ObjectsCompat;
+import androidx.core.util.ObjectsCompat
+import im.threads.business.utils.DateHelper
 
-import java.util.List;
+class MessageFromHistory : ChatItem {
+    var uuid: String? = null
+    var clientId: String? = null
+    override var threadId: Long? = null
+    var operator: Operator? = null
+    var client: Client? = null
+    var receivedDate: String? = null
+    var channel: Channel? = null
+    var isRead = false
+    var formattedText: String? = null
+    var text: String? = null
+    var speechText: String? = null
+    var attachments: List<Attachment>? = null
+    var quickReplies: List<QuickReply>? = null
+    val settings: Settings? = null
+    var quotes: List<MessageFromHistory>? = null
+    var type: String? = null
+    var isDisplay = false
+    val speechStatus: String? = null
 
-import im.threads.business.utils.DateHelper;
+    // SURVEY
+    val hideAfter: Long? = null
 
-public final class MessageFromHistory implements ChatItem {
-    private String uuid;  //This this a mfms messageId required for read status updates
-    private String clientId;
-    private Long threadId;
-    private Operator operator;
-    private Client client;
-    private String receivedDate;
-    private Channel channel;
-    private boolean read;
-    private String formattedText;
-    private String text;
-    private String speechText;
-    private List<Attachment> attachments;
-    private List<QuickReply> quickReplies;
-    @Nullable
-    private Settings settings;
-    private List<MessageFromHistory> quotes;
-    private String type;
-    private boolean display;
-    private String speechStatus;
+    // SURVEY ANSWERED
+    var sendingId: Long? = null
+    var questionId: Long? = null
+    var rate: Int? = null
+    var scale: Int? = null
+    var isSimple = false
+    var errorMock: Boolean? = null
+    override val timeStamp: Long
+        get() = DateHelper.getMessageTimestampFromDateString(receivedDate)
 
-    //SURVEY
-    private Long hideAfter;
-
-    //SURVEY ANSWERED
-    private Long sendingId;
-    private Long questionId;
-    private Integer rate;
-    private Integer scale;
-    private boolean simple;
-    private Boolean errorMock;
-
-    public String getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(String id) {
-        this.uuid = id;
-    }
-
-    public String getClientId() {
-        return clientId;
-    }
-
-    public void setClientId(String clientId) {
-        this.clientId = clientId;
-    }
-
-    public Long getThreadId() {
-        return threadId;
-    }
-
-    public void setThreadId(Long threadId) {
-        this.threadId = threadId;
-    }
-
-    public Operator getOperator() {
-        return operator;
-    }
-
-    public void setOperator(Operator operator) {
-        this.operator = operator;
-    }
-
-    public Client getClient() {
-        return client;
-    }
-
-    public void setClient(Client client) {
-        this.client = client;
-    }
-
-    public String getReceivedDate() {
-        return receivedDate;
-    }
-
-    public void setReceivedDate(String receivedDate) {
-        this.receivedDate = receivedDate;
-    }
-
-    public Channel getChannel() {
-        return channel;
-    }
-
-    public void setChannel(Channel channel) {
-        this.channel = channel;
-    }
-
-    public boolean isRead() {
-        return read;
-    }
-
-    public void setRead(boolean read) {
-        this.read = read;
-    }
-
-    public String getFormattedText() {
-        return formattedText;
-    }
-
-    public void setFormattedText(String formattedText) {
-        this.formattedText = formattedText;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public String getSpeechText() {
-        return speechText;
-    }
-
-    public void setSpeechText(String text) {
-        speechText = text;
-    }
-
-    public List<Attachment> getAttachments() {
-        return attachments;
-    }
-
-    public void setAttachments(List<Attachment> attachments) {
-        this.attachments = attachments;
-    }
-
-    public List<QuickReply> getQuickReplies() {
-        return quickReplies;
-    }
-
-    public void setQuickReplies(List<QuickReply> quickReplies) {
-        this.quickReplies = quickReplies;
-    }
-
-    @Nullable
-    public Settings getSettings() {
-        return settings;
-    }
-
-    public List<MessageFromHistory> getQuotes() {
-        return quotes;
-    }
-
-    public void setQuotes(List<MessageFromHistory> quotes) {
-        this.quotes = quotes;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    @Override
-    public long getTimeStamp() {
-        return DateHelper.getMessageTimestampFromDateString(receivedDate);
-    }
-
-    public boolean isDisplay() {
-        return display;
-    }
-
-    public void setDisplay(boolean display) {
-        this.display = display;
-    }
-
-    public String getSpeechStatus() {
-        return speechStatus;
-    }
-
-    public Long getSendingId() {
-        return sendingId;
-    }
-
-    public void setSendingId(Long sendingId) {
-        this.sendingId = sendingId;
-    }
-
-    public Long getHideAfter() {
-        return hideAfter;
-    }
-
-    public Long getQuestionId() {
-        return questionId;
-    }
-
-    public void setQuestionId(Long questionId) {
-        this.questionId = questionId;
-    }
-
-    public Integer getRate() {
-        return rate;
-    }
-
-    public void setRate(Integer rate) {
-        this.rate = rate;
-    }
-
-    public Integer getScale() {
-        return scale;
-    }
-
-    public void setScale(Integer scale) {
-        this.scale = scale;
-    }
-
-    public boolean isSimple() {
-        return simple;
-    }
-
-    public void setSimple(boolean simple) {
-        this.simple = simple;
-    }
-
-    public Boolean getErrorMock() { return errorMock; }
-
-    public void setErrorMock(Boolean errorMock) {
-        this.errorMock = errorMock;
-    }
-
-    @Override
-    public boolean isTheSameItem(ChatItem otherItem) {
-        if (otherItem instanceof MessageFromHistory) {
-            return ObjectsCompat.equals(this.uuid, ((MessageFromHistory) otherItem).uuid);
+    override fun isTheSameItem(otherItem: ChatItem?): Boolean {
+        return if (otherItem is MessageFromHistory) {
+            ObjectsCompat.equals(uuid, otherItem.uuid)
+        } else {
+            false
         }
-        return false;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        MessageFromHistory that = (MessageFromHistory) o;
-        return read == that.read &&
-                display == that.display &&
-                simple == that.simple &&
-                ObjectsCompat.equals(uuid, that.uuid) &&
-                ObjectsCompat.equals(clientId, that.clientId) &&
-                ObjectsCompat.equals(threadId, that.threadId) &&
-                ObjectsCompat.equals(operator, that.operator) &&
-                ObjectsCompat.equals(client, that.client) &&
-                ObjectsCompat.equals(receivedDate, that.receivedDate) &&
-                ObjectsCompat.equals(channel, that.channel) &&
-                ObjectsCompat.equals(formattedText, that.formattedText) &&
-                ObjectsCompat.equals(text, that.text) &&
-                ObjectsCompat.equals(attachments, that.attachments) &&
-                ObjectsCompat.equals(quickReplies, that.quickReplies) &&
-                ObjectsCompat.equals(quotes, that.quotes) &&
-                ObjectsCompat.equals(type, that.type) &&
-                ObjectsCompat.equals(hideAfter, that.hideAfter) &&
-                ObjectsCompat.equals(sendingId, that.sendingId) &&
-                ObjectsCompat.equals(questionId, that.questionId) &&
-                ObjectsCompat.equals(rate, that.rate) &&
-                ObjectsCompat.equals(scale, that.scale);
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || javaClass != other.javaClass) return false
+        val that = other as MessageFromHistory
+        return isRead == that.isRead && isDisplay == that.isDisplay && isSimple == that.isSimple &&
+            ObjectsCompat.equals(uuid, that.uuid) &&
+            ObjectsCompat.equals(clientId, that.clientId) &&
+            ObjectsCompat.equals(threadId, that.threadId) &&
+            ObjectsCompat.equals(operator, that.operator) &&
+            ObjectsCompat.equals(client, that.client) &&
+            ObjectsCompat.equals(receivedDate, that.receivedDate) &&
+            ObjectsCompat.equals(channel, that.channel) &&
+            ObjectsCompat.equals(formattedText, that.formattedText) &&
+            ObjectsCompat.equals(text, that.text) &&
+            ObjectsCompat.equals(attachments, that.attachments) &&
+            ObjectsCompat.equals(quickReplies, that.quickReplies) &&
+            ObjectsCompat.equals(quotes, that.quotes) &&
+            ObjectsCompat.equals(type, that.type) &&
+            ObjectsCompat.equals(hideAfter, that.hideAfter) &&
+            ObjectsCompat.equals(sendingId, that.sendingId) &&
+            ObjectsCompat.equals(questionId, that.questionId) &&
+            ObjectsCompat.equals(rate, that.rate) &&
+            ObjectsCompat.equals(scale, that.scale)
     }
 
-    @Override
-    public int hashCode() {
-        return ObjectsCompat.hash(uuid, clientId, threadId, operator, client, receivedDate, channel, read, formattedText, text, attachments, quickReplies, quotes, type, display, hideAfter, sendingId, questionId, rate, scale, simple);
+    override fun hashCode(): Int {
+        return ObjectsCompat.hash(
+            uuid,
+            clientId,
+            threadId,
+            operator,
+            client,
+            receivedDate,
+            channel,
+            isRead,
+            formattedText,
+            text,
+            attachments,
+            quickReplies,
+            quotes,
+            type,
+            isDisplay,
+            hideAfter,
+            sendingId,
+            questionId,
+            rate,
+            scale,
+            isSimple
+        )
     }
 }
