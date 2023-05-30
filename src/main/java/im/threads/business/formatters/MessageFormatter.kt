@@ -55,20 +55,20 @@ object MessageFormatter {
                     val fileDescription = ci.fileDescription
                     if (isImage(fileDescription)) {
                         imagesCount++
-                        imagePath = fileDescription!!.downloadPath
+                        imagePath = fileDescription?.downloadPath
                     } else {
                         plainFilesCount++
-                        docName = fileDescription!!.incomingName
+                        docName = fileDescription?.incomingName ?: ""
                     }
                 }
                 if (ci.quote?.fileDescription != null) {
                     val fileDescription = ci.quote.fileDescription
                     if (isImage(fileDescription)) {
                         imagesCount++
-                        imagePath = fileDescription!!.downloadPath
+                        imagePath = fileDescription?.downloadPath
                     } else {
                         plainFilesCount++
-                        docName = fileDescription!!.incomingName
+                        docName = fileDescription?.incomingName ?: ""
                     }
                 }
                 avatarPath = ci.avatarPath

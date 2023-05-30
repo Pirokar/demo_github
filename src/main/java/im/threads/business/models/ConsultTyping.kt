@@ -1,48 +1,24 @@
-package im.threads.business.models;
+package im.threads.business.models
 
-import androidx.core.util.ObjectsCompat;
+import androidx.core.util.ObjectsCompat
 
-public final class ConsultTyping extends ConsultChatPhrase implements ChatItem {
-    private long date;
-
-    @Override
-    public long getTimeStamp() {
-        return date;
+class ConsultTyping(consultId: String?, override var timeStamp: Long, avatarPath: String?) :
+    ConsultChatPhrase(avatarPath, consultId), ChatItem {
+    override fun isTheSameItem(otherItem: ChatItem?): Boolean {
+        return otherItem is ConsultTyping
     }
 
-    public ConsultTyping(String consultId, long date, String avatarPath) {
-        super(avatarPath, consultId);
-        this.date = date;
+    override val threadId: Long?
+        get() = null
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || javaClass != other.javaClass) return false
+        val that = other as ConsultTyping
+        return timeStamp == that.timeStamp
     }
 
-    public void setDate(long date) {
-        this.date = date;
-    }
-
-    public long getDate() {
-        return date;
-    }
-
-    @Override
-    public boolean isTheSameItem(ChatItem otherItem) {
-        return otherItem instanceof ConsultTyping;
-    }
-
-    @Override
-    public Long getThreadId() {
-        return null;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ConsultTyping that = (ConsultTyping) o;
-        return date == that.date;
-    }
-
-    @Override
-    public int hashCode() {
-        return ObjectsCompat.hash(date);
+    override fun hashCode(): Int {
+        return ObjectsCompat.hash(timeStamp)
     }
 }

@@ -1248,7 +1248,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 }
             }
             if (isWithTyping && !(items.get(items.size() - 1) instanceof ConsultTyping)) {
-                ct.setDate(items.get(items.size() - 1).getTimeStamp() + 1);
+                ct.setTimeStamp(items.get(items.size() - 1).getTimeStamp() + 1);
             }
             sortItemsByTimeStamp(items);
             removeAllSpacings(items);

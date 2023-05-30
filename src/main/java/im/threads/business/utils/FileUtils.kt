@@ -51,14 +51,7 @@ object FileUtils {
     }
 
     @JvmStatic
-    fun getFileName(fd: FileDescription): String {
-        if (fd.incomingName != null) {
-            return fd.incomingName
-        } else if (fd.fileUri != null) {
-            return getFileName(fd.fileUri!!)
-        }
-        return ""
-    }
+    fun getFileName(fd: FileDescription) = fd.incomingName ?: getFileName(fd.fileUri)
 
     @JvmStatic
     fun getFileName(uri: Uri?): String {
@@ -131,9 +124,10 @@ object FileUtils {
 
     @JvmStatic
     fun getMimeType(fd: FileDescription): String {
-        if (!TextUtils.isEmpty(fd.mimeType)) {
-            return fd.mimeType
+        if (!fd.mimeType.isNullOrBlank()) {
+            return fd.mimeType ?: ""
         }
+
         return if (fd.fileUri != null) {
             getMimeType(fd.fileUri!!)
         } else {

@@ -1,249 +1,130 @@
-package im.threads.business.models;
+package im.threads.business.models
 
-import android.net.Uri;
-import android.os.Parcel;
-import android.os.Parcelable;
+import android.net.Uri
+import android.os.Parcel
+import android.os.Parcelable
+import android.os.Parcelable.Creator
+import androidx.core.util.ObjectsCompat
+import im.threads.business.models.enums.AttachmentStateEnum
+import im.threads.business.models.enums.AttachmentStateEnum.Companion.fromString
+import im.threads.business.models.enums.ErrorStateEnum
+import im.threads.business.models.enums.ErrorStateEnum.Companion.errorStateEnumFromString
+import io.reactivex.subjects.PublishSubject
 
-import androidx.annotation.Nullable;
-import androidx.core.util.ObjectsCompat;
+class FileDescription(var from: String?, var fileUri: Uri?, var size: Long, var timeStamp: Long) :
+    Parcelable {
+    val onCompleteSubject = PublishSubject.create<FileDescriptionUri>()
+    var downloadPath: String? = null
+    var originalPath: String? = null
+    var incomingName: String? = null
+    var mimeType: String? = null
+    var downloadProgress = 0
+    var isDownloadError = false
+    var state = AttachmentStateEnum.ANY
+    var errorCode = ErrorStateEnum.ANY
+    var errorMessage: String? = ""
 
-import im.threads.business.models.enums.AttachmentStateEnum;
-import im.threads.business.models.enums.ErrorStateEnum;
-import io.reactivex.subjects.PublishSubject;
-
-public final class FileDescription implements Parcelable {
-    public static final Parcelable.Creator<FileDescription> CREATOR = new Creator<>() {
-        @Override
-        public FileDescription createFromParcel(Parcel source) {
-            String state = source.readString();
-            String errorCode = source.readString();
-            String errorMessage = source.readString();
-            String from = source.readString();
-            Uri filePath = source.readParcelable(Uri.class.getClassLoader());
-            String downloadPath = source.readString();
-            String incomingName = source.readString();
-            String originalPath = source.readString();
-            String mimeType = source.readString();
-            long size = source.readLong();
-            long timeStamp = source.readLong();
-            int progress = source.readInt();
-            FileDescription fd = new FileDescription(from, filePath, size, timeStamp);
-            fd.setState(AttachmentStateEnum.fromString(state));
-            fd.setErrorCode(ErrorStateEnum.errorStateEnumFromString(errorCode));
-            fd.setErrorMessage(errorMessage);
-            fd.setIncomingName(incomingName);
-            fd.setMimeType(mimeType);
-            fd.setDownloadPath(downloadPath);
-            fd.setOriginalPath(originalPath);
-            fd.setDownloadProgress(progress);
-            return fd;
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is FileDescription) return false
+        if (size != other.size) return false
+        if (timeStamp != other.timeStamp) return false
+        return if (!ObjectsCompat.equals(mimeType, other.mimeType)) {
+            false
+        } else {
+            ObjectsCompat.equals(
+                from,
+                other.from
+            )
         }
-
-        @Override
-        public FileDescription[] newArray(int size) {
-            return new FileDescription[size];
-        }
-    };
-    private final PublishSubject<FileDescriptionUri> onCompleteSubject = PublishSubject.create();
-    private long size;
-    private String from;
-    private Uri fileUri;
-    private long timeStamp;
-    private String downloadPath;
-    private String originalPath;
-    private String incomingName;
-    private String mimeType = null;
-    private int downloadProgress;
-    private boolean downloadError = false;
-    private AttachmentStateEnum state = AttachmentStateEnum.ANY;
-    private ErrorStateEnum errorCode = ErrorStateEnum.ANY;
-    private String errorMessage = "";
-
-    public FileDescription(String from, Uri fileUri, long size, long timeStamp) {
-        this.from = from;
-        this.fileUri = fileUri;
-        this.size = size;
-        this.timeStamp = timeStamp;
     }
 
-    public String getFrom() {
-        return from;
+    override fun hashCode(): Int {
+        return ObjectsCompat.hash(size, timeStamp, mimeType, from)
     }
 
-    public void setFrom(String header) {
-        this.from = header;
+    override fun describeContents(): Int {
+        return hashCode()
     }
 
-    @Nullable
-    public Uri getFileUri() {
-        return fileUri;
+    override fun writeToParcel(dest: Parcel, flags: Int) {
+        dest.writeString(state.state)
+        dest.writeString(errorCode.state)
+        dest.writeString(errorMessage)
+        dest.writeString(from)
+        dest.writeParcelable(fileUri, 0)
+        dest.writeString(downloadPath)
+        dest.writeString(incomingName)
+        dest.writeString(originalPath)
+        dest.writeString(mimeType)
+        dest.writeLong(size)
+        dest.writeLong(timeStamp)
+        dest.writeInt(downloadProgress)
     }
 
-    public void setFileUri(Uri fileUri) {
-        this.fileUri = fileUri;
-    }
-
-    public long getSize() {
-        return size;
-    }
-
-    public void setSize(long size) {
-        this.size = size;
-    }
-
-    public long getTimeStamp() {
-        return timeStamp;
-    }
-
-    public void setTimeStamp(long timeStamp) {
-        this.timeStamp = timeStamp;
-    }
-
-    @Nullable
-    public String getDownloadPath() {
-        return downloadPath;
-    }
-
-    public void setDownloadPath(String downloadPath) {
-        this.downloadPath = downloadPath;
-    }
-
-    @Nullable
-    public String getOriginalPath() {
-        return originalPath;
-    }
-
-    public void setOriginalPath(String originalPath) {
-        this.originalPath = originalPath;
-    }
-
-    public String getIncomingName() {
-        return incomingName;
-    }
-
-    public void setIncomingName(String incomingName) {
-        this.incomingName = incomingName;
-    }
-
-    public String getMimeType() {
-        return mimeType;
-    }
-
-    public void setMimeType(String mimeType) {
-        this.mimeType = mimeType;
-    }
-
-    public int getDownloadProgress() {
-        return downloadProgress;
-    }
-
-    public void setDownloadProgress(int downloadProgress) {
-        this.downloadProgress = downloadProgress;
-    }
-
-    public boolean isDownloadError() {
-        return downloadError;
-    }
-
-    public void setDownloadError(boolean downloadError) {
-        this.downloadError = downloadError;
-    }
-
-    public AttachmentStateEnum getState() {
-        return state;
-    }
-
-    public void setState(AttachmentStateEnum state) {
-        this.state = state;
-    }
-
-    public ErrorStateEnum getErrorCode() {
-        return errorCode;
-    }
-
-    public void setErrorCode(ErrorStateEnum errorCode) {
-        this.errorCode = errorCode;
-    }
-
-    public String getErrorMessage() {
-        return errorMessage;
-    }
-
-    public void setErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
-    }
-
-    public PublishSubject<FileDescriptionUri> getOnCompleteSubject() {
-        return onCompleteSubject;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof FileDescription)) return false;
-
-        FileDescription that = (FileDescription) o;
-
-        if (size != that.size) return false;
-        if (timeStamp != that.timeStamp) return false;
-        if (!ObjectsCompat.equals(mimeType, that.mimeType)) return false;
-        return ObjectsCompat.equals(from, that.from);
-
-    }
-
-    @Override
-    public int hashCode() {
-        return ObjectsCompat.hash(size, timeStamp, mimeType, from);
-    }
-
-    @Override
-    public int describeContents() {
-        return hashCode();
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(state.getState());
-        dest.writeString(errorCode.getState());
-        dest.writeString(errorMessage);
-        dest.writeString(from);
-        dest.writeParcelable(fileUri, 0);
-        dest.writeString(downloadPath);
-        dest.writeString(incomingName);
-        dest.writeString(originalPath);
-        dest.writeString(mimeType);
-        dest.writeLong(size);
-        dest.writeLong(timeStamp);
-        dest.writeInt(downloadProgress);
-    }
-
-    @Override
-    public String toString() {
+    override fun toString(): String {
         return "FileDescription{" +
-                "from='" + from + '\'' +
-                ", filePath='" + fileUri + '\'' +
-                ", downloadPath='" + downloadPath + '\'' +
-                ", incomingName='" + incomingName + '\'' +
-                ", size=" + size +
-                ", timeStamp=" + timeStamp +
-                ", downloadProgress=" + downloadProgress +
-                ", state=" + state.getState() +
-                ", errorCode=" + errorCode.getState() +
-                ", errorMessage=" + errorMessage +
-                '}';
+            "from='" + from + '\'' +
+            ", filePath='" + fileUri + '\'' +
+            ", downloadPath='" + downloadPath + '\'' +
+            ", incomingName='" + incomingName + '\'' +
+            ", size=" + size +
+            ", timeStamp=" + timeStamp +
+            ", downloadProgress=" + downloadProgress +
+            ", state=" + state.state +
+            ", errorCode=" + errorCode.state +
+            ", errorMessage=" + errorMessage +
+            '}'
     }
 
-    public boolean hasSameContent(FileDescription fileDescription) {
-        if (fileDescription == null) {
-            return false;
+    fun hasSameContent(fileDescription: FileDescription?): Boolean {
+        return if (fileDescription == null) {
+            false
+        } else {
+            (
+                ObjectsCompat.equals(from, fileDescription.from) &&
+                    ObjectsCompat.equals(fileUri, fileDescription.fileUri) &&
+                    ObjectsCompat.equals(timeStamp, fileDescription.timeStamp) &&
+                    ObjectsCompat.equals(downloadPath, fileDescription.downloadPath) &&
+                    ObjectsCompat.equals(size, fileDescription.size) &&
+                    ObjectsCompat.equals(incomingName, fileDescription.incomingName) &&
+                    ObjectsCompat.equals(mimeType, fileDescription.mimeType) &&
+                    ObjectsCompat.equals(downloadProgress, fileDescription.downloadProgress)
+                )
         }
-        return ObjectsCompat.equals(this.from, fileDescription.from)
-                && ObjectsCompat.equals(this.fileUri, fileDescription.fileUri)
-                && ObjectsCompat.equals(this.timeStamp, fileDescription.timeStamp)
-                && ObjectsCompat.equals(this.downloadPath, fileDescription.downloadPath)
-                && ObjectsCompat.equals(this.size, fileDescription.size)
-                && ObjectsCompat.equals(this.incomingName, fileDescription.incomingName)
-                && ObjectsCompat.equals(this.mimeType, fileDescription.mimeType)
-                && ObjectsCompat.equals(this.downloadProgress, fileDescription.downloadProgress);
+    }
+
+    companion object {
+        @JvmField
+        val CREATOR: Creator<FileDescription> = object : Creator<FileDescription> {
+            override fun createFromParcel(source: Parcel): FileDescription {
+                val state = source.readString()
+                val errorCode = source.readString()
+                val errorMessage = source.readString()
+                val from = source.readString()
+                val filePath = source.readParcelable<Uri>(Uri::class.java.classLoader)
+                val downloadPath = source.readString()
+                val incomingName = source.readString()
+                val originalPath = source.readString()
+                val mimeType = source.readString()
+                val size = source.readLong()
+                val timeStamp = source.readLong()
+                val progress = source.readInt()
+                val fd = FileDescription(from, filePath, size, timeStamp)
+                fd.state = fromString(state!!)
+                fd.errorCode = errorStateEnumFromString(errorCode!!)
+                fd.errorMessage = errorMessage
+                fd.incomingName = incomingName
+                fd.mimeType = mimeType
+                fd.downloadPath = downloadPath
+                fd.originalPath = originalPath
+                fd.downloadProgress = progress
+                return fd
+            }
+
+            override fun newArray(size: Int): Array<FileDescription?> {
+                return arrayOfNulls(size)
+            }
+        }
     }
 }
