@@ -71,10 +71,10 @@ class ServersProvider(
 
     fun getSelectedServer(): ServerConfig? {
         val selected = preferences.getSelectedServer()
+        val servers = readServersFromFile()
         return if (selected != null) {
-            selected
+            servers.find { it.name == selected.name } ?: selected
         } else {
-            val servers = readServersFromFile()
             if (servers.isNotEmpty()) {
                 servers[0]
             } else {
