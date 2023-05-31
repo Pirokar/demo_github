@@ -27,7 +27,6 @@
       "serverBaseUrl": "https://mobile4.dev.flex.mfms.ru/",
       "datastoreUrl": "https://mobile4.dev.flex.mfms.ru/",
       "threadsGateUrl": "ws://mobile4.dev.flex.mfms.ru/gate/socket",
-      "allowUntrustedSSLCertificate": false,
       "trustedSSLCertificates": [
         "edna"
       ]
