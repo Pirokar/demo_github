@@ -22,8 +22,8 @@ open class BaseConfigBuilder(var context: Context) {
     protected var isNewChatCenterApi: Boolean? = false
     protected var loggerConfig: LoggerConfig? = null
     protected var requestConfig = RequestConfig()
-    protected var certificateRawResIds = emptyList<Int>()
-    protected var isSslPinningDisabled = false
+    protected var trustedSSLCertificates = emptyList<Int>()
+    protected var allowUntrustedSSLCertificate = false
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     protected var notificationImportance = NotificationManager.IMPORTANCE_DEFAULT
@@ -72,16 +72,17 @@ open class BaseConfigBuilder(var context: Context) {
         return this
     }
 
-    open fun certificateRawResIds(certificateRawResIds: List<Int>): BaseConfigBuilder? {
-        this.certificateRawResIds = certificateRawResIds
+    open fun trustedSSLCertificates(trustedSSLCertificates: List<Int>?): BaseConfigBuilder? {
+        if (trustedSSLCertificates.isNullOrEmpty()) {
+            this.trustedSSLCertificates = emptyList()
+        } else {
+            this.trustedSSLCertificates = trustedSSLCertificates
+        }
         return this
     }
 
-    /**
-     * Выключает SSL pinning, даже если передан сертификат
-     */
-    fun disableSSLPinning(): BaseConfigBuilder {
-        isSslPinningDisabled = true
+    open fun allowUntrustedSSLCertificates(allowUntrustedSSLCertificate: Boolean): BaseConfigBuilder? {
+        this.allowUntrustedSSLCertificate = allowUntrustedSSLCertificate
         return this
     }
 
@@ -130,9 +131,9 @@ open class BaseConfigBuilder(var context: Context) {
             historyLoadingCount,
             surveyCompletionDelay,
             requestConfig,
-            isSslPinningDisabled,
             notificationLevel,
-            certificateRawResIds
+            trustedSSLCertificates,
+            allowUntrustedSSLCertificate
         )
     }
 }
