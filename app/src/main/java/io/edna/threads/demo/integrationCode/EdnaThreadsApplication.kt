@@ -39,14 +39,14 @@ class EdnaThreadsApplication : Application() {
             .isDebugLoggingEnabled(true)
             .showAttachmentsButton()
             .enableLogging(loggerConfig)
-            .certificateRawResIds(listOf(R.raw.edna))
-            .disableSSLPinning() as ConfigBuilder
 
         serversProvider.getSelectedServer()?.let { server ->
             configBuilder.serverBaseUrl(server.serverBaseUrl)
             configBuilder.datastoreUrl(server.datastoreUrl)
             configBuilder.threadsGateUrl(server.threadsGateUrl)
             configBuilder.threadsGateProviderUid(server.threadsGateProviderUid)
+            configBuilder.trustedSSLCertificates(server.trustedSSLCertificates)
+            configBuilder.allowUntrustedSSLCertificates(server.allowUntrustedSSLCertificate)
             configBuilder.setNewChatCenterApi()
         }
 

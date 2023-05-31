@@ -95,7 +95,9 @@ class LaunchViewModel(
                 serverConfig.serverBaseUrl,
                 serverConfig.datastoreUrl,
                 serverConfig.threadsGateUrl,
-                serverConfig.threadsGateProviderUid
+                serverConfig.threadsGateProviderUid,
+                serverConfig.trustedSSLCertificates,
+                serverConfig.allowUntrustedSSLCertificate
             )
             ThreadsLib.getInstance().initUser(
                 UserInfoBuilder(user?.userId!!)
@@ -184,7 +186,7 @@ class LaunchViewModel(
                 serverConfig.isFromApp,
                 serverConfig.isShowMenu,
                 serverConfig.filesAndMediaMenuItemEnabled,
-                serverConfig.isSSLPinningDisabled
+                serverConfig.trustedSSLCertificates
             )
         }
     }
