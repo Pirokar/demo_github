@@ -19,7 +19,6 @@ import im.threads.business.utils.MetadataBusiness.getNewChatCenterApi
 import im.threads.business.utils.MetadataBusiness.getServerBaseUrl
 import im.threads.business.utils.MetadataBusiness.getThreadsGateProviderUid
 import im.threads.business.utils.MetadataBusiness.getThreadsGateUrl
-import im.threads.business.utils.checkCertificatesWishUrls
 import im.threads.business.utils.createSslSocketFactoryConfig
 import im.threads.business.utils.createTlsPinningKeyStore
 import im.threads.business.utils.getTrustManagers
@@ -27,6 +26,7 @@ import im.threads.business.utils.gson.UriDeserializer
 import im.threads.business.utils.gson.UriSerializer
 import okhttp3.Interceptor
 import java.security.cert.X509Certificate
+import javax.net.ssl.TrustManager
 import javax.net.ssl.X509TrustManager
 
 open class BaseConfig(
@@ -45,7 +45,7 @@ open class BaseConfig(
     val requestConfig: RequestConfig,
     val notificationImportance: Int,
     var trustedSSLCertificates: List<Int>?,
-    var allowUntrustedSSLCertificate: Boolean,
+    var allowUntrustedSSLCertificate: Boolean
 ) {
     @JvmField val context: Context
     var sslSocketFactoryConfig: SslSocketFactoryConfig?
@@ -84,7 +84,7 @@ open class BaseConfig(
     internal fun updateTransport(
         threadsGateUrl: String,
         threadsGateProviderUid: String,
-        trustedSSLCertificates: List<Int>?,
+        trustedSSLCertificates: List<Int>?
     ) {
         this.trustedSSLCertificates = trustedSSLCertificates
         sslSocketFactoryConfig = getSslSocketFactoryConfig(trustedSSLCertificates)
@@ -96,24 +96,18 @@ open class BaseConfig(
     }
 
     private fun getSslSocketFactoryConfig(trustedSSLCertificates: List<Int>?): SslSocketFactoryConfig? {
-        if (trustedSSLCertificates.isNullOrEmpty()) {
-            return null
+        if (!trustedSSLCertificates.isNullOrEmpty()) {
+            val keyStore = createTlsPinningKeyStore(
+                context.resources,
+                trustedSSLCertificates
+            )
+            return createSslSocketFactoryConfig(getTrustManagers(keyStore))
         }
-        val keyStore = createTlsPinningKeyStore(
-            context.resources,
-            trustedSSLCertificates
-        )
-        var trustManagers = getTrustManagers(keyStore)
-        if (
-            !allowUntrustedSSLCertificate ||
-            checkCertificatesWishUrls(trustManagers, serverBaseUrl, datastoreUrl)
-        ) {
-            return createSslSocketFactoryConfig(trustManagers)
-        } else {
+        if (allowUntrustedSSLCertificate) {
             @SuppressLint("CustomX509TrustManager", "TrustAllX509TrustManager")
-            trustManagers = arrayOf(object : X509TrustManager {
+            val trustManagers = arrayOf<TrustManager>(object : X509TrustManager {
                 @SuppressLint("TrustAllX509TrustManager")
-                override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) { }
+                override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {}
 
                 @SuppressLint("TrustAllX509TrustManager")
                 override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {}
@@ -124,12 +118,13 @@ open class BaseConfig(
             })
             return createSslSocketFactoryConfig(trustManagers)
         }
+        return null
     }
 
     private fun getTransport(
         providedThreadsGateUrl: String?,
         providedThreadsGateProviderUid: String?,
-        socketClientSettings: SocketClientSettings,
+        socketClientSettings: SocketClientSettings
     ): Transport {
         val threadsGateProviderUid = if (!providedThreadsGateProviderUid.isNullOrBlank()) {
             providedThreadsGateProviderUid

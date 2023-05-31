@@ -9,7 +9,6 @@ import androidx.annotation.RawRes
 import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.SslSocketFactoryConfig
 import java.io.InputStream
-import java.net.URL
 import java.security.KeyStore
 import java.security.SecureRandom
 import java.security.cert.CertificateFactory
@@ -76,23 +75,6 @@ fun createTlsPinningSocketFactory(trustManagers: Array<TrustManager>): SSLSocket
         init(null, trustManagers, SecureRandom())
     }
     return sslContext.socketFactory
-}
-
-fun checkCertificatesWishUrls(
-    trustManagers: Array<TrustManager>,
-    serverBaseUrl: String,
-    datastoreUrl: String
-): Boolean {
-    val config = createSslSocketFactoryConfig(trustManagers)
-    val baseUrl = URL(serverBaseUrl).host
-    val storeUrl = URL(datastoreUrl).host
-    config.trustManager.acceptedIssuers.forEach {
-        val allow = it.subjectDN.toString().contains(baseUrl) || it.subjectDN.toString().contains(storeUrl)
-        if (allow) {
-            return true
-        }
-    }
-    return false
 }
 
 fun createSslSocketFactoryConfig(trustManagers: Array<TrustManager>): SslSocketFactoryConfig {
