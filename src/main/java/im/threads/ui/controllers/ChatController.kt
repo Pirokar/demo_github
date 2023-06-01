@@ -621,15 +621,13 @@ class ChatController private constructor() {
                                         if (consultInfo != null) {
                                             fragment?.setStateConsultConnected(consultInfo)
                                         }
-                                        fragment?.hideProgressBar()
                                     }
                                 }
+                                fragment?.hideProgressBar()
                             }
                         ) { e: Throwable? ->
                             isDownloadingMessages = false
-                            if (fragment != null) {
-                                fragment?.hideProgressBar()
-                            }
+                            fragment?.hideProgressBar()
                             error(e)
                         }
                 )
