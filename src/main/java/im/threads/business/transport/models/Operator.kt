@@ -1,56 +1,20 @@
-package im.threads.business.transport.models;
+package im.threads.business.transport.models
 
-import android.text.TextUtils;
+import android.text.TextUtils
 
-import androidx.annotation.Nullable;
-
-public final class Operator {
-    private long id;
-    private String name;
-    private String alias;
-    private String status;
-    private String photoUrl;
-    private String gender;
-    private String organizationUnit;
-    private String role;
-
-    public long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getAlias() {
-        return alias;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public String getPhotoUrl() {
-        return photoUrl;
-    }
-
-    public String getGender() {
-        return gender;
-    }
-
-    public String getOrganizationUnit() {
-        return organizationUnit;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    @Nullable
-    public String getAliasOrName() {
-        if (!TextUtils.isEmpty(alias)) {
-            return alias;
+class Operator {
+    val id: Long = 0
+    val name: String? = null
+    val alias: String? = null
+    val status: String? = null
+    val photoUrl: String? = null
+    val gender: String? = null
+    val organizationUnit: String? = null
+    val role: String? = null
+    val aliasOrName: String?
+        get() = if (!TextUtils.isEmpty(alias)) {
+            alias
+        } else {
+            name
         }
-        return name;
-    }
 }

@@ -30,7 +30,7 @@ object FileHelper {
             disposable = chatUpdateProcessor.attachmentSettingsProcessor
                 .subscribe(
                     { receivedAttachmentSettings ->
-                        attachmentSettings = receivedAttachmentSettings.content
+                        receivedAttachmentSettings.content?.let { attachmentSettings = it }
                     },
                     LoggerEdna::error
                 )

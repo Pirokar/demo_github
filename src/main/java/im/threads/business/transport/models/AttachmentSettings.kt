@@ -1,36 +1,13 @@
-package im.threads.business.transport.models;
+package im.threads.business.transport.models
 
-public class AttachmentSettings {
+class AttachmentSettings {
+    var clientId: String? = null
+    var content: Content? = null
 
-    private String clientId;
-    private Content content;
-
-    public String getClientId() {
-        return clientId;
-    }
-
-    public Content getContent() {
-        return content;
-    }
-
-    public static class Content {
-        private int maxSize;
-        private String[] fileExtensions;
-
-        public Content() {
-        }
-
-        public Content(int maxSize, String[] fileExtensions) {
-            this.maxSize = maxSize;
-            this.fileExtensions = fileExtensions;
-        }
-
-        public int getMaxSize() {
-            return maxSize;
-        }
-
-        public String[] getFileExtensions() {
-            return fileExtensions;
-        }
+    class Content(maxSize: Int, fileExtensions: Array<String>) {
+        var maxSize = maxSize
+            private set
+        var fileExtensions: Array<String> = fileExtensions
+            private set
     }
 }
