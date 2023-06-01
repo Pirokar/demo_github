@@ -25,10 +25,13 @@ class ChatAppFragment : BaseAppFragment<FragmentChatBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         subscribeToGlobalBackClick()
-        childFragmentManager
-            .beginTransaction()
-            .add(R.id.chatFragmentContainer, ChatFragment.newInstance(OpenWay.FROM_PUSH))
-            .commit()
+        ChatFragment.newInstance(OpenWay.FROM_PUSH).let {
+            fragment = it
+            childFragmentManager
+                .beginTransaction()
+                .add(R.id.chatFragmentContainer, it)
+                .commit()
+        }
     }
 
     override fun onDestroy() {
