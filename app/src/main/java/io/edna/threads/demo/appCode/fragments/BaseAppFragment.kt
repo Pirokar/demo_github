@@ -40,7 +40,7 @@ abstract class BaseAppFragment<T : ViewDataBinding> : Fragment() {
     }
 
     protected open fun navigateUp() {
-        if (fragment?.onBackPressed() != false && isAdded) {
+        if (fragment?.onBackPressed() == true && isAdded) {
             findNavController().navigateUp()
         }
     }
