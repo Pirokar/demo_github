@@ -565,7 +565,7 @@ class ChatController private constructor() {
         clearUnreadPush()
         processSystemMessages(serverItems)
         fragment?.let { chatFragment ->
-            response?.consultInfo?.let { chatFragment.setStateConsultConnected(it) }
+            response?.getConsultInfo()?.let { chatFragment.setStateConsultConnected(it) }
         }
         return setLastAvatars(serverItems)
     }
@@ -603,7 +603,7 @@ class ChatController private constructor() {
                                 BaseConfig.instance.transport.markMessagesAsRead(uuidList)
                             }
                         }
-                        Pair(response?.consultInfo, serverItems)
+                        Pair(response?.getConsultInfo(), serverItems)
                     }
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -1290,7 +1290,7 @@ class ChatController private constructor() {
                     messenger.saveMessages(chatItems)
                     clearUnreadPush()
                     processSystemMessages(chatItems)
-                    androidx.core.util.Pair(response?.consultInfo, setLastAvatars(chatItems))
+                    androidx.core.util.Pair(response?.getConsultInfo(), setLastAvatars(chatItems))
                 }
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
