@@ -5,7 +5,7 @@ import android.graphics.Typeface
 class MarkdownConfig {
     /**
      * Color of links in text.
-     * TextPaint#linkColor will be used as a default linkColor. @ColorRes
+     * TextPaint#linkColor will be used as a default linkColor. @ColorInt
      */
     var linkColor: Int? = null
 

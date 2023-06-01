@@ -1,158 +1,199 @@
-package im.threads.ui.widget.textView;
+package im.threads.ui.widget.textView
 
-import android.content.Context;
-import android.content.res.TypedArray;
-import android.graphics.Paint;
-import android.graphics.Rect;
-import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
-import android.text.Html;
-import android.text.SpannableStringBuilder;
-import android.text.Spanned;
-import android.text.TextUtils;
-import android.util.AttributeSet;
-import android.widget.TextView;
+import android.content.Context
+import android.graphics.Paint
+import android.graphics.Rect
+import android.graphics.Typeface
+import android.graphics.drawable.Drawable
+import android.text.Html
+import android.text.Selection
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.TextPaint
+import android.text.TextUtils
+import android.text.style.ClickableSpan
+import android.util.AttributeSet
+import android.view.View
+import android.widget.TextView
+import androidx.core.content.ContextCompat
+import im.threads.R
+import im.threads.business.markdown.MarkdownProcessor
+import im.threads.business.markdown.MarkwonMarkdownProcessor
+import im.threads.ui.config.Config.Companion.getInstance
+import im.threads.ui.utils.NoLongClickMovementMethod
+import im.threads.ui.widget.CustomFontTextView
 
-import im.threads.ui.ChatStyle;
-import im.threads.R;
-import im.threads.business.markdown.MarkdownProcessor;
-import im.threads.business.markdown.MarkwonMarkdownProcessor;
-import im.threads.ui.widget.CustomFontTextView;
-import im.threads.ui.config.Config;
+class BubbleMessageTextView : CustomFontTextView {
+    private var mHasImageInText = false
+    private var lastLinePadding = ""
+    private var lastLineExtraPaddingSymbolsCount = 0f
+    private val chatStyle = getInstance().chatStyle
+    private val markdownProcessor: MarkdownProcessor = MarkwonMarkdownProcessor(
+        getInstance().context,
+        chatStyle.incomingMarkdownConfiguration,
+        chatStyle.outgoingMarkdownConfiguration,
+        false
+    )
 
-public final class BubbleMessageTextView extends CustomFontTextView {
-
-    private static final Spanned SPACE = Html.fromHtml("&#160;");
-
-    private boolean mHasImageInText;
-    private String lastLinePadding = "";
-    private float lastLineExtraPaddingSymbolsCount = 0;
-    private ChatStyle chatStyle = Config.getInstance().getChatStyle();
-
-    private MarkdownProcessor markdownProcessor = new MarkwonMarkdownProcessor(
-            Config.getInstance().context,
-            chatStyle.getIncomingMarkdownConfiguration(),
-            chatStyle.getOutgoingMarkdownConfiguration()
-    );
-
-    public BubbleMessageTextView(Context context) {
-        super(context);
+    constructor(context: Context?) : super(context) {}
+    constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
+        fetchLastLinePadding(context, attrs)
     }
 
-    public BubbleMessageTextView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        fetchLastLinePadding(context, attrs);
-    }
-
-    public void setTypefaceView(Context context) {
-        ChatStyle style = Config.getInstance().getChatStyle();
+    override fun setTypefaceView(context: Context) {
+        val style = getInstance().chatStyle
         if (!TextUtils.isEmpty(style.bubbleMessageFont)) {
-            setTypeface(Typeface.createFromAsset(context.getAssets(), style.bubbleMessageFont));
+            typeface = Typeface.createFromAsset(context.assets, style.bubbleMessageFont)
         } else {
-            super.setTypefaceView(context);
+            super.setTypefaceView(context)
         }
     }
 
-    public void bindTimestampView(BubbleTimeTextView timeTextView) {
-        timeTextView.measure(0, 0);
-        int timeWidth = timeTextView.getMeasuredWidth() * 2;
-
-        StringBuilder paddingBuilder = new StringBuilder(" ");
-
-        Rect bounds = new Rect();
-        Paint textPaint = getPaint();
-        int width = 0;
+    fun bindTimestampView(timeTextView: BubbleTimeTextView) {
+        timeTextView.measure(0, 0)
+        val timeWidth = timeTextView.measuredWidth * 2
+        val paddingBuilder = StringBuilder(" ")
+        val bounds = Rect()
+        val textPaint: Paint = paint
+        var width = 0
         while (width < timeWidth) {
-            paddingBuilder.append("_");
-            textPaint.getTextBounds(paddingBuilder.toString(), 0, paddingBuilder.toString().length(), bounds);
-            width = bounds.width();
+            paddingBuilder.append("_")
+            textPaint.getTextBounds(
+                paddingBuilder.toString(),
+                0,
+                paddingBuilder.toString().length,
+                bounds
+            )
+            width = bounds.width()
         }
-
-        for (int i = 0; i < lastLineExtraPaddingSymbolsCount; i++) {
-            paddingBuilder.append("_");
+        var i = 0
+        while (i < lastLineExtraPaddingSymbolsCount) {
+            paddingBuilder.append("_")
+            i++
         }
-
-        lastLinePadding = paddingBuilder.toString().replace("_", SPACE);
+        lastLinePadding = paddingBuilder.toString().replace("_", SPACE.toString())
     }
 
-    @Override
-    public void setText(CharSequence text, BufferType type) {
-        text = addPadding(text);
+    override fun setText(text: CharSequence, type: BufferType) {
+        var textLocal = text
+        textLocal = addPadding(textLocal)
         if (mHasImageInText) {
-            mHasImageInText = false;
+            mHasImageInText = false
         }
-        super.setText(text, type);
+        super.setText(textLocal, type)
     }
 
-    public void setFormattedText(CharSequence text, Boolean isOperatorMessage) {
-        text = addPadding(text);
-        Spanned spannedText = getSpanned(text, isOperatorMessage);
+    fun setFormattedText(
+        text: CharSequence,
+        isOperatorMessage: Boolean,
+        links: List<Pair<String?, OnClickListener>> = arrayListOf()
+    ) {
+        var textLocal = text
+        textLocal = addPadding(textLocal)
+        val spannedText = getSpanned(textLocal, isOperatorMessage)
         if (mHasImageInText) {
-            mHasImageInText = false;
+            mHasImageInText = false
         }
-        super.setText(spannedText, TextView.BufferType.NORMAL);
+        val spannableString = SpannableString(spannedText)
+        var startIndexOfLink = -1
+        for (link in links) {
+            if (!link.first.isNullOrBlank()) {
+                val clickableSpan = object : ClickableSpan() {
+                    override fun updateDrawState(textPaint: TextPaint) {
+                        val linksColor = chatStyle.incomingMarkdownConfiguration.linkColor
+                            ?: ContextCompat.getColor(
+                                this@BubbleMessageTextView.context,
+                                chatStyle.incomingMessageLinkColor
+                            )
+                        textPaint.color = linksColor
+                        textPaint.isUnderlineText = chatStyle.incomingMarkdownConfiguration.isLinkUnderlined
+                    }
+
+                    override fun onClick(view: View) {
+                        Selection.setSelection((view as TextView).text as Spannable, 0)
+                        view.invalidate()
+                        link.second.onClick(view)
+                    }
+                }
+                startIndexOfLink = spannableString.toString().indexOf(
+                    link.first!!,
+                    startIndexOfLink + 1
+                )
+                if (startIndexOfLink >= 0) {
+                    spannableString.setSpan(
+                        clickableSpan,
+                        startIndexOfLink,
+                        startIndexOfLink + link.first!!.length,
+                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                    )
+                }
+            }
+        }
+        this.movementMethod = NoLongClickMovementMethod.getInstance()
+        this.setText(spannableString, BufferType.SPANNABLE)
     }
 
-    @Override
-    public void invalidateDrawable(Drawable dr) {
+    override fun invalidateDrawable(dr: Drawable) {
         if (mHasImageInText) {
-            invalidate();
+            invalidate()
         } else {
-            super.invalidateDrawable(dr);
+            super.invalidateDrawable(dr)
         }
     }
 
-    private void fetchLastLinePadding(Context context, AttributeSet attrs) {
-        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.BubbleMessageTextView);
-        try {
-            lastLineExtraPaddingSymbolsCount = typedArray.getFloat(
-                    R.styleable.BubbleMessageTextView_last_line_extra_padding_symbols,
-                    0
-            );
+    private fun fetchLastLinePadding(context: Context, attrs: AttributeSet) {
+        val typedArray = context.obtainStyledAttributes(attrs, R.styleable.BubbleMessageTextView)
+        lastLineExtraPaddingSymbolsCount = try {
+            typedArray.getFloat(
+                R.styleable.BubbleMessageTextView_last_line_extra_padding_symbols,
+                0f
+            )
         } finally {
-            typedArray.recycle();
+            typedArray.recycle()
         }
     }
 
-    private CharSequence addPadding(CharSequence text) {
-        if (!TextUtils.isEmpty(text) && !TextUtils.isEmpty(lastLinePadding)) {
-            SpannableStringBuilder builder = new SpannableStringBuilder(text);
-            builder = trimEndSpannable(builder);
-            text = builder.append(lastLinePadding);
+    private fun addPadding(text: CharSequence): CharSequence {
+        var textLocal = text
+        if (!TextUtils.isEmpty(textLocal) && !TextUtils.isEmpty(lastLinePadding)) {
+            var builder: SpannableStringBuilder? = SpannableStringBuilder(textLocal)
+            builder = trimEndSpannable(builder)
+            builder?.let { textLocal = it.append(lastLinePadding) }
         }
-        return text;
+        return textLocal
     }
 
-    private Spanned getSpanned(CharSequence text, Boolean isOperatorMessage) {
-        Spanned spannedText;
-        if (isOperatorMessage) {
-            spannedText = markdownProcessor.parseOperatorMessage(text.toString());
+    private fun getSpanned(text: CharSequence, isOperatorMessage: Boolean): Spanned {
+        val spannedText: Spanned = if (isOperatorMessage) {
+            markdownProcessor.parseOperatorMessage(text.toString())
         } else {
-            spannedText = markdownProcessor.parseClientMessage(text.toString());
+            markdownProcessor.parseClientMessage(text.toString())
         }
-        return spannedText;
+        return spannedText
     }
 
-    private SpannableStringBuilder trimEndSpannable(SpannableStringBuilder spannable) {
+    private fun trimEndSpannable(spannable: SpannableStringBuilder?): SpannableStringBuilder? {
         if (spannable == null) {
-            return null;
+            return null
         }
-        boolean shouldTrim = false;
-
-        int trimStart = spannable.length() - 1;
-        int trimEnd = spannable.length() - 1;
-
-        while (spannable.charAt(trimStart) == ' ') {
-            shouldTrim = true;
-            trimStart--;
+        var shouldTrim = false
+        var trimStart = spannable.length - 1
+        val trimEnd = spannable.length - 1
+        while (spannable[trimStart] == ' ') {
+            shouldTrim = true
+            trimStart--
         }
-
-        SpannableStringBuilder result;
-        if (shouldTrim) {
-            result = spannable.delete(trimStart, trimEnd);
+        val result: SpannableStringBuilder = if (shouldTrim) {
+            spannable.delete(trimStart, trimEnd)
         } else {
-            result = spannable;
+            spannable
         }
-        return result;
+        return result
+    }
+
+    companion object {
+        private val SPACE = Html.fromHtml("&#160;")
     }
 }

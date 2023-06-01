@@ -1,5 +1,6 @@
 package im.threads.ui.holders
 
+import android.content.Intent
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.net.Uri
@@ -15,6 +16,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.startActivity
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -185,7 +187,8 @@ abstract class BaseHolder internal constructor(
     protected fun highlightOperatorText(
         textView: TextView,
         phrase: ConsultPhrase,
-        url: String? = null
+        url: String? = null,
+        emails: List<String> = arrayListOf()
     ) {
         if (phrase.formattedPhrase.isNullOrBlank()) {
             textView.setText(phrase.phraseText?.trimIndent(), TextView.BufferType.NORMAL)
@@ -196,8 +199,25 @@ abstract class BaseHolder internal constructor(
             )
         } else {
             (textView as? BubbleMessageTextView)?.let {
-                setMovementMethod(it)
-                it.setFormattedText(phrase.formattedPhrase, true)
+                val emailLinksPairs = ArrayList<Pair<String?, View.OnClickListener>>()
+                emails.forEach { email ->
+                    emailLinksPairs.add(
+                        Pair(
+                            email,
+                            View.OnClickListener {
+                                val intent = Intent(Intent.ACTION_VIEW)
+                                val data = Uri.parse("mailto:$email")
+                                intent.data = data
+                                startActivity(itemView.context, intent, null)
+                            }
+                        )
+                    )
+                }
+                it.setFormattedText(
+                    phrase.formattedPhrase,
+                    true,
+                    emailLinksPairs
+                )
             } ?: run {
                 setMovementMethod(textView)
                 textView.setText(phrase.phraseText?.trimIndent(), TextView.BufferType.NORMAL)
