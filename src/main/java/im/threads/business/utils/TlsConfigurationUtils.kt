@@ -7,6 +7,7 @@ import android.os.Handler
 import android.os.Looper
 import androidx.annotation.RawRes
 import im.threads.business.logger.LoggerEdna
+import im.threads.business.models.SslSocketFactoryConfig
 import java.io.InputStream
 import java.security.KeyStore
 import java.security.SecureRandom
@@ -33,14 +34,14 @@ fun getX509TrustManager(trustManagers: Array<TrustManager>): X509TrustManager =
 
 fun createTlsPinningKeyStore(
     resources: Resources,
-    certificateRawResIds: List<Int>
+    trustedSSLCertificates: List<Int>
 ): KeyStore {
     val certificateFactory = CertificateFactory.getInstance(CERTIFICATE_FORMAT)
     val keyStore = KeyStore.getInstance(KeyStore.getDefaultType())
     keyStore.load(null, null)
 
-    for (certificateRawResId in certificateRawResIds) {
-        loadCertificateIntoKeyStore(certificateFactory, keyStore, resources, certificateRawResId)
+    for (trustedSSLCertificate in trustedSSLCertificates) {
+        loadCertificateIntoKeyStore(certificateFactory, keyStore, resources, trustedSSLCertificate)
     }
     return keyStore
 }
@@ -74,6 +75,12 @@ fun createTlsPinningSocketFactory(trustManagers: Array<TrustManager>): SSLSocket
         init(null, trustManagers, SecureRandom())
     }
     return sslContext.socketFactory
+}
+
+fun createSslSocketFactoryConfig(trustManagers: Array<TrustManager>): SslSocketFactoryConfig {
+    val trustManager = getX509TrustManager(trustManagers)
+    val sslSocketFactory = createTlsPinningSocketFactory(trustManagers)
+    return SslSocketFactoryConfig(sslSocketFactory, trustManager)
 }
 
 private const val CERTIFICATE_FORMAT = "X.509"

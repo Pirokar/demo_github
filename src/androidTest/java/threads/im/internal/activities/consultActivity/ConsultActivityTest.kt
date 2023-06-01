@@ -22,7 +22,6 @@ class ConsultActivityTest : TestCase() {
             .historyLoadingCount(50)
             .isDebugLoggingEnabled(true)
             .showAttachmentsButton()
-            .disableSSLPinning()
             .serverBaseUrl("http://ednatest.ru")
             .datastoreUrl("http://ednatest.ru")
             .threadsGateUrl("wss://ednatest.ru")

@@ -2,7 +2,6 @@ package im.threads.business.imageLoading
 
 import im.threads.business.logger.NetworkLoggerInterceptor
 import im.threads.business.models.SslSocketFactoryConfig
-import im.threads.business.preferences.Preferences
 import im.threads.business.rest.config.HttpClientSettings
 import im.threads.business.transport.AuthHeadersProvider
 import im.threads.business.utils.ClientUseCase
@@ -11,7 +10,6 @@ import java.util.concurrent.TimeUnit
 import javax.net.ssl.SSLSession
 
 class ImageLoaderOkHttpProvider(
-    private val preferences: Preferences,
     private val authHeadersProvider: AuthHeadersProvider,
     private val clientUseCase: ClientUseCase
 ) {
@@ -37,7 +35,7 @@ class ImageLoaderOkHttpProvider(
                 sslSocketFactoryConfig.sslSocketFactory,
                 sslSocketFactoryConfig.trustManager
             )
-            httpClientBuilder.hostnameVerifier { hostname: String, session: SSLSession -> true }
+            httpClientBuilder.hostnameVerifier { _: String, _: SSLSession -> true }
         }
         httpClientBuilder.addInterceptor(NetworkLoggerInterceptor(true))
         okHttpClient = httpClientBuilder.build()
