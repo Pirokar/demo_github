@@ -2123,8 +2123,12 @@ class ChatFragment :
 
     private fun onActivityBackPressed() {
         if (isAdded) {
-            val activity: Activity? = activity
-            activity?.onBackPressed()
+            if (isInMessageSearchMode) {
+                hideSearchMode()
+            } else {
+                val activity: Activity? = activity
+                activity?.onBackPressed()
+            }
         }
     }
 
