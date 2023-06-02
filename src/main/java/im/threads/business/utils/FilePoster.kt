@@ -30,7 +30,6 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
-import java.net.URLEncoder
 
 private const val PHOTO_RESIZE_MAX_SIDE = 1600
 
@@ -68,7 +67,7 @@ private fun sendFile(uri: Uri, mimeType: String, token: String, fileDescription:
 
     showSendingFileLog(uri, fileName, fileRequestBody)
 
-    val response = DatastoreApi.get().upload(part, agent, URLEncoder.encode(token, "utf-8"))?.execute()
+    val response = DatastoreApi.get().upload(part, agent, token.encodeUrl())?.execute()
     response?.let {
         showFileSentLog(it)
         if (it.isSuccessful) {
