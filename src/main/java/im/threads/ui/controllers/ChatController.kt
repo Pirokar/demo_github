@@ -162,7 +162,6 @@ class ChatController private constructor() {
         messenger.onViewStart()
         InitialisationConstants.chatState = ChatState.ANDROID_CHAT_LIFECYCLE
         checkEmptyStateVisibility()
-        checkForSendInit()
     }
 
     fun onViewStop() {
@@ -481,15 +480,6 @@ class ChatController private constructor() {
             fragment?.showEmptyState()
         } else {
             fragment?.hideEmptyState()
-        }
-    }
-
-    private fun checkForSendInit() {
-        clientUseCase.getUserInfo()?.clientId?.let { currentUserId ->
-            val lastUserIdWithSendInit = preferences.get<String>(PreferencesCoreKeys.INIT_SENT_LAST_USER_ID)
-            if (currentUserId != lastUserIdWithSendInit) {
-                BaseConfig.instance.transport.sendInit(false)
-            }
         }
     }
 
