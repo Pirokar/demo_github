@@ -27,7 +27,6 @@ import im.threads.business.models.UserPhrase
 import im.threads.business.preferences.Preferences
 import im.threads.business.preferences.PreferencesCoreKeys
 import im.threads.business.rest.config.SocketClientSettings
-import im.threads.business.rest.queries.ThreadsApi
 import im.threads.business.secureDatabase.DatabaseHolder
 import im.threads.business.serviceLocator.core.inject
 import im.threads.business.state.ChatState
@@ -314,8 +313,7 @@ class ThreadsGateTransport(
             if (!TextUtils.isEmpty(deviceName)) deviceName else deviceModel,
             deviceModel,
             deviceAddress,
-            clientId,
-            ThreadsApi.API_VERSION
+            clientId
         )
         val text = BaseConfig.instance.gson.toJson(
             RegisterDeviceRequest(UUID.randomUUID().toString(), data)
@@ -326,7 +324,6 @@ class ThreadsGateTransport(
     private fun getCloudToken(): String? {
         val fcmToken = preferences.get<String>(PreferencesCoreKeys.FCM_TOKEN)
         val hcmToken = preferences.get<String>(PreferencesCoreKeys.HCM_TOKEN)
-
         return fcmToken ?: hcmToken
     }
 
