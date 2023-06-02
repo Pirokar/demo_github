@@ -142,7 +142,7 @@ class ImageFromUserViewHolder(
                         )
                     }
                 }
-                MessageStatus.SENT -> {
+                MessageStatus.SENT, MessageStatus.ENQUEUED -> {
                     showCommonLayout(fileDescription)
                     getColoredDrawable(
                         style.messageSentIconResId,
