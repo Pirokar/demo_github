@@ -42,7 +42,7 @@ class LaunchFragment : BaseAppFragment<FragmentLaunchBinding>() {
 
     override fun onStart() {
         super.onStart()
-//        ThreadsLib.getInstance().logoutClient()
+        ThreadsLib.getInstance().logoutClient()
     }
 
     override fun onDestroyView() {
