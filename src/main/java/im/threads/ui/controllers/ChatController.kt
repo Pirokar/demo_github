@@ -700,7 +700,7 @@ class ChatController private constructor() {
 
     private fun addLocalUserMessages(serverItems: List<ChatItem>): List<ChatItem> {
         val items = serverItems.toMutableList()
-        val localMessagesToDelete = java.util.ArrayList<UserPhrase>()
+        val localMessagesToDelete = ArrayList<UserPhrase>()
         for (localUserMessage in localUserMessages) {
             for (serverItem in items) {
                 if (serverItem.isTheSameItem(localUserMessage)) {
@@ -1244,6 +1244,7 @@ class ChatController private constructor() {
         removePushNotification()
         UnreadMessagesController.INSTANCE.refreshUnreadMessagesCount()
         preferences.sharedPreferences.edit().clear().commit()
+        localUserMessages.clear()
         database.cleanDatabase()
     }
 
