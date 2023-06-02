@@ -328,7 +328,8 @@ class ConsultPhraseHolder(
         phraseTextView.visible()
         val deeplink = UrlUtils.extractDeepLink(phrase)
         val extractedLink = bindOGData(phrase)
-        highlightOperatorText(phraseTextView, consultPhrase, deeplink ?: extractedLink?.link)
+        val emails = UrlUtils.extractEmailAddresses(phrase)
+        highlightOperatorText(phraseTextView, consultPhrase, deeplink ?: extractedLink?.link, emails)
     }
 
     private fun showQuote(
