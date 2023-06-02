@@ -2,6 +2,7 @@ package im.threads.business.markdown
 
 import android.content.Context
 import android.text.Spanned
+import android.text.util.Linkify
 import im.threads.business.utils.UrlUtils
 import io.noties.markwon.AbstractMarkwonPlugin
 import io.noties.markwon.Markwon
@@ -14,7 +15,8 @@ import io.noties.markwon.image.ImagesPlugin
 class MarkwonMarkdownProcessor(
     private val context: Context,
     incomingMarkdownConfig: MarkdownConfig,
-    outgoingMarkdownConfig: MarkdownConfig
+    outgoingMarkdownConfig: MarkdownConfig,
+    private val highlightEmails: Boolean = true
 ) : MarkdownProcessor {
     private val incomingProcessor: Markwon
     private val outgoingProcessor: Markwon
@@ -33,8 +35,7 @@ class MarkwonMarkdownProcessor(
     }
 
     private fun configureParser(markdownConfig: MarkdownConfig): Markwon {
-        return Markwon.builder(context)
-            .usePlugin(LinkifyPlugin.create())
+        val builder = Markwon.builder(context)
             .usePlugin(StrikethroughPlugin.create())
             .usePlugin(ImagesPlugin.create())
             .usePlugin(object : AbstractMarkwonPlugin() {
@@ -47,7 +48,13 @@ class MarkwonMarkdownProcessor(
                     configureLinks(builder)
                 }
             })
-            .build()
+        if (highlightEmails) {
+            builder.usePlugin(LinkifyPlugin.create())
+        } else {
+            builder.usePlugin(LinkifyPlugin.create(Linkify.PHONE_NUMBERS or Linkify.WEB_URLS))
+        }
+
+        return builder.build()
     }
 
     private fun configureMessagesView(builder: MarkwonTheme.Builder, config: MarkdownConfig) {
