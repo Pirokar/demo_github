@@ -35,7 +35,7 @@ class OutgoingMessageCreator(
             addProperty(MessageAttributes.TYPE, ChatItemType.INIT_CHAT.name)
             addProperty(MessageAttributes.DATA, userInfo?.clientData)
             addProperty(MessageAttributes.APP_MARKER_KEY, userInfo?.appMarker)
-            addProperty(MessageAttributes.AUTHORIZED, true)
+//            addProperty(MessageAttributes.AUTHORIZED, true)      //Не удалять. Раскомментируем по необходимости.
             addProperty(MessageAttributes.DEVICE_ADDRESS, deviceAddress)
         }
         return jsonObject
@@ -61,7 +61,7 @@ class OutgoingMessageCreator(
             addProperty("clientLocale", locale)
             addProperty("chatApiVersion", ThreadsApi.API_VERSION)
             addProperty(MessageAttributes.TYPE, ChatItemType.CLIENT_INFO.name)
-            addProperty(MessageAttributes.AUTHORIZED, true)
+//            addProperty(MessageAttributes.AUTHORIZED, true)      //Не удалять. Раскомментируем по необходимости.
             addProperty(MessageAttributes.DEVICE_ADDRESS, deviceAddress)
         }
         return jsonObject
@@ -75,7 +75,7 @@ class OutgoingMessageCreator(
             addProperty(MessageAttributes.TYPE, ChatItemType.TYPING.name)
             addProperty(MessageAttributes.TYPING_DRAFT, input)
             addProperty(MessageAttributes.APP_MARKER_KEY, userInfo?.appMarker)
-            addProperty(MessageAttributes.AUTHORIZED, true)
+//            addProperty(MessageAttributes.AUTHORIZED, true)      //Не удалять. Раскомментируем по необходимости.
             addProperty(MessageAttributes.DEVICE_ADDRESS, deviceAddress)
         }
         return jsonObject
@@ -91,7 +91,7 @@ class OutgoingMessageCreator(
             addProperty("rate", survey.questions[0].rate)
             addProperty("text", survey.questions[0].text)
             addProperty(MessageAttributes.APP_MARKER_KEY, userInfo?.appMarker)
-            addProperty(MessageAttributes.AUTHORIZED, true)
+//            addProperty(MessageAttributes.AUTHORIZED, true)      //Не удалять. Раскомментируем по необходимости.
         }
         return jsonObject
     }
@@ -102,7 +102,7 @@ class OutgoingMessageCreator(
             addProperty(MessageAttributes.CLIENT_ID, userInfo?.clientId)
             addProperty(MessageAttributes.TYPE, ChatItemType.CLOSE_THREAD.name)
             addProperty(MessageAttributes.APP_MARKER_KEY, userInfo?.appMarker)
-            addProperty(MessageAttributes.AUTHORIZED, true)
+//            addProperty(MessageAttributes.AUTHORIZED, true)      //Не удалять. Раскомментируем по необходимости.
         }
         return jsonObject
     }
@@ -113,7 +113,7 @@ class OutgoingMessageCreator(
             addProperty(MessageAttributes.CLIENT_ID, userInfo?.clientId)
             addProperty(MessageAttributes.TYPE, ChatItemType.REOPEN_THREAD.name)
             addProperty(MessageAttributes.APP_MARKER_KEY, userInfo?.appMarker)
-            addProperty(MessageAttributes.AUTHORIZED, true)
+//            addProperty(MessageAttributes.AUTHORIZED, true)      //Не удалять. Раскомментируем по необходимости.
         }
         return jsonObject
     }
@@ -124,7 +124,7 @@ class OutgoingMessageCreator(
             addProperty(MessageAttributes.CLIENT_ID, clientId)
             addProperty(MessageAttributes.TYPE, ChatItemType.CLIENT_OFFLINE.name)
             addProperty(MessageAttributes.APP_MARKER_KEY, userInfo?.appMarker)
-            addProperty(MessageAttributes.AUTHORIZED, true)
+//            addProperty(MessageAttributes.AUTHORIZED, true)      //Не удалять. Раскомментируем по необходимости.
         }
         return jsonObject
     }
@@ -155,7 +155,7 @@ class OutgoingMessageCreator(
             addProperty("clientLocale", locale)
             addProperty("chatApiVersion", ThreadsApi.API_VERSION)
             addProperty(MessageAttributes.TYPE, ChatItemType.UPDATE_LOCATION.name)
-            addProperty(MessageAttributes.AUTHORIZED, true)
+//            addProperty(MessageAttributes.AUTHORIZED, true)      //Не удалять. Раскомментируем по необходимости.
         }
         return jsonObject
     }
@@ -177,7 +177,7 @@ class OutgoingMessageCreator(
             addProperty(MessageAttributes.CLIENT_ID, userInfo?.clientId)
             addProperty(MessageAttributes.TEXT, phrase ?: "")
             addProperty(MessageAttributes.APP_MARKER_KEY, userInfo?.appMarker)
-            addProperty(MessageAttributes.AUTHORIZED, true)
+//            addProperty(MessageAttributes.AUTHORIZED, true)      //Не удалять. Раскомментируем по необходимости.
             addProperty(MessageAttributes.DEVICE_ADDRESS, deviceAddress)
         }
         val quotes = JsonArray().apply {

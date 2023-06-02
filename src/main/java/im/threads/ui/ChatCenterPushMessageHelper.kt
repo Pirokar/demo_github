@@ -18,7 +18,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class ChatCenterPushMessageHelper() {
+class ChatCenterPushMessageHelper {
     private val preferences: Preferences by inject()
 
     fun setFcmToken(fcmToken: String?) {
@@ -50,9 +50,7 @@ class ChatCenterPushMessageHelper() {
     fun process(context: Context, bundle: Bundle) {
         val sdf = SimpleDateFormat(CAMPAIGN_DATE_FORMAT_PARSE, Locale.getDefault())
         if (PushMessageAttributes.THREADS.equals(
-                bundle.getString(
-                        PushMessageAttributes.ORIGIN
-                    ),
+                bundle.getString(PushMessageAttributes.ORIGIN),
                 ignoreCase = true
             )
         ) {
