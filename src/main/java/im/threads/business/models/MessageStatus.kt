@@ -1,20 +1,24 @@
 package im.threads.business.models
 
 import com.google.gson.annotations.SerializedName
+import im.threads.business.logger.LoggerEdna
 
-enum class MessageStatus {
-    SENDING,
+enum class MessageStatus(val value: Int) {
+    SENDING(0),
 
-    FAILED,
+    FAILED(1),
 
     @SerializedName("sent")
-    SENT,
+    SENT(2),
+
+    @SerializedName("enqueued")
+    ENQUEUED(3),
 
     @SerializedName("delivered")
-    DELIVERED,
+    DELIVERED(4),
 
     @SerializedName("read")
-    READ;
+    READ(5);
 
     companion object {
         @JvmStatic
@@ -29,6 +33,7 @@ enum class MessageStatus {
             return when (string) {
                 "delivered" -> DELIVERED
                 "sent" -> SENT
+                "enqueued" -> ENQUEUED
                 "read" -> READ
                 "failed" -> FAILED
                 else -> SENDING

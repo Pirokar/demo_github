@@ -522,7 +522,7 @@ class UserPhraseViewHolder(
                     )
                 }
             }
-            MessageStatus.SENT -> {
+            MessageStatus.SENT, MessageStatus.ENQUEUED -> {
                 showNormalBubble()
                 updateDrawable(
                     parentView.context,

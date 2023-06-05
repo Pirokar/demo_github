@@ -148,7 +148,7 @@ class UserFileViewHolder(
                         )
                     }
                 }
-                MessageStatus.SENT -> {
+                MessageStatus.SENT, MessageStatus.ENQUEUED -> {
                     showNormalBubble()
                     getColoredDrawable(
                         style.messageSentIconResId,
