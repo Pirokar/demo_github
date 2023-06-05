@@ -14,7 +14,7 @@ public final class SendMessageRequest extends BaseRequest<SendMessageRequest.Dat
 
         private final String deviceAddress;
 
-        private final String messageId;
+        private final String externalId;
 
         private final JsonObject content;
 
@@ -25,7 +25,7 @@ public final class SendMessageRequest extends BaseRequest<SendMessageRequest.Dat
                     JsonObject content,
                     boolean important) {
             this.deviceAddress = deviceAddress;
-            this.messageId = messageId;
+            this.externalId = messageId;
             this.content = content;
             this.important = important;
         }
