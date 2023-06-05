@@ -61,7 +61,12 @@ class NetworkLoggerInterceptor(private val isImage: Boolean = false) : Intercept
             val copy = request.newBuilder().build()
             val buffer = Buffer()
             copy.body!!.writeTo(buffer)
-            buffer.readUtf8()
+            val result = buffer.readUtf8()
+            if (result.contains("Content-Type: image/")) {
+                ""
+            } else {
+                result
+            }
         } catch (e: Exception) {
             null
         }
