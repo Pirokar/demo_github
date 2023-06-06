@@ -40,7 +40,6 @@ class MessengerImpl(
     private val clientUseCase: ClientUseCase
 ) : Messenger {
     private val context = BaseConfig.instance.context
-    private val transport = BaseConfig.instance.transport
     private var isDownloadingMessages = false
     private var isAllMessagesDownloaded = false
     private var lastMessageTimestamp = 0L
@@ -210,7 +209,7 @@ class MessengerImpl(
                 if (quoteFileDescription != null) {
                     quoteFilePath = postFile(quoteFileDescription, clientId)
                 }
-                transport.sendMessage(userPhrase, consultInfo, filePath, quoteFilePath)
+                BaseConfig.instance.transport.sendMessage(userPhrase, consultInfo, filePath, quoteFilePath)
             }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
