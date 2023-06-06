@@ -49,6 +49,7 @@ import im.threads.business.models.SystemMessage
 import im.threads.business.models.UpcomingUserMessage
 import im.threads.business.models.UserPhrase
 import im.threads.business.models.enums.AttachmentStateEnum
+import im.threads.business.models.enums.CurrentUiTheme
 import im.threads.business.preferences.Preferences
 import im.threads.business.preferences.PreferencesCoreKeys
 import im.threads.business.rest.models.SettingsResponse
@@ -1250,9 +1251,11 @@ class ChatController private constructor() {
     private fun clearPreferences() {
         val fcmToken = preferences.get<String>(PreferencesCoreKeys.FCM_TOKEN)
         val hcmToken = preferences.get<String>(PreferencesCoreKeys.HCM_TOKEN)
+        val currentUiThemeValue = preferences.get(PreferencesCoreKeys.USER_SELECTED_UI_THEME_KEY, CurrentUiTheme.SYSTEM.value)
         preferences.sharedPreferences.edit().clear().commit()
         preferences.save(PreferencesCoreKeys.FCM_TOKEN, fcmToken)
         preferences.save(PreferencesCoreKeys.HCM_TOKEN, hcmToken)
+        preferences.save(PreferencesCoreKeys.USER_SELECTED_UI_THEME_KEY, currentUiThemeValue)
     }
 
     private fun removePushNotification() {
