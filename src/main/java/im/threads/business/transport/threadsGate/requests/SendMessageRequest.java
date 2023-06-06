@@ -14,18 +14,14 @@ public final class SendMessageRequest extends BaseRequest<SendMessageRequest.Dat
 
         private final String deviceAddress;
 
-        private final String externalId;
-
         private final JsonObject content;
 
         private final boolean important;
 
         public Data(String deviceAddress,
-                    String messageId,
                     JsonObject content,
                     boolean important) {
             this.deviceAddress = deviceAddress;
-            this.externalId = messageId;
             this.content = content;
             this.important = important;
         }
