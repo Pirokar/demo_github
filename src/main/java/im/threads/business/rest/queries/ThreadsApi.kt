@@ -6,10 +6,10 @@ import im.threads.business.rest.models.ConfigResponse
 import im.threads.business.rest.models.HistoryResponse
 import im.threads.business.rest.models.SettingsResponse
 import im.threads.business.rest.models.VersionsModel
+import im.threads.business.utils.encodeUrl
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Call
-import java.net.URLEncoder
 
 class ThreadsApi(
     private val oldThreadsApi: OldThreadsBackendApi? = null,
@@ -47,10 +47,10 @@ class ThreadsApi(
         version: String?
     ): Call<HistoryResponse?>? {
         return if (BaseConfig.instance.newChatCenterApi) {
-            newThreadsApi?.history(URLEncoder.encode(token, "utf-8"), beforeDate, count, version)
+            newThreadsApi?.history(token?.encodeUrl(), beforeDate, count, version)
         } else {
             oldThreadsApi?.history(
-                URLEncoder.encode(token, "utf-8"),
+                token?.encodeUrl(),
                 beforeDate,
                 count,
                 version,
@@ -68,7 +68,7 @@ class ThreadsApi(
     }
 
     fun upload(file: MultipartBody.Part?, agent: RequestBody?, token: String): Call<FileUploadResponse?>? {
-        return datastoreApi?.upload(file, agent, URLEncoder.encode(SIGNATURE_STRING + token, "utf-8"))
+        return datastoreApi?.upload(file, agent, "$SIGNATURE_STRING$token".encodeUrl())
     }
 
     companion object {

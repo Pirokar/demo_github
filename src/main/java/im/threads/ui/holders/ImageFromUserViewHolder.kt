@@ -142,7 +142,7 @@ class ImageFromUserViewHolder(
                         )
                     }
                 }
-                MessageStatus.SENT -> {
+                MessageStatus.SENT, MessageStatus.ENQUEUED -> {
                     showCommonLayout(fileDescription)
                     getColoredDrawable(
                         style.messageSentIconResId,
@@ -206,7 +206,7 @@ class ImageFromUserViewHolder(
         loaderLayoutRoot.isVisible = true
         imageLayout.isVisible = false
         errorText.isVisible = false
-        fileName.text = fileDescription.incomingName
+        fileName.text = fileDescription.incomingName ?: ""
         initAnimation(loader, false)
     }
 

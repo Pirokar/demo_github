@@ -125,7 +125,7 @@ class MessagesTable(
         val query = String.format(
             Locale.US,
             "select * from (select * from %s " +
-                " where " + COLUMN_MESSAGE_SEND_STATE + " = " + MessageStatus.SENDING.ordinal +
+                " where " + COLUMN_MESSAGE_SEND_STATE + " = " + MessageStatus.SENDING.value +
                 " order by %s desc) order by %s asc",
             TABLE_MESSAGES,
             COLUMN_TIMESTAMP,
@@ -148,7 +148,7 @@ class MessagesTable(
         val query = String.format(
             Locale.US,
             "select * from (select * from %s " +
-                " where " + COLUMN_MESSAGE_SEND_STATE + " < " + MessageStatus.DELIVERED.ordinal +
+                " where " + COLUMN_MESSAGE_SEND_STATE + " < " + MessageStatus.DELIVERED.value +
                 " order by %s desc) order by %s asc",
             TABLE_MESSAGES,
             COLUMN_TIMESTAMP,
@@ -251,7 +251,7 @@ class MessagesTable(
             chatItem.id?.let { id ->
                 if (chatItem.sentState != MessageStatus.READ) {
                     val existedItem = getChatItemByCorrelationId(sqlHelper, id) as? UserPhrase
-                    if (existedItem != null && existedItem.sentState.ordinal > chatItem.sentState.ordinal) {
+                    if (existedItem != null && existedItem.sentState.value > chatItem.sentState.value) {
                         chatItem.sentState = existedItem.sentState
                     }
                 }
@@ -335,7 +335,7 @@ class MessagesTable(
         messageStatus: MessageStatus?
     ) {
         val cv = ContentValues()
-        cv.put(COLUMN_MESSAGE_SEND_STATE, messageStatus?.ordinal)
+        cv.put(COLUMN_MESSAGE_SEND_STATE, messageStatus?.value)
         sqlHelper.writableDatabase.update(TABLE_MESSAGES, cv, "$COLUMN_MESSAGE_CORRELATION_ID = ?", arrayOf(uuid))
     }
 
@@ -345,7 +345,7 @@ class MessagesTable(
         messageStatus: MessageStatus?
     ) {
         val cv = ContentValues()
-        cv.put(COLUMN_MESSAGE_SEND_STATE, messageStatus?.ordinal)
+        cv.put(COLUMN_MESSAGE_SEND_STATE, messageStatus?.value)
         sqlHelper.writableDatabase.update(TABLE_MESSAGES, cv, "$COLUMN_MESSAGE_ID = ?", arrayOf(messageId))
     }
 
@@ -368,7 +368,7 @@ class MessagesTable(
         cv.put(COLUMN_IS_READ, true)
         val whereClause = (
             "(" + COLUMN_MESSAGE_TYPE + " = " + MessageType.CONSULT_PHRASE.ordinal +
-                " or (" + COLUMN_MESSAGE_TYPE + " = " + MessageType.SURVEY.ordinal + " and " + COLUMN_MESSAGE_SEND_STATE + " = " + MessageStatus.FAILED.ordinal + ")" +
+                " or (" + COLUMN_MESSAGE_TYPE + " = " + MessageType.SURVEY.ordinal + " and " + COLUMN_MESSAGE_SEND_STATE + " = " + MessageStatus.FAILED.value + ")" +
                 " or " + COLUMN_MESSAGE_TYPE + " = " + MessageType.REQUEST_RESOLVE_THREAD.ordinal + ")" +
                 " and " + COLUMN_IS_READ + " = 0"
             )
@@ -381,7 +381,7 @@ class MessagesTable(
         cv.put(COLUMN_IS_READ, true)
         val whereClause = (
             "(" + COLUMN_MESSAGE_TYPE + " = " + MessageType.CONSULT_PHRASE.ordinal +
-                " or (" + COLUMN_MESSAGE_TYPE + " = " + MessageType.SURVEY.ordinal + " and " + COLUMN_MESSAGE_SEND_STATE + " = " + MessageStatus.FAILED.ordinal + ")" +
+                " or (" + COLUMN_MESSAGE_TYPE + " = " + MessageType.SURVEY.ordinal + " and " + COLUMN_MESSAGE_SEND_STATE + " = " + MessageStatus.FAILED.value + ")" +
                 " or " + COLUMN_MESSAGE_TYPE + " = " + MessageType.REQUEST_RESOLVE_THREAD.ordinal + ")" +
                 " and " + COLUMN_IS_READ + " = 0 and $COLUMN_THREAD_ID = $threadId"
             )
@@ -439,7 +439,7 @@ class MessagesTable(
                 " from " + TABLE_MESSAGES +
                 " where (" +
                 COLUMN_MESSAGE_TYPE + " = " + MessageType.CONSULT_PHRASE.ordinal + " or " +
-                "(" + COLUMN_MESSAGE_TYPE + " = " + MessageType.SURVEY.ordinal + " and " + COLUMN_MESSAGE_SEND_STATE + " = " + MessageStatus.FAILED.ordinal + ") or " +
+                "(" + COLUMN_MESSAGE_TYPE + " = " + MessageType.SURVEY.ordinal + " and " + COLUMN_MESSAGE_SEND_STATE + " = " + MessageStatus.FAILED.value + ") or " +
                 COLUMN_MESSAGE_TYPE + " = " + MessageType.REQUEST_RESOLVE_THREAD.ordinal +
                 ")" +
                 " and " + COLUMN_IS_READ + " = 0" +
@@ -474,7 +474,7 @@ class MessagesTable(
                 " from " + TABLE_MESSAGES +
                 " where (" +
                 COLUMN_MESSAGE_TYPE + " = " + MessageType.CONSULT_PHRASE.ordinal + " or " +
-                "(" + COLUMN_MESSAGE_TYPE + " = " + MessageType.SURVEY.ordinal + " and " + COLUMN_MESSAGE_SEND_STATE + " = " + MessageStatus.FAILED.ordinal + ") or " +
+                "(" + COLUMN_MESSAGE_TYPE + " = " + MessageType.SURVEY.ordinal + " and " + COLUMN_MESSAGE_SEND_STATE + " = " + MessageStatus.FAILED.value + ") or " +
                 COLUMN_MESSAGE_TYPE + " = " + MessageType.REQUEST_RESOLVE_THREAD.ordinal +
                 ")" +
                 " and " + COLUMN_IS_READ + " = 0" +
@@ -496,7 +496,7 @@ class MessagesTable(
         cv.put(COLUMN_DISPLAY_MESSAGE, false)
         val whereClause = (
             COLUMN_MESSAGE_TYPE + " = " + MessageType.SURVEY.ordinal +
-                " and " + COLUMN_MESSAGE_SEND_STATE + " = " + MessageStatus.FAILED.ordinal
+                " and " + COLUMN_MESSAGE_SEND_STATE + " = " + MessageStatus.FAILED.value
             )
         return sqlHelper.writableDatabase
             .update(TABLE_MESSAGES, cv, whereClause, null)
@@ -698,7 +698,7 @@ class MessagesTable(
         cv.put(COLUMN_PHRASE, phrase.phraseText)
         cv.put(COLUMN_TIMESTAMP, phrase.timeStamp)
         cv.put(COLUMN_MESSAGE_TYPE, MessageType.USER_PHRASE.ordinal)
-        cv.put(COLUMN_MESSAGE_SEND_STATE, phrase.sentState.ordinal)
+        cv.put(COLUMN_MESSAGE_SEND_STATE, phrase.sentState.value)
         cv.put(COLUMN_THREAD_ID, phrase.threadId)
         return cv
     }
@@ -806,13 +806,13 @@ class MessagesTable(
         cv.put(COLUMN_SURVEY_SENDING_ID, survey.sendingId)
         cv.put(COLUMN_SURVEY_HIDE_AFTER, survey.hideAfter)
         cv.put(COLUMN_TIMESTAMP, survey.timeStamp)
-        cv.put(COLUMN_MESSAGE_SEND_STATE, survey.sentState.ordinal)
+        cv.put(COLUMN_MESSAGE_SEND_STATE, survey.sentState.value)
         cv.put(COLUMN_DISPLAY_MESSAGE, survey.isDisplayMessage)
         cv.put(COLUMN_IS_READ, survey.isRead)
         if (survey.isRead) {
-            cv.put(COLUMN_MESSAGE_SEND_STATE, MessageStatus.READ.ordinal)
+            cv.put(COLUMN_MESSAGE_SEND_STATE, MessageStatus.READ.value)
         } else {
-            cv.put(COLUMN_MESSAGE_SEND_STATE, survey.sentState.ordinal)
+            cv.put(COLUMN_MESSAGE_SEND_STATE, survey.sentState.value)
         }
         sqlHelper.readableDatabase.rawQuery(sql, selectionArgs).use { c ->
             if (c.count > 0) {
@@ -839,7 +839,7 @@ class MessagesTable(
         cv.put(COLUMN_DISPLAY_MESSAGE, false)
         val whereClause = (
             COLUMN_MESSAGE_TYPE + " = " + MessageType.SURVEY.ordinal +
-                " and " + COLUMN_MESSAGE_SEND_STATE + " = " + MessageStatus.FAILED.ordinal +
+                " and " + COLUMN_MESSAGE_SEND_STATE + " = " + MessageStatus.FAILED.value +
                 " and " + COLUMN_SURVEY_SENDING_ID + " != ?"
             )
         sqlHelper.writableDatabase

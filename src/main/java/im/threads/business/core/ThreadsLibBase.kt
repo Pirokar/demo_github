@@ -254,6 +254,7 @@ open class ThreadsLibBase protected constructor(context: Context) {
             allowUntrustedSSLCertificate: Boolean
         ) {
             try {
+                BaseConfig.instance.sslSocketFactoryConfig = null
                 BaseConfig.instance.allowUntrustedSSLCertificate = allowUntrustedSSLCertificate
                 if (baseUrl != null) BaseConfig.instance.serverBaseUrl = baseUrl
                 if (datastoreUrl != null) BaseConfig.instance.datastoreUrl = datastoreUrl

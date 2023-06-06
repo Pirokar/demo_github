@@ -4,14 +4,12 @@ import android.accounts.NetworkErrorException
 import android.graphics.Bitmap
 import android.net.Uri
 import android.widget.ImageView
-import com.google.gson.Gson
 import im.threads.business.chatUpdates.ChatUpdateProcessor
 import im.threads.business.config.BaseConfig
 import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.ErrorResponse
 import im.threads.business.models.FileDescription
-import im.threads.business.models.FileUploadResponse
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.rest.queries.DatastoreApi
 import im.threads.business.rest.queries.ThreadsApi
@@ -24,13 +22,11 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import retrofit2.Response
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
-import java.net.URLEncoder
 
 private const val PHOTO_RESIZE_MAX_SIDE = 1600
 
@@ -66,11 +62,8 @@ private fun sendFile(uri: Uri, mimeType: String, token: String, fileDescription:
     )
     val agent: RequestBody = token.toRequestBody("text/plain".toMediaTypeOrNull())
 
-    showSendingFileLog(uri, fileName, fileRequestBody)
-
-    val response = DatastoreApi.get().upload(part, agent, URLEncoder.encode(token, "utf-8"))?.execute()
+    val response = DatastoreApi.get().upload(part, agent, token.encodeUrl())?.execute()
     response?.let {
-        showFileSentLog(it)
         if (it.isSuccessful) {
             response.body()?.let { fileUploadResponse ->
                 chatUpdateProcessor.postUploadResult(fileDescription.apply { state = AttachmentStateEnum.READY })
@@ -118,7 +111,6 @@ private fun isJpeg(uri: Uri): Boolean {
 }
 
 private fun getJpegRequestBody(uri: Uri?): RequestBody? {
-    LoggerEdna.info("sendFile: $uri")
     val file = compressImage(uri) ?: return null
     return file.asRequestBody("image/jpeg".toMediaTypeOrNull())
 }
@@ -162,32 +154,6 @@ private fun compressImage(uri: Uri?): File? {
         }
     }
     return null
-}
-
-private fun showSendingFileLog(
-    uri: Uri,
-    fileName: String,
-    fileRequestBody: RequestBody
-) {
-    LoggerEdna.info(
-        ThreadsApi.REST_TAG,
-        "Sending file. Uri: $uri, fileName: $fileName, requestBody: $fileRequestBody"
-    )
-}
-
-private fun showFileSentLog(response: Response<FileUploadResponse?>) {
-    val responseBody = try {
-        Gson().toJson(response.body())
-    } catch (exc: Exception) {
-        val error = response.errorBody()?.string() ?: "no error message"
-        "Sending file error when parsing the body. Response: $response. Error message: $error.\n" +
-            "Exception:$exc"
-    }
-
-    LoggerEdna.info(
-        ThreadsApi.REST_TAG,
-        "File has been sent. Response: $response. Body: $responseBody"
-    )
 }
 
 private fun showErrorMessageLog(message: String) {

@@ -2123,8 +2123,12 @@ class ChatFragment :
 
     private fun onActivityBackPressed() {
         if (isAdded) {
-            val activity: Activity? = activity
-            activity?.onBackPressed()
+            if (isInMessageSearchMode) {
+                hideSearchMode()
+            } else {
+                val activity: Activity? = activity
+                activity?.onBackPressed()
+            }
         }
     }
 
@@ -2137,36 +2141,35 @@ class ChatFragment :
             return true
         }
         chatAdapter?.removeHighlight()
-        var isNeedToClose = true
-        if (bottomSheetDialogFragment != null) {
+        return if (bottomSheetDialogFragment != null) {
             hideBottomSheet()
-            return false
-        }
-        if (binding.copyControls.visibility == View.VISIBLE &&
+            false
+        } else if (binding.copyControls.visibility == View.VISIBLE &&
             binding.searchLo.visibility == View.VISIBLE
         ) {
             unChooseItem()
             binding.search.requestFocus()
             binding.search.showKeyboard(100)
-            return false
-        }
-        if (binding.copyControls.visibility == View.VISIBLE) {
+            false
+        } else if (binding.copyControls.visibility == View.VISIBLE) {
             unChooseItem()
             hideBackButton()
-            isNeedToClose = false
-        }
-        if (binding.searchLo.visibility == View.VISIBLE) {
-            isNeedToClose = false
+            false
+        } else if (binding.searchLo.visibility == View.VISIBLE) {
             hideSearchMode()
             if (chatAdapter != null) {
                 scrollToPosition(chatAdapter!!.itemCount - 1, false)
             }
-        }
-        if (mQuoteLayoutHolder?.isVisible == true) {
+            false
+        } else if (mQuoteLayoutHolder?.isVisible == true) {
             mQuoteLayoutHolder?.clear()
-            return false
+            false
+        } else if (isInMessageSearchMode) {
+            hideSearchMode()
+            false
+        } else {
+            true
         }
-        return isNeedToClose
     }
 
     private fun hideSearchMode() {

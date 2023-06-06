@@ -1,5 +1,6 @@
 package im.threads.ui.controllers
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Context
@@ -162,7 +163,6 @@ class ChatController private constructor() {
         messenger.onViewStart()
         InitialisationConstants.chatState = ChatState.ANDROID_CHAT_LIFECYCLE
         checkEmptyStateVisibility()
-        checkForSendInit()
     }
 
     fun onViewStop() {
@@ -484,15 +484,6 @@ class ChatController private constructor() {
         }
     }
 
-    private fun checkForSendInit() {
-        clientUseCase.getUserInfo()?.clientId?.let { currentUserId ->
-            val lastUserIdWithSendInit = preferences.get<String>(PreferencesCoreKeys.INIT_SENT_LAST_USER_ID)
-            if (currentUserId != lastUserIdWithSendInit) {
-                BaseConfig.instance.transport.sendInit(false)
-            }
-        }
-    }
-
     private fun loadItemsFromDB() {
         fragment?.let {
             it.addChatItems(database.getChatItems(0, -1))
@@ -700,7 +691,7 @@ class ChatController private constructor() {
 
     private fun addLocalUserMessages(serverItems: List<ChatItem>): List<ChatItem> {
         val items = serverItems.toMutableList()
-        val localMessagesToDelete = java.util.ArrayList<UserPhrase>()
+        val localMessagesToDelete = ArrayList<UserPhrase>()
         for (localUserMessage in localUserMessages) {
             for (serverItem in items) {
                 if (serverItem.isTheSameItem(localUserMessage)) {
@@ -958,41 +949,48 @@ class ChatController private constructor() {
             Flowable.fromPublisher(chatUpdateProcessor.newMessageProcessor)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext { chatItem: ChatItem ->
-                    if (chatItem is MessageRead) {
-                        val readMessagesIds = chatItem.messageId
-                        for (readId in readMessagesIds) {
-                            val databaseItem = database.getChatItemByCorrelationId(readId)
-                            (databaseItem as UserPhrase?)?.let { userPhrase ->
-                                userPhrase.id?.let {
-                                    info("Sending read status to update processor. CorrelationId: $it")
-                                    if (!chatUpdateProcessor.outgoingMessageStatusChangedProcessor.hasSubscribers()) {
-                                        subscribeToOutgoingMessageStatusChanged()
+                    when (chatItem) {
+                        is MessageRead -> {
+                            val readMessagesIds = chatItem.messageId
+                            for (readId in readMessagesIds) {
+                                val databaseItem = database.getChatItemByCorrelationId(readId)
+                                (databaseItem as UserPhrase?)?.let { userPhrase ->
+                                    userPhrase.id?.let {
+                                        info("Sending read status to update processor. CorrelationId: $it")
+                                        if (!chatUpdateProcessor.outgoingMessageStatusChangedProcessor.hasSubscribers()) {
+                                            subscribeToOutgoingMessageStatusChanged()
+                                        }
+                                        chatUpdateProcessor.postOutgoingMessageStatusChanged(listOf(Status(it, status = MessageStatus.READ)))
                                     }
-                                    chatUpdateProcessor.postOutgoingMessageStatusChanged(listOf(Status(it, status = MessageStatus.READ)))
                                 }
                             }
+                            return@doOnNext
                         }
-                        return@doOnNext
-                    } else if (chatItem is ScheduleInfo) {
-                        currentScheduleInfo = chatItem
-                        currentScheduleInfo?.calculateServerTimeDiff()
-                        refreshUserInputState()
-                        if (!isChatWorking) {
-                            consultWriter.isSearchingConsult = false
-                            fragment?.removeSearching()
-                            fragment?.setTitleStateDefault()
+                        is ScheduleInfo -> {
+                            currentScheduleInfo = chatItem
+                            currentScheduleInfo?.calculateServerTimeDiff()
+                            refreshUserInputState()
+                            if (!isChatWorking) {
+                                consultWriter.isSearchingConsult = false
+                                fragment?.removeSearching()
+                                fragment?.setTitleStateDefault()
+                            }
+                            fragment?.addChatItem(currentScheduleInfo)
                         }
-                        fragment?.addChatItem(currentScheduleInfo)
-                    } else if (chatItem is ConsultConnectionMessage) {
-                        processConsultConnectionMessage(chatItem)
-                    } else if (chatItem is SearchingConsult) {
-                        fragment?.setStateSearchingConsult()
-                        consultWriter.isSearchingConsult = true
-                        return@doOnNext
-                    } else if (chatItem is SimpleSystemMessage) {
-                        processSimpleSystemMessage(chatItem)
-                    } else if (chatItem is ConsultPhrase) {
-                        refreshUserInputState(chatItem.isBlockInput)
+                        is ConsultConnectionMessage -> {
+                            processConsultConnectionMessage(chatItem)
+                        }
+                        is SearchingConsult -> {
+                            fragment?.setStateSearchingConsult()
+                            consultWriter.isSearchingConsult = true
+                            return@doOnNext
+                        }
+                        is SimpleSystemMessage -> {
+                            processSimpleSystemMessage(chatItem)
+                        }
+                        is ConsultPhrase -> {
+                            refreshUserInputState(chatItem.isBlockInput)
+                        }
                     }
                     addMessage(chatItem)
                 }
@@ -1242,9 +1240,19 @@ class ChatController private constructor() {
         consultWriter.setCurrentConsultLeft()
         consultWriter.isSearchingConsult = false
         removePushNotification()
+        clearPreferences()
         UnreadMessagesController.INSTANCE.refreshUnreadMessagesCount()
-        preferences.sharedPreferences.edit().clear().commit()
+        localUserMessages.clear()
         database.cleanDatabase()
+    }
+
+    @SuppressLint("ApplySharedPref")
+    private fun clearPreferences() {
+        val fcmToken = preferences.get<String>(PreferencesCoreKeys.FCM_TOKEN)
+        val hcmToken = preferences.get<String>(PreferencesCoreKeys.HCM_TOKEN)
+        preferences.sharedPreferences.edit().clear().commit()
+        preferences.save(PreferencesCoreKeys.FCM_TOKEN, fcmToken)
+        preferences.save(PreferencesCoreKeys.HCM_TOKEN, hcmToken)
     }
 
     private fun removePushNotification() {

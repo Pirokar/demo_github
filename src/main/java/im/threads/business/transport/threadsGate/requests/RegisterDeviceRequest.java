@@ -36,8 +36,6 @@ public final class RegisterDeviceRequest extends BaseRequest<RegisterDeviceReque
 
         private final String clientId;
 
-        private final String apiVersion;
-
         public Data(String appPackage,
                     String appVersion,
                     String providerUid,
@@ -50,8 +48,8 @@ public final class RegisterDeviceRequest extends BaseRequest<RegisterDeviceReque
                     String deviceName,
                     String deviceModel,
                     String deviceAddress,
-                    String clientId,
-                    String apiVersion) {
+                    String clientId
+        ) {
             this.appPackage = appPackage;
             this.appVersion = appVersion;
             this.providerUid = providerUid;
@@ -65,7 +63,6 @@ public final class RegisterDeviceRequest extends BaseRequest<RegisterDeviceReque
             this.deviceModel = deviceModel;
             this.deviceAddress = deviceAddress;
             this.clientId = clientId;
-            this.apiVersion = apiVersion;
         }
     }
 }
