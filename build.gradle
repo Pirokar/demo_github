@@ -67,6 +67,7 @@ ext {
     koin_version = '3.2.0'
     okhttp_webserver_version = '4.10.0'
 
+    pushVersion = '3.5.2'
     okhttpVersion = '4.9.3'
     retrofitVersion = '2.9.0'
     rxjava2Version = '2.2.21'

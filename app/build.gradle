@@ -1,6 +1,8 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'com.huawei.agconnect'
+    id 'com.google.gms.google-services'
     id 'kotlin-kapt'
     id 'kotlin-parcelize'
     id 'dev.testify'
@@ -85,6 +87,11 @@ dependencies {
 
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$rootProject.viewmodelVersion"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$rootProject.viewmodelVersion"
+
+    debugImplementation "com.edna.android:push-lite-debug:$pushVersion"
+    debugImplementation "com.edna.android:push-lite-huawei-debug:$pushVersion"
+    releaseImplementation "com.edna.android:push-lite-release:$pushVersion"
+    releaseImplementation "com.edna.android:push-lite-huawei-release:$pushVersion"
 
     testImplementation "junit:junit:$rootProject.testJunitVersion"
     androidTestImplementation "androidx.test:runner:$rootProject.androidXTestVersion"

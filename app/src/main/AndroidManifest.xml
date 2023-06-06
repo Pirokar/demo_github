@@ -3,10 +3,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="io.edna.threads.demo">
 
+    <permission
+        android:name="${applicationId}.permission.pushserver.RECEIVE"
+        android:protectionLevel="signature"/>
+
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="${applicationId}.permission.pushserver.RECEIVE"/>
+
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="*" />
+        </intent>
+    </queries>
+
 
     <application
         android:name=".integrationCode.EdnaThreadsApplication"
@@ -39,5 +52,25 @@
             android:screenOrientation="portrait"/>
 
         <activity android:name=".appCode.test.TestChatActivity"/>
+
+        <service android:name=".appCode.push.CustomPushFcmIntentService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".appCode.push.CustomPushHcmIntentService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.huawei.push.action.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <meta-data
+            android:name="com.pushserver.android.logs"
+            android:value="true" />
+
     </application>
 </manifest>
