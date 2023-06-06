@@ -260,7 +260,6 @@ class ThreadsGateTransport(
         webSocket ?: return false
         val clientId = clientUseCase.getUserInfo()?.clientId
         val deviceAddress = preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS)
-        val messageId = content.get(MessageAttributes.UUID)?.asString
         if (sendInit && !clientId.isNullOrBlank() && !deviceAddress.isNullOrBlank()) {
             sendInitChatMessage(false)
             sendEnvironmentMessage(false)
@@ -268,7 +267,7 @@ class ThreadsGateTransport(
         val text = BaseConfig.instance.gson.toJson(
             SendMessageRequest(
                 correlationId,
-                SendMessageRequest.Data(deviceAddress, messageId, content, important)
+                SendMessageRequest.Data(deviceAddress, content, important)
             )
         )
         return sendMessageWithWebsocket(text)

@@ -1,7 +1,6 @@
 package im.threads.business.models
 
 import com.google.gson.annotations.SerializedName
-import im.threads.business.logger.LoggerEdna
 
 enum class MessageStatus(val value: Int) {
     SENDING(0),
