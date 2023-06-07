@@ -2645,19 +2645,21 @@ class ChatFragment :
         }
 
         override fun onQuickReplyClick(quickReply: QuickReply) {
-            hideQuickReplies()
-            sendMessage(
-                listOf(
-                    UpcomingUserMessage(
-                        null,
-                        null,
-                        null,
-                        quickReply.text.trim { it <= ' ' },
-                        quickReply.text.isLastCopyText()
-                    )
-                ),
-                false
-            )
+            if (chatController.isChatWorking) {
+                hideQuickReplies()
+                sendMessage(
+                    listOf(
+                        UpcomingUserMessage(
+                            null,
+                            null,
+                            null,
+                            quickReply.text.trim { it <= ' ' },
+                            quickReply.text.isLastCopyText()
+                        )
+                    ),
+                    false
+                )
+            }
         }
     }
 

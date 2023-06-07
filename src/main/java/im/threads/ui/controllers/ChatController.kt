@@ -542,7 +542,7 @@ class ChatController private constructor() {
             .firstOrNull { it.id == correlationId } == null
     }
 
-    private val isChatWorking: Boolean
+    val isChatWorking: Boolean
         get() = currentScheduleInfo == null || currentScheduleInfo?.isChatWorking == true
 
     @Throws(Exception::class)
