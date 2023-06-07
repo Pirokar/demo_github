@@ -9,5 +9,5 @@ import im.threads.ui.styles.StyleUseCase
  */
 val uiSLModule = module {
     factory { ChatCenterPushMessageHelper() }
-    factory { StyleUseCase(get()) }
+    factory { StyleUseCase(get(), get()) }
 }

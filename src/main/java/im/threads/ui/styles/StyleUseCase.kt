@@ -1,12 +1,15 @@
 package im.threads.ui.styles
 
 import android.content.Context
+import androidx.preference.PreferenceManager
+import im.threads.business.preferences.Preferences
+import im.threads.business.preferences.PreferencesCoreKeys
 import im.threads.ui.ChatStyle
 import im.threads.ui.extensions.isDarkThemeOn
 import im.threads.ui.styles.permissions.PermissionDescriptionDialogStyle
 import im.threads.ui.styles.permissions.PermissionDescriptionType
 
-internal class StyleUseCase(private val context: Context) {
+internal class StyleUseCase(private val preferences: Preferences, private val context: Context) {
 
     /**
      * Вовзаращает светлую и темную темы
@@ -39,6 +42,37 @@ internal class StyleUseCase(private val context: Context) {
             PermissionDescriptionType.RECORD_AUDIO -> setRecordAudioStyle(style)
             PermissionDescriptionType.CAMERA -> setCameraStyle(style)
         }
+    }
+
+    fun clearUnusedPreferences() {
+        val keys = arrayOf(
+            "APP_STYLE",
+            "STORAGE_PERMISSION_DESCRIPTION_DIALOG_STYLE",
+            "RECORD_AUDIO_PERMISSION_DESCRIPTION_DIALOG_STYLE",
+            "CAMERA_PERMISSION_DESCRIPTION_DIALOG_STYLE",
+            "CLIENT_NOTIFICATION_DISPLAY_TYPE",
+            "PREF_ATTACHMENT_SETTINGS",
+            "APP_LIGHT_STYLE",
+            "APP_DARK_STYLE",
+            "STORAGE_PERMISSION_DESCRIPTION_DIALOG_LIGHT_STYLE",
+            "STORAGE_PERMISSION_DESCRIPTION_DIALOG_DARK_STYLE",
+            "RECORD_AUDIO_PERMISSION_DESCRIPTION_DIALOG_LIGHT_STYLE",
+            "RECORD_AUDIO_PERMISSION_DESCRIPTION_DIALOG_DARK_STYLE",
+            "CAMERA_PERMISSION_DESCRIPTION_DIALOG_LIGHT_STYLE",
+            "CAMERA_PERMISSION_DESCRIPTION_DIALOG_DARK_STYLE"
+        )
+
+        val notEncryptedPrefsEditor = PreferenceManager.getDefaultSharedPreferences(context).edit()
+        keys.forEach { notEncryptedPrefsEditor.putString(it, null) }
+        notEncryptedPrefsEditor.commit()
+
+        val storePrefsEditor = context.getSharedPreferences(PreferencesCoreKeys.STORE_NAME, Context.MODE_PRIVATE).edit()
+        keys.forEach { storePrefsEditor.putString(it, null) }
+        storePrefsEditor.commit()
+
+        val encryptedPrefsEditor = preferences.sharedPreferences.edit()
+        keys.forEach { encryptedPrefsEditor.putString(it, null) }
+        encryptedPrefsEditor.commit()
     }
 
     private fun setStorageStyle(style: PermissionDescriptionDialogStyle) {

@@ -10,12 +10,13 @@ import im.threads.business.preferences.Preferences
 import im.threads.business.preferences.PreferencesCoreKeys
 import im.threads.business.serviceLocator.core.inject
 import im.threads.business.utils.ClientUseCase
+import im.threads.ui.styles.StyleUseCase
 import java.io.File
 
 open class PreferencesMigrationBase(
     private val context: Context
 ) : Preferences(context) {
-    private val clientUseCase: ClientUseCase by inject()
+    private val styleUseCase: StyleUseCase by inject()
     protected open val keys = PreferencesCoreKeys.allPrefKeys
 
     fun migrateMainSharedPreferences() {
@@ -37,6 +38,10 @@ open class PreferencesMigrationBase(
             )
             deletePreferenceWithNameContains(PreferencesCoreKeys.STORE_NAME)
         }
+    }
+
+    fun removeStyleFromPreferences() {
+        styleUseCase.clearUnusedPreferences()
     }
 
     fun migrateNamedPreferences(preferenceName: String) {
