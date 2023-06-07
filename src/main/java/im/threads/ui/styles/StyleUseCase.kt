@@ -1,53 +1,36 @@
 package im.threads.ui.styles
 
 import android.content.Context
-import com.google.gson.Gson
-import com.google.gson.JsonSyntaxException
-import im.threads.business.config.BaseConfig
-import im.threads.business.logger.LoggerEdna
+import androidx.preference.PreferenceManager
 import im.threads.business.preferences.Preferences
+import im.threads.business.preferences.PreferencesCoreKeys
 import im.threads.ui.ChatStyle
 import im.threads.ui.extensions.isDarkThemeOn
-import im.threads.ui.preferences.PreferencesUiKeys
 import im.threads.ui.styles.permissions.PermissionDescriptionDialogStyle
 import im.threads.ui.styles.permissions.PermissionDescriptionType
-import java.io.Serializable
 
 internal class StyleUseCase(private val preferences: Preferences, private val context: Context) {
-    private val gson = Gson()
 
     /**
      * Вовзаращает светлую и темную темы
      */
     val incomingStyle: Pair<ChatStyle?, ChatStyle?>
-        get() = Pair(
-            getIncomingStyle(PreferencesUiKeys.APP_LIGHT_STYLE, ChatStyle::class.java),
-            getIncomingStyle(PreferencesUiKeys.APP_DARK_STYLE, ChatStyle::class.java)
-        )
+        get() = Pair(incomingStyleLight, incomingStyleDark)
 
     fun getIncomingStyle(type: PermissionDescriptionType): PermissionDescriptionDialogStyle? {
         return when (type) {
-            PermissionDescriptionType.STORAGE -> getIncomingStyle(
-                storagePermissionDescriptionDialogStyleKey,
-                PermissionDescriptionDialogStyle::class.java
-            )
-            PermissionDescriptionType.RECORD_AUDIO -> getIncomingStyle(
-                recordAudioPermissionDescriptionDialogStyleKey,
-                PermissionDescriptionDialogStyle::class.java
-            )
-            PermissionDescriptionType.CAMERA -> getIncomingStyle(
-                cameraPermissionDescriptionDialogStyleKey,
-                PermissionDescriptionDialogStyle::class.java
-            )
+            PermissionDescriptionType.STORAGE -> getStorageStyle()
+            PermissionDescriptionType.RECORD_AUDIO -> getRecordAudioStyle()
+            PermissionDescriptionType.CAMERA -> getCameraStyle()
         }
     }
 
     fun setIncomingLightStyle(style: ChatStyle) {
-        setIncomingStyle(PreferencesUiKeys.APP_LIGHT_STYLE, style)
+        incomingStyleLight = style
     }
 
     fun setIncomingDarkStyle(style: ChatStyle) {
-        setIncomingStyle(PreferencesUiKeys.APP_DARK_STYLE, style)
+        incomingStyleDark = style
     }
 
     fun setIncomingStyle(
@@ -55,67 +38,99 @@ internal class StyleUseCase(private val preferences: Preferences, private val co
         style: PermissionDescriptionDialogStyle
     ) {
         when (type) {
-            PermissionDescriptionType.STORAGE -> setIncomingStyle(
-                storagePermissionDescriptionDialogStyleKey,
-                style
-            )
-            PermissionDescriptionType.RECORD_AUDIO -> setIncomingStyle(
-                recordAudioPermissionDescriptionDialogStyleKey,
-                style
-            )
-            PermissionDescriptionType.CAMERA -> setIncomingStyle(
-                cameraPermissionDescriptionDialogStyleKey,
-                style
-            )
+            PermissionDescriptionType.STORAGE -> setStorageStyle(style)
+            PermissionDescriptionType.RECORD_AUDIO -> setRecordAudioStyle(style)
+            PermissionDescriptionType.CAMERA -> setCameraStyle(style)
         }
     }
 
-    private val storagePermissionDescriptionDialogStyleKey: String
-        get() {
-            return if (context.isDarkThemeOn()) {
-                PreferencesUiKeys.STORAGE_PERMISSION_DESCRIPTION_DIALOG_DARK_STYLE
-            } else {
-                PreferencesUiKeys.STORAGE_PERMISSION_DESCRIPTION_DIALOG_LIGHT_STYLE
-            }
-        }
+    fun clearUnusedPreferences() {
+        val keys = arrayOf(
+            "APP_STYLE",
+            "STORAGE_PERMISSION_DESCRIPTION_DIALOG_STYLE",
+            "RECORD_AUDIO_PERMISSION_DESCRIPTION_DIALOG_STYLE",
+            "CAMERA_PERMISSION_DESCRIPTION_DIALOG_STYLE",
+            "CLIENT_NOTIFICATION_DISPLAY_TYPE",
+            "PREF_ATTACHMENT_SETTINGS",
+            "APP_LIGHT_STYLE",
+            "APP_DARK_STYLE",
+            "STORAGE_PERMISSION_DESCRIPTION_DIALOG_LIGHT_STYLE",
+            "STORAGE_PERMISSION_DESCRIPTION_DIALOG_DARK_STYLE",
+            "RECORD_AUDIO_PERMISSION_DESCRIPTION_DIALOG_LIGHT_STYLE",
+            "RECORD_AUDIO_PERMISSION_DESCRIPTION_DIALOG_DARK_STYLE",
+            "CAMERA_PERMISSION_DESCRIPTION_DIALOG_LIGHT_STYLE",
+            "CAMERA_PERMISSION_DESCRIPTION_DIALOG_DARK_STYLE"
+        )
 
-    private val recordAudioPermissionDescriptionDialogStyleKey: String
-        get() {
-            return if (context.isDarkThemeOn()) {
-                PreferencesUiKeys.RECORD_AUDIO_PERMISSION_DESCRIPTION_DIALOG_DARK_STYLE
-            } else {
-                PreferencesUiKeys.RECORD_AUDIO_PERMISSION_DESCRIPTION_DIALOG_LIGHT_STYLE
-            }
-        }
+        val notEncryptedPrefsEditor = PreferenceManager.getDefaultSharedPreferences(context).edit()
+        keys.forEach { notEncryptedPrefsEditor.putString(it, null) }
+        notEncryptedPrefsEditor.commit()
 
-    private val cameraPermissionDescriptionDialogStyleKey: String
-        get() {
-            return if (context.isDarkThemeOn()) {
-                PreferencesUiKeys.CAMERA_PERMISSION_DESCRIPTION_DIALOG_DARK_STYLE
-            } else {
-                PreferencesUiKeys.CAMERA_PERMISSION_DESCRIPTION_DIALOG_LIGHT_STYLE
-            }
-        }
+        val storePrefsEditor = context.getSharedPreferences(PreferencesCoreKeys.STORE_NAME, Context.MODE_PRIVATE).edit()
+        keys.forEach { storePrefsEditor.putString(it, null) }
+        storePrefsEditor.commit()
 
-    private fun <T : Serializable?> getIncomingStyle(
-        key: String,
-        styleClass: Class<T>
-    ): T? {
-        var style: T? = null
-        try {
-            val sharedPreferencesString = preferences.get<String>(key)
-            if (sharedPreferencesString != null) {
-                style = BaseConfig.instance.gson.fromJson(sharedPreferencesString, styleClass)
-            }
-        } catch (ex: IllegalStateException) {
-            LoggerEdna.error("getIncomingStyle ${styleClass.canonicalName} failed: ", ex)
-        } catch (ex: JsonSyntaxException) {
-            LoggerEdna.error("getIncomingStyle ${styleClass.canonicalName} failed: ", ex)
-        }
-        return style
+        val encryptedPrefsEditor = preferences.sharedPreferences.edit()
+        keys.forEach { encryptedPrefsEditor.putString(it, null) }
+        encryptedPrefsEditor.commit()
     }
 
-    private fun <T : Serializable?> setIncomingStyle(key: String, style: T) {
-        preferences.save(key, gson.toJson(style))
+    private fun setStorageStyle(style: PermissionDescriptionDialogStyle) {
+        if (context.isDarkThemeOn()) {
+            storageChatStyleDark = style
+        } else {
+            storageChatStyleLight = style
+        }
+    }
+
+    private fun getStorageStyle(): PermissionDescriptionDialogStyle? {
+        return if (context.isDarkThemeOn() && storageChatStyleDark != null) {
+            storageChatStyleDark
+        } else {
+            storageChatStyleLight
+        }
+    }
+
+    private fun setCameraStyle(style: PermissionDescriptionDialogStyle) {
+        if (context.isDarkThemeOn()) {
+            cameraChatStyleDark = style
+        } else {
+            cameraChatStyleLight = style
+        }
+    }
+
+    private fun getCameraStyle(): PermissionDescriptionDialogStyle? {
+        return if (context.isDarkThemeOn() && cameraChatStyleDark != null) {
+            cameraChatStyleDark
+        } else {
+            cameraChatStyleLight
+        }
+    }
+
+    private fun setRecordAudioStyle(style: PermissionDescriptionDialogStyle) {
+        if (context.isDarkThemeOn()) {
+            recordAudioChatStyleDark = style
+        } else {
+            recordAudioChatStyleLight = style
+        }
+    }
+
+    private fun getRecordAudioStyle(): PermissionDescriptionDialogStyle? {
+        return if (context.isDarkThemeOn() && recordAudioChatStyleDark != null) {
+            recordAudioChatStyleDark
+        } else {
+            recordAudioChatStyleLight
+        }
+    }
+
+    companion object {
+        private var incomingStyleLight: ChatStyle? = null
+        private var incomingStyleDark: ChatStyle? = null
+        private var storageChatStyleLight: PermissionDescriptionDialogStyle? = null
+        private var cameraChatStyleLight: PermissionDescriptionDialogStyle? = null
+        private var recordAudioChatStyleLight: PermissionDescriptionDialogStyle? = null
+        private var storageChatStyleDark: PermissionDescriptionDialogStyle? = null
+        private var cameraChatStyleDark: PermissionDescriptionDialogStyle? = null
+        private var recordAudioChatStyleDark: PermissionDescriptionDialogStyle? = null
     }
 }
