@@ -58,7 +58,7 @@ import im.threads.business.rest.queries.ThreadsApi
 import im.threads.business.secureDatabase.DatabaseHolder
 import im.threads.business.serviceLocator.core.inject
 import im.threads.business.state.ChatState
-import im.threads.business.state.InitialisationConstants
+import im.threads.business.state.ChatStateEnum
 import im.threads.business.transport.ChatItemProviderData
 import im.threads.business.transport.HistoryLoader
 import im.threads.business.transport.HistoryParser
@@ -115,6 +115,7 @@ class ChatController private constructor() {
     private val preferences: Preferences by inject()
     private val historyLoader: HistoryLoader by inject()
     private val clientUseCase: ClientUseCase by inject()
+    private val chatState: ChatState by inject()
 
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
@@ -157,12 +158,11 @@ class ChatController private constructor() {
     init {
         PreferencesMigrationUi(appContext).migrateNamedPreferences(ChatController::class.java.simpleName)
         subscribeToChatEvents()
-        messenger.resendMessages()
     }
 
     fun onViewStart() {
+        checkStateOnViewStart()
         messenger.onViewStart()
-        InitialisationConstants.chatState = ChatState.ANDROID_CHAT_LIFECYCLE
         checkEmptyStateVisibility()
     }
 
@@ -306,6 +306,12 @@ class ChatController private constructor() {
         )
     }
 
+    private fun checkStateOnViewStart() {
+        if (chatState.getCurrentState() < ChatStateEnum.REGISTERING_DEVICE) {
+            BaseConfig.instance.transport.sendRegisterDevice(false)
+        }
+    }
+
     private fun updateDoubleItems(serverItems: ArrayList<ChatItem>) {
         updateServerItemsBySendingItems(serverItems, getSendingItems())
     }
@@ -321,6 +327,8 @@ class ChatController private constructor() {
             }
         }
     }
+
+    fun isChatReady() = chatState.isChatReady()
 
     private fun getSendingItems(): ArrayList<UserPhrase> {
         return database.getSendingChatItems() as ArrayList<UserPhrase>
@@ -603,7 +611,7 @@ class ChatController private constructor() {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                             { pair: Pair<ConsultInfo?, List<ChatItem>> ->
-                                InitialisationConstants.isHistoryLoaded = true
+                                chatState.changeState(ChatStateEnum.HISTORY_LOADED)
                                 isDownloadingMessages = false
                                 if (applyUiChanges) {
                                     val (consultInfo, serverItems) = pair
@@ -751,6 +759,7 @@ class ChatController private constructor() {
         subscribeOnClientIdChange()
         subscribeOnMessageError()
         subscribeOnFileUploadResult()
+        subscribeOnChatState()
     }
 
     fun checkSubscribing() {
@@ -1288,7 +1297,7 @@ class ChatController private constructor() {
         if (fragment != null && !clientId.isNullOrBlank()) {
             subscribe(
                 Single.fromCallable {
-                    BaseConfig.instance.transport.sendInit(false)
+                    BaseConfig.instance.transport.sendRegisterDevice(false)
                     val response = historyLoader.getHistorySync(
                         null,
                         true
@@ -1318,7 +1327,7 @@ class ChatController private constructor() {
                     ) { obj: Throwable -> obj.message }
             )
         } else {
-            BaseConfig.instance.transport.sendInit(false)
+            BaseConfig.instance.transport.sendRegisterDevice(false)
             info(
                 ThreadsApi.REST_TAG,
                 "Loading history cancelled in onDeviceAddressChanged. " +
@@ -1595,6 +1604,21 @@ class ChatController private constructor() {
                     fragment?.updateProgress(fileDescription)
                 }
         )
+    }
+
+    private fun subscribeOnChatState() {
+        coroutineScope.launch(Dispatchers.IO) {
+            chatState.getStateFlow().collect { state ->
+                info("ChatState: ${state.name}")
+                if (state == ChatStateEnum.DEVICE_REGISTERED) {
+                    BaseConfig.instance.transport.sendInitMessages()
+                } else if (state == ChatStateEnum.INIT_USER_SENT) {
+                    loadHistory()
+                } else if (isChatReady()) {
+                    messenger.resendMessages()
+                }
+            }
+        }
     }
 
     companion object {
