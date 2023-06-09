@@ -96,6 +96,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import retrofit2.Response
 import java.util.Date
 import java.util.concurrent.TimeUnit
@@ -239,7 +240,10 @@ class ChatController private constructor() {
                             seeker = ChatMessageSeeker()
                         }
                         lastSearchQuery = query
-                        Runnable { fragment?.hideProgressBar() }.runOnUiThread()
+                        Runnable {
+                            fragment?.hideProgressBar()
+                            fragment?.showWelcomeScreen(isNeedToShowWelcome)
+                        }.runOnUiThread()
                     }
                 }
                 .subscribeOn(Schedulers.newThread())
@@ -248,7 +252,10 @@ class ChatController private constructor() {
                     { consumer.accept(seeker.searchMessages(lastItems, !forward, query)) }
                 ) { e: Throwable? ->
                     error(e)
-                    Runnable { fragment?.hideProgressBar() }.runOnUiThread()
+                    Runnable {
+                        fragment?.hideProgressBar()
+                        fragment?.showWelcomeScreen(isNeedToShowWelcome)
+                    }.runOnUiThread()
                 }
         )
     }
@@ -330,6 +337,19 @@ class ChatController private constructor() {
 
     fun isChatReady() = chatState.isChatReady()
 
+    fun onRetryInitChatClick() {
+        fragment?.hideErrorView()
+        fragment?.showProgressBar()
+
+        val state = chatState.getCurrentState()
+        val transport = BaseConfig.instance.transport
+        if (state < ChatStateEnum.DEVICE_REGISTERED) {
+            transport.sendRegisterDevice(false)
+        } else if (state < ChatStateEnum.INIT_USER_SENT) {
+            transport.sendInitMessages()
+        }
+    }
+
     private fun getSendingItems(): ArrayList<UserPhrase> {
         return database.getSendingChatItems() as ArrayList<UserPhrase>
     }
@@ -369,6 +389,7 @@ class ChatController private constructor() {
                         return@fromCallable setLastAvatars(serverItems)
                     } catch (e: Exception) {
                         fragment?.hideProgressBar()
+                        fragment?.showWelcomeScreen(isNeedToShowWelcome)
                         error(ThreadsApi.REST_TAG, "Requesting history items error", e)
                         return@fromCallable setLastAvatars(
                             database.getChatItems(
@@ -407,7 +428,7 @@ class ChatController private constructor() {
     }
 
     val isNeedToShowWelcome: Boolean
-        get() = database.getMessagesCount() == 0 && fragment?.getDisplayedMessagesCount() == 0
+        get() = database.getMessagesCount() == 0 && fragment?.getDisplayedMessagesCount() == 0 && isChatReady()
 
     val stateOfConsult: Int
         get() = if (consultWriter.isSearchingConsult) {
@@ -497,6 +518,7 @@ class ChatController private constructor() {
         fragment?.let {
             it.addChatItems(database.getChatItems(0, -1))
             it.hideProgressBar()
+            it.showWelcomeScreen(isNeedToShowWelcome)
         }
     }
 
@@ -575,8 +597,10 @@ class ChatController private constructor() {
     fun loadHistory(fromBeginning: Boolean = true, applyUiChanges: Boolean = true) {
         if (isAllMessagesDownloaded) {
             fragment?.hideProgressBar()
+            fragment?.showWelcomeScreen(isNeedToShowWelcome)
             return
         }
+        if (!chatState.isChatReady()) return
         synchronized(this) {
             if (!isDownloadingMessages) {
                 isDownloadingMessages = true
@@ -624,6 +648,8 @@ class ChatController private constructor() {
                                             fragment?.setStateConsultConnected(consultInfo)
                                         }
                                         fragment?.hideProgressBar()
+                                        fragment?.showWelcomeScreen(isNeedToShowWelcome)
+                                        fragment?.showBottomBar()
                                     }
                                 }
                             }
@@ -631,6 +657,8 @@ class ChatController private constructor() {
                             isDownloadingMessages = false
                             if (fragment != null) {
                                 fragment?.hideProgressBar()
+                                fragment?.showWelcomeScreen(isNeedToShowWelcome)
+                                fragment?.showBottomBar()
                             }
                             error(e)
                         }
@@ -790,6 +818,9 @@ class ChatController private constructor() {
             Flowable.fromPublisher(chatUpdateProcessor.errorProcessor)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
+                    if (chatState.getCurrentState() < ChatStateEnum.INIT_USER_SENT) {
+                        fragment?.showErrorView(it.message)
+                    }
                     error("subscribeToTransportException ", it)
                 }
         )
@@ -1608,11 +1639,16 @@ class ChatController private constructor() {
 
     private fun subscribeOnChatState() {
         coroutineScope.launch(Dispatchers.IO) {
-            chatState.getStateFlow().collect { state ->
-                info("ChatState: ${state.name}")
-                if (state == ChatStateEnum.DEVICE_REGISTERED) {
+            chatState.getStateFlow().collect { stateEvent ->
+                info("ChatState name: ${stateEvent.state.name}, isTimeout: ${stateEvent.isTimeout}")
+                if (!stateEvent.isTimeout && stateEvent.state < ChatStateEnum.HISTORY_LOADED) {
+                    withContext(Dispatchers.Main) { fragment?.showProgressBar() }
+                }
+                if (stateEvent.isTimeout && chatState.getCurrentState() < ChatStateEnum.INIT_USER_SENT) {
+                    withContext(Dispatchers.Main) { fragment?.showErrorView("Timeout") }
+                } else if (stateEvent.state == ChatStateEnum.DEVICE_REGISTERED) {
                     BaseConfig.instance.transport.sendInitMessages()
-                } else if (state == ChatStateEnum.INIT_USER_SENT) {
+                } else if (stateEvent.state == ChatStateEnum.INIT_USER_SENT) {
                     loadHistory()
                 } else if (isChatReady()) {
                     messenger.resendMessages()

@@ -12,6 +12,7 @@
     <string name="ecc_sent_at">отправлено %1$s</string>
     <string name="ecc_image">изображение</string>
     <string name="ecc_send">Отправить</string>
+    <string name="ecc_repeat">Повторить</string>
     <string name="ecc_repeat_sending">Повторить отправку</string>
     <string name="ecc_delete">Удалить</string>
     <string name="ecc_search_messages">Поиск сообщений</string>
@@ -166,5 +167,7 @@
     <string name="ecc_mbytes">МБ</string>
     <string name="ecc_gbytes">ГБ</string>
     <string name="ecc_tbytes">ТБ</string>
+    <string name="error_image">Изображение с ошибкой</string>
+    <string name="ecc_error_when_chat_init">Ошибка при инициализации чата</string>
 
 </resources>
