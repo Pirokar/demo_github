@@ -419,7 +419,7 @@ class ChatController private constructor() {
         }
 
     val isConsultFound: Boolean
-        get() = isChatWorking && consultWriter.isConsultConnected
+        get() = isChatWorking() && consultWriter.isConsultConnected
 
     val currentConsultInfo: ConsultInfo?
         get() = consultWriter.currentConsultInfo
@@ -551,8 +551,7 @@ class ChatController private constructor() {
             .firstOrNull { it.id == correlationId } == null
     }
 
-    private val isChatWorking: Boolean
-        get() = currentScheduleInfo == null || currentScheduleInfo?.isChatWorking == true
+    fun isChatWorking(): Boolean = currentScheduleInfo == null || currentScheduleInfo?.isChatWorking == true
 
     @Throws(Exception::class)
     private fun onClientIdChanged(): List<ChatItem> {
@@ -980,7 +979,7 @@ class ChatController private constructor() {
                             currentScheduleInfo = chatItem
                             currentScheduleInfo?.calculateServerTimeDiff()
                             refreshUserInputState()
-                            if (!isChatWorking) {
+                            if (!isChatWorking()) {
                                 consultWriter.isSearchingConsult = false
                                 fragment?.removeSearching()
                                 fragment?.setTitleStateDefault()
@@ -1370,7 +1369,7 @@ class ChatController private constructor() {
     }
 
     private fun processSystemMessages(chatItems: List<ChatItem>) {
-        if (!isChatWorking) {
+        if (!isChatWorking()) {
             return
         }
         var latestSystemMessage: ChatItem? = null

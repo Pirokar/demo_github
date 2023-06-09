@@ -275,7 +275,7 @@ class ThreadsGateTransport(
             )
         )
 
-        if (content["type"].toString().contains(ChatItemType.INIT_CHAT.name)) {
+        if (content["type"] != null && content["type"].toString().contains(ChatItemType.INIT_CHAT.name)) {
             chatState.initChatCorrelationId = correlationId
         }
 

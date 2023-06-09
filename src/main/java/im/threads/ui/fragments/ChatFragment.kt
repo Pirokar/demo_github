@@ -1958,17 +1958,21 @@ class ChatFragment :
 
     internal fun updateInputEnable(enableModel: InputFieldEnableModel) {
         isSendBlocked = !enableModel.isEnabledSendButton
-        binding.sendMessage.isEnabled = enableModel.isEnabledSendButton &&
+        val isChatWorking = chatController.isChatWorking()
+        binding.sendMessage.isEnabled = enableModel.isEnabledSendButton && isChatWorking &&
             (!TextUtils.isEmpty(binding.inputEditView.text) || hasAttachments())
-        binding.inputEditView.isEnabled = enableModel.isEnabledInputField
-        binding.addAttachment.isEnabled = enableModel.isEnabledInputField
+        binding.inputEditView.isEnabled = enableModel.isEnabledInputField && isChatWorking
+        binding.addAttachment.isEnabled = enableModel.isEnabledInputField && isChatWorking
         if (!enableModel.isEnabledInputField) {
             binding.inputEditView.hideKeyboard(100)
         }
     }
 
     internal fun updateChatAvailabilityMessage(enableModel: InputFieldEnableModel) {
-        if (enableModel.isEnabledSendButton && enableModel.isEnabledInputField) {
+        if (enableModel.isEnabledSendButton &&
+            enableModel.isEnabledInputField &&
+            chatController.isChatWorking()
+        ) {
             chatAdapter?.removeSchedule(false)
         }
     }
