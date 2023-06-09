@@ -262,10 +262,8 @@ class ChatFragment :
         initRecordButtonState()
         chatController.threadId?.let { setCurrentThreadId(it) }
         BaseConfig.instance.transport.setLifecycle(lifecycle)
-        if (chatController.isChatReady()) {
-            ChatController.getInstance().settings
-            ChatController.getInstance().loadHistory()
-        }
+        ChatController.getInstance().settings
+        ChatController.getInstance().loadHistory()
     }
 
     override fun onStop() {
