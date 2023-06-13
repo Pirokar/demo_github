@@ -1587,15 +1587,6 @@ class ChatFragment :
             scrollDelayedOnNewMessageReceived(item is UserPhrase, isLastMessageVisible)
         } else if (needsModifyImage(item)) {
             chatAdapter!!.modifyImageInItem((item as ChatPhrase).fileDescription)
-/*        } else if (item is ScheduleInfo) {
-            if (item.isChatWorking) {
-                if (quickReplyItem != null) {
-                    showQuickReplies(quickReplyItem)
-                }
-            } else {
-                hideQuickReplies()
-            }
- */
         }
     }
 
