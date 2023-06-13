@@ -1587,6 +1587,15 @@ class ChatFragment :
             scrollDelayedOnNewMessageReceived(item is UserPhrase, isLastMessageVisible)
         } else if (needsModifyImage(item)) {
             chatAdapter!!.modifyImageInItem((item as ChatPhrase).fileDescription)
+/*        } else if (item is ScheduleInfo) {
+            if (item.isChatWorking) {
+                if (quickReplyItem != null) {
+                    showQuickReplies(quickReplyItem)
+                }
+            } else {
+                hideQuickReplies()
+            }
+ */
         }
     }
 
@@ -1641,20 +1650,11 @@ class ChatFragment :
     }
 
     private fun needsAddMessage(item: ChatItem): Boolean {
-        error("!!!!!!!!    needsAddMessage()   "+item.javaClass+"     "+chatController.isChatWorking())
         return when (item) {
             is ScheduleInfo -> {
                 // Если сообщение о расписании уже показано, то снова отображать не нужно.
                 // Если в сообщении о расписании указано, что сейчас чат работет,
                 // то расписание отображать не нужно.
-                error("!!!!!!!!    needsAddMessage(ScheduleInfo)  "+item.isChatWorking+"     "+quickReplyItem)
-                if (item.isChatWorking) {
-                    if (quickReplyItem != null) {
-                        showQuickReplies(quickReplyItem)
-                    }
-                } else {
-                    hideQuickReplies()
-                }
                 !item.isChatWorking && chatAdapter?.hasSchedule() != true
             }
             is QuickReplyItem -> {
@@ -1973,7 +1973,7 @@ class ChatFragment :
         isSendBlocked = !enableModel.isEnabledSendButton
         val isChatWorking = chatController.isChatWorking()
         binding.sendMessage.isEnabled = enableModel.isEnabledSendButton && isChatWorking &&
-                (!TextUtils.isEmpty(binding.inputEditView.text) || hasAttachments())
+            (!TextUtils.isEmpty(binding.inputEditView.text) || hasAttachments())
         binding.inputEditView.isEnabled = enableModel.isEnabledInputField && isChatWorking
         binding.addAttachment.isEnabled = enableModel.isEnabledInputField && isChatWorking
         if (!enableModel.isEnabledInputField) {
