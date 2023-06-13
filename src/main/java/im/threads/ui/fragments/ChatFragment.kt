@@ -1641,18 +1641,33 @@ class ChatFragment :
     }
 
     private fun needsAddMessage(item: ChatItem): Boolean {
-        return if (item is ScheduleInfo) {
-            // Если сообщение о расписании уже показано, то снова отображать не нужно.
-            // Если в сообщении о расписании указано, что сейчас чат работет,
-            // то расписание отображать не нужно.
-            !item.isChatWorking && chatAdapter?.hasSchedule() != true
-        } else {
-            val chatPhrase: ChatPhrase
-            try {
-                chatPhrase = item as ChatPhrase
-                chatPhrase.fileDescription == null || TextUtils.isEmpty(chatPhrase.fileDescription?.originalPath)
-            } catch (exception: Exception) {
-                true
+        error("!!!!!!!!    needsAddMessage()   "+item.javaClass+"     "+chatController.isChatWorking())
+        return when (item) {
+            is ScheduleInfo -> {
+                // Если сообщение о расписании уже показано, то снова отображать не нужно.
+                // Если в сообщении о расписании указано, что сейчас чат работет,
+                // то расписание отображать не нужно.
+                error("!!!!!!!!    needsAddMessage(ScheduleInfo)  "+item.isChatWorking+"     "+quickReplyItem)
+                if (item.isChatWorking) {
+                    if (quickReplyItem != null) {
+                        showQuickReplies(quickReplyItem)
+                    }
+                } else {
+                    hideQuickReplies()
+                }
+                !item.isChatWorking && chatAdapter?.hasSchedule() != true
+            }
+            is QuickReplyItem -> {
+                chatController.isChatWorking()
+            }
+            else -> {
+                val chatPhrase: ChatPhrase
+                try {
+                    chatPhrase = item as ChatPhrase
+                    chatPhrase.fileDescription == null || TextUtils.isEmpty(chatPhrase.fileDescription?.originalPath)
+                } catch (exception: Exception) {
+                    true
+                }
             }
         }
     }
@@ -1956,17 +1971,21 @@ class ChatFragment :
 
     internal fun updateInputEnable(enableModel: InputFieldEnableModel) {
         isSendBlocked = !enableModel.isEnabledSendButton
-        binding.sendMessage.isEnabled = enableModel.isEnabledSendButton &&
-            (!TextUtils.isEmpty(binding.inputEditView.text) || hasAttachments())
-        binding.inputEditView.isEnabled = enableModel.isEnabledInputField
-        binding.addAttachment.isEnabled = enableModel.isEnabledInputField
+        val isChatWorking = chatController.isChatWorking()
+        binding.sendMessage.isEnabled = enableModel.isEnabledSendButton && isChatWorking &&
+                (!TextUtils.isEmpty(binding.inputEditView.text) || hasAttachments())
+        binding.inputEditView.isEnabled = enableModel.isEnabledInputField && isChatWorking
+        binding.addAttachment.isEnabled = enableModel.isEnabledInputField && isChatWorking
         if (!enableModel.isEnabledInputField) {
             binding.inputEditView.hideKeyboard(100)
         }
     }
 
     internal fun updateChatAvailabilityMessage(enableModel: InputFieldEnableModel) {
-        if (enableModel.isEnabledSendButton && enableModel.isEnabledInputField) {
+        if (enableModel.isEnabledSendButton &&
+            enableModel.isEnabledInputField &&
+            chatController.isChatWorking()
+        ) {
             chatAdapter?.removeSchedule(false)
         }
     }
@@ -2645,7 +2664,7 @@ class ChatFragment :
         }
 
         override fun onQuickReplyClick(quickReply: QuickReply) {
-            if (chatController.isChatWorking) {
+            if (chatController.isChatWorking()) {
                 hideQuickReplies()
                 sendMessage(
                     listOf(
