@@ -1,13 +1,42 @@
-# You can override the included template(s) by including variable overrides
-# SAST customization: https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
-# Secret Detection customization: https://docs.gitlab.com/ee/user/application_security/secret_detection/#customizing-settings
-# Dependency Scanning customization: https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#customizing-the-dependency-scanning-settings
-# Container Scanning customization: https://docs.gitlab.com/ee/user/application_security/container_scanning/#customizing-the-container-scanning-settings
-# Note that environment variables can be set in several places
-# See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
+# Образ для запуска
+image: images.mfms.ru/gitlab/builder/android:31_02r
+
+# Задаем переменные окружения
+variables:
+  LC_ALL: "en_US.UTF-8"
+  LANG: "en_US.UTF-8"
+
+# Кэш для ускорения шагов для текущего пайплайна
+cache:
+  key: ${CI_PROJECT_ID}
+  paths:
+    - .gradle/wrapper
+    - .gradle/caches
+
+# Выполняется до скриптов
+# - делаем градл выполняемым
+# - задаем путь для GRADLE_USER_HOME
+# before_script:
+#   - chmod +x ./gradlew
+#   - export GRADLE_USER_HOME=$PWD/.gradle
+
+# Основные шаги
 stages:
-- test
-sast:
+  # - environment
+  # - build
+  - lint
+  - test
+
+linting:
+  stage: lint
+  script:
+    - bundle exec fastlane sdkLint
+  only:
+    - merge_requests
+
+unitTests:
   stage: test
-include:
-- template: Security/SAST.gitlab-ci.yml
+  script:
+    - bundle exec fastlane sdkUnitTests
+  only:
+    - merge_requests
