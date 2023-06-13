@@ -77,11 +77,13 @@ class ChatState(private val preferences: Preferences) {
         coroutineScope?.cancel()
         coroutineScope = CoroutineScope(Dispatchers.IO)
         coroutineScope?.launch {
-            while (getCurrentState() <= state && isActive) {
-                delay(delayTime)
-                if (System.currentTimeMillis() - startTime > timeout) {
-                    changeState(ChatStateEvent(getCurrentState(), true), timeout)
-                    break
+            if (!state.isLastObservableState()) {
+                while (getCurrentState().value <= (state.value + 1) && isActive) {
+                    delay(delayTime)
+                    if (System.currentTimeMillis() - startTime > timeout) {
+                        changeState(ChatStateEvent(getCurrentState(), true), timeout)
+                        break
+                    }
                 }
             }
         }

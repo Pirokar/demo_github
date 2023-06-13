@@ -43,7 +43,8 @@ abstract class Transport {
                         ThreadsApi.REST_TAG,
                         "error on messages read : $uuidList"
                     )
-                    chatUpdateProcessor.postError(TransportException(e.message))
+                    val message = if (e.localizedMessage.isNullOrBlank()) e.message else e.localizedMessage
+                    chatUpdateProcessor.postError(TransportException(message))
                 }
         )
     }

@@ -169,5 +169,6 @@
     <string name="ecc_tbytes">ТБ</string>
     <string name="error_image">Изображение с ошибкой</string>
     <string name="ecc_error_when_chat_init">Ошибка при инициализации чата</string>
+    <string name="timeout_message">Истекло время ожидания подключения к серверу</string>
 
 </resources>

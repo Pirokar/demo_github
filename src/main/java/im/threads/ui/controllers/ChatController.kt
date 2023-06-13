@@ -697,8 +697,9 @@ class ChatController private constructor() {
                         chatState.changeState(ChatStateEnum.SETTINGS_LOADED)
                     }
                 ) { e: Throwable ->
-                    info("error on getting settings : " + e.message)
-                    chatUpdateProcessor.postError(TransportException(e.message))
+                    val message = if (e.localizedMessage.isNullOrBlank()) e.message else e.localizedMessage
+                    info("error on getting settings: $message")
+                    chatUpdateProcessor.postError(TransportException(message))
                 }
         )
     }
@@ -1638,7 +1639,8 @@ class ChatController private constructor() {
                     withContext(Dispatchers.Main) { fragment?.showProgressBar() }
                 }
                 if (stateEvent.isTimeout && chatState.getCurrentState() < ChatStateEnum.SETTINGS_LOADED) {
-                    withContext(Dispatchers.Main) { fragment?.showErrorView("Timeout") }
+                    val timeoutMessage = fragment?.getString(R.string.timeout_message) ?: "Timeout"
+                    withContext(Dispatchers.Main) { fragment?.showErrorView(timeoutMessage) }
                 } else if (stateEvent.state == ChatStateEnum.DEVICE_REGISTERED) {
                     BaseConfig.instance.transport.sendInitMessages()
                 } else if (stateEvent.state == ChatStateEnum.INIT_USER_SENT) {

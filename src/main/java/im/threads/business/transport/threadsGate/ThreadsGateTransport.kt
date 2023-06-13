@@ -644,7 +644,8 @@ class ThreadsGateTransport(
 
         override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
             LoggerEdna.info("[REST_WS] ☚\u274C On Websocket error : ${t.message}")
-            chatUpdateProcessor.postError(TransportException(t.message))
+            val message = if (t.localizedMessage.isNullOrBlank()) t.message else t.localizedMessage
+            chatUpdateProcessor.postError(TransportException(message))
             synchronized(messageInProcessIds) {
                 coroutineScope.launch {
                     for (i in 0 until messageInProcessIds.size) {
