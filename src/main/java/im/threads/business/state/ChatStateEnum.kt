@@ -6,5 +6,7 @@ enum class ChatStateEnum(val value: Int) {
     DEVICE_REGISTERED(2),
     SENDING_INIT_USER(3),
     INIT_USER_SENT(4),
-    HISTORY_LOADED(5)
+    LOADING_SETTINGS(5),
+    SETTINGS_LOADED(6),
+    HISTORY_LOADED(7)
 }

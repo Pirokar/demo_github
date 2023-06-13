@@ -266,7 +266,7 @@ class ChatFragment :
         chatController.threadId?.let { setCurrentThreadId(it) }
         BaseConfig.instance.transport.setLifecycle(lifecycle)
         if (chatController.isChatReady()) {
-            ChatController.getInstance().settings
+            ChatController.getInstance().loadSettings()
             ChatController.getInstance().loadHistory()
         }
     }

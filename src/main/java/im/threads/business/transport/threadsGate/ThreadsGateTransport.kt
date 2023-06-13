@@ -275,9 +275,11 @@ class ThreadsGateTransport(
             )
         )
 
-        if (content["type"].toString().contains(ChatItemType.INIT_CHAT.name)) {
-            chatState.initChatCorrelationId = correlationId
-        }
+        try {
+            if (content["type"].toString().contains(ChatItemType.INIT_CHAT.name)) {
+                chatState.initChatCorrelationId = correlationId
+            }
+        } catch (ignored: NullPointerException) {}
 
         return sendMessageWithWebsocket(text)
     }

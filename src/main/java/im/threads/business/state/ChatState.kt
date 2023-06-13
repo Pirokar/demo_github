@@ -13,8 +13,14 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 class ChatState(private val preferences: Preferences) {
-    private val timeout = try {
+    private val socketTimeout = try {
         BaseConfig.instance.requestConfig.socketClientSettings.connectTimeoutMillis
+    } catch (exc: Exception) {
+        10000L
+    }
+
+    private val restTimeout = try {
+        BaseConfig.instance.requestConfig.threadsApiHttpClientSettings.readTimeoutMillis
     } catch (exc: Exception) {
         10000L
     }
@@ -32,18 +38,21 @@ class ChatState(private val preferences: Preferences) {
     fun changeState(state: ChatStateEnum) {
         preferences.save(PreferencesCoreKeys.CHAT_STATE, state)
         stateChannel.value = ChatStateEvent(state)
-        observeState(state)
+        val timeout = if (state < ChatStateEnum.LOADING_SETTINGS) socketTimeout else restTimeout
+        observeState(state, timeout)
     }
 
-    private fun changeState(event: ChatStateEvent) {
+    private fun changeState(event: ChatStateEvent, timeout: Long) {
         preferences.save(PreferencesCoreKeys.CHAT_STATE, event.state)
         stateChannel.value = event
-        observeState(event.state)
+        if (!event.isTimeout) {
+            observeState(event.state, timeout)
+        }
     }
 
-    private fun observeState(state: ChatStateEnum) {
-        if (state < ChatStateEnum.INIT_USER_SENT) {
-            startTimeoutObserver(state)
+    private fun observeState(state: ChatStateEnum, timeout: Long) {
+        if (state < ChatStateEnum.SETTINGS_LOADED) {
+            startTimeoutObserver(state, timeout)
         } else {
             stopTimeoutObserver()
         }
@@ -58,10 +67,10 @@ class ChatState(private val preferences: Preferences) {
     }
 
     fun isChatReady(): Boolean {
-        return getCurrentState() >= ChatStateEnum.INIT_USER_SENT
+        return getCurrentState() >= ChatStateEnum.SETTINGS_LOADED
     }
 
-    private fun startTimeoutObserver(state: ChatStateEnum) {
+    private fun startTimeoutObserver(state: ChatStateEnum, timeout: Long) {
         val startTime = System.currentTimeMillis()
         val delayTime = 500L
 
@@ -71,7 +80,7 @@ class ChatState(private val preferences: Preferences) {
             while (getCurrentState() <= state && isActive) {
                 delay(delayTime)
                 if (System.currentTimeMillis() - startTime > timeout) {
-                    changeState(ChatStateEvent(getCurrentState(), true))
+                    changeState(ChatStateEvent(getCurrentState(), true), timeout)
                     break
                 }
             }

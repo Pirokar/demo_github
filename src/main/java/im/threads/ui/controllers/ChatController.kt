@@ -10,7 +10,6 @@ import android.net.ConnectivityManager
 import androidx.annotation.MainThread
 import androidx.core.util.Consumer
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.google.gson.JsonObject
 import im.threads.R
 import im.threads.business.broadcastReceivers.ProgressReceiver
 import im.threads.business.chatUpdates.ChatUpdateProcessor
@@ -98,7 +97,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Response
-import java.util.Date
 import java.util.concurrent.TimeUnit
 
 /**
@@ -347,6 +345,8 @@ class ChatController private constructor() {
             transport.sendRegisterDevice(false)
         } else if (state < ChatStateEnum.INIT_USER_SENT) {
             transport.sendInitMessages()
+        } else if (state < ChatStateEnum.SETTINGS_LOADED) {
+            loadSettings()
         }
     }
 
@@ -669,45 +669,38 @@ class ChatController private constructor() {
         }
     }
 
-    val settings: Unit
-        get() {
-            subscribe(
-                Single.fromCallable {
-                    get().settings()?.execute()
-                }
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                        { response: Response<SettingsResponse?>? ->
-                            val responseBody = response?.body()
-                            if (responseBody != null) {
-                                val clientNotificationType =
-                                    responseBody.clientNotificationDisplayType
-                                if (clientNotificationType != null && clientNotificationType.isNotEmpty()) {
-                                    val type = ClientNotificationDisplayType.fromString(
-                                        clientNotificationType
-                                    )
-                                    preferences.save(
-                                        PreferencesUiKeys.CLIENT_NOTIFICATION_DISPLAY_TYPE,
-                                        type.name
-                                    )
-                                    chatUpdateProcessor.postClientNotificationDisplayType(type)
-                                }
+    fun loadSettings() {
+        chatState.changeState(ChatStateEnum.LOADING_SETTINGS)
+        subscribe(
+            Single.fromCallable {
+                get().settings()?.execute()
+            }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { response: Response<SettingsResponse?>? ->
+                        val responseBody = response?.body()
+                        if (responseBody != null) {
+                            val clientNotificationType =
+                                responseBody.clientNotificationDisplayType
+                            if (clientNotificationType != null && clientNotificationType.isNotEmpty()) {
+                                val type = ClientNotificationDisplayType.fromString(
+                                    clientNotificationType
+                                )
+                                preferences.save(
+                                    PreferencesUiKeys.CLIENT_NOTIFICATION_DISPLAY_TYPE,
+                                    type.name
+                                )
+                                chatUpdateProcessor.postClientNotificationDisplayType(type)
                             }
                         }
-                    ) { e: Throwable ->
-                        info("error on getting settings : " + e.message)
-                        chatUpdateProcessor.postError(TransportException(e.message))
+                        chatState.changeState(ChatStateEnum.SETTINGS_LOADED)
                     }
-            )
-        }
-
-    private fun getScheduleInfo(fullMessage: JsonObject?): ScheduleInfo? {
-        return fullMessage?.get("content")?.let {
-            val scheduleInfo = BaseConfig.instance.gson.fromJson(it, ScheduleInfo::class.java)
-            scheduleInfo.date = Date().time
-            scheduleInfo
-        }
+                ) { e: Throwable ->
+                    info("error on getting settings : " + e.message)
+                    chatUpdateProcessor.postError(TransportException(e.message))
+                }
+        )
     }
 
     fun downloadMessagesTillEnd(): Single<List<ChatItem>> {
@@ -1644,11 +1637,13 @@ class ChatController private constructor() {
                 if (!stateEvent.isTimeout && stateEvent.state < ChatStateEnum.HISTORY_LOADED) {
                     withContext(Dispatchers.Main) { fragment?.showProgressBar() }
                 }
-                if (stateEvent.isTimeout && chatState.getCurrentState() < ChatStateEnum.INIT_USER_SENT) {
+                if (stateEvent.isTimeout && chatState.getCurrentState() < ChatStateEnum.SETTINGS_LOADED) {
                     withContext(Dispatchers.Main) { fragment?.showErrorView("Timeout") }
                 } else if (stateEvent.state == ChatStateEnum.DEVICE_REGISTERED) {
                     BaseConfig.instance.transport.sendInitMessages()
                 } else if (stateEvent.state == ChatStateEnum.INIT_USER_SENT) {
+                    loadSettings()
+                } else if (stateEvent.state == ChatStateEnum.SETTINGS_LOADED) {
                     loadHistory()
                 } else if (isChatReady()) {
                     messenger.resendMessages()
