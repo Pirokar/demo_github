@@ -15,11 +15,20 @@ class BaseUrlSelectionInterceptor(private val isDatastoreApi: Boolean) : Interce
         val uri = Uri.parse(url)
         val host = uri.host
         val scheme = uri.scheme
+        val path = uri.path?.let { pathDraft ->
+            if (pathDraft.isNotEmpty() && pathDraft[0] == '/') {
+                pathDraft.replaceFirst("/", "")
+            } else {
+                pathDraft
+            }
+        }
 
         val newUrl = if (host != null && scheme != null) {
-            request.url.newBuilder()
+            val builder = request.url.newBuilder()
+                .scheme(scheme)
                 .host(host)
-                .build()
+            if (!path.isNullOrBlank()) builder.addPathSegment(path)
+            builder.build()
         } else {
             null
         }

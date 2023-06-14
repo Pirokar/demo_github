@@ -1,5 +1,6 @@
 package im.threads.ui.controllers
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Context
@@ -47,6 +48,7 @@ import im.threads.business.models.SystemMessage
 import im.threads.business.models.UpcomingUserMessage
 import im.threads.business.models.UserPhrase
 import im.threads.business.models.enums.AttachmentStateEnum
+import im.threads.business.models.enums.CurrentUiTheme
 import im.threads.business.preferences.Preferences
 import im.threads.business.preferences.PreferencesCoreKeys
 import im.threads.business.rest.models.SettingsResponse
@@ -160,7 +162,6 @@ class ChatController private constructor() {
         messenger.onViewStart()
         InitialisationConstants.chatState = ChatState.ANDROID_CHAT_LIFECYCLE
         checkEmptyStateVisibility()
-        checkForSendInit()
     }
 
     fun onViewStop() {
@@ -408,7 +409,7 @@ class ChatController private constructor() {
         }
 
     val isConsultFound: Boolean
-        get() = isChatWorking && consultWriter.isConsultConnected
+        get() = isChatWorking() && consultWriter.isConsultConnected
 
     val currentConsultInfo: ConsultInfo?
         get() = consultWriter.currentConsultInfo
@@ -482,15 +483,6 @@ class ChatController private constructor() {
         }
     }
 
-    private fun checkForSendInit() {
-        clientUseCase.getUserInfo()?.clientId?.let { currentUserId ->
-            val lastUserIdWithSendInit = preferences.get<String>(PreferencesCoreKeys.INIT_SENT_LAST_USER_ID)
-            if (currentUserId != lastUserIdWithSendInit) {
-                BaseConfig.instance.transport.sendInit(false)
-            }
-        }
-    }
-
     private fun loadItemsFromDB() {
         fragment?.let {
             it.addChatItems(database.getChatItems(0, -1))
@@ -549,8 +541,7 @@ class ChatController private constructor() {
             .firstOrNull { it.id == correlationId } == null
     }
 
-    private val isChatWorking: Boolean
-        get() = currentScheduleInfo == null || currentScheduleInfo?.isChatWorking == true
+    fun isChatWorking(): Boolean = currentScheduleInfo == null || currentScheduleInfo?.isChatWorking == true
 
     @Throws(Exception::class)
     private fun onClientIdChanged(): List<ChatItem> {
@@ -688,7 +679,7 @@ class ChatController private constructor() {
 
     private fun addLocalUserMessages(serverItems: List<ChatItem>): List<ChatItem> {
         val items = serverItems.toMutableList()
-        val localMessagesToDelete = java.util.ArrayList<UserPhrase>()
+        val localMessagesToDelete = ArrayList<UserPhrase>()
         for (localUserMessage in localUserMessages) {
             for (serverItem in items) {
                 if (serverItem.isTheSameItem(localUserMessage)) {
@@ -968,7 +959,7 @@ class ChatController private constructor() {
                             currentScheduleInfo = chatItem
                             currentScheduleInfo?.calculateServerTimeDiff()
                             refreshUserInputState()
-                            if (!isChatWorking) {
+                            if (!isChatWorking()) {
                                 consultWriter.isSearchingConsult = false
                                 fragment?.removeSearching()
                                 fragment?.setTitleStateDefault()
@@ -1242,9 +1233,21 @@ class ChatController private constructor() {
         consultWriter.setCurrentConsultLeft()
         consultWriter.isSearchingConsult = false
         removePushNotification()
+        clearPreferences()
         UnreadMessagesController.INSTANCE.refreshUnreadMessagesCount()
-        preferences.sharedPreferences.edit().clear().commit()
+        localUserMessages.clear()
         database.cleanDatabase()
+    }
+
+    @SuppressLint("ApplySharedPref")
+    private fun clearPreferences() {
+        val fcmToken = preferences.get<String>(PreferencesCoreKeys.FCM_TOKEN)
+        val hcmToken = preferences.get<String>(PreferencesCoreKeys.HCM_TOKEN)
+        val currentUiThemeValue = preferences.get(PreferencesCoreKeys.USER_SELECTED_UI_THEME_KEY, CurrentUiTheme.SYSTEM.value)
+        preferences.sharedPreferences.edit().clear().commit()
+        preferences.save(PreferencesCoreKeys.FCM_TOKEN, fcmToken)
+        preferences.save(PreferencesCoreKeys.HCM_TOKEN, hcmToken)
+        preferences.save(PreferencesCoreKeys.USER_SELECTED_UI_THEME_KEY, currentUiThemeValue)
     }
 
     private fun removePushNotification() {
@@ -1350,7 +1353,7 @@ class ChatController private constructor() {
     }
 
     private fun processSystemMessages(chatItems: List<ChatItem>) {
-        if (!isChatWorking) {
+        if (!isChatWorking()) {
             return
         }
         var latestSystemMessage: ChatItem? = null

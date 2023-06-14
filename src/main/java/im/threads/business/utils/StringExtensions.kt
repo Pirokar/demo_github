@@ -1,5 +1,7 @@
 package im.threads.business.utils
 
+import android.net.Uri
+
 fun String.paddingStart(paddingCount: Int, delimiter: String = " "): String {
     val stringBuilder = StringBuilder()
     for (i in 0 until paddingCount) {
@@ -30,4 +32,9 @@ fun String.paddingStartEnd(
     this.paddingStart(paddingStartCount, delimiterStart).also {
         return it.paddingEnd(paddingEndCount, delimiterEnd)
     }
+}
+
+fun String.encodeUrl(): String {
+    val allowedChars = "@#&=*+-_.,:!?()/~'%"
+    return Uri.encode(this, allowedChars)
 }
