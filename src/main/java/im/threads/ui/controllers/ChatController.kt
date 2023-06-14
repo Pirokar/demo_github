@@ -19,6 +19,7 @@ import im.threads.business.controllers.UnreadMessagesController
 import im.threads.business.core.ContextHolder
 import im.threads.business.core.ThreadsLibBase
 import im.threads.business.formatters.ChatItemType
+import im.threads.business.logger.LoggerEdna
 import im.threads.business.logger.LoggerEdna.debug
 import im.threads.business.logger.LoggerEdna.error
 import im.threads.business.logger.LoggerEdna.info
@@ -608,7 +609,9 @@ class ChatController private constructor() {
                                     val items = setLastAvatars(serverItems)
                                     if (fragment != null) {
                                         fragment?.addChatItems(items)
-                                        handleQuickReplies(items)
+                                        if (fromBeginning) {
+                                            handleQuickReplies(items)
+                                        }
                                         handleInputAvailability(items)
                                         if (consultInfo != null) {
                                             fragment?.setStateConsultConnected(consultInfo)
@@ -973,6 +976,11 @@ class ChatController private constructor() {
                                 consultWriter.isSearchingConsult = false
                                 fragment?.removeSearching()
                                 fragment?.setTitleStateDefault()
+                                hideQuickReplies()
+                            } else {
+                                if (fragment?.quickReplyItem != null) {
+                                    fragment?.showQuickReplies(fragment?.quickReplyItem)
+                                }
                             }
                             fragment?.addChatItem(currentScheduleInfo)
                         }
@@ -1108,6 +1116,8 @@ class ChatController private constructor() {
             chatUpdateProcessor.quickRepliesProcessor
                 .subscribe(
                     { quickReplies: QuickReplyItem? ->
+
+
                         hasQuickReplies = quickReplies != null && quickReplies.items.isNotEmpty()
                         if (hasQuickReplies && isChatWorking()) {
                             fragment?.showQuickReplies(quickReplies)

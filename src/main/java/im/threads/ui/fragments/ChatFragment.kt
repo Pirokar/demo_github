@@ -195,7 +195,7 @@ class ChatFragment :
     private var mAttachedImages: MutableList<Uri>? = ArrayList()
     private var recorder: AudioRecorder? = null
     private var isNewMessageUpdateTimeoutOn = false
-    private var quickReplyItem: QuickReplyItem? = null
+    var quickReplyItem: QuickReplyItem? = null
     private var previousChatItemsCount = 0
     private val config = Config.getInstance()
     var style: ChatStyle = config.chatStyle
@@ -1630,7 +1630,6 @@ class ChatFragment :
     }
 
     private fun scrollToPosition(itemCount: Int, smooth: Boolean) {
-        info("scrollToPosition: $itemCount")
         if (itemCount >= 0 && isAdded) {
             if (smooth) {
                 binding.recycler.smoothScrollToPosition(itemCount)
@@ -1686,7 +1685,7 @@ class ChatFragment :
             }
             welcomeScreenVisibility(false)
             val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
-            val lastVisibleItemTimestamp = if (lastVisibleItemPosition >= 0) {
+            val lastVisibleItemTimestamp = if (lastVisibleItemPosition >= 0 && lastVisibleItemPosition < chatAdapter.list.size) {
                 chatAdapter.list[lastVisibleItemPosition].timeStamp
             } else {
                 null
