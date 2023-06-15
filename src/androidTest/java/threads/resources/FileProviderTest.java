@@ -11,10 +11,10 @@ import java.io.File;
 import java.io.IOException;
 
 import androidx.test.InstrumentationRegistry;
-import im.threads.business.utils.FileProviderHelper;
+import im.threads.business.utils.FileProvider;
 import im.threads.business.utils.FileDownloader;
 
-public class FileProviderHelperTest {
+public class FileProviderTest {
 
     private Context appContext;
 
@@ -25,10 +25,11 @@ public class FileProviderHelperTest {
 
     @Test
     public void checkDownloadDirAccess() throws IOException {
+        FileProvider fileProvider = new FileProvider();
 
         File outputFile = new File(FileDownloader.getDownloadDir(appContext), "testFile");
         outputFile.createNewFile();
-        Uri uri = FileProviderHelper.getUriForFile(appContext, outputFile);
+        Uri uri = fileProvider.getUriForFile(appContext, outputFile);
         Assert.assertNotNull(uri);
         Assert.assertNotEquals("File uri is empty", uri, Uri.EMPTY);
     }

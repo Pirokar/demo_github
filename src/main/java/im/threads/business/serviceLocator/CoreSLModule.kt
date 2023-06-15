@@ -17,6 +17,7 @@ import im.threads.business.utils.AppInfo
 import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.ConsultWriter
 import im.threads.business.utils.DeviceInfo
+import im.threads.business.utils.FileProvider
 import im.threads.business.utils.internet.NetworkInteractor
 import im.threads.business.utils.internet.NetworkInteractorImpl
 
@@ -41,4 +42,5 @@ val coreSLModule = module {
     factory { ThreadsGateMessageParser(get()) }
     factory { AppInfo() }
     factory { DeviceInfo() }
+    factory { FileProvider() }
 }

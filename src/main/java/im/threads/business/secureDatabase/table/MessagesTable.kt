@@ -18,7 +18,7 @@ import im.threads.business.models.SpeechMessageUpdate
 import im.threads.business.models.Survey
 import im.threads.business.models.UserPhrase
 import im.threads.business.utils.FileDownloader.Companion.getDownloadDir
-import im.threads.business.utils.FileProviderHelper
+import im.threads.business.utils.FileProvider
 import im.threads.business.utils.FileUtils.generateFileName
 import net.zetetic.database.sqlcipher.SQLiteDatabase
 import net.zetetic.database.sqlcipher.SQLiteOpenHelper
@@ -870,7 +870,7 @@ class MessagesTable(
             generateFileName(fileDescription)
         )
         return if (outputFile.exists()) {
-            FileProviderHelper.getUriForFile(
+            FileProvider().getUriForFile(
                 BaseConfig.instance.context,
                 outputFile
             )

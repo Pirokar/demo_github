@@ -3,7 +3,7 @@ package im.threads.business.logger
 import android.content.Context
 import android.content.Intent
 import im.threads.business.utils.Balloon
-import im.threads.business.utils.FileProviderHelper
+import im.threads.business.utils.FileProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -19,7 +19,7 @@ import java.util.zip.ZipOutputStream
 /**
  * Архивирует папку с логами и шэрит в получатель
  */
-class LogZipSender(private val context: Context) {
+class LogZipSender(private val context: Context, private val fileProvider: FileProvider) {
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
     /**
@@ -90,7 +90,7 @@ class LogZipSender(private val context: Context) {
             sharingIntent.type = "application/zip"
             sharingIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             sharingIntent.action = Intent.ACTION_SEND
-            sharingIntent.putExtra(Intent.EXTRA_STREAM, FileProviderHelper.getUriForFile(context, file))
+            sharingIntent.putExtra(Intent.EXTRA_STREAM, fileProvider.getUriForFile(context, file))
             context.startActivity(Intent.createChooser(sharingIntent, "Share file"))
         }
     }

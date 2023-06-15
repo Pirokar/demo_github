@@ -1,20 +1,18 @@
-package im.threads.business.utils;
+package im.threads.business.utils
 
-import android.content.Context;
-import android.net.Uri;
+import android.content.Context
+import android.net.Uri
+import androidx.core.content.FileProvider
+import java.io.File
 
-import java.io.File;
+class FileProvider {
+    private val authorityPostfix = ".im.threads.fileprovider"
 
-import androidx.annotation.NonNull;
-import androidx.core.content.FileProvider;
-
-public final class FileProviderHelper {
-
-    private static final String AUTHORITY_POSTFIX = ".im.threads.fileprovider";
-
-    public static Uri getUriForFile(@NonNull Context context, @NonNull File file) {
-        return FileProvider.getUriForFile(context,
-                context.getPackageName() + AUTHORITY_POSTFIX,
-                file);
+    fun getUriForFile(context: Context, file: File): Uri {
+        return FileProvider.getUriForFile(
+            context,
+            "${context.packageName}$authorityPostfix",
+            file
+        )
     }
 }

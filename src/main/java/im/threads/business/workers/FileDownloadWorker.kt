@@ -21,7 +21,7 @@ import im.threads.business.serviceLocator.core.inject
 import im.threads.business.transport.AuthHeadersProvider
 import im.threads.business.utils.FileDownloader
 import im.threads.business.utils.FileDownloader.DownloadListener
-import im.threads.business.utils.FileProviderHelper
+import im.threads.business.utils.FileProvider
 import im.threads.business.utils.FileUtils.generateFileName
 import im.threads.business.utils.WorkerUtils.marshall
 import im.threads.business.utils.WorkerUtils.unmarshall
@@ -34,6 +34,7 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
     private val preferences: Preferences by inject()
     private val database: DatabaseHolder by inject()
     private val authHeadersProvider: AuthHeadersProvider by inject()
+    private val fileProvider: FileProvider by inject()
 
     override fun doWork(): Result {
         val data = inputData.getByteArray(FD_TAG)?.let { unmarshall(it) }
@@ -69,7 +70,7 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
 
                 override fun onComplete(file: File) {
                     fileDescription.downloadProgress = 100
-                    val fileUri = FileProviderHelper.getUriForFile(
+                    val fileUri = fileProvider.getUriForFile(
                         BaseConfig.instance.context,
                         file
                     )
