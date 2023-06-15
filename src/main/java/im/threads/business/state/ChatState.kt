@@ -1,5 +1,95 @@
 package im.threads.business.state
 
-enum class ChatState(val value: Int) {
-    LOGGED_OUT(0), INIT_USER(1), ANDROID_CHAT_LIFECYCLE(2)
+import im.threads.business.config.BaseConfig
+import im.threads.business.preferences.Preferences
+import im.threads.business.preferences.PreferencesCoreKeys
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+
+class ChatState(private val preferences: Preferences) {
+    private val socketTimeout = try {
+        BaseConfig.instance.requestConfig.socketClientSettings.connectTimeoutMillis
+    } catch (exc: Exception) {
+        10000L
+    }
+
+    private val restTimeout = try {
+        BaseConfig.instance.requestConfig.threadsApiHttpClientSettings.readTimeoutMillis
+    } catch (exc: Exception) {
+        10000L
+    }
+
+    private var coroutineScope: CoroutineScope? = null
+
+    private var stateChannel = MutableStateFlow(
+        ChatStateEvent(
+            preferences.get(PreferencesCoreKeys.CHAT_STATE, ChatStateEnum.LOGGED_OUT) ?: ChatStateEnum.LOGGED_OUT
+        )
+    )
+
+    var initChatCorrelationId: String = ""
+
+    fun changeState(state: ChatStateEnum) {
+        preferences.save(PreferencesCoreKeys.CHAT_STATE, state)
+        stateChannel.value = ChatStateEvent(state)
+        val timeout = if (state < ChatStateEnum.LOADING_SETTINGS) socketTimeout else restTimeout
+        observeState(state, timeout)
+    }
+
+    private fun changeState(event: ChatStateEvent, timeout: Long) {
+        preferences.save(PreferencesCoreKeys.CHAT_STATE, event.state)
+        stateChannel.value = event
+        if (!event.isTimeout) {
+            observeState(event.state, timeout)
+        }
+    }
+
+    private fun observeState(state: ChatStateEnum, timeout: Long) {
+        if (state < ChatStateEnum.SETTINGS_LOADED) {
+            startTimeoutObserver(state, timeout)
+        } else {
+            stopTimeoutObserver()
+        }
+    }
+
+    fun getCurrentState() = stateChannel.value.state
+
+    fun getStateFlow(): StateFlow<ChatStateEvent> = stateChannel
+
+    fun onLogout() {
+        changeState(ChatStateEnum.LOGGED_OUT)
+    }
+
+    fun isChatReady(): Boolean {
+        return getCurrentState() >= ChatStateEnum.SETTINGS_LOADED
+    }
+
+    private fun startTimeoutObserver(state: ChatStateEnum, timeout: Long) {
+        val startTime = System.currentTimeMillis()
+        val delayTime = 500L
+
+        coroutineScope?.cancel()
+        coroutineScope = CoroutineScope(Dispatchers.IO)
+        coroutineScope?.launch {
+            if (!state.isLastObservableState()) {
+                while (getCurrentState().value <= (state.value + 1) && isActive) {
+                    delay(delayTime)
+                    if (System.currentTimeMillis() - startTime > timeout) {
+                        changeState(ChatStateEvent(getCurrentState(), true), timeout)
+                        break
+                    }
+                }
+            }
+        }
+    }
+
+    private fun stopTimeoutObserver() {
+        coroutineScope?.cancel()
+    }
 }
