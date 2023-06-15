@@ -1,9 +1,5 @@
-package im.threads.business.transport.models;
+package im.threads.business.transport.models
 
-public class TextContent {
-    private String text;
-
-    public String getText() {
-        return text;
-    }
+class TextContent {
+    val text: String? = null
 }

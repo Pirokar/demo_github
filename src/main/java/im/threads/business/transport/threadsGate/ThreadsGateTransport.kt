@@ -547,7 +547,7 @@ class ThreadsGateTransport(
                                     message.content,
                                     TypingContent::class.java
                                 )
-                                chatUpdateProcessor.postTyping(content.clientId)
+                                content.clientId?.let { chatUpdateProcessor.postTyping(content.clientId) }
                             } else if (ChatItemType.ATTACHMENT_SETTINGS == type) {
                                 val attachmentSettings = gson.fromJson(
                                     message.content,

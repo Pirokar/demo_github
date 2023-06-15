@@ -1,18 +1,7 @@
-package im.threads.business.transport.models;
+package im.threads.business.transport.models
 
-public class RequestResolveThreadContent {
-    private String uuid;
-    private long hideAfter;
-    private long threadId;
-
-    public String getUuid() {
-        return uuid;
-    }
-
-    public long getHideAfter() {
-        return hideAfter;
-    }
-    public long getThreadId() {
-        return threadId;
-    }
+class RequestResolveThreadContent {
+    val uuid: String? = null
+    val hideAfter: Long = 0
+    val threadId: Long = 0
 }
