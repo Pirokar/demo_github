@@ -692,30 +692,6 @@ class ChatFragment :
                 if (layoutManager != null) {
                     val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
                     val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
-                    val itemCount = chatAdapter?.itemCount ?: 0
-                    if (itemCount - 1 - lastVisibleItemPosition > INVISIBLE_MESSAGES_COUNT) {
-                        if (binding.scrollDownButtonContainer.visibility != View.VISIBLE) {
-                            binding.scrollDownButtonContainer.visibility = View.VISIBLE
-                            showUnreadMessagesCount(chatController.getUnreadMessagesCount())
-                        }
-                    } else {
-                        binding.scrollDownButtonContainer.visibility = View.GONE
-                        recyclerView.post { setMessagesAsRead() }
-                    }
-                    if (firstVisibleItemPosition == 0) {
-                        chatController.loadHistory(false)
-                    }
-                }
-            }
-        })
-
-        binding.recycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                val layoutManager = binding.recycler.layoutManager as LinearLayoutManager?
-                if (layoutManager != null) {
-                    val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
-                    val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
                     val itemCount = chatAdapter?.itemCount
                     if (itemCount != null && itemCount - 1 - lastVisibleItemPosition > INVISIBLE_MESSAGES_COUNT &&
                         binding.scrollDownButtonContainer.isNotVisible()
