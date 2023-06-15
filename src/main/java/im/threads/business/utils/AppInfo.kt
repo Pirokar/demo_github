@@ -1,49 +1,53 @@
-package im.threads.business.utils;
+package im.threads.business.utils
 
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
+import android.content.pm.PackageInfo
+import android.content.pm.PackageManager
+import im.threads.BuildConfig
+import im.threads.business.config.BaseConfig
+import im.threads.business.logger.LoggerEdna.error
 
-import im.threads.BuildConfig;
-import im.threads.business.config.BaseConfig;
-import im.threads.business.logger.LoggerEdna;
-
-public final class AppInfoHelper {
-    public static String getAppVersion() {
-        PackageInfo pInfo = null;
-        try {
-            pInfo = BaseConfig.instance.context.getPackageManager().getPackageInfo(BaseConfig.instance.context.getPackageName(), 0);
-        } catch (PackageManager.NameNotFoundException e) {
-            LoggerEdna.error("getAppVersion", e);
-        }
-        return pInfo != null ? pInfo.versionName : "";
-    }
-
-    public static String getLibVersion() {
-        return BuildConfig.VERSION_NAME;
-    }
-
-    public static String getAppName() {
-        ApplicationInfo applicationInfo = BaseConfig.instance.context.getApplicationInfo();
-        if (applicationInfo != null) {
+class AppInfo {
+    val appVersion: String
+        get() {
+            var pInfo: PackageInfo? = null
             try {
-                return applicationInfo.loadLabel(BaseConfig.instance.context.getPackageManager()).toString();
-            } catch (Exception e) {
-                LoggerEdna.error("getAppName", e);
+                pInfo = BaseConfig.instance.context.packageManager.getPackageInfo(
+                    BaseConfig.instance.context.packageName,
+                    0
+                )
+            } catch (e: PackageManager.NameNotFoundException) {
+                error("getAppVersion", e)
             }
+            return if (pInfo != null) pInfo.versionName else ""
         }
-        return "Unknown";
-    }
 
-    public static String getAppId() {
-        ApplicationInfo applicationInfo = BaseConfig.instance.context.getApplicationInfo();
-        if (applicationInfo != null) {
-            try {
-                return applicationInfo.packageName;
-            } catch (Exception e) {
-                LoggerEdna.error("getAppId", e);
+    val libVersion: String
+        get() = BuildConfig.VERSION_NAME
+
+    val appName: String
+        get() {
+            val applicationInfo = BaseConfig.instance.context.applicationInfo
+            if (applicationInfo != null) {
+                try {
+                    return applicationInfo.loadLabel(BaseConfig.instance.context.packageManager)
+                        .toString()
+                } catch (e: Exception) {
+                    error("getAppName", e)
+                }
             }
+            return "Unknown"
         }
-        return "";
-    }
+
+    val appId: String
+        get() {
+            val applicationInfo = BaseConfig.instance.context.applicationInfo
+            if (applicationInfo != null) {
+                try {
+                    return applicationInfo.packageName
+                } catch (e: Exception) {
+                    error("getAppId", e)
+                }
+            }
+            return ""
+        }
 }

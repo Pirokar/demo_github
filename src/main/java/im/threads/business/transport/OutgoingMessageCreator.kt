@@ -12,7 +12,7 @@ import im.threads.business.models.UserPhrase
 import im.threads.business.preferences.Preferences
 import im.threads.business.preferences.PreferencesCoreKeys
 import im.threads.business.rest.queries.ThreadsApi
-import im.threads.business.utils.AppInfoHelper
+import im.threads.business.utils.AppInfo
 import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.DeviceInfoHelper
 import im.threads.business.utils.FileUtils.getFileName
@@ -24,7 +24,8 @@ import java.util.TimeZone
 
 class OutgoingMessageCreator(
     private val preferences: Preferences,
-    private val clientUseCase: ClientUseCase
+    private val clientUseCase: ClientUseCase,
+    private val appInfo: AppInfo
 ) {
     fun createInitChatMessage(): JsonObject {
         val jsonObject = JsonObject()
@@ -52,11 +53,11 @@ class OutgoingMessageCreator(
             addProperty("osVersion", DeviceInfoHelper.getOsVersion())
             addProperty("device", DeviceInfoHelper.getDeviceName())
             addProperty("ip", DeviceInfoHelper.getIpAddress())
-            addProperty("appVersion", AppInfoHelper.getAppVersion())
-            addProperty("appName", AppInfoHelper.getAppName())
-            addProperty(MessageAttributes.APP_BUNDLE_KEY, AppInfoHelper.getAppId())
+            addProperty("appVersion", appInfo.appVersion)
+            addProperty("appName", appInfo.appName)
+            addProperty(MessageAttributes.APP_BUNDLE_KEY, appInfo.appId)
             addProperty(MessageAttributes.APP_MARKER_KEY, userInfo?.appMarker)
-            addProperty("libVersion", AppInfoHelper.getLibVersion())
+            addProperty("libVersion", appInfo.libVersion)
             addProperty("clientLocale", locale)
             addProperty("chatApiVersion", ThreadsApi.API_VERSION)
             addProperty(MessageAttributes.TYPE, ChatItemType.CLIENT_INFO.name)
@@ -142,11 +143,11 @@ class OutgoingMessageCreator(
             addProperty("osVersion", DeviceInfoHelper.getOsVersion())
             addProperty("device", DeviceInfoHelper.getDeviceName())
             addProperty("ip", DeviceInfoHelper.getIpAddress())
-            addProperty("appVersion", AppInfoHelper.getAppVersion())
-            addProperty("appName", AppInfoHelper.getAppName())
-            addProperty(MessageAttributes.APP_BUNDLE_KEY, AppInfoHelper.getAppId())
+            addProperty("appVersion", appInfo.appVersion)
+            addProperty("appName", appInfo.appName)
+            addProperty(MessageAttributes.APP_BUNDLE_KEY, appInfo.appId)
             addProperty(MessageAttributes.APP_MARKER_KEY, userInfo?.appMarker)
-            addProperty("libVersion", AppInfoHelper.getLibVersion())
+            addProperty("libVersion", appInfo.libVersion)
             addProperty("clientLocale", locale)
             addProperty("chatApiVersion", ThreadsApi.API_VERSION)
             addProperty(MessageAttributes.TYPE, ChatItemType.UPDATE_LOCATION.name)

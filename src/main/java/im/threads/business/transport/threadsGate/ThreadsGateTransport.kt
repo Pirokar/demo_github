@@ -49,7 +49,7 @@ import im.threads.business.transport.threadsGate.responses.GetStatusesData
 import im.threads.business.transport.threadsGate.responses.RegisterDeviceData
 import im.threads.business.transport.threadsGate.responses.SendMessageData
 import im.threads.business.transport.threadsGate.responses.Status
-import im.threads.business.utils.AppInfoHelper
+import im.threads.business.utils.AppInfo
 import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.DeviceInfoHelper
 import im.threads.business.utils.SSLCertificateInterceptor
@@ -98,6 +98,7 @@ class ThreadsGateTransport(
     private val jsonFormatter: JsonFormatter by inject()
     private val clientUseCase: ClientUseCase by inject()
     private val messageParser: ThreadsGateMessageParser by inject()
+    private val appInfo: AppInfo by inject()
 
     init { buildTransport() }
 
@@ -301,8 +302,8 @@ class ThreadsGateTransport(
         val deviceName = getDeviceName()
         val deviceAddress = preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS)
         val data = RegisterDeviceRequest.Data(
-            AppInfoHelper.getAppId(),
-            AppInfoHelper.getAppVersion(),
+            appInfo.appId,
+            appInfo.appVersion,
             threadsGateProviderUid,
             getCloudToken(),
             getDeviceUid(),

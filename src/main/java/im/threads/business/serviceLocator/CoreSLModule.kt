@@ -13,6 +13,7 @@ import im.threads.business.transport.HistoryLoader
 import im.threads.business.transport.MessageParser
 import im.threads.business.transport.OutgoingMessageCreator
 import im.threads.business.transport.threadsGate.ThreadsGateMessageParser
+import im.threads.business.utils.AppInfo
 import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.ConsultWriter
 import im.threads.business.utils.internet.NetworkInteractor
@@ -27,14 +28,15 @@ val coreSLModule = module {
     factory { DatabaseHolder(get()) }
     factory { AuthHeadersProvider() }
     factory { ImageLoaderOkHttpProvider(get(), get()) }
-    factory { OutgoingMessageCreator(get(), get()) }
+    factory { OutgoingMessageCreator(get(), get(), get()) }
     factory { ClientUseCase(get()) }
     factory { AuthInterceptor(get(), get(), get()) }
     factory { ConsultWriter(get()) }
     factory { ChatUpdateProcessor() }
     factory<NetworkInteractor> { NetworkInteractorImpl() }
-    factory { HistoryLoader(get()) }
+    factory { HistoryLoader(get(), get()) }
     factory { JsonFormatter() }
     factory { MessageParser() }
     factory { ThreadsGateMessageParser(get()) }
+    factory { AppInfo() }
 }

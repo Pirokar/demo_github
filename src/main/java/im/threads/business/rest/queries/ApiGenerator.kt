@@ -8,7 +8,7 @@ import im.threads.business.logger.NetworkLoggerInterceptor
 import im.threads.business.rest.config.BaseUrlSelectionInterceptor
 import im.threads.business.serviceLocator.core.inject
 import im.threads.business.transport.AuthInterceptor
-import im.threads.business.utils.AppInfoHelper
+import im.threads.business.utils.AppInfo
 import im.threads.business.utils.DeviceInfoHelper
 import im.threads.business.utils.SSLCertificateInterceptor
 import okhttp3.Interceptor
@@ -26,6 +26,7 @@ abstract class ApiGenerator protected constructor(
     protected lateinit var threadsApi: ThreadsApi
     protected lateinit var apiBuild: Retrofit
     private val authInterceptor: AuthInterceptor by inject()
+    private val appInfo: AppInfo by inject()
 
     private val userAgent: String
         get() = String.format(
@@ -33,9 +34,9 @@ abstract class ApiGenerator protected constructor(
             DeviceInfoHelper.getOsVersion(),
             DeviceInfoHelper.getDeviceName(),
             DeviceInfoHelper.getIpAddress(),
-            AppInfoHelper.getAppVersion(),
-            AppInfoHelper.getAppId(),
-            AppInfoHelper.getLibVersion()
+            appInfo.appVersion,
+            appInfo.appId,
+            appInfo.libVersion
         )
 
     init { init() }

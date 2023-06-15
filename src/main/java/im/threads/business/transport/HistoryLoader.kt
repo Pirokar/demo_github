@@ -9,11 +9,11 @@ import im.threads.business.models.MessageFromHistory
 import im.threads.business.rest.models.HistoryResponse
 import im.threads.business.rest.queries.BackendApi.Companion.get
 import im.threads.business.rest.queries.ThreadsApi
-import im.threads.business.utils.AppInfoHelper
+import im.threads.business.utils.AppInfo
 import im.threads.business.utils.DateHelper
 import java.io.IOException
 
-class HistoryLoader(private val context: Context) {
+class HistoryLoader(private val context: Context, private val appInfo: AppInfo) {
     private var lastLoadedTimestamp: Long? = null
 
     /**
@@ -44,7 +44,7 @@ class HistoryLoader(private val context: Context) {
                 DateHelper.getMessageDateStringFromTimestamp(beforeTimestamp)
             }
 
-            threadsApi.history(token, beforeDate, count, AppInfoHelper.getLibVersion())?.execute()?.body()
+            threadsApi.history(token, beforeDate, count, appInfo.libVersion)?.execute()?.body()
         } else {
             error(ThreadsApi.REST_TAG, "Error when loading history - token is empty!")
             throw IOException()
