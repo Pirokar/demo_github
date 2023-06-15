@@ -195,7 +195,7 @@ class ChatFragment :
     private var mAttachedImages: MutableList<Uri>? = ArrayList()
     private var recorder: AudioRecorder? = null
     private var isNewMessageUpdateTimeoutOn = false
-    private var quickReplyItem: QuickReplyItem? = null
+    var quickReplyItem: QuickReplyItem? = null
     private var previousChatItemsCount = 0
     private val config = Config.getInstance()
     var style: ChatStyle = config.chatStyle
@@ -692,30 +692,6 @@ class ChatFragment :
                 if (layoutManager != null) {
                     val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
                     val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
-                    val itemCount = chatAdapter?.itemCount ?: 0
-                    if (itemCount - 1 - lastVisibleItemPosition > INVISIBLE_MESSAGES_COUNT) {
-                        if (binding.scrollDownButtonContainer.visibility != View.VISIBLE) {
-                            binding.scrollDownButtonContainer.visibility = View.VISIBLE
-                            showUnreadMessagesCount(chatController.getUnreadMessagesCount())
-                        }
-                    } else {
-                        binding.scrollDownButtonContainer.visibility = View.GONE
-                        recyclerView.post { setMessagesAsRead() }
-                    }
-                    if (firstVisibleItemPosition == 0) {
-                        chatController.loadHistory(false)
-                    }
-                }
-            }
-        })
-
-        binding.recycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                val layoutManager = binding.recycler.layoutManager as LinearLayoutManager?
-                if (layoutManager != null) {
-                    val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
-                    val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
                     val itemCount = chatAdapter?.itemCount
                     if (itemCount != null && itemCount - 1 - lastVisibleItemPosition > INVISIBLE_MESSAGES_COUNT &&
                         binding.scrollDownButtonContainer.isNotVisible()
@@ -726,7 +702,11 @@ class ChatFragment :
                         binding.scrollDownButtonContainer.visibility = View.GONE
                         recyclerView.post { setMessagesAsRead() }
                     }
-                    if (firstVisibleItemPosition == 0 && !chatController.isAllMessagesDownloaded) {
+                    if (firstVisibleItemPosition == 0 &&
+                        !chatController.isAllMessagesDownloaded &&
+                        itemCount != null &&
+                        itemCount > BaseConfig.instance.historyLoadingCount / 2
+                    ) {
                         binding.swipeRefresh.isRefreshing = true
                         chatController.loadHistory(false)
                     }
@@ -1629,7 +1609,6 @@ class ChatFragment :
     }
 
     private fun scrollToPosition(itemCount: Int, smooth: Boolean) {
-        info("scrollToPosition: $itemCount")
         if (itemCount >= 0 && isAdded) {
             if (smooth) {
                 binding.recycler.smoothScrollToPosition(itemCount)
@@ -1640,18 +1619,24 @@ class ChatFragment :
     }
 
     private fun needsAddMessage(item: ChatItem): Boolean {
-        return if (item is ScheduleInfo) {
-            // Если сообщение о расписании уже показано, то снова отображать не нужно.
-            // Если в сообщении о расписании указано, что сейчас чат работет,
-            // то расписание отображать не нужно.
-            !item.isChatWorking && chatAdapter?.hasSchedule() != true
-        } else {
-            val chatPhrase: ChatPhrase
-            try {
-                chatPhrase = item as ChatPhrase
-                chatPhrase.fileDescription == null || TextUtils.isEmpty(chatPhrase.fileDescription?.originalPath)
-            } catch (exception: Exception) {
-                true
+        return when (item) {
+            is ScheduleInfo -> {
+                // Если сообщение о расписании уже показано, то снова отображать не нужно.
+                // Если в сообщении о расписании указано, что сейчас чат работет,
+                // то расписание отображать не нужно.
+                !item.isChatWorking && chatAdapter?.hasSchedule() != true
+            }
+            is QuickReplyItem -> {
+                chatController.isChatWorking()
+            }
+            else -> {
+                val chatPhrase: ChatPhrase
+                try {
+                    chatPhrase = item as ChatPhrase
+                    chatPhrase.fileDescription == null || TextUtils.isEmpty(chatPhrase.fileDescription?.originalPath)
+                } catch (exception: Exception) {
+                    true
+                }
             }
         }
     }
@@ -1679,7 +1664,7 @@ class ChatFragment :
             }
             welcomeScreenVisibility(false)
             val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
-            val lastVisibleItemTimestamp = if (lastVisibleItemPosition >= 0) {
+            val lastVisibleItemTimestamp = if (lastVisibleItemPosition >= 0 && lastVisibleItemPosition < chatAdapter.list.size) {
                 chatAdapter.list[lastVisibleItemPosition].timeStamp
             } else {
                 null
@@ -1955,17 +1940,21 @@ class ChatFragment :
 
     internal fun updateInputEnable(enableModel: InputFieldEnableModel) {
         isSendBlocked = !enableModel.isEnabledSendButton
-        binding.sendMessage.isEnabled = enableModel.isEnabledSendButton &&
+        val isChatWorking = chatController.isChatWorking()
+        binding.sendMessage.isEnabled = enableModel.isEnabledSendButton && isChatWorking &&
             (!TextUtils.isEmpty(binding.inputEditView.text) || hasAttachments())
-        binding.inputEditView.isEnabled = enableModel.isEnabledInputField
-        binding.addAttachment.isEnabled = enableModel.isEnabledInputField
+        binding.inputEditView.isEnabled = enableModel.isEnabledInputField && isChatWorking
+        binding.addAttachment.isEnabled = enableModel.isEnabledInputField && isChatWorking
         if (!enableModel.isEnabledInputField) {
             binding.inputEditView.hideKeyboard(100)
         }
     }
 
     internal fun updateChatAvailabilityMessage(enableModel: InputFieldEnableModel) {
-        if (enableModel.isEnabledSendButton && enableModel.isEnabledInputField) {
+        if (enableModel.isEnabledSendButton &&
+            enableModel.isEnabledInputField &&
+            chatController.isChatWorking()
+        ) {
             chatAdapter?.removeSchedule(false)
         }
     }
@@ -2644,19 +2633,21 @@ class ChatFragment :
         }
 
         override fun onQuickReplyClick(quickReply: QuickReply) {
-            hideQuickReplies()
-            sendMessage(
-                listOf(
-                    UpcomingUserMessage(
-                        null,
-                        null,
-                        null,
-                        quickReply.text.trim { it <= ' ' },
-                        quickReply.text.isLastCopyText()
-                    )
-                ),
-                false
-            )
+            if (chatController.isChatWorking()) {
+                hideQuickReplies()
+                sendMessage(
+                    listOf(
+                        UpcomingUserMessage(
+                            null,
+                            null,
+                            null,
+                            quickReply.text.trim { it <= ' ' },
+                            quickReply.text.isLastCopyText()
+                        )
+                    ),
+                    false
+                )
+            }
         }
     }
 

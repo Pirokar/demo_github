@@ -413,7 +413,7 @@ class ChatController private constructor() {
         }
 
     val isConsultFound: Boolean
-        get() = isChatWorking && consultWriter.isConsultConnected
+        get() = isChatWorking() && consultWriter.isConsultConnected
 
     val currentConsultInfo: ConsultInfo?
         get() = consultWriter.currentConsultInfo
@@ -448,7 +448,6 @@ class ChatController private constructor() {
                     { chatItems: List<ChatItem> ->
                         chatFragment.addChatItems(chatItems)
                         handleQuickReplies(chatItems)
-                        loadHistory()
                     }
                 ) { obj: Throwable -> obj.message }
         )
@@ -545,8 +544,7 @@ class ChatController private constructor() {
             .firstOrNull { it.id == correlationId } == null
     }
 
-    private val isChatWorking: Boolean
-        get() = currentScheduleInfo == null || currentScheduleInfo?.isChatWorking == true
+    fun isChatWorking(): Boolean = currentScheduleInfo == null || currentScheduleInfo?.isChatWorking == true
 
     @Throws(Exception::class)
     private fun onClientIdChanged(): List<ChatItem> {
@@ -612,7 +610,9 @@ class ChatController private constructor() {
                                     val items = setLastAvatars(serverItems)
                                     if (fragment != null) {
                                         fragment?.addChatItems(items)
-                                        handleQuickReplies(items)
+                                        if (fromBeginning) {
+                                            handleQuickReplies(items)
+                                        }
                                         handleInputAvailability(items)
                                         if (consultInfo != null) {
                                             fragment?.setStateConsultConnected(consultInfo)
@@ -973,10 +973,15 @@ class ChatController private constructor() {
                             currentScheduleInfo = chatItem
                             currentScheduleInfo?.calculateServerTimeDiff()
                             refreshUserInputState()
-                            if (!isChatWorking) {
+                            if (!isChatWorking()) {
                                 consultWriter.isSearchingConsult = false
                                 fragment?.removeSearching()
                                 fragment?.setTitleStateDefault()
+                                hideQuickReplies()
+                            } else {
+                                if (fragment?.quickReplyItem != null) {
+                                    fragment?.showQuickReplies(fragment?.quickReplyItem)
+                                }
                             }
                             fragment?.addChatItem(currentScheduleInfo)
                         }
@@ -1111,7 +1116,7 @@ class ChatController private constructor() {
                 .subscribe(
                     { quickReplies: QuickReplyItem? ->
                         hasQuickReplies = quickReplies != null && quickReplies.items.isNotEmpty()
-                        if (hasQuickReplies) {
+                        if (hasQuickReplies && isChatWorking()) {
                             fragment?.showQuickReplies(quickReplies)
                         } else {
                             fragment?.hideQuickReplies()
@@ -1361,7 +1366,7 @@ class ChatController private constructor() {
     }
 
     private fun processSystemMessages(chatItems: List<ChatItem>) {
-        if (!isChatWorking) {
+        if (!isChatWorking()) {
             return
         }
         var latestSystemMessage: ChatItem? = null
