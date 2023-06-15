@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/errorLayout">
+
+    <ImageView
+        android:id="@+id/errorImage"
+        android:layout_width="180dp"
+        android:layout_height="180dp"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/ecc_serious_worker"
+        android:contentDescription="@string/error_image"/>
+
+    <TextView
+        android:id="@+id/errorMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/ecc_padding_material"
+        android:layout_marginEnd="@dimen/ecc_padding_material"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="23dp"
+        android:textColor="@color/ecc_chat_new_system_message"
+        android:textSize="15sp"
+        tools:text="@string/ecc_error_when_chat_init"
+        android:maxLines="5"/>
+
+    <Button
+        android:id="@+id/retryInitChatBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="35dp"
+        android:text="@string/ecc_repeat"
+        android:textAllCaps="false"
+        android:textSize="15sp"
+        android:layout_gravity="center_horizontal"/>
+
+</LinearLayout>

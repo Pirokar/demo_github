@@ -7,6 +7,7 @@ import im.threads.business.imageLoading.ImageLoaderOkHttpProvider
 import im.threads.business.preferences.Preferences
 import im.threads.business.secureDatabase.DatabaseHolder
 import im.threads.business.serviceLocator.core.module
+import im.threads.business.state.ChatState
 import im.threads.business.transport.AuthHeadersProvider
 import im.threads.business.transport.AuthInterceptor
 import im.threads.business.transport.HistoryLoader
@@ -33,4 +34,5 @@ val coreSLModule = module {
     factory<NetworkInteractor> { NetworkInteractorImpl() }
     factory { HistoryLoader(get()) }
     factory { JsonFormatter() }
+    factory { ChatState(get()) }
 }
