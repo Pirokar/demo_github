@@ -10,7 +10,9 @@ import im.threads.business.serviceLocator.core.module
 import im.threads.business.transport.AuthHeadersProvider
 import im.threads.business.transport.AuthInterceptor
 import im.threads.business.transport.HistoryLoader
+import im.threads.business.transport.MessageParser
 import im.threads.business.transport.OutgoingMessageCreator
+import im.threads.business.transport.threadsGate.ThreadsGateMessageParser
 import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.ConsultWriter
 import im.threads.business.utils.internet.NetworkInteractor
@@ -33,4 +35,6 @@ val coreSLModule = module {
     factory<NetworkInteractor> { NetworkInteractorImpl() }
     factory { HistoryLoader(get()) }
     factory { JsonFormatter() }
+    factory { MessageParser() }
+    factory { ThreadsGateMessageParser(get()) }
 }

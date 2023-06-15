@@ -97,6 +97,7 @@ class ThreadsGateTransport(
     private val database: DatabaseHolder by inject()
     private val jsonFormatter: JsonFormatter by inject()
     private val clientUseCase: ClientUseCase by inject()
+    private val messageParser: ThreadsGateMessageParser by inject()
 
     init { buildTransport() }
 
@@ -539,7 +540,7 @@ class ThreadsGateTransport(
                     val messages = data.messages ?: listOf()
                     for (message in messages) {
                         if (message.content != null && message.content.has(MessageAttributes.TYPE)) {
-                            val type = ChatItemType.fromString(ThreadsGateMessageParser.getType(message))
+                            val type = ChatItemType.fromString(messageParser.getType(message))
                             if (ChatItemType.TYPING == type) {
                                 val content = gson.fromJson(
                                     message.content,
@@ -561,12 +562,12 @@ class ThreadsGateTransport(
                                     chatUpdateProcessor.updateAttachments(attachments)
                                 }
                             } else if (ChatItemType.SPEECH_MESSAGE_UPDATED == type) {
-                                val chatItem = ThreadsGateMessageParser.format(message)
+                                val chatItem = messageParser.format(message)
                                 if (chatItem is SpeechMessageUpdate) {
                                     chatUpdateProcessor.postSpeechMessageUpdate(chatItem)
                                 }
                             } else {
-                                val chatItem = ThreadsGateMessageParser.format(message)
+                                val chatItem = messageParser.format(message)
                                 if (chatItem != null) {
                                     chatUpdateProcessor.postNewMessage(chatItem)
                                 }
