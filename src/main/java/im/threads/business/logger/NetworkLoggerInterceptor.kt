@@ -70,8 +70,7 @@ class NetworkLoggerInterceptor(private val isImage: Boolean = false) : Intercept
                 "Content-Type: application/html",
                 "Content-Type: text/"
             )
-            if (result.hasSubstring(types) && !result.contains("Content-Transfer-Encoding: binary")
-            ) {
+            if (result.hasSubstring(types) && !result.contains("Content-Transfer-Encoding: binary")) {
                 result
             } else {
                 "File body. Size: ${result.length}"
