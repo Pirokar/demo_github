@@ -16,6 +16,7 @@ import im.threads.business.transport.threadsGate.ThreadsGateMessageParser
 import im.threads.business.utils.AppInfo
 import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.ConsultWriter
+import im.threads.business.utils.DeviceInfo
 import im.threads.business.utils.internet.NetworkInteractor
 import im.threads.business.utils.internet.NetworkInteractorImpl
 
@@ -28,7 +29,7 @@ val coreSLModule = module {
     factory { DatabaseHolder(get()) }
     factory { AuthHeadersProvider() }
     factory { ImageLoaderOkHttpProvider(get(), get()) }
-    factory { OutgoingMessageCreator(get(), get(), get()) }
+    factory { OutgoingMessageCreator(get(), get(), get(), get()) }
     factory { ClientUseCase(get()) }
     factory { AuthInterceptor(get(), get(), get()) }
     factory { ConsultWriter(get()) }
@@ -39,4 +40,5 @@ val coreSLModule = module {
     factory { MessageParser() }
     factory { ThreadsGateMessageParser(get()) }
     factory { AppInfo() }
+    factory { DeviceInfo() }
 }

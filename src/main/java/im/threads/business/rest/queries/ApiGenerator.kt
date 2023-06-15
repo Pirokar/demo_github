@@ -9,7 +9,7 @@ import im.threads.business.rest.config.BaseUrlSelectionInterceptor
 import im.threads.business.serviceLocator.core.inject
 import im.threads.business.transport.AuthInterceptor
 import im.threads.business.utils.AppInfo
-import im.threads.business.utils.DeviceInfoHelper
+import im.threads.business.utils.DeviceInfo
 import im.threads.business.utils.SSLCertificateInterceptor
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -27,13 +27,14 @@ abstract class ApiGenerator protected constructor(
     protected lateinit var apiBuild: Retrofit
     private val authInterceptor: AuthInterceptor by inject()
     private val appInfo: AppInfo by inject()
+    private val deviceInfo: DeviceInfo by inject()
 
     private val userAgent: String
         get() = String.format(
             config.context.resources.getString(R.string.threads_user_agent),
-            DeviceInfoHelper.getOsVersion(),
-            DeviceInfoHelper.getDeviceName(),
-            DeviceInfoHelper.getIpAddress(),
+            deviceInfo.osVersion,
+            deviceInfo.deviceName,
+            deviceInfo.ipAddress,
             appInfo.appVersion,
             appInfo.appId,
             appInfo.libVersion

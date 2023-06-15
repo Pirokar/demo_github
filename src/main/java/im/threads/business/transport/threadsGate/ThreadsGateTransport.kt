@@ -51,7 +51,7 @@ import im.threads.business.transport.threadsGate.responses.SendMessageData
 import im.threads.business.transport.threadsGate.responses.Status
 import im.threads.business.utils.AppInfo
 import im.threads.business.utils.ClientUseCase
-import im.threads.business.utils.DeviceInfoHelper
+import im.threads.business.utils.DeviceInfo
 import im.threads.business.utils.SSLCertificateInterceptor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -99,6 +99,7 @@ class ThreadsGateTransport(
     private val clientUseCase: ClientUseCase by inject()
     private val messageParser: ThreadsGateMessageParser by inject()
     private val appInfo: AppInfo by inject()
+    private val deviceInfo: DeviceInfo by inject()
 
     init { buildTransport() }
 
@@ -220,7 +221,7 @@ class ThreadsGateTransport(
             val content = outgoingMessageCreator.createMessageUpdateLocation(
                 latitude,
                 longitude,
-                DeviceInfoHelper.getLocale(BaseConfig.instance.context)
+                deviceInfo.getLocale(BaseConfig.instance.context)
             )
             sendMessage(content, sendInit = false)
         }
@@ -308,8 +309,8 @@ class ThreadsGateTransport(
             getCloudToken(),
             getDeviceUid(),
             "Android",
-            DeviceInfoHelper.getOsVersion(),
-            DeviceInfoHelper.getLocale(BaseConfig.instance.context),
+            deviceInfo.osVersion,
+            deviceInfo.getLocale(BaseConfig.instance.context),
             Calendar.getInstance().timeZone.displayName,
             if (!TextUtils.isEmpty(deviceName)) deviceName else deviceModel,
             deviceModel,
@@ -350,7 +351,7 @@ class ThreadsGateTransport(
     private fun sendEnvironmentMessage(tryOpeningWebSocket: Boolean): Boolean {
         return sendMessage(
             outgoingMessageCreator.createEnvironmentMessage(
-                DeviceInfoHelper.getLocale(BaseConfig.instance.context)
+                deviceInfo.getLocale(BaseConfig.instance.context)
             ),
             tryOpeningWebSocket = tryOpeningWebSocket,
             sendInit = false

@@ -14,7 +14,7 @@ import im.threads.business.preferences.PreferencesCoreKeys
 import im.threads.business.rest.queries.ThreadsApi
 import im.threads.business.utils.AppInfo
 import im.threads.business.utils.ClientUseCase
-import im.threads.business.utils.DeviceInfoHelper
+import im.threads.business.utils.DeviceInfo
 import im.threads.business.utils.FileUtils.getFileName
 import im.threads.business.utils.FileUtils.getFileSize
 import im.threads.business.utils.FileUtils.getMimeType
@@ -25,7 +25,8 @@ import java.util.TimeZone
 class OutgoingMessageCreator(
     private val preferences: Preferences,
     private val clientUseCase: ClientUseCase,
-    private val appInfo: AppInfo
+    private val appInfo: AppInfo,
+    private val deviceInfo: DeviceInfo
 ) {
     fun createInitChatMessage(): JsonObject {
         val jsonObject = JsonObject()
@@ -50,9 +51,9 @@ class OutgoingMessageCreator(
             addProperty(MessageAttributes.CLIENT_ID_ENCRYPTED, userInfo?.clientIdEncrypted)
             userInfo?.clientData?.let { addProperty(MessageAttributes.DATA, it) }
             addProperty("platform", "Android")
-            addProperty("osVersion", DeviceInfoHelper.getOsVersion())
-            addProperty("device", DeviceInfoHelper.getDeviceName())
-            addProperty("ip", DeviceInfoHelper.getIpAddress())
+            addProperty("osVersion", deviceInfo.osVersion)
+            addProperty("device", deviceInfo.deviceName)
+            addProperty("ip", deviceInfo.ipAddress)
             addProperty("appVersion", appInfo.appVersion)
             addProperty("appName", appInfo.appName)
             addProperty(MessageAttributes.APP_BUNDLE_KEY, appInfo.appId)
@@ -140,9 +141,9 @@ class OutgoingMessageCreator(
             addProperty(MessageAttributes.CLIENT_ID, userInfo?.clientId)
             addProperty(MessageAttributes.CLIENT_ID_ENCRYPTED, userInfo?.clientIdEncrypted)
             addProperty("platform", "Android")
-            addProperty("osVersion", DeviceInfoHelper.getOsVersion())
-            addProperty("device", DeviceInfoHelper.getDeviceName())
-            addProperty("ip", DeviceInfoHelper.getIpAddress())
+            addProperty("osVersion", deviceInfo.osVersion)
+            addProperty("device", deviceInfo.deviceName)
+            addProperty("ip", deviceInfo.ipAddress)
             addProperty("appVersion", appInfo.appVersion)
             addProperty("appName", appInfo.appName)
             addProperty(MessageAttributes.APP_BUNDLE_KEY, appInfo.appId)
