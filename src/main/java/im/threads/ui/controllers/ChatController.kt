@@ -18,7 +18,6 @@ import im.threads.business.controllers.UnreadMessagesController
 import im.threads.business.core.ContextHolder
 import im.threads.business.core.ThreadsLibBase
 import im.threads.business.formatters.ChatItemType
-import im.threads.business.logger.LoggerEdna.debug
 import im.threads.business.logger.LoggerEdna.error
 import im.threads.business.logger.LoggerEdna.info
 import im.threads.business.logger.LoggerEdna.warning

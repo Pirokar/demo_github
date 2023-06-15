@@ -39,7 +39,7 @@ fun String.encodeUrl(): String {
     return Uri.encode(this, allowedChars)
 }
 
-fun String.hasSubstring(subStrings: List<String>): Boolean {
+fun String.hasSubstrings(subStrings: List<String>): Boolean {
     for (string in subStrings) {
         if (this.contains(string)) {
             return true
@@ -47,4 +47,3 @@ fun String.hasSubstring(subStrings: List<String>): Boolean {
     }
     return false
 }
-
