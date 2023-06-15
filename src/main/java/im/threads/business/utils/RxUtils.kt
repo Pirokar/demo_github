@@ -1,78 +1,66 @@
-package im.threads.business.utils;
+package im.threads.business.utils
 
-import androidx.annotation.NonNull;
-import androidx.databinding.ObservableField;
+import androidx.databinding.Observable.OnPropertyChangedCallback
+import androidx.databinding.ObservableField
+import io.reactivex.Observable
+import io.reactivex.ObservableEmitter
+import io.reactivex.Single
+import io.reactivex.SingleEmitter
 
-import io.reactivex.Observable;
-import io.reactivex.Single;
-
-public final class RxUtils {
-
-    private RxUtils() {
-    }
-
-    @NonNull
-    public static <T> Observable<T> toObservable(@NonNull final ObservableField<T> observableField) {
-        return Observable.create(source -> {
-            final androidx.databinding.Observable.OnPropertyChangedCallback callback = new androidx.databinding.Observable.OnPropertyChangedCallback() {
-                @Override
-                public void onPropertyChanged(androidx.databinding.Observable observable, int i) {
-                    source.onNext(observableField.get());
+object RxUtils {
+    fun <T> toObservable(observableField: ObservableField<T>): Observable<T?> {
+        return Observable.create { source: ObservableEmitter<T?> ->
+            val callback: OnPropertyChangedCallback = object : OnPropertyChangedCallback() {
+                override fun onPropertyChanged(observable: androidx.databinding.Observable, i: Int) {
+                    observableField.get()?.let { source.onNext(it) }
                 }
-            };
-            observableField.addOnPropertyChangedCallback(callback);
-            source.setCancellable(() -> observableField.removeOnPropertyChangedCallback(callback));
-        });
+            }
+            observableField.addOnPropertyChangedCallback(callback)
+            source.setCancellable { observableField.removeOnPropertyChangedCallback(callback) }
+        }
     }
 
-    @NonNull
-    public static <T> Observable<T> toObservableImmediately(@NonNull final ObservableField<T> observableField) {
-        return Observable.create(source -> {
-            final androidx.databinding.Observable.OnPropertyChangedCallback callback = new androidx.databinding.Observable.OnPropertyChangedCallback() {
-                @Override
-                public void onPropertyChanged(androidx.databinding.Observable observable, int i) {
-                    source.onNext(observableField.get());
+    fun <T> toObservableImmediately(observableField: ObservableField<T>): Observable<T?> {
+        return Observable.create { source: ObservableEmitter<T?> ->
+            val callback: OnPropertyChangedCallback = object : OnPropertyChangedCallback() {
+                override fun onPropertyChanged(observable: androidx.databinding.Observable, i: Int) {
+                    observableField.get()?.let { source.onNext(it) }
                 }
-            };
-            observableField.addOnPropertyChangedCallback(callback);
-            source.setCancellable(() -> observableField.removeOnPropertyChangedCallback(callback));
-            T value = observableField.get();
-            if (value != null) {
-                source.onNext(value);
             }
-        });
-    }
-
-    public static <T> Single<T> toSingle(@NonNull final ObservableField<T> observableField) {
-        return Single.create(source -> {
-            final androidx.databinding.Observable.OnPropertyChangedCallback callback =
-                    new androidx.databinding.Observable.OnPropertyChangedCallback() {
-                        @Override
-                        public void onPropertyChanged(androidx.databinding.Observable observable, int i) {
-                            source.onSuccess(observableField.get());
-                        }
-                    };
-            observableField.addOnPropertyChangedCallback(callback);
-            source.setCancellable(() -> observableField.removeOnPropertyChangedCallback(callback));
-        });
-    }
-
-    public static <T> Single<T> toSingleWithImmediateEmission(@NonNull final ObservableField<T> observableField) {
-        return Single.create(source -> {
-            final androidx.databinding.Observable.OnPropertyChangedCallback callback =
-                    new androidx.databinding.Observable.OnPropertyChangedCallback() {
-                        @Override
-                        public void onPropertyChanged(androidx.databinding.Observable observable, int i) {
-                            source.onSuccess(observableField.get());
-                        }
-                    };
-            observableField.addOnPropertyChangedCallback(callback);
-            source.setCancellable(() -> observableField.removeOnPropertyChangedCallback(callback));
-            T value = observableField.get();
+            observableField.addOnPropertyChangedCallback(callback)
+            source.setCancellable { observableField.removeOnPropertyChangedCallback(callback) }
+            val value = observableField.get()
             if (value != null) {
-                source.onSuccess(value);
+                source.onNext(value)
             }
-        });
+        }
     }
 
+    fun <T> toSingle(observableField: ObservableField<T>): Single<T?> {
+        return Single.create { source: SingleEmitter<T?> ->
+            val callback: OnPropertyChangedCallback = object : OnPropertyChangedCallback() {
+                override fun onPropertyChanged(observable: androidx.databinding.Observable, i: Int) {
+                    observableField.get()?.let { source.onSuccess(it) }
+                }
+            }
+            observableField.addOnPropertyChangedCallback(callback)
+            source.setCancellable { observableField.removeOnPropertyChangedCallback(callback) }
+        }
+    }
+
+    fun <T> toSingleWithImmediateEmission(observableField: ObservableField<T>): Single<T?> {
+        return Single.create { source: SingleEmitter<T?> ->
+            val callback: OnPropertyChangedCallback = object : OnPropertyChangedCallback() {
+                override fun onPropertyChanged(observable: androidx.databinding.Observable, i: Int) {
+                    observableField.get()?.let { source.onSuccess(it) }
+                }
+            }
+            observableField.addOnPropertyChangedCallback(callback)
+            source.setCancellable { observableField.removeOnPropertyChangedCallback(callback) }
+            val value = observableField.get()
+            if (value != null) {
+                source.onSuccess(value)
+            }
+        }
+    }
 }

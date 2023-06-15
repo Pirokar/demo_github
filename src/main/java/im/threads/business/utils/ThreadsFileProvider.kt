@@ -1,6 +1,5 @@
-package im.threads.business.utils;
+package im.threads.business.utils
 
-import androidx.core.content.FileProvider;
+import androidx.core.content.FileProvider
 
-public final class ThreadsFileProvider extends FileProvider {
-}
+class ThreadsFileProvider : FileProvider()

@@ -769,12 +769,12 @@ class ChatFragment :
             .filter { charSequence: String -> charSequence.isNotEmpty() }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                { input: String -> onInputChanged(input) }
+                { input: String? -> onInputChanged(input) }
             ) { error: Throwable? -> error("configureInputChangesSubscription ", error) }
         subscribe(userTypingDisposable)
     }
 
-    private fun onInputChanged(input: String) {
+    private fun onInputChanged(input: String?) {
         chatController.onUserTyping(input)
         updateLastUserActivityTime()
     }
