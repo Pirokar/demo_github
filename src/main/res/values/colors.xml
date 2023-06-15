@@ -140,4 +140,6 @@
     <color name="ecc_empty_state_progress">@color/ecc_teal_009688</color>
     <color name="ecc_empty_state_hint">@color/ecc_black</color>
     <color name="ecc_consult_searching_progress_color">@color/ecc_teal_009688</color>
+    <color name="ecc_button_normal">@color/ecc_teal_009688</color>
+    <color name="ecc_button_pressed">#03C6B4</color>
 </resources>

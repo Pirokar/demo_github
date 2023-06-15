@@ -20,7 +20,7 @@ data class SocketClientSettings(
 )
 
 data class HttpClientSettings(
-    var connectTimeoutMillis: Int = 10_000,
-    var readTimeoutMillis: Int = 10_000,
-    var writeTimeoutMillis: Int = 10_000
+    var connectTimeoutMillis: Long = 10_000,
+    var readTimeoutMillis: Long = 10_000,
+    var writeTimeoutMillis: Long = 10_000
 )

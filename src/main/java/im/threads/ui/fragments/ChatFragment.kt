@@ -23,6 +23,7 @@ import android.text.SpannableString
 import android.text.TextUtils
 import android.text.TextWatcher
 import android.text.style.ForegroundColorSpan
+import android.util.TypedValue
 import android.view.Gravity
 import android.view.HapticFeedbackConstants
 import android.view.KeyEvent
@@ -128,7 +129,9 @@ import im.threads.ui.utils.FileHelper.isAllowedFileExtension
 import im.threads.ui.utils.FileHelper.isAllowedFileSize
 import im.threads.ui.utils.FileHelper.isFileExtensionsEmpty
 import im.threads.ui.utils.FileHelper.maxAllowedFileSize
+import im.threads.ui.utils.gone
 import im.threads.ui.utils.hideKeyboard
+import im.threads.ui.utils.invisible
 import im.threads.ui.utils.isNotVisible
 import im.threads.ui.utils.isVisible
 import im.threads.ui.utils.runOnUiThread
@@ -262,8 +265,10 @@ class ChatFragment :
         initRecordButtonState()
         chatController.threadId?.let { setCurrentThreadId(it) }
         BaseConfig.instance.transport.setLifecycle(lifecycle)
-        ChatController.getInstance().settings
-        ChatController.getInstance().loadHistory()
+        if (chatController.isChatReady()) {
+            ChatController.getInstance().loadSettings()
+            ChatController.getInstance().loadHistory()
+        }
     }
 
     override fun onStop() {
@@ -330,6 +335,7 @@ class ChatFragment :
     fun isStartSecondLevelScreen(): Boolean {
         return resumeAfterSecondLevelScreen
     }
+
     internal val lastVisibleItemPosition: Int
         get() = if (isAdded) {
             mLayoutManager?.findLastVisibleItemPosition() ?: RecyclerView.NO_POSITION
@@ -351,9 +357,68 @@ class ChatFragment :
             ArrayList()
         }
 
+    internal fun showErrorView(message: String?) = with(binding) {
+        if (chatErrorLayout.errorLayout.isNotVisible()) {
+            showWelcomeScreen(false)
+            hideProgressBar()
+            recycler.invisible()
+            bottomLayout.invisible()
+            chatErrorLayout.errorLayout.visible()
+            initErrorViewStyles()
+            chatErrorLayout.errorMessage.text = message
+        }
+    }
+
+    internal fun hideErrorView() = with(binding) {
+        chatErrorLayout.errorLayout.gone()
+        bottomLayout.visible()
+        val isNeedToShowWelcome = chatController.isNeedToShowWelcome
+        if (isNeedToShowWelcome) {
+            showWelcomeScreen(true)
+        } else {
+            recycler.visible()
+        }
+    }
+
+    private fun initErrorViewStyles() = with(binding.chatErrorLayout) {
+        errorImage.setImageResource(style.chatErrorScreenImageResId)
+        context?.let {
+            errorMessage.setTextColor(ContextCompat.getColor(it, style.chatErrorScreenMessageTextColorResId))
+            retryInitChatBtn.setTextColor(ContextCompat.getColor(it, style.chatErrorScreenButtonTextColorResId))
+            retryInitChatBtn.backgroundTintList = if (style.chatErrorScreenButtonTintColorList != null) {
+                style.chatErrorScreenButtonTintColorList
+            } else if (style.chatBodyIconsColorState != null && style.chatBodyIconsColorState.size > 2) {
+                ColorsHelper.getColorStateList(
+                    it,
+                    style.chatBodyIconsColorState[0],
+                    style.chatBodyIconsColorState[1],
+                    style.chatBodyIconsColorState[2]
+                )
+            } else {
+                ColorsHelper.getColorStateList(
+                    it,
+                    style.chatDisabledTextColor,
+                    style.chatToolbarColorResId,
+                    style.chatToolbarColorResId
+                )
+            }
+        }
+        errorMessage.setTextSize(
+            TypedValue.COMPLEX_UNIT_PX,
+            resources.getDimension(style.chatErrorScreenMessageTextSizeResId)
+        )
+        retryInitChatBtn.setTextSize(
+            TypedValue.COMPLEX_UNIT_PX,
+            resources.getDimension(style.chatErrorScreenButtonTextSizeResId)
+        )
+        retryInitChatBtn.setOnClickListener {
+            chatController.onRetryInitChatClick()
+        }
+    }
+
     private fun initController() {
         val activity = activity ?: return
-        welcomeScreenVisibility(chatController.isNeedToShowWelcome)
+        showWelcomeScreen(chatController.isNeedToShowWelcome)
         chatController.bindFragment(this)
         mChatReceiver = ChatReceiver()
         val intentFilter = IntentFilter(ACTION_SEARCH_CHAT_FILES)
@@ -804,7 +869,7 @@ class ChatFragment :
         if (inputText == null || inputText.trim { it <= ' ' }.isEmpty() && getFileDescription() == null) {
             return
         }
-        welcomeScreenVisibility(false)
+        showWelcomeScreen(false)
         val input: MutableList<UpcomingUserMessage> = ArrayList()
         val message = UpcomingUserMessage(
             getFileDescription(),
@@ -857,7 +922,7 @@ class ChatFragment :
     private fun afterRefresh(result: List<ChatItem>) {
         chatAdapter?.let {
             val itemsBefore = it.itemCount
-            chatAdapter?.addItems(result, true)
+            addItemsToChat(result)
             scrollToPosition(it.itemCount - itemsBefore, true)
         }
 
@@ -1318,7 +1383,7 @@ class ChatFragment :
                 chatAdapter?.removeHighlight()
             }
             chatAdapter?.let {
-                it.addItems(data, true)
+                addItemsToChat(data)
                 if (highlightedItem != null) {
                     chatAdapter?.removeHighlight()
                     scrollToPosition(it.setItemHighlighted(highlightedItem), true)
@@ -1332,7 +1397,7 @@ class ChatFragment :
     private fun onPhotosResult(data: Intent) {
         val photos = data.getParcelableArrayListExtra<Uri>(GalleryActivity.PHOTOS_TAG)
         hideBottomSheet()
-        welcomeScreenVisibility(false)
+        showWelcomeScreen(false)
         val inputText = inputTextObservable.get()
         if (photos == null || photos.size == 0 || inputText == null) {
             return
@@ -1557,8 +1622,8 @@ class ChatFragment :
             chatAdapter?.setAvatar(item.consultId, item.avatarPath)
         }
         if (needsAddMessage(item)) {
-            welcomeScreenVisibility(false)
-            chatAdapter?.addItems(listOf(item), true)
+            showWelcomeScreen(false)
+            addItemsToChat(listOf(item))
             if (!isLastMessageVisible) {
                 binding.scrollDownButtonContainer.visibility = View.VISIBLE
                 showUnreadMessagesCount(chatController.getUnreadMessagesCount())
@@ -1662,14 +1727,14 @@ class ChatFragment :
             if (layoutManager == null || list.size == 1 && list[0] is ConsultTyping || isInMessageSearchMode) {
                 return
             }
-            welcomeScreenVisibility(false)
+            showWelcomeScreen(false)
             val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
             val lastVisibleItemTimestamp = if (lastVisibleItemPosition >= 0 && lastVisibleItemPosition < chatAdapter.list.size) {
                 chatAdapter.list[lastVisibleItemPosition].timeStamp
             } else {
                 null
             }
-            chatAdapter.addItems(list, isBottomItemsVisible)
+            addItemsToChat(list, isBottomItemsVisible)
             val newAdapterSize = chatAdapter.list.size
             if (oldAdapterSize == 0) {
                 scrollToPosition(chatAdapter.itemCount - 1, false)
@@ -1824,14 +1889,22 @@ class ChatFragment :
             )
             binding.recycler.adapter = chatAdapter
             setTitleStateDefault()
-            welcomeScreenVisibility(false)
+            showWelcomeScreen(false)
             binding.inputEditView.clearFocus()
-            welcomeScreenVisibility(true)
+            showWelcomeScreen(true)
         }
     }
 
-    private fun welcomeScreenVisibility(show: Boolean) {
-        binding.welcome.visibility = if (show) View.VISIBLE else View.GONE
+    internal fun showWelcomeScreen(show: Boolean) {
+        binding.welcome.visibility = if (show && binding.chatErrorLayout.errorLayout.isNotVisible()) {
+            View.VISIBLE
+        } else {
+            View.GONE
+        }
+    }
+
+    internal fun showBottomBar() {
+        binding.bottomLayout.visible()
     }
 
     /**
@@ -2322,7 +2395,6 @@ class ChatFragment :
     }
 
     fun hideProgressBar() {
-        welcomeScreenVisibility(chatController.isNeedToShowWelcome)
         binding.flEmpty.visibility = View.GONE
         binding.swipeRefresh.isRefreshing = false
     }
@@ -2565,7 +2637,7 @@ class ChatFragment :
                 chatController.downloadMessagesTillEnd()
                     .observeOn(AndroidSchedulers.mainThread())
                     .map<List<ChatItem?>?> { list: List<ChatItem?>? ->
-                        if (list != null) chatAdapter?.addItems(list, true)
+                        addItemsToChat(list)
                         val itemHighlightedIndex = chatAdapter?.setItemHighlighted(quote.uuid) ?: -1
                         if (itemHighlightedIndex != -1) scrollToPosition(itemHighlightedIndex, true)
                         list
@@ -2576,7 +2648,7 @@ class ChatFragment :
                     .subscribe(
                         { list: List<ChatItem?>? ->
                             chatAdapter?.removeHighlight()
-                            if (list != null) chatAdapter?.addItems(list, true)
+                            addItemsToChat(list)
                         }
                     ) { obj: Throwable -> obj.message }
             )
@@ -2647,6 +2719,20 @@ class ChatFragment :
                     ),
                     false
                 )
+            }
+        }
+    }
+
+    private fun addItemsToChat(list: List<ChatItem?>?, withAnimation: Boolean = true) {
+        list?.filterNotNull()?.let {
+            if (it.isNotEmpty()) {
+                val isChatReady = chatController.isChatReady()
+                val isAnimationEnabled = withAnimation && isChatReady
+                chatAdapter?.addItems(it, isAnimationEnabled)
+                if (isChatReady) {
+                    hideErrorView()
+                    hideProgressBar()
+                }
             }
         }
     }

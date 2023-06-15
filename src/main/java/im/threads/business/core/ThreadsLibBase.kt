@@ -26,7 +26,6 @@ import im.threads.business.serviceLocator.core.inject
 import im.threads.business.serviceLocator.core.startEdnaLocator
 import im.threads.business.serviceLocator.coreSLModule
 import im.threads.business.state.ChatState
-import im.threads.business.state.InitialisationConstants
 import im.threads.business.useractivity.UserActivityTimeProvider.getLastUserActivityTimeCounter
 import im.threads.business.useractivity.UserActivityTimeProvider.initializeLastUserActivity
 import im.threads.business.utils.ClientUseCase
@@ -57,6 +56,7 @@ open class ThreadsLibBase protected constructor(context: Context) {
     private val clientUseCase: ClientUseCase by inject()
     private val chatUpdateProcessor: ChatUpdateProcessor by inject()
     private val database: DatabaseHolder by inject()
+    private val chatState: ChatState by inject()
 
     /**
      * @return time in seconds since the last user activity
@@ -86,16 +86,19 @@ open class ThreadsLibBase protected constructor(context: Context) {
     val socketResponseMapProcessor: FlowableProcessor<Map<String, Any>>
         get() = chatUpdateProcessor.socketResponseMapProcessor
 
-    protected open fun initUser(
-        userInfoBuilder: UserInfoBuilder,
-        forceRegistration: Boolean = false,
-        callback: (isAuthorized: Boolean) -> Unit
-    ) {
-        InitialisationConstants.chatState = ChatState.INIT_USER
+    /**
+     * Инициализирует пользователя синхронно и загружает его историю в фоновом потоке
+     * (изменения истории сообщений применяются в потоке UI)
+     * @param userInfoBuilder данные о пользователе
+     * @param forceRegistration открывает сокет, отправляет данные о регистрации, закрывает сокет
+     */
+    open fun initUser(userInfoBuilder: UserInfoBuilder, forceRegistration: Boolean = false) {
         clientUseCase.saveUserInfo(userInfoBuilder)
-        BaseConfig.instance.transport.sendInit(forceRegistration)
-        if (!ChatFragment.isShown && forceRegistration) {
-            BaseConfig.instance.transport.closeWebSocket()
+        if (forceRegistration) {
+            BaseConfig.instance.transport.sendRegisterDevice(true)
+            if (!ChatFragment.isShown) {
+                BaseConfig.instance.transport.closeWebSocket()
+            }
         }
     }
 
@@ -103,7 +106,7 @@ open class ThreadsLibBase protected constructor(context: Context) {
      * Used to stop receiving messages for user
      */
     fun logoutClient() {
-        InitialisationConstants.onLogout()
+        chatState.onLogout()
 
         val clientId = clientUseCase.getUserInfo()?.clientId
         if (!clientId.isNullOrBlank()) {
