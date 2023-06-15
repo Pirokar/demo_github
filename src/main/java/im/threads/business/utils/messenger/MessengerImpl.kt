@@ -4,7 +4,6 @@ import im.threads.business.chatUpdates.ChatUpdateProcessor
 import im.threads.business.config.BaseConfig
 import im.threads.business.logger.LoggerEdna.debug
 import im.threads.business.logger.LoggerEdna.error
-import im.threads.business.logger.LoggerEdna.info
 import im.threads.business.models.ChatItem
 import im.threads.business.models.ChatItemSendErrorModel
 import im.threads.business.models.ConsultInfo
@@ -73,7 +72,6 @@ class MessengerImpl(
     }
 
     override fun sendMessage(userPhrase: UserPhrase) {
-        info("sendMessage: $userPhrase")
         userPhrase.id?.let { resendStream.onNext(it) }
 
         val consultWriter = ConsultWriter(preferences)
@@ -132,7 +130,6 @@ class MessengerImpl(
     }
 
     override fun queueMessageSending(userPhrase: UserPhrase) {
-        info("queueMessageSending: $userPhrase, queue size: ${sendQueue.size}")
         synchronized(sendQueue) { sendQueue.add(userPhrase) }
         if (sendQueue.size == 1) {
             sendMessage(userPhrase)
@@ -190,12 +187,10 @@ class MessengerImpl(
     }
 
     private fun sendTextMessage(userPhrase: UserPhrase, consultInfo: ConsultInfo?) {
-        info("sendTextMessage: $userPhrase, $consultInfo")
         BaseConfig.instance.transport.sendMessage(userPhrase, consultInfo, null, null)
     }
 
     private fun sendFileMessage(userPhrase: UserPhrase, consultInfo: ConsultInfo?) {
-        info("sendFileMessage: $userPhrase, $consultInfo")
         val fileDescription = userPhrase.fileDescription
         val quoteFileDescription = if (userPhrase.quote != null) userPhrase.quote.fileDescription else null
         subscribe(

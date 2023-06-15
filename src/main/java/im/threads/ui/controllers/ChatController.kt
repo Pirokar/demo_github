@@ -1016,7 +1016,6 @@ class ChatController private constructor() {
                 .flatMapMaybe { chatItemSent: ChatItemProviderData ->
                     val chatItem = database.getChatItemByCorrelationId(chatItemSent.uuid)
                     if (chatItem is UserPhrase) {
-                        debug("server answer on phrase sent with id " + chatItemSent.messageId)
                         if (chatItemSent.sentAt > 0) {
                             chatItem.timeStamp = chatItemSent.sentAt
                         }
@@ -1047,7 +1046,6 @@ class ChatController private constructor() {
                 .flatMapMaybe { (_, phraseUuid): ChatItemSendErrorModel ->
                     val chatItem = database.getChatItemByCorrelationId(phraseUuid)
                     if (chatItem is UserPhrase) {
-                        debug("server answer on phrase sent with id $phraseUuid")
                         chatItem.sentState = MessageStatus.FAILED
                         database.putChatItem(chatItem)
                     }

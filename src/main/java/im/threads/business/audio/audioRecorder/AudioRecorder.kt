@@ -4,6 +4,7 @@ import android.content.Context
 import android.media.MediaRecorder
 import android.os.Build
 import im.threads.business.logger.LoggerEdna.error
+import im.threads.business.logger.LoggerEdna.info
 import java.io.IOException
 import java.text.SimpleDateFormat
 
@@ -25,7 +26,7 @@ class AudioRecorder(private val context: Context) {
         prepare(AudioRecorderConfig(fileNameDateFormat = fileNameDateFormat).getDefaultConfig(context))
     }
 
-    fun prepare(config: AudioRecorderConfig) {
+    private fun prepare(config: AudioRecorderConfig) {
         currentConfig = config
 
         config.audioSource?.let { recorder.setAudioSource(it) }
@@ -51,7 +52,7 @@ class AudioRecorder(private val context: Context) {
             recorder.stop()
             recorder.release()
         } catch (runtimeException: RuntimeException) {
-            error("Exception occurred in releaseRecorder but it's fine", runtimeException)
+            info("Exception occurred in releaseRecorder but it's fine")
         }
     }
 }

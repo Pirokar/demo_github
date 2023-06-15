@@ -278,7 +278,7 @@ class ThreadsGateTransport(
         if (message != null) {
             isSent = webSocket?.send(message) ?: false
             LoggerEdna.info(
-                "[REST_WS] ☛ Sending message with WS. Is sent: $isSent. Message: ${jsonFormatter.jsonToPrettyFormat(message)}"
+                "[WS] ☛ Sending message with WS. Is sent: $isSent. Message: ${jsonFormatter.jsonToPrettyFormat(message)}"
             )
         }
 
@@ -439,7 +439,7 @@ class ThreadsGateTransport(
         }
 
         override fun onMessage(webSocket: WebSocket, text: String) {
-            LoggerEdna.info("[REST_WS] ☚ ${jsonFormatter.jsonToPrettyFormat(text)}")
+            LoggerEdna.info("[WS] ☚ ${jsonFormatter.jsonToPrettyFormat(text)}")
             postSocketResponseMap(text)
             val response = BaseConfig.instance.gson.fromJson(text, BaseResponse::class.java)
             val action = response.action
@@ -459,7 +459,6 @@ class ThreadsGateTransport(
                         response.data.toString(),
                         RegisterDeviceData::class.java
                     )
-                    LoggerEdna.info("Saving device address")
                     preferences.save(PreferencesCoreKeys.DEVICE_ADDRESS, data.deviceAddress)
                     chatUpdateProcessor.postDeviceAddressChanged(data.deviceAddress)
                     location?.let {
@@ -595,12 +594,12 @@ class ThreadsGateTransport(
         }
 
         override fun onMessage(webSocket: WebSocket, bytes: ByteString) {
-            LoggerEdna.info("[REST_WS] ☚ Receiving bytes: ${bytes.hex()}")
+            LoggerEdna.info("[WS] ☚ Receiving bytes: ${bytes.hex()}")
         }
 
         override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
             postSocketResponseMap(code, reason)
-            LoggerEdna.info("[REST_WS] ☚ Websocket closing: $code / $reason")
+            LoggerEdna.info("[WS] ☚ Websocket closing: $code / $reason")
             webSocket.close(NORMAL_CLOSURE_STATUS, null)
         }
 
@@ -608,7 +607,7 @@ class ThreadsGateTransport(
             postSocketResponseMap(code, reason)
             preferences.save("", PreferencesCoreKeys.DEVICE_ADDRESS)
             this@ThreadsGateTransport.webSocket = null
-            LoggerEdna.info("[REST_WS] ☚ Websocket closed: $code / $reason")
+            LoggerEdna.info("[WS] ☚ Websocket closed: $code / $reason")
         }
 
         private fun postSocketResponseMap(code: Int, reason: String) {
@@ -624,7 +623,7 @@ class ThreadsGateTransport(
         }
 
         override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
-            LoggerEdna.info("[REST_WS] ☚\u274C On Websocket error : ${t.message}")
+            LoggerEdna.info("[WS] ☚\u274C On Websocket error : ${t.message}")
             chatUpdateProcessor.postError(TransportException(t.message))
             synchronized(messageInProcessIds) {
                 coroutineScope.launch {
