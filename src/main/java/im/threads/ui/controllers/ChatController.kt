@@ -446,7 +446,6 @@ class ChatController private constructor() {
                     { chatItems: List<ChatItem> ->
                         chatFragment.addChatItems(chatItems)
                         handleQuickReplies(chatItems)
-                        loadHistory()
                     }
                 ) { obj: Throwable -> obj.message }
         )
@@ -609,7 +608,9 @@ class ChatController private constructor() {
                                     val items = setLastAvatars(serverItems)
                                     if (fragment != null) {
                                         fragment?.addChatItems(items)
-                                        handleQuickReplies(items)
+                                        if (fromBeginning) {
+                                            handleQuickReplies(items)
+                                        }
                                         handleInputAvailability(items)
                                         if (consultInfo != null) {
                                             fragment?.setStateConsultConnected(consultInfo)
@@ -974,6 +975,11 @@ class ChatController private constructor() {
                                 consultWriter.isSearchingConsult = false
                                 fragment?.removeSearching()
                                 fragment?.setTitleStateDefault()
+                                hideQuickReplies()
+                            } else {
+                                if (fragment?.quickReplyItem != null) {
+                                    fragment?.showQuickReplies(fragment?.quickReplyItem)
+                                }
                             }
                             fragment?.addChatItem(currentScheduleInfo)
                         }
@@ -1110,7 +1116,7 @@ class ChatController private constructor() {
                 .subscribe(
                     { quickReplies: QuickReplyItem? ->
                         hasQuickReplies = quickReplies != null && quickReplies.items.isNotEmpty()
-                        if (hasQuickReplies) {
+                        if (hasQuickReplies && isChatWorking()) {
                             fragment?.showQuickReplies(quickReplies)
                         } else {
                             fragment?.hideQuickReplies()
