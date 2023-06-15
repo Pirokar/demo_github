@@ -154,6 +154,8 @@ class ChatController private constructor() {
     private val localUserMessages = ArrayList<UserPhrase>()
     private val attachmentsHistory = HashMap<String, AttachmentStateEnum>()
 
+    private var enableModel: InputFieldEnableModel? = null
+
     init {
         PreferencesMigrationUi(appContext).migrateNamedPreferences(ChatController::class.java.simpleName)
         subscribeToChatEvents()
@@ -1453,7 +1455,10 @@ class ChatController private constructor() {
                 InputFieldEnableModel(isInputFieldEnabled(), isSendButtonEnabled)
             }
         }
-        info("UserInputState_change. isInputBlockedFromMessage: $isInputBlockedFromMessage, $inputFieldEnableModel")
+        if (enableModel.toString() != inputFieldEnableModel.toString()) {
+            info("UserInputState_change. isInputBlockedFromMessage: $isInputBlockedFromMessage, $inputFieldEnableModel")
+        }
+        enableModel = inputFieldEnableModel
         fragment?.updateInputEnable(inputFieldEnableModel)
         fragment?.updateChatAvailabilityMessage(inputFieldEnableModel)
     }

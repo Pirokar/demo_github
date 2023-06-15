@@ -64,9 +64,7 @@ abstract class ApiGenerator protected constructor(
             .readTimeout(readTimeoutMillis.toLong(), TimeUnit.MILLISECONDS)
             .writeTimeout(writeTimeoutMillis.toLong(), TimeUnit.MILLISECONDS)
         if (config.isDebugLoggingEnabled) {
-            httpClientBuilder.addInterceptor(
-                HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
-            )
+            httpClientBuilder.addInterceptor(NetworkLoggerInterceptor())
         }
         val sslSocketFactoryConfig = config.sslSocketFactoryConfig
         if (sslSocketFactoryConfig != null) {
@@ -80,7 +78,6 @@ abstract class ApiGenerator protected constructor(
             )
             httpClientBuilder.hostnameVerifier { _: String?, _: SSLSession? -> true }
         }
-        httpClientBuilder.addInterceptor(NetworkLoggerInterceptor())
         return httpClientBuilder.build()
     }
 
