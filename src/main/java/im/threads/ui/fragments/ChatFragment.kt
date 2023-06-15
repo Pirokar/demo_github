@@ -702,7 +702,11 @@ class ChatFragment :
                         binding.scrollDownButtonContainer.visibility = View.GONE
                         recyclerView.post { setMessagesAsRead() }
                     }
-                    if (firstVisibleItemPosition == 0 && !chatController.isAllMessagesDownloaded) {
+                    if (firstVisibleItemPosition == 0 &&
+                        !chatController.isAllMessagesDownloaded &&
+                        itemCount != null &&
+                        itemCount > BaseConfig.instance.historyLoadingCount / 2
+                    ) {
                         binding.swipeRefresh.isRefreshing = true
                         chatController.loadHistory(false)
                     }

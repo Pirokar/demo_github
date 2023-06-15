@@ -445,7 +445,6 @@ class ChatController private constructor() {
                     { chatItems: List<ChatItem> ->
                         chatFragment.addChatItems(chatItems)
                         handleQuickReplies(chatItems)
-                        loadHistory()
                     }
                 ) { obj: Throwable -> obj.message }
         )
