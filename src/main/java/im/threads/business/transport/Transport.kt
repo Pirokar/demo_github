@@ -43,7 +43,8 @@ abstract class Transport {
                         ThreadsApi.REST_TAG,
                         "error on messages read : $uuidList"
                     )
-                    chatUpdateProcessor.postError(TransportException(e.message))
+                    val message = if (e.localizedMessage.isNullOrBlank()) e.message else e.localizedMessage
+                    chatUpdateProcessor.postError(TransportException(message))
                 }
         )
     }
@@ -59,7 +60,8 @@ abstract class Transport {
     abstract fun sendRatingDone(survey: Survey)
     abstract fun sendResolveThread(approveResolve: Boolean)
     abstract fun sendUserTying(input: String)
-    abstract fun sendInit(forceRegistration: Boolean)
+    abstract fun sendRegisterDevice(forceRegistration: Boolean)
+    abstract fun sendInitMessages()
     abstract fun closeWebSocket()
     internal abstract fun updatePushToken()
 

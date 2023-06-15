@@ -57,7 +57,7 @@ import im.threads.business.rest.queries.ThreadsApi
 import im.threads.business.secureDatabase.DatabaseHolder
 import im.threads.business.serviceLocator.core.inject
 import im.threads.business.state.ChatState
-import im.threads.business.state.InitialisationConstants
+import im.threads.business.state.ChatStateEnum
 import im.threads.business.transport.ChatItemProviderData
 import im.threads.business.transport.HistoryLoader
 import im.threads.business.transport.HistoryParser
@@ -95,6 +95,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import retrofit2.Response
 import java.util.concurrent.TimeUnit
 
@@ -113,6 +114,7 @@ class ChatController private constructor() {
     private val preferences: Preferences by inject()
     private val historyLoader: HistoryLoader by inject()
     private val clientUseCase: ClientUseCase by inject()
+    private val chatState: ChatState by inject()
 
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
@@ -155,12 +157,11 @@ class ChatController private constructor() {
     init {
         PreferencesMigrationUi(appContext).migrateNamedPreferences(ChatController::class.java.simpleName)
         subscribeToChatEvents()
-        messenger.resendMessages()
     }
 
     fun onViewStart() {
+        checkStateOnViewStart()
         messenger.onViewStart()
-        InitialisationConstants.chatState = ChatState.ANDROID_CHAT_LIFECYCLE
         checkEmptyStateVisibility()
     }
 
@@ -237,7 +238,10 @@ class ChatController private constructor() {
                             seeker = ChatMessageSeeker()
                         }
                         lastSearchQuery = query
-                        Runnable { fragment?.hideProgressBar() }.runOnUiThread()
+                        Runnable {
+                            fragment?.hideProgressBar()
+                            fragment?.showWelcomeScreen(isNeedToShowWelcome)
+                        }.runOnUiThread()
                     }
                 }
                 .subscribeOn(Schedulers.newThread())
@@ -246,7 +250,10 @@ class ChatController private constructor() {
                     { consumer.accept(seeker.searchMessages(lastItems, !forward, query)) }
                 ) { e: Throwable? ->
                     error(e)
-                    Runnable { fragment?.hideProgressBar() }.runOnUiThread()
+                    Runnable {
+                        fragment?.hideProgressBar()
+                        fragment?.showWelcomeScreen(isNeedToShowWelcome)
+                    }.runOnUiThread()
                 }
         )
     }
@@ -304,6 +311,12 @@ class ChatController private constructor() {
         )
     }
 
+    private fun checkStateOnViewStart() {
+        if (chatState.getCurrentState() < ChatStateEnum.REGISTERING_DEVICE) {
+            BaseConfig.instance.transport.sendRegisterDevice(false)
+        }
+    }
+
     private fun updateDoubleItems(serverItems: ArrayList<ChatItem>) {
         updateServerItemsBySendingItems(serverItems, getSendingItems())
     }
@@ -317,6 +330,23 @@ class ChatController private constructor() {
             } else {
                 database.setMessageWasRead(item.id)
             }
+        }
+    }
+
+    fun isChatReady() = chatState.isChatReady()
+
+    fun onRetryInitChatClick() {
+        fragment?.hideErrorView()
+        fragment?.showProgressBar()
+
+        val state = chatState.getCurrentState()
+        val transport = BaseConfig.instance.transport
+        if (state < ChatStateEnum.DEVICE_REGISTERED) {
+            transport.sendRegisterDevice(false)
+        } else if (state < ChatStateEnum.INIT_USER_SENT) {
+            transport.sendInitMessages()
+        } else if (state < ChatStateEnum.SETTINGS_LOADED) {
+            loadSettings()
         }
     }
 
@@ -359,6 +389,7 @@ class ChatController private constructor() {
                         return@fromCallable setLastAvatars(serverItems)
                     } catch (e: Exception) {
                         fragment?.hideProgressBar()
+                        fragment?.showWelcomeScreen(isNeedToShowWelcome)
                         error(ThreadsApi.REST_TAG, "Requesting history items error", e)
                         return@fromCallable setLastAvatars(
                             database.getChatItems(
@@ -397,7 +428,7 @@ class ChatController private constructor() {
     }
 
     val isNeedToShowWelcome: Boolean
-        get() = database.getMessagesCount() == 0 && fragment?.getDisplayedMessagesCount() == 0
+        get() = database.getMessagesCount() == 0 && fragment?.getDisplayedMessagesCount() == 0 && isChatReady()
 
     val stateOfConsult: Int
         get() = if (consultWriter.isSearchingConsult) {
@@ -444,7 +475,6 @@ class ChatController private constructor() {
                     { chatItems: List<ChatItem> ->
                         chatFragment.addChatItems(chatItems)
                         handleQuickReplies(chatItems)
-                        loadHistory()
                     }
                 ) { obj: Throwable -> obj.message }
         )
@@ -487,6 +517,7 @@ class ChatController private constructor() {
         fragment?.let {
             it.addChatItems(database.getChatItems(0, -1))
             it.hideProgressBar()
+            it.showWelcomeScreen(isNeedToShowWelcome)
         }
     }
 
@@ -564,8 +595,10 @@ class ChatController private constructor() {
     fun loadHistory(fromBeginning: Boolean = true, applyUiChanges: Boolean = true) {
         if (isAllMessagesDownloaded) {
             fragment?.hideProgressBar()
+            fragment?.showWelcomeScreen(isNeedToShowWelcome)
             return
         }
+        if (!chatState.isChatReady()) return
         synchronized(this) {
             if (!isDownloadingMessages) {
                 isDownloadingMessages = true
@@ -600,25 +633,33 @@ class ChatController private constructor() {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                             { pair: Pair<ConsultInfo?, List<ChatItem>> ->
-                                InitialisationConstants.isHistoryLoaded = true
+                                chatState.changeState(ChatStateEnum.HISTORY_LOADED)
                                 isDownloadingMessages = false
                                 if (applyUiChanges) {
                                     val (consultInfo, serverItems) = pair
                                     val items = setLastAvatars(serverItems)
                                     if (fragment != null) {
                                         fragment?.addChatItems(items)
-                                        handleQuickReplies(items)
+                                        if (fromBeginning) {
+                                            handleQuickReplies(items)
+                                        }
                                         handleInputAvailability(items)
                                         if (consultInfo != null) {
                                             fragment?.setStateConsultConnected(consultInfo)
                                         }
+                                        fragment?.hideProgressBar()
+                                        fragment?.showWelcomeScreen(isNeedToShowWelcome)
+                                        fragment?.showBottomBar()
                                     }
                                 }
-                                fragment?.hideProgressBar()
                             }
                         ) { e: Throwable? ->
                             isDownloadingMessages = false
-                            fragment?.hideProgressBar()
+                            if (fragment != null) {
+                                fragment?.hideProgressBar()
+                                fragment?.showWelcomeScreen(isNeedToShowWelcome)
+                                fragment?.showBottomBar()
+                            }
                             error(e)
                         }
                 )
@@ -628,38 +669,40 @@ class ChatController private constructor() {
         }
     }
 
-    val settings: Unit
-        get() {
-            subscribe(
-                Single.fromCallable {
-                    get().settings()?.execute()
-                }
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                        { response: Response<SettingsResponse?>? ->
-                            val responseBody = response?.body()
-                            if (responseBody != null) {
-                                val clientNotificationType =
-                                    responseBody.clientNotificationDisplayType
-                                if (clientNotificationType != null && clientNotificationType.isNotEmpty()) {
-                                    val type = ClientNotificationDisplayType.fromString(
-                                        clientNotificationType
-                                    )
-                                    preferences.save(
-                                        PreferencesUiKeys.CLIENT_NOTIFICATION_DISPLAY_TYPE,
-                                        type.name
-                                    )
-                                    chatUpdateProcessor.postClientNotificationDisplayType(type)
-                                }
+    fun loadSettings() {
+        chatState.changeState(ChatStateEnum.LOADING_SETTINGS)
+        subscribe(
+            Single.fromCallable {
+                get().settings()?.execute()
+            }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { response: Response<SettingsResponse?>? ->
+                        val responseBody = response?.body()
+                        if (responseBody != null) {
+                            val clientNotificationType =
+                                responseBody.clientNotificationDisplayType
+                            if (clientNotificationType != null && clientNotificationType.isNotEmpty()) {
+                                val type = ClientNotificationDisplayType.fromString(
+                                    clientNotificationType
+                                )
+                                preferences.save(
+                                    PreferencesUiKeys.CLIENT_NOTIFICATION_DISPLAY_TYPE,
+                                    type.name
+                                )
+                                chatUpdateProcessor.postClientNotificationDisplayType(type)
                             }
                         }
-                    ) { e: Throwable ->
-                        info("error on getting settings : " + e.message)
-                        chatUpdateProcessor.postError(TransportException(e.message))
+                        chatState.changeState(ChatStateEnum.SETTINGS_LOADED)
                     }
-            )
-        }
+                ) { e: Throwable ->
+                    val message = if (e.localizedMessage.isNullOrBlank()) e.message else e.localizedMessage
+                    info("error on getting settings: $message")
+                    chatUpdateProcessor.postError(TransportException(message))
+                }
+        )
+    }
 
     fun downloadMessagesTillEnd(): Single<List<ChatItem>> {
         return messenger.downloadMessagesTillEnd()
@@ -738,6 +781,7 @@ class ChatController private constructor() {
         subscribeOnClientIdChange()
         subscribeOnMessageError()
         subscribeOnFileUploadResult()
+        subscribeOnChatState()
     }
 
     fun checkSubscribing() {
@@ -768,6 +812,9 @@ class ChatController private constructor() {
             Flowable.fromPublisher(chatUpdateProcessor.errorProcessor)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
+                    if (chatState.getCurrentState() < ChatStateEnum.INIT_USER_SENT) {
+                        fragment?.showErrorView(it.message)
+                    }
                     error("subscribeToTransportException ", it)
                 }
         )
@@ -963,6 +1010,11 @@ class ChatController private constructor() {
                                 consultWriter.isSearchingConsult = false
                                 fragment?.removeSearching()
                                 fragment?.setTitleStateDefault()
+                                hideQuickReplies()
+                            } else {
+                                if (fragment?.quickReplyItem != null) {
+                                    fragment?.showQuickReplies(fragment?.quickReplyItem)
+                                }
                             }
                             fragment?.addChatItem(currentScheduleInfo)
                         }
@@ -1103,7 +1155,7 @@ class ChatController private constructor() {
                 .subscribe(
                     { quickReplies: QuickReplyItem? ->
                         hasQuickReplies = quickReplies != null && quickReplies.items.isNotEmpty()
-                        if (hasQuickReplies) {
+                        if (hasQuickReplies && isChatWorking()) {
                             fragment?.showQuickReplies(quickReplies)
                         } else {
                             fragment?.hideQuickReplies()
@@ -1280,7 +1332,7 @@ class ChatController private constructor() {
         if (fragment != null && !clientId.isNullOrBlank()) {
             subscribe(
                 Single.fromCallable {
-                    BaseConfig.instance.transport.sendInit(false)
+                    BaseConfig.instance.transport.sendRegisterDevice(false)
                     val response = historyLoader.getHistorySync(
                         null,
                         true
@@ -1310,7 +1362,7 @@ class ChatController private constructor() {
                     ) { obj: Throwable -> obj.message }
             )
         } else {
-            BaseConfig.instance.transport.sendInit(false)
+            BaseConfig.instance.transport.sendRegisterDevice(false)
             info(
                 ThreadsApi.REST_TAG,
                 "Loading history cancelled in onDeviceAddressChanged. " +
@@ -1583,6 +1635,29 @@ class ChatController private constructor() {
                     fragment?.updateProgress(fileDescription)
                 }
         )
+    }
+
+    private fun subscribeOnChatState() {
+        coroutineScope.launch(Dispatchers.IO) {
+            chatState.getStateFlow().collect { stateEvent ->
+                info("ChatState name: ${stateEvent.state.name}, isTimeout: ${stateEvent.isTimeout}")
+                if (!stateEvent.isTimeout && stateEvent.state < ChatStateEnum.HISTORY_LOADED) {
+                    withContext(Dispatchers.Main) { fragment?.showProgressBar() }
+                }
+                if (stateEvent.isTimeout && chatState.getCurrentState() < ChatStateEnum.SETTINGS_LOADED) {
+                    val timeoutMessage = fragment?.getString(R.string.timeout_message) ?: "Timeout"
+                    withContext(Dispatchers.Main) { fragment?.showErrorView(timeoutMessage) }
+                } else if (stateEvent.state == ChatStateEnum.DEVICE_REGISTERED) {
+                    BaseConfig.instance.transport.sendInitMessages()
+                } else if (stateEvent.state == ChatStateEnum.INIT_USER_SENT) {
+                    loadSettings()
+                } else if (stateEvent.state == ChatStateEnum.SETTINGS_LOADED) {
+                    loadHistory()
+                } else if (isChatReady()) {
+                    messenger.resendMessages()
+                }
+            }
+        }
     }
 
     companion object {

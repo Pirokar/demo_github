@@ -1,6 +1,7 @@
 package im.threads.ui;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.view.Gravity;
 
 import androidx.annotation.ArrayRes;
@@ -279,6 +280,7 @@ public final class ChatStyle implements Serializable {
     public int downloadButtonTintResId = R.color.ecc_green_83b144;
     @ColorRes
     public int downloadButtonBackgroundTintResId = R.color.ecc_white;
+
     @ColorRes
     public int loaderTintResId = R.color.ecc_green_83b144;
     @DrawableRes
@@ -575,9 +577,50 @@ public final class ChatStyle implements Serializable {
     @ColorRes
     public int messageFailedIconColorResId = R.color.ecc_white;
 
+    // Chat error screen
+    @DrawableRes
+    public int chatErrorScreenImageResId = R.drawable.ecc_serious_worker;
+
+    @DimenRes
+    public int chatErrorScreenMessageTextSizeResId = R.dimen.ecc_text_medium;
+
+    @ColorRes
+    public int chatErrorScreenMessageTextColorResId = R.color.ecc_chat_new_system_message;
+
+    @DimenRes
+    public int chatErrorScreenButtonTextSizeResId = R.dimen.ecc_text_medium;
+
+    @StringRes
+    public int chatErrorScreenButtonTextResId = R.string.ecc_repeat;
+
+    @ColorRes
+    public int chatErrorScreenButtonTextColorResId = R.color.ecc_white;
+
+    public ColorStateList chatErrorScreenButtonTintColorList = null;
+
     private MarkdownConfig incomingMarkdownConfiguration, outgoingMarkdownConfiguration;
 
     public ChatStyle() {
+    }
+
+    public ChatStyle setChatErrorScreenStyle(
+            @DrawableRes Integer imageResId,
+            @DimenRes Integer messageTextSizeResId,
+            @ColorRes Integer messageTextColorResId,
+            @DimenRes Integer buttonTextSizeResId,
+            @ColorRes Integer buttonTextColorResId,
+            ColorStateList buttonTintColorStateList,
+            @StringRes Integer buttonTextResId
+    ) {
+        if (imageResId != null) chatErrorScreenImageResId = imageResId;
+        if (messageTextSizeResId != null) chatErrorScreenMessageTextSizeResId = messageTextSizeResId;
+        if (messageTextColorResId != null) chatErrorScreenMessageTextColorResId = messageTextColorResId;
+        if (buttonTextSizeResId != null) chatErrorScreenButtonTextSizeResId = buttonTextSizeResId;
+        if (buttonTextResId != null) chatErrorScreenButtonTextResId = buttonTextResId;
+        if (buttonTintColorStateList != null) chatErrorScreenButtonTintColorList = buttonTintColorStateList;
+        if (buttonTextColorResId != null) chatErrorScreenButtonTextColorResId = buttonTextColorResId;
+
+        return this;
     }
 
     public ChatStyle setArePermissionDescriptionDialogsEnabled(final boolean areEnabled) {

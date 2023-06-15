@@ -3,14 +3,12 @@ package im.threads.ui.core
 import android.content.Context
 import android.net.Uri
 import im.threads.R
-import im.threads.business.UserInfoBuilder
 import im.threads.business.config.BaseConfig
 import im.threads.business.core.ThreadsLibBase
 import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.FileDescription
 import im.threads.business.models.UpcomingUserMessage
 import im.threads.business.serviceLocator.core.inject
-import im.threads.business.state.InitialisationConstants
 import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.FileProvider
 import im.threads.business.utils.FileUtils.getFileSize
@@ -22,9 +20,6 @@ import im.threads.ui.styles.permissions.PermissionDescriptionDialogStyle
 import im.threads.ui.utils.preferences.PreferencesMigrationUi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.io.File
 
 class ThreadsLib(context: Context) : ThreadsLibBase(context) {
@@ -32,49 +27,6 @@ class ThreadsLib(context: Context) : ThreadsLibBase(context) {
     private val clientUseCase: ClientUseCase by inject()
     private val fileProvider: FileProvider by inject()
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
-
-    /**
-     * Инициализирует пользователя синхронно и загружает его историю в фоновом потоке
-     * (изменения истории сообщений применяются в потоке UI)
-     * @param userInfoBuilder данные о пользователе
-     * @param forceRegistration открывает сокет, отправляет данные о регистрации, закрывает сокет
-     * @param callback вызывается, когда пользователь инициализирован и загружена его история
-     */
-    public override fun initUser(
-        userInfoBuilder: UserInfoBuilder,
-        forceRegistration: Boolean,
-        callback: (isAuthorized: Boolean) -> Unit
-    ) {
-        super.initUser(userInfoBuilder, forceRegistration, callback)
-        coroutineScope.launch {
-            val waitingStartTime = System.currentTimeMillis()
-            val timeToDelay = 100L
-            while (!InitialisationConstants.isChatReady()) {
-                if (isInitUserTimeout(waitingStartTime, callback)) return@launch
-                delay(timeToDelay)
-            }
-            ChatController.getInstance().loadHistory(applyUiChanges = false)
-            while (!InitialisationConstants.isHistoryLoaded) {
-                if (isInitUserTimeout(waitingStartTime, callback)) return@launch
-                delay(timeToDelay)
-            }
-            withContext(Dispatchers.Main) {
-                LoggerEdna.info("User is initialized")
-                callback(true)
-            }
-        }
-    }
-
-    /**
-     * Инициализирует пользователя синхронно и загружает его историю в фоновом потоке
-     * (изменения истории сообщений применяются в потоке UI)
-     * @param userInfoBuilder данные о пользователе
-     * @param forceRegistration открывает сокет, отправляет данные о регистрации, закрывает сокет
-     */
-    fun initUser(userInfoBuilder: UserInfoBuilder, forceRegistration: Boolean) {
-        super.initUser(userInfoBuilder, forceRegistration) {}
-        ChatController.getInstance().loadHistory(applyUiChanges = false)
-    }
 
     /**
      * Применяет настройки светлой темы

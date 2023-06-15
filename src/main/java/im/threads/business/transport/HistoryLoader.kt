@@ -43,7 +43,6 @@ class HistoryLoader(private val context: Context, private val appInfo: AppInfo) 
             } else {
                 DateHelper.getMessageDateStringFromTimestamp(beforeTimestamp)
             }
-
             threadsApi.history(token, beforeDate, count, appInfo.libVersion)?.execute()?.body()
         } else {
             error(ThreadsApi.REST_TAG, "Error when loading history - token is empty!")

@@ -58,6 +58,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
 
+                <include
+                    android:id="@+id/chatErrorLayout"
+                    layout="@layout/ecc_chat_error_layout"
+                    android:layout_gravity="center_vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone" />
+
             </FrameLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -117,7 +125,8 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:background="@color/ecc_input_background"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:visibility="invisible">
 
                 <LinearLayout
                     android:id="@+id/quote_layout"
