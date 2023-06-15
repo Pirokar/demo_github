@@ -61,11 +61,19 @@ class NetworkLoggerInterceptor(private val isImage: Boolean = false) : Intercept
             val copy = request.newBuilder().build()
             val buffer = Buffer()
             copy.body!!.writeTo(buffer)
+            copy.body?.contentType()
             val result = buffer.readUtf8()
-            if (result.contains("Content-Type: application/json")) {
+            if ((
+                    result.contains("Content-Type: application/json") ||
+                        result.contains("Content-Type: application/text") ||
+                        result.contains("Content-Type: application/html") ||
+                        result.contains("Content-Type: text/")
+                    ) &&
+                !result.contains("Content-Transfer-Encoding: binary")
+            ) {
                 result
             } else {
-                "Body data.....  Size: ${result.length}"
+                "File body. Size: ${result.length}"
             }
         } catch (e: Exception) {
             null

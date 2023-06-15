@@ -11,7 +11,7 @@ import okhttp3.Interceptor
 
 open class BaseConfigBuilder(var context: Context) {
     protected var unreadMessagesCountListener: UnreadMessagesCountListener? = null
-    protected var isDebugLoggingEnabled = true
+    protected var isDebugLoggingEnabled = false
     protected var historyLoadingCount = 50
     protected var surveyCompletionDelay = 2000
     protected var serverBaseUrl: String? = null

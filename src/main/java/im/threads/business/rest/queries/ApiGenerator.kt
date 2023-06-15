@@ -13,6 +13,7 @@ import im.threads.business.utils.DeviceInfoHelper
 import im.threads.business.utils.SSLCertificateInterceptor
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
@@ -63,7 +64,7 @@ abstract class ApiGenerator protected constructor(
             .readTimeout(readTimeoutMillis.toLong(), TimeUnit.MILLISECONDS)
             .writeTimeout(writeTimeoutMillis.toLong(), TimeUnit.MILLISECONDS)
         if (config.isDebugLoggingEnabled) {
-            httpClientBuilder.addInterceptor(NetworkLoggerInterceptor())
+            HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
         }
         val sslSocketFactoryConfig = config.sslSocketFactoryConfig
         if (sslSocketFactoryConfig != null) {
@@ -77,6 +78,7 @@ abstract class ApiGenerator protected constructor(
             )
             httpClientBuilder.hostnameVerifier { _: String?, _: SSLSession? -> true }
         }
+        httpClientBuilder.addInterceptor(NetworkLoggerInterceptor())
         return httpClientBuilder.build()
     }
 
