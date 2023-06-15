@@ -444,7 +444,7 @@ class ThreadsGateTransport(
             val response = BaseConfig.instance.gson.fromJson(text, BaseResponse::class.java)
             val action = response.action
             val correlationId = response.correlationId
-            if (response.data.has(KEY_ERROR)) {
+            if (response.data != null && response.data.has(KEY_ERROR)) {
                 var errorMessage = response.data[KEY_ERROR].asString
                 if (response.data.has(KEY_ERROR_DETAILS)) {
                     val errorDetails = response.data[KEY_ERROR_DETAILS].asString
@@ -461,18 +461,16 @@ class ThreadsGateTransport(
                     )
                     LoggerEdna.info("Saving device address")
                     preferences.save(PreferencesCoreKeys.DEVICE_ADDRESS, data.deviceAddress)
-                    chatUpdateProcessor.postDeviceAddressChanged(data.deviceAddress)
-                    location?.let {
-                        updateLocation(it.latitude, it.longitude)
-                    }
+                    data.deviceAddress?.let { chatUpdateProcessor.postDeviceAddressChanged(data.deviceAddress) }
+                    location?.let { updateLocation(it.latitude, it.longitude) }
                 }
                 if (action == Action.SEND_MESSAGE) {
                     val data = BaseConfig.instance.gson.fromJson(
                         response.data.toString(),
                         SendMessageData::class.java
                     )
-                    val tokens = response.correlationId.split(CORRELATION_ID_DIVIDER).toTypedArray()
-                    if (tokens.size > 1) {
+                    val tokens = response.correlationId?.split(CORRELATION_ID_DIVIDER)?.toTypedArray()
+                    if (tokens != null && tokens.size > 1) {
                         when (ChatItemType.fromString(tokens[0])) {
                             ChatItemType.MESSAGE -> {
                                 if (campaignsInProcess.containsKey(tokens[1])) {
@@ -538,10 +536,10 @@ class ThreadsGateTransport(
                         GetMessagesData::class.java
                     )
                     val gson = BaseConfig.instance.gson
-                    for (message in data.messages) {
-                        if (message.content.has(MessageAttributes.TYPE)) {
-                            val type =
-                                ChatItemType.fromString(ThreadsGateMessageParser.getType(message))
+                    val messages = data.messages ?: listOf()
+                    for (message in messages) {
+                        if (message.content != null && message.content.has(MessageAttributes.TYPE)) {
+                            val type = ChatItemType.fromString(ThreadsGateMessageParser.getType(message))
                             if (ChatItemType.TYPING == type) {
                                 val content = gson.fromJson(
                                     message.content,

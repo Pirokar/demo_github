@@ -1,23 +1,10 @@
-package im.threads.business.transport.threadsGate.responses;
+package im.threads.business.transport.threadsGate.responses
 
-import com.google.gson.JsonObject;
+import com.google.gson.JsonObject
+import im.threads.business.transport.threadsGate.Action
 
-import im.threads.business.transport.threadsGate.Action;
-
-public class BaseResponse {
-    private Action action;
-    private String correlationId;
-    private JsonObject data;
-
-    public Action getAction() {
-        return action;
-    }
-
-    public String getCorrelationId() {
-        return correlationId;
-    }
-
-    public JsonObject getData() {
-        return data;
-    }
+class BaseResponse {
+    val action: Action? = null
+    val correlationId: String? = null
+    val data: JsonObject? = null
 }

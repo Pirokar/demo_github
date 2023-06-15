@@ -1,9 +1,5 @@
-package im.threads.business.transport.threadsGate.responses;
+package im.threads.business.transport.threadsGate.responses
 
-public class RegisterDeviceData {
-    private String deviceAddress;
-
-    public String getDeviceAddress() {
-        return deviceAddress;
-    }
+class RegisterDeviceData {
+    val deviceAddress: String? = null
 }
