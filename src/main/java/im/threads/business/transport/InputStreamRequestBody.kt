@@ -1,54 +1,42 @@
-package im.threads.business.transport;
+package im.threads.business.transport
 
-import android.content.ContentResolver;
-import android.net.Uri;
+import android.annotation.SuppressLint
+import android.content.ContentResolver
+import android.net.Uri
+import im.threads.business.utils.FileUtils.getFileSize
+import okhttp3.MediaType
+import okhttp3.RequestBody
+import okio.BufferedSink
+import okio.source
+import java.io.IOException
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+class InputStreamRequestBody(contentType: MediaType?, contentResolver: ContentResolver, uri: Uri?) :
+    RequestBody() {
+    private val contentType: MediaType?
+    private val contentResolver: ContentResolver
+    private val uri: Uri
 
-import java.io.IOException;
-import java.io.InputStream;
-
-import im.threads.business.utils.FileUtils;
-import okhttp3.MediaType;
-import okhttp3.RequestBody;
-import okio.BufferedSink;
-import okio.Okio;
-import okio.Source;
-
-public class InputStreamRequestBody extends RequestBody {
-    private final MediaType contentType;
-    private final ContentResolver contentResolver;
-    private final Uri uri;
-
-    public InputStreamRequestBody(MediaType contentType, ContentResolver contentResolver, Uri uri) {
+    init {
         if (uri == null) {
-            throw new NullPointerException("uri == null");
+            throw NullPointerException("uri == null")
         }
-        this.contentType = contentType;
-        this.contentResolver = contentResolver;
-        this.uri = uri;
+        this.contentType = contentType
+        this.contentResolver = contentResolver
+        this.uri = uri
     }
 
-    @Nullable
-    @Override
-    public MediaType contentType() {
-        return contentType;
+    override fun contentType(): MediaType? {
+        return contentType
     }
 
-    @Override
-    public long contentLength() {
-        return FileUtils.getFileSize(uri);
+    override fun contentLength(): Long {
+        return getFileSize(uri)
     }
 
-    @Override
-    public void writeTo(@NonNull BufferedSink sink) throws IOException {
-        InputStream inputStream = contentResolver.openInputStream(uri);
-        if (inputStream != null) {
-            try (Source source = Okio.source(inputStream)) {
-                sink.writeAll(source);
-            }
-        }
+    @SuppressLint("Recycle")
+    @Throws(IOException::class)
+    override fun writeTo(sink: BufferedSink) {
+        val inputStream = contentResolver.openInputStream(uri)
+        inputStream?.source()?.use { source -> sink.writeAll(source) }
     }
 }
-

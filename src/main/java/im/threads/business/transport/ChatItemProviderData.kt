@@ -1,13 +1,3 @@
-package im.threads.business.transport;
+package im.threads.business.transport
 
-public final class ChatItemProviderData {
-    public final String uuid;
-    public final String messageId;
-    public final long sentAt;
-
-    public ChatItemProviderData(String uuid, String messageId, long sentAt) {
-        this.uuid = uuid;
-        this.messageId = messageId;
-        this.sentAt = sentAt;
-    }
-}
+class ChatItemProviderData(val uuid: String, val messageId: String?, val sentAt: Long)
