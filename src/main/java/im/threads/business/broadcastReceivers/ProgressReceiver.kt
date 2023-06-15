@@ -17,11 +17,9 @@ class ProgressReceiver(callback: Callback) : BroadcastReceiver() {
     private val callback = SoftReference(callback)
 
     override fun onReceive(context: Context, intent: Intent) {
-        LoggerEdna.info("onReceive:")
         val action = intent.action ?: return
         when (action) {
             PROGRESS_BROADCAST -> {
-                LoggerEdna.info("onReceive: PROGRESS_BROADCAST ")
                 intent.getParcelableExtra<FileDescription>(FileDownloadWorker.FD_TAG)?.let {
                     callback.get()?.updateProgress(it)
                 }

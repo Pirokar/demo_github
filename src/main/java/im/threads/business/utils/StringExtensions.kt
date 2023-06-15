@@ -38,3 +38,12 @@ fun String.encodeUrl(): String {
     val allowedChars = "@#&=*+-_.,:!?()/~'%"
     return Uri.encode(this, allowedChars)
 }
+
+fun String.hasSubstrings(subStrings: List<String>): Boolean {
+    for (string in subStrings) {
+        if (this.contains(string)) {
+            return true
+        }
+    }
+    return false
+}

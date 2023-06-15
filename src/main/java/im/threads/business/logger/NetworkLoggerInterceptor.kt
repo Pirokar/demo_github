@@ -2,6 +2,7 @@ package im.threads.business.logger
 
 import im.threads.business.formatters.JsonFormatter
 import im.threads.business.serviceLocator.core.inject
+import im.threads.business.utils.hasSubstrings
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
@@ -61,11 +62,18 @@ class NetworkLoggerInterceptor(private val isImage: Boolean = false) : Intercept
             val copy = request.newBuilder().build()
             val buffer = Buffer()
             copy.body!!.writeTo(buffer)
+            copy.body?.contentType()
             val result = buffer.readUtf8()
-            if (result.contains("Content-Type: image/")) {
-                ""
-            } else {
+            val types = listOf(
+                "Content-Type: application/json",
+                "Content-Type: application/text",
+                "Content-Type: application/html",
+                "Content-Type: text/"
+            )
+            if (result.hasSubstrings(types) && !result.contains("Content-Transfer-Encoding: binary")) {
                 result
+            } else {
+                "File body. Size: ${result.length}"
             }
         } catch (e: Exception) {
             null
