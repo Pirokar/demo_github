@@ -8,6 +8,7 @@ import android.media.AudioManager.OnAudioFocusChangeListener
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.core.util.ObjectsCompat
 import im.threads.business.config.BaseConfig
 import im.threads.business.logger.LoggerEdna.error
@@ -46,20 +47,7 @@ class FileDescriptionMediaPlayer(private val audioManager: AudioManager) {
             }
         }
     }
-    private var audioFocusRequest = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        AudioFocusRequest.Builder(AudioManager.STREAM_MUSIC)
-            .setAudioAttributes(
-                AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
-                    .build()
-            )
-            .setAcceptsDelayedFocusGain(true)
-            .setOnAudioFocusChangeListener(onAudioFocusChangeListener)
-            .build()
-    } else {
-        null
-    }
+    private var audioFocusRequest: AudioFocusRequest? = null
 
     var fileDescription: FileDescription? = null
         private set
@@ -99,21 +87,25 @@ class FileDescriptionMediaPlayer(private val audioManager: AudioManager) {
     @Suppress("DEPRECATION")
     @SuppressLint("NewApi")
     fun requestAudioFocus() {
-        audioFocusRequest?.let {
-            audioManager.requestAudioFocus(it)
-        } ?: audioManager.requestAudioFocus(
-            onAudioFocusChangeListener,
-            AudioManager.STREAM_MUSIC,
-            AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE
-        )
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            audioManager.requestAudioFocus(getAudioFocusRequest())
+        } else {
+            audioManager.requestAudioFocus(
+                onAudioFocusChangeListener,
+                AudioManager.STREAM_MUSIC,
+                AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE
+            )
+        }
     }
 
     @Suppress("DEPRECATION")
     @SuppressLint("NewApi")
     fun abandonAudioFocus() {
-        audioFocusRequest?.let {
-            audioManager.abandonAudioFocusRequest(it)
-        } ?: audioManager.abandonAudioFocus(onAudioFocusChangeListener)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            audioManager.abandonAudioFocusRequest(getAudioFocusRequest())
+        } else {
+            audioManager.abandonAudioFocus(onAudioFocusChangeListener)
+        }
     }
 
     fun clearClickedDownloadPath() {
@@ -124,6 +116,23 @@ class FileDescriptionMediaPlayer(private val audioManager: AudioManager) {
         releaseMediaPlayer()
         createMediaPlayer(fileDescription)
         return mediaPlayer
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun getAudioFocusRequest(): AudioFocusRequest {
+        return audioFocusRequest ?: let {
+            audioFocusRequest = AudioFocusRequest.Builder(AudioManager.STREAM_MUSIC)
+                .setAudioAttributes(
+                    AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                        .build()
+                )
+                .setAcceptsDelayedFocusGain(true)
+                .setOnAudioFocusChangeListener(onAudioFocusChangeListener)
+                .build()
+            audioFocusRequest!!
+        }
     }
 
     private fun startMediaPlayer(fileDescription: FileDescription) {
