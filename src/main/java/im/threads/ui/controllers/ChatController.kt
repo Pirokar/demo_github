@@ -964,7 +964,13 @@ class ChatController private constructor() {
                                                 item.fileDescription?.fileUri.toString()
                                                     .contains(attachmentName)
                                                 )
-                                        if ((incomingNameEquals || isUrlHashFileName) && fragment?.isAdded == true) {
+                                        val isOriginalUrlValid = attachment.originalUrl?.let {
+                                            val downloadPathContainsUrl = item.fileDescription?.downloadPath?.contains(it) ?: false
+                                            val fileUriContainsUrl = item.fileDescription?.fileUri?.toString()?.contains(it) ?: false
+
+                                            downloadPathContainsUrl || fileUriContainsUrl
+                                        } ?: false
+                                        if ((incomingNameEquals || isUrlHashFileName || isOriginalUrlValid) && fragment?.isAdded == true) {
                                             item.fileDescription?.state = attachment.state
                                             item.fileDescription?.errorCode =
                                                 attachment.getErrorCodeState()
