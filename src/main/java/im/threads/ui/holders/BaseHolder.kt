@@ -192,6 +192,11 @@ abstract class BaseHolder internal constructor(
     ) {
         if (phrase.formattedPhrase.isNullOrBlank()) {
             textView.setText(phrase.phraseText?.trimIndent(), TextView.BufferType.NORMAL)
+            setTextWithHighlighting(
+                textView,
+                style.incomingMarkdownConfiguration.isLinkUnderlined,
+                url
+            )
         } else {
             (textView as? BubbleMessageTextView)?.let {
                 val emailLinksPairs = ArrayList<Pair<String?, View.OnClickListener>>()
@@ -218,11 +223,6 @@ abstract class BaseHolder internal constructor(
                 textView.setText(phrase.phraseText?.trimIndent(), TextView.BufferType.NORMAL)
             }
         }
-        setTextWithHighlighting(
-            textView,
-            style.incomingMarkdownConfiguration.isLinkUnderlined,
-            url
-        )
     }
 
     /**
