@@ -71,6 +71,7 @@ class OpenGraphParserJsoupImpl : OpenGraphParser {
      */
     override fun getContents(urlToParse: String?): OGData? {
         if (urlToParse == null) return null
+        LoggerEdna.info("OGParser Url: $urlToParse")
 
         return try {
             val response = Jsoup.connect(urlToParse)
@@ -87,7 +88,7 @@ class OpenGraphParserJsoupImpl : OpenGraphParser {
                 parsedUrl = urlToParse
             }
             existedOpenGraphs[getHostAndPath(urlToParse)] = result
-
+            LoggerEdna.info("OGParser Result: : $result")
             result
         } catch (e: Exception) {
             LoggerEdna.error("Error when parsing OG data!", e)

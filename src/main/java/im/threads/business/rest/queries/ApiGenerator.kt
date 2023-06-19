@@ -66,9 +66,7 @@ abstract class ApiGenerator protected constructor(
             .readTimeout(readTimeoutMillis.toLong(), TimeUnit.MILLISECONDS)
             .writeTimeout(writeTimeoutMillis.toLong(), TimeUnit.MILLISECONDS)
         if (config.isDebugLoggingEnabled) {
-            httpClientBuilder.addInterceptor(
-                HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
-            )
+            HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
         }
         val sslSocketFactoryConfig = config.sslSocketFactoryConfig
         if (sslSocketFactoryConfig != null) {

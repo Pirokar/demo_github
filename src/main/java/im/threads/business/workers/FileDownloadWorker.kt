@@ -158,7 +158,6 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
         @JvmStatic
         @Synchronized
         fun startDownload(context: Context, fileDescription: FileDescription, isDownloadNonstop: Boolean = false) {
-            LoggerEdna.debug("Start download")
             val downloadKey = if (isDownloadNonstop) START_DOWNLOAD_WITH_NO_STOP else START_DOWNLOAD_FD_TAG
             val inputData = Data.Builder()
                 .putString(START_DOWNLOAD_ACTION, downloadKey)

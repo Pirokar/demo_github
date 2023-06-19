@@ -31,7 +31,6 @@ import java.io.InputStream
 private const val PHOTO_RESIZE_MAX_SIDE = 1600
 
 fun postFile(fileDescription: FileDescription, clientId: String?): String? {
-    LoggerEdna.info(ThreadsApi.REST_TAG, "Posting file with token = $clientId")
     if (!clientId.isNullOrBlank()) {
         fileDescription.fileUri?.let {
             if (it.toString().isNotEmpty()) {

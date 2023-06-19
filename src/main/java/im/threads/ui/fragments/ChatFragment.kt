@@ -1584,7 +1584,6 @@ class ChatFragment :
     }
 
     private fun sendMessage(messages: List<UpcomingUserMessage>, clearInput: Boolean = true) {
-        info("isInMessageSearchMode =$isInMessageSearchMode")
         for (message in messages) {
             chatController.onUserInput(message)
         }

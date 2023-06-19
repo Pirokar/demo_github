@@ -18,7 +18,6 @@ import im.threads.business.controllers.UnreadMessagesController
 import im.threads.business.core.ContextHolder
 import im.threads.business.core.ThreadsLibBase
 import im.threads.business.formatters.ChatItemType
-import im.threads.business.logger.LoggerEdna.debug
 import im.threads.business.logger.LoggerEdna.error
 import im.threads.business.logger.LoggerEdna.info
 import im.threads.business.logger.LoggerEdna.warning
@@ -153,6 +152,8 @@ class ChatController private constructor() {
     private val messenger: Messenger = MessengerImpl(compositeDisposable, clientUseCase)
     private val localUserMessages = ArrayList<UserPhrase>()
     private val attachmentsHistory = HashMap<String, AttachmentStateEnum>()
+
+    private var enableModel: InputFieldEnableModel? = null
 
     init {
         PreferencesMigrationUi(appContext).migrateNamedPreferences(ChatController::class.java.simpleName)
@@ -963,7 +964,13 @@ class ChatController private constructor() {
                                                 item.fileDescription?.fileUri.toString()
                                                     .contains(attachmentName)
                                                 )
-                                        if ((incomingNameEquals || isUrlHashFileName) && fragment?.isAdded == true) {
+                                        val isOriginalUrlValid = attachment.originalUrl?.let {
+                                            val downloadPathContainsUrl = item.fileDescription?.downloadPath?.contains(it) ?: false
+                                            val fileUriContainsUrl = item.fileDescription?.fileUri?.toString()?.contains(it) ?: false
+
+                                            downloadPathContainsUrl || fileUriContainsUrl
+                                        } ?: false
+                                        if ((incomingNameEquals || isUrlHashFileName || isOriginalUrlValid) && fragment?.isAdded == true) {
                                             item.fileDescription?.state = attachment.state
                                             item.fileDescription?.errorCode =
                                                 attachment.getErrorCodeState()
@@ -1060,7 +1067,6 @@ class ChatController private constructor() {
                 .flatMapMaybe { chatItemSent: ChatItemProviderData ->
                     val chatItem = database.getChatItemByCorrelationId(chatItemSent.uuid)
                     if (chatItem is UserPhrase) {
-                        debug("server answer on phrase sent with id " + chatItemSent.messageId)
                         if (chatItemSent.sentAt > 0) {
                             chatItem.timeStamp = chatItemSent.sentAt
                         }
@@ -1091,7 +1097,6 @@ class ChatController private constructor() {
                 .flatMapMaybe { (_, phraseUuid): ChatItemSendErrorModel ->
                     val chatItem = database.getChatItemByCorrelationId(phraseUuid)
                     if (chatItem is UserPhrase) {
-                        debug("server answer on phrase sent with id $phraseUuid")
                         chatItem.sentState = MessageStatus.FAILED
                         database.putChatItem(chatItem)
                     }
@@ -1495,7 +1500,10 @@ class ChatController private constructor() {
                 InputFieldEnableModel(isInputFieldEnabled(), isSendButtonEnabled)
             }
         }
-        info("UserInputState_change. isInputBlockedFromMessage: $isInputBlockedFromMessage, $inputFieldEnableModel")
+        if (enableModel.toString() != inputFieldEnableModel.toString()) {
+            info("UserInputState_change. isInputBlockedFromMessage: $isInputBlockedFromMessage, $inputFieldEnableModel")
+        }
+        enableModel = inputFieldEnableModel
         fragment?.updateInputEnable(inputFieldEnableModel)
         fragment?.updateChatAvailabilityMessage(inputFieldEnableModel)
     }
