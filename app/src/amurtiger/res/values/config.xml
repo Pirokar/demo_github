@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="datastore_url" translatable="false">https://amurtiger.edna.io/</string>
+    <string name="serverBaseUrl" translatable="false">https://amurtiger.edna.io/</string>
+    <string name="threadsGateUrl" translatable="false">wss://amurtiger.edna.io/socket</string>
+    <string name="threadsGateProviderUid" translatable="false">PH5ucnVkYXMtbmV3LTE1MzE5MTQ2NTk4MDItZ2VuZXJhdGVkV2l0aFVJfj4</string>
+    <bool name="files_and_media_menu_item_enabled">true</bool>
+</resources>

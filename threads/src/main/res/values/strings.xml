@@ -1,0 +1,161 @@
+<resources>
+    <string name="ecc_push_title">Threads</string>
+    <string name="ecc_media_description">Threads</string>
+    <string name="ecc_input_hint">Your message…</string>
+    <string name="ecc_allow">Allow</string>
+    <string name="ecc_close">Close</string>
+    <string name="ecc_camera">Camera</string>
+    <string name="ecc_gallery">Gallery</string>
+    <string name="ecc_file">File</string>
+    <string name="ecc_hide">Hide</string>
+    <string name="ecc_connected_female">connected to dialog at</string>
+    <string name="ecc_left_female">disconnected from dialog at</string>
+    <string name="ecc_eft_dialog">disconnected from dialog at</string>
+    <string name="ecc_connected">connected to dialog</string>
+    <string name="ecc_sent_at">sent at %1$s</string>
+    <string name="ecc_image">Picture</string>
+    <string name="ecc_send">Send</string>
+    <string name="ecc_repeat_sending">Retry</string>
+    <string name="ecc_delete">Delete</string>
+    <string name="ecc_search_messages">Search message</string>
+    <string name="ecc_search_files">Search files</string>
+    <string name="ecc_talkback_search_icon">Search icon</string>
+    <string name="ecc_search_photos">Search photos…</string>
+    <string name="ecc_files_and_media">Files and media</string>
+    <string name="ecc_recently">Recently</string>
+    <string name="ecc_yesterday">Yesterday</string>
+    <string name="ecc_photos">Photographies</string>
+    <string name="ecc_find_photos">Find photos</string>
+    <string name="ecc_on_your_device">on your device</string>
+    <string name="ecc_cancel">Cancel</string>
+    <string name="ecc_nothing_found">Nothing found</string>
+    <string name="ecc_no_cameras_detected">Your device doesn\'t have a camera</string>
+    <string name="ecc_back_camera_could_not_start_error">Failed to start the rear camera.</string>
+    <string name="ecc_consult">Consultant</string>
+    <string name="ecc_bot">Bot</string>
+    <string name="ecc_operator">Operator</string>
+
+    <string name="ecc_error_no_file">Unfortunately, file was deleted from server</string>
+    <string name="ecc_no_media_and_files_header">Media files are missing</string>
+    <string name="ecc_no_media_and_files_description">Add new ones using\n"Attach" button on the chat screen</string>
+    <string name="ecc_I">I</string>
+    <string name="ecc_download">Download</string>
+    <string name="ecc_choose_file">Choose file to send</string>
+    <string name="ecc_sending_files_not_allowed">Sending files is not allowed</string>
+    <string name="ecc_folder_up">Up</string>
+    <string name="ecc_now_you_are_in_directory">Your are in </string>
+    <string name="ecc_from">from</string>
+    <string name="ecc_in">in</string>
+    <string name="ecc_search_more">Search more</string>
+    <string name="ecc_message_were_unsent">Message not sent</string>
+    <string name="ecc_failed_to_open_file">Failed to open selected file</string>
+    <string name="ecc_saved_to_downloads">Saved to Downloads</string>
+    <string name="ecc_unable_to_save">Unable to save file</string>
+    <string name="ecc_push_left_female">left dialog</string>
+    <string name="ecc_push_left">left dialog</string>
+    <string name="ecc_push_connected_female">connected to dialog</string>
+    <string name="ecc_push_connected">connected to dialog</string>
+    <string name="ecc_reply">reply</string>
+    <string name="ecc_send_male">send</string>
+    <string name="ecc_send_female">send</string>
+    <string name="ecc_touch_to_look">Touch to look</string>
+    <string name="ecc_touch_to_download">Touch to download</string>
+    <string name="ecc_answer">ANSWER</string>
+    <string name="ecc_check_connection">problems with internet connection</string>
+
+    <string name="ecc_message_not_sent">Message not sent, check connection settings</string>
+    <string name="ecc_typing">typing…</string>
+    <string name="ecc_ask_to_rate">Please rate the quality of our service</string>
+    <string name="ecc_thanks_for_rate">Thank you for your mark</string>
+    <string name="ecc_item_user_rate_header">Evaluation of the solution</string>
+    <string name="ecc_item_user_rate_text">from</string>
+
+    <!-- Разрешения. Диалоги при отказе от предоставления разрешений. -->
+    <string name="ecc_permissions_help">Help</string>
+    <string name="ecc_permissions_string_help_text">Permission is not available.\n\nTo provide permissions, click "Settings", then "Permissions" and enable them.\n\nThen return to the application.</string>
+    <string name="ecc_permissions_camera_and_write_external_storage_help_text">There are no permissions to the Camera and External Storage\n\nTo grant permissions, click "Settings", then "Permissions" and enable them.\n\nThen return to the application.</string>
+    <string name="ecc_permissions_write_external_storage_help_text">Memory permission is missing (Write to external storage).\n\nTo grant permissions, click "Settings", then "Permissions" and enable them.\n\nThen return to the application.</string>
+    <string name="ecc_permissions_read_external_storage_help_text">There is no permission to Memory (Reading from external storage).\n\nTo grant permissions, click "Settings", then "Permissions" and enable them.\n\nThen return to the application.</string>
+    <string name="ecc_permissions_record_audio_help_text">Audio recording permission is missing (Microphone).\n\nTo grant permissions, click "Settings", then "Permissions" and enable them.\n\nThen return to the application.</string>
+    <string name="ecc_permissions_settings">Settings</string>
+
+    <!-- Разрешения. Диалоги описания причины запроса доступа. -->
+    <string name="ecc_permission_description_access_to_files_title">Allow the app to access files on your device</string>
+    <string name="ecc_permission_description_access_to_files_message">It is required to send files</string>
+    <string name="ecc_permission_description_access_to_audio_recording_title">Allow the app to record audio</string>
+    <string name="ecc_permission_description_access_to_audio_recording_message">It is required to send voice messages</string>
+    <string name="ecc_permission_description_access_to_camera_title">Allow the app to take pictures</string>
+    <string name="ecc_permission_description_access_to_camera_message">It is required to send photos</string>
+
+    <string name="ecc_contact_center">Contact center</string>
+    <string name="ecc_searching_operator">Searching operator…</string>
+    <string name="ecc_operator_subtitle">@string/ecc_operator</string>
+    <string name="ecc_unknown_operator">Unknown</string>
+
+    <string name="ecc_channel_name">Contact center</string>
+
+    <string name="ecc_request_to_resolve_thread">Operator answered all your questions, continue the consultation?</string>
+    <string name="ecc_request_to_resolve_thread_close">No</string>
+    <string name="ecc_request_to_resolve_thread_open">Yes</string>
+
+    <string name="ecc_welcome_screen_title_text">Welcome!</string>
+    <string name="ecc_welcome_screen_subtitle_text">Send your question</string>
+    <string name="ecc_camera_could_not_start_error">Could not start camera app</string>
+
+    <string name="ecc_message_text_copied">Text copied to clipboard</string>
+
+    <plurals name="ecc_unread_messages">
+
+        <item quantity="one">%d unread message</item>
+        <item quantity="other">%d unread messages</item>
+    </plurals>
+
+    <plurals name="ecc_new_messages">
+        <item quantity="one">%d new message</item>
+        <item quantity="other">%d new messages</item>
+    </plurals>
+
+    <plurals name="ecc_images">
+        <item quantity="one">%d image</item>
+        <item quantity="other">%d images</item>
+    </plurals>
+
+    <plurals name="ecc_files">
+        <item quantity="one">%d file</item>
+        <item quantity="other">%d files</item>
+    </plurals>
+
+    <string name="ecc_not_allowed_file_extension">Not allowed file format</string>
+    <string name="ecc_not_allowed_file_size">The file exceeds the maximum allowed size of %1$d MB</string>
+    <string name="ecc_message_sending_is_unavailable">You cannot send message at the moment</string>
+    <string name="ecc_hold_button_to_record_audio">Hold record button to send voice message</string>
+    <string name="ecc_voice_message">Voice message</string>
+    <string name="ecc_voice_message_slide_to_cancel">Slide to cancel</string>
+    <string name="ecc_voice_message_is_processing">Voice message is processing</string>
+    <string name="ecc_voice_message_error">Voice message processing error</string>
+    <string name="ecc_empty_state_hint">Client initialization</string>
+    <string name="ecc_achieve_images_count_limit_message">You\'ve reached the limit of images to send</string>
+
+    <string name="ecc_disallowed_error_during_load_file">File upload failed:\nFile verification failed </string>
+    <string name="ecc_timeout_error_during_load_file">The file upload cannot be completed due to a timeout.\nPlease try uploading the file later</string>
+    <string name="ecc_unexpected_error_during_load_file"> The file upload cannot be completed.\nPlease try uploading the file later</string>
+    <string name="ecc_some_error_during_load_file">An error occurred while loading\nor validating the file.</string>
+    <string name="ecc_file_restricted_type_error_during_load_file">This file type is not permitted for upload</string>
+    <string name="ecc_file_restricted_size_error_during_load_file">The file is bigger than the maximum attachment size</string>
+    <string name="ecc_file_not_found_error_during_load_file">File not found</string>
+
+    <string name="ecc_loading"></string>
+
+    <string name="ecc_not_enough_space">Insufficient storage available</string>
+    <string name="ecc_history_loading_message">The chat history is being loaded, please wait</string>
+    <string name="ecc_consult_portrait">Consult portrait</string>
+    <string name="ecc_file_not_supported">No application support this type of file</string>
+    <string name="ecc_operator_avatar">Operator avatar</string>
+    <string name="ecc_play_button">Play button</string>
+    <string name="ecc_loading_animation">Loading</string>
+    <string name="ecc_bytes">B</string>
+    <string name="ecc_kbytes">KB</string>
+    <string name="ecc_mbytes">MB</string>
+    <string name="ecc_gbytes">GB</string>
+    <string name="ecc_tbytes">TB</string>
+</resources>

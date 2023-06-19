@@ -1,0 +1,3 @@
+<resources>
+    <dimen name="ecc_message_image_size">250dp</dimen>
+</resources>

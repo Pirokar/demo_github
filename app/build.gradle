@@ -1,0 +1,113 @@
+plugins {
+    id 'com.android.application'
+    id 'com.huawei.agconnect'
+    id 'kotlin-android'
+    id 'kotlin-parcelize'
+    id 'kotlin-kapt'
+    id 'com.google.gms.google-services'
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.6.21'
+}
+
+android {
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+    kotlinOptions {
+        jvmTarget = '11'
+    }
+
+    compileSdk rootProject.compileSdkVersion
+
+    defaultConfig {
+        applicationId "io.edna.threads.demo"
+        minSdk rootProject.minSdkVersion
+        targetSdk rootProject.targetSdkVersion
+
+        versionCode 89
+        versionName "${version}"
+        project.ext.set("archivesBaseName", "Threads-app " + defaultConfig.versionName)
+        vectorDrawables.useSupportLibrary = true
+        multiDexEnabled = true
+    }
+
+    signingConfigs {
+        debug {
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+            storePassword 'android'
+            storeFile file('debug.keystore')
+        }
+    }
+
+    buildTypes {
+        debug {
+            debuggable = true
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
+        }
+        release {
+            debuggable = false
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
+        }
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    buildFeatures {
+        dataBinding = true
+        viewBinding true
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation project(':threads')
+
+    implementation "com.google.android.gms:play-services-location:$playServiceVersion"
+
+    implementation "androidx.preference:preference-ktx:$rootProject.androidXPreferenceVersion"
+    implementation "androidx.core:core-ktx:$rootProject.androidXCoreVersion"
+
+    implementation "androidx.multidex:multidex:$rootProject.androidXMultidexVersion"
+    implementation "com.google.android.material:material:$rootProject.materialComponentsVersion"
+
+    implementation "com.squareup.retrofit2:retrofit:$rootProject.retrofitVersion"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:$rootProject.retrofitVersion"
+    implementation "com.squareup.retrofit2:converter-gson:$rootProject.retrofitVersion"
+
+    implementation "io.reactivex.rxjava2:rxjava:$rootProject.rxjava2Version"
+    implementation "io.reactivex.rxjava2:rxandroid:$rootProject.rxAndroidVersion"
+
+    implementation "com.squareup.okhttp3:okhttp:$rootProject.okhttpVersion"
+    implementation "com.squareup.okhttp3:logging-interceptor:$rootProject.okhttpVersion"
+
+    implementation "com.google.code.gson:gson:$rootProject.gsonVersion"
+
+    //Beagle
+    implementation "io.github.pandulapeter.beagle:ui-bottom-sheet:$beagleVersion"
+    debugImplementation "io.github.pandulapeter.beagle:log-crash-noop:$beagleVersion"
+    releaseImplementation  "io.github.pandulapeter.beagle:log-crash:$beagleVersion"
+    api "io.github.pandulapeter.beagle:log-okhttp:$beagleVersion"
+
+    //Push lite
+    debugImplementation "com.edna.android:push-lite-debug:$pushVersion"
+    debugImplementation "com.edna.android:push-lite-huawei-debug:$pushVersion"
+    releaseImplementation "com.edna.android:push-lite-release:$pushVersion"
+    releaseImplementation "com.edna.android:push-lite-huawei-release:$pushVersion"
+
+    // Koin main features for Android
+    implementation "io.insert-koin:koin-android:$koin_version"
+
+    implementation "com.jakewharton:process-phoenix:$rootProject.processPhoenixVersion"
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'
+}

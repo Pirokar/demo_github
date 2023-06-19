@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="powermock-mockito-1.6.5-full">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../threads/libs/powermock-mockito-1.6.5-full.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
