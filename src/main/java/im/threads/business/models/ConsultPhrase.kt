@@ -39,6 +39,7 @@ class ConsultPhrase constructor(
         get() = (
             phraseText.isNullOrEmpty() &&
                 formattedPhrase.isNullOrEmpty() &&
+                fileDescription != null &&
                 !isImage(fileDescription) &&
                 !isVoiceMessage(fileDescription)
             )
