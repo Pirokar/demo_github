@@ -112,7 +112,9 @@ class EdnaThreadsApplication : Application() {
                 systemMessage = R.color.dark_system_text,
                 mediaAndFilesTextColor = R.color.dark_system_text,
                 welcomeScreenTitleText = R.color.dark_system_text,
-                welcomeScreenSubtitleText = R.color.dark_system_text
+                welcomeScreenSubtitleText = R.color.dark_system_text,
+                chatErrorScreenImageTint = R.color.white_color,
+                chatErrorScreenMessageTextColor = R.color.white_color
             ),
             images = ChatImages(
                 backBtn = R.drawable.alt_ic_arrow_back_24dp,
