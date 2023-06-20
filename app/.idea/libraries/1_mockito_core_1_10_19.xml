@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="1_mockito-core-1.10.19">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../threads/libs/mockito-core-1.10.19.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

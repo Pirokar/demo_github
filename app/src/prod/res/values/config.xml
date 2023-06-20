@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="datastore_url" translatable="false">https://beta-prod.edna.ru/</string>
-    <string name="serverBaseUrl" translatable="false">https://beta-prod.edna.ru</string>
-    <string name="threadsGateUrl" translatable="false">wss://beta-prod.edna.ru/socket</string>
-    <string name="threadsGateProviderUid" translatable="false">YmV0YS1wcm9kLmVkbmEucnU7O2FuZHJvaWQ7OzIwMjIwMzI4</string>
-    <bool name="files_and_media_menu_item_enabled">true</bool>
-</resources>
