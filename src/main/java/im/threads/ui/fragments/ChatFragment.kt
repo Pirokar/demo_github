@@ -43,6 +43,7 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.core.util.ObjectsCompat
 import androidx.core.view.ViewCompat
+import androidx.databinding.DataBindingUtil
 import androidx.databinding.ObservableField
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -116,7 +117,6 @@ import im.threads.ui.activities.filesActivity.FilesActivity.Companion.startActiv
 import im.threads.ui.adapters.ChatAdapter
 import im.threads.ui.config.Config
 import im.threads.ui.controllers.ChatController
-import im.threads.ui.extensions.selfDestructibleField
 import im.threads.ui.files.FileSelectedListener
 import im.threads.ui.fragments.PermissionDescriptionAlertFragment.Companion.newInstance
 import im.threads.ui.fragments.PermissionDescriptionAlertFragment.OnAllowPermissionClickListener
@@ -162,7 +162,7 @@ import java.util.concurrent.TimeUnit
  * чтобы чат можно было встроить в приложене в навигацией на фрагментах
  */
 class ChatFragment :
-    BaseFragment(R.layout.ecc_fragment_chat),
+    BaseFragment(),
     AttachmentBottomSheetDialogFragment.Callback,
     ProgressReceiver.Callback,
     PopupMenu.OnMenuItemClickListener,
@@ -189,7 +189,8 @@ class ChatFragment :
     private var isInMessageSearchMode = false
     private var isResumed = false
     private var isSendBlocked = false
-    private var binding by selfDestructibleField<EccFragmentChatBinding>()
+    private var _binding: EccFragmentChatBinding? = null
+    private val binding get() = _binding!!
     private var externalCameraPhotoFile: File? = null
     private var bottomSheetDialogFragment: AttachmentBottomSheetDialogFragment? = null
     private var permissionDescriptionAlertDialogFragment: PermissionDescriptionAlertFragment? = null
@@ -207,12 +208,11 @@ class ChatFragment :
         info(ChatFragment::class.java.simpleName + " onCreateView.")
         val activity: Activity? = activity
 
-        binding = EccFragmentChatBinding.inflate(inflater, container, false)
-
         // Статус бар подкрашивается только при использовании чата в стандартном Activity.
         if (activity is ChatActivity) {
             ColorsHelper.setStatusBarColor(WeakReference(activity), style.chatStatusBarColorResId, style.windowLightStatusBarResId)
         }
+        _binding = DataBindingUtil.inflate(inflater, R.layout.ecc_fragment_chat, container, false)
         binding.inputTextObservable = inputTextObservable
         chatAdapterCallback = AdapterCallback()
         val audioManager = requireContext().getSystemService(Context.AUDIO_SERVICE) as AudioManager
@@ -320,6 +320,7 @@ class ChatFragment :
         val activity: Activity? = activity
         activity?.unregisterReceiver(mChatReceiver)
         isShown = false
+        _binding = null
         statuses.clear()
         BaseConfig.instance.transport.setLifecycle(null)
         chatController.onViewDestroy()
