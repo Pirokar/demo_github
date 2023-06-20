@@ -1,31 +1,32 @@
-package im.threads.ui.fragments;
+package im.threads.ui.fragments
 
-import androidx.fragment.app.Fragment;
+import androidx.annotation.LayoutRes
+import androidx.fragment.app.Fragment
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
 
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
-
-public abstract class BaseFragment extends Fragment {
-
-    private CompositeDisposable compositeDisposable;
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        unsubscribeAll();
+abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes) {
+    private var compositeDisposable: CompositeDisposable? = null
+    override fun onDestroyView() {
+        super.onDestroyView()
+        unsubscribeAll()
     }
 
-    protected boolean subscribe(final Disposable event) {
-        if (compositeDisposable == null || compositeDisposable.isDisposed()) {
-            compositeDisposable = new CompositeDisposable();
+    protected fun subscribe(event: Disposable?): Boolean {
+        if (compositeDisposable == null || compositeDisposable?.isDisposed == true) {
+            compositeDisposable = CompositeDisposable()
         }
-        return compositeDisposable.add(event);
+        return if (event != null) {
+            compositeDisposable?.add(event) ?: false
+        } else {
+            false
+        }
     }
 
-    private void unsubscribeAll() {
+    private fun unsubscribeAll() {
         if (compositeDisposable != null) {
-            compositeDisposable.dispose();
-            compositeDisposable = null;
+            compositeDisposable?.dispose()
+            compositeDisposable = null
         }
     }
 }
