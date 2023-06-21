@@ -2012,7 +2012,7 @@ class ChatFragment :
 
     internal fun updateInputEnable(enableModel: InputFieldEnableModel) {
         isSendBlocked = !enableModel.isEnabledSendButton
-        val isChatWorking = chatController.isChatWorking()
+        val isChatWorking = chatController.isChatWorking() || chatController.isSendDuringInactive()
         binding.sendMessage.isEnabled = enableModel.isEnabledSendButton && isChatWorking &&
             (!TextUtils.isEmpty(binding.inputEditView.text) || hasAttachments())
         binding.inputEditView.isEnabled = enableModel.isEnabledInputField && isChatWorking

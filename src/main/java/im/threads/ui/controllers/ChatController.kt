@@ -575,6 +575,8 @@ class ChatController private constructor() {
 
     fun isChatWorking(): Boolean = currentScheduleInfo == null || currentScheduleInfo?.isChatWorking == true
 
+    fun isSendDuringInactive() = currentScheduleInfo?.sendDuringInactive == true
+
     @Throws(Exception::class)
     private fun onClientIdChanged(): List<ChatItem> {
         info(ThreadsApi.REST_TAG, "Client id changed. Loading history.")
@@ -1537,7 +1539,7 @@ class ChatController private constructor() {
     }
 
     private fun isScheduleActive(scheduleInfo: ScheduleInfo?): Boolean {
-        return scheduleInfo?.isChatWorking == true || scheduleInfo?.isSendDuringInactive == true
+        return scheduleInfo?.isChatWorking == true || scheduleInfo?.sendDuringInactive == true
     }
 
     private fun handleQuickReplies(chatItems: List<ChatItem>) {
