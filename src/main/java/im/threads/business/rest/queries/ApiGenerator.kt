@@ -5,7 +5,6 @@ import com.google.gson.GsonBuilder
 import im.threads.R
 import im.threads.business.config.BaseConfig
 import im.threads.business.logger.NetworkLoggerInterceptor
-import im.threads.business.rest.config.BaseUrlSelectionInterceptor
 import im.threads.business.serviceLocator.core.inject
 import im.threads.business.transport.AuthInterceptor
 import im.threads.business.utils.AppInfo
@@ -48,8 +47,6 @@ abstract class ApiGenerator protected constructor(
         val (connectTimeoutMillis, readTimeoutMillis, writeTimeoutMillis) =
             config.requestConfig.threadsApiHttpClientSettings
         val httpClientBuilder: OkHttpClient.Builder = OkHttpClient.Builder()
-            .addInterceptor(BaseUrlSelectionInterceptor(isDatastoreApi))
-            .cache(null)
             .addInterceptor(
                 Interceptor { chain: Interceptor.Chain ->
                     chain.proceed(
@@ -90,7 +87,7 @@ abstract class ApiGenerator protected constructor(
             .create()
 
         apiBuild = Retrofit.Builder()
-            .baseUrl("http://nourl.com")
+            .baseUrl(BaseConfig.instance.serverBaseUrl)
             .addConverterFactory(GsonConverterFactory.create(gson))
             .client(createOkHttpClient())
             .build()
