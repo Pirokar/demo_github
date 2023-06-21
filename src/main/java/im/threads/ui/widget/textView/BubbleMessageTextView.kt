@@ -175,7 +175,7 @@ class BubbleMessageTextView : CustomFontTextView {
     }
 
     private fun trimEndSpannable(spannable: SpannableStringBuilder?): SpannableStringBuilder? {
-        if (spannable == null) {
+        if (spannable.isNullOrBlank()) {
             return null
         }
         var shouldTrim = false
