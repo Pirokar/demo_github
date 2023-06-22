@@ -39,7 +39,7 @@ class ConsultIsTypingViewHolderNew(parent: ViewGroup) : RecyclerView.ViewHolder(
             setTextColor(
                 ContextCompat.getColor(
                     itemView.context,
-                    style.systemMessageTextColorResId
+                    style.chatSystemMessageTextColor
                 )
             )
         }

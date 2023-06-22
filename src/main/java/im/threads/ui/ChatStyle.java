@@ -231,6 +231,9 @@ public final class ChatStyle implements Serializable {
     public int[] chatBodyIconsColorState = null;
 
     @ColorRes
+    public int chatSystemMessageTextColor = R.color.ecc_chat_connection_message;
+
+    @ColorRes
     public int iconsAndSeparatorsColor = R.color.ecc_icon_and_separators_color;
     @DrawableRes
     public int defaultOperatorAvatar = R.drawable.ecc_operator_avatar_placeholder;
@@ -1342,7 +1345,7 @@ public final class ChatStyle implements Serializable {
 
         this.imagePlaceholder = imagePlaceholder;
         this.chatBodyIconsTint = chatBodyIconsTint;
-        this.systemMessageTextColorResId = chatSystemMessageTextColor;
+        this.chatSystemMessageTextColor = chatSystemMessageTextColor;
 
         this.mediaAndFilesScreenBackgroundColor = mediaAndFilesScreenBackgroundColor;
         this.mediaAndFilesTextColor = mediaAndFilesTextColor;
