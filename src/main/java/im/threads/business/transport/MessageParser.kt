@@ -171,6 +171,7 @@ class MessageParser {
         val content = BaseConfig.instance.gson.fromJson(fullMessage, TextContent::class.java)
         val scheduleInfo = BaseConfig.instance.gson.fromJson(content.text, ScheduleInfo::class.java)
         scheduleInfo.date = Date().time
+        scheduleInfo.timeStamp = Date().time
         return scheduleInfo
     }
 
