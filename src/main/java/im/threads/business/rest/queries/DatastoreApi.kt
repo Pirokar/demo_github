@@ -5,7 +5,7 @@ import im.threads.business.config.BaseConfig
 class DatastoreApi private constructor(config: BaseConfig) : ApiGenerator(config, true) {
     override fun createThreadsApi() {
         threadsApi = ThreadsApi(
-            datastoreApi = apiBuild.create(ThreadsDatastoreApi::class.java)
+            datastoreApi = datastoreBuild.create(ThreadsDatastoreApi::class.java)
         )
     }
 
