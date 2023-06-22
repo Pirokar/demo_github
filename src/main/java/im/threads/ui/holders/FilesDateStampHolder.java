@@ -33,7 +33,7 @@ public final class FilesDateStampHolder extends RecyclerView.ViewHolder {
             sdf = new SimpleDateFormat("dd MMMM yyyy", Locale.getDefault());
         }
         if (style == null) style = Config.getInstance().getChatStyle();
-        mDateTextView.setTextColor(ContextCompat.getColor(itemView.getContext(), style.systemMessageTextColorResId));
+        mDateTextView.setTextColor(ContextCompat.getColor(itemView.getContext(), style.chatSystemMessageTextColor));
         linearLayout.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatBackgroundColor));
     }
 
