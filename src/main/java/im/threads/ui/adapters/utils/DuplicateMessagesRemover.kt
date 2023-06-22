@@ -17,11 +17,11 @@ class DuplicateMessagesRemover {
             val mapOfLastElements = HashMap<String, Int>()
             val elementsToRemove = arrayListOf<ChatItem>()
             listWhere.indices.forEach { index ->
-                (listWhere[index] as? SimpleSystemMessage)?.let { mapOfLastElements[it.text] = index }
+                (listWhere[index] as? SimpleSystemMessage)?.let { mapOfLastElements[it.getText()] = index }
             }
             listWhere.indices.forEach { index ->
                 (listWhere[index] as? SimpleSystemMessage)?.let {
-                    if (mapOfLastElements[it.text] != index) {
+                    if (mapOfLastElements[it.getText()] != index) {
                         elementsToRemove.add(it)
                     }
                 }

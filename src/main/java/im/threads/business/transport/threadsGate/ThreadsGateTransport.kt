@@ -49,9 +49,9 @@ import im.threads.business.transport.threadsGate.responses.GetStatusesData
 import im.threads.business.transport.threadsGate.responses.RegisterDeviceData
 import im.threads.business.transport.threadsGate.responses.SendMessageData
 import im.threads.business.transport.threadsGate.responses.Status
-import im.threads.business.utils.AppInfoHelper
+import im.threads.business.utils.AppInfo
 import im.threads.business.utils.ClientUseCase
-import im.threads.business.utils.DeviceInfoHelper
+import im.threads.business.utils.DeviceInfo
 import im.threads.business.utils.SSLCertificateInterceptor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -97,6 +97,9 @@ class ThreadsGateTransport(
     private val database: DatabaseHolder by inject()
     private val jsonFormatter: JsonFormatter by inject()
     private val clientUseCase: ClientUseCase by inject()
+    private val messageParser: ThreadsGateMessageParser by inject()
+    private val appInfo: AppInfo by inject()
+    private val deviceInfo: DeviceInfo by inject()
     private val chatState: ChatState by inject()
 
     init { buildTransport() }
@@ -135,10 +138,10 @@ class ThreadsGateTransport(
     }
 
     override fun sendRatingDone(survey: Survey) {
-        if (survey.questions.isNotEmpty()) {
+        if (!survey.questions.isNullOrEmpty()) {
             val content = outgoingMessageCreator.createRatingDoneMessage(survey)
             val firstPartOfCorrelationId = "${ChatItemType.SURVEY_QUESTION_ANSWER.name}$CORRELATION_ID_DIVIDER"
-            val secondPartOfCorrelationId = "${survey.sendingId}$CORRELATION_ID_DIVIDER${survey.questions.first().correlationId}"
+            val secondPartOfCorrelationId = "${survey.sendingId}$CORRELATION_ID_DIVIDER${survey.questions?.first()?.correlationId}"
             val correlationId = "$firstPartOfCorrelationId$secondPartOfCorrelationId"
             surveysInProcess[survey.sendingId] = survey
             sendMessage(content, true, correlationId)
@@ -222,7 +225,7 @@ class ThreadsGateTransport(
             val content = outgoingMessageCreator.createMessageUpdateLocation(
                 latitude,
                 longitude,
-                DeviceInfoHelper.getLocale(BaseConfig.instance.context)
+                deviceInfo.getLocale(BaseConfig.instance.context)
             )
             sendMessage(content, sendInit = false)
         }
@@ -313,14 +316,14 @@ class ThreadsGateTransport(
         val deviceName = getDeviceName()
         val deviceAddress = preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS)
         val data = RegisterDeviceRequest.Data(
-            AppInfoHelper.getAppId(),
-            AppInfoHelper.getAppVersion(),
+            appInfo.appId,
+            appInfo.appVersion,
             threadsGateProviderUid,
             getCloudToken(),
             getDeviceUid(),
             "Android",
-            DeviceInfoHelper.getOsVersion(),
-            DeviceInfoHelper.getLocale(BaseConfig.instance.context),
+            deviceInfo.osVersion,
+            deviceInfo.getLocale(BaseConfig.instance.context),
             Calendar.getInstance().timeZone.displayName,
             if (!TextUtils.isEmpty(deviceName)) deviceName else deviceModel,
             deviceModel,
@@ -362,7 +365,7 @@ class ThreadsGateTransport(
     private fun sendEnvironmentMessage(tryOpeningWebSocket: Boolean): Boolean {
         return sendMessage(
             outgoingMessageCreator.createEnvironmentMessage(
-                DeviceInfoHelper.getLocale(BaseConfig.instance.context)
+                deviceInfo.getLocale(BaseConfig.instance.context)
             ),
             tryOpeningWebSocket = tryOpeningWebSocket,
             sendInit = false
@@ -458,7 +461,7 @@ class ThreadsGateTransport(
             val response = BaseConfig.instance.gson.fromJson(text, BaseResponse::class.java)
             val action = response.action
             val correlationId = response.correlationId
-            if (response.data.has(KEY_ERROR)) {
+            if (response.data != null && response.data.has(KEY_ERROR)) {
                 var errorMessage = response.data[KEY_ERROR].asString
                 if (response.data.has(KEY_ERROR_DETAILS)) {
                     val errorDetails = response.data[KEY_ERROR_DETAILS].asString
@@ -474,7 +477,7 @@ class ThreadsGateTransport(
                         RegisterDeviceData::class.java
                     )
                     preferences.save(PreferencesCoreKeys.DEVICE_ADDRESS, data.deviceAddress)
-                    chatUpdateProcessor.postDeviceAddressChanged(data.deviceAddress)
+                    data.deviceAddress?.let { chatUpdateProcessor.postDeviceAddressChanged(data.deviceAddress) }
                     location?.let { updateLocation(it.latitude, it.longitude) }
                     chatState.changeState(ChatStateEnum.DEVICE_REGISTERED)
                 }
@@ -483,8 +486,8 @@ class ThreadsGateTransport(
                         response.data.toString(),
                         SendMessageData::class.java
                     )
-                    val tokens = response.correlationId.split(CORRELATION_ID_DIVIDER).toTypedArray()
-                    if (tokens.size > 1) {
+                    val tokens = response.correlationId?.split(CORRELATION_ID_DIVIDER)?.toTypedArray()
+                    if (tokens != null && tokens.size > 1) {
                         when (ChatItemType.fromString(tokens[0])) {
                             ChatItemType.MESSAGE -> {
                                 if (campaignsInProcess.containsKey(tokens[1])) {
@@ -516,7 +519,7 @@ class ThreadsGateTransport(
                                         if (questions.isEmpty()) {
                                             surveysInProcess.remove(sendingId)
                                         } else {
-                                            surveysInProcess[sendingId]?.questions = questions
+                                            surveysInProcess[sendingId]?.questions = ArrayList(questions)
                                         }
                                     } ?: surveysInProcess.remove(sendingId)
                                 }
@@ -556,16 +559,16 @@ class ThreadsGateTransport(
                         GetMessagesData::class.java
                     )
                     val gson = BaseConfig.instance.gson
-                    for (message in data.messages) {
-                        if (message.content.has(MessageAttributes.TYPE)) {
-                            val type =
-                                ChatItemType.fromString(ThreadsGateMessageParser.getType(message))
+                    val messages = data.messages ?: listOf()
+                    for (message in messages) {
+                        if (message.content != null && message.content.has(MessageAttributes.TYPE)) {
+                            val type = ChatItemType.fromString(messageParser.getType(message))
                             if (ChatItemType.TYPING == type) {
                                 val content = gson.fromJson(
                                     message.content,
                                     TypingContent::class.java
                                 )
-                                chatUpdateProcessor.postTyping(content.clientId)
+                                content.clientId?.let { chatUpdateProcessor.postTyping(content.clientId) }
                             } else if (ChatItemType.ATTACHMENT_SETTINGS == type) {
                                 val attachmentSettings = gson.fromJson(
                                     message.content,
@@ -581,12 +584,12 @@ class ThreadsGateTransport(
                                     chatUpdateProcessor.updateAttachments(attachments)
                                 }
                             } else if (ChatItemType.SPEECH_MESSAGE_UPDATED == type) {
-                                val chatItem = ThreadsGateMessageParser.format(message)
+                                val chatItem = messageParser.format(message)
                                 if (chatItem is SpeechMessageUpdate) {
                                     chatUpdateProcessor.postSpeechMessageUpdate(chatItem)
                                 }
                             } else {
-                                val chatItem = ThreadsGateMessageParser.format(message)
+                                val chatItem = messageParser.format(message)
                                 if (chatItem != null) {
                                     chatUpdateProcessor.postNewMessage(chatItem)
                                 }

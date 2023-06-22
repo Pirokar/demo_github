@@ -10,7 +10,7 @@ import im.threads.business.models.FileDescription
 import im.threads.business.models.UpcomingUserMessage
 import im.threads.business.serviceLocator.core.inject
 import im.threads.business.utils.ClientUseCase
-import im.threads.business.utils.FileProviderHelper
+import im.threads.business.utils.FileProvider
 import im.threads.business.utils.FileUtils.getFileSize
 import im.threads.ui.ChatStyle
 import im.threads.ui.config.Config
@@ -25,6 +25,7 @@ import java.io.File
 class ThreadsLib(context: Context) : ThreadsLibBase(context) {
     private val config by lazy { Config.getInstance() }
     private val clientUseCase: ClientUseCase by inject()
+    private val fileProvider: FileProvider by inject()
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
     /**
@@ -68,7 +69,7 @@ class ThreadsLib(context: Context) : ThreadsLibBase(context) {
      */
     fun sendMessage(message: String?, file: File?): Boolean {
         val fileUri = if (file != null) {
-            FileProviderHelper.getUriForFile(
+            fileProvider.getUriForFile(
                 Config.getInstance().context,
                 file
             )

@@ -67,7 +67,7 @@ object HistoryParser {
                     orgUnit = operator.orgUnit
                     role = operator.role
                 }
-                when (fromString(message.type)) {
+                when (fromString(message.type ?: "")) {
                     ChatItemType.THREAD_ENQUEUED, ChatItemType.AVERAGE_WAIT_TIME, ChatItemType.PARTING_AFTER_SURVEY,
                     ChatItemType.THREAD_CLOSED, ChatItemType.THREAD_WILL_BE_REASSIGNED, ChatItemType.CLIENT_BLOCKED,
                     ChatItemType.THREAD_IN_PROGRESS -> out.add(
@@ -78,16 +78,17 @@ object HistoryParser {
                             uuid, operatorId,
                             message.type, name, sex, timeStamp, photoUrl,
                             null, null, orgUnit, role, message.isDisplay,
-                            message.text, message.threadId
+                            message.text, message.threadId ?: 0L
                         )
                     )
                     ChatItemType.SURVEY -> {
-                        val survey = getSurveyFromJsonString(message.text)
+                        val survey = getSurveyFromJsonString(message.text ?: "")
                         if (survey != null) {
                             survey.isRead = message.isRead
-                            survey.phraseTimeStamp = message.timeStamp
-                            for (questionDTO in survey.questions) {
-                                questionDTO.phraseTimeStamp = message.timeStamp
+                            survey.timeStamp = message.timeStamp
+
+                            survey.questions?.indices?.forEach { index ->
+                                survey.questions!![index].phraseTimeStamp = message.timeStamp
                             }
                             out.add(survey)
                         }
@@ -96,9 +97,9 @@ object HistoryParser {
                     ChatItemType.REQUEST_CLOSE_THREAD -> out.add(
                         RequestResolveThread(
                             uuid,
-                            message.hideAfter,
+                            message.hideAfter ?: 0,
                             timeStamp,
-                            message.threadId,
+                            message.threadId ?: 0,
                             message.isRead
                         )
                     )
@@ -109,12 +110,12 @@ object HistoryParser {
                         } else if (message.speechText != null) {
                             phraseText = message.speechText
                         }
-                        val fileDescription = if (message.attachments != null) fileDescriptionFromList(message.attachments) else null
+                        val fileDescription = message.attachments?.let { fileDescriptionFromList(it) }
                         if (fileDescription != null) {
                             fileDescription.from = name
                             fileDescription.timeStamp = timeStamp
                         }
-                        val quote = if (message.quotes != null) quoteFromList(message.quotes) else null
+                        val quote = message.quotes?.let { quoteFromList(it) }
                         quote?.fileDescription?.timeStamp = timeStamp
                         if (message.operator != null) {
                             out.add(
@@ -129,11 +130,11 @@ object HistoryParser {
                                     operatorId,
                                     photoUrl,
                                     message.isRead,
-                                    message.operator.status,
+                                    message.operator?.status,
                                     false,
                                     message.threadId,
                                     message.quickReplies,
-                                    if (message.settings != null) message.settings!!.isBlockInput else null,
+                                    message.settings?.isBlockInput,
                                     SpeechStatus.fromString(message.speechStatus)
                                 ).apply {
                                     errorMock = message.errorMock
@@ -179,11 +180,13 @@ object HistoryParser {
         return try {
             val survey = BaseConfig.instance.gson.fromJson(text, Survey::class.java)
             val time = Date().time
-            survey.phraseTimeStamp = time
+            survey.timeStamp = time
             survey.sentState = MessageStatus.FAILED
             survey.isDisplayMessage = true
-            for (questionDTO in survey.questions) {
-                questionDTO.phraseTimeStamp = time
+            if (survey.questions != null) {
+                for (questionDTO in survey.questions!!) {
+                    questionDTO.phraseTimeStamp = time
+                }
             }
             survey
         } catch (e: JsonSyntaxException) {
@@ -195,26 +198,26 @@ object HistoryParser {
     private fun getCompletedSurveyFromHistory(message: MessageFromHistory): Survey {
         val survey = Survey(
             message.uuid,
-            message.sendingId,
+            message.sendingId ?: 0,
             message.timeStamp,
             MessageStatus.READ,
             message.isRead,
             message.isDisplay
         )
         val question = QuestionDTO()
-        question.id = message.questionId
+        question.id = message.questionId ?: 0
         question.phraseTimeStamp = message.timeStamp
         question.text = message.text
         question.rate = message.rate
-        question.scale = message.scale
-        question.sendingId = message.sendingId
+        question.scale = message.scale ?: 0
+        question.sendingId = message.sendingId ?: 0
         question.simple = message.isSimple
-        survey.questions = listOf(question)
+        survey.questions = arrayListOf(question)
         return survey
     }
 
     private fun getSystemMessageFromHistory(message: MessageFromHistory): SimpleSystemMessage {
-        return SimpleSystemMessage(message.uuid, message.type, message.timeStamp, message.text, message.threadId)
+        return SimpleSystemMessage(message.uuid, message.type, message.timeStamp, message.text, message.threadId ?: 0)
     }
 
     private fun quoteFromList(quotes: List<MessageFromHistory?>): Quote? {
@@ -235,16 +238,13 @@ object HistoryParser {
             if (quoteFromHistory.text != null) {
                 quoteString = quoteFromHistory.text
             }
-            if (quoteFromHistory.attachments != null && quoteFromHistory.attachments.size > 0 &&
-                quoteFromHistory.attachments[0].result != null
+            if (quoteFromHistory.attachments != null && quoteFromHistory.attachments!!.isNotEmpty() &&
+                quoteFromHistory.attachments!![0].result != null
             ) {
-                quoteFileDescription = fileDescriptionFromList(quoteFromHistory.attachments)
+                quoteFileDescription = fileDescriptionFromList(quoteFromHistory.attachments!!)
             }
-            val authorName: String? = if (quoteFromHistory.operator != null) {
-                quoteFromHistory.operator.aliasOrName
-            } else {
-                BaseConfig.instance.context.getString(R.string.ecc_I)
-            }
+            val authorName = quoteFromHistory.operator?.aliasOrName ?: BaseConfig.instance.context.getString(R.string.ecc_I)
+
             if (quoteString != null || quoteFileDescription != null) {
                 quote = Quote(quoteFromHistory.uuid, authorName, quoteString, quoteFileDescription, timestamp)
             }
@@ -265,7 +265,7 @@ object HistoryParser {
                 var size: Long = 0
                 val metaData = attachment.optional
                 if (metaData != null) {
-                    size = metaData.size
+                    size = metaData.size ?: 0
                 }
                 fileDescription = FileDescription(
                     null,

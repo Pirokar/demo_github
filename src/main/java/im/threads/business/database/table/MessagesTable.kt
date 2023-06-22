@@ -196,7 +196,7 @@ class MessagesTable(
             cGetBool(c, COLUMN_IS_READ),
             cGetBool(c, COLUMN_DISPLAY_MESSAGE)
         )
-        survey.questions = listOf(questionsTable.getQuestion(sqlHelper, surveySendingId))
+        survey.questions = ArrayList(listOfNotNull(questionsTable.getQuestion(sqlHelper, surveySendingId)))
         return survey
     }
 

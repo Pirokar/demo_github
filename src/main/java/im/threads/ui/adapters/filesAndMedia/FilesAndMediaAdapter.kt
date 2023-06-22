@@ -103,8 +103,8 @@ internal class FilesAndMediaAdapter(
                 if (isContainsThisLocale) {
                     filteredItems.add(fileDescription)
                 } else if (fileDescription.incomingName != null) {
-                    val lowercaseName = fileDescription.incomingName.lowercase(Locale.getDefault())
-                    if (lowercaseName.contains(lowercaseFilter)) {
+                    val lowercaseName = fileDescription.incomingName?.lowercase(Locale.getDefault())
+                    if (lowercaseName?.contains(lowercaseFilter) == true) {
                         filteredItems.add(fileDescription)
                     }
                 } else if (fileName.lowercase(Locale.getDefault()).contains(lowercaseFilter)) {

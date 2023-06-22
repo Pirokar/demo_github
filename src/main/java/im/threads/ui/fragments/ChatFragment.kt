@@ -89,7 +89,7 @@ import im.threads.business.models.UserPhrase
 import im.threads.business.serviceLocator.core.inject
 import im.threads.business.useractivity.UserActivityTimeProvider.getLastUserActivityTimeCounter
 import im.threads.business.utils.Balloon.show
-import im.threads.business.utils.FileProviderHelper
+import im.threads.business.utils.FileProvider
 import im.threads.business.utils.FileUtils.canBeSent
 import im.threads.business.utils.FileUtils.createImageFile
 import im.threads.business.utils.FileUtils.getExtensionFromMediaStore
@@ -177,6 +177,7 @@ class ChatFragment :
     private val mediaMetadataRetriever = MediaMetadataRetriever()
     private val audioConverter = ChatCenterAudioConverter()
     private val chatUpdateProcessor: ChatUpdateProcessor by inject()
+    private val fileProvider: FileProvider by inject()
     private var fdMediaPlayer: FileDescriptionMediaPlayer? = null
     private val chatController: ChatController by lazy { ChatController.getInstance() }
     private var chatAdapter: ChatAdapter? = null
@@ -649,7 +650,7 @@ class ChatFragment :
         val context = context ?: return
         val fd = FileDescription(
             requireContext().getString(R.string.ecc_voice_message).lowercase(Locale.getDefault()),
-            FileProviderHelper.getUriForFile(context, file),
+            fileProvider.getUriForFile(context, file),
             file.length(),
             System.currentTimeMillis()
         )
@@ -697,7 +698,7 @@ class ChatFragment :
         binding.consultName.setOnLongClickListener {
             val context = context
             if (context != null) {
-                LogZipSender(context).shareLogs()
+                LogZipSender(context, fileProvider).shareLogs()
             }
             true
         }
@@ -811,12 +812,12 @@ class ChatFragment :
             .filter { charSequence: String -> charSequence.isNotEmpty() }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                { input: String -> onInputChanged(input) }
+                { input: String? -> onInputChanged(input) }
             ) { error: Throwable? -> error("configureInputChangesSubscription ", error) }
         subscribe(userTypingDisposable)
     }
 
-    private fun onInputChanged(input: String) {
+    private fun onInputChanged(input: String?) {
         chatController.onUserTyping(input)
         updateLastUserActivityTime()
     }
@@ -1083,7 +1084,7 @@ class ChatFragment :
             try {
                 val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                 externalCameraPhotoFile = createImageFile(activity)
-                val photoUri = FileProviderHelper.getUriForFile(activity, externalCameraPhotoFile!!)
+                val photoUri = fileProvider.getUriForFile(activity, externalCameraPhotoFile!!)
                 debug("Image File uri resolved: $photoUri")
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
                 grantPermissionsForImageUri(activity, intent, photoUri)
@@ -1459,7 +1460,7 @@ class ChatFragment :
             setFileDescription(
                 FileDescription(
                     requireContext().getString(R.string.ecc_image),
-                    FileProviderHelper.getUriForFile(BaseConfig.instance.context, file),
+                    fileProvider.getUriForFile(BaseConfig.instance.context, file),
                     file.length(),
                     System.currentTimeMillis()
                 )
@@ -1537,7 +1538,7 @@ class ChatFragment :
             val file = File(imageExtra)
             val fileDescription = FileDescription(
                 requireContext().getString(R.string.ecc_image),
-                FileProviderHelper.getUriForFile(requireContext(), file),
+                fileProvider.getUriForFile(requireContext(), file),
                 file.length(),
                 System.currentTimeMillis()
             )
@@ -2011,7 +2012,7 @@ class ChatFragment :
 
     internal fun updateInputEnable(enableModel: InputFieldEnableModel) {
         isSendBlocked = !enableModel.isEnabledSendButton
-        val isChatWorking = chatController.isChatWorking()
+        val isChatWorking = chatController.isChatWorking() || chatController.isSendDuringInactive()
         binding.sendMessage.isEnabled = enableModel.isEnabledSendButton && isChatWorking &&
             (!TextUtils.isEmpty(binding.inputEditView.text) || hasAttachments())
         binding.inputEditView.isEnabled = enableModel.isEnabledInputField && isChatWorking
@@ -2354,7 +2355,7 @@ class ChatFragment :
     }
 
     override fun onFileSelected(file: File?) {
-        val uri = if (file != null) FileProviderHelper.getUriForFile(requireContext(), file) else null
+        val uri = if (file != null) fileProvider.getUriForFile(requireContext(), file) else null
         if (uri != null && canBeSent(requireContext(), uri)) {
             onFileResult(uri)
         } else {
@@ -2689,8 +2690,8 @@ class ChatFragment :
         override fun onSystemMessageClick(systemMessage: SystemMessage) {}
         override fun onRatingClick(survey: Survey, rating: Int) {
             val activity: Activity? = activity
-            if (activity != null) {
-                survey.questions[0].rate = rating
+            if (activity != null && !survey.questions.isNullOrEmpty()) {
+                survey.questions!![0].rate = rating
                 chatController.onRatingClick(survey)
             }
         }
@@ -2711,8 +2712,8 @@ class ChatFragment :
                             null,
                             null,
                             null,
-                            quickReply.text.trim { it <= ' ' },
-                            quickReply.text.isLastCopyText()
+                            quickReply.text?.trim { it <= ' ' },
+                            quickReply.text?.isLastCopyText() ?: false
                         )
                     ),
                     false

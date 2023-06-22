@@ -575,6 +575,8 @@ class ChatController private constructor() {
 
     fun isChatWorking(): Boolean = currentScheduleInfo == null || currentScheduleInfo?.isChatWorking == true
 
+    fun isSendDuringInactive() = currentScheduleInfo?.sendDuringInactive == true
+
     @Throws(Exception::class)
     private fun onClientIdChanged(): List<ChatItem> {
         info(ThreadsApi.REST_TAG, "Client id changed. Loading history.")
@@ -588,7 +590,7 @@ class ChatController private constructor() {
         clearUnreadPush()
         processSystemMessages(serverItems)
         fragment?.let { chatFragment ->
-            response?.consultInfo?.let { chatFragment.setStateConsultConnected(it) }
+            response?.getConsultInfo()?.let { chatFragment.setStateConsultConnected(it) }
         }
         return setLastAvatars(serverItems)
     }
@@ -628,7 +630,7 @@ class ChatController private constructor() {
                                 BaseConfig.instance.transport.markMessagesAsRead(uuidList)
                             }
                         }
-                        Pair(response?.consultInfo, serverItems)
+                        Pair(response?.getConsultInfo(), serverItems)
                     }
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -1008,6 +1010,7 @@ class ChatController private constructor() {
                             }
                             return@doOnNext
                         }
+
                         is ScheduleInfo -> {
                             currentScheduleInfo = chatItem
                             currentScheduleInfo?.calculateServerTimeDiff()
@@ -1024,17 +1027,21 @@ class ChatController private constructor() {
                             }
                             fragment?.addChatItem(currentScheduleInfo)
                         }
+
                         is ConsultConnectionMessage -> {
                             processConsultConnectionMessage(chatItem)
                         }
+
                         is SearchingConsult -> {
                             fragment?.setStateSearchingConsult()
                             consultWriter.isSearchingConsult = true
                             return@doOnNext
                         }
+
                         is SimpleSystemMessage -> {
                             processSimpleSystemMessage(chatItem)
                         }
+
                         is ConsultPhrase -> {
                             refreshUserInputState(chatItem.isBlockInput)
                         }
@@ -1043,7 +1050,7 @@ class ChatController private constructor() {
                 }
                 .filter { chatItem: ChatItem? -> chatItem is Hidable }
                 .map { chatItem: ChatItem -> chatItem as Hidable }
-                .delay { item: Hidable -> Flowable.timer(item.hideAfter, TimeUnit.SECONDS) }
+                .delay { item: Hidable -> Flowable.timer(item.hideAfter ?: 0, TimeUnit.SECONDS) }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                     { hidable: Hidable? ->
@@ -1224,7 +1231,7 @@ class ChatController private constructor() {
      */
     private fun addMessage(chatItem: ChatItem) {
         if (chatItem is Survey) {
-            chatItem.questions.forEach { it.generateCorrelationId() }
+            chatItem.questions?.forEach { it.generateCorrelationId() }
         }
         database.putChatItem(chatItem)
         UnreadMessagesController.INSTANCE.refreshUnreadMessagesCount()
@@ -1267,7 +1274,7 @@ class ChatController private constructor() {
         // или новое расписание в котором сейчас чат работает
         // - нужно удалить расписание из чата
         if (chatItem is ConsultPhrase ||
-            chatItem is ConsultConnectionMessage && ChatItemType.OPERATOR_JOINED.name == chatItem.type ||
+            chatItem is ConsultConnectionMessage && ChatItemType.OPERATOR_JOINED.name == chatItem.getType() ||
             chatItem is ScheduleInfo && chatItem.isChatWorking
         ) {
             if (fragment?.isAdded == true) {
@@ -1343,7 +1350,7 @@ class ChatController private constructor() {
                     messenger.saveMessages(chatItems)
                     clearUnreadPush()
                     processSystemMessages(chatItems)
-                    androidx.core.util.Pair(response?.consultInfo, setLastAvatars(chatItems))
+                    androidx.core.util.Pair(response?.getConsultInfo(), setLastAvatars(chatItems))
                 }
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -1413,7 +1420,7 @@ class ChatController private constructor() {
             if (chatItem is SystemMessage) {
                 val threadId = chatItem.threadId
                 if (threadId != null && threadId >= threadId) {
-                    val type = (chatItem as SystemMessage).type
+                    val type = (chatItem as SystemMessage).getType()
                     if (ChatItemType.OPERATOR_JOINED.toString().equals(type, ignoreCase = true) ||
                         ChatItemType.THREAD_ENQUEUED.toString().equals(type, ignoreCase = true) ||
                         ChatItemType.THREAD_WILL_BE_REASSIGNED.toString()
@@ -1442,11 +1449,9 @@ class ChatController private constructor() {
 
     @MainThread
     private fun processConsultConnectionMessage(ccm: ConsultConnectionMessage) {
-        if (ccm.type.equals(ChatItemType.OPERATOR_JOINED.name, ignoreCase = true)) {
-            if (ccm.threadId != null) {
-                threadId = ccm.threadId ?: 0L
-                fragment?.setCurrentThreadId(ccm.threadId ?: 0L)
-            }
+        if (ccm.getType().equals(ChatItemType.OPERATOR_JOINED.name, ignoreCase = true)) {
+            threadId = ccm.threadId
+            fragment?.setCurrentThreadId(ccm.threadId)
             consultWriter.isSearchingConsult = false
             consultWriter.setCurrentConsultInfo(ccm)
             fragment?.setStateConsultConnected(
@@ -1464,7 +1469,7 @@ class ChatController private constructor() {
 
     @MainThread
     private fun processSimpleSystemMessage(systemMessage: SimpleSystemMessage) {
-        val type = systemMessage.type
+        val type = systemMessage.getType()
         if (ChatItemType.THREAD_CLOSED.name.equals(type, ignoreCase = true)) {
             threadId = -1L
             removeResolveRequest()
@@ -1473,10 +1478,8 @@ class ChatController private constructor() {
                 fragment?.setTitleStateDefault()
             }
         } else {
-            if (systemMessage.threadId != null) {
-                threadId = systemMessage.threadId ?: 0L
-                fragment?.setCurrentThreadId(systemMessage.threadId ?: 0L)
-            }
+            threadId = systemMessage.threadId
+            fragment?.setCurrentThreadId(systemMessage.threadId)
             if (ChatItemType.THREAD_ENQUEUED.name.equals(type, ignoreCase = true) ||
                 ChatItemType.THREAD_WILL_BE_REASSIGNED.name.equals(type, ignoreCase = true) ||
                 ChatItemType.AVERAGE_WAIT_TIME.name.equals(type, ignoreCase = true)
@@ -1536,7 +1539,7 @@ class ChatController private constructor() {
     }
 
     private fun isScheduleActive(scheduleInfo: ScheduleInfo?): Boolean {
-        return scheduleInfo?.isChatWorking == true || scheduleInfo?.isSendDuringInactive == true
+        return scheduleInfo?.isChatWorking == true || scheduleInfo?.sendDuringInactive == true
     }
 
     private fun handleQuickReplies(chatItems: List<ChatItem>) {

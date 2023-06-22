@@ -35,12 +35,12 @@ object MessageFormatter {
             if (ci is ConsultConnectionMessage) {
                 val ccm = ci
                 consultName = ccm.name
-                phrase = ccm.text
+                phrase = ccm.getText()
                 sex = ccm.sex
                 avatarPath = ci.avatarPath
             }
             if (ci is SimpleSystemMessage) {
-                phrase = ci.text
+                phrase = ci.getText()
             }
             if (ci is ConsultPhrase) {
                 isNeedAnswer = true
@@ -55,20 +55,20 @@ object MessageFormatter {
                     val fileDescription = ci.fileDescription
                     if (isImage(fileDescription)) {
                         imagesCount++
-                        imagePath = fileDescription!!.downloadPath
+                        imagePath = fileDescription?.downloadPath
                     } else {
                         plainFilesCount++
-                        docName = fileDescription!!.incomingName
+                        docName = fileDescription?.incomingName ?: ""
                     }
                 }
                 if (ci.quote?.fileDescription != null) {
                     val fileDescription = ci.quote.fileDescription
                     if (isImage(fileDescription)) {
                         imagesCount++
-                        imagePath = fileDescription!!.downloadPath
+                        imagePath = fileDescription?.downloadPath
                     } else {
                         plainFilesCount++
-                        docName = fileDescription!!.incomingName
+                        docName = fileDescription?.incomingName ?: ""
                     }
                 }
                 avatarPath = ci.avatarPath
