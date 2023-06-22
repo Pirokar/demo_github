@@ -1,5 +1,7 @@
 package im.threads.business.models
 
+import im.threads.business.logger.LoggerEdna
+
 /**
  * Роль (должность) консультатнта.
  */
@@ -13,10 +15,11 @@ enum class ConsultRole(val role: String) {
 
     companion object {
         @JvmStatic
-        fun consultRoleFromString(role: String) =
+        fun consultRoleFromString(role: String?) =
             try {
                 values().first { it.role == role }
             } catch (exception: NoSuchElementException) {
+                LoggerEdna.error("Cannot find consult role for: $role. Applied default \"Operator\"")
                 OPERATOR
             }
     }

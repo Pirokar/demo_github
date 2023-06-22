@@ -12,6 +12,7 @@ import im.threads.business.models.Attachment
 import im.threads.business.models.ChatItem
 import im.threads.business.models.ConsultConnectionMessage
 import im.threads.business.models.ConsultPhrase
+import im.threads.business.models.ConsultRole
 import im.threads.business.models.FileDescription
 import im.threads.business.models.MessageFromHistory
 import im.threads.business.models.MessageStatus
@@ -135,7 +136,8 @@ object HistoryParser {
                                     message.threadId,
                                     message.quickReplies,
                                     message.settings?.isBlockInput,
-                                    SpeechStatus.fromString(message.speechStatus)
+                                    SpeechStatus.fromString(message.speechStatus),
+                                    ConsultRole.consultRoleFromString(role)
                                 ).apply {
                                     errorMock = message.errorMock
                                 }

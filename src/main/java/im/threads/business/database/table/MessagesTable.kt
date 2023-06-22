@@ -7,6 +7,7 @@ import im.threads.business.formatters.SpeechStatus.Companion.fromString
 import im.threads.business.models.ChatItem
 import im.threads.business.models.ConsultConnectionMessage
 import im.threads.business.models.ConsultPhrase
+import im.threads.business.models.ConsultRole
 import im.threads.business.models.MessageStatus.Companion.fromOrdinal
 import im.threads.business.models.RequestResolveThread
 import im.threads.business.models.SimpleSystemMessage
@@ -169,7 +170,8 @@ class MessagesTable(
             cGetLong(c, COLUMN_THREAD_ID),
             quickRepliesTable.getQuickReplies(sqlHelper, cGetString(c, COLUMN_MESSAGE_UUID)),
             cGetBool(c, COLUMN_BLOCK_INPUT),
-            fromString(cGetString(c, COLUMN_SPEECH_STATUS))
+            fromString(cGetString(c, COLUMN_SPEECH_STATUS)),
+            ConsultRole.consultRoleFromString(cGetString(c, COLUMN_ROLE))
         )
     }
 
@@ -247,5 +249,6 @@ class MessagesTable(
         private const val COLUMN_THREAD_ID = "COLUMN_THREAD_ID"
         private const val COLUMN_BLOCK_INPUT = "COLUMN_BLOCK_INPUT"
         private const val COLUMN_SPEECH_STATUS = "COLUMN_SPEECH_STATUS"
+        private const val COLUMN_ROLE = "COLUMN_ROLE"
     }
 }

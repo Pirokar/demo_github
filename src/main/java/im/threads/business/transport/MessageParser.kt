@@ -10,6 +10,7 @@ import im.threads.business.logger.LoggerEdna.error
 import im.threads.business.models.ChatItem
 import im.threads.business.models.ConsultConnectionMessage
 import im.threads.business.models.ConsultPhrase
+import im.threads.business.models.ConsultRole
 import im.threads.business.models.FileDescription
 import im.threads.business.models.MessageRead
 import im.threads.business.models.MessageStatus
@@ -206,7 +207,20 @@ class MessageParser {
     }
 
     private fun getPhrase(sentAt: Long, shortMessage: String?, fullMessage: JsonObject): ChatItem? {
-        val (uuid, text, speechText, formattedText, _, threadId, operator, attachments, quotes, quickReplies, settings, speechStatus, read) = BaseConfig.instance.gson.fromJson(
+        val (
+            uuid,
+            text,
+            speechText,
+            formattedText,
+            _, threadId,
+            operator,
+            attachments,
+            quotes,
+            quickReplies,
+            settings,
+            speechStatus,
+            read
+        ) = BaseConfig.instance.gson.fromJson(
             fullMessage,
             MessageContent::class.java
         )
@@ -249,7 +263,8 @@ class MessageParser {
                 threadId,
                 quickReplies,
                 settings?.isBlockInput,
-                fromString(speechStatus)
+                fromString(speechStatus),
+                ConsultRole.consultRoleFromString(operator.role)
             )
         } else {
             var fileDescription: FileDescription? = null

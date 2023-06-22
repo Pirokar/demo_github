@@ -10,6 +10,7 @@ import im.threads.business.models.ChatItem
 import im.threads.business.models.ConsultConnectionMessage
 import im.threads.business.models.ConsultInfo
 import im.threads.business.models.ConsultPhrase
+import im.threads.business.models.ConsultRole
 import im.threads.business.models.FileDescription
 import im.threads.business.models.MessageStatus
 import im.threads.business.models.RequestResolveThread
@@ -623,7 +624,8 @@ class MessagesTable(
                 quickRepliesTable.getQuickReplies(sqlHelper, it)
             },
             cursorGetBool(c, COLUMN_BLOCK_INPUT),
-            fromString(cursorGetString(c, COLUMN_SPEECH_STATUS))
+            fromString(cursorGetString(c, COLUMN_SPEECH_STATUS)),
+            ConsultRole.consultRoleFromString(cursorGetString(c, COLUMN_CONSULT_ROLE))
         )
     }
 
@@ -689,6 +691,7 @@ class MessagesTable(
         cv.put(COLUMN_THREAD_ID, phrase.threadId)
         cv.put(COLUMN_BLOCK_INPUT, phrase.isBlockInput)
         cv.put(COLUMN_SPEECH_STATUS, phrase.speechStatus.toString())
+        cv.put(COLUMN_CONSULT_ROLE, phrase.role.name)
         return cv
     }
 
