@@ -24,6 +24,7 @@ abstract class ApiGenerator protected constructor(
 ) {
     protected lateinit var threadsApi: ThreadsApi
     protected lateinit var apiBuild: Retrofit
+    protected lateinit var datastoreBuild: Retrofit
     private val authInterceptor: AuthInterceptor by inject()
     private val appInfo: AppInfo by inject()
     private val deviceInfo: DeviceInfo by inject()
@@ -88,6 +89,11 @@ abstract class ApiGenerator protected constructor(
 
         apiBuild = Retrofit.Builder()
             .baseUrl(BaseConfig.instance.serverBaseUrl)
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .client(createOkHttpClient())
+            .build()
+        datastoreBuild = Retrofit.Builder()
+            .baseUrl(BaseConfig.instance.datastoreUrl)
             .addConverterFactory(GsonConverterFactory.create(gson))
             .client(createOkHttpClient())
             .build()
