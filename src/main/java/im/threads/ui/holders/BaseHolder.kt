@@ -190,14 +190,7 @@ abstract class BaseHolder internal constructor(
         url: String? = null,
         emails: List<String> = arrayListOf()
     ) {
-        if (phrase.formattedPhrase.isNullOrBlank()) {
-            textView.setText(phrase.phraseText?.trimIndent(), TextView.BufferType.NORMAL)
-            setTextWithHighlighting(
-                textView,
-                style.incomingMarkdownConfiguration.isLinkUnderlined,
-                url
-            )
-        } else {
+        if (!phrase.formattedPhrase.isNullOrBlank()) {
             (textView as? BubbleMessageTextView)?.let {
                 val emailLinksPairs = ArrayList<Pair<String?, View.OnClickListener>>()
                 emails.forEach { email ->
@@ -222,6 +215,13 @@ abstract class BaseHolder internal constructor(
                 setMovementMethod(textView)
                 textView.setText(phrase.phraseText?.trimIndent(), TextView.BufferType.NORMAL)
             }
+        } else if (!phrase.phraseText.isNullOrEmpty()) {
+            textView.setText(phrase.phraseText.trimIndent(), TextView.BufferType.NORMAL)
+            setTextWithHighlighting(
+                textView,
+                style.incomingMarkdownConfiguration.isLinkUnderlined,
+                url
+            )
         }
     }
 
