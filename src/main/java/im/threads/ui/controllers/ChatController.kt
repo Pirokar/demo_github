@@ -1543,6 +1543,9 @@ class ChatController private constructor() {
     }
 
     private fun handleQuickReplies(chatItems: List<ChatItem>) {
+        if (chatItems.isNullOrEmpty()) {
+            return
+        }
         val quickReplyMessageCandidate = getQuickReplyMessageCandidate(chatItems)
         if (quickReplyMessageCandidate != null) {
             inputEnabledDuringQuickReplies = if (quickReplyMessageCandidate.isBlockInput != null) {
