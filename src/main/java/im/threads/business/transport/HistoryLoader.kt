@@ -1,6 +1,5 @@
 package im.threads.business.transport
 
-import android.content.Context
 import androidx.annotation.WorkerThread
 import com.google.gson.Gson
 import im.threads.business.config.BaseConfig
@@ -11,9 +10,10 @@ import im.threads.business.rest.queries.BackendApi.Companion.get
 import im.threads.business.rest.queries.ThreadsApi
 import im.threads.business.utils.AppInfo
 import im.threads.business.utils.DateHelper
+import im.threads.business.utils.DemoModeProvider
 import java.io.IOException
 
-class HistoryLoader(private val context: Context, private val appInfo: AppInfo) {
+class HistoryLoader(private val demoModeProvider: DemoModeProvider, private val appInfo: AppInfo) {
     private var lastLoadedTimestamp: Long? = null
 
     /**
@@ -26,9 +26,8 @@ class HistoryLoader(private val context: Context, private val appInfo: AppInfo) 
     @WorkerThread
     @Throws(Exception::class)
     fun getHistorySync(beforeTimestamp: Long?, count: Int?): HistoryResponse? {
-        val historyMock = getHistoryMock(context)
-        if (context.applicationInfo.packageName == "io.edna.threads.demo" && historyMock.isNotEmpty()) {
-            return Gson().fromJson(historyMock, HistoryResponse::class.java)
+        if (demoModeProvider.isDemoModeEnabled()) {
+            return Gson().fromJson(demoModeProvider.getHistoryMock(), HistoryResponse::class.java)
         }
 
         var count = count
@@ -66,13 +65,6 @@ class HistoryLoader(private val context: Context, private val appInfo: AppInfo) 
     fun setupLastItemIdFromHistory(list: List<MessageFromHistory>?) {
         if (!list.isNullOrEmpty()) {
             lastLoadedTimestamp = list[0].timeStamp
-        }
-    }
-
-    companion object {
-        fun getHistoryMock(context: Context): String {
-            val preferences = context.getSharedPreferences("ecc_demo_json_preference", Context.MODE_PRIVATE)
-            return preferences.getString("ecc_demo_json_preference_key", "") ?: ""
         }
     }
 }

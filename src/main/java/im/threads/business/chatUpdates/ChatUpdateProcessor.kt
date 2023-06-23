@@ -15,7 +15,6 @@ import im.threads.business.transport.TransportException
 import im.threads.business.transport.models.Attachment
 import im.threads.business.transport.models.AttachmentSettings
 import im.threads.business.transport.threadsGate.responses.Status
-import im.threads.ui.controllers.ChatController
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 
@@ -51,101 +50,78 @@ class ChatUpdateProcessor {
     }
 
     fun postAttachmentSettings(attachmentSettings: AttachmentSettings) {
-        checkSubscribers()
         attachmentSettingsProcessor.onNext(attachmentSettings)
     }
 
     fun postOutgoingMessageStatusChanged(statuses: List<Status>) {
-        checkSubscribers()
         outgoingMessageStatusChangedProcessor.onNext(statuses)
     }
 
     fun postIncomingMessageWasRead(messageId: String) {
-        checkSubscribers()
         incomingMessageReadProcessor.onNext(messageId)
     }
 
     fun postSpeechMessageUpdate(speechMessageUpdate: SpeechMessageUpdate) {
-        checkSubscribers()
         speechMessageUpdateProcessor.onNext(speechMessageUpdate)
     }
 
     fun postNewMessage(chatItem: ChatItem) {
-        checkSubscribers()
         newMessageProcessor.onNext(chatItem)
     }
 
     fun updateAttachments(attachments: List<Attachment>) {
-        checkSubscribers()
         updateAttachmentsProcessor.onNext(attachments)
     }
 
     fun postChatItemSendSuccess(chatItemProviderData: ChatItemProviderData) {
-        checkSubscribers()
         messageSendSuccessProcessor.onNext(chatItemProviderData)
     }
 
     fun postChatItemSendError(sendErrorModel: ChatItemSendErrorModel) {
-        checkSubscribers()
         messageSendErrorProcessor.onNext(sendErrorModel)
     }
 
     fun postRemoveChatItem(chatItemType: ChatItemType) {
-        checkSubscribers()
         removeChatItemProcessor.onNext(chatItemType)
     }
 
     fun postSurveySendSuccess(survey: Survey) {
-        checkSubscribers()
         surveySendSuccessProcessor.onNext(survey)
     }
 
     fun postCampaignMessageReplySuccess(campaignMessage: CampaignMessage) {
-        checkSubscribers()
         campaignMessageReplySuccessProcessor.onNext(campaignMessage)
     }
 
     fun postDeviceAddressChanged(deviceAddress: String) {
-        checkSubscribers()
         deviceAddressChangedProcessor.onNext(deviceAddress)
     }
 
     fun postUserInputEnableChanged(enable: InputFieldEnableModel) {
-        checkSubscribers()
         userInputEnableProcessor.onNext(enable)
     }
 
     fun postQuickRepliesChanged(quickReplies: QuickReplyItem) {
-        checkSubscribers()
         quickRepliesProcessor.onNext(quickReplies)
     }
 
     fun postClientNotificationDisplayType(type: ClientNotificationDisplayType) {
-        checkSubscribers()
         clientNotificationDisplayTypeProcessor.onNext(type)
     }
 
     fun postAttachAudioFile(attached: Boolean) {
-        checkSubscribers()
         attachAudioFilesProcessor.onNext(attached)
     }
 
     fun postError(error: TransportException) {
-        checkSubscribers()
         errorProcessor.onNext(error)
     }
 
     fun postSocketResponseMap(socketResponseMap: Map<String, Any>) {
-        checkSubscribers()
         socketResponseMapProcessor.onNext(socketResponseMap)
     }
 
     fun postUploadResult(uploadResult: FileDescription?) {
-        checkSubscribers()
         uploadResultProcessor.onNext(uploadResult)
-    }
-
-    private fun checkSubscribers() {
-        ChatController.getInstance().checkSubscribing()
     }
 }
