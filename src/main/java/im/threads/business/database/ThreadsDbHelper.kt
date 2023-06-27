@@ -81,6 +81,6 @@ class ThreadsDbHelper(context: Context?) : SQLiteOpenHelper(context, "messages.d
         get() = fileDescriptionTable.getAllFileDescriptions(this)
 
     companion object {
-        private const val VERSION = 16
+        private const val VERSION = 17
     }
 }

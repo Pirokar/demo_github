@@ -22,7 +22,8 @@ class ConsultPhrase constructor(
     override val threadId: Long?,
     val quickReplies: List<QuickReply>?,
     val isBlockInput: Boolean?,
-    val speechStatus: SpeechStatus
+    val speechStatus: SpeechStatus,
+    val role: ConsultRole
 ) : ConsultChatPhrase(avatarPath, consultId), ChatPhrase {
     var ogData: OGData? = null
     var ogUrl: String? = null
@@ -101,7 +102,7 @@ class ConsultPhrase constructor(
 
     fun copy() = ConsultPhrase(
         id, fileDescription, quote, consultName, phraseText, formattedPhrase, date, consultId, avatarPath,
-        isRead, status, sex, threadId, quickReplies, isBlockInput, speechStatus
+        isRead, status, sex, threadId, quickReplies, isBlockInput, speechStatus, role
     ).also {
         it.ogData = ogData
         it.ogUrl = ogUrl
