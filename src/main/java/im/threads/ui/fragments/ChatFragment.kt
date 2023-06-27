@@ -757,8 +757,8 @@ class ChatFragment :
                     val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
                     val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
                     val itemCount = chatAdapter?.itemCount
-                    if (itemCount != null && itemCount - 1 - lastVisibleItemPosition > INVISIBLE_MESSAGES_COUNT &&
-                        binding.scrollDownButtonContainer.isNotVisible()
+                    if (itemCount != null &&
+                        itemCount - 1 - lastVisibleItemPosition > INVISIBLE_MESSAGES_COUNT
                     ) {
                         binding.scrollDownButtonContainer.visible()
                         showUnreadMessagesCount(chatController.getUnreadMessagesCount())
