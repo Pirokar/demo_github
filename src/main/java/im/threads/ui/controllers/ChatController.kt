@@ -66,6 +66,7 @@ import im.threads.business.transport.threadsGate.responses.Status
 import im.threads.business.utils.ChatMessageSeeker
 import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.ConsultWriter
+import im.threads.business.utils.DemoModeProvider
 import im.threads.business.utils.FileUtils.getMimeType
 import im.threads.business.utils.FileUtils.isImage
 import im.threads.business.utils.FileUtils.isVoiceMessage
@@ -114,6 +115,7 @@ class ChatController private constructor() {
     private val historyLoader: HistoryLoader by inject()
     private val clientUseCase: ClientUseCase by inject()
     private val chatState: ChatState by inject()
+    private val demoModeProvider: DemoModeProvider by inject()
 
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
@@ -137,6 +139,7 @@ class ChatController private constructor() {
     private var lastSearchQuery: String? = ""
     internal var isAllMessagesDownloaded = false
     private var isDownloadingMessages = false
+
     var firstUnreadUuidId: String? = null
         private set
 
@@ -450,7 +453,7 @@ class ChatController private constructor() {
         info("bindFragment: $chatFragment")
         val activity = chatFragment?.activity ?: return
 
-        if (HistoryLoader.getHistoryMock(appContext).isNotEmpty()) {
+        if (demoModeProvider.isDemoModeEnabled()) {
             database.cleanDatabase()
         }
 
@@ -770,7 +773,6 @@ class ChatController private constructor() {
         subscribeToNewMessage()
         subscribeToUpdateAttachments()
         subscribeToMessageSendSuccess()
-        subscribeToTransportException()
         subscribeToCampaignMessageReplySuccess()
         subscribeToMessageSendError()
         subscribeToSurveySendSuccess()
@@ -784,30 +786,8 @@ class ChatController private constructor() {
         subscribeOnClientIdChange()
         subscribeOnMessageError()
         subscribeOnFileUploadResult()
+        subscribeToTransportException()
         subscribeOnChatState()
-    }
-
-    fun checkSubscribing() {
-        if (fragment?.isAdded != true) return
-        if (!chatUpdateProcessor.typingProcessor.hasSubscribers()) subscribeToTyping()
-        if (!chatUpdateProcessor.outgoingMessageStatusChangedProcessor.hasSubscribers()) subscribeToOutgoingMessageStatusChanged()
-        if (!chatUpdateProcessor.incomingMessageReadProcessor.hasSubscribers()) subscribeToIncomingMessageRead()
-        if (!chatUpdateProcessor.newMessageProcessor.hasSubscribers()) subscribeToNewMessage()
-        if (!chatUpdateProcessor.updateAttachmentsProcessor.hasSubscribers()) subscribeToUpdateAttachments()
-        if (!chatUpdateProcessor.messageSendSuccessProcessor.hasSubscribers()) subscribeToMessageSendSuccess()
-        if (!chatUpdateProcessor.errorProcessor.hasSubscribers()) subscribeToTransportException()
-        if (!chatUpdateProcessor.campaignMessageReplySuccessProcessor.hasSubscribers()) subscribeToCampaignMessageReplySuccess()
-        if (!chatUpdateProcessor.messageSendErrorProcessor.hasSubscribers()) subscribeToMessageSendError()
-        if (!chatUpdateProcessor.surveySendSuccessProcessor.hasSubscribers()) subscribeToSurveySendSuccess()
-        if (!chatUpdateProcessor.removeChatItemProcessor.hasSubscribers()) subscribeToRemoveChatItem()
-        if (!chatUpdateProcessor.deviceAddressChangedProcessor.hasSubscribers()) subscribeToDeviceAddressChanged()
-        if (!chatUpdateProcessor.quickRepliesProcessor.hasSubscribers()) subscribeToQuickReplies()
-        if (!chatUpdateProcessor.attachAudioFilesProcessor.hasSubscribers()) subscribeToAttachAudioFiles()
-        if (!chatUpdateProcessor.clientNotificationDisplayTypeProcessor.hasSubscribers()) subscribeToClientNotificationDisplayTypeProcessor()
-        if (!chatUpdateProcessor.speechMessageUpdateProcessor.hasSubscribers()) subscribeSpeechMessageUpdated()
-        if (!messenger.resendStream.hasObservers()) subscribeForResendMessage()
-        if (!messageErrorProcessor.hasObservers()) subscribeOnMessageError()
-        if (!chatUpdateProcessor.uploadResultProcessor.hasSubscribers()) subscribeOnFileUploadResult()
     }
 
     private fun subscribeToTransportException() {
@@ -1653,21 +1633,26 @@ class ChatController private constructor() {
     private fun subscribeOnChatState() {
         coroutineScope.launch(Dispatchers.IO) {
             chatState.getStateFlow().collect { stateEvent ->
-                info("ChatState name: ${stateEvent.state.name}, isTimeout: ${stateEvent.isTimeout}")
-                if (!stateEvent.isTimeout && stateEvent.state < ChatStateEnum.HISTORY_LOADED) {
-                    withContext(Dispatchers.Main) { fragment?.showProgressBar() }
-                }
-                if (stateEvent.isTimeout && chatState.getCurrentState() < ChatStateEnum.SETTINGS_LOADED) {
-                    val timeoutMessage = fragment?.getString(R.string.timeout_message) ?: "Timeout"
-                    withContext(Dispatchers.Main) { fragment?.showErrorView(timeoutMessage) }
-                } else if (stateEvent.state == ChatStateEnum.DEVICE_REGISTERED) {
-                    BaseConfig.instance.transport.sendInitMessages()
-                } else if (stateEvent.state == ChatStateEnum.INIT_USER_SENT) {
-                    loadSettings()
-                } else if (stateEvent.state == ChatStateEnum.SETTINGS_LOADED) {
-                    loadHistory()
-                } else if (isChatReady()) {
-                    messenger.resendMessages()
+                if (demoModeProvider.isDemoModeEnabled() && stateEvent.state < ChatStateEnum.SETTINGS_LOADED) {
+                    chatState.changeState(ChatStateEnum.SETTINGS_LOADED)
+                } else {
+                    info("ChatState name: ${stateEvent.state.name}, isTimeout: ${stateEvent.isTimeout}")
+                    if (!stateEvent.isTimeout && stateEvent.state < ChatStateEnum.HISTORY_LOADED) {
+                        withContext(Dispatchers.Main) { fragment?.showProgressBar() }
+                    }
+                    if (stateEvent.isTimeout && chatState.getCurrentState() < ChatStateEnum.SETTINGS_LOADED) {
+                        val timeoutMessage =
+                            fragment?.getString(R.string.timeout_message) ?: "Timeout"
+                        withContext(Dispatchers.Main) { fragment?.showErrorView(timeoutMessage) }
+                    } else if (stateEvent.state == ChatStateEnum.DEVICE_REGISTERED) {
+                        BaseConfig.instance.transport.sendInitMessages()
+                    } else if (stateEvent.state == ChatStateEnum.INIT_USER_SENT) {
+                        loadSettings()
+                    } else if (stateEvent.state == ChatStateEnum.SETTINGS_LOADED) {
+                        loadHistory()
+                    } else if (isChatReady()) {
+                        messenger.resendMessages()
+                    }
                 }
             }
         }

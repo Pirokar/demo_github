@@ -17,6 +17,7 @@ import im.threads.business.transport.threadsGate.ThreadsGateMessageParser
 import im.threads.business.utils.AppInfo
 import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.ConsultWriter
+import im.threads.business.utils.DemoModeProvider
 import im.threads.business.utils.DeviceInfo
 import im.threads.business.utils.FileProvider
 import im.threads.business.utils.internet.NetworkInteractor
@@ -45,4 +46,5 @@ val coreSLModule = module {
     factory { DeviceInfo() }
     factory { FileProvider() }
     factory { ChatState(get()) }
+    factory { DemoModeProvider(get()) }
 }
