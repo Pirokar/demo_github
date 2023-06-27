@@ -187,11 +187,13 @@ class ThreadsDbHelper private constructor(val context: Context, password: String
         @Synchronized
         fun getInstance(context: Context): ThreadsDbHelper {
             val password = getDbPassword(context)
-            checkDatabase(context, password)
             if (dbInstance == null) {
                 dbInstance = ThreadsDbHelper(context, password)
+                if (!isDatabaseAlive(context)) {
+                    dbInstance = ThreadsDbHelper(context, password)
+                }
             }
-            return dbInstance ?: ThreadsDbHelper(context, password)
+            return dbInstance!!
         }
 
         private fun getDbPassword(context: Context): String {
@@ -206,14 +208,14 @@ class ThreadsDbHelper private constructor(val context: Context, password: String
             return securedPassword
         }
 
-        private fun checkDatabase(context: Context, password: String) {
-            try {
-                val newDatabase = ThreadsDbHelper(context, password)
-                newDatabase.readableDatabase.rawQuery("SELECT * FROM ${QuotesTable.TABLE_QUOTE}")
-                newDatabase.close()
+        private fun isDatabaseAlive(context: Context): Boolean {
+            return try {
+                val cursor = dbInstance?.readableDatabase?.rawQuery("SELECT * FROM ${QuotesTable.TABLE_QUOTE}")
+                cursor != null
             } catch (exc: Exception) {
                 LoggerEdna.error("Cannot read database. Database will be deleted", exc)
                 context.deleteDatabase(DATABASE_NAME)
+                false
             }
         }
 
