@@ -181,7 +181,7 @@ class BubbleMessageTextView : CustomFontTextView {
         var shouldTrim = false
         var trimStart = spannable.length - 1
         val trimEnd = spannable.length - 1
-        while (spannable[trimStart] == ' ') {
+        while (spannable[trimStart] == ' ' && trimStart > 0) {
             shouldTrim = true
             trimStart--
         }

@@ -59,6 +59,7 @@ import im.threads.business.config.BaseConfig
 import im.threads.business.extensions.withMainContext
 import im.threads.business.imageLoading.ImageLoader.Companion.get
 import im.threads.business.logger.LogZipSender
+import im.threads.business.logger.LoggerEdna
 import im.threads.business.logger.LoggerEdna.debug
 import im.threads.business.logger.LoggerEdna.error
 import im.threads.business.logger.LoggerEdna.info
@@ -757,8 +758,8 @@ class ChatFragment :
                     val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
                     val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
                     val itemCount = chatAdapter?.itemCount
-                    if (itemCount != null && itemCount - 1 - lastVisibleItemPosition > INVISIBLE_MESSAGES_COUNT &&
-                        binding.scrollDownButtonContainer.isNotVisible()
+                    if (itemCount != null &&
+                        itemCount - 1 - lastVisibleItemPosition > INVISIBLE_MESSAGES_COUNT
                     ) {
                         binding.scrollDownButtonContainer.visible()
                         showUnreadMessagesCount(chatController.getUnreadMessagesCount())
