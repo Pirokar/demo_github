@@ -47,7 +47,7 @@ class DemoSamplesListFragment : BaseAppFragment<FragmentSamplesListBinding>(), S
 
     private fun setNavigationIcon() = with(binding) {
         toolbar.navigationIcon?.setTint(ContextCompat.getColor(requireContext(), R.color.white_color_ec))
-        toolbar.setNavigationOnClickListener { navigateUp() }
+        toolbar.setNavigationOnClickListener { findNavController().navigateUp() }
     }
 
     private fun subscribeForData() {
