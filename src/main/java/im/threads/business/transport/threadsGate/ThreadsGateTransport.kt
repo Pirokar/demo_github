@@ -380,7 +380,7 @@ class ThreadsGateTransport(
     private fun closeWebSocketIfNeeded() {
         if (messageInProcessIds.isEmpty() &&
             lifecycle?.currentState?.isAtLeast(Lifecycle.State.STARTED)?.not() != false &&
-            chatState.getCurrentState() == ChatStateEnum.INIT_USER_SENT
+            chatState.getCurrentState() >= ChatStateEnum.INIT_USER_SENT
         ) {
             closeWebSocket()
         }

@@ -170,7 +170,6 @@ class ChatController private constructor() {
     }
 
     fun onViewStop() {
-        BaseConfig.instance.transport.closeWebSocket()
         isAllMessagesDownloaded = false
         messenger.onViewStop()
     }
