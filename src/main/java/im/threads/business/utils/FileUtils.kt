@@ -200,7 +200,7 @@ object FileUtils {
             relativeUrl
         } else {
             val datastoreUrl = BaseConfig.instance.datastoreUrl
-            val filesUrl = if (datastoreUrl.endsWith("/")) {
+            val filesUrl = if (datastoreUrl?.endsWith("/") == true) {
                 "${datastoreUrl}files"
             } else {
                 "$datastoreUrl/files"

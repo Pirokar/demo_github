@@ -231,6 +231,8 @@ open class ThreadsLibBase protected constructor(context: Context) {
                     }
                 }
             }
+
+            updateTransport()
             showVersionsLog()
 
             info("Lib_init_time: ${System.currentTimeMillis() - startInitTime}ms")
@@ -289,6 +291,20 @@ open class ThreadsLibBase protected constructor(context: Context) {
         protected fun createLibInstance(context: Context) {
             if (libInstance == null) {
                 libInstance = ThreadsLibBase(context)
+            }
+        }
+
+        private fun updateTransport() {
+            val threadsGateUrl = BaseConfig.instance.threadsGateUrl
+            val threadsGateProviderUid = BaseConfig.instance.threadsGateProviderUid
+            val trustedSSLCertificates = BaseConfig.instance.trustedSSLCertificates
+
+            if (threadsGateUrl != null && threadsGateProviderUid != null) {
+                BaseConfig.instance.updateTransport(
+                    threadsGateUrl,
+                    threadsGateProviderUid,
+                    trustedSSLCertificates
+                )
             }
         }
 
