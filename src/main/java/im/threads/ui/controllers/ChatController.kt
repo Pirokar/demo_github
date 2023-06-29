@@ -460,7 +460,7 @@ class ChatController private constructor() {
         fragment = chatFragment
 
         chatFragment.showProgressBar()
-        loadItemsFromDB()
+        if (isChatReady()) loadItemsFromDB()
         if (consultWriter.isSearchingConsult) {
             chatFragment.setStateSearchingConsult()
         }
@@ -519,9 +519,12 @@ class ChatController private constructor() {
 
     private fun loadItemsFromDB() {
         fragment?.let {
-            it.addChatItems(database.getChatItems(0, -1))
-            it.hideProgressBar()
-            it.showWelcomeScreen(isNeedToShowWelcome)
+            coroutineScope.launch() {
+                val itemsDef = async(Dispatchers.IO) { database.getChatItems(0, -1) }
+                it.addChatItems(itemsDef.await())
+                it.hideProgressBar()
+                it.showWelcomeScreen(isNeedToShowWelcome)
+            }
         }
     }
 
@@ -585,17 +588,21 @@ class ChatController private constructor() {
         info(ThreadsApi.REST_TAG, "Client id changed. Loading history.")
         cleanAll()
         fragment?.removeSearching()
-        val response = historyLoader.getHistorySync(null, true)
-        var serverItems = HistoryParser.getChatItems(response)
-        serverItems = addLocalUserMessages(serverItems)
-        parseHistoryItemsForSentStatus(serverItems)
-        messenger.saveMessages(serverItems)
-        clearUnreadPush()
-        processSystemMessages(serverItems)
-        fragment?.let { chatFragment ->
-            response?.getConsultInfo()?.let { chatFragment.setStateConsultConnected(it) }
+        return if (isChatReady()) {
+            val response = historyLoader.getHistorySync(null, true)
+            var serverItems = HistoryParser.getChatItems(response)
+            serverItems = addLocalUserMessages(serverItems)
+            parseHistoryItemsForSentStatus(serverItems)
+            messenger.saveMessages(serverItems)
+            clearUnreadPush()
+            processSystemMessages(serverItems)
+            fragment?.let { chatFragment ->
+                response?.getConsultInfo()?.let { chatFragment.setStateConsultConnected(it) }
+            }
+            setLastAvatars(serverItems)
+        } else {
+            listOf()
         }
-        return setLastAvatars(serverItems)
     }
 
     fun loadHistory(fromBeginning: Boolean = true, applyUiChanges: Boolean = true) {
@@ -654,8 +661,11 @@ class ChatController private constructor() {
                                             fragment?.setStateConsultConnected(consultInfo)
                                         }
                                         fragment?.hideProgressBar()
-                                        fragment?.showWelcomeScreen(isNeedToShowWelcome)
                                         fragment?.showBottomBar()
+
+                                        if (isNeedToShowWelcome) {
+                                            fragment?.showWelcomeScreen(true)
+                                        }
                                     }
                                 }
                             }
@@ -1337,7 +1347,7 @@ class ChatController private constructor() {
                     .subscribe(
                         { pair: androidx.core.util.Pair<ConsultInfo?, List<ChatItem>> ->
                             val chatItems = pair.second
-                            if (fragment != null) {
+                            if (fragment != null && isChatReady()) {
                                 fragment?.addChatItems(chatItems)
                                 handleQuickReplies(chatItems)
                                 val info = pair.first
@@ -1649,6 +1659,7 @@ class ChatController private constructor() {
                     } else if (stateEvent.state == ChatStateEnum.INIT_USER_SENT) {
                         loadSettings()
                     } else if (stateEvent.state == ChatStateEnum.SETTINGS_LOADED) {
+                        loadItemsFromDB()
                         loadHistory()
                     } else if (isChatReady()) {
                         messenger.resendMessages()

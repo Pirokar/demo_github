@@ -373,7 +373,7 @@ class ChatFragment :
         bottomLayout.visible()
         val isNeedToShowWelcome = chatController.isNeedToShowWelcome
         if (isNeedToShowWelcome) {
-            showWelcomeScreen(true)
+            showWelcomeScreen(chatController.isChatReady())
         } else {
             recycler.visible()
         }
@@ -1896,7 +1896,7 @@ class ChatFragment :
             setTitleStateDefault()
             showWelcomeScreen(false)
             binding.inputEditView.clearFocus()
-            showWelcomeScreen(true)
+            showWelcomeScreen(chatController.isChatReady())
         }
     }
 
@@ -2385,8 +2385,10 @@ class ChatFragment :
         }
 
     fun showEmptyState() {
-        binding.flEmpty.visibility = View.VISIBLE
-        binding.tvEmptyStateHint.setText(R.string.ecc_empty_state_hint)
+        if (chatController.isChatReady()) {
+            binding.flEmpty.visibility = View.VISIBLE
+            binding.tvEmptyStateHint.setText(R.string.ecc_empty_state_hint)
+        }
     }
 
     fun hideEmptyState() {
