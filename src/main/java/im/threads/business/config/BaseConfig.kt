@@ -31,11 +31,11 @@ import javax.net.ssl.X509TrustManager
 
 open class BaseConfig(
     context: Context,
-    serverBaseUrl: String?,
-    datastoreUrl: String?,
-    threadsGateUrl: String?,
-    threadsGateProviderUid: String?,
-    isNewChatCenterApi: Boolean?,
+    var serverBaseUrl: String?,
+    var datastoreUrl: String?,
+    var threadsGateUrl: String?,
+    var threadsGateProviderUid: String?,
+    var isNewChatCenterApi: Boolean?,
     val loggerConfig: LoggerConfig?,
     val unreadMessagesCountListener: UnreadMessagesCountListener?,
     val networkInterceptor: Interceptor?,
@@ -52,8 +52,6 @@ open class BaseConfig(
 
     @JvmField
     var transport: Transport
-    var serverBaseUrl: String
-    var datastoreUrl: String
 
     /**
      * set history loading count
