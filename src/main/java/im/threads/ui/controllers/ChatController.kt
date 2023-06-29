@@ -392,8 +392,10 @@ class ChatController private constructor() {
                         processSystemMessages(serverItems)
                         return@fromCallable setLastAvatars(serverItems)
                     } catch (e: Exception) {
-                        fragment?.hideProgressBar()
-                        fragment?.showWelcomeScreen(isNeedToShowWelcome)
+                        coroutineScope.launch {
+                            fragment?.hideProgressBar()
+                            fragment?.showWelcomeScreen(isNeedToShowWelcome)
+                        }
                         error(ThreadsApi.REST_TAG, "Requesting history items error", e)
                         return@fromCallable setLastAvatars(
                             database.getChatItems(
@@ -600,8 +602,10 @@ class ChatController private constructor() {
 
     fun loadHistory(fromBeginning: Boolean = true, applyUiChanges: Boolean = true) {
         if (isAllMessagesDownloaded) {
-            fragment?.hideProgressBar()
-            fragment?.showWelcomeScreen(isNeedToShowWelcome)
+            coroutineScope.launch {
+                fragment?.hideProgressBar()
+                fragment?.showWelcomeScreen(isNeedToShowWelcome)
+            }
             return
         }
         if (!chatState.isChatReady()) return
