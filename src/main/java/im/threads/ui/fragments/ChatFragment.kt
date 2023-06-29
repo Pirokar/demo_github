@@ -689,7 +689,13 @@ class ChatFragment :
 
     private fun bindViews() {
         binding.swipeRefresh.setSwipeListener {}
-        binding.swipeRefresh.setOnRefreshListener { onRefresh() }
+        binding.swipeRefresh.setOnRefreshListener {
+            if (chatController.isChatReady()) {
+                onRefresh()
+            } else {
+                binding.swipeRefresh.isRefreshing = false
+            }
+        }
         binding.consultName.setOnClickListener {
             if (chatController.isConsultFound) {
                 chatAdapterCallback?.onConsultAvatarClick(chatController.currentConsultInfo!!.id)
