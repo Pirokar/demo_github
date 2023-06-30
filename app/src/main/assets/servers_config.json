@@ -39,6 +39,13 @@
       "threadsGateUrl": "wss://arm-beta3-ecc.edna.ru/gate/socket"
     },
     {
+      "name": "Dev 4",
+      "threadsGateProviderUid": "DEV4_9M2pMcnZyaXBaZURYU0tKemRSZkV1OVFwTU12SWU1TEtLSFFs",
+      "serverBaseUrl": "http://arm.dev4.chc.dte/",
+      "datastoreUrl": "http://datastore.dev4.chc.dte/",
+      "threadsGateUrl": "ws://tg.dev4.chc.dte/gate/socket"
+    },
+    {
       "name": "GPB",
       "threadsGateProviderUid": "GPB-TEST_iT6VrvripZeDCCVJzdRfEu9QpMMvIe5L5KcEM",
       "serverBaseUrl": "http://open-ig.gpb-test.chc.dte/",
