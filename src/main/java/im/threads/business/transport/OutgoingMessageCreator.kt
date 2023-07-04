@@ -174,6 +174,7 @@ class OutgoingMessageCreator(
             addProperty(MessageAttributes.TEXT, phrase ?: "")
             addProperty(MessageAttributes.APP_MARKER_KEY, userInfo?.appMarker)
             addProperty(MessageAttributes.DEVICE_ADDRESS, deviceAddress)
+            addProperty(MessageAttributes.TYPE, ChatItemType.MESSAGE.name)
         }
         val quotes = JsonArray().apply {
             campaignMessage?.let {
