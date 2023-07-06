@@ -376,40 +376,6 @@ class ChatController private constructor() {
         serverItems.addAll(sendingItems)
     }
 
-    internal fun requestItems(itemsCountToGet: Int): Observable<List<ChatItem>>? {
-        return Observable
-            .fromCallable {
-                if (instance?.fragment != null && ThreadsLibBase.getInstance().isUserInitialized) {
-                    val count = BaseConfig.instance.historyLoadingCount
-                    try {
-                        val response = historyLoader.getHistorySync(itemsCountToGet, false)
-                        var serverItems = HistoryParser.getChatItems(response)
-                        serverItems = addLocalUserMessages(serverItems)
-                        updateDoubleItems(serverItems as ArrayList<ChatItem>)
-                        parseHistoryItemsForSentStatus(serverItems)
-                        messenger.saveMessages(serverItems)
-                        clearUnreadPush()
-                        processSystemMessages(serverItems)
-                        return@fromCallable setLastAvatars(serverItems)
-                    } catch (e: Exception) {
-                        coroutineScope.launch {
-                            fragment?.hideProgressBar()
-                            fragment?.showWelcomeScreen(isNeedToShowWelcome)
-                        }
-                        error(ThreadsApi.REST_TAG, "Requesting history items error", e)
-                        return@fromCallable setLastAvatars(
-                            database.getChatItems(
-                                itemsCountToGet,
-                                count
-                            )
-                        )
-                    }
-                }
-                java.util.ArrayList()
-            }
-            .subscribeOn(Schedulers.io())
-    }
-
     internal fun onFileDownloadRequest(fileDescription: FileDescription?) {
         if (fragment?.isAdded == true) {
             fragment?.activity?.let {
@@ -583,21 +549,10 @@ class ChatController private constructor() {
     internal fun isSendDuringInactive() = currentScheduleInfo?.sendDuringInactive == true
 
     @Throws(Exception::class)
-    private fun onClientIdChanged(): List<ChatItem> {
+    private fun onClientIdChanged() {
         info(ThreadsApi.REST_TAG, "Client id changed. Loading history.")
         cleanAll()
-        fragment?.removeSearching()
-        val response = historyLoader.getHistorySync(null, true)
-        var serverItems = HistoryParser.getChatItems(response)
-        serverItems = addLocalUserMessages(serverItems)
-        parseHistoryItemsForSentStatus(serverItems)
-        messenger.saveMessages(serverItems)
-        clearUnreadPush()
-        processSystemMessages(serverItems)
-        fragment?.let { chatFragment ->
-            response?.getConsultInfo()?.let { chatFragment.setStateConsultConnected(it) }
-        }
-        return setLastAvatars(serverItems)
+        loadHistory()
     }
 
     internal fun loadHistoryAfterWithLastMessageCheck(applyUiChanges: Boolean = true) {
@@ -609,6 +564,7 @@ class ChatController private constructor() {
         }
     }
 
+    @Synchronized
     internal fun loadHistory(
         anchorTimestamp: Long? = null,
         isAfterAnchor: Boolean? = null,
@@ -697,7 +653,7 @@ class ChatController private constructor() {
         }
     }
 
-    internal fun loadSettings() {
+    private fun loadSettings() {
         chatState.changeState(ChatStateEnum.LOADING_SETTINGS)
         subscribe(
             Single.fromCallable {
@@ -1333,39 +1289,9 @@ class ChatController private constructor() {
         info(ThreadsApi.REST_TAG, "onDeviceAddressChanged. Loading history.")
         val clientId = clientUseCase.getUserInfo()?.clientId
         if (fragment != null && !clientId.isNullOrBlank()) {
-            subscribe(
-                Single.fromCallable {
-                    BaseConfig.instance.transport.sendRegisterDevice(false)
-                    isDownloadingMessages = true
-                    val response = historyLoader.getHistorySync(
-                        null,
-                        true
-                    )
-                    var chatItems = HistoryParser.getChatItems(response)
-                    chatItems = addLocalUserMessages(chatItems)
-                    parseHistoryItemsForSentStatus(chatItems)
-                    messenger.saveMessages(chatItems)
-                    clearUnreadPush()
-                    processSystemMessages(chatItems)
-                    androidx.core.util.Pair(response?.getConsultInfo(), setLastAvatars(chatItems))
-                }
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                        { pair: androidx.core.util.Pair<ConsultInfo?, List<ChatItem>> ->
-                            val chatItems = pair.second
-                            if (fragment != null) {
-                                fragment?.addChatItems(chatItems)
-                                handleQuickReplies(chatItems)
-                                val info = pair.first
-                                if (info != null) {
-                                    fragment?.setStateConsultConnected(info)
-                                }
-                                isDownloadingMessages = false
-                            }
-                        }
-                    ) { obj: Throwable -> obj.message }
-            )
+            BaseConfig.instance.transport.sendRegisterDevice(false)
+            clearUnreadPush()
+            loadHistory()
         } else {
             BaseConfig.instance.transport.sendRegisterDevice(false)
             info(
@@ -1597,28 +1523,12 @@ class ChatController private constructor() {
     }
 
     private fun subscribeOnClientIdChange() {
-        instance?.subscribe(
-            Single.fromCallable {
-                val userInfo = clientUseCase.getUserInfo()
-                val newClientId = clientUseCase.getTagNewClientId()
-                val oldClientId = userInfo?.clientId
-                if (!newClientId.isNullOrEmpty() && newClientId != oldClientId) {
-                    instance?.onClientIdChanged() ?: ArrayList()
-                } else {
-                    ArrayList()
-                }
-            }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { chatItems: List<ChatItem> ->
-                        if (instance?.fragment != null) {
-                            instance?.fragment?.addChatItems(chatItems)
-                            instance?.handleQuickReplies(chatItems)
-                        }
-                    }
-                ) { obj: Throwable -> obj.message }
-        )
+        val userInfo = clientUseCase.getUserInfo()
+        val newClientId = clientUseCase.getTagNewClientId()
+        val oldClientId = userInfo?.clientId
+        if (!newClientId.isNullOrEmpty() && newClientId != oldClientId) {
+            instance?.onClientIdChanged()
+        }
     }
 
     private fun subscribeOnMessageError() {

@@ -265,10 +265,6 @@ class ChatFragment :
         initRecordButtonState()
         chatController.threadId?.let { setCurrentThreadId(it) }
         BaseConfig.instance.transport.setLifecycle(lifecycle)
-        if (chatController.isChatReady()) {
-            ChatController.getInstance().loadSettings()
-            ChatController.getInstance().loadHistoryAfterWithLastMessageCheck()
-        }
     }
 
     override fun onStop() {
@@ -908,14 +904,7 @@ class ChatFragment :
     }
 
     private fun onRefresh() {
-        val disposable = chatController.requestItems(BaseConfig.instance.historyLoadingCount)
-            ?.delay(500, TimeUnit.MILLISECONDS)
-            ?.observeOn(AndroidSchedulers.mainThread())
-            ?.subscribe({ result: List<ChatItem> -> afterRefresh(result) }) { onError: Throwable? -> error("onRefresh ", onError) }
-
-        if (disposable != null) {
-            subscribe(disposable)
-        }
+        chatController.loadHistory()
     }
 
     private fun afterRefresh(result: List<ChatItem>) {
