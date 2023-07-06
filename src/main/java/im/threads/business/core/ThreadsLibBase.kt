@@ -157,7 +157,7 @@ open class ThreadsLibBase protected constructor(context: Context) {
         @JvmStatic
         fun init(configBuilder: BaseConfigBuilder) {
             val startInitTime = System.currentTimeMillis()
-            val isUIMode = BaseConfig.instance != null
+            val isUIMode = BaseConfig.isInstanceInitialized()
 
             if (!isUIMode) {
                 createLibInstance(configBuilder.context)
