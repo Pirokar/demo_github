@@ -267,7 +267,7 @@ class ChatFragment :
         BaseConfig.instance.transport.setLifecycle(lifecycle)
         if (chatController.isChatReady()) {
             ChatController.getInstance().loadSettings()
-            ChatController.getInstance().loadHistory()
+            ChatController.getInstance().loadHistoryAfterWithLastMessageCheck()
         }
     }
 
@@ -772,7 +772,7 @@ class ChatFragment :
                         itemCount > BaseConfig.instance.historyLoadingCount / 2
                     ) {
                         binding.swipeRefresh.isRefreshing = true
-                        chatController.loadHistory(false)
+                        chatController.loadHistory(isAfterAnchor = false) // before
                     }
                 }
             }

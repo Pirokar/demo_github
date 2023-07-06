@@ -59,6 +59,25 @@ class ThreadsApi(
         }
     }
 
+    fun historyAfter(
+        token: String?,
+        afterDate: String,
+        count: Int?,
+        version: String?
+    ): Call<HistoryResponse?>? {
+        return if (BaseConfig.instance.newChatCenterApi) {
+            newThreadsApi?.history(token?.encodeUrl(), afterDate, count, version)
+        } else {
+            oldThreadsApi?.history(
+                token?.encodeUrl(),
+                afterDate,
+                count,
+                version,
+                API_VERSION
+            )
+        }
+    }
+
     fun markMessageAsRead(ids: List<String?>?): Call<Void?>? {
         return if (BaseConfig.instance.newChatCenterApi) {
             newThreadsApi?.markMessageAsRead(ids)

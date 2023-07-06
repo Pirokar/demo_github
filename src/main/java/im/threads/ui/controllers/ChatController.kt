@@ -178,24 +178,24 @@ class ChatController private constructor() {
         messenger.onViewDestroy()
     }
 
-    fun onRatingClick(survey: Survey) {
+    internal fun onRatingClick(survey: Survey) {
         if (!surveyCompletionInProgress) {
             surveyCompletionInProgress = true
         }
         BaseConfig.instance.transport.sendRatingDone(survey)
     }
 
-    fun onResolveThreadClick(approveResolve: Boolean) {
+    internal fun onResolveThreadClick(approveResolve: Boolean) {
         BaseConfig.instance.transport.sendResolveThread(approveResolve)
     }
 
-    fun onUserTyping(input: String?) {
+    internal fun onUserTyping(input: String?) {
         if (input != null) {
             BaseConfig.instance.transport.sendUserTying(input)
         }
     }
 
-    fun onUserInput(upcomingUserMessage: UpcomingUserMessage) {
+    internal fun onUserInput(upcomingUserMessage: UpcomingUserMessage) {
         removeResolveRequest()
         // If user has written a message while the active survey is visible
         // we should make invisible the survey
@@ -208,7 +208,7 @@ class ChatController private constructor() {
         messenger.queueMessageSending(um)
     }
 
-    fun fancySearch(
+    internal fun fancySearch(
         query: String?,
         forward: Boolean,
         consumer: Consumer<Pair<List<ChatItem?>?, ChatItem?>?>
@@ -262,7 +262,7 @@ class ChatController private constructor() {
         )
     }
 
-    fun onFileClick(fileDescription: FileDescription) {
+    internal fun onFileClick(fileDescription: FileDescription) {
         info("onFileClick $fileDescription")
         if (fragment?.isAdded == true) {
             val activity: Activity? = fragment?.activity
@@ -288,7 +288,7 @@ class ChatController private constructor() {
         }
     }
 
-    fun setActivityIsForeground(isForeground: Boolean) {
+    internal fun setActivityIsForeground(isForeground: Boolean) {
         info("setActivityIsForeground")
         isActive = isForeground
         if (isForeground && fragment?.isAdded == true) {
@@ -325,9 +325,9 @@ class ChatController private constructor() {
         updateServerItemsBySendingItems(serverItems, getSendingItems())
     }
 
-    fun getUnreadMessagesCount() = database.getUnreadMessagesCount()
+    internal fun getUnreadMessagesCount() = database.getUnreadMessagesCount()
 
-    fun setMessageAsRead(item: ChatItem?, async: Boolean = true) {
+    internal fun setMessageAsRead(item: ChatItem?, async: Boolean = true) {
         if (item is ConsultPhrase) {
             if (async) {
                 coroutineScope.launch(Dispatchers.IO) { database.setMessageWasRead(item.id) }
@@ -337,9 +337,9 @@ class ChatController private constructor() {
         }
     }
 
-    fun isChatReady() = chatState.isChatReady()
+    internal fun isChatReady() = chatState.isChatReady()
 
-    fun onRetryInitChatClick() {
+    internal fun onRetryInitChatClick() {
         fragment?.hideErrorView()
         fragment?.showProgressBar()
 
@@ -376,7 +376,7 @@ class ChatController private constructor() {
         serverItems.addAll(sendingItems)
     }
 
-    fun requestItems(itemsCountToGet: Int): Observable<List<ChatItem>>? {
+    internal fun requestItems(itemsCountToGet: Int): Observable<List<ChatItem>>? {
         return Observable
             .fromCallable {
                 if (instance?.fragment != null && ThreadsLibBase.getInstance().isUserInitialized) {
@@ -410,7 +410,7 @@ class ChatController private constructor() {
             .subscribeOn(Schedulers.io())
     }
 
-    fun onFileDownloadRequest(fileDescription: FileDescription?) {
+    internal fun onFileDownloadRequest(fileDescription: FileDescription?) {
         if (fragment?.isAdded == true) {
             fragment?.activity?.let {
                 if (fileDescription != null) {
@@ -420,7 +420,7 @@ class ChatController private constructor() {
         }
     }
 
-    fun onConsultChoose(activity: Activity?, consultId: String?) {
+    internal fun onConsultChoose(activity: Activity?, consultId: String?) {
         if (consultId == null) {
             warning("Can't show consult info: consultId == null")
         } else {
@@ -451,7 +451,7 @@ class ChatController private constructor() {
     val currentConsultInfo: ConsultInfo?
         get() = consultWriter.currentConsultInfo
 
-    fun bindFragment(chatFragment: ChatFragment?) {
+    internal fun bindFragment(chatFragment: ChatFragment?) {
         info("bindFragment: $chatFragment")
         val activity = chatFragment?.activity ?: return
 
@@ -501,7 +501,7 @@ class ChatController private constructor() {
         }
     }
 
-    fun unbindFragment() {
+    internal fun unbindFragment() {
         fragment?.let {
             val activity: Activity? = it.activity
             if (activity != null && progressReceiver != null) {
@@ -527,7 +527,7 @@ class ChatController private constructor() {
         }
     }
 
-    fun setMessagesInCurrentThreadAsReadInDB() {
+    internal fun setMessagesInCurrentThreadAsReadInDB() {
         subscribe(
             database.setAllConsultMessagesWereReadInThread(threadId)
                 .subscribe(
@@ -550,7 +550,7 @@ class ChatController private constructor() {
             preferences.save(PreferencesCoreKeys.FILE_DESCRIPTION_DRAFT, fileDescription)
         }
 
-    fun clearUnreadPushCount() {
+    internal fun clearUnreadPushCount() {
         preferences.save(PreferencesCoreKeys.UNREAD_PUSH_COUNT, 0)
     }
 
@@ -561,7 +561,7 @@ class ChatController private constructor() {
         return compositeDisposable?.add(event) == true
     }
 
-    fun setAllMessagesWereRead() {
+    internal fun setAllMessagesWereRead() {
         removePushNotification()
         subscribe(
             database.setAllConsultMessagesWereRead()
@@ -572,15 +572,15 @@ class ChatController private constructor() {
         fragment?.setAllMessagesWereRead()
     }
 
-    fun isMessageSent(correlationId: String?): Boolean {
+    internal fun isMessageSent(correlationId: String?): Boolean {
         return database
             .getNotDeliveredChatItems()
             .firstOrNull { it.id == correlationId } == null
     }
 
-    fun isChatWorking(): Boolean = currentScheduleInfo == null || currentScheduleInfo?.isChatWorking == true
+    internal fun isChatWorking(): Boolean = currentScheduleInfo == null || currentScheduleInfo?.isChatWorking == true
 
-    fun isSendDuringInactive() = currentScheduleInfo?.sendDuringInactive == true
+    internal fun isSendDuringInactive() = currentScheduleInfo?.sendDuringInactive == true
 
     @Throws(Exception::class)
     private fun onClientIdChanged(): List<ChatItem> {
@@ -600,7 +600,20 @@ class ChatController private constructor() {
         return setLastAvatars(serverItems)
     }
 
-    fun loadHistory(fromBeginning: Boolean = true, applyUiChanges: Boolean = true) {
+    internal fun loadHistoryAfterWithLastMessageCheck(applyUiChanges: Boolean = true) {
+        coroutineScope.launch {
+            val lastTimeStampDef = async(Dispatchers.IO) { getLastDbItemTimestamp() }
+            lastTimeStampDef.await()?.let {
+                loadHistory(it, true, applyUiChanges)
+            } ?: loadHistory(applyUiChanges = applyUiChanges)
+        }
+    }
+
+    internal fun loadHistory(
+        anchorTimestamp: Long? = null,
+        isAfterAnchor: Boolean? = null,
+        applyUiChanges: Boolean = true
+    ) {
         if (isAllMessagesDownloaded) {
             coroutineScope.launch {
                 fragment?.hideProgressBar()
@@ -618,10 +631,15 @@ class ChatController private constructor() {
                         if (count < database.getMessagesCount()) {
                             count = database.getMessagesCount()
                         }
-                        val response = historyLoader.getHistorySync(
-                            count,
-                            fromBeginning
-                        )
+
+                        val response = if (isAfterAnchor == true && anchorTimestamp != null) {
+                            historyLoader.getHistorySync(anchorTimestamp, count, true)
+                        } else {
+                            historyLoader.getHistorySync(
+                                count,
+                                isAfterAnchor == null
+                            )
+                        }
                         val serverItems = HistoryParser.getChatItems(response)
                         if (serverItems.isEmpty()) {
                             isAllMessagesDownloaded = true
@@ -650,7 +668,7 @@ class ChatController private constructor() {
                                     val items = setLastAvatars(serverItems)
                                     if (fragment != null) {
                                         fragment?.addChatItems(items)
-                                        if (fromBeginning) {
+                                        if (isAfterAnchor == null) { // from beginning
                                             handleQuickReplies(items)
                                         }
                                         handleInputAvailability(items)
@@ -679,7 +697,7 @@ class ChatController private constructor() {
         }
     }
 
-    fun loadSettings() {
+    internal fun loadSettings() {
         chatState.changeState(ChatStateEnum.LOADING_SETTINGS)
         subscribe(
             Single.fromCallable {
@@ -693,7 +711,7 @@ class ChatController private constructor() {
                         if (responseBody != null) {
                             val clientNotificationType =
                                 responseBody.clientNotificationDisplayType
-                            if (clientNotificationType != null && clientNotificationType.isNotEmpty()) {
+                            if (!clientNotificationType.isNullOrEmpty()) {
                                 val type = ClientNotificationDisplayType.fromString(
                                     clientNotificationType
                                 )
@@ -714,17 +732,17 @@ class ChatController private constructor() {
         )
     }
 
-    fun downloadMessagesTillEnd(): Single<List<ChatItem>> {
+    internal fun downloadMessagesTillEnd(): Single<List<ChatItem>> {
         return messenger.downloadMessagesTillEnd()
     }
 
-    fun forceResend(userPhrase: UserPhrase?) {
+    internal fun forceResend(userPhrase: UserPhrase?) {
         if (isScheduleActive(currentScheduleInfo) && userPhrase != null) {
             messenger.forceResend(userPhrase)
         }
     }
 
-    fun removeUserPhraseFromDatabaseAsync(userPhrase: UserPhrase) {
+    internal fun removeUserPhraseFromDatabaseAsync(userPhrase: UserPhrase) {
         coroutineScope.launch(Dispatchers.IO) {
             database.removeItem(userPhrase.id, userPhrase.backendMessageId)
         }
@@ -762,12 +780,6 @@ class ChatController private constructor() {
             }
         }
         return list
-    }
-
-    fun hideEmptyState() {
-        if (ThreadsLibBase.getInstance().isUserInitialized && fragment != null && fragment?.isAdded == true) {
-            fragment?.hideEmptyState()
-        }
     }
 
     private fun subscribeToChatEvents() {
@@ -1267,7 +1279,7 @@ class ChatController private constructor() {
         }
     }
 
-    fun cleanAll() {
+    internal fun cleanAll() {
         info("cleanAll!")
         isAllMessagesDownloaded = false
         messenger.clearSendQueue()
@@ -1324,6 +1336,7 @@ class ChatController private constructor() {
             subscribe(
                 Single.fromCallable {
                     BaseConfig.instance.transport.sendRegisterDevice(false)
+                    isDownloadingMessages = true
                     val response = historyLoader.getHistorySync(
                         null,
                         true
@@ -1348,6 +1361,7 @@ class ChatController private constructor() {
                                 if (info != null) {
                                     fragment?.setStateConsultConnected(info)
                                 }
+                                isDownloadingMessages = false
                             }
                         }
                     ) { obj: Throwable -> obj.message }
@@ -1527,7 +1541,7 @@ class ChatController private constructor() {
     }
 
     private fun handleQuickReplies(chatItems: List<ChatItem>) {
-        if (chatItems.isNullOrEmpty()) {
+        if (chatItems.isEmpty()) {
             return
         }
         val quickReplyMessageCandidate = getQuickReplyMessageCandidate(chatItems)
@@ -1559,12 +1573,12 @@ class ChatController private constructor() {
         }
     }
 
-    fun hideQuickReplies() {
+    internal fun hideQuickReplies() {
         chatUpdateProcessor.postQuickRepliesChanged(QuickReplyItem(java.util.ArrayList(), 0))
     }
 
     private fun getQuickReplyMessageCandidate(chatItems: List<ChatItem>?): ConsultPhrase? {
-        if (chatItems != null && chatItems.isNotEmpty()) {
+        if (!chatItems.isNullOrEmpty()) {
             val listIterator = chatItems.listIterator(chatItems.size)
             while (listIterator.hasPrevious()) {
                 val chatItem = listIterator.previous()
@@ -1653,12 +1667,23 @@ class ChatController private constructor() {
                     } else if (stateEvent.state == ChatStateEnum.INIT_USER_SENT) {
                         loadSettings()
                     } else if (stateEvent.state == ChatStateEnum.SETTINGS_LOADED) {
-                        loadHistory()
+                        loadHistoryAfterWithLastMessageCheck()
                     } else if (isChatReady()) {
                         messenger.resendMessages()
                     }
                 }
             }
+        }
+    }
+
+    private fun getLastDbItemTimestamp(): Long? {
+        return try {
+            database
+                .getChatItems(0, 1)
+                .map { it.timeStamp }
+                .last()
+        } catch (exc: Exception) {
+            null
         }
     }
 
