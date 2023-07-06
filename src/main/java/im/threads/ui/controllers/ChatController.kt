@@ -555,7 +555,7 @@ class ChatController private constructor() {
         loadHistory()
     }
 
-    internal fun loadHistoryAfterWithLastMessageCheck(applyUiChanges: Boolean = true) {
+    private fun loadHistoryAfterWithLastMessageCheck(applyUiChanges: Boolean = true) {
         coroutineScope.launch {
             val lastTimeStampDef = async(Dispatchers.IO) { getLastDbItemTimestamp() }
             lastTimeStampDef.await()?.let {
