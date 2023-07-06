@@ -555,11 +555,18 @@ class ChatController private constructor() {
         loadHistory()
     }
 
-    private fun loadHistoryAfterWithLastMessageCheck(applyUiChanges: Boolean = true) {
+    private fun loadHistoryAfterWithLastMessageCheck(
+        applyUiChanges: Boolean = true
+    ) {
         coroutineScope.launch {
             val lastTimeStampDef = async(Dispatchers.IO) { getLastDbItemTimestamp() }
             lastTimeStampDef.await()?.let {
-                loadHistory(it, true, applyUiChanges)
+                loadHistory(
+                    it,
+                    isAfterAnchor = true,
+                    loadToTheEnd = true,
+                    applyUiChanges = applyUiChanges
+                )
             } ?: loadHistory(applyUiChanges = applyUiChanges)
         }
     }
@@ -568,9 +575,11 @@ class ChatController private constructor() {
     internal fun loadHistory(
         anchorTimestamp: Long? = null,
         isAfterAnchor: Boolean? = null,
+        loadToTheEnd: Boolean = false,
+        forceLoad: Boolean = false,
         applyUiChanges: Boolean = true
     ) {
-        if (isAllMessagesDownloaded) {
+        if (!forceLoad && isAllMessagesDownloaded) {
             coroutineScope.launch {
                 fragment?.hideProgressBar()
                 fragment?.showWelcomeScreen(isNeedToShowWelcome)
@@ -619,8 +628,9 @@ class ChatController private constructor() {
                             { pair: Pair<ConsultInfo?, List<ChatItem>> ->
                                 chatState.changeState(ChatStateEnum.HISTORY_LOADED)
                                 isDownloadingMessages = false
+                                val (consultInfo, serverItems) = pair
+                                val isShouldBeLoadedMore = loadToTheEnd && serverItems.size == BaseConfig.instance.historyLoadingCount
                                 if (applyUiChanges) {
-                                    val (consultInfo, serverItems) = pair
                                     val items = setLastAvatars(serverItems)
                                     if (fragment != null) {
                                         fragment?.addChatItems(items)
@@ -631,10 +641,16 @@ class ChatController private constructor() {
                                         if (consultInfo != null) {
                                             fragment?.setStateConsultConnected(consultInfo)
                                         }
-                                        fragment?.hideProgressBar()
-                                        fragment?.showWelcomeScreen(isNeedToShowWelcome)
-                                        fragment?.showBottomBar()
+
+                                        if (!isShouldBeLoadedMore) {
+                                            fragment?.hideProgressBar()
+                                            fragment?.showWelcomeScreen(isNeedToShowWelcome)
+                                            fragment?.showBottomBar()
+                                        }
                                     }
+                                }
+                                if (isShouldBeLoadedMore) {
+                                    loadHistory(anchorTimestamp, isAfterAnchor, true, applyUiChanges = applyUiChanges)
                                 }
                             }
                         ) { e: Throwable? ->

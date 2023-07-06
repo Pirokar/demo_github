@@ -904,7 +904,7 @@ class ChatFragment :
     }
 
     private fun onRefresh() {
-        chatController.loadHistory()
+        chatController.loadHistory(forceLoad = true)
     }
 
     private fun afterRefresh(result: List<ChatItem>) {
