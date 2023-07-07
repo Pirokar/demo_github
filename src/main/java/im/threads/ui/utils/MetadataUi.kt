@@ -18,12 +18,12 @@ object MetadataUi {
     }
 
     @JvmStatic
-    fun getFilesAndMediaMenuItemEnabled(context: Context): Boolean {
+    fun getFilesAndMediaMenuItemEnabled(context: Context): Boolean? {
         val metaData = MetadataBusiness.getMetaData(context)
         return if (metaData != null && metaData.containsKey(FILES_AND_MEDIA_MENU_ITEM_ENABLED)) {
             metaData.getBoolean(FILES_AND_MEDIA_MENU_ITEM_ENABLED)
         } else {
-            true
+            null
         }
     }
 }

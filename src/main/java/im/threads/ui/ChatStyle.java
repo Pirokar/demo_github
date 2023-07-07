@@ -368,6 +368,8 @@ public final class ChatStyle implements Serializable {
 
     // Media and files screen
     @BoolRes
+    public int filesAndMediaItemEnabled = R.bool.ecc_files_and_media_enabled;
+    @BoolRes
     public int mediaAndFilesWindowLightStatusBarResId = R.bool.ecc_chat_is_light_status_bar;
     @ColorRes
     public int mediaAndFilesStatusBarColorResId = R.color.ecc_chat_status_bar;
@@ -887,6 +889,11 @@ public final class ChatStyle implements Serializable {
     }
 
     // <editor-fold defaultState="collapsed" desc="MediaAndFiles Screen">
+    public ChatStyle setFilesAndMediaItemEnabled(@BoolRes final int filesAndMediaItemEnabled) {
+        this.filesAndMediaItemEnabled = filesAndMediaItemEnabled;
+        return this;
+    }
+
     public ChatStyle setMediaAndFilesWindowLightStatusBarResId(@BoolRes final int mediaAndFilesWindowLightStatusBarResId) {
         this.mediaAndFilesWindowLightStatusBarResId = mediaAndFilesWindowLightStatusBarResId;
         return this;
