@@ -5,8 +5,12 @@ package im.threads.business.rest.config
  */
 class RequestConfig {
     val socketClientSettings = SocketClientSettings()
+
     val picassoHttpClientSettings = HttpClientSettings()
+
+    @Deprecated("Please use threadsApiHttpClientSettings instead")
     val authHttpClientSettings = HttpClientSettings(connectTimeoutMillis = 2_000)
+
     val threadsApiHttpClientSettings = HttpClientSettings(connectTimeoutMillis = 60_000)
 }
 
