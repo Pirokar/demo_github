@@ -1820,7 +1820,7 @@ public final class ChatStyle implements Serializable {
     /**
      * Default values:
      *
-     * @param maxGalleryImagesCount - R.integer.max_count_attached_images
+     * @param maxGalleryImagesCount - R.integer.ecc_max_count_attached_images
      * @return Builder
      */
     public ChatStyle setMaxGalleryImagesCount(@IntegerRes final int maxGalleryImagesCount) {
