@@ -190,7 +190,7 @@ class ChatController private constructor() {
     }
 
     fun onUserTyping(input: String?) {
-        if (input != null) {
+        if (input != null && isChatReady()) {
             BaseConfig.instance.transport.sendUserTying(input)
         }
     }
