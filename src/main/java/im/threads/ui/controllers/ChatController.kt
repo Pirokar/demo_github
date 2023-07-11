@@ -434,7 +434,7 @@ class ChatController private constructor() {
     }
 
     val isNeedToShowWelcome: Boolean
-        get() = database.getMessagesCount() == 0 && fragment?.getDisplayedMessagesCount() == 0 && isChatReady()
+        get() = database.getMessagesCount() == 0 && fragment?.getDisplayedMessagesCount() == 0 && isChatReady() && !isDownloadingMessages
 
     val stateOfConsult: Int
         get() = if (consultWriter.isSearchingConsult) {

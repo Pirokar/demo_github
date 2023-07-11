@@ -54,6 +54,8 @@ class GalleryActivity : BaseActivity(), OnItemClick, OnGalleryItemClick {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = EccActivityGalleryBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
         initViews()
         subscribeToScreenState()
         subscribeToDataIsEmpty()
@@ -61,9 +63,6 @@ class GalleryActivity : BaseActivity(), OnItemClick, OnGalleryItemClick {
         initData()
         showBucketListState()
         setButtonsClickListeners()
-
-        screenState.onNext(ScreenState.BUCKET_LIST)
-        dataIsEmpty.onNext(false)
     }
 
     override fun onDestroy() {
