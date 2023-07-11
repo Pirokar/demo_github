@@ -58,7 +58,6 @@ import im.threads.business.config.BaseConfig
 import im.threads.business.extensions.withMainContext
 import im.threads.business.imageLoading.ImageLoader.Companion.get
 import im.threads.business.logger.LogZipSender
-import im.threads.business.logger.LoggerEdna
 import im.threads.business.logger.LoggerEdna.debug
 import im.threads.business.logger.LoggerEdna.error
 import im.threads.business.logger.LoggerEdna.info
@@ -813,14 +812,15 @@ class ChatFragment :
     }
 
     private fun configureUserTypingSubscription() {
-        val userTypingDisposable = inputTextObservable
-            .throttleLatest(INPUT_DELAY, TimeUnit.MILLISECONDS)
-            .filter { charSequence: String -> charSequence.isNotEmpty() }
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { input: String? -> onInputChanged(input) }
-            ) { error: Throwable? -> error("configureInputChangesSubscription ", error) }
-        subscribe(userTypingDisposable)
+        subscribe(
+            inputTextObservable
+                .throttleLatest(INPUT_DELAY, TimeUnit.MILLISECONDS)
+                .filter { charSequence: String -> charSequence.isNotEmpty() }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ input: String? ->
+                    onInputChanged(input)
+                }) { error: Throwable? -> error("configureInputChangesSubscription ", error) }
+        )
     }
 
     private fun onInputChanged(input: String?) {
@@ -918,9 +918,9 @@ class ChatFragment :
             inputTextObservable
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    binding.inputEditView.setText(it)
+                    onInputChanged(it)
                 }, {
-                    LoggerEdna.error(it)
+                    error(it)
                 })
         )
     }
@@ -1005,6 +1005,7 @@ class ChatFragment :
                 } else {
                     binding.inputEditView.maxLines = INPUT_EDIT_VIEW_MAX_LINES_COUNT
                 }
+                inputTextObservable.onNext(s.toString())
                 binding.sendMessage.isEnabled = !TextUtils.isEmpty(s) || hasAttachments()
             }
         })
