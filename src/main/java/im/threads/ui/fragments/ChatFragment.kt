@@ -1603,8 +1603,8 @@ class ChatFragment :
             chatAdapter!!.itemCount - 1 - layoutManager.findLastVisibleItemPosition() < INVISIBLE_MESSAGES_COUNT
             )
         if (item is ConsultPhrase) {
-            item.isRead = (isLastMessageVisible && isResumed && !isInMessageSearchMode)
-            if (item.isRead) {
+            item.read = (isLastMessageVisible && isResumed && !isInMessageSearchMode)
+            if (item.read) {
                 chatController.setMessageAsRead(item)
             }
             chatAdapter?.setAvatar(item.consultId, item.avatarPath)
@@ -2060,7 +2060,7 @@ class ChatFragment :
         for (i in 1 until list.size) {
             val currentItem = list[i]
             if (currentItem is UnreadMessages || currentItem is ConsultPhrase &&
-                !currentItem.isRead || currentItem is Survey && !currentItem.isRead
+                !currentItem.read || currentItem is Survey && !currentItem.isRead
             ) {
                 layoutManager.scrollToPositionWithOffset(i - 1, 0)
                 break

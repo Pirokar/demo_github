@@ -592,11 +592,7 @@ class ChatController private constructor() {
                 isDownloadingMessages = true
                 subscribe(
                     Single.fromCallable {
-                        var count = BaseConfig.instance.historyLoadingCount
-                        if (count < database.getMessagesCount()) {
-                            count = database.getMessagesCount()
-                        }
-
+                        val count = BaseConfig.instance.historyLoadingCount
                         val response = if (isAfterAnchor == true && anchorTimestamp != null) {
                             historyLoader.getHistorySync(anchorTimestamp, count, true)
                         } else {

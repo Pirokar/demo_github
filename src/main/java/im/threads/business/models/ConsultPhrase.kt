@@ -16,7 +16,7 @@ class ConsultPhrase constructor(
     val date: Long,
     consultId: String?,
     avatarPath: String?,
-    var isRead: Boolean,
+    var read: Boolean,
     val status: String?,
     val sex: Boolean,
     override val threadId: Long?,
@@ -63,7 +63,7 @@ class ConsultPhrase constructor(
         if (this === other) return true
         if (other == null || javaClass != other.javaClass) return false
         val that = other as ConsultPhrase
-        return sex == that.sex && date == that.date && isAvatarVisible == that.isAvatarVisible && isRead == that.isRead && found == that.found &&
+        return sex == that.sex && date == that.date && isAvatarVisible == that.isAvatarVisible && read == that.read && found == that.found &&
             ObjectsCompat.equals(id, that.id) &&
             ObjectsCompat.equals(phraseText, that.phraseText) &&
             ObjectsCompat.equals(formattedPhrase, that.formattedPhrase) &&
@@ -89,7 +89,7 @@ class ConsultPhrase constructor(
             isAvatarVisible,
             quote,
             fileDescription,
-            isRead,
+            read,
             status,
             quickReplies,
             isBlockInput,
@@ -102,7 +102,7 @@ class ConsultPhrase constructor(
 
     fun copy() = ConsultPhrase(
         id, fileDescription, quote, consultName, phraseText, formattedPhrase, date, consultId, avatarPath,
-        isRead, status, sex, threadId, quickReplies, isBlockInput, speechStatus, role
+        read, status, sex, threadId, quickReplies, isBlockInput, speechStatus, role
     ).also {
         it.ogData = ogData
         it.ogUrl = ogUrl
