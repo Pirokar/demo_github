@@ -1506,7 +1506,7 @@ class ChatController private constructor() {
 
     private fun isInputFieldEnabled(): Boolean {
         val fileDescription = try {
-            fragment?.fileDescription?.get()?.get()
+            fragment?.fileDescription?.value?.get()
         } catch (exc: NoSuchElementException) {
             null
         }
