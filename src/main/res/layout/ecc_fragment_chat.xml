@@ -66,7 +66,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_above="@+id/bottom_layout"
-            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
             android:layout_margin="@dimen/ecc_scroll_down_button_margin"
             android:visibility="gone"
             tools:visibility="visible">
@@ -272,8 +272,6 @@
                         android:id="@+id/record_view"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentBottom="true"
-                        android:layout_toLeftOf="@id/record_button"
                         android:layout_weight="1"
                         android:background="@color/ecc_input_background"
                         android:visibility="invisible"
@@ -288,8 +286,6 @@
                         android:id="@+id/record_button"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:layout_alignParentBottom="true"
                         android:background="@drawable/ecc_record_button_background"
                         android:scaleType="centerInside"
                         app:mic_icon="@drawable/ecc_record_button_icon" />
