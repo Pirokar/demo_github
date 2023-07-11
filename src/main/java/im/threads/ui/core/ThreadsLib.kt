@@ -128,7 +128,7 @@ class ThreadsLib(context: Context) : ThreadsLibBase(context) {
                 migrateUserInfo()
             }
 
-            ThreadsLibBase.init(configBuilder)
+            initBaseParams()
         }
 
         /**

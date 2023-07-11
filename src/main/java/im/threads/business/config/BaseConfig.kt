@@ -176,7 +176,5 @@ open class BaseConfig(
     companion object {
         @SuppressLint("StaticFieldLeak")
         lateinit var instance: BaseConfig
-
-        fun isInstanceInitialized() = this::instance.isInitialized
     }
 }

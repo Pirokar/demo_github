@@ -153,22 +153,24 @@ open class ThreadsLibBase protected constructor(context: Context) {
         @JvmStatic
         fun getLibVersion() = BuildConfig.VERSION_NAME
 
-        @SuppressLint("CheckResult")
         @JvmStatic
         fun init(configBuilder: BaseConfigBuilder) {
             val startInitTime = System.currentTimeMillis()
-            val isUIMode = BaseConfig.isInstanceInitialized()
 
-            if (!isUIMode) {
-                createLibInstance(configBuilder.context)
-                BaseConfig.instance = configBuilder.build()
-                BaseConfig.instance.loggerConfig?.let { LoggerEdna.init(it) }
-                PreferencesMigrationBase(BaseConfig.instance.context).apply {
-                    migrateMainSharedPreferences()
-                    migrateUserInfo()
-                }
+            createLibInstance(configBuilder.context)
+            BaseConfig.instance = configBuilder.build()
+            BaseConfig.instance.loggerConfig?.let { LoggerEdna.init(it) }
+            PreferencesMigrationBase(BaseConfig.instance.context).apply {
+                migrateMainSharedPreferences()
+                migrateUserInfo()
             }
+            initBaseParams()
 
+            info("Lib_init_time: ${System.currentTimeMillis() - startInitTime}ms")
+        }
+
+        @SuppressLint("CheckResult")
+        internal fun initBaseParams() {
             BackendApi.init(BaseConfig.instance)
             DatastoreApi.init(BaseConfig.instance)
 
@@ -234,8 +236,6 @@ open class ThreadsLibBase protected constructor(context: Context) {
 
             updateTransport()
             showVersionsLog()
-
-            info("Lib_init_time: ${System.currentTimeMillis() - startInitTime}ms")
         }
 
         /**
@@ -289,9 +289,8 @@ open class ThreadsLibBase protected constructor(context: Context) {
         }
 
         protected fun createLibInstance(context: Context) {
-            if (libInstance == null) {
-                libInstance = ThreadsLibBase(context)
-            }
+            check(libInstance == null) { "ThreadsLib has already been initialized" }
+            libInstance = ThreadsLibBase(context)
         }
 
         private fun updateTransport() {
