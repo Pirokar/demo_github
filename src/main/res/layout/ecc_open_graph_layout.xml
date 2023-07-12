@@ -78,7 +78,7 @@
         app:layout_constraintTop_toBottomOf="@id/ogContent"
         app:layout_constraintEnd_toEndOf="parent"
         android:padding="4dp"
-        android:background="@drawable/ecc_incoming_underlayer"
+        android:background="@drawable/ecc_timestamp_incoming_underlayer"
         android:textColor="@color/ecc_incoming_message_time"
         tools:text="10:19" />
 

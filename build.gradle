@@ -23,7 +23,7 @@ android {
     kotlinOptions {
         jvmTarget = '11'
     }
-    compileSdk 33
+    compileSdk rootProject.compileSdkVersion
 
     lintOptions {
         disable 'InvalidPackage'

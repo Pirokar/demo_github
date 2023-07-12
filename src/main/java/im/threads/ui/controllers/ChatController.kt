@@ -428,7 +428,7 @@ class ChatController private constructor() {
         fragment = chatFragment
 
         chatFragment.showProgressBar()
-        loadItemsFromDB()
+        if (isChatReady()) loadItemsFromDB()
         if (consultWriter.isSearchingConsult) {
             chatFragment.setStateSearchingConsult()
         }
@@ -487,9 +487,12 @@ class ChatController private constructor() {
 
     private fun loadItemsFromDB() {
         fragment?.let {
-            it.addChatItems(database.getChatItems(0, -1))
-            it.hideProgressBar()
-            it.showWelcomeScreen(isNeedToShowWelcome)
+            coroutineScope.launch() {
+                val itemsDef = async(Dispatchers.IO) { database.getChatItems(0, -1) }
+                it.addChatItems(itemsDef.await())
+                it.hideProgressBar()
+                it.showWelcomeScreen(isNeedToShowWelcome)
+            }
         }
     }
 
@@ -552,7 +555,8 @@ class ChatController private constructor() {
     private fun onClientIdChanged() {
         info(ThreadsApi.REST_TAG, "Client id changed. Loading history.")
         cleanAll()
-        loadHistory()
+        fragment?.removeSearching()
+        if (isChatReady()) loadHistory()
     }
 
     private fun loadHistoryAfterWithLastMessageCheck(
@@ -640,8 +644,10 @@ class ChatController private constructor() {
 
                                         if (!isShouldBeLoadedMore) {
                                             fragment?.hideProgressBar()
-                                            fragment?.showWelcomeScreen(isNeedToShowWelcome)
                                             fragment?.showBottomBar()
+                                            if (isNeedToShowWelcome) {
+                                                fragment?.showWelcomeScreen(true)
+                                            }
                                         }
                                     }
                                 }
@@ -1589,6 +1595,7 @@ class ChatController private constructor() {
                     } else if (stateEvent.state == ChatStateEnum.INIT_USER_SENT) {
                         loadSettings()
                     } else if (stateEvent.state == ChatStateEnum.SETTINGS_LOADED) {
+                        loadItemsFromDB()
                         loadHistoryAfterWithLastMessageCheck()
                     } else if (isChatReady()) {
                         messenger.resendMessages()
