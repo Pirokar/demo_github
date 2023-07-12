@@ -6,8 +6,6 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.text.Editable
 import android.view.View
-import androidx.databinding.Bindable
-import androidx.databinding.Observable
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -22,7 +20,7 @@ import org.parceler.Parcels
 
 class AddServerViewModel(
     private val stringsProvider: StringsProvider
-) : ViewModel(), DefaultLifecycleObserver, Observable {
+) : ViewModel(), DefaultLifecycleObserver {
 
     private var srcServerConfig: ServerConfig? = null
     private var _serverConfigLiveData = MutableLiveData(ServerConfig())
@@ -113,7 +111,6 @@ class AddServerViewModel(
         }
     }
 
-    @get:Bindable
     val nameTextWatcher = object : AfterTextChangedTextWatcher {
         override fun afterTextChanged(s: Editable?) {
             if (s != null) {
@@ -128,7 +125,6 @@ class AddServerViewModel(
         }
     }
 
-    @get:Bindable
     val providerIdTextWatcher = object : AfterTextChangedTextWatcher {
         override fun afterTextChanged(s: Editable?) {
             if (s != null) {
@@ -143,7 +139,6 @@ class AddServerViewModel(
         }
     }
 
-    @get:Bindable
     val baseUrlTextWatcher = object : AfterTextChangedTextWatcher {
         override fun afterTextChanged(s: Editable?) {
             if (s != null) {
@@ -158,7 +153,6 @@ class AddServerViewModel(
         }
     }
 
-    @get:Bindable
     val datastoreUrlTextWatcher = object : AfterTextChangedTextWatcher {
         override fun afterTextChanged(s: Editable?) {
             if (s != null) {
@@ -173,7 +167,6 @@ class AddServerViewModel(
         }
     }
 
-    @get:Bindable
     val threadsGateUrlTextWatcher = object : AfterTextChangedTextWatcher {
         override fun afterTextChanged(s: Editable?) {
             if (s != null) {
@@ -187,7 +180,4 @@ class AddServerViewModel(
             }
         }
     }
-
-    override fun addOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback?) {}
-    override fun removeOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback?) {}
 }
