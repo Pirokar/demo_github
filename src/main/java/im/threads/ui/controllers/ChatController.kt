@@ -428,7 +428,6 @@ class ChatController private constructor() {
         fragment = chatFragment
 
         chatFragment.showProgressBar()
-        if (isChatReady()) loadItemsFromDB()
         if (consultWriter.isSearchingConsult) {
             chatFragment.setStateSearchingConsult()
         }
@@ -485,13 +484,13 @@ class ChatController private constructor() {
         }
     }
 
-    private fun loadItemsFromDB() {
+    private fun loadItemsFromDB(isWelcomeScreenAllowed: Boolean = true) {
         fragment?.let {
             coroutineScope.launch() {
                 val itemsDef = async(Dispatchers.IO) { database.getChatItems(0, -1) }
                 it.addChatItems(itemsDef.await())
                 it.hideProgressBar()
-                it.showWelcomeScreen(isNeedToShowWelcome)
+                it.showWelcomeScreen(isWelcomeScreenAllowed && isNeedToShowWelcome)
             }
         }
     }
@@ -1595,7 +1594,7 @@ class ChatController private constructor() {
                     } else if (stateEvent.state == ChatStateEnum.INIT_USER_SENT) {
                         loadSettings()
                     } else if (stateEvent.state == ChatStateEnum.SETTINGS_LOADED) {
-                        loadItemsFromDB()
+                        loadItemsFromDB(false)
                         loadHistoryAfterWithLastMessageCheck()
                     } else if (isChatReady()) {
                         messenger.resendMessages()
