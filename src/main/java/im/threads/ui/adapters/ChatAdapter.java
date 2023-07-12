@@ -71,7 +71,6 @@ import im.threads.business.utils.FileUtils;
 import im.threads.business.utils.FileUtilsKt;
 import im.threads.business.workers.FileDownloadWorker;
 import im.threads.ui.ChatStyle;
-import im.threads.ui.adapters.utils.DuplicateMessagesRemover;
 import im.threads.ui.adapters.utils.SendingStatusObserver;
 import im.threads.ui.config.Config;
 import im.threads.ui.holders.BaseHolder;
