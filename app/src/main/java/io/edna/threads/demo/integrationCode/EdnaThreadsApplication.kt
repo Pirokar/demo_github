@@ -48,14 +48,11 @@ class EdnaThreadsApplication : Application() {
                 incomingBubble = R.color.alt_white,
                 outgoingBubble = R.color.light_outgoing_bubble,
                 toolbarText = R.color.white_color,
-                voiceBtnBackgroundColor = R.color.light_main,
-                outgoingImageTimeBackgroundColor = R.color.light_time_text,
                 messageSendingStatus = R.color.light_icons,
                 messageSentStatus = R.color.light_icons,
                 messageDeliveredStatus = R.color.light_icons,
                 messageReadStatus = R.color.light_icons,
                 messageFailedStatus = R.color.light_icons,
-                messageHighlightingColor = R.color.light_highlighting,
                 incomingLink = R.color.light_links,
                 outgoingLink = R.color.light_links,
                 toolbar = R.color.light_main,
@@ -93,28 +90,22 @@ class EdnaThreadsApplication : Application() {
                 incomingBubble = R.color.dark_incoming_bubble,
                 outgoingBubble = R.color.dark_outgoing_bubble,
                 toolbarText = R.color.white_color,
-                voiceBtnBackgroundColor = R.color.dark_main,
-                outgoingImageTimeBackgroundColor = R.color.dark_outgoing_image_time_background,
                 outgoingTimeText = R.color.dark_time_text,
                 messageSendingStatus = R.color.dark_icons,
                 messageSentStatus = R.color.dark_icons,
                 messageDeliveredStatus = R.color.dark_icons,
                 messageReadStatus = R.color.dark_icons,
                 messageFailedStatus = R.color.dark_icons,
-                messageHighlightingColor = R.color.dark_highlighting,
                 incomingLink = R.color.dark_links,
                 outgoingLink = R.color.dark_links,
                 statusBar = R.color.alt_threads_chat_status_bar,
                 toolbar = R.color.dark_main,
                 toolbarContextMenu = R.color.alt_threads_chat_context_menu,
                 menuItem = R.color.alt_threads_chat_toolbar_menu_item_black,
-                searchHintColor = R.color.alt_threads_chat_toolbar_hint,
                 systemMessage = R.color.dark_system_text,
-                mediaAndFilesTextColor = R.color.dark_system_text,
                 welcomeScreenTitleText = R.color.dark_system_text,
                 welcomeScreenSubtitleText = R.color.dark_system_text,
-                chatErrorScreenImageTint = R.color.white_color,
-                chatErrorScreenMessageTextColor = R.color.white_color
+                chatErrorScreenImageTint = R.color.white_color
             ),
             images = ChatImages(
                 backBtn = R.drawable.alt_ic_arrow_back_24dp,
@@ -166,25 +157,6 @@ class EdnaThreadsApplication : Application() {
             .setShowConsultSearching(true)
             .setVoiceMessageEnabled(true)
             .showChatBackButton(true)
-            .setIngoingPadding(
-                R.dimen.alt_greenBubbleIncomingPaddingLeft,
-                R.dimen.alt_greenBubbleIncomingPaddingTop,
-                R.dimen.alt_greenBubbleIncomingPaddingRight,
-                R.dimen.alt_greenBubbleIncomingPaddingBottom
-            )
-            .setIncomingImageBordersSize(
-                R.dimen.alt_incomingImageLeftBorderSize,
-                R.dimen.alt_incomingImageTopBorderSize,
-                R.dimen.alt_incomingImageRightBorderSize,
-                R.dimen.alt_incomingImageBottomBorderSize
-            )
-            .setOutgoingImageBordersSize(
-                R.dimen.alt_outgoingImageLeftBorderSize,
-                R.dimen.alt_outgoingImageTopBorderSize,
-                R.dimen.alt_outgoingImageRightBorderSize,
-                R.dimen.alt_outgoingImageBottomBorderSize
-            )
-
         return chatStyle
     }
 }
