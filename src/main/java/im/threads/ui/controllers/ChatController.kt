@@ -182,16 +182,16 @@ class ChatController private constructor() {
         if (!surveyCompletionInProgress) {
             surveyCompletionInProgress = true
         }
-        BaseConfig.instance.transport.sendRatingDone(survey)
+        BaseConfig.getInstance().transport.sendRatingDone(survey)
     }
 
     fun onResolveThreadClick(approveResolve: Boolean) {
-        BaseConfig.instance.transport.sendResolveThread(approveResolve)
+        BaseConfig.getInstance().transport.sendResolveThread(approveResolve)
     }
 
     fun onUserTyping(input: String?) {
         if (input != null) {
-            BaseConfig.instance.transport.sendUserTying(input)
+            BaseConfig.getInstance().transport.sendUserTying(input)
         }
     }
 
@@ -297,7 +297,7 @@ class ChatController private constructor() {
             if (cm.activeNetworkInfo != null && cm.activeNetworkInfo!!.isConnectedOrConnecting) {
                 val uuidList = database.getUnreadMessagesUuid()
                 firstUnreadUuidId = if (uuidList.isNotEmpty()) {
-                    BaseConfig.instance.transport.markMessagesAsRead(uuidList)
+                    BaseConfig.getInstance().transport.markMessagesAsRead(uuidList)
                     uuidList[0] // для скролла к первому непрочитанному сообщению
                 } else {
                     null
@@ -317,7 +317,7 @@ class ChatController private constructor() {
 
     private fun checkStateOnViewStart() {
         if (chatState.getCurrentState() < ChatStateEnum.REGISTERING_DEVICE) {
-            BaseConfig.instance.transport.sendRegisterDevice(false)
+            BaseConfig.getInstance().transport.sendRegisterDevice(false)
         }
     }
 
@@ -344,7 +344,7 @@ class ChatController private constructor() {
         fragment?.showProgressBar()
 
         val state = chatState.getCurrentState()
-        val transport = BaseConfig.instance.transport
+        val transport = BaseConfig.getInstance().transport
         if (state < ChatStateEnum.DEVICE_REGISTERED) {
             transport.sendRegisterDevice(false)
         } else if (state < ChatStateEnum.INIT_USER_SENT) {
@@ -380,7 +380,7 @@ class ChatController private constructor() {
         return Observable
             .fromCallable {
                 if (instance?.fragment != null && ThreadsLibBase.getInstance().isUserInitialized) {
-                    val count = BaseConfig.instance.historyLoadingCount
+                    val count = BaseConfig.getInstance().historyLoadingCount
                     try {
                         val response = historyLoader.getHistorySync(itemsCountToGet, false)
                         var serverItems = HistoryParser.getChatItems(response)
@@ -468,7 +468,7 @@ class ChatController private constructor() {
         }
         subscribe(
             Single.fromCallable {
-                val historyLoadingCount = BaseConfig.instance.historyLoadingCount
+                val historyLoadingCount = BaseConfig.getInstance().historyLoadingCount
                 val unsentUserPhrase = database.getUnsendUserPhrase(historyLoadingCount)
                 if (unsentUserPhrase.isNotEmpty()) {
                     messenger.recreateUnsentMessagesWith(unsentUserPhrase)
@@ -614,7 +614,7 @@ class ChatController private constructor() {
                 isDownloadingMessages = true
                 subscribe(
                     Single.fromCallable {
-                        var count = BaseConfig.instance.historyLoadingCount
+                        var count = BaseConfig.getInstance().historyLoadingCount
                         if (count < database.getMessagesCount()) {
                             count = database.getMessagesCount()
                         }
@@ -634,7 +634,7 @@ class ChatController private constructor() {
                         if (fragment != null && isActive && !fragment!!.isStartSecondLevelScreen()) {
                             val uuidList: List<String?> = database.getUnreadMessagesUuid()
                             if (uuidList.isNotEmpty()) {
-                                BaseConfig.instance.transport.markMessagesAsRead(uuidList)
+                                BaseConfig.getInstance().transport.markMessagesAsRead(uuidList)
                             }
                         }
                         Pair(response?.getConsultInfo(), serverItems)
@@ -1238,10 +1238,10 @@ class ChatController private constructor() {
             hideQuickReplies()
         }
         if (chatItem is Survey && isActive) {
-            BaseConfig.instance.transport.markMessagesAsRead(listOf(chatItem.uuid))
+            BaseConfig.getInstance().transport.markMessagesAsRead(listOf(chatItem.uuid))
         }
         if (chatItem is RequestResolveThread && isActive) {
-            BaseConfig.instance.transport.markMessagesAsRead(listOf(chatItem.uuid))
+            BaseConfig.getInstance().transport.markMessagesAsRead(listOf(chatItem.uuid))
         }
         subscribe(
             Observable.timer(1500, TimeUnit.MILLISECONDS)
@@ -1323,7 +1323,7 @@ class ChatController private constructor() {
         if (fragment != null && !clientId.isNullOrBlank()) {
             subscribe(
                 Single.fromCallable {
-                    BaseConfig.instance.transport.sendRegisterDevice(false)
+                    BaseConfig.getInstance().transport.sendRegisterDevice(false)
                     val response = historyLoader.getHistorySync(
                         null,
                         true
@@ -1353,7 +1353,7 @@ class ChatController private constructor() {
                     ) { obj: Throwable -> obj.message }
             )
         } else {
-            BaseConfig.instance.transport.sendRegisterDevice(false)
+            BaseConfig.getInstance().transport.sendRegisterDevice(false)
             info(
                 ThreadsApi.REST_TAG,
                 "Loading history cancelled in onDeviceAddressChanged. " +
@@ -1649,7 +1649,7 @@ class ChatController private constructor() {
                             fragment?.getString(R.string.timeout_message) ?: "Timeout"
                         withContext(Dispatchers.Main) { fragment?.showErrorView(timeoutMessage) }
                     } else if (stateEvent.state == ChatStateEnum.DEVICE_REGISTERED) {
-                        BaseConfig.instance.transport.sendInitMessages()
+                        BaseConfig.getInstance().transport.sendInitMessages()
                     } else if (stateEvent.state == ChatStateEnum.INIT_USER_SENT) {
                         loadSettings()
                     } else if (stateEvent.state == ChatStateEnum.SETTINGS_LOADED) {

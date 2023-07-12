@@ -71,7 +71,7 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
                 override fun onComplete(file: File) {
                     fileDescription.downloadProgress = 100
                     val fileUri = fileProvider.getUriForFile(
-                        BaseConfig.instance.context,
+                        BaseConfig.getInstance().context,
                         file
                     )
                     fileDescription.fileUri = fileUri

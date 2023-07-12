@@ -495,7 +495,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     private void updateReadStateForConsultPhrase(ConsultPhrase phrase) {
         if (!phrase.isRead() && phrase.getId() != null) {
-            BaseConfig.instance.transport.markMessagesAsRead(List.of(phrase.getId()));
+            BaseConfig.Companion.getInstance().transport.markMessagesAsRead(List.of(phrase.getId()));
         }
     }
 

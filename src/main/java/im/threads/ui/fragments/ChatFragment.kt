@@ -264,7 +264,7 @@ class ChatFragment :
         ChatController.getInstance().onViewStart()
         initRecordButtonState()
         chatController.threadId?.let { setCurrentThreadId(it) }
-        BaseConfig.instance.transport.setLifecycle(lifecycle)
+        BaseConfig.getInstance().transport.setLifecycle(lifecycle)
         if (chatController.isChatReady()) {
             ChatController.getInstance().loadSettings()
             ChatController.getInstance().loadHistory()
@@ -321,7 +321,7 @@ class ChatFragment :
         activity?.unregisterReceiver(mChatReceiver)
         isShown = false
         statuses.clear()
-        BaseConfig.instance.transport.setLifecycle(null)
+        BaseConfig.getInstance().transport.setLifecycle(null)
         chatController.onViewDestroy()
         chatAdapter?.onDestroyView()
         super.onDestroyView()
@@ -769,7 +769,7 @@ class ChatFragment :
                     if (firstVisibleItemPosition == 0 &&
                         !chatController.isAllMessagesDownloaded &&
                         itemCount != null &&
-                        itemCount > BaseConfig.instance.historyLoadingCount / 2
+                        itemCount > BaseConfig.getInstance().historyLoadingCount / 2
                     ) {
                         binding.swipeRefresh.isRefreshing = true
                         chatController.loadHistory(false)
@@ -908,7 +908,7 @@ class ChatFragment :
     }
 
     private fun onRefresh() {
-        val disposable = chatController.requestItems(BaseConfig.instance.historyLoadingCount)
+        val disposable = chatController.requestItems(BaseConfig.getInstance().historyLoadingCount)
             ?.delay(500, TimeUnit.MILLISECONDS)
             ?.observeOn(AndroidSchedulers.mainThread())
             ?.subscribe({ result: List<ChatItem> -> afterRefresh(result) }) { onError: Throwable? -> error("onRefresh ", onError) }
@@ -1460,7 +1460,7 @@ class ChatFragment :
             setFileDescription(
                 FileDescription(
                     requireContext().getString(R.string.ecc_image),
-                    fileProvider.getUriForFile(BaseConfig.instance.context, file),
+                    fileProvider.getUriForFile(BaseConfig.getInstance().context, file),
                     file.length(),
                     System.currentTimeMillis()
                 )
@@ -1484,8 +1484,8 @@ class ChatFragment :
     private fun onFileResult(data: Intent) {
         val uri = data.data
         if (uri != null) {
-            if (isAllowedFileExtension(getExtensionFromMediaStore(BaseConfig.instance.context, uri))) {
-                if (isAllowedFileSize(getFileSizeFromMediaStore(BaseConfig.instance.context, uri))) {
+            if (isAllowedFileExtension(getExtensionFromMediaStore(BaseConfig.getInstance().context, uri))) {
+                if (isAllowedFileSize(getFileSizeFromMediaStore(BaseConfig.getInstance().context, uri))) {
                     try {
                         if (canBeSent(requireContext(), uri)) {
                             onFileResult(uri)

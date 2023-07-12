@@ -113,6 +113,7 @@ class ThreadsLib(context: Context) : ThreadsLibBase(context) {
     }
 
     companion object {
+
         @JvmStatic
         fun getLibVersion() = ThreadsLibBase.getLibVersion()
 
@@ -120,9 +121,8 @@ class ThreadsLib(context: Context) : ThreadsLibBase(context) {
         fun init(configBuilder: ConfigBuilder) {
             createLibInstance(configBuilder.context)
             Config.setInstance(configBuilder.build())
-            BaseConfig.instance = Config.getInstance()
-            BaseConfig.instance.loggerConfig?.let { LoggerEdna.init(it) }
-            PreferencesMigrationUi(BaseConfig.instance.context).apply {
+            BaseConfig.getInstance().loggerConfig?.let { LoggerEdna.init(it) }
+            PreferencesMigrationUi(BaseConfig.getInstance().context).apply {
                 removeStyleFromPreferences()
                 migrateMainSharedPreferences()
                 migrateUserInfo()
@@ -170,20 +170,6 @@ class ThreadsLib(context: Context) : ThreadsLibBase(context) {
         private fun createLibInstance(context: Context) {
             check(libInstance == null) { "ThreadsLib has already been initialized" }
             setLibraryInstance(ThreadsLib(context))
-        }
-
-        private fun isInitUserTimeout(waitingStartTime: Long, callback: (isAuthorized: Boolean) -> Unit): Boolean {
-            val timeout = try {
-                BaseConfig.instance.requestConfig.socketClientSettings.connectTimeoutMillis
-            } catch (exc: Exception) {
-                10000L
-            }
-            return if (System.currentTimeMillis() - waitingStartTime > timeout) {
-                callback(false)
-                true
-            } else {
-                false
-            }
         }
     }
 }

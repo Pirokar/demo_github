@@ -116,7 +116,7 @@ class QuickAnswerFragment : BaseDialogFragment() {
 
     override fun onStart() {
         super.onStart()
-        BaseConfig.instance.transport.setLifecycle(lifecycle)
+        BaseConfig.getInstance().transport.setLifecycle(lifecycle)
         dialog?.let {
             val width = resources.displayMetrics.widthPixels
             it.window?.setLayout(width, FrameLayout.LayoutParams.WRAP_CONTENT)
@@ -139,7 +139,7 @@ class QuickAnswerFragment : BaseDialogFragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        BaseConfig.instance.transport.setLifecycle(null)
+        BaseConfig.getInstance().transport.setLifecycle(null)
     }
 
     companion object {

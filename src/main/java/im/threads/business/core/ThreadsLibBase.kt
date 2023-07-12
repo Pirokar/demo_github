@@ -95,9 +95,9 @@ open class ThreadsLibBase protected constructor(context: Context) {
     open fun initUser(userInfoBuilder: UserInfoBuilder, forceRegistration: Boolean = false) {
         clientUseCase.saveUserInfo(userInfoBuilder)
         if (forceRegistration) {
-            BaseConfig.instance.transport.sendRegisterDevice(true)
+            BaseConfig.getInstance().transport.sendRegisterDevice(true)
             if (!ChatFragment.isShown) {
-                BaseConfig.instance.transport.closeWebSocket()
+                BaseConfig.getInstance().transport.closeWebSocket()
             }
         }
     }
@@ -110,12 +110,12 @@ open class ThreadsLibBase protected constructor(context: Context) {
 
         val clientId = clientUseCase.getUserInfo()?.clientId
         if (!clientId.isNullOrBlank()) {
-            BaseConfig.instance.transport.sendClientOffline(clientId)
+            BaseConfig.getInstance().transport.sendClientOffline(clientId)
             coroutineScope.launch { database.cleanDatabase() }
         } else {
             info("clientId must not be empty")
         }
-        BaseConfig.instance.transport.closeWebSocket()
+        BaseConfig.getInstance().transport.closeWebSocket()
         clientUseCase.saveUserInfo(null)
         ChatController.getInstance().cleanAll()
     }
@@ -140,7 +140,7 @@ open class ThreadsLibBase protected constructor(context: Context) {
             it.setAuthData(authToken, authSchema, authMethod)
             clientUseCase.saveUserInfo(it)
         }
-        BaseConfig.instance.transport.buildTransport()
+        BaseConfig.getInstance().transport.buildTransport()
     }
 
     companion object {
@@ -158,9 +158,9 @@ open class ThreadsLibBase protected constructor(context: Context) {
             val startInitTime = System.currentTimeMillis()
 
             createLibInstance(configBuilder.context)
-            BaseConfig.instance = configBuilder.build()
-            BaseConfig.instance.loggerConfig?.let { LoggerEdna.init(it) }
-            PreferencesMigrationBase(BaseConfig.instance.context).apply {
+            BaseConfig.setInstance(configBuilder.build())
+            BaseConfig.getInstance().loggerConfig?.let { LoggerEdna.init(it) }
+            PreferencesMigrationBase(BaseConfig.getInstance().context).apply {
                 migrateMainSharedPreferences()
                 migrateUserInfo()
             }
@@ -171,10 +171,10 @@ open class ThreadsLibBase protected constructor(context: Context) {
 
         @SuppressLint("CheckResult")
         internal fun initBaseParams() {
-            BackendApi.init(BaseConfig.instance)
-            DatastoreApi.init(BaseConfig.instance)
+            BackendApi.init(BaseConfig.getInstance())
+            DatastoreApi.init(BaseConfig.getInstance())
 
-            BaseConfig.instance.unreadMessagesCountListener?.let { unreadMessagesCountListener ->
+            BaseConfig.getInstance().unreadMessagesCountListener?.let { unreadMessagesCountListener ->
                 UnreadMessagesController.INSTANCE.unreadMessagesPublishProcessor
                     .distinctUntilChanged()
                     .observeOn(AndroidSchedulers.mainThread())
@@ -195,7 +195,7 @@ open class ThreadsLibBase protected constructor(context: Context) {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
                 try {
                     AudioConverter.load(
-                        BaseConfig.instance.context,
+                        BaseConfig.getInstance().context,
                         object : ILoadCallback {
                             override fun onSuccess() {
                                 info("AndroidAudioConverter was successfully loaded")
@@ -259,15 +259,15 @@ open class ThreadsLibBase protected constructor(context: Context) {
             allowUntrustedSSLCertificate: Boolean
         ) {
             try {
-                BaseConfig.instance.sslSocketFactoryConfig = null
-                BaseConfig.instance.allowUntrustedSSLCertificate = allowUntrustedSSLCertificate
-                if (baseUrl != null) BaseConfig.instance.serverBaseUrl = baseUrl
-                if (datastoreUrl != null) BaseConfig.instance.datastoreUrl = datastoreUrl
+                BaseConfig.getInstance().sslSocketFactoryConfig = null
+                BaseConfig.getInstance().allowUntrustedSSLCertificate = allowUntrustedSSLCertificate
+                if (baseUrl != null) BaseConfig.getInstance().serverBaseUrl = baseUrl
+                if (datastoreUrl != null) BaseConfig.getInstance().datastoreUrl = datastoreUrl
                 if (threadsGateUrl != null && threadsGateProviderUid != null) {
-                    BaseConfig.instance.updateTransport(threadsGateUrl, threadsGateProviderUid, trustedSSLCertificates)
+                    BaseConfig.getInstance().updateTransport(threadsGateUrl, threadsGateProviderUid, trustedSSLCertificates)
                 }
-                BackendApi.init(BaseConfig.instance)
-                DatastoreApi.init(BaseConfig.instance)
+                BackendApi.init(BaseConfig.getInstance())
+                DatastoreApi.init(BaseConfig.getInstance())
             } catch (exc: Exception) {
                 coroutineScope.launch {
                     LoggerEdna.error(exc)
@@ -294,12 +294,12 @@ open class ThreadsLibBase protected constructor(context: Context) {
         }
 
         private fun updateTransport() {
-            val threadsGateUrl = BaseConfig.instance.threadsGateUrl
-            val threadsGateProviderUid = BaseConfig.instance.threadsGateProviderUid
-            val trustedSSLCertificates = BaseConfig.instance.trustedSSLCertificates
+            val threadsGateUrl = BaseConfig.getInstance().threadsGateUrl
+            val threadsGateProviderUid = BaseConfig.getInstance().threadsGateProviderUid
+            val trustedSSLCertificates = BaseConfig.getInstance().trustedSSLCertificates
 
             if (threadsGateUrl != null && threadsGateProviderUid != null) {
-                BaseConfig.instance.updateTransport(
+                BaseConfig.getInstance().updateTransport(
                     threadsGateUrl,
                     threadsGateProviderUid,
                     trustedSSLCertificates
@@ -308,7 +308,7 @@ open class ThreadsLibBase protected constructor(context: Context) {
         }
 
         private fun showVersionsLog() {
-            if (BaseConfig.instance.loggerConfig != null) {
+            if (BaseConfig.getInstance().loggerConfig != null) {
                 coroutineScope.launch(Dispatchers.IO) {
                     info("Getting versions from \"api/versions\"...")
                     val response = try {

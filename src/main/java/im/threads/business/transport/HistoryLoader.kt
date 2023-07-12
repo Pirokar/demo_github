@@ -31,9 +31,9 @@ class HistoryLoader(private val demoModeProvider: DemoModeProvider, private val 
         }
 
         var count = count
-        val token = BaseConfig.instance.transport.getToken()
+        val token = BaseConfig.getInstance().transport.getToken()
         if (count == null) {
-            count = BaseConfig.instance.historyLoadingCount
+            count = BaseConfig.getInstance().historyLoadingCount
         }
         return if (token.isNotEmpty()) {
             val threadsApi = get()

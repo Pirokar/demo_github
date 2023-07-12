@@ -147,7 +147,7 @@ class FileDescriptionMediaPlayer(private val audioManager: AudioManager) {
     private fun createMediaPlayer(fileDescription: FileDescription) {
         this.fileDescription = fileDescription
         try {
-            mediaPlayer = MediaPlayer.create(BaseConfig.instance.context, fileUri)
+            mediaPlayer = MediaPlayer.create(BaseConfig.getInstance().context, fileUri)
             restartCount = 0
         } catch (exception: Exception) {
             if (restartCount++ < 3) {

@@ -51,7 +51,7 @@ class FileDownloader(
                 return
             }
 
-            BaseConfig.instance.sslSocketFactoryConfig?.let {
+            BaseConfig.getInstance().sslSocketFactoryConfig?.let {
                 HttpsURLConnection.setDefaultSSLSocketFactory(it.sslSocketFactory)
             }
             val urlConnection = if (url.protocol.equals("file", ignoreCase = true)) {

@@ -7,7 +7,7 @@ import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 
 class DatabaseHolder private constructor() {
-    private val mMyOpenHelper: ThreadsDbHelper = ThreadsDbHelper(BaseConfig.instance.context)
+    private val mMyOpenHelper: ThreadsDbHelper = ThreadsDbHelper(BaseConfig.getInstance().context)
 
     fun getChatItems(offset: Int, limit: Int): List<ChatItem> {
         return mMyOpenHelper.getChatItems(offset, limit)

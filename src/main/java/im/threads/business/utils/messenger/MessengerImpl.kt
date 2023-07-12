@@ -38,7 +38,7 @@ class MessengerImpl(
     private var compositeDisposable: CompositeDisposable?,
     private val clientUseCase: ClientUseCase
 ) : Messenger {
-    private val context = BaseConfig.instance.context
+    private val context = BaseConfig.getInstance().context
     private var isDownloadingMessages = false
     private var isAllMessagesDownloaded = false
     private var lastMessageTimestamp = 0L
@@ -187,7 +187,7 @@ class MessengerImpl(
     }
 
     private fun sendTextMessage(userPhrase: UserPhrase, consultInfo: ConsultInfo?) {
-        BaseConfig.instance.transport.sendMessage(userPhrase, consultInfo, null, null)
+        BaseConfig.getInstance().transport.sendMessage(userPhrase, consultInfo, null, null)
     }
 
     private fun sendFileMessage(userPhrase: UserPhrase, consultInfo: ConsultInfo?) {
@@ -204,7 +204,7 @@ class MessengerImpl(
                 if (quoteFileDescription != null) {
                     quoteFilePath = postFile(quoteFileDescription, clientId)
                 }
-                BaseConfig.instance.transport.sendMessage(userPhrase, consultInfo, filePath, quoteFilePath)
+                BaseConfig.getInstance().transport.sendMessage(userPhrase, consultInfo, filePath, quoteFilePath)
             }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -230,7 +230,7 @@ class MessengerImpl(
                 if (isViewActive) {
                     proceedUnsentMessages()
                 }
-                delay(BaseConfig.instance.requestConfig.socketClientSettings.resendIntervalMillis)
+                delay(BaseConfig.getInstance().requestConfig.socketClientSettings.resendIntervalMillis)
             }
         }
     }

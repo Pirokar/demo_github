@@ -38,7 +38,7 @@ class QuickAnswerController : Fragment() {
                     database.putChatItems(chatItems)
                     val uuidList: List<String?> = database.getUnreadMessagesUuid()
                     if (uuidList.isNotEmpty()) {
-                        BaseConfig.instance.transport.markMessagesAsRead(uuidList)
+                        BaseConfig.getInstance().transport.markMessagesAsRead(uuidList)
                     }
                 }
                 .flatMap<ConsultPhrase> { database.lastConsultPhrase }

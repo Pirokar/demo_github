@@ -11,8 +11,8 @@ class AppInfo {
         get() {
             var pInfo: PackageInfo? = null
             try {
-                pInfo = BaseConfig.instance.context.packageManager.getPackageInfo(
-                    BaseConfig.instance.context.packageName,
+                pInfo = BaseConfig.getInstance().context.packageManager.getPackageInfo(
+                    BaseConfig.getInstance().context.packageName,
                     0
                 )
             } catch (e: PackageManager.NameNotFoundException) {
@@ -26,10 +26,10 @@ class AppInfo {
 
     val appName: String
         get() {
-            val applicationInfo = BaseConfig.instance.context.applicationInfo
+            val applicationInfo = BaseConfig.getInstance().context.applicationInfo
             if (applicationInfo != null) {
                 try {
-                    return applicationInfo.loadLabel(BaseConfig.instance.context.packageManager)
+                    return applicationInfo.loadLabel(BaseConfig.getInstance().context.packageManager)
                         .toString()
                 } catch (e: Exception) {
                     error("getAppName", e)
@@ -40,7 +40,7 @@ class AppInfo {
 
     val appId: String
         get() {
-            val applicationInfo = BaseConfig.instance.context.applicationInfo
+            val applicationInfo = BaseConfig.getInstance().context.applicationInfo
             if (applicationInfo != null) {
                 try {
                     return applicationInfo.packageName

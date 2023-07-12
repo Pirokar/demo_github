@@ -17,7 +17,7 @@ class ThreadsApi(
     private val datastoreApi: ThreadsDatastoreApi? = null
 ) {
     fun versions(): Call<VersionsModel?>? {
-        return if (BaseConfig.instance.newChatCenterApi) {
+        return if (BaseConfig.getInstance().newChatCenterApi) {
             newThreadsApi?.versions()
         } else {
             oldThreadsApi?.versions()
@@ -25,7 +25,7 @@ class ThreadsApi(
     }
 
     fun settings(): Call<SettingsResponse?>? {
-        return if (BaseConfig.instance.newChatCenterApi) {
+        return if (BaseConfig.getInstance().newChatCenterApi) {
             newThreadsApi?.settings()
         } else {
             oldThreadsApi?.settings()
@@ -33,7 +33,7 @@ class ThreadsApi(
     }
 
     fun config(): Call<ConfigResponse?>? {
-        return if (BaseConfig.instance.newChatCenterApi) {
+        return if (BaseConfig.getInstance().newChatCenterApi) {
             newThreadsApi?.config(API_VERSION)
         } else {
             oldThreadsApi?.config(API_VERSION)
@@ -46,7 +46,7 @@ class ThreadsApi(
         count: Int?,
         version: String?
     ): Call<HistoryResponse?>? {
-        return if (BaseConfig.instance.newChatCenterApi) {
+        return if (BaseConfig.getInstance().newChatCenterApi) {
             newThreadsApi?.history(token?.encodeUrl(), beforeDate, count, version)
         } else {
             oldThreadsApi?.history(
@@ -60,7 +60,7 @@ class ThreadsApi(
     }
 
     fun markMessageAsRead(ids: List<String?>?): Call<Void?>? {
-        return if (BaseConfig.instance.newChatCenterApi) {
+        return if (BaseConfig.getInstance().newChatCenterApi) {
             newThreadsApi?.markMessageAsRead(ids)
         } else {
             oldThreadsApi?.markMessageAsRead(ids)

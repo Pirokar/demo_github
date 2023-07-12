@@ -225,7 +225,7 @@ class ThreadsGateTransport(
             val content = outgoingMessageCreator.createMessageUpdateLocation(
                 latitude,
                 longitude,
-                deviceInfo.getLocale(BaseConfig.instance.context)
+                deviceInfo.getLocale(BaseConfig.getInstance().context)
             )
             sendMessage(content, sendInit = false)
         }
@@ -271,7 +271,7 @@ class ThreadsGateTransport(
             sendInitChatMessage(false)
             sendEnvironmentMessage(false)
         }
-        val text = BaseConfig.instance.gson.toJson(
+        val text = BaseConfig.getInstance().gson.toJson(
             SendMessageRequest(
                 correlationId,
                 SendMessageRequest.Data(deviceAddress, content, important)
@@ -323,14 +323,14 @@ class ThreadsGateTransport(
             getDeviceUid(),
             "Android",
             deviceInfo.osVersion,
-            deviceInfo.getLocale(BaseConfig.instance.context),
+            deviceInfo.getLocale(BaseConfig.getInstance().context),
             Calendar.getInstance().timeZone.displayName,
             if (!TextUtils.isEmpty(deviceName)) deviceName else deviceModel,
             deviceModel,
             deviceAddress,
             clientId
         )
-        val text = BaseConfig.instance.gson.toJson(
+        val text = BaseConfig.getInstance().gson.toJson(
             RegisterDeviceRequest(UUID.randomUUID().toString(), data)
         )
         sendMessageWithWebsocket(text)
@@ -365,7 +365,7 @@ class ThreadsGateTransport(
     private fun sendEnvironmentMessage(tryOpeningWebSocket: Boolean): Boolean {
         return sendMessage(
             outgoingMessageCreator.createEnvironmentMessage(
-                deviceInfo.getLocale(BaseConfig.instance.context)
+                deviceInfo.getLocale(BaseConfig.getInstance().context)
             ),
             tryOpeningWebSocket = tryOpeningWebSocket,
             sendInit = false
@@ -407,7 +407,7 @@ class ThreadsGateTransport(
     private fun getDeviceName(): String {
         val deviceName = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
             Settings.Secure.getString(
-                BaseConfig.instance.context.contentResolver,
+                BaseConfig.getInstance().context.contentResolver,
                 Settings.Global.DEVICE_NAME
             )
         } else {
@@ -416,7 +416,7 @@ class ThreadsGateTransport(
 
         return if (deviceName.isNullOrBlank() && Build.VERSION.SDK_INT <= Build.VERSION_CODES.S) {
             val blName = try {
-                Settings.Secure.getString(BaseConfig.instance.context.contentResolver, "bluetooth_name")
+                Settings.Secure.getString(BaseConfig.getInstance().context.contentResolver, "bluetooth_name")
             } catch (ignored: Exception) {
                 getSimpleDeviceName()
             }
@@ -458,7 +458,7 @@ class ThreadsGateTransport(
         override fun onMessage(webSocket: WebSocket, text: String) {
             LoggerEdna.info("[WS] ☚ ${jsonFormatter.jsonToPrettyFormat(text)}")
             postSocketResponseMap(text)
-            val response = BaseConfig.instance.gson.fromJson(text, BaseResponse::class.java)
+            val response = BaseConfig.getInstance().gson.fromJson(text, BaseResponse::class.java)
             val action = response.action
             val correlationId = response.correlationId
             if (response.data != null && response.data.has(KEY_ERROR)) {
@@ -472,7 +472,7 @@ class ThreadsGateTransport(
                 chatUpdateProcessor.postError(TransportException(errorMessage))
             } else if (action != null) {
                 if (action == Action.REGISTER_DEVICE && chatState.getCurrentState() > ChatStateEnum.LOGGED_OUT) {
-                    val data = BaseConfig.instance.gson.fromJson(
+                    val data = BaseConfig.getInstance().gson.fromJson(
                         response.data.toString(),
                         RegisterDeviceData::class.java
                     )
@@ -482,7 +482,7 @@ class ThreadsGateTransport(
                     chatState.changeState(ChatStateEnum.DEVICE_REGISTERED)
                 }
                 if (action == Action.SEND_MESSAGE) {
-                    val data = BaseConfig.instance.gson.fromJson(
+                    val data = BaseConfig.getInstance().gson.fromJson(
                         response.data.toString(),
                         SendMessageData::class.java
                     )
@@ -547,18 +547,18 @@ class ThreadsGateTransport(
                     )
                 }
                 if (action == Action.GET_STATUSES) {
-                    val data = BaseConfig.instance.gson.fromJson(
+                    val data = BaseConfig.getInstance().gson.fromJson(
                         response.data.toString(),
                         GetStatusesData::class.java
                     )
                     data.statuses?.let { chatUpdateProcessor.postOutgoingMessageStatusChanged(it) }
                 }
                 if (action == Action.GET_MESSAGES) {
-                    val data = BaseConfig.instance.gson.fromJson(
+                    val data = BaseConfig.getInstance().gson.fromJson(
                         response.data.toString(),
                         GetMessagesData::class.java
                     )
-                    val gson = BaseConfig.instance.gson
+                    val gson = BaseConfig.getInstance().gson
                     val messages = data.messages ?: listOf()
                     for (message in messages) {
                         if (message.content != null && message.content.has(MessageAttributes.TYPE)) {
