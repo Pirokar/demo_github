@@ -225,7 +225,7 @@ class MessagesTable(
         }
         if (chatItem is ConsultPhrase) {
             val item = getChatItemByCorrelationId(sqlHelper, chatItem.id) as? ConsultPhrase
-            chatItem.isRead = if (item?.isRead == true) true else chatItem.isRead
+            chatItem.read = if (item?.read == true) true else chatItem.read
             insertOrUpdateMessage(sqlHelper, getConsultPhraseCV(chatItem))
             chatItem.fileDescription?.let {
                 isFileDownloaded(it)?.let { uri ->
@@ -684,7 +684,7 @@ class MessagesTable(
         cv.put(COLUMN_MESSAGE_TYPE, MessageType.CONSULT_PHRASE.ordinal)
         cv.put(COLUMN_AVATAR_PATH, phrase.avatarPath)
         cv.put(COLUMN_CONSULT_ID, phrase.consultId)
-        cv.put(COLUMN_IS_READ, phrase.isRead)
+        cv.put(COLUMN_IS_READ, phrase.read)
         cv.put(COLUMN_CONSULT_STATUS, phrase.status)
         cv.put(COLUMN_NAME, phrase.consultName)
         cv.put(COLUMN_SEX, phrase.sex)

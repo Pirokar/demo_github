@@ -32,6 +32,16 @@ interface NewThreadsBackendApi {
         @Query("chatApiVersion") chatApiVersion: String = ThreadsApi.API_VERSION
     ): Call<HistoryResponse?>?
 
+    @Headers("X-Header-Encoding: url")
+    @GET("api/client/history")
+    fun historyAfter(
+        @Header("X-Client-Token") token: String?,
+        @Query("after") afterDate: String,
+        @Query("count") count: Int?,
+        @Query("libVersion") version: String?,
+        @Query("chatApiVersion") chatApiVersion: String = ThreadsApi.API_VERSION
+    ): Call<HistoryResponse?>?
+
     @POST("api/messages/read")
     fun markMessageAsRead(@Body ids: List<String?>?): Call<Void?>?
 }

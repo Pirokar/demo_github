@@ -11,7 +11,7 @@ class MessageFromHistory : ChatItem {
     var client: Client? = null
     var receivedDate: String? = null
     var channel: Channel? = null
-    var isRead = false
+    var read = false
     var formattedText: String? = null
     var text: String? = null
     var speechText: String? = null
@@ -48,7 +48,7 @@ class MessageFromHistory : ChatItem {
         if (this === other) return true
         if (other == null || javaClass != other.javaClass) return false
         val that = other as MessageFromHistory
-        return isRead == that.isRead && isDisplay == that.isDisplay && isSimple == that.isSimple &&
+        return read == that.read && isDisplay == that.isDisplay && isSimple == that.isSimple &&
             ObjectsCompat.equals(uuid, that.uuid) &&
             ObjectsCompat.equals(clientId, that.clientId) &&
             ObjectsCompat.equals(threadId, that.threadId) &&
@@ -78,7 +78,7 @@ class MessageFromHistory : ChatItem {
             client,
             receivedDate,
             channel,
-            isRead,
+            read,
             formattedText,
             text,
             attachments,
