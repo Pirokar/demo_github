@@ -43,7 +43,6 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.core.util.ObjectsCompat
 import androidx.core.view.ViewCompat
-import androidx.databinding.ObservableField
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.annimon.stream.Optional
@@ -100,7 +99,6 @@ import im.threads.business.utils.FileUtils.getUpcomingUserMessagesFromSelection
 import im.threads.business.utils.FileUtils.isImage
 import im.threads.business.utils.FileUtils.isVoiceMessage
 import im.threads.business.utils.MediaHelper.grantPermissionsForImageUri
-import im.threads.business.utils.RxUtils
 import im.threads.business.utils.ThreadsPermissionChecker
 import im.threads.business.utils.ThreadsPermissionChecker.isRecordAudioPermissionGranted
 import im.threads.business.utils.copyToBuffer
@@ -144,6 +142,7 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.BehaviorSubject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -172,8 +171,8 @@ class ChatFragment :
 
     private val handler = Handler(Looper.getMainLooper())
     private val fileNameDateFormat = SimpleDateFormat("dd.MM.yyyy.HH:mm:ss.S", Locale.getDefault())
-    private val inputTextObservable = ObservableField("")
-    internal val fileDescription = ObservableField(Optional.empty<FileDescription?>())
+    private val inputTextObservable = BehaviorSubject.createDefault("")
+    internal val fileDescription = BehaviorSubject.createDefault(Optional.empty<FileDescription?>())
     private val mediaMetadataRetriever = MediaMetadataRetriever()
     private val audioConverter = ChatCenterAudioConverter()
     private val chatUpdateProcessor: ChatUpdateProcessor by inject()
@@ -213,7 +212,6 @@ class ChatFragment :
             ColorsHelper.setStatusBarColor(WeakReference(activity), style.chatStatusBarColorResId, style.windowLightStatusBarResId)
         }
         binding = EccFragmentChatBinding.inflate(inflater, container, false)
-        binding.inputTextObservable = inputTextObservable
         chatAdapterCallback = AdapterCallback()
         val audioManager = requireContext().getSystemService(Context.AUDIO_SERVICE) as AudioManager
         fdMediaPlayer = FileDescriptionMediaPlayer(audioManager)
@@ -226,6 +224,7 @@ class ChatFragment :
         setFragmentStyle()
         initMediaPlayer()
         subscribeToFileDescription()
+        subscribeToInputText()
         isShown = true
         return binding.root
     }
@@ -809,14 +808,15 @@ class ChatFragment :
     }
 
     private fun configureUserTypingSubscription() {
-        val userTypingDisposable = RxUtils.toObservable(inputTextObservable)
-            .throttleLatest(INPUT_DELAY, TimeUnit.MILLISECONDS)
-            .filter { charSequence: String -> charSequence.isNotEmpty() }
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { input: String? -> onInputChanged(input) }
-            ) { error: Throwable? -> error("configureInputChangesSubscription ", error) }
-        subscribe(userTypingDisposable)
+        subscribe(
+            inputTextObservable
+                .throttleLatest(INPUT_DELAY, TimeUnit.MILLISECONDS)
+                .filter { charSequence: String -> charSequence.isNotEmpty() }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ input: String? ->
+                    onInputChanged(input)
+                }) { error: Throwable? -> error("configureInputChangesSubscription ", error) }
+        )
     }
 
     private fun onInputChanged(input: String?) {
@@ -831,8 +831,8 @@ class ChatFragment :
 
     private fun configureRecordButtonVisibility() {
         val recordButtonVisibilityDisposable = Observable.combineLatest(
-            RxUtils.toObservableImmediately(inputTextObservable),
-            RxUtils.toObservableImmediately(fileDescription)
+            inputTextObservable,
+            fileDescription
         ) { s: String, fileDescriptionOptional: Optional<FileDescription?>? ->
             (
                 (TextUtils.isEmpty(s) || s.trim { it <= ' ' }.isEmpty()) &&
@@ -866,7 +866,7 @@ class ChatFragment :
             return
         }
 
-        val inputText = inputTextObservable.get()
+        val inputText = inputTextObservable.value
         if (inputText == null || inputText.trim { it <= ' ' }.isEmpty() && getFileDescription() == null) {
             return
         }
@@ -881,10 +881,12 @@ class ChatFragment :
         )
         input.add(message)
         sendMessage(input)
+        updateLastUserActivityTime()
+        clearInput()
     }
 
     fun getFileDescription(): FileDescription? {
-        val fileDescriptionOptional = fileDescription.get()
+        val fileDescriptionOptional = fileDescription.value
         return if (fileDescriptionOptional != null && fileDescriptionOptional.isPresent) {
             fileDescriptionOptional.get()
         } else {
@@ -893,12 +895,12 @@ class ChatFragment :
     }
 
     private fun setFileDescription(fileDescription: FileDescription?) {
-        this.fileDescription.set(Optional.ofNullable(fileDescription))
+        this.fileDescription.onNext(Optional.ofNullable(fileDescription))
     }
 
     private fun subscribeToFileDescription() {
         subscribe(
-            RxUtils.toObservable(fileDescription)
+            fileDescription
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { files: Optional<FileDescription?>? ->
                     val isFilesAvailable = files != null && !files.isEmpty
@@ -906,6 +908,18 @@ class ChatFragment :
                     val isEnable = isFilesAvailable || isInputAvailable
                     binding.sendMessage.isEnabled = isEnable
                 }
+        )
+    }
+
+    private fun subscribeToInputText() {
+        subscribe(
+            inputTextObservable
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    onInputChanged(it)
+                }, {
+                    error(it)
+                })
         )
     }
 
@@ -982,6 +996,7 @@ class ChatFragment :
                 } else {
                     binding.inputEditView.maxLines = INPUT_EDIT_VIEW_MAX_LINES_COUNT
                 }
+                inputTextObservable.onNext(s.toString())
                 binding.sendMessage.isEnabled = !TextUtils.isEmpty(s) || hasAttachments()
             }
         })
@@ -1276,7 +1291,7 @@ class ChatFragment :
                             show(requireContext(), getString(R.string.ecc_failed_to_open_file))
                             return@subscribe
                         }
-                        val inputText = inputTextObservable.get() ?: return@subscribe
+                        val inputText = inputTextObservable.value ?: return@subscribe
                         val messages = getUpcomingUserMessagesFromSelection(
                             filteredPhotos,
                             inputText,
@@ -1392,7 +1407,7 @@ class ChatFragment :
         val photos = data.getParcelableArrayListExtra<Uri>(GalleryActivity.PHOTOS_TAG)
         hideBottomSheet()
         showWelcomeScreen(false)
-        val inputText = inputTextObservable.get()
+        val inputText = inputTextObservable.value
         if (photos == null || photos.size == 0 || inputText == null) {
             return
         }
@@ -1428,7 +1443,7 @@ class ChatFragment :
                     } else {
                         chatController.onUserInput(uum)
                     }
-                    inputTextObservable.set("")
+                    inputTextObservable.onNext("")
                     mQuoteLayoutHolder?.clear()
                     for (i in 1 until filteredPhotos.size) {
                         fileUri = filteredPhotos[i]
@@ -1460,7 +1475,7 @@ class ChatFragment :
                     System.currentTimeMillis()
                 )
             )
-            val inputText = inputTextObservable.get()
+            val inputText = inputTextObservable.value
             sendMessage(
                 listOf(
                     UpcomingUserMessage(
@@ -1540,7 +1555,7 @@ class ChatFragment :
             setFileDescription(
                 fileDescription
             )
-            val inputText = inputTextObservable.get()
+            val inputText = inputTextObservable.value
             val uum = UpcomingUserMessage(
                 fileDescription,
                 campaignMessage,
@@ -1590,7 +1605,7 @@ class ChatFragment :
     }
 
     private fun clearInput() {
-        inputTextObservable.set("")
+        binding.inputEditView.setText("")
         mQuoteLayoutHolder?.clear()
         setBottomStateDefault()
         hideCopyControls()
