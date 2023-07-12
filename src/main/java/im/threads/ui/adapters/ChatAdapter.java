@@ -1255,7 +1255,6 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             for (int i = 1; i < items.size(); i++) {
                 updateConsultAvatarIfNeed(items, i - 1, i);
             }
-            DuplicateMessagesRemover.removeDuplicateSystemMessages(items);
             insertSpacing(items);
         }
 
