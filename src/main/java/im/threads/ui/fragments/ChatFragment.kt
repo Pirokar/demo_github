@@ -264,6 +264,7 @@ class ChatFragment :
         initRecordButtonState()
         chatController.threadId?.let { setCurrentThreadId(it) }
         BaseConfig.instance.transport.setLifecycle(lifecycle)
+        checkScrollDownButtonVisibility()
     }
 
     override fun onStop() {
@@ -755,18 +756,9 @@ class ChatFragment :
                 super.onScrolled(recyclerView, dx, dy)
                 val layoutManager = binding.recycler.layoutManager as LinearLayoutManager?
                 if (layoutManager != null) {
-                    val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
+                    checkScrollDownButtonVisibility()
                     val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
                     val itemCount = chatAdapter?.itemCount
-                    if (itemCount != null &&
-                        itemCount - 1 - lastVisibleItemPosition > INVISIBLE_MESSAGES_COUNT
-                    ) {
-                        binding.scrollDownButtonContainer.visible()
-                        showUnreadMessagesCount(chatController.getUnreadMessagesCount())
-                    } else {
-                        binding.scrollDownButtonContainer.visibility = View.GONE
-                        recyclerView.post { setMessagesAsRead() }
-                    }
                     if (firstVisibleItemPosition == 0 &&
                         !chatController.isAllMessagesDownloaded &&
                         itemCount != null &&
@@ -790,6 +782,22 @@ class ChatFragment :
             binding.scrollDownButtonContainer.visibility = View.GONE
             if (isInMessageSearchMode) {
                 hideSearchMode()
+            }
+        }
+    }
+
+    private fun checkScrollDownButtonVisibility() {
+        mLayoutManager?.let { layoutManager ->
+            val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
+            val itemCount = chatAdapter?.itemCount
+            if (itemCount != null &&
+                itemCount - 1 - lastVisibleItemPosition > INVISIBLE_MESSAGES_COUNT
+            ) {
+                binding.scrollDownButtonContainer.visible()
+                showUnreadMessagesCount(chatController.getUnreadMessagesCount())
+            } else {
+                binding.scrollDownButtonContainer.visibility = View.GONE
+                activity?.runOnUiThread { setMessagesAsRead() }
             }
         }
     }
