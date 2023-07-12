@@ -881,6 +881,8 @@ class ChatFragment :
         )
         input.add(message)
         sendMessage(input)
+        updateLastUserActivityTime()
+        clearInput()
     }
 
     fun getFileDescription(): FileDescription? {
@@ -1603,7 +1605,7 @@ class ChatFragment :
     }
 
     private fun clearInput() {
-        inputTextObservable.onNext("")
+        binding.inputEditView.setText("")
         mQuoteLayoutHolder?.clear()
         setBottomStateDefault()
         hideCopyControls()
