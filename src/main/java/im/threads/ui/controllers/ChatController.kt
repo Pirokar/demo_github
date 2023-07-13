@@ -628,7 +628,7 @@ class ChatController private constructor() {
                                 chatState.changeState(ChatStateEnum.HISTORY_LOADED)
                                 isDownloadingMessages = false
                                 val (consultInfo, serverItems) = pair
-                                val isShouldBeLoadedMore = loadToTheEnd && serverItems.size == BaseConfig.instance.historyLoadingCount
+                                val isShouldBeLoadedMore = loadToTheEnd && serverItems.size == BaseConfig.getInstance().historyLoadingCount
                                 if (applyUiChanges) {
                                     val items = setLastAvatars(serverItems)
                                     if (fragment != null) {

@@ -65,7 +65,7 @@ class ThreadsApi(
         count: Int?,
         version: String?
     ): Call<HistoryResponse?>? {
-        return if (BaseConfig.instance.newChatCenterApi) {
+        return if (BaseConfig.getInstance().newChatCenterApi) {
             newThreadsApi?.historyAfter(token?.encodeUrl(), afterDate, count, version)
         } else {
             oldThreadsApi?.historyAfter(
