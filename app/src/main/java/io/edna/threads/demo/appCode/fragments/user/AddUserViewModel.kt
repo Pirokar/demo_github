@@ -42,7 +42,7 @@ class AddUserViewModel(
             }
             if (user != null) {
                 srcUser = user
-                _userLiveData.value = user
+                _userLiveData.value = user.clone()
             }
         }
     }

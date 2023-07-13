@@ -53,7 +53,7 @@ class AddServerViewModel(
             R.id.backButton -> navigationController.navigate(R.id.action_AddServerFragment_to_ServerListFragment)
             R.id.okButton -> {
                 if (serverConfigLiveData.value?.isAllFieldsFilled() == true) {
-                    finalServerConfigLiveData.postValue(serverConfigLiveData.value)
+                    finalServerConfigLiveData.value = serverConfigLiveData.value
                     navigationController.navigate(R.id.action_AddServerFragment_to_ServerListFragment)
                 } else {
                     setupErrorFields(serverConfigLiveData.value)
@@ -81,32 +81,32 @@ class AddServerViewModel(
     private fun setSrcConfig(config: ServerConfig?) {
         if (config != null) {
             srcServerConfig = config
-            _serverConfigLiveData.postValue(config.copy())
+            _serverConfigLiveData.value = config.copy()
         }
     }
 
     private fun setupErrorFields(config: ServerConfig?) {
         if (config == null) {
-            _errorStringForServerNameFieldLiveData.postValue(stringsProvider.requiredField)
-            _errorStringForProviderIdFieldLiveData.postValue(stringsProvider.requiredField)
-            _errorStringForBaseUrlFieldLiveData.postValue(stringsProvider.requiredField)
-            _errorStringForDatastoreUrlFieldLiveData.postValue(stringsProvider.requiredField)
-            _errorStringForThreadsGateUrlFieldLiveData.postValue(stringsProvider.requiredField)
+            _errorStringForServerNameFieldLiveData.value = stringsProvider.requiredField
+            _errorStringForProviderIdFieldLiveData.value = stringsProvider.requiredField
+            _errorStringForBaseUrlFieldLiveData.value = stringsProvider.requiredField
+            _errorStringForDatastoreUrlFieldLiveData.value = stringsProvider.requiredField
+            _errorStringForThreadsGateUrlFieldLiveData.value = stringsProvider.requiredField
         } else {
             if (config.name.isNullOrEmpty()) {
-                _errorStringForServerNameFieldLiveData.postValue(stringsProvider.requiredField)
+                _errorStringForServerNameFieldLiveData.value = stringsProvider.requiredField
             }
             if (config.threadsGateProviderUid.isNullOrEmpty()) {
-                _errorStringForProviderIdFieldLiveData.postValue(stringsProvider.requiredField)
+                _errorStringForProviderIdFieldLiveData.value = stringsProvider.requiredField
             }
             if (config.serverBaseUrl.isNullOrEmpty()) {
-                _errorStringForBaseUrlFieldLiveData.postValue(stringsProvider.requiredField)
+                _errorStringForBaseUrlFieldLiveData.value = stringsProvider.requiredField
             }
             if (config.datastoreUrl.isNullOrEmpty()) {
-                _errorStringForDatastoreUrlFieldLiveData.postValue(stringsProvider.requiredField)
+                _errorStringForDatastoreUrlFieldLiveData.value = stringsProvider.requiredField
             }
             if (config.threadsGateUrl.isNullOrEmpty()) {
-                _errorStringForThreadsGateUrlFieldLiveData.postValue(stringsProvider.requiredField)
+                _errorStringForThreadsGateUrlFieldLiveData.value = stringsProvider.requiredField
             }
         }
     }
@@ -116,10 +116,10 @@ class AddServerViewModel(
             if (s != null) {
                 if (_serverConfigLiveData.value?.name != s.toString()) {
                     serverConfigLiveData.value?.name = s.toString()
-                    _serverConfigLiveData.postValue(serverConfigLiveData.value)
+                    _serverConfigLiveData.value = serverConfigLiveData.value
                 }
                 if (s.isNotEmpty()) {
-                    _errorStringForServerNameFieldLiveData.postValue(null)
+                    _errorStringForServerNameFieldLiveData.value = null
                 }
             }
         }
@@ -130,10 +130,10 @@ class AddServerViewModel(
             if (s != null) {
                 if (serverConfigLiveData.value?.threadsGateProviderUid != s.toString()) {
                     serverConfigLiveData.value?.threadsGateProviderUid = s.toString()
-                    _serverConfigLiveData.postValue(serverConfigLiveData.value)
+                    _serverConfigLiveData.value = serverConfigLiveData.value
                 }
                 if (s.isNotEmpty()) {
-                    _errorStringForProviderIdFieldLiveData.postValue(null)
+                    _errorStringForProviderIdFieldLiveData.value = null
                 }
             }
         }
@@ -144,10 +144,10 @@ class AddServerViewModel(
             if (s != null) {
                 if (serverConfigLiveData.value?.serverBaseUrl != s.toString()) {
                     serverConfigLiveData.value?.serverBaseUrl = s.toString()
-                    _serverConfigLiveData.postValue(serverConfigLiveData.value)
+                    _serverConfigLiveData.value = serverConfigLiveData.value
                 }
                 if (s.isNotEmpty()) {
-                    _errorStringForBaseUrlFieldLiveData.postValue(null)
+                    _errorStringForBaseUrlFieldLiveData.value = null
                 }
             }
         }
@@ -158,10 +158,10 @@ class AddServerViewModel(
             if (s != null) {
                 if (serverConfigLiveData.value?.datastoreUrl != s.toString()) {
                     serverConfigLiveData.value?.datastoreUrl = s.toString()
-                    _serverConfigLiveData.postValue(serverConfigLiveData.value)
+                    _serverConfigLiveData.value = serverConfigLiveData.value
                 }
                 if (s.isNotEmpty()) {
-                    _errorStringForDatastoreUrlFieldLiveData.postValue(null)
+                    _errorStringForDatastoreUrlFieldLiveData.value = null
                 }
             }
         }
@@ -172,10 +172,10 @@ class AddServerViewModel(
             if (s != null) {
                 if (serverConfigLiveData.value?.threadsGateUrl != s.toString()) {
                     serverConfigLiveData.value?.threadsGateUrl = s.toString()
-                    _serverConfigLiveData.postValue(serverConfigLiveData.value)
+                    _serverConfigLiveData.value = serverConfigLiveData.value
                 }
                 if (s.isNotEmpty()) {
-                    _errorStringForThreadsGateUrlFieldLiveData.postValue(null)
+                    _errorStringForThreadsGateUrlFieldLiveData.value = null
                 }
             }
         }
