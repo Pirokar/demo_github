@@ -12,7 +12,7 @@ class ChatCenterAudioConverter {
 
     fun convertToWav(file: File, callback: ChatCenterAudioConverterCallback) {
         val callbackReference = WeakReference(callback)
-        AudioConverter.with(BaseConfig.instance.context)
+        AudioConverter.with(BaseConfig.getInstance().context)
             .setFile(file)
             .setFormat(AudioFormat.WAV)
             .setCallback(object : IConvertCallback {

@@ -70,13 +70,13 @@ object FileHelper {
                 defaultAttachmentSettings
             } else {
                 val attachmentSettingsContent =
-                    BaseConfig.instance.gson.fromJson(settingsStr, AttachmentSettings.Content::class.java)
+                    BaseConfig.getInstance().gson.fromJson(settingsStr, AttachmentSettings.Content::class.java)
                 attachmentSettingsContent ?: defaultAttachmentSettings
             }
         }
         set(value) = preferences.save(
             PreferencesUiKeys.PREF_ATTACHMENT_SETTINGS,
-            BaseConfig.instance.gson.toJson(value)
+            BaseConfig.getInstance().gson.toJson(value)
         )
 
     private val defaultAttachmentSettings: AttachmentSettings.Content

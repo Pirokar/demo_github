@@ -41,7 +41,7 @@ public final class BottomGalleryAdapter extends RecyclerView.Adapter<BottomGalle
         holder.onBind(list.get(position), v -> {
             if (!isSendingAllowed(item, holder)) return;
             if (!item.isChosen() &&
-                    mChosenItems.size() >= config.getChatStyle().getMaxGalleryImagesCount(BaseConfig.instance.context)) {
+                    mChosenItems.size() >= config.getChatStyle().getMaxGalleryImagesCount(BaseConfig.Companion.getInstance().context)) {
                 Balloon.show(
                         holder.itemView.getContext(),
                         holder.itemView.getContext().getString(R.string.ecc_achieve_images_count_limit_message)
@@ -67,10 +67,10 @@ public final class BottomGalleryAdapter extends RecyclerView.Adapter<BottomGalle
         Uri uri = item.getImagePath();
         if (uri != null) {
             if (FileHelper.INSTANCE.isAllowedFileExtension(
-                    FileUtils.getExtensionFromMediaStore(BaseConfig.instance.context, uri))
+                    FileUtils.getExtensionFromMediaStore(BaseConfig.Companion.getInstance().context, uri))
             ) {
                 if (FileHelper.INSTANCE.isAllowedFileSize(
-                        FileUtils.getFileSizeFromMediaStore(BaseConfig.instance.context, uri))
+                        FileUtils.getFileSizeFromMediaStore(BaseConfig.Companion.getInstance().context, uri))
                 ) {
                     return true;
                 } else {

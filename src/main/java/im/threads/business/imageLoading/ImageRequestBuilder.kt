@@ -124,7 +124,7 @@ class ImageRequestBuilder {
     private fun getRightAngleImage(photoPath: String): Float {
         return try {
             val ei = ExifInterface(
-                BaseConfig.instance.context.contentResolver.openInputStream(
+                BaseConfig.getInstance().context.contentResolver.openInputStream(
                     Uri.parse(photoPath)
                 )!!
             )

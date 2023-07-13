@@ -171,6 +171,7 @@ class Config(
 
         fun setInstance(config: Config) {
             instance = config
+            BaseConfig.setInstance(config)
         }
     }
 }

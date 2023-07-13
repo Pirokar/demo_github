@@ -869,12 +869,12 @@ class MessagesTable(
             return null
         }
         val outputFile = File(
-            getDownloadDir(BaseConfig.instance.context),
+            getDownloadDir(BaseConfig.getInstance().context),
             generateFileName(fileDescription)
         )
         return if (outputFile.exists()) {
             FileProvider().getUriForFile(
-                BaseConfig.instance.context,
+                BaseConfig.getInstance().context,
                 outputFile
             )
         } else {

@@ -263,7 +263,7 @@ class ChatFragment :
         ChatController.getInstance().onViewStart()
         initRecordButtonState()
         chatController.threadId?.let { setCurrentThreadId(it) }
-        BaseConfig.instance.transport.setLifecycle(lifecycle)
+        BaseConfig.getInstance().transport.setLifecycle(lifecycle)
         checkScrollDownButtonVisibility()
     }
 
@@ -317,7 +317,7 @@ class ChatFragment :
         activity?.unregisterReceiver(mChatReceiver)
         isShown = false
         statuses.clear()
-        BaseConfig.instance.transport.setLifecycle(null)
+        BaseConfig.getInstance().transport.setLifecycle(null)
         chatController.onViewDestroy()
         chatAdapter?.onDestroyView()
         super.onDestroyView()
@@ -762,7 +762,7 @@ class ChatFragment :
                     if (firstVisibleItemPosition == 0 &&
                         !chatController.isAllMessagesDownloaded &&
                         itemCount != null &&
-                        itemCount > BaseConfig.instance.historyLoadingCount / 2
+                        itemCount > BaseConfig.getInstance().historyLoadingCount / 2
                     ) {
                         binding.swipeRefresh.isRefreshing = true
                         chatController.loadHistory(isAfterAnchor = false) // before
@@ -1478,7 +1478,7 @@ class ChatFragment :
             setFileDescription(
                 FileDescription(
                     requireContext().getString(R.string.ecc_image),
-                    fileProvider.getUriForFile(BaseConfig.instance.context, file),
+                    fileProvider.getUriForFile(BaseConfig.getInstance().context, file),
                     file.length(),
                     System.currentTimeMillis()
                 )
@@ -1502,8 +1502,8 @@ class ChatFragment :
     private fun onFileResult(data: Intent) {
         val uri = data.data
         if (uri != null) {
-            if (isAllowedFileExtension(getExtensionFromMediaStore(BaseConfig.instance.context, uri))) {
-                if (isAllowedFileSize(getFileSizeFromMediaStore(BaseConfig.instance.context, uri))) {
+            if (isAllowedFileExtension(getExtensionFromMediaStore(BaseConfig.getInstance().context, uri))) {
+                if (isAllowedFileSize(getFileSizeFromMediaStore(BaseConfig.getInstance().context, uri))) {
                     try {
                         if (canBeSent(requireContext(), uri)) {
                             onFileResult(uri)

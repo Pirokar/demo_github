@@ -47,7 +47,7 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
     Worker(context, workerParameters) {
 
     private val executor = Executors.newSingleThreadExecutor()
-    private val config: BaseConfig by lazy { BaseConfig.instance }
+    private val config: BaseConfig by lazy { BaseConfig.getInstance() }
 
     private var notificationChannel: NotificationChannel? = null
 

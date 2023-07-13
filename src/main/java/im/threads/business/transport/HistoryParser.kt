@@ -144,7 +144,7 @@ object HistoryParser {
                             )
                         } else {
                             if (fileDescription != null) {
-                                fileDescription.from = BaseConfig.instance.context.getString(R.string.ecc_I)
+                                fileDescription.from = BaseConfig.getInstance().context.getString(R.string.ecc_I)
                             }
                             val sentState = if (message.errorMock == true) {
                                 MessageStatus.FAILED
@@ -180,7 +180,7 @@ object HistoryParser {
 
     private fun getSurveyFromJsonString(text: String): Survey? {
         return try {
-            val survey = BaseConfig.instance.gson.fromJson(text, Survey::class.java)
+            val survey = BaseConfig.getInstance().gson.fromJson(text, Survey::class.java)
             val time = Date().time
             survey.timeStamp = time
             survey.sentState = MessageStatus.FAILED
@@ -245,7 +245,7 @@ object HistoryParser {
             ) {
                 quoteFileDescription = fileDescriptionFromList(quoteFromHistory.attachments!!)
             }
-            val authorName = quoteFromHistory.operator?.aliasOrName ?: BaseConfig.instance.context.getString(R.string.ecc_I)
+            val authorName = quoteFromHistory.operator?.aliasOrName ?: BaseConfig.getInstance().context.getString(R.string.ecc_I)
 
             if (quoteString != null || quoteFileDescription != null) {
                 quote = Quote(quoteFromHistory.uuid, authorName, quoteString, quoteFileDescription, timestamp)

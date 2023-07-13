@@ -13,16 +13,20 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 class ChatState(private val preferences: Preferences) {
-    private val socketTimeout = try {
-        BaseConfig.instance.requestConfig.socketClientSettings.connectTimeoutMillis
-    } catch (exc: Exception) {
-        10000L
+    private val socketTimeout: Long by lazy {
+        try {
+            BaseConfig.getInstance().requestConfig.socketClientSettings.connectTimeoutMillis
+        } catch (exc: Exception) {
+            10000L
+        }
     }
 
-    private val restTimeout = try {
-        BaseConfig.instance.requestConfig.threadsApiHttpClientSettings.readTimeoutMillis
-    } catch (exc: Exception) {
-        10000L
+    private val restTimeout: Long by lazy {
+        try {
+            BaseConfig.getInstance().requestConfig.threadsApiHttpClientSettings.readTimeoutMillis
+        } catch (exc: Exception) {
+            10000L
+        }
     }
 
     private var coroutineScope: CoroutineScope? = null

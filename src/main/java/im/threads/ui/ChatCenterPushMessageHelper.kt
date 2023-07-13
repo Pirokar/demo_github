@@ -28,7 +28,7 @@ class ChatCenterPushMessageHelper {
         }
         if (fcmToken != preferences.get(PreferencesCoreKeys.FCM_TOKEN, "")) {
             preferences.save(PreferencesCoreKeys.FCM_TOKEN, fcmToken)
-            BaseConfig.instance.transport.updatePushToken()
+            BaseConfig.getInstance().transport.updatePushToken()
         }
     }
 
@@ -39,7 +39,7 @@ class ChatCenterPushMessageHelper {
         }
         if (hcmToken != preferences.get(PreferencesCoreKeys.HCM_TOKEN, "")) {
             preferences.save(PreferencesCoreKeys.HCM_TOKEN, hcmToken)
-            BaseConfig.instance.transport.updatePushToken()
+            BaseConfig.getInstance().transport.updatePushToken()
         }
     }
 

@@ -56,7 +56,7 @@ object FileUtils {
     @JvmStatic
     fun getFileName(uri: Uri?): String {
         uri?.let {
-            BaseConfig.instance.context.contentResolver.query(uri, null, null, null, null)
+            BaseConfig.getInstance().context.contentResolver.query(uri, null, null, null, null)
                 .use { cursor ->
                     if (cursor != null && cursor.moveToFirst()) {
                         val index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
@@ -73,7 +73,7 @@ object FileUtils {
 
     @JvmStatic
     fun getFileSize(uri: Uri): Long {
-        BaseConfig.instance.context.contentResolver.query(uri, null, null, null, null)
+        BaseConfig.getInstance().context.contentResolver.query(uri, null, null, null, null)
             .use { cursor ->
                 if (cursor != null && cursor.moveToFirst()) {
                     val index = cursor.getColumnIndex(OpenableColumns.SIZE)
@@ -137,7 +137,7 @@ object FileUtils {
 
     @JvmStatic
     fun getMimeType(uri: Uri): String {
-        val context = BaseConfig.instance.context
+        val context = BaseConfig.getInstance().context
         var type = context.contentResolver.getType(uri)
         if (type == null) {
             type = MimeTypeMap.getSingleton()
@@ -156,7 +156,7 @@ object FileUtils {
     fun saveToDownloads(fileDescription: FileDescription) {
         val uri = fileDescription.fileUri
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            val resolver = BaseConfig.instance.context.contentResolver
+            val resolver = BaseConfig.getInstance().context.contentResolver
             val imageCV = ContentValues()
             imageCV.put(MediaStore.Images.Media.DISPLAY_NAME, fileDescription.incomingName)
             imageCV.put(MediaStore.Images.Media.MIME_TYPE, getMimeType(fileDescription))
@@ -178,10 +178,10 @@ object FileUtils {
             if (outputFile.exists() || outputFile.createNewFile()) {
                 saveImageToFile(uri, outputFile)
                 val dm =
-                    BaseConfig.instance.context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+                    BaseConfig.getInstance().context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
                 dm.addCompletedDownload(
                     getFileName(uri),
-                    BaseConfig.instance.context.getString(R.string.ecc_media_description),
+                    BaseConfig.getInstance().context.getString(R.string.ecc_media_description),
                     true,
                     getMimeType(uri),
                     outputFile.path,
@@ -199,7 +199,7 @@ object FileUtils {
         return if (TextUtils.isEmpty(relativeUrl) || relativeUrl!!.startsWith("http")) {
             relativeUrl
         } else {
-            val datastoreUrl = BaseConfig.instance.datastoreUrl
+            val datastoreUrl = BaseConfig.getInstance().datastoreUrl
             val filesUrl = if (datastoreUrl?.endsWith("/") == true) {
                 "${datastoreUrl}files"
             } else {
@@ -302,7 +302,7 @@ object FileUtils {
         ImageLoader
             .get()
             .load(uri.toString())
-            .getBitmapSync(BaseConfig.instance.context)?.let { bitmap ->
+            .getBitmapSync(BaseConfig.getInstance().context)?.let { bitmap ->
                 val byteArrayOutputStream = ByteArrayOutputStream()
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
                 try {
@@ -320,11 +320,11 @@ object FileUtils {
 
     @Throws(IOException::class)
     private fun saveToUri(uri: Uri?, outputUri: Uri?) {
-        val resolver = BaseConfig.instance.context.contentResolver
+        val resolver = BaseConfig.getInstance().context.contentResolver
         ImageLoader
             .get()
             .load(uri.toString())
-            .getBitmapSync(BaseConfig.instance.context)?.let { bitmap ->
+            .getBitmapSync(BaseConfig.getInstance().context)?.let { bitmap ->
                 val byteArrayOutputStream = ByteArrayOutputStream()
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
                 try {
@@ -428,7 +428,7 @@ object FileUtils {
 
 fun MediaMetadataRetriever.getDuration(uri: Uri): Long {
     try {
-        setDataSource(BaseConfig.instance.context, uri)
+        setDataSource(BaseConfig.getInstance().context, uri)
     } catch (exc: Exception) {
         try {
             setDataSource(uri.toString(), mutableMapOf<String, String>())
@@ -440,7 +440,7 @@ fun MediaMetadataRetriever.getDuration(uri: Uri): Long {
 }
 
 fun Long.toFileSize(): String {
-    val context = BaseConfig.instance.context
+    val context = BaseConfig.getInstance().context
     val kb = 1024L
     val mb = kb * kb
     val gb = mb * kb

@@ -175,6 +175,12 @@ open class BaseConfig(
 
     companion object {
         @SuppressLint("StaticFieldLeak")
-        lateinit var instance: BaseConfig
+        private var baseInstance: BaseConfig? = null
+
+        fun getInstance() = baseInstance!!
+
+        fun setInstance(instance: BaseConfig) {
+            baseInstance = instance
+        }
     }
 }

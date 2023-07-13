@@ -72,7 +72,7 @@ private fun sendFile(uri: Uri, mimeType: String, token: String, fileDescription:
             response.errorBody()?.let { responseBody ->
                 chatUpdateProcessor.postUploadResult(fileDescription.apply { state = AttachmentStateEnum.ERROR })
                 val errorBody: ErrorResponse =
-                    BaseConfig.instance.gson.fromJson(responseBody.string(), ErrorResponse::class.java)
+                    BaseConfig.getInstance().gson.fromJson(responseBody.string(), ErrorResponse::class.java)
                 if (!errorBody.message.isNullOrEmpty()) {
                     showErrorMessageLog(errorBody.message)
                     throw IOException(errorBody.code)
@@ -93,14 +93,14 @@ private fun getFileRequestBody(uri: Uri, mimeType: String): RequestBody {
     }
     return InputStreamRequestBody(
         mimeType.toMediaTypeOrNull(),
-        BaseConfig.instance.context.contentResolver,
+        BaseConfig.getInstance().context.contentResolver,
         uri
     )
 }
 
 private fun isJpeg(uri: Uri): Boolean {
     try {
-        BaseConfig.instance.context.contentResolver.openInputStream(uri)?.use { iStream ->
+        BaseConfig.getInstance().context.contentResolver.openInputStream(uri)?.use { iStream ->
             val inputData = getBytes(iStream)
             return inputData[0] == (-1).toByte() && inputData[1] == (-40).toByte() && inputData[2] == (-1).toByte()
         }
@@ -133,8 +133,8 @@ private fun compressImage(uri: Uri?): File? {
         .onlyScaleDown()
         .scales(ImageView.ScaleType.CENTER_INSIDE)
         .autoRotateWithExif(true)
-        .getBitmapSync(BaseConfig.instance.context)
-    val downsizedImageFile = File(BaseConfig.instance.context.cacheDir, getFileName(uri))
+        .getBitmapSync(BaseConfig.getInstance().context)
+    val downsizedImageFile = File(BaseConfig.getInstance().context.cacheDir, getFileName(uri))
     val byteArrayOutputStream = ByteArrayOutputStream()
     bitmap?.let {
         it.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)

@@ -30,8 +30,8 @@ class HistoryLoader(private val demoModeProvider: DemoModeProvider, private val 
             return Gson().fromJson(demoModeProvider.getHistoryMock(), HistoryResponse::class.java)
         }
 
-        val itemsCount = count ?: BaseConfig.instance.historyLoadingCount
-        val token = BaseConfig.instance.transport.getToken()
+        val itemsCount = count ?: BaseConfig.getInstance().historyLoadingCount
+        val token = BaseConfig.getInstance().transport.getToken()
 
         return if (token.isNotEmpty()) {
             val threadsApi = get()

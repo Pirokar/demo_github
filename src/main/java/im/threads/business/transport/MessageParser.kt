@@ -74,7 +74,7 @@ class MessageParser {
                 ChatItemType.MESSAGES_READ -> getMessageRead(fullMessage)
                 ChatItemType.SCENARIO -> null
                 ChatItemType.ATTACHMENT_SETTINGS -> {
-                    val attachmentSettings = BaseConfig.instance.gson.fromJson(
+                    val attachmentSettings = BaseConfig.getInstance().gson.fromJson(
                         fullMessage,
                         AttachmentSettings::class.java
                     )
@@ -87,7 +87,7 @@ class MessageParser {
                 }
 
                 ChatItemType.SPEECH_MESSAGE_UPDATED -> {
-                    val (uuid, speechStatus, attachments) = BaseConfig.instance.gson.fromJson(
+                    val (uuid, speechStatus, attachments) = BaseConfig.getInstance().gson.fromJson(
                         fullMessage,
                         SpeechMessageUpdatedContent::class.java
                     )
@@ -136,7 +136,7 @@ class MessageParser {
         fullMessage: JsonObject
     ): ConsultConnectionMessage {
         val content =
-            BaseConfig.instance.gson.fromJson(fullMessage, OperatorJoinedContent::class.java)
+            BaseConfig.getInstance().gson.fromJson(fullMessage, OperatorJoinedContent::class.java)
         val operator = content.operator
         return ConsultConnectionMessage(
             content.uuid, operator!!.id.toString(),
@@ -158,7 +158,7 @@ class MessageParser {
 
     private fun getSystemMessage(sentAt: Long, fullMessage: JsonObject): SimpleSystemMessage {
         val content =
-            BaseConfig.instance.gson.fromJson(fullMessage, SystemMessageContent::class.java)
+            BaseConfig.getInstance().gson.fromJson(fullMessage, SystemMessageContent::class.java)
         return SimpleSystemMessage(
             content.uuid,
             content.type,
@@ -169,16 +169,16 @@ class MessageParser {
     }
 
     private fun getScheduleInfo(fullMessage: JsonObject): ScheduleInfo {
-        val content = BaseConfig.instance.gson.fromJson(fullMessage, TextContent::class.java)
-        val scheduleInfo = BaseConfig.instance.gson.fromJson(content.text, ScheduleInfo::class.java)
+        val content = BaseConfig.getInstance().gson.fromJson(fullMessage, TextContent::class.java)
+        val scheduleInfo = BaseConfig.getInstance().gson.fromJson(content.text, ScheduleInfo::class.java)
         scheduleInfo.date = Date().time
         scheduleInfo.timeStamp = Date().time
         return scheduleInfo
     }
 
     private fun getSurvey(sentAt: Long, fullMessage: JsonObject): Survey {
-        val content = BaseConfig.instance.gson.fromJson(fullMessage, SurveyContent::class.java)
-        val survey = BaseConfig.instance.gson.fromJson(content.text, Survey::class.java)
+        val content = BaseConfig.getInstance().gson.fromJson(fullMessage, SurveyContent::class.java)
+        val survey = BaseConfig.getInstance().gson.fromJson(content.text, Survey::class.java)
         survey.uuid = content.uuid
         survey.timeStamp = sentAt
         survey.sentState = MessageStatus.FAILED
@@ -196,7 +196,7 @@ class MessageParser {
         fullMessage: JsonObject
     ): RequestResolveThread {
         val content =
-            BaseConfig.instance.gson.fromJson(fullMessage, RequestResolveThreadContent::class.java)
+            BaseConfig.getInstance().gson.fromJson(fullMessage, RequestResolveThreadContent::class.java)
         return RequestResolveThread(
             content.uuid,
             content.hideAfter,
@@ -220,7 +220,7 @@ class MessageParser {
             settings,
             speechStatus,
             read
-        ) = BaseConfig.instance.gson.fromJson(
+        ) = BaseConfig.getInstance().gson.fromJson(
             fullMessage,
             MessageContent::class.java
         )
