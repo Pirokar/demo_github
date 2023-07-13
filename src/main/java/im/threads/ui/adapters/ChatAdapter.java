@@ -414,7 +414,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         for (final Iterator<ChatItem> iter = getList().iterator(); iter.hasNext(); ) {
             final ChatItem item = iter.next();
             if (item instanceof ConsultPhrase) {
-                if (!((ConsultPhrase) item).isRead()) {
+                if (!((ConsultPhrase) item).getRead()) {
                     ((ConsultPhrase) item).setRead(true);
                 }
             }
@@ -494,7 +494,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     private void updateReadStateForConsultPhrase(ConsultPhrase phrase) {
-        if (!phrase.isRead() && phrase.getId() != null) {
+        if (!phrase.getRead() && phrase.getId() != null) {
             BaseConfig.Companion.getInstance().transport.markMessagesAsRead(List.of(phrase.getId()));
         }
     }

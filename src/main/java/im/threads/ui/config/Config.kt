@@ -96,6 +96,7 @@ class Config(
 
     init {
         filesAndMediaMenuItemEnabled = MetadataUi.getFilesAndMediaMenuItemEnabled(this.context)
+            ?: context.resources.getBoolean(chatStyle.filesAndMediaItemEnabled)
         lightTheme?.let { styleUseCase.setIncomingLightStyle(it) }
         darkTheme?.let { styleUseCase.setIncomingDarkStyle(it) }
     }

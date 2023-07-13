@@ -43,7 +43,6 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.core.util.ObjectsCompat
 import androidx.core.view.ViewCompat
-import androidx.databinding.ObservableField
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.annimon.stream.Optional
@@ -100,7 +99,6 @@ import im.threads.business.utils.FileUtils.getUpcomingUserMessagesFromSelection
 import im.threads.business.utils.FileUtils.isImage
 import im.threads.business.utils.FileUtils.isVoiceMessage
 import im.threads.business.utils.MediaHelper.grantPermissionsForImageUri
-import im.threads.business.utils.RxUtils
 import im.threads.business.utils.ThreadsPermissionChecker
 import im.threads.business.utils.ThreadsPermissionChecker.isRecordAudioPermissionGranted
 import im.threads.business.utils.copyToBuffer
@@ -144,6 +142,7 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.BehaviorSubject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -172,8 +171,8 @@ class ChatFragment :
 
     private val handler = Handler(Looper.getMainLooper())
     private val fileNameDateFormat = SimpleDateFormat("dd.MM.yyyy.HH:mm:ss.S", Locale.getDefault())
-    private val inputTextObservable = ObservableField("")
-    internal val fileDescription = ObservableField(Optional.empty<FileDescription?>())
+    private val inputTextObservable = BehaviorSubject.createDefault("")
+    internal val fileDescription = BehaviorSubject.createDefault(Optional.empty<FileDescription?>())
     private val mediaMetadataRetriever = MediaMetadataRetriever()
     private val audioConverter = ChatCenterAudioConverter()
     private val chatUpdateProcessor: ChatUpdateProcessor by inject()
@@ -213,7 +212,6 @@ class ChatFragment :
             ColorsHelper.setStatusBarColor(WeakReference(activity), style.chatStatusBarColorResId, style.windowLightStatusBarResId)
         }
         binding = EccFragmentChatBinding.inflate(inflater, container, false)
-        binding.inputTextObservable = inputTextObservable
         chatAdapterCallback = AdapterCallback()
         val audioManager = requireContext().getSystemService(Context.AUDIO_SERVICE) as AudioManager
         fdMediaPlayer = FileDescriptionMediaPlayer(audioManager)
@@ -226,6 +224,7 @@ class ChatFragment :
         setFragmentStyle()
         initMediaPlayer()
         subscribeToFileDescription()
+        subscribeToInputText()
         isShown = true
         return binding.root
     }
@@ -265,10 +264,7 @@ class ChatFragment :
         initRecordButtonState()
         chatController.threadId?.let { setCurrentThreadId(it) }
         BaseConfig.getInstance().transport.setLifecycle(lifecycle)
-        if (chatController.isChatReady()) {
-            ChatController.getInstance().loadSettings()
-            ChatController.getInstance().loadHistory()
-        }
+        checkScrollDownButtonVisibility()
     }
 
     override fun onStop() {
@@ -373,7 +369,7 @@ class ChatFragment :
         bottomLayout.visible()
         val isNeedToShowWelcome = chatController.isNeedToShowWelcome
         if (isNeedToShowWelcome) {
-            showWelcomeScreen(true)
+            showWelcomeScreen(chatController.isChatReady())
         } else {
             recycler.visible()
         }
@@ -689,7 +685,13 @@ class ChatFragment :
 
     private fun bindViews() {
         binding.swipeRefresh.setSwipeListener {}
-        binding.swipeRefresh.setOnRefreshListener { onRefresh() }
+        binding.swipeRefresh.setOnRefreshListener {
+            if (chatController.isChatReady()) {
+                onRefresh()
+            } else {
+                binding.swipeRefresh.isRefreshing = false
+            }
+        }
         binding.consultName.setOnClickListener {
             if (chatController.isConsultFound) {
                 chatAdapterCallback?.onConsultAvatarClick(chatController.currentConsultInfo!!.id)
@@ -754,25 +756,16 @@ class ChatFragment :
                 super.onScrolled(recyclerView, dx, dy)
                 val layoutManager = binding.recycler.layoutManager as LinearLayoutManager?
                 if (layoutManager != null) {
-                    val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
+                    checkScrollDownButtonVisibility()
                     val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
                     val itemCount = chatAdapter?.itemCount
-                    if (itemCount != null &&
-                        itemCount - 1 - lastVisibleItemPosition > INVISIBLE_MESSAGES_COUNT
-                    ) {
-                        binding.scrollDownButtonContainer.visible()
-                        showUnreadMessagesCount(chatController.getUnreadMessagesCount())
-                    } else {
-                        binding.scrollDownButtonContainer.visibility = View.GONE
-                        recyclerView.post { setMessagesAsRead() }
-                    }
                     if (firstVisibleItemPosition == 0 &&
                         !chatController.isAllMessagesDownloaded &&
                         itemCount != null &&
                         itemCount > BaseConfig.getInstance().historyLoadingCount / 2
                     ) {
                         binding.swipeRefresh.isRefreshing = true
-                        chatController.loadHistory(false)
+                        chatController.loadHistory(isAfterAnchor = false) // before
                     }
                 }
             }
@@ -793,6 +786,22 @@ class ChatFragment :
         }
     }
 
+    private fun checkScrollDownButtonVisibility() {
+        mLayoutManager?.let { layoutManager ->
+            val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
+            val itemCount = chatAdapter?.itemCount
+            if (itemCount != null &&
+                itemCount - 1 - lastVisibleItemPosition > INVISIBLE_MESSAGES_COUNT
+            ) {
+                binding.scrollDownButtonContainer.visible()
+                showUnreadMessagesCount(chatController.getUnreadMessagesCount())
+            } else {
+                binding.scrollDownButtonContainer.visibility = View.GONE
+                activity?.runOnUiThread { setMessagesAsRead() }
+            }
+        }
+    }
+
     private fun setMessagesAsRead() {
         chatAdapter?.setAllMessagesRead()
         setMessagesAsReadForStorages()
@@ -807,14 +816,15 @@ class ChatFragment :
     }
 
     private fun configureUserTypingSubscription() {
-        val userTypingDisposable = RxUtils.toObservable(inputTextObservable)
-            .throttleLatest(INPUT_DELAY, TimeUnit.MILLISECONDS)
-            .filter { charSequence: String -> charSequence.isNotEmpty() }
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { input: String? -> onInputChanged(input) }
-            ) { error: Throwable? -> error("configureInputChangesSubscription ", error) }
-        subscribe(userTypingDisposable)
+        subscribe(
+            inputTextObservable
+                .throttleLatest(INPUT_DELAY, TimeUnit.MILLISECONDS)
+                .filter { charSequence: String -> charSequence.isNotEmpty() }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ input: String? ->
+                    onInputChanged(input)
+                }) { error: Throwable? -> error("configureInputChangesSubscription ", error) }
+        )
     }
 
     private fun onInputChanged(input: String?) {
@@ -829,8 +839,8 @@ class ChatFragment :
 
     private fun configureRecordButtonVisibility() {
         val recordButtonVisibilityDisposable = Observable.combineLatest(
-            RxUtils.toObservableImmediately(inputTextObservable),
-            RxUtils.toObservableImmediately(fileDescription)
+            inputTextObservable,
+            fileDescription
         ) { s: String, fileDescriptionOptional: Optional<FileDescription?>? ->
             (
                 (TextUtils.isEmpty(s) || s.trim { it <= ' ' }.isEmpty()) &&
@@ -864,7 +874,7 @@ class ChatFragment :
             return
         }
 
-        val inputText = inputTextObservable.get()
+        val inputText = inputTextObservable.value
         if (inputText == null || inputText.trim { it <= ' ' }.isEmpty() && getFileDescription() == null) {
             return
         }
@@ -879,10 +889,12 @@ class ChatFragment :
         )
         input.add(message)
         sendMessage(input)
+        updateLastUserActivityTime()
+        clearInput()
     }
 
     fun getFileDescription(): FileDescription? {
-        val fileDescriptionOptional = fileDescription.get()
+        val fileDescriptionOptional = fileDescription.value
         return if (fileDescriptionOptional != null && fileDescriptionOptional.isPresent) {
             fileDescriptionOptional.get()
         } else {
@@ -891,12 +903,12 @@ class ChatFragment :
     }
 
     private fun setFileDescription(fileDescription: FileDescription?) {
-        this.fileDescription.set(Optional.ofNullable(fileDescription))
+        this.fileDescription.onNext(Optional.ofNullable(fileDescription))
     }
 
     private fun subscribeToFileDescription() {
         subscribe(
-            RxUtils.toObservable(fileDescription)
+            fileDescription
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { files: Optional<FileDescription?>? ->
                     val isFilesAvailable = files != null && !files.isEmpty
@@ -907,15 +919,20 @@ class ChatFragment :
         )
     }
 
-    private fun onRefresh() {
-        val disposable = chatController.requestItems(BaseConfig.getInstance().historyLoadingCount)
-            ?.delay(500, TimeUnit.MILLISECONDS)
-            ?.observeOn(AndroidSchedulers.mainThread())
-            ?.subscribe({ result: List<ChatItem> -> afterRefresh(result) }) { onError: Throwable? -> error("onRefresh ", onError) }
+    private fun subscribeToInputText() {
+        subscribe(
+            inputTextObservable
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    onInputChanged(it)
+                }, {
+                    error(it)
+                })
+        )
+    }
 
-        if (disposable != null) {
-            subscribe(disposable)
-        }
+    private fun onRefresh() {
+        chatController.loadHistory(forceLoad = true)
     }
 
     private fun afterRefresh(result: List<ChatItem>) {
@@ -987,6 +1004,7 @@ class ChatFragment :
                 } else {
                     binding.inputEditView.maxLines = INPUT_EDIT_VIEW_MAX_LINES_COUNT
                 }
+                inputTextObservable.onNext(s.toString())
                 binding.sendMessage.isEnabled = !TextUtils.isEmpty(s) || hasAttachments()
             }
         })
@@ -1281,7 +1299,7 @@ class ChatFragment :
                             show(requireContext(), getString(R.string.ecc_failed_to_open_file))
                             return@subscribe
                         }
-                        val inputText = inputTextObservable.get() ?: return@subscribe
+                        val inputText = inputTextObservable.value ?: return@subscribe
                         val messages = getUpcomingUserMessagesFromSelection(
                             filteredPhotos,
                             inputText,
@@ -1397,7 +1415,7 @@ class ChatFragment :
         val photos = data.getParcelableArrayListExtra<Uri>(GalleryActivity.PHOTOS_TAG)
         hideBottomSheet()
         showWelcomeScreen(false)
-        val inputText = inputTextObservable.get()
+        val inputText = inputTextObservable.value
         if (photos == null || photos.size == 0 || inputText == null) {
             return
         }
@@ -1433,7 +1451,7 @@ class ChatFragment :
                     } else {
                         chatController.onUserInput(uum)
                     }
-                    inputTextObservable.set("")
+                    inputTextObservable.onNext("")
                     mQuoteLayoutHolder?.clear()
                     for (i in 1 until filteredPhotos.size) {
                         fileUri = filteredPhotos[i]
@@ -1465,7 +1483,7 @@ class ChatFragment :
                     System.currentTimeMillis()
                 )
             )
-            val inputText = inputTextObservable.get()
+            val inputText = inputTextObservable.value
             sendMessage(
                 listOf(
                     UpcomingUserMessage(
@@ -1545,7 +1563,7 @@ class ChatFragment :
             setFileDescription(
                 fileDescription
             )
-            val inputText = inputTextObservable.get()
+            val inputText = inputTextObservable.value
             val uum = UpcomingUserMessage(
                 fileDescription,
                 campaignMessage,
@@ -1595,7 +1613,7 @@ class ChatFragment :
     }
 
     private fun clearInput() {
-        inputTextObservable.set("")
+        binding.inputEditView.setText("")
         mQuoteLayoutHolder?.clear()
         setBottomStateDefault()
         hideCopyControls()
@@ -1614,8 +1632,8 @@ class ChatFragment :
             chatAdapter!!.itemCount - 1 - layoutManager.findLastVisibleItemPosition() < INVISIBLE_MESSAGES_COUNT
             )
         if (item is ConsultPhrase) {
-            item.isRead = (isLastMessageVisible && isResumed && !isInMessageSearchMode)
-            if (item.isRead) {
+            item.read = (isLastMessageVisible && isResumed && !isInMessageSearchMode)
+            if (item.read) {
                 chatController.setMessageAsRead(item)
             }
             chatAdapter?.setAvatar(item.consultId, item.avatarPath)
@@ -1890,7 +1908,7 @@ class ChatFragment :
             setTitleStateDefault()
             showWelcomeScreen(false)
             binding.inputEditView.clearFocus()
-            showWelcomeScreen(true)
+            showWelcomeScreen(chatController.isChatReady())
         }
     }
 
@@ -2071,7 +2089,7 @@ class ChatFragment :
         for (i in 1 until list.size) {
             val currentItem = list[i]
             if (currentItem is UnreadMessages || currentItem is ConsultPhrase &&
-                !currentItem.isRead || currentItem is Survey && !currentItem.isRead
+                !currentItem.read || currentItem is Survey && !currentItem.isRead
             ) {
                 layoutManager.scrollToPositionWithOffset(i - 1, 0)
                 break
@@ -2379,8 +2397,10 @@ class ChatFragment :
         }
 
     fun showEmptyState() {
-        binding.flEmpty.visibility = View.VISIBLE
-        binding.tvEmptyStateHint.setText(R.string.ecc_empty_state_hint)
+        if (chatController.isChatReady()) {
+            binding.flEmpty.visibility = View.VISIBLE
+            binding.tvEmptyStateHint.setText(R.string.ecc_empty_state_hint)
+        }
     }
 
     fun hideEmptyState() {

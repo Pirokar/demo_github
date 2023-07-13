@@ -85,7 +85,7 @@ object HistoryParser {
                     ChatItemType.SURVEY -> {
                         val survey = getSurveyFromJsonString(message.text ?: "")
                         if (survey != null) {
-                            survey.isRead = message.isRead
+                            survey.isRead = message.read
                             survey.timeStamp = message.timeStamp
 
                             survey.questions?.indices?.forEach { index ->
@@ -101,7 +101,7 @@ object HistoryParser {
                             message.hideAfter ?: 0,
                             timeStamp,
                             message.threadId ?: 0,
-                            message.isRead
+                            message.read
                         )
                     )
                     else -> {
@@ -130,7 +130,7 @@ object HistoryParser {
                                     timeStamp,
                                     operatorId,
                                     photoUrl,
-                                    message.isRead,
+                                    message.read,
                                     message.operator?.status,
                                     false,
                                     message.threadId,
@@ -148,7 +148,7 @@ object HistoryParser {
                             }
                             val sentState = if (message.errorMock == true) {
                                 MessageStatus.FAILED
-                            } else if (message.isRead) {
+                            } else if (message.read) {
                                 MessageStatus.READ
                             } else {
                                 MessageStatus.SENT
@@ -164,7 +164,7 @@ object HistoryParser {
                                     message.threadId
                                 ).apply {
                                     errorMock = message.errorMock
-                                    isRead = message.isRead
+                                    isRead = message.read
                                 }
                             )
                         }
@@ -203,7 +203,7 @@ object HistoryParser {
             message.sendingId ?: 0,
             message.timeStamp,
             MessageStatus.READ,
-            message.isRead,
+            message.read,
             message.isDisplay
         )
         val question = QuestionDTO()

@@ -14,10 +14,9 @@ import android.view.MenuItem
 import android.view.inputmethod.EditorInfo
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
-import androidx.databinding.DataBindingUtil
-import androidx.databinding.ObservableField
 import androidx.recyclerview.widget.GridLayoutManager
 import im.threads.R
+import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.MediaPhoto
 import im.threads.business.models.PhotoBucketItem
 import im.threads.business.utils.MediaHelper
@@ -31,29 +30,44 @@ import im.threads.ui.utils.BucketsGalleryDecorator
 import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.utils.ColorsHelper.setDrawableColor
 import im.threads.ui.utils.GalleryDecorator
+import im.threads.ui.utils.gone
+import im.threads.ui.utils.visible
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.subjects.BehaviorSubject
 import java.util.Locale
 
 class GalleryActivity : BaseActivity(), OnItemClick, OnGalleryItemClick {
 
-    val screenState = ObservableField(ScreenState.BUCKET_LIST)
-    val dataEmpty = ObservableField(false)
+    private val screenState = BehaviorSubject.createDefault(ScreenState.BUCKET_LIST)
+    private val dataIsEmpty = BehaviorSubject.createDefault(false)
 
     private var photosMap: MutableMap<String, MutableList<MediaPhoto>> = HashMap()
     private val bucketItems: MutableList<PhotoBucketItem> = ArrayList()
     private val chosenItems: MutableList<MediaPhoto> = ArrayList()
     private val bucketsGalleryDecorator = BucketsGalleryDecorator(4)
     private val galleryDecorator = GalleryDecorator(4)
+    private val compositeDisposable = CompositeDisposable()
 
     private lateinit var binding: EccActivityGalleryBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, R.layout.ecc_activity_gallery)
-        binding.viewModel = this
+        binding = EccActivityGalleryBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
         initViews()
+        subscribeToScreenState()
+        subscribeToDataIsEmpty()
         initStatusBar()
         initData()
         showBucketListState()
+        setButtonsClickListeners()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        compositeDisposable.clear()
     }
 
     private fun initStatusBar() {
@@ -82,7 +96,6 @@ class GalleryActivity : BaseActivity(), OnItemClick, OnGalleryItemClick {
         ColorsHelper.setTint(this, binding.backButton, style.chatToolbarTextColorResId)
 
         initToolbarTextPosition()
-        setClickForBackBtn()
     }
 
     private fun initToolbarTextPosition() {
@@ -91,10 +104,12 @@ class GalleryActivity : BaseActivity(), OnItemClick, OnGalleryItemClick {
         binding.title.gravity = gravity
     }
 
-    private fun setClickForBackBtn() {
-        binding.backButton.setOnClickListener {
-            onBackPressed()
-        }
+    private fun setButtonsClickListeners() = with(binding) {
+        backButton.setOnClickListener { onBackPressed() }
+        clearSearchButton.setOnClickListener { clearSearch() }
+        searchPhoto.setOnClickListener { showSearch() }
+        cancel.setOnClickListener { onBackPressed() }
+        send.setOnClickListener { send() }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -107,7 +122,7 @@ class GalleryActivity : BaseActivity(), OnItemClick, OnGalleryItemClick {
     }
 
     override fun onBackPressed() {
-        if (ScreenState.BUCKET_LIST != screenState.get()) {
+        if (ScreenState.BUCKET_LIST != screenState.value) {
             binding.searchEditText.setText("")
             showBucketListState()
         } else {
@@ -228,18 +243,18 @@ class GalleryActivity : BaseActivity(), OnItemClick, OnGalleryItemClick {
     }
 
     private fun showBucketListState() {
-        screenState.set(ScreenState.BUCKET_LIST)
+        screenState.onNext(ScreenState.BUCKET_LIST)
         chosenItems.clear()
         setTitle(resources.getString(R.string.ecc_photos))
         binding.recycler.removeItemDecoration(galleryDecorator)
         binding.recycler.addItemDecoration(bucketsGalleryDecorator)
         binding.recycler.layoutManager = GridLayoutManager(this, 2)
         binding.recycler.adapter = PhotoBucketsGalleryAdapter(bucketItems, this)
-        dataEmpty.set(bucketItems.isEmpty())
+        dataIsEmpty.onNext(bucketItems.isEmpty())
     }
 
     private fun showPhotoListState(title: String, item: PhotoBucketItem) {
-        screenState.set(ScreenState.PHOTO_LIST)
+        screenState.onNext(ScreenState.PHOTO_LIST)
         chosenItems.clear()
         syncSendButtonState()
         setTitle(title)
@@ -257,11 +272,11 @@ class GalleryActivity : BaseActivity(), OnItemClick, OnGalleryItemClick {
             it.isChecked = false
         }
         binding.recycler.adapter = GalleryAdapter(photos, this)
-        dataEmpty.set(photos.isNullOrEmpty())
+        dataIsEmpty.onNext(photos.isNullOrEmpty())
     }
 
     private fun showSearchState() {
-        screenState.set(ScreenState.SEARCH)
+        screenState.onNext(ScreenState.SEARCH)
         chosenItems.clear()
         syncSendButtonState()
         binding.searchEditText.requestFocus()
@@ -269,7 +284,7 @@ class GalleryActivity : BaseActivity(), OnItemClick, OnGalleryItemClick {
         binding.recycler.addItemDecoration(galleryDecorator)
         binding.recycler.layoutManager = GridLayoutManager(this, 3)
         binding.recycler.adapter = null
-        dataEmpty.set(true)
+        dataIsEmpty.onNext(true)
     }
 
     private fun search(searchString: String) {
@@ -289,7 +304,7 @@ class GalleryActivity : BaseActivity(), OnItemClick, OnGalleryItemClick {
             }
         }
         binding.recycler.adapter = GalleryAdapter(list, this)
-        dataEmpty.set(list.isEmpty())
+        dataIsEmpty.onNext(list.isEmpty())
     }
 
     private fun clearCheckedStateOfItems() {
@@ -312,6 +327,55 @@ class GalleryActivity : BaseActivity(), OnItemClick, OnGalleryItemClick {
                     R.color.ecc_disabled_text_color
                 )
             )
+        }
+    }
+
+    private fun subscribeToScreenState() {
+        compositeDisposable.add(
+            screenState
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    if (it == ScreenState.SEARCH) {
+                        binding.searchLayout.visible()
+                    } else {
+                        binding.searchLayout.gone()
+                    }
+
+                    if (it == ScreenState.BUCKET_LIST) {
+                        binding.searchLabelLayout.visible()
+                    } else {
+                        binding.searchLabelLayout.gone()
+                    }
+
+                    checkBottomButtons()
+                }, {
+                    LoggerEdna.error(it)
+                })
+        )
+    }
+
+    private fun subscribeToDataIsEmpty() {
+        compositeDisposable.add(
+            dataIsEmpty
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ isDataEmpty ->
+                    if (isDataEmpty) {
+                        binding.nothingFoundLabel.visible()
+                    } else {
+                        binding.nothingFoundLabel.gone()
+                    }
+                    checkBottomButtons()
+                }, {
+                    LoggerEdna.error(it)
+                })
+        )
+    }
+
+    private fun checkBottomButtons() {
+        if (dataIsEmpty.value != true && screenState.value != ScreenState.BUCKET_LIST) {
+            binding.bottomButtons.visible()
+        } else {
+            binding.bottomButtons.gone()
         }
     }
 

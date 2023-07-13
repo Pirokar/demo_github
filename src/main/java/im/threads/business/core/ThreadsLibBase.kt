@@ -26,6 +26,7 @@ import im.threads.business.serviceLocator.core.inject
 import im.threads.business.serviceLocator.core.startEdnaLocator
 import im.threads.business.serviceLocator.coreSLModule
 import im.threads.business.state.ChatState
+import im.threads.business.state.ChatStateEnum
 import im.threads.business.useractivity.UserActivityTimeProvider.getLastUserActivityTimeCounter
 import im.threads.business.useractivity.UserActivityTimeProvider.initializeLastUserActivity
 import im.threads.business.utils.ClientUseCase
@@ -87,12 +88,12 @@ open class ThreadsLibBase protected constructor(context: Context) {
         get() = chatUpdateProcessor.socketResponseMapProcessor
 
     /**
-     * Инициализирует пользователя синхронно и загружает его историю в фоновом потоке
-     * (изменения истории сообщений применяются в потоке UI)
+     * Инициализирует пользователя
      * @param userInfoBuilder данные о пользователе
      * @param forceRegistration открывает сокет, отправляет данные о регистрации, закрывает сокет
      */
     open fun initUser(userInfoBuilder: UserInfoBuilder, forceRegistration: Boolean = false) {
+        chatState.changeState(ChatStateEnum.LOGGING_IN)
         clientUseCase.saveUserInfo(userInfoBuilder)
         if (forceRegistration) {
             BaseConfig.getInstance().transport.sendRegisterDevice(true)

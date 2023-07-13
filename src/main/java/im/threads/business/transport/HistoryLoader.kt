@@ -20,29 +20,31 @@ class HistoryLoader(private val demoModeProvider: DemoModeProvider, private val 
      * метод обертка для запроса истории сообщений
      * выполняется синхронно
      *
-     * @param beforeTimestamp timestamp сообщения от которого грузить, null если с начала
+     * @param anchorTimestamp timestamp сообщения от которого грузить, null если с начала
      * @param count           количество сообщений для загрузки
      */
     @WorkerThread
     @Throws(Exception::class)
-    fun getHistorySync(beforeTimestamp: Long?, count: Int?): HistoryResponse? {
+    fun getHistorySync(anchorTimestamp: Long?, count: Int?, isAfterAnchor: Boolean = false): HistoryResponse? {
         if (demoModeProvider.isDemoModeEnabled()) {
             return Gson().fromJson(demoModeProvider.getHistoryMock(), HistoryResponse::class.java)
         }
 
-        var count = count
+        val itemsCount = count ?: BaseConfig.getInstance().historyLoadingCount
         val token = BaseConfig.getInstance().transport.getToken()
-        if (count == null) {
-            count = BaseConfig.getInstance().historyLoadingCount
-        }
+
         return if (token.isNotEmpty()) {
             val threadsApi = get()
-            val beforeDate = if (beforeTimestamp == null) {
+            val anchorDate = if (anchorTimestamp == null) {
                 null
             } else {
-                DateHelper.getMessageDateStringFromTimestamp(beforeTimestamp)
+                DateHelper.getMessageDateStringFromTimestamp(anchorTimestamp)
             }
-            threadsApi.history(token, beforeDate, count, appInfo.libVersion)?.execute()?.body()
+            if (isAfterAnchor && anchorDate != null) {
+                threadsApi.historyAfter(token, anchorDate, itemsCount, appInfo.libVersion)?.execute()?.body()
+            } else {
+                threadsApi.history(token, anchorDate, itemsCount, appInfo.libVersion)?.execute()?.body()
+            }
         } else {
             error(ThreadsApi.REST_TAG, "Error when loading history - token is empty!")
             throw IOException()
