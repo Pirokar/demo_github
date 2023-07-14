@@ -7,8 +7,7 @@ import im.threads.business.rest.models.VersionsModel
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
-import retrofit2.http.Header
-import retrofit2.http.Headers
+import retrofit2.http.HeaderMap
 import retrofit2.http.POST
 import retrofit2.http.Query
 
@@ -19,20 +18,18 @@ interface OldThreadsBackendApi {
     @GET("api/versions")
     fun versions(): Call<VersionsModel?>?
 
-    @Headers("X-Header-Encoding: url")
     @GET("history")
     fun history(
-        @Header("X-Client-Token") token: String?,
+        @HeaderMap headerMap: Map<String, String?>,
         @Query("before") beforeDate: String?,
         @Query("count") count: Int?,
         @Query("libVersion") version: String?,
         @Query("chatApiVersion") chatApiVersion: String?
     ): Call<HistoryResponse?>?
 
-    @Headers("X-Header-Encoding: url")
     @GET("history")
     fun historyAfter(
-        @Header("X-Client-Token") token: String?,
+        @HeaderMap headerMap: Map<String, String?>,
         @Query("after") afterDate: String,
         @Query("count") count: Int?,
         @Query("libVersion") version: String?,

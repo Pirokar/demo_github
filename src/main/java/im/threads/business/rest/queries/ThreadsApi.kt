@@ -6,6 +6,8 @@ import im.threads.business.rest.models.ConfigResponse
 import im.threads.business.rest.models.HistoryResponse
 import im.threads.business.rest.models.SettingsResponse
 import im.threads.business.rest.models.VersionsModel
+import im.threads.business.serviceLocator.core.inject
+import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.encodeUrl
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -16,6 +18,8 @@ class ThreadsApi(
     private val newThreadsApi: NewThreadsBackendApi? = null,
     private val datastoreApi: ThreadsDatastoreApi? = null
 ) {
+    private val clientInfo: ClientUseCase by inject()
+
     fun versions(): Call<VersionsModel?>? {
         return if (BaseConfig.getInstance().newChatCenterApi) {
             newThreadsApi?.versions()
@@ -47,10 +51,10 @@ class ThreadsApi(
         version: String?
     ): Call<HistoryResponse?>? {
         return if (BaseConfig.getInstance().newChatCenterApi) {
-            newThreadsApi?.history(token?.encodeUrl(), beforeDate, count, version)
+            newThreadsApi?.history(getHeadersMap(token), beforeDate, count, version)
         } else {
             oldThreadsApi?.history(
-                token?.encodeUrl(),
+                getHeadersMap(token),
                 beforeDate,
                 count,
                 version,
@@ -66,10 +70,10 @@ class ThreadsApi(
         version: String?
     ): Call<HistoryResponse?>? {
         return if (BaseConfig.getInstance().newChatCenterApi) {
-            newThreadsApi?.historyAfter(token?.encodeUrl(), afterDate, count, version)
+            newThreadsApi?.historyAfter(getHeadersMap(token), afterDate, count, version)
         } else {
             oldThreadsApi?.historyAfter(
-                token?.encodeUrl(),
+                getHeadersMap(token),
                 afterDate,
                 count,
                 version,
@@ -88,6 +92,18 @@ class ThreadsApi(
 
     fun upload(file: MultipartBody.Part?, agent: RequestBody?, token: String): Call<FileUploadResponse?>? {
         return datastoreApi?.upload(file, agent, "$SIGNATURE_STRING$token".encodeUrl())
+    }
+
+    private fun getHeadersMap(token: String?): Map<String, String?> {
+        val isClientIdEncrypted = clientInfo.getUserInfo()?.clientIdEncrypted == true
+        return if (isClientIdEncrypted) {
+            mapOf(Pair("X-Client-Token", token))
+        } else {
+            mapOf(
+                Pair("X-Client-Token", token?.encodeUrl()),
+                Pair("X-Header-Encoding", "url")
+            )
+        }
     }
 
     companion object {
