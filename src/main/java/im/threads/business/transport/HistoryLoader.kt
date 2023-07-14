@@ -41,9 +41,19 @@ class HistoryLoader(private val demoModeProvider: DemoModeProvider, private val 
                 DateHelper.getMessageDateStringFromTimestamp(anchorTimestamp)
             }
             if (isAfterAnchor && anchorDate != null) {
-                threadsApi.historyAfter(token, anchorDate, itemsCount, appInfo.libVersion)?.execute()?.body()
+                threadsApi.history(
+                    token,
+                    afterDate = anchorDate,
+                    count = itemsCount,
+                    version = appInfo.libVersion
+                )?.execute()?.body()
             } else {
-                threadsApi.history(token, anchorDate, itemsCount, appInfo.libVersion)?.execute()?.body()
+                threadsApi.history(
+                    token,
+                    beforeDate = anchorDate,
+                    count = itemsCount,
+                    version = appInfo.libVersion
+                )?.execute()?.body()
             }
         } else {
             error(ThreadsApi.REST_TAG, "Error when loading history - token is empty!")

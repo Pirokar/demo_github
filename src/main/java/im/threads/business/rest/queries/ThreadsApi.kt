@@ -46,34 +46,17 @@ class ThreadsApi(
 
     fun history(
         token: String?,
-        beforeDate: String?,
+        beforeDate: String? = null,
+        afterDate: String? = null,
         count: Int?,
         version: String?
     ): Call<HistoryResponse?>? {
         return if (BaseConfig.getInstance().newChatCenterApi) {
-            newThreadsApi?.history(getHeadersMap(token), beforeDate, count, version)
+            newThreadsApi?.history(getHeadersMap(token), beforeDate, afterDate, count, version)
         } else {
             oldThreadsApi?.history(
                 getHeadersMap(token),
                 beforeDate,
-                count,
-                version,
-                API_VERSION
-            )
-        }
-    }
-
-    fun historyAfter(
-        token: String?,
-        afterDate: String,
-        count: Int?,
-        version: String?
-    ): Call<HistoryResponse?>? {
-        return if (BaseConfig.getInstance().newChatCenterApi) {
-            newThreadsApi?.historyAfter(getHeadersMap(token), afterDate, count, version)
-        } else {
-            oldThreadsApi?.historyAfter(
-                getHeadersMap(token),
                 afterDate,
                 count,
                 version,
@@ -109,6 +92,6 @@ class ThreadsApi(
     companion object {
         const val API_VERSION = "14"
         const val REST_TAG = "RestQuery"
-        private const val SIGNATURE_STRING = "super-duper-signature-string:"
+        private const val SIGNATURE_STRING = "edna_79e621ac_a76a_4d36_b490_6758c43fa3d1:"
     }
 }

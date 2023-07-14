@@ -22,15 +22,7 @@ interface OldThreadsBackendApi {
     fun history(
         @HeaderMap headerMap: Map<String, String?>,
         @Query("before") beforeDate: String?,
-        @Query("count") count: Int?,
-        @Query("libVersion") version: String?,
-        @Query("chatApiVersion") chatApiVersion: String?
-    ): Call<HistoryResponse?>?
-
-    @GET("history")
-    fun historyAfter(
-        @HeaderMap headerMap: Map<String, String?>,
-        @Query("after") afterDate: String,
+        @Query("after") afterDate: String?,
         @Query("count") count: Int?,
         @Query("libVersion") version: String?,
         @Query("chatApiVersion") chatApiVersion: String?
