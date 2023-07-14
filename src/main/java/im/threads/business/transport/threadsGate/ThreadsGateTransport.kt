@@ -68,6 +68,7 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.util.Calendar
+import java.util.TimeZone
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 import javax.net.ssl.SSLSession
@@ -324,7 +325,7 @@ class ThreadsGateTransport(
             "Android",
             deviceInfo.osVersion,
             deviceInfo.getLocale(BaseConfig.getInstance().context),
-            Calendar.getInstance().timeZone.displayName,
+            Calendar.getInstance().timeZone.getDisplayName(false, TimeZone.SHORT),
             if (!TextUtils.isEmpty(deviceName)) deviceName else deviceModel,
             deviceModel,
             deviceAddress,
