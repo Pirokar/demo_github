@@ -7,8 +7,7 @@ import im.threads.business.rest.models.VersionsModel
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
-import retrofit2.http.Header
-import retrofit2.http.Headers
+import retrofit2.http.HeaderMap
 import retrofit2.http.POST
 import retrofit2.http.Query
 
@@ -22,21 +21,11 @@ interface NewThreadsBackendApi {
     @GET("/api/chat/config?channelType=MOBILE&auth=true")
     fun config(@Query("chatApiVersion") chatApiVersion: String?): Call<ConfigResponse?>?
 
-    @Headers("X-Header-Encoding: url")
     @GET("api/client/history")
     fun history(
-        @Header("X-Client-Token") token: String?,
+        @HeaderMap headerMap: Map<String, String?>,
         @Query("before") beforeDate: String?,
-        @Query("count") count: Int?,
-        @Query("libVersion") version: String?,
-        @Query("chatApiVersion") chatApiVersion: String = ThreadsApi.API_VERSION
-    ): Call<HistoryResponse?>?
-
-    @Headers("X-Header-Encoding: url")
-    @GET("api/client/history")
-    fun historyAfter(
-        @Header("X-Client-Token") token: String?,
-        @Query("after") afterDate: String,
+        @Query("after") afterDate: String?,
         @Query("count") count: Int?,
         @Query("libVersion") version: String?,
         @Query("chatApiVersion") chatApiVersion: String = ThreadsApi.API_VERSION
