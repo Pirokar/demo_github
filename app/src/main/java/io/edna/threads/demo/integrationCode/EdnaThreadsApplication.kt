@@ -5,12 +5,12 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import im.threads.business.logger.LoggerConfig
 import im.threads.business.logger.LoggerRetentionPolicy
 import im.threads.business.markdown.MarkdownConfig
-import im.threads.ui.ChatStyle
 import im.threads.ui.config.ConfigBuilder
 import im.threads.ui.core.ThreadsLib
-import im.threads.ui.newInterface.settings.ChatTheme
-import im.threads.ui.newInterface.settings.theme.ChatColors
-import im.threads.ui.newInterface.settings.theme.ChatImages
+import im.threads.ui.uiStyle.settings.ChatSettings
+import im.threads.ui.uiStyle.settings.ChatTheme
+import im.threads.ui.uiStyle.settings.theme.ChatColors
+import im.threads.ui.uiStyle.settings.theme.ChatImages
 import io.edna.threads.demo.BuildConfig
 import io.edna.threads.demo.R
 import io.edna.threads.demo.appCode.business.ServersProvider
@@ -125,7 +125,7 @@ class EdnaThreadsApplication : Application() {
             .historyLoadingCount(50)
             .applyLightTheme(chatLightTheme)
             .applyDarkTheme(chatDarkTheme)
-            .applyChatStyle(getMainChatTheme())
+            .applyChatSettings(getMainChatTheme())
             .isDebugLoggingEnabled(true)
             .showAttachmentsButton()
             .enableLogging(loggerConfig)
@@ -143,13 +143,13 @@ class EdnaThreadsApplication : Application() {
         ThreadsLib.init(configBuilder)
     }
 
-    private fun getMainChatTheme(): ChatStyle {
-        val chatStyle = ChatStyle()
+    private fun getMainChatTheme(): ChatSettings {
+        val chatSettings = ChatSettings()
             .setScrollChatToEndIfUserTyping(false)
 
         val markdownConfig = MarkdownConfig()
         markdownConfig.isLinkUnderlined = true
-        chatStyle
+        chatSettings
             .setChatSubtitleShowConsultOrgUnit(true)
             .setIncomingMarkdownConfiguration(markdownConfig)
             .setOutgoingMarkdownConfiguration(markdownConfig)
@@ -157,7 +157,7 @@ class EdnaThreadsApplication : Application() {
             .setShowConsultSearching(true)
             .setVoiceMessageEnabled(true)
             .showChatBackButton(true)
-        return chatStyle
+        return chatSettings
     }
 }
 
