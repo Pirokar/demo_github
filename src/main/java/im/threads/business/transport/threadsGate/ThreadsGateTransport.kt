@@ -364,7 +364,7 @@ class ThreadsGateTransport(
 
     private fun sendEnvironmentMessage(tryOpeningWebSocket: Boolean): Boolean {
         return sendMessage(
-            outgoingMessageCreator.createEnvironmentMessage(
+            outgoingMessageCreator.createClientInfoMessage(
                 deviceInfo.getLocale(BaseConfig.getInstance().context)
             ),
             tryOpeningWebSocket = tryOpeningWebSocket,
