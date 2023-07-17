@@ -94,8 +94,9 @@ open class ThreadsLibBase protected constructor(context: Context) {
      */
     open fun initUser(userInfoBuilder: UserInfoBuilder, forceRegistration: Boolean = false) {
         chatState.changeState(ChatStateEnum.LOGGING_IN)
+        isForceRegistration = forceRegistration
         clientUseCase.saveUserInfo(userInfoBuilder)
-        if (forceRegistration) {
+        if (forceRegistration && preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS).isNullOrBlank()) {
             BaseConfig.getInstance().transport.sendRegisterDevice(true)
             if (!ChatFragment.isShown) {
                 BaseConfig.getInstance().transport.closeWebSocket()
@@ -145,10 +146,14 @@ open class ThreadsLibBase protected constructor(context: Context) {
     }
 
     companion object {
+        internal var isForceRegistration = false
+
         @JvmStatic
         @SuppressLint("StaticFieldLeak")
         protected var libInstance: ThreadsLibBase? = null
+
         private val clientInteractor: ClientUseCase by inject()
+
         private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
         @JvmStatic
