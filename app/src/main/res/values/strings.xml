@@ -64,4 +64,6 @@
     <string name="dark_theme">Темная</string>
     <string name="light_theme">Светлая</string>
     <string name="ok">OK</string>
+    <string name="remove">Удалить</string>
+    <string name="edit">Изменить</string>
 </resources>
