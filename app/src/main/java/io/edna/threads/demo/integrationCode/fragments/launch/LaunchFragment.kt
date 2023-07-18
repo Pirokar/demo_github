@@ -58,7 +58,7 @@ class LaunchFragment : BaseAppFragment<FragmentLaunchBinding>(FragmentLaunchBind
             userButton.text = it?.nickName
         }
         viewModel.enabledLoginButtonLiveData.observe(viewLifecycleOwner) {
-            login.isEnabled = it
+            login.isEnabled = it == true
         }
     }
 
