@@ -104,6 +104,7 @@ class MessageParser {
                 }
 
                 ChatItemType.MESSAGE,
+                ChatItemType.MIRROR,
                 ChatItemType.ON_HOLD -> getPhrase(
                     sentAt,
                     shortMessage,

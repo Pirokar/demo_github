@@ -490,6 +490,7 @@ class ThreadsGateTransport(
                     val tokens = response.correlationId?.split(CORRELATION_ID_DIVIDER)?.toTypedArray()
                     if (tokens != null && tokens.size > 1) {
                         when (ChatItemType.fromString(tokens[0])) {
+                            ChatItemType.MIRROR,
                             ChatItemType.MESSAGE -> {
                                 if (campaignsInProcess.containsKey(tokens[1])) {
                                     campaignsInProcess[tokens[1]]?.let { campaignMessage ->

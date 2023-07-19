@@ -9,6 +9,7 @@ enum class ChatItemType {
     SURVEY,
     REQUEST_CLOSE_THREAD,
     MESSAGE,
+    MIRROR,
     ON_HOLD,
     NONE,
     MESSAGES_READ,
