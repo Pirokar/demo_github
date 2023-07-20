@@ -85,6 +85,8 @@ import im.threads.business.models.SystemMessage
 import im.threads.business.models.UnreadMessages
 import im.threads.business.models.UpcomingUserMessage
 import im.threads.business.models.UserPhrase
+import im.threads.business.preferences.Preferences
+import im.threads.business.preferences.PreferencesCoreKeys
 import im.threads.business.serviceLocator.core.inject
 import im.threads.business.useractivity.UserActivityTimeProvider.getLastUserActivityTimeCounter
 import im.threads.business.utils.Balloon.show
@@ -169,6 +171,7 @@ class ChatFragment :
     ChatCenterAudioConverterCallback,
     OnAllowPermissionClickListener {
 
+    private val preferences: Preferences by inject()
     private val handler = Handler(Looper.getMainLooper())
     private val fileNameDateFormat = SimpleDateFormat("dd.MM.yyyy.HH:mm:ss.S", Locale.getDefault())
     private val inputTextObservable = BehaviorSubject.createDefault("")
@@ -815,10 +818,14 @@ class ChatFragment :
         }
     }
 
-    private fun configureUserTypingSubscription() {
+    fun configureUserTypingSubscription() {
+        var typingIntevalSeconds = INPUT_DELAY
+        preferences.get<Long>(PreferencesCoreKeys.TYPING_MESSAGES_INTERVAL_SECONDS)?.let {
+            typingIntevalSeconds = it
+        }
         subscribe(
             inputTextObservable
-                .throttleLatest(INPUT_DELAY, TimeUnit.MILLISECONDS)
+                .throttleLatest(typingIntevalSeconds, TimeUnit.SECONDS)
                 .filter { charSequence: String -> charSequence.isNotEmpty() }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ input: String? ->
@@ -2782,7 +2789,7 @@ class ChatFragment :
         private const val DISABLED_ALPHA = 0.5f
         private const val ENABLED_ALPHA = 1.0f
         private const val INVISIBLE_MESSAGES_COUNT = 3
-        private const val INPUT_DELAY: Long = 3000
+        private const val INPUT_DELAY: Long = 3
         private const val INPUT_EDIT_VIEW_MIN_LINES_COUNT = 1
         private const val INPUT_EDIT_VIEW_MAX_LINES_COUNT = 7
         var isShown = false

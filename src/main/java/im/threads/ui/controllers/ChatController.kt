@@ -7,6 +7,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
+import android.os.Handler
+import android.os.Looper
 import androidx.annotation.MainThread
 import androidx.core.util.Consumer
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -50,6 +52,7 @@ import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.models.enums.CurrentUiTheme
 import im.threads.business.preferences.Preferences
 import im.threads.business.preferences.PreferencesCoreKeys
+import im.threads.business.rest.models.ConfigResponse
 import im.threads.business.rest.models.SettingsResponse
 import im.threads.business.rest.queries.BackendApi.Companion.get
 import im.threads.business.rest.queries.ThreadsApi
@@ -351,6 +354,7 @@ class ChatController private constructor() {
             transport.sendInitMessages()
         } else if (state < ChatStateEnum.SETTINGS_LOADED) {
             loadSettings()
+            loadConfig()
         }
     }
 
@@ -696,6 +700,30 @@ class ChatController private constructor() {
                             }
                         }
                         chatState.changeState(ChatStateEnum.SETTINGS_LOADED)
+                    }
+                ) { e: Throwable ->
+                    val message = if (e.localizedMessage.isNullOrBlank()) e.message else e.localizedMessage
+                    info("error on getting settings: $message")
+                    chatUpdateProcessor.postError(TransportException(message))
+                }
+        )
+    }
+
+    private fun loadConfig() {
+        subscribe(
+            Single.fromCallable {
+                get().config()?.execute()
+            }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { response: Response<ConfigResponse?>? ->
+                        response?.body()?.settings?.typingMessagesIntervalSeconds?.let {
+                            preferences.save(PreferencesCoreKeys.TYPING_MESSAGES_INTERVAL_SECONDS, it)
+                            Handler(Looper.getMainLooper()).postDelayed({
+                                fragment?.configureUserTypingSubscription()
+                            }, 500)
+                        }
                     }
                 ) { e: Throwable ->
                     val message = if (e.localizedMessage.isNullOrBlank()) e.message else e.localizedMessage
@@ -1593,6 +1621,7 @@ class ChatController private constructor() {
                         BaseConfig.getInstance().transport.sendInitMessages()
                     } else if (stateEvent.state == ChatStateEnum.INIT_USER_SENT) {
                         loadSettings()
+                        loadConfig()
                     } else if (stateEvent.state == ChatStateEnum.SETTINGS_LOADED) {
                         loadItemsFromDB(false)
                         loadHistoryAfterWithLastMessageCheck()
