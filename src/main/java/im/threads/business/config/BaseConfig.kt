@@ -147,7 +147,8 @@ open class BaseConfig(
             isDebugLoggingEnabled,
             socketClientSettings,
             sslSocketFactoryConfig,
-            networkInterceptor
+            networkInterceptor,
+            context
         )
     }
 

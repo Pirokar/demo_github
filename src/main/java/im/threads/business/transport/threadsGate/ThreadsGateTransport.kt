@@ -1,5 +1,6 @@
 package im.threads.business.transport.threadsGate
 
+import android.content.Context
 import android.os.Build
 import android.provider.Settings
 import android.text.TextUtils
@@ -8,6 +9,7 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import im.threads.R
 import im.threads.business.chatUpdates.ChatUpdateProcessor
 import im.threads.business.config.BaseConfig
 import im.threads.business.formatters.ChatItemType
@@ -79,7 +81,8 @@ class ThreadsGateTransport(
     private val isDebugLoggingEnabled: Boolean,
     private val socketSettings: SocketClientSettings,
     private val sslSocketFactoryConfig: SslSocketFactoryConfig? = null,
-    private val networkInterceptor: Interceptor?
+    private val networkInterceptor: Interceptor?,
+    private val context: Context
 ) : Transport(), LifecycleObserver {
     private lateinit var client: OkHttpClient
     private lateinit var request: Request
@@ -313,6 +316,13 @@ class ThreadsGateTransport(
         chatState.changeState(ChatStateEnum.REGISTERING_DEVICE)
 
         val clientId = clientUseCase.getUserInfo()?.clientId
+
+        if (clientId.isNullOrBlank()) {
+            val message = context.getString(R.string.ecc_no_user_id)
+            chatUpdateProcessor.postError(TransportException(message))
+            return
+        }
+
         val deviceModel = getSimpleDeviceName()
         val deviceName = getDeviceName()
         val deviceAddress = preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS)
@@ -436,12 +446,6 @@ class ThreadsGateTransport(
             model
         } else {
             "${manufacturer.capitalize()} $model"
-        }
-    }
-
-    private fun saveInitUserId() {
-        clientUseCase.getUserInfo()?.clientId?.let { userId ->
-            preferences.save(PreferencesCoreKeys.INIT_SENT_LAST_USER_ID, userId, true)
         }
     }
 

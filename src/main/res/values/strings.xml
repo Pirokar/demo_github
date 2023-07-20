@@ -161,5 +161,6 @@
     <string name="ecc_tbytes">TB</string>
     <string name="error_image">Error image</string>
     <string name="ecc_error_when_chat_init">Error initializing the chat</string>
-    <string name="timeout_message">The connection to server timed out</string>
+    <string name="ecc_timeout_message">Request timed out</string>
+    <string name="ecc_no_user_id">User not set, please login first</string>
 </resources>
