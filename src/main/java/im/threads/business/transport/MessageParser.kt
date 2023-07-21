@@ -1,7 +1,6 @@
 package im.threads.business.transport
 
 import com.google.gson.JsonObject
-import im.threads.business.chatUpdates.ChatUpdateProcessorJavaGetter
 import im.threads.business.config.BaseConfig
 import im.threads.business.formatters.ChatItemType
 import im.threads.business.formatters.ChatItemType.Companion.fromString
@@ -23,7 +22,6 @@ import im.threads.business.models.SpeechMessageUpdate
 import im.threads.business.models.Survey
 import im.threads.business.models.UserPhrase
 import im.threads.business.transport.models.Attachment
-import im.threads.business.transport.models.AttachmentSettings
 import im.threads.business.transport.models.MessageContent
 import im.threads.business.transport.models.OperatorJoinedContent
 import im.threads.business.transport.models.RequestResolveThreadContent
@@ -73,19 +71,7 @@ class MessageParser {
                 ChatItemType.NONE,
                 ChatItemType.MESSAGES_READ -> getMessageRead(fullMessage)
                 ChatItemType.SCENARIO -> null
-                ChatItemType.ATTACHMENT_SETTINGS -> {
-                    val attachmentSettings = BaseConfig.getInstance().gson.fromJson(
-                        fullMessage,
-                        AttachmentSettings::class.java
-                    )
-                    if (attachmentSettings.clientId != null) {
-                        ChatUpdateProcessorJavaGetter().processor.postAttachmentSettings(
-                            attachmentSettings
-                        )
-                    }
-                    null
-                }
-
+                ChatItemType.ATTACHMENT_SETTINGS -> null
                 ChatItemType.SPEECH_MESSAGE_UPDATED -> {
                     val (uuid, speechStatus, attachments) = BaseConfig.getInstance().gson.fromJson(
                         fullMessage,
