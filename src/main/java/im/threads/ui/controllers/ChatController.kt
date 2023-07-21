@@ -96,6 +96,7 @@ import io.reactivex.subjects.PublishSubject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Response
@@ -715,9 +716,8 @@ class ChatController private constructor() {
                 result?.body()?.settings?.typingMessagesIntervalSeconds?.let {
                     preferences.save(PreferencesCoreKeys.TYPING_MESSAGES_INTERVAL_SECONDS, it)
                     withContext(Dispatchers.Main) {
-                        Handler(Looper.getMainLooper()).postDelayed({
-                            fragment?.configureUserTypingSubscription()
-                        }, 500)
+                        delay(500)
+                        fragment?.configureUserTypingSubscription()
                     }
                 }
             } catch (exception: Exception) {
