@@ -53,8 +53,8 @@ data class ItemDecorator(
     private var typefaceFromStartToEnd = Typeface.SANS_SERIF
     private var typefaceFromEndToStart = Typeface.SANS_SERIF
 
-    private var textSizeFromStartToEnd = 10f
-    private var textSizeFromEndToStart = 10f
+    private var textSizeFromStartToEnd = 14f
+    private var textSizeFromEndToStart = 14f
 
     private var iconHorizontalMargin = 16f
 
