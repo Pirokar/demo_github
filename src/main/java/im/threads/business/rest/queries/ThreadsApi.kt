@@ -36,11 +36,11 @@ class ThreadsApi(
         }
     }
 
-    fun config(): Call<ConfigResponse?>? {
+    fun configAsync(): Call<ConfigResponse?>? {
         return if (BaseConfig.getInstance().newChatCenterApi) {
-            newThreadsApi?.config(API_VERSION)
+            newThreadsApi?.configAsync(API_VERSION)
         } else {
-            oldThreadsApi?.config(API_VERSION)
+            oldThreadsApi?.configAsync(API_VERSION)
         }
     }
 

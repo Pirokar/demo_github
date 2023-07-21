@@ -19,7 +19,7 @@ interface NewThreadsBackendApi {
     fun settings(): Call<SettingsResponse?>?
 
     @GET("/api/chat/config?channelType=MOBILE&auth=true")
-    fun config(@Query("chatApiVersion") chatApiVersion: String?): Call<ConfigResponse?>?
+    fun configAsync(@Query("chatApiVersion") chatApiVersion: String?): Call<ConfigResponse?>?
 
     @GET("api/client/history")
     fun history(

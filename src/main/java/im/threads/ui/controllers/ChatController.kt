@@ -52,7 +52,6 @@ import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.models.enums.CurrentUiTheme
 import im.threads.business.preferences.Preferences
 import im.threads.business.preferences.PreferencesCoreKeys
-import im.threads.business.rest.models.ConfigResponse
 import im.threads.business.rest.models.SettingsResponse
 import im.threads.business.rest.queries.BackendApi.Companion.get
 import im.threads.business.rest.queries.ThreadsApi
@@ -710,27 +709,21 @@ class ChatController private constructor() {
     }
 
     private fun loadConfig() {
-        subscribe(
-            Single.fromCallable {
-                get().config()?.execute()
-            }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { response: Response<ConfigResponse?>? ->
-                        response?.body()?.settings?.typingMessagesIntervalSeconds?.let {
-                            preferences.save(PreferencesCoreKeys.TYPING_MESSAGES_INTERVAL_SECONDS, it)
-                            Handler(Looper.getMainLooper()).postDelayed({
-                                fragment?.configureUserTypingSubscription()
-                            }, 500)
-                        }
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val result = get().configAsync()?.execute()
+                result?.body()?.settings?.typingMessagesIntervalSeconds?.let {
+                    preferences.save(PreferencesCoreKeys.TYPING_MESSAGES_INTERVAL_SECONDS, it)
+                    withContext(Dispatchers.Main) {
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            fragment?.configureUserTypingSubscription()
+                        }, 500)
                     }
-                ) { e: Throwable ->
-                    val message = if (e.localizedMessage.isNullOrBlank()) e.message else e.localizedMessage
-                    info("error on getting settings: $message")
-                    chatUpdateProcessor.postError(TransportException(message))
                 }
-        )
+            } catch (exception: Exception) {
+                error("[REST] Error load config data: $exception")
+            }
+        }
     }
 
     internal fun downloadMessagesTillEnd(): Single<List<ChatItem>> {
