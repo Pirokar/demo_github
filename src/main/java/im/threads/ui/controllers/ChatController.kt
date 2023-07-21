@@ -883,6 +883,7 @@ class ChatController private constructor() {
         subscribe(
             Flowable.fromPublisher(chatUpdateProcessor.incomingMessageReadProcessor)
                 .observeOn(Schedulers.io())
+                .onBackpressureBuffer()
                 .subscribe(
                     { uuid: String? ->
                         database.setMessageWasRead(uuid)
