@@ -711,7 +711,7 @@ class ChatController private constructor() {
     private fun loadConfig() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val result = get().configAsync()?.execute()
+                val result = get().config()?.execute()
                 result?.body()?.settings?.typingMessagesIntervalSeconds?.let {
                     preferences.save(PreferencesCoreKeys.TYPING_MESSAGES_INTERVAL_SECONDS, it)
                     withContext(Dispatchers.Main) {
