@@ -119,6 +119,7 @@ data class ItemDecorator(
         private fun create(): ItemDecorator = decorator
     }
 
+    @Suppress("DEPRECATION")
     private fun Drawable.colorFilter(@ColorInt tintColor: Int) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             this.setColorFilter(tintColor, PorterDuff.Mode.MULTIPLY)
