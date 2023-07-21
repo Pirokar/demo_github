@@ -585,7 +585,7 @@ class ChatController private constructor() {
         if (!forceLoad && isAllMessagesDownloaded) {
             coroutineScope.launch {
                 fragment?.hideProgressBar()
-                fragment?.showWelcomeScreen(isNeedToShowWelcome)
+                fragment?.hideErrorView()
             }
             return
         }
@@ -644,9 +644,7 @@ class ChatController private constructor() {
                                         if (!isShouldBeLoadedMore) {
                                             fragment?.hideProgressBar()
                                             fragment?.showBottomBar()
-                                            if (isNeedToShowWelcome) {
-                                                fragment?.showWelcomeScreen(true)
-                                            }
+                                            fragment?.hideErrorView()
                                         }
                                     }
                                 }

@@ -364,13 +364,13 @@ class ChatFragment :
         }
     }
 
-    internal fun hideErrorView() = with(binding) {
+    internal fun hideErrorView(showList: Boolean = true) = with(binding) {
         chatErrorLayout.errorLayout.gone()
         bottomLayout.visible()
         val isNeedToShowWelcome = chatController.isNeedToShowWelcome
-        if (isNeedToShowWelcome) {
+        if (isNeedToShowWelcome && showList) {
             showWelcomeScreen(chatController.isChatReady())
-        } else {
+        } else if (showList) {
             recycler.visible()
         }
     }
