@@ -50,14 +50,11 @@ class UserListAdapter(private val onItemClickListener: ListItemClickListener) :
 
         fun onBind(position: Int) {
             (list[position] as? UserInfo)?.let { item ->
-                binding.name.text = item.userId
-                binding.userId.text = item.userData
+                binding.userId.text = item.userId
                 if (uiThemeProvider.isDarkThemeOn()) {
-                    binding.name.setTextColor(ContextCompat.getColor(binding.root.context, R.color.white_color_fa))
                     binding.userId.setTextColor(ContextCompat.getColor(binding.root.context, R.color.white_color_fa))
                     ColorsHelper.setTint(binding.root.context, binding.image, R.color.white_color_fa)
                 } else {
-                    binding.name.setTextColor(ContextCompat.getColor(binding.root.context, R.color.black_color))
                     binding.userId.setTextColor(ContextCompat.getColor(binding.root.context, R.color.black_color))
                     ColorsHelper.setTint(binding.root.context, binding.image, R.color.black_color)
                 }

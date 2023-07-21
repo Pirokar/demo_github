@@ -22,23 +22,12 @@
             android:layout_marginStart="@dimen/common_app_margins"
             android:layout_marginTop="@dimen/margin_8"
             android:layout_marginEnd="@dimen/common_app_margins"
+            android:layout_marginBottom="@dimen/margin_8"
             android:contentDescription="@string/content_description_user_list_icon"
             android:src="@drawable/ic_user"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/common_app_margins"
-            android:layout_marginTop="@dimen/margin_8"
-            android:ellipsize="end"
-            android:lines="1"
-            android:textColor="@color/black_color"
-            android:textSize="@dimen/text_size_14"
-            app:layout_constraintStart_toEndOf="@+id/image"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
 
         <TextView
             android:id="@+id/userId"
@@ -46,11 +35,13 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/common_app_margins"
             android:ellipsize="end"
-            android:lines="2"
-            android:textColor="@color/gray_color_b5"
-            android:textSize="@dimen/text_size_12"
+            android:lines="1"
+            android:textColor="@color/black_color"
+            android:textSize="@dimen/text_size_14"
             app:layout_constraintStart_toEndOf="@+id/image"
-            app:layout_constraintTop_toBottomOf="@+id/name" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>
