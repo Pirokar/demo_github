@@ -26,10 +26,14 @@ object FileHelper {
     }
 
     fun subscribeToAttachments() {
-        if (disposable == null || disposable?.isDisposed == true) {
+        if (disposable == null ||
+            disposable?.isDisposed == true ||
+            !chatUpdateProcessor.attachmentSettingsProcessor.hasSubscribers()
+        ) {
             disposable = chatUpdateProcessor.attachmentSettingsProcessor
                 .subscribe(
                     { receivedAttachmentSettings ->
+                        LoggerEdna.error("subscribeToAttachments(). receivedAttachmentSettings: $receivedAttachmentSettings")
                         receivedAttachmentSettings.content?.let { attachmentSettings = it }
                     },
                     LoggerEdna::error
@@ -42,43 +46,36 @@ object FileHelper {
     }
 
     fun isAllowedFileExtension(fileExtension: String?): Boolean {
-        val attachmentSettings = attachmentSettings
-        for (allowedExt in attachmentSettings.fileExtensions) {
-            if (allowedExt.equals(fileExtension, ignoreCase = true)) {
-                return true
+        attachmentSettings?.let {
+            for (allowedExt in it.fileExtensions) {
+                if (allowedExt.equals(fileExtension, ignoreCase = true)) {
+                    return true
+                }
             }
         }
+        LoggerEdna.warning("isAllowedFileExtension() - false. Extension \"$fileExtension\" missing in array: ${attachmentSettings?.fileExtensions?.asList()}")
         return false
     }
 
     fun isFileExtensionsEmpty(): Boolean {
-        return attachmentSettings.fileExtensions.isNullOrEmpty()
+        LoggerEdna.error("isFileExtensionsEmpty(???). Extension array: ${attachmentSettings?.fileExtensions?.asList()}")
+        return attachmentSettings?.fileExtensions?.isEmpty() ?: true
     }
 
     fun isJpgAllow(): Boolean {
-        return attachmentSettings.fileExtensions?.contains("jpg") == true
+        return attachmentSettings?.fileExtensions?.contains("jpg") ?: false
     }
 
     val maxAllowedFileSize: Long
-        get() = attachmentSettings.maxSize.toLong()
+        get() = attachmentSettings?.maxSize?.toLong() ?: 0
 
-    private var attachmentSettings: AttachmentSettings.Content
+    private var attachmentSettings: AttachmentSettings.Content?
         get() {
             val settingsStr = preferences.get(PreferencesUiKeys.PREF_ATTACHMENT_SETTINGS) ?: ""
-
-            return if (settingsStr.isEmpty()) {
-                defaultAttachmentSettings
-            } else {
-                val attachmentSettingsContent =
-                    BaseConfig.getInstance().gson.fromJson(settingsStr, AttachmentSettings.Content::class.java)
-                attachmentSettingsContent ?: defaultAttachmentSettings
-            }
+            return BaseConfig.getInstance().gson.fromJson(settingsStr, AttachmentSettings.Content::class.java)
         }
         set(value) = preferences.save(
             PreferencesUiKeys.PREF_ATTACHMENT_SETTINGS,
             BaseConfig.getInstance().gson.toJson(value)
         )
-
-    private val defaultAttachmentSettings: AttachmentSettings.Content
-        get() = AttachmentSettings.Content(30, arrayOf("jpeg", "jpg", "png", "pdf", "doc", "docx", "rtf"))
 }

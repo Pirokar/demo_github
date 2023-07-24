@@ -55,6 +55,7 @@ import im.threads.business.utils.AppInfo
 import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.DeviceInfo
 import im.threads.business.utils.SSLCertificateInterceptor
+import im.threads.ui.utils.FileHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -579,6 +580,7 @@ class ThreadsGateTransport(
                                     message.content,
                                     AttachmentSettings::class.java
                                 )
+                                FileHelper.subscribeToAttachments()
                                 chatUpdateProcessor.postAttachmentSettings(attachmentSettings)
                             } else if (ChatItemType.ATTACHMENT_UPDATED == type) {
                                 val attachments: ArrayList<Attachment> = ArrayList()
