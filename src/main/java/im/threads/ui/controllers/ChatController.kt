@@ -553,7 +553,7 @@ class ChatController private constructor() {
     @Throws(Exception::class)
     private fun onClientIdChanged() {
         info(ThreadsApi.REST_TAG, "Client id changed. Loading history.")
-        cleanAll()
+        cleanAll(true)
         fragment?.removeSearching()
         if (isChatReady()) loadHistory()
     }
@@ -1250,7 +1250,7 @@ class ChatController private constructor() {
         }
     }
 
-    internal fun cleanAll() {
+    internal fun cleanAll(keepClientId: Boolean = false) {
         info("cleanAll!")
         isAllMessagesDownloaded = false
         messenger.clearSendQueue()
@@ -1259,21 +1259,26 @@ class ChatController private constructor() {
         consultWriter.setCurrentConsultLeft()
         consultWriter.isSearchingConsult = false
         removePushNotification()
-        clearPreferences()
+        clearPreferences(keepClientId)
         UnreadMessagesController.INSTANCE.refreshUnreadMessagesCount()
         localUserMessages.clear()
         database.cleanDatabase()
     }
 
     @SuppressLint("ApplySharedPref")
-    private fun clearPreferences() {
+    private fun clearPreferences(keepClientId: Boolean = false) {
         val fcmToken = preferences.get<String>(PreferencesCoreKeys.FCM_TOKEN)
         val hcmToken = preferences.get<String>(PreferencesCoreKeys.HCM_TOKEN)
         val currentUiThemeValue = preferences.get(PreferencesCoreKeys.USER_SELECTED_UI_THEME_KEY, CurrentUiTheme.SYSTEM.value)
+        val clientInfo = if (keepClientId) clientUseCase.getUserInfo() else null
         preferences.sharedPreferences.edit().clear().commit()
         preferences.save(PreferencesCoreKeys.FCM_TOKEN, fcmToken)
         preferences.save(PreferencesCoreKeys.HCM_TOKEN, hcmToken)
         preferences.save(PreferencesCoreKeys.USER_SELECTED_UI_THEME_KEY, currentUiThemeValue)
+
+        if (clientInfo != null) {
+            clientUseCase.saveUserInfo(clientInfo)
+        }
     }
 
     private fun removePushNotification() {
@@ -1307,13 +1312,6 @@ class ChatController private constructor() {
             BaseConfig.getInstance().transport.sendRegisterDevice(false)
             clearUnreadPush()
             loadHistory()
-        } else {
-            BaseConfig.getInstance().transport.sendRegisterDevice(false)
-            info(
-                ThreadsApi.REST_TAG,
-                "Loading history cancelled in onDeviceAddressChanged. " +
-                    "fragment != null && !TextUtils.isEmpty(clientId) == false"
-            )
         }
     }
 
