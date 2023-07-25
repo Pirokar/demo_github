@@ -36,10 +36,10 @@ internal fun ImageView.loadImage(
                 .callback(callback)
                 .autoRotateWithExif(autoRotateWithExif)
                 .into(this)
-        } ?: showLog()
-    } ?: showLog()
+        } ?: showLog("Image builder is empty, nothing to load")
+    } ?: showLog("Image data is empty, nothing to load")
 }
 
-private fun showLog() {
-    LoggerEdna.error("Data is empty, nothing to load")
+private fun showLog(message: String) {
+    LoggerEdna.info(message)
 }
