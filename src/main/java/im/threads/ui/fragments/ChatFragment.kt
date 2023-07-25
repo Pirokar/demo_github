@@ -158,7 +158,7 @@ import java.util.concurrent.TimeUnit
 
 /**
  * Весь функционал чата находится здесь во фрагменте,
- * чтобы чат можно было встроить в приложене в навигацией на фрагментах
+ * чтобы чат можно было встроить в приложение с навигацией на фрагментах
  */
 class ChatFragment :
     BaseFragment(),
@@ -218,7 +218,6 @@ class ChatFragment :
         initViews()
         initRecording()
         bindViews()
-        initToolbar()
         setHasOptionsMenu(true)
         initController()
         setFragmentStyle()
@@ -255,6 +254,7 @@ class ChatFragment :
             )
             chatController.campaignMessage = null
         }
+        initToolbar()
     }
 
     override fun onStart() {
@@ -1179,7 +1179,7 @@ class ChatFragment :
         if (item.itemId == R.id.ecc_search) {
             if (!isInMessageSearchMode) {
                 search(false)
-                binding.chatBackButton.visibility = View.VISIBLE
+                binding.chatBackButton.visible()
             } else {
                 return true
             }
@@ -2128,11 +2128,7 @@ class ChatFragment :
         binding.toolbar.title = ""
         ColorsHelper.setBackgroundColor(activity, binding.toolbar, style.chatToolbarColorResId)
         initToolbarShadow()
-        if (activity is ChatActivity) {
-            binding.chatBackButton.visibility = View.VISIBLE
-        } else {
-            binding.chatBackButton.visibility = if (style.showBackButton) View.VISIBLE else View.GONE
-        }
+        checkBackButtonVisibility()
         binding.chatBackButton.setOnClickListener { onActivityBackPressed() }
         binding.chatBackButton.setImageResource(style.chatToolbarBackIconResId)
         ColorsHelper.setTint(activity, binding.chatBackButton, style.chatToolbarTextColorResId)
@@ -2231,7 +2227,7 @@ class ChatFragment :
             false
         } else if (binding.copyControls.visibility == View.VISIBLE) {
             unChooseItem()
-            hideBackButton()
+            checkBackButtonVisibility()
             false
         } else if (binding.searchLo.visibility == View.VISIBLE) {
             hideSearchMode()
@@ -2264,15 +2260,16 @@ class ChatFragment :
             ChatController.CONSULT_STATE_FOUND -> setStateConsultConnected(chatController.currentConsultInfo)
             ChatController.CONSULT_STATE_SEARCHING -> setTitleStateSearchingConsult()
         }
-        hideBackButton()
+        checkBackButtonVisibility()
     }
 
-    private fun hideBackButton() {
-        val activity: Activity? = activity
-        if (activity !is ChatActivity) {
-            if (!style.showBackButton) {
-                binding.chatBackButton.visibility = View.GONE
-            }
+    private fun checkBackButtonVisibility() {
+        if (!style.showBackButton) {
+            info("Back button is disabled in the style")
+            binding.chatBackButton.gone()
+        } else {
+            info("Back button is enabled in the style")
+            binding.chatBackButton.visible()
         }
     }
 
@@ -2312,8 +2309,8 @@ class ChatFragment :
         } else {
             binding.contentCopy.visibility = View.VISIBLE
         }
-        if (binding.chatBackButton.visibility == View.GONE) {
-            binding.chatBackButton.visibility = View.VISIBLE
+        if (binding.chatBackButton.isNotVisible()) {
+            binding.chatBackButton.visible()
         }
 
         CoroutineScope(Dispatchers.IO).launch {
@@ -2323,7 +2320,7 @@ class ChatFragment :
                     binding.reply.isEnabled = true
                     binding.reply.setOnClickListener {
                         onReplyClick(chatPhrase, position)
-                        hideBackButton()
+                        checkBackButtonVisibility()
                         unChooseItem()
                     }
                 }
@@ -2343,7 +2340,7 @@ class ChatFragment :
 
         binding.contentCopy.setOnClickListener {
             onCopyClick(activity, chatPhrase)
-            hideBackButton()
+            checkBackButtonVisibility()
         }
 
         chatAdapter?.setItemHighlighted(chatPhrase)
