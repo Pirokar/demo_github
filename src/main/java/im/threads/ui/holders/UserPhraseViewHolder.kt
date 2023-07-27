@@ -300,7 +300,7 @@ class UserPhraseViewHolder(
     private fun showPhrase(phrase: String) {
         phraseTextView.visible()
         phraseTextView.bindTimestampView(timeStampTextView)
-        bindOGData(phrase)
+        if (style.linkPreviewEnabled) bindOGData(phrase)
         val extractedLink = UrlUtils.extractLink(phrase)
         val deeplink = UrlUtils.extractDeepLink(phrase)
         val urlLink = if (extractedLink == null || extractedLink.isEmail) {
