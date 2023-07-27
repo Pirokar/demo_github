@@ -66,6 +66,7 @@ class EdnaThreadsApplication : Application() {
     private fun getLightChatTheme() = getMainChatTheme().apply {
         setConsultSearchingProgressColor(R.color.light_toolbar)
         setChatBodyIconsTint(R.color.light_toolbar)
+        enableLinkPreview()
         setChatTitleStyle(
             R.string.app_name,
             R.string.demo_alt_threads_operator_subtitle,
@@ -97,6 +98,7 @@ class EdnaThreadsApplication : Application() {
     private fun getDarkChatTheme() = getMainChatTheme().apply {
         setConsultSearchingProgressColor(R.color.dark_toolbar)
         setChatBodyIconsTint(R.color.dark_toolbar)
+        enableLinkPreview()
         setChatTitleStyle(
             R.string.demo_alt_threads_contact_center,
             R.string.demo_alt_threads_operator_subtitle,
