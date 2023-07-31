@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import im.threads.ui.utils.ColorsHelper
+import im.threads.ui.utils.EdnaColors
 import im.threads.ui.utils.gone
 import im.threads.ui.utils.visible
 import io.edna.threads.demo.R
@@ -91,7 +91,7 @@ class ServerListAdapter(private val onItemClickListener: ServerListItemOnClickLi
                             R.color.white_color_fa
                         )
                     )
-                    ColorsHelper.setTint(
+                    EdnaColors.setTint(
                         binding.root.context,
                         binding.image,
                         R.color.white_color_fa
@@ -109,7 +109,7 @@ class ServerListAdapter(private val onItemClickListener: ServerListItemOnClickLi
                             R.color.black_color
                         )
                     )
-                    ColorsHelper.setTint(binding.root.context, binding.image, R.color.black_color)
+                    EdnaColors.setTint(binding.root.context, binding.image, R.color.black_color)
                 }
                 if (item.isShowMenu) {
                     binding.menuLayout.visible()
