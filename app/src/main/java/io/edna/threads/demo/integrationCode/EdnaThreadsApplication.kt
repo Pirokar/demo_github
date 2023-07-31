@@ -119,7 +119,6 @@ class EdnaThreadsApplication : Application() {
             .build()
 
         val configBuilder = ConfigBuilder(this)
-            .surveyCompletionDelay(2000)
             .historyLoadingCount(50)
             .applyLightTheme(chatLightTheme)
             .applyDarkTheme(chatDarkTheme)
