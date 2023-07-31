@@ -22,10 +22,13 @@ import im.threads.business.markdown.MarkdownConfig;
 
 /**
  * Стиль чата.
- * Хранит в себе информацию о расцветках, иконках
- * и других кастомизациях чата.
+ * Хранит в себе информацию о расцветках, иконках и других настройках чата.
  */
 public final class ChatStyle implements Serializable {
+    /**
+     * Определяет доступность предпросмотра для ссылок (OpenGraph). По умолчанию отключено.
+     */
+    public boolean linkPreviewEnabled = false;
 
     public boolean arePermissionDescriptionDialogsEnabled = false;
 
@@ -2144,6 +2147,14 @@ public final class ChatStyle implements Serializable {
             @ColorRes int errorMessageTextColor
     ) {
         this.errorMessageTextColor = errorMessageTextColor;
+        return this;
+    }
+
+    /**
+     * Включает предпросмотр для ссылок (OpenGraph). По умолчанию отключено.
+     */
+    public ChatStyle enableLinkPreview() {
+        linkPreviewEnabled = true;
         return this;
     }
 }

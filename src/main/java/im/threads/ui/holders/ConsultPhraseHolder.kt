@@ -327,7 +327,7 @@ class ConsultPhraseHolder(
         phraseTextView.bindTimestampView(timeStampTextView)
         phraseTextView.visible()
         val deeplink = UrlUtils.extractDeepLink(phrase)
-        val extractedLink = bindOGData(phrase)
+        val extractedLink = if (style.linkPreviewEnabled) bindOGData(phrase) else UrlUtils.extractLink(phrase)
         val emails = UrlUtils.extractEmailAddresses(phrase)
         highlightOperatorText(phraseTextView, consultPhrase, deeplink ?: extractedLink?.link, emails)
     }
