@@ -6,7 +6,7 @@ class OperatorJoinedContent {
     val uuid: String? = null
     val title: String? = null
     val operator: Operator? = null
-    val isDisplay = false
+    val display = false
     val text: String? = null
     val threadId: Long = 0
 }
