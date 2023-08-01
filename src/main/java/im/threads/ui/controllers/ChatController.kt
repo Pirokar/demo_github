@@ -100,7 +100,7 @@ import kotlinx.coroutines.withContext
 import retrofit2.Response
 import java.lang.Runnable
 import java.lang.System
-import java.util.*
+import java.util.Collections
 import java.util.concurrent.TimeUnit
 
 /**
@@ -1614,11 +1614,11 @@ class ChatController private constructor() {
     }
 
     private fun getUncompletedUserPhraseTimestamp(): Long? {
-        val items = database.getChatItems(0, BaseConfig.getInstance().historyLoadingCount)
+        val items = database.getChatItems(0, BaseConfig.getInstance().historyLoadingCount).toMutableList()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             Collections.sort(items, Comparator.comparingLong(ChatItem::timeStamp))
         } else {
-            Collections.sort(items) { lhs: ChatItem, rhs: ChatItem ->
+            items.sortWith { lhs: ChatItem, rhs: ChatItem ->
                 lhs.timeStamp.compareTo(rhs.timeStamp)
             }
         }
