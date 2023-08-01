@@ -2419,6 +2419,18 @@ class ChatFragment :
         show(requireContext(), message!!)
     }
 
+    fun allUserPhraseFinalState(): Boolean {
+        chatAdapter?.list?.forEach {
+            if (it is UserPhrase) {
+                val userPhrase = it
+                if (userPhrase.sentState != MessageStatus.READ) {
+                    return false
+                }
+            }
+        }
+        return true
+    }
+
     internal fun getDisplayedMessagesCount() = chatAdapter?.itemCount ?: 0
 
     override fun acceptConvertedFile(convertedFile: File) {

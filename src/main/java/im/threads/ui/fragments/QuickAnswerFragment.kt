@@ -20,11 +20,9 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import im.threads.R
-import im.threads.business.chatUpdates.ChatUpdateProcessor
 import im.threads.business.config.BaseConfig
 import im.threads.business.imageLoading.ImageLoader.Companion.get
 import im.threads.business.imageLoading.ImageModifications
-import im.threads.business.serviceLocator.core.inject
 import im.threads.business.useractivity.UserActivityTimeProvider.getLastUserActivityTimeCounter
 import im.threads.business.utils.FileUtils.convertRelativeUrlToAbsolute
 import im.threads.ui.ChatStyle
@@ -34,7 +32,6 @@ import im.threads.ui.utils.ColorsHelper
 
 class QuickAnswerFragment : BaseDialogFragment() {
     private var editText: EditText? = null
-    private val chatUpdateProcessor: ChatUpdateProcessor by inject()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val style = getInstance().chatStyle

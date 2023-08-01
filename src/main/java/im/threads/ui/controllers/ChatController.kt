@@ -1592,7 +1592,11 @@ class ChatController private constructor() {
                         loadSettings()
                     } else if (stateEvent.state == ChatStateEnum.SETTINGS_LOADED) {
                         loadItemsFromDB(false)
-                        loadHistoryAfterWithLastMessageCheck()
+                        if (fragment?.allUserPhraseFinalState() == true) {
+                            loadHistoryAfterWithLastMessageCheck()
+                        } else {
+                            loadHistory(applyUiChanges = true)
+                        }
                     } else if (isChatReady()) {
                         messenger.resendMessages()
                     }
