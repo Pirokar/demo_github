@@ -1592,11 +1592,7 @@ class ChatController private constructor() {
                         loadSettings()
                     } else if (stateEvent.state == ChatStateEnum.SETTINGS_LOADED) {
                         loadItemsFromDB(false)
-                        if (fragment?.allUserPhraseFinalState() == true) {
-                            loadHistoryAfterWithLastMessageCheck()
-                        } else {
-                            loadHistory(applyUiChanges = true)
-                        }
+                        loadHistoryAfterWithLastMessageCheck()
                     } else if (isChatReady()) {
                         messenger.resendMessages()
                     }
@@ -1606,6 +1602,15 @@ class ChatController private constructor() {
     }
 
     private fun getLastDbItemTimestamp(): Long? {
+        val items = database.getChatItems(0, BaseConfig.getInstance().historyLoadingCount)
+        for (i in 0 until items.size - 1) {
+            if (items[i] is UserPhrase) {
+                val userPhrase = items[i] as UserPhrase
+                if (userPhrase.sentState != MessageStatus.READ) {
+                    return userPhrase.timeStamp + 1000
+                }
+            }
+        }
         return try {
             database
                 .getChatItems(0, 1)
