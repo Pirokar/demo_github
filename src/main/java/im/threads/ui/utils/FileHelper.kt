@@ -58,7 +58,6 @@ object FileHelper {
     }
 
     fun isFileExtensionsEmpty(): Boolean {
-        LoggerEdna.error("isFileExtensionsEmpty(???). Extension array: ${attachmentSettings?.fileExtensions?.asList()}")
         return attachmentSettings?.fileExtensions?.isEmpty() ?: true
     }
 

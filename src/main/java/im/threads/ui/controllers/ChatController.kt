@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
+import android.os.Build
 import androidx.annotation.MainThread
 import androidx.core.util.Consumer
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -97,6 +98,9 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Response
+import java.lang.Runnable
+import java.lang.System
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 /**
@@ -562,7 +566,7 @@ class ChatController private constructor() {
         applyUiChanges: Boolean = true
     ) {
         coroutineScope.launch {
-            val lastTimeStampDef = async(Dispatchers.IO) { getLastDbItemTimestamp() }
+            val lastTimeStampDef = async(Dispatchers.IO) { getNeedItemTimestamp() }
             lastTimeStampDef.await()?.let {
                 loadHistory(
                     it,
@@ -1601,16 +1605,35 @@ class ChatController private constructor() {
         }
     }
 
-    private fun getLastDbItemTimestamp(): Long? {
+    private fun getNeedItemTimestamp(): Long? {
+        val timeStamp = getUncompletedUserPhraseTimestamp()
+        if (timeStamp != null) {
+            return timeStamp
+        }
+        return getLastDbItemTimestamp()
+    }
+
+    private fun getUncompletedUserPhraseTimestamp(): Long? {
         val items = database.getChatItems(0, BaseConfig.getInstance().historyLoadingCount)
-        for (i in 0 until items.size - 1) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            Collections.sort(items, Comparator.comparingLong(ChatItem::timeStamp))
+        } else {
+            Collections.sort(items) { lhs: ChatItem, rhs: ChatItem ->
+                lhs.timeStamp.compareTo(rhs.timeStamp)
+            }
+        }
+        for (i in items.size - 1 downTo 0) {
             if (items[i] is UserPhrase) {
                 val userPhrase = items[i] as UserPhrase
                 if (userPhrase.sentState != MessageStatus.READ) {
-                    return userPhrase.timeStamp + 1000
+                    return userPhrase.timeStamp - 1
                 }
             }
         }
+        return null
+    }
+
+    private fun getLastDbItemTimestamp(): Long? {
         return try {
             database
                 .getChatItems(0, 1)
