@@ -4,6 +4,7 @@ import androidx.annotation.WorkerThread
 import com.google.gson.Gson
 import im.threads.business.config.BaseConfig
 import im.threads.business.logger.LoggerEdna.error
+import im.threads.business.models.ChatItem
 import im.threads.business.models.MessageFromHistory
 import im.threads.business.rest.models.HistoryResponse
 import im.threads.business.rest.queries.BackendApi.Companion.get
@@ -78,5 +79,9 @@ class HistoryLoader(private val demoModeProvider: DemoModeProvider, private val 
         if (!list.isNullOrEmpty()) {
             lastLoadedTimestamp = list[0].timeStamp
         }
+    }
+
+    internal interface HistoryLoadingCallback {
+        fun onLoaded(items: List<ChatItem>)
     }
 }

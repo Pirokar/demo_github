@@ -482,8 +482,11 @@ class ThreadsGateTransport(
                         response.data.toString(),
                         RegisterDeviceData::class.java
                     )
+                    val previousDeviceAddress = preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS)
                     preferences.save(PreferencesCoreKeys.DEVICE_ADDRESS, data.deviceAddress)
-                    data.deviceAddress?.let { chatUpdateProcessor.postDeviceAddressChanged(data.deviceAddress) }
+                    if (data.deviceAddress != null && previousDeviceAddress != data.deviceAddress) {
+                        chatUpdateProcessor.postDeviceAddressChanged(data.deviceAddress)
+                    }
                     location?.let { updateLocation(it.latitude, it.longitude) }
                     chatState.changeState(ChatStateEnum.DEVICE_REGISTERED)
                 }

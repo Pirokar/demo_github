@@ -187,7 +187,7 @@ class ChatFragment :
     private var campaignMessage: CampaignMessage? = null
     private var mChatReceiver: ChatReceiver? = null
     private var isInMessageSearchMode = false
-    private var isResumed = false
+    internal var isResumed = false
     private var isSendBlocked = false
     private var binding by selfDestructibleField<EccFragmentChatBinding>()
     private var externalCameraPhotoFile: File? = null

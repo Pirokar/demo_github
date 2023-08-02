@@ -562,9 +562,10 @@ class ChatController private constructor() {
         if (isChatReady()) loadHistory()
     }
 
-    private fun loadHistoryAfterWithLastMessageCheck(
+    internal fun loadHistoryAfterWithLastMessageCheck(
         applyUiChanges: Boolean = true,
-        forceLoad: Boolean = false
+        forceLoad: Boolean = false,
+        callback: HistoryLoader.HistoryLoadingCallback? = null
     ) {
         coroutineScope.launch {
             val lastTimeStampDef = async(Dispatchers.IO) { getItemTimestampForHistoryLoad() }
@@ -573,10 +574,14 @@ class ChatController private constructor() {
                     it,
                     isAfterAnchor = true,
                     loadToTheEnd = true,
-                    forceLoad = true,
-                    applyUiChanges = applyUiChanges
+                    forceLoad = forceLoad,
+                    applyUiChanges = applyUiChanges,
+                    callback = callback
                 )
-            } ?: loadHistory(applyUiChanges = applyUiChanges)
+            } ?: loadHistory(
+                applyUiChanges = applyUiChanges,
+                callback = callback
+            )
         }
     }
 
@@ -586,7 +591,8 @@ class ChatController private constructor() {
         isAfterAnchor: Boolean? = null,
         loadToTheEnd: Boolean = false,
         forceLoad: Boolean = false,
-        applyUiChanges: Boolean = true
+        applyUiChanges: Boolean = true,
+        callback: HistoryLoader.HistoryLoadingCallback? = null
     ) {
         if (!forceLoad && isAllMessagesDownloaded) {
             coroutineScope.launch {
@@ -653,7 +659,9 @@ class ChatController private constructor() {
                                             fragment?.hideErrorView()
                                         }
                                     }
+                                    callback?.onLoaded(items)
                                 }
+                                if (!applyUiChanges) callback?.onLoaded(serverItems)
                                 if (isShouldBeLoadedMore) {
                                     loadHistory(anchorTimestamp, isAfterAnchor, true, applyUiChanges = applyUiChanges)
                                 }
@@ -1318,7 +1326,9 @@ class ChatController private constructor() {
         if (fragment != null && !clientId.isNullOrBlank()) {
             BaseConfig.getInstance().transport.sendRegisterDevice(false)
             clearUnreadPush()
-            loadHistory()
+            if (fragment?.isResumed == true) {
+                loadHistory()
+            }
         }
     }
 
@@ -1598,7 +1608,7 @@ class ChatController private constructor() {
                         loadSettings()
                     } else if (stateEvent.state == ChatStateEnum.SETTINGS_LOADED) {
                         loadItemsFromDB(false)
-                        loadHistoryAfterWithLastMessageCheck()
+                        if (fragment?.isResumed == true) loadHistoryAfterWithLastMessageCheck()
                     } else if (isChatReady()) {
                         messenger.resendMessages()
                     }

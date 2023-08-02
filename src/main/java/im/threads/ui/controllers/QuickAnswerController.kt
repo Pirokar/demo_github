@@ -2,7 +2,6 @@ package im.threads.ui.controllers
 
 import androidx.fragment.app.Fragment
 import im.threads.business.config.BaseConfig
-import im.threads.business.logger.LoggerEdna.error
 import im.threads.business.logger.LoggerEdna.info
 import im.threads.business.models.ChatItem
 import im.threads.business.models.ConsultPhrase
@@ -10,56 +9,50 @@ import im.threads.business.models.UpcomingUserMessage
 import im.threads.business.secureDatabase.DatabaseHolder
 import im.threads.business.serviceLocator.core.inject
 import im.threads.business.transport.HistoryLoader
-import im.threads.business.transport.HistoryParser
 import im.threads.ui.activities.QuickAnswerActivity
-import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 
 /**
  * Контроллер для диалога с быстрыми ответами
  */
 class QuickAnswerController : Fragment() {
-    private var compositeDisposable: CompositeDisposable? = CompositeDisposable()
     private val database: DatabaseHolder by inject()
-    private val historyLoader: HistoryLoader by inject()
+    private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
     fun onBind(activity: QuickAnswerActivity) {
         info("onBind in " + QuickAnswerController::class.java.simpleName)
-        ChatController.getInstance().loadHistory()
-        compositeDisposable?.add(
-            Single.fromCallable {
-                HistoryParser.getChatItems(
-                    historyLoader.getHistorySync(100, true)
-                )
-            }
-                .doOnSuccess { chatItems: List<ChatItem>? ->
-                    database.putChatItems(chatItems)
-                    val uuidList: List<String?> = database.getUnreadMessagesUuid()
-                    if (uuidList.isNotEmpty()) {
-                        BaseConfig.getInstance().transport.markMessagesAsRead(uuidList)
-                    }
-                }
-                .flatMap<ConsultPhrase> { database.lastConsultPhrase }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { consultPhrase ->
-                        if (consultPhrase != null) {
-                            activity.setLastUnreadMessage(consultPhrase)
+        ChatController.getInstance().loadHistoryAfterWithLastMessageCheck(
+            applyUiChanges = false,
+            forceLoad = true,
+            callback = object : HistoryLoader.HistoryLoadingCallback {
+                override fun onLoaded(items: List<ChatItem>) {
+                    coroutineScope.launch {
+                        val lastConsultPhraseDef = async(Dispatchers.IO) {
+                            database.putChatItems(items)
+                            val uuidList: List<String?> = database.getUnreadMessagesUuid()
+                            if (uuidList.isNotEmpty()) {
+                                BaseConfig.getInstance().transport.markMessagesAsRead(uuidList)
+                            }
+                            items.last { it is ConsultPhrase } as? ConsultPhrase
+                        }
+                        if (isActive) {
+                            val lastConsultPhrase = lastConsultPhraseDef.await()
+                            activity.setLastUnreadMessage(lastConsultPhrase)
                         }
                     }
-                ) { e: Throwable? -> error("onBind", e) }
+                }
+            }
         )
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        if (compositeDisposable != null) {
-            compositeDisposable?.dispose()
-            compositeDisposable = null
-        }
+        coroutineScope.cancel()
     }
 
     fun onUserAnswer(upcomingUserMessage: UpcomingUserMessage) {

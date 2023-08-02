@@ -87,9 +87,7 @@ class DatabaseHolder(private val context: Context) {
         tryExecute { myOpenHelper.setUserPhraseStateByBackendMessageId(messageId, messageStatus) }
     }
 
-    val lastConsultPhrase: Single<ConsultPhrase?> =
-        Single.fromCallable { tryExecute { myOpenHelper.getLastConsultPhrase() } }
-            .subscribeOn(Schedulers.io())
+    val lastConsultPhrase: ConsultPhrase? = tryExecute { myOpenHelper.getLastConsultPhrase() }
 
     fun setAllConsultMessagesWereRead(): Completable {
         return Completable.fromCallable { tryExecute { myOpenHelper.setAllConsultMessagesWereRead() } }
