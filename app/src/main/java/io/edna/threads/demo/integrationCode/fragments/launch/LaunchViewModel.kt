@@ -186,9 +186,9 @@ class LaunchViewModel(
     }
 
     private fun getSelectedServer(): ServerConfig? {
-        preferences.getSelectedServer()?.let {
+        preferences.getSelectedServer()?.let { server ->
             preferences.getAllServers().forEach {
-                if (it.name == it.name) {
+                if (server.name == it.name) {
                     return ServerConfig(
                         it.name,
                         it.threadsGateProviderUid,
