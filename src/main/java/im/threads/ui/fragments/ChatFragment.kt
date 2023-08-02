@@ -58,6 +58,7 @@ import im.threads.business.config.BaseConfig
 import im.threads.business.extensions.withMainContext
 import im.threads.business.imageLoading.ImageLoader.Companion.get
 import im.threads.business.logger.LogZipSender
+import im.threads.business.logger.LoggerEdna
 import im.threads.business.logger.LoggerEdna.debug
 import im.threads.business.logger.LoggerEdna.error
 import im.threads.business.logger.LoggerEdna.info
@@ -114,7 +115,6 @@ import im.threads.ui.activities.filesActivity.FilesActivity.Companion.startActiv
 import im.threads.ui.adapters.ChatAdapter
 import im.threads.ui.config.Config
 import im.threads.ui.controllers.ChatController
-import im.threads.ui.extensions.selfDestructibleField
 import im.threads.ui.files.FileSelectedListener
 import im.threads.ui.fragments.PermissionDescriptionAlertFragment.Companion.newInstance
 import im.threads.ui.fragments.PermissionDescriptionAlertFragment.OnAllowPermissionClickListener
@@ -132,7 +132,6 @@ import im.threads.ui.utils.hideKeyboard
 import im.threads.ui.utils.invisible
 import im.threads.ui.utils.isNotVisible
 import im.threads.ui.utils.isVisible
-import im.threads.ui.utils.runOnUiThread
 import im.threads.ui.utils.showKeyboard
 import im.threads.ui.utils.visible
 import im.threads.ui.views.VoiceTimeLabelFormatter
@@ -189,7 +188,7 @@ class ChatFragment :
     private var isInMessageSearchMode = false
     private var isResumed = false
     private var isSendBlocked = false
-    private var binding by selfDestructibleField<EccFragmentChatBinding>()
+    private var binding: EccFragmentChatBinding? = null
     private var externalCameraPhotoFile: File? = null
     private var bottomSheetDialogFragment: AttachmentBottomSheetDialogFragment? = null
     private var permissionDescriptionAlertDialogFragment: PermissionDescriptionAlertFragment? = null
@@ -225,7 +224,7 @@ class ChatFragment :
         subscribeToFileDescription()
         subscribeToInputText()
         isShown = true
-        return binding.root
+        return binding!!.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -288,9 +287,9 @@ class ChatFragment :
         }
         chatController.setActivityIsForeground(false)
         if (isAdded) {
-            binding.swipeRefresh.isRefreshing = false
-            binding.swipeRefresh.destroyDrawingCache()
-            binding.swipeRefresh.clearAnimation()
+            binding?.swipeRefresh?.isRefreshing = false
+            binding?.swipeRefresh?.destroyDrawingCache()
+            binding?.swipeRefresh?.clearAnimation()
             chatAdapter?.onPauseView()
         }
     }
@@ -320,6 +319,7 @@ class ChatFragment :
         BaseConfig.getInstance().transport.setLifecycle(null)
         chatController.onViewDestroy()
         chatAdapter?.onDestroyView()
+        binding = null
         super.onDestroyView()
     }
 
@@ -340,7 +340,7 @@ class ChatFragment :
 
     fun scrollToElementByIndex(index: Int) {
         if (isAdded) {
-            mLayoutManager?.smoothScrollToPosition(binding.recycler, RecyclerView.State(), index)
+            mLayoutManager?.smoothScrollToPosition(binding?.recycler, RecyclerView.State(), index)
         }
     }
 
@@ -352,7 +352,7 @@ class ChatFragment :
             ArrayList()
         }
 
-    internal fun showErrorView(message: String?) = with(binding) {
+    internal fun showErrorView(message: String?) = binding?.apply {
         if (chatErrorLayout.errorLayout.isNotVisible()) {
             showWelcomeScreen(false)
             hideProgressBar()
@@ -364,7 +364,7 @@ class ChatFragment :
         }
     }
 
-    internal fun hideErrorView(showList: Boolean = true) = with(binding) {
+    internal fun hideErrorView(showList: Boolean = true) = binding?.apply {
         chatErrorLayout.errorLayout.gone()
         bottomLayout.visible()
         val isNeedToShowWelcome = chatController.isNeedToShowWelcome
@@ -375,7 +375,7 @@ class ChatFragment :
         }
     }
 
-    private fun initErrorViewStyles() = with(binding.chatErrorLayout) {
+    private fun initErrorViewStyles() = binding?.chatErrorLayout?.apply {
         errorImage.setImageResource(style.chatErrorScreenImageResId)
         context?.let {
             errorMessage.setTextColor(ContextCompat.getColor(it, style.chatErrorScreenMessageTextColorResId))
@@ -422,45 +422,45 @@ class ChatFragment :
         activity.registerReceiver(mChatReceiver, intentFilter)
     }
 
-    private fun initViews() {
+    private fun initViews() = binding?.apply {
         val activity: Activity? = activity
         if (activity == null || fdMediaPlayer == null || chatAdapterCallback == null) {
-            return
+            return@apply
         }
         initInputLayout(activity)
         mQuoteLayoutHolder = QuoteLayoutHolder()
         mLayoutManager = LinearLayoutManager(activity)
-        binding.recycler.layoutManager = mLayoutManager
+        recycler.layoutManager = mLayoutManager
         chatAdapter = ChatAdapter(
             chatAdapterCallback!!,
             fdMediaPlayer!!,
             mediaMetadataRetriever,
             ChatController.getInstance().messageErrorProcessor
         )
-        val itemAnimator = binding.recycler.itemAnimator
+        val itemAnimator = recycler.itemAnimator
         if (itemAnimator != null) {
             itemAnimator.changeDuration = 0
         }
-        binding.recycler.adapter = chatAdapter
-        binding.searchDownIb.alpha = DISABLED_ALPHA
-        binding.searchUpIb.alpha = DISABLED_ALPHA
-        binding.searchDownIb.isEnabled = false
-        binding.searchUpIb.isEnabled = false
+        recycler.adapter = chatAdapter
+        searchDownIb.alpha = DISABLED_ALPHA
+        searchUpIb.alpha = DISABLED_ALPHA
+        searchDownIb.isEnabled = false
+        searchUpIb.isEnabled = false
     }
 
-    private fun initInputLayout(activity: Activity) {
+    private fun initInputLayout(activity: Activity) = binding?.apply {
         applyTintAndColorState(activity)
         val attachmentVisibility = if (config.getIsAttachmentsEnabled()) View.VISIBLE else View.GONE
-        binding.addAttachment.visibility = attachmentVisibility
-        binding.addAttachment.setOnClickListener { openBottomSheetAndGallery() }
-        binding.sendMessage.setOnClickListener { onSendButtonClick() }
-        binding.sendMessage.isEnabled = false
+        addAttachment.visibility = attachmentVisibility
+        addAttachment.setOnClickListener { openBottomSheetAndGallery() }
+        sendMessage.setOnClickListener { onSendButtonClick() }
+        sendMessage.isEnabled = false
     }
 
-    private fun applyTintAndColorState(activity: Activity) {
-        binding.sendMessage.setImageResource(style.sendMessageIconResId)
-        binding.addAttachment.setImageResource(style.attachmentIconResId)
-        binding.quoteClear.setImageResource(style.quoteClearIconResId)
+    private fun applyTintAndColorState(activity: Activity) = binding?.apply {
+        sendMessage.setImageResource(style.sendMessageIconResId)
+        addAttachment.setImageResource(style.attachmentIconResId)
+        quoteClear.setImageResource(style.quoteClearIconResId)
         val fullColorStateListSize = 3
         if (style.chatBodyIconsColorState != null &&
             style.chatBodyIconsColorState.size >= fullColorStateListSize
@@ -471,23 +471,23 @@ class ChatFragment :
                 style.chatBodyIconsColorState[1],
                 style.chatBodyIconsColorState[2]
             )
-            ColorsHelper.setTintColorStateList(binding.sendMessage, chatImagesColorStateList)
-            ColorsHelper.setTintColorStateList(binding.addAttachment, chatImagesColorStateList)
-            ColorsHelper.setTintColorStateList(binding.quoteClear, chatImagesColorStateList)
+            ColorsHelper.setTintColorStateList(sendMessage, chatImagesColorStateList)
+            ColorsHelper.setTintColorStateList(addAttachment, chatImagesColorStateList)
+            ColorsHelper.setTintColorStateList(quoteClear, chatImagesColorStateList)
         } else {
             val iconTint = if (style.chatBodyIconsTint == 0) style.inputIconTintResId else style.chatBodyIconsTint
-            ColorsHelper.setTint(activity, binding.sendMessage, iconTint)
-            ColorsHelper.setTint(activity, binding.addAttachment, iconTint)
+            ColorsHelper.setTint(activity, sendMessage, iconTint)
+            ColorsHelper.setTint(activity, addAttachment, iconTint)
             val quoteClearIconTintResId = if (style.chatBodyIconsTint == 0) style.quoteClearIconTintResId else style.chatBodyIconsTint
-            ColorsHelper.setTint(activity, binding.quoteClear, quoteClearIconTintResId)
+            ColorsHelper.setTint(activity, quoteClear, quoteClearIconTintResId)
         }
     }
 
     private fun initRecordButtonState() {
-        val recordButton = binding.recordButton
+        val recordButton = binding?.recordButton
         if (!isRecordAudioPermissionGranted(requireContext())) {
-            recordButton.isListenForRecord = false
-            recordButton.setOnRecordClickListener {
+            recordButton?.isListenForRecord = false
+            recordButton?.setOnRecordClickListener {
                 if (style.arePermissionDescriptionDialogsEnabled) {
                     showSafelyPermissionDescriptionDialog(
                         PermissionDescriptionType.RECORD_AUDIO,
@@ -498,20 +498,20 @@ class ChatFragment :
                 }
             }
         } else {
-            recordButton.isListenForRecord = true
-            recordButton.setOnRecordClickListener(null)
+            recordButton?.isListenForRecord = true
+            recordButton?.setOnRecordClickListener(null)
         }
     }
 
     private fun initRecording() {
-        val recordButton = binding.recordButton
+        val recordButton = binding?.recordButton
         if (!style.voiceMessageEnabled) {
-            binding.recordLayout.visibility = View.GONE
+            binding?.recordLayout?.visibility = View.GONE
             return
         }
-        val recordView = binding.recordView
-        recordView.setRecordPermissionHandler { isRecordAudioPermissionGranted(requireContext()) }
-        recordButton.setRecordView(recordView)
+        val recordView = binding?.recordView
+        recordView?.setRecordPermissionHandler { isRecordAudioPermissionGranted(requireContext()) }
+        recordButton?.setRecordView(recordView)
         var drawable = AppCompatResources.getDrawable(
             requireContext(),
             style.threadsRecordButtonBackground
@@ -523,19 +523,19 @@ class ChatFragment :
                 drawable,
                 style.threadsRecordButtonBackgroundColor
             )
-            recordButton.background = drawable
+            recordButton?.background = drawable
         }
-        recordButton.setImageResource(style.threadsRecordButtonIcon)
-        recordButton.setColorFilter(
+        recordButton?.setImageResource(style.threadsRecordButtonIcon)
+        recordButton?.setColorFilter(
             ContextCompat.getColor(requireContext(), style.threadsRecordButtonIconColor),
             PorterDuff.Mode.SRC_ATOP
         )
-        recordView.cancelBounds = 8f
-        recordView.setSmallMicColor(style.threadsRecordButtonSmallMicColor)
-        recordView.setLessThanSecondAllowed(false)
-        recordView.setSlideToCancelText(requireContext().getString(R.string.ecc_voice_message_slide_to_cancel))
-        recordView.setSoundEnabled(false)
-        recordView.setOnRecordListener(object : OnRecordListener {
+        recordView?.cancelBounds = 8f
+        recordView?.setSmallMicColor(style.threadsRecordButtonSmallMicColor)
+        recordView?.setLessThanSecondAllowed(false)
+        recordView?.setSlideToCancelText(requireContext().getString(R.string.ecc_voice_message_slide_to_cancel))
+        recordView?.setSoundEnabled(false)
+        recordView?.setOnRecordListener(object : OnRecordListener {
             override fun onStart() {
                 fdMediaPlayer?.reset()
                 fdMediaPlayer?.requestAudioFocus()
@@ -553,7 +553,7 @@ class ChatFragment :
                             {}
                         ) { error: Throwable -> error("initRecording -> onCancel $error") }
                 )
-                recordButton.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
+                recordButton?.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
                 info("onStart performance: " + (Date().time - start.time))
             }
 
@@ -581,7 +581,7 @@ class ChatFragment :
                 recordView.visibility = View.INVISIBLE
                 debug("RecordView: onFinish")
                 debug("RecordTime: $recordTime")
-                recordButton.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
+                recordButton?.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
                 info("onFinish performance: " + (Date().time - start.time))
             }
 
@@ -596,7 +596,7 @@ class ChatFragment :
                 )
                 show(requireContext(), getString(R.string.ecc_hold_button_to_record_audio))
                 debug("RecordView: onLessThanSecond")
-                recordButton.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
+                recordButton?.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
             }
 
             override fun onLock() {
@@ -628,16 +628,16 @@ class ChatFragment :
                 }
             }
         })
-        recordView.setOnBasketAnimationEndListener {
+        recordView?.setOnBasketAnimationEndListener {
             recordView.visibility = View.INVISIBLE
             debug("RecordView: Basket Animation Finished")
         }
     }
 
-    private fun stopRecording() {
+    private fun stopRecording() = binding?.apply {
         if (recorder != null) {
             val motionEvent = MotionEvent.obtain(0L, 0L, MotionEvent.ACTION_UP, 0f, 0f, 0)
-            binding.recordButton.onTouch(binding.recordButton, motionEvent)
+            recordButton.onTouch(recordButton, motionEvent)
             motionEvent.recycle()
         }
     }
@@ -683,43 +683,43 @@ class ChatFragment :
         }
     }
 
-    private fun bindViews() {
-        binding.swipeRefresh.setSwipeListener {}
-        binding.swipeRefresh.setOnRefreshListener {
+    private fun bindViews() = binding?.apply {
+        swipeRefresh.setSwipeListener {}
+        swipeRefresh.setOnRefreshListener {
             if (chatController.isChatReady()) {
                 onRefresh()
             } else {
-                binding.swipeRefresh.isRefreshing = false
+                swipeRefresh.isRefreshing = false
             }
         }
-        binding.consultName.setOnClickListener {
+        consultName.setOnClickListener {
             if (chatController.isConsultFound) {
                 chatAdapterCallback?.onConsultAvatarClick(chatController.currentConsultInfo!!.id)
             }
         }
-        binding.consultName.setOnLongClickListener {
+        consultName.setOnLongClickListener {
             val context = context
             if (context != null) {
                 LogZipSender(context, fileProvider).shareLogs()
             }
             true
         }
-        binding.subtitle.setOnClickListener {
+        subtitle.setOnClickListener {
             if (chatController.isConsultFound) {
                 chatAdapterCallback?.onConsultAvatarClick(chatController.currentConsultInfo?.id)
             }
         }
         configureUserTypingSubscription()
         configureRecordButtonVisibility()
-        binding.searchUpIb.setOnClickListener {
-            if (TextUtils.isEmpty(binding.search.text)) return@setOnClickListener
-            doFancySearch(binding.search.text.toString(), false)
+        searchUpIb.setOnClickListener {
+            if (TextUtils.isEmpty(search.text)) return@setOnClickListener
+            doFancySearch(search.text.toString(), false)
         }
-        binding.searchDownIb.setOnClickListener {
-            if (TextUtils.isEmpty(binding.search.text)) return@setOnClickListener
-            doFancySearch(binding.search.text.toString(), true)
+        searchDownIb.setOnClickListener {
+            if (TextUtils.isEmpty(search.text)) return@setOnClickListener
+            doFancySearch(search.text.toString(), true)
         }
-        binding.search.addTextChangedListener(object : TextWatcher {
+        search.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable) {
@@ -729,7 +729,7 @@ class ChatFragment :
                 doFancySearch(s.toString(), true)
             }
         })
-        binding.search.setOnEditorActionListener { v: TextView, actionId: Int, _: KeyEvent? ->
+        search.setOnEditorActionListener { v: TextView, actionId: Int, _: KeyEvent? ->
             if (isInMessageSearchMode && actionId == EditorInfo.IME_ACTION_SEARCH) {
                 doFancySearch(v.text.toString(), false)
                 return@setOnEditorActionListener true
@@ -737,24 +737,28 @@ class ChatFragment :
                 return@setOnEditorActionListener false
             }
         }
-        binding.recycler.addOnLayoutChangeListener { v: View?, left: Int, top: Int, right: Int, bottom: Int, oldLeft: Int, oldTop: Int, oldRight: Int, oldBottom: Int ->
+        recycler.addOnLayoutChangeListener { v: View?, left: Int, top: Int, right: Int, bottom: Int, oldLeft: Int, oldTop: Int, oldRight: Int, oldBottom: Int ->
             if (bottom < oldBottom) {
-                binding.recycler.postDelayed({
-                    if (style.scrollChatToEndIfUserTyping) {
-                        chatAdapter?.itemCount?.let { scrollToPosition(it - 1, false) }
-                    } else {
-                        if (isAdded) {
-                            binding.recycler.smoothScrollBy(0, oldBottom - bottom)
+                recycler.postDelayed({
+                    try {
+                        if (style.scrollChatToEndIfUserTyping) {
+                            chatAdapter?.itemCount?.let { scrollToPosition(it - 1, false) }
+                        } else {
+                            if (isAdded) {
+                                recycler.smoothScrollBy(0, oldBottom - bottom)
+                            }
                         }
+                    } catch (exc: NullPointerException) {
+                        LoggerEdna.error("Handling exception when scrolling after delay", exc)
                     }
                 }, 100)
             }
         }
 
-        binding.recycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        recycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                val layoutManager = binding.recycler.layoutManager as LinearLayoutManager?
+                val layoutManager = recycler.layoutManager as LinearLayoutManager?
                 if (layoutManager != null) {
                     checkScrollDownButtonVisibility()
                     val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
@@ -764,13 +768,13 @@ class ChatFragment :
                         itemCount != null &&
                         itemCount > BaseConfig.getInstance().historyLoadingCount / 2
                     ) {
-                        binding.swipeRefresh.isRefreshing = true
+                        swipeRefresh.isRefreshing = true
                         chatController.loadHistory(isAfterAnchor = false) // before
                     }
                 }
             }
         })
-        binding.scrollDownButtonContainer.setOnClickListener {
+        binding?.scrollDownButtonContainer?.setOnClickListener {
             showUnreadMessagesCount(0)
             val unreadCount = chatController.getUnreadMessagesCount()
             if (unreadCount > 0) {
@@ -779,7 +783,7 @@ class ChatFragment :
                 scrollToPosition(chatAdapter!!.itemCount - 1, false)
             }
             setMessagesAsRead()
-            binding.scrollDownButtonContainer.visibility = View.GONE
+            binding?.scrollDownButtonContainer?.visibility = View.GONE
             if (isInMessageSearchMode) {
                 hideSearchMode()
             }
@@ -793,10 +797,10 @@ class ChatFragment :
             if (itemCount != null &&
                 itemCount - 1 - lastVisibleItemPosition > INVISIBLE_MESSAGES_COUNT
             ) {
-                binding.scrollDownButtonContainer.visible()
+                binding?.scrollDownButtonContainer?.visible()
                 showUnreadMessagesCount(chatController.getUnreadMessagesCount())
             } else {
-                binding.scrollDownButtonContainer.visibility = View.GONE
+                binding?.scrollDownButtonContainer?.visibility = View.GONE
                 activity?.runOnUiThread { setMessagesAsRead() }
             }
         }
@@ -856,15 +860,15 @@ class ChatFragment :
 
     private fun setRecordButtonVisibility(isInputEmpty: Boolean) {
         val isButtonVisible = (isInputEmpty && style.voiceMessageEnabled)
-        binding.recordButton.visibility = if (isButtonVisible) View.VISIBLE else View.GONE
+        binding?.recordButton?.visibility = if (isButtonVisible) View.VISIBLE else View.GONE
     }
 
-    private fun showUnreadMessagesCount(unreadCount: Int) {
-        if (binding.scrollDownButtonContainer.visibility == View.VISIBLE) {
+    private fun showUnreadMessagesCount(unreadCount: Int) = binding?.apply {
+        if (scrollDownButtonContainer.visibility == View.VISIBLE) {
             val hasUnreadCount = unreadCount > 0
-            binding.unreadMsgCount.text = if (hasUnreadCount) unreadCount.toString() else ""
-            binding.unreadMsgCount.visibility = if (hasUnreadCount) View.VISIBLE else View.GONE
-            binding.unreadMsgSticker.visibility = if (hasUnreadCount) View.VISIBLE else View.GONE
+            unreadMsgCount.text = if (hasUnreadCount) unreadCount.toString() else ""
+            unreadMsgCount.visibility = if (hasUnreadCount) View.VISIBLE else View.GONE
+            unreadMsgSticker.visibility = if (hasUnreadCount) View.VISIBLE else View.GONE
         }
     }
 
@@ -912,9 +916,9 @@ class ChatFragment :
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { files: Optional<FileDescription?>? ->
                     val isFilesAvailable = files != null && !files.isEmpty
-                    val isInputAvailable = !TextUtils.isEmpty(binding.inputEditView.text)
-                    val isEnable = isFilesAvailable || isInputAvailable
-                    binding.sendMessage.isEnabled = isEnable
+                    val isInputAvailable = binding?.inputEditView?.text?.isNotBlank()
+                    val isEnable = isFilesAvailable || isInputAvailable == true
+                    binding?.sendMessage?.isEnabled = isEnable
                 }
         )
     }
@@ -935,100 +939,85 @@ class ChatFragment :
         chatController.loadHistory(forceLoad = true)
     }
 
-    private fun afterRefresh(result: List<ChatItem>) {
-        chatAdapter?.let {
-            val itemsBefore = it.itemCount
-            addItemsToChat(result)
-            scrollToPosition(it.itemCount - itemsBefore, true)
-        }
-
-        Runnable {
-            binding.swipeRefresh.isRefreshing = false
-            binding.swipeRefresh.clearAnimation()
-            binding.swipeRefresh.destroyDrawingCache()
-            binding.swipeRefresh.invalidate()
-        }.runOnUiThread()
-    }
-
-    private fun setFragmentStyle() {
-        val activity = activity ?: return
-        ColorsHelper.setBackgroundColor(activity, binding.chatRoot, style.chatBackgroundColor)
-        ColorsHelper.setBackgroundColor(activity, binding.inputLayout, style.chatMessageInputColor)
-        ColorsHelper.setBackgroundColor(activity, binding.bottomLayout, style.chatMessageInputColor)
-        ColorsHelper.setBackgroundColor(activity, binding.recordView, style.chatMessageInputColor)
-        ColorsHelper.setDrawableColor(activity, binding.searchUpIb.drawable, style.chatToolbarTextColorResId)
-        ColorsHelper.setDrawableColor(activity, binding.searchDownIb.drawable, style.chatToolbarTextColorResId)
-        binding.searchMore.setBackgroundColor(ContextCompat.getColor(activity, style.iconsAndSeparatorsColor))
-        binding.searchMore.setTextColor(ContextCompat.getColor(activity, style.iconsAndSeparatorsColor))
-        binding.swipeRefresh.setColorSchemeColors(*resources.getIntArray(style.threadsSwipeRefreshColors))
-        binding.scrollDownButton.setBackgroundResource(style.scrollDownBackgroundResId)
-        binding.scrollDownButton.setImageResource(style.scrollDownIconResId)
-        val lp = binding.scrollDownButton.layoutParams as MarginLayoutParams
+    private fun setFragmentStyle() = binding?.apply {
+        val activity = activity ?: return@apply
+        ColorsHelper.setBackgroundColor(activity, chatRoot, style.chatBackgroundColor)
+        ColorsHelper.setBackgroundColor(activity, inputLayout, style.chatMessageInputColor)
+        ColorsHelper.setBackgroundColor(activity, bottomLayout, style.chatMessageInputColor)
+        ColorsHelper.setBackgroundColor(activity, recordView, style.chatMessageInputColor)
+        ColorsHelper.setDrawableColor(activity, searchUpIb.drawable, style.chatToolbarTextColorResId)
+        ColorsHelper.setDrawableColor(activity, searchDownIb.drawable, style.chatToolbarTextColorResId)
+        searchMore.setBackgroundColor(ContextCompat.getColor(activity, style.iconsAndSeparatorsColor))
+        searchMore.setTextColor(ContextCompat.getColor(activity, style.iconsAndSeparatorsColor))
+        swipeRefresh.setColorSchemeColors(*resources.getIntArray(style.threadsSwipeRefreshColors))
+        scrollDownButton.setBackgroundResource(style.scrollDownBackgroundResId)
+        scrollDownButton.setImageResource(style.scrollDownIconResId)
+        val lp = scrollDownButton.layoutParams as MarginLayoutParams
         lp.height = resources.getDimensionPixelSize(style.scrollDownButtonHeight)
         lp.width = resources.getDimensionPixelSize(style.scrollDownButtonWidth)
-        ViewCompat.setElevation(binding.scrollDownButton, resources.getDimension(style.scrollDownButtonElevation))
-        val lpButtonContainer = binding.scrollDownButtonContainer.layoutParams as MarginLayoutParams
+        ViewCompat.setElevation(scrollDownButton, resources.getDimension(style.scrollDownButtonElevation))
+        val lpButtonContainer = scrollDownButtonContainer.layoutParams as MarginLayoutParams
         val margin = resources.getDimensionPixelSize(style.scrollDownButtonMargin)
         lpButtonContainer.setMargins(margin, margin, margin, margin)
-        binding.unreadMsgSticker.background.setColorFilter(
+        unreadMsgSticker.background.setColorFilter(
             ContextCompat.getColor(activity, style.unreadMsgStickerColorResId),
             PorterDuff.Mode.SRC_ATOP
         )
-        ViewCompat.setElevation(binding.unreadMsgSticker, resources.getDimension(style.scrollDownButtonElevation))
-        binding.unreadMsgCount.setTextColor(ContextCompat.getColor(activity, style.unreadMsgCountTextColorResId))
-        ViewCompat.setElevation(binding.unreadMsgCount, resources.getDimension(style.scrollDownButtonElevation))
-        binding.inputEditView.minHeight = activity.resources.getDimension(style.inputHeight).toInt()
-        binding.inputEditView.background = AppCompatResources.getDrawable(activity, style.inputBackground)
-        binding.inputEditView.setHint(style.inputHint)
-        binding.inputEditView.maxLines = INPUT_EDIT_VIEW_MIN_LINES_COUNT
-        binding.inputEditView.setPadding(
+        ViewCompat.setElevation(unreadMsgSticker, resources.getDimension(style.scrollDownButtonElevation))
+        unreadMsgCount.setTextColor(ContextCompat.getColor(activity, style.unreadMsgCountTextColorResId))
+        ViewCompat.setElevation(unreadMsgCount, resources.getDimension(style.scrollDownButtonElevation))
+        inputEditView.minHeight = activity.resources.getDimension(style.inputHeight).toInt()
+        inputEditView.background = AppCompatResources.getDrawable(activity, style.inputBackground)
+        inputEditView.setHint(style.inputHint)
+        inputEditView.maxLines = INPUT_EDIT_VIEW_MIN_LINES_COUNT
+        inputEditView.setPadding(
             resources.getDimensionPixelSize(style.inputFieldPaddingLeft),
             resources.getDimensionPixelSize(style.inputFieldPaddingTop),
             resources.getDimensionPixelSize(style.inputFieldPaddingRight),
             resources.getDimensionPixelSize(style.inputFieldPaddingBottom)
         )
-        val params = binding.inputEditView.layoutParams as LinearLayout.LayoutParams
+        val params = inputEditView.layoutParams as LinearLayout.LayoutParams
         params.setMargins(
             resources.getDimensionPixelSize(style.inputFieldMarginLeft),
             resources.getDimensionPixelSize(style.inputFieldMarginTop),
             resources.getDimensionPixelSize(style.inputFieldMarginRight),
             resources.getDimensionPixelSize(style.inputFieldMarginBottom)
         )
-        binding.inputEditView.layoutParams = params
-        binding.inputEditView.addTextChangedListener(object : TextWatcher {
+        inputEditView.layoutParams = params
+        inputEditView.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable) {
-                if (TextUtils.isEmpty(binding.inputEditView.text)) {
-                    binding.inputEditView.maxLines = INPUT_EDIT_VIEW_MIN_LINES_COUNT
+                if (TextUtils.isEmpty(inputEditView.text)) {
+                    inputEditView.maxLines = INPUT_EDIT_VIEW_MIN_LINES_COUNT
                 } else {
-                    binding.inputEditView.maxLines = INPUT_EDIT_VIEW_MAX_LINES_COUNT
+                    inputEditView.maxLines = INPUT_EDIT_VIEW_MAX_LINES_COUNT
                 }
                 inputTextObservable.onNext(s.toString())
-                binding.sendMessage.isEnabled = !TextUtils.isEmpty(s) || hasAttachments()
+                sendMessage.isEnabled = !TextUtils.isEmpty(s) || hasAttachments()
             }
         })
-        ColorsHelper.setTextColor(activity, binding.search, style.chatToolbarTextColorResId)
-        ColorsHelper.setTextColor(activity, binding.subtitle, style.chatToolbarTextColorResId)
-        ColorsHelper.setTextColor(activity, binding.consultName, style.chatToolbarTextColorResId)
-        ColorsHelper.setTextColor(activity, binding.subtitle, style.chatToolbarTextColorResId)
-        ColorsHelper.setTextColor(activity, binding.consultName, style.chatToolbarTextColorResId)
-        ColorsHelper.setHintTextColor(activity, binding.inputEditView, style.chatMessageInputHintTextColor)
-        ColorsHelper.setHintTextColor(activity, binding.search, style.chatToolbarHintTextColor)
-        ColorsHelper.setTextColor(activity, binding.inputEditView, style.inputTextColor)
+        ColorsHelper.setTextColor(activity, search, style.chatToolbarTextColorResId)
+        ColorsHelper.setTextColor(activity, subtitle, style.chatToolbarTextColorResId)
+        ColorsHelper.setTextColor(activity, consultName, style.chatToolbarTextColorResId)
+        ColorsHelper.setTextColor(activity, subtitle, style.chatToolbarTextColorResId)
+        ColorsHelper.setTextColor(activity, consultName, style.chatToolbarTextColorResId)
+        ColorsHelper.setHintTextColor(activity, inputEditView, style.chatMessageInputHintTextColor)
+        ColorsHelper.setHintTextColor(activity, search, style.chatToolbarHintTextColor)
+        ColorsHelper.setTextColor(activity, inputEditView, style.inputTextColor)
         if (!TextUtils.isEmpty(style.inputTextFont)) {
             try {
                 val customFont = Typeface.createFromAsset(activity.assets, style.inputTextFont)
-                binding.inputEditView.typeface = customFont
+                inputEditView.typeface = customFont
             } catch (e: Exception) {
                 error("setFragmentStyle", e)
             }
         }
-        binding.flEmpty.setBackgroundColor(ContextCompat.getColor(activity, style.emptyStateBackgroundColorResId))
-        val progressDrawable = binding.progressBar.indeterminateDrawable.mutate()
+        flEmpty.setBackgroundColor(ContextCompat.getColor(activity, style.emptyStateBackgroundColorResId))
+        val progressDrawable = progressBar.indeterminateDrawable.mutate()
         ColorsHelper.setDrawableColor(activity, progressDrawable, style.emptyStateProgressBarColorResId)
-        binding.progressBar.indeterminateDrawable = progressDrawable
-        ColorsHelper.setTextColor(activity, binding.tvEmptyStateHint, style.emptyStateHintColorResId)
+        progressBar.indeterminateDrawable = progressDrawable
+        ColorsHelper.setTextColor(activity, tvEmptyStateHint, style.emptyStateHintColorResId)
     }
 
     override fun onAllowClick(type: PermissionDescriptionType, requestCode: Int) {
@@ -1140,10 +1129,10 @@ class ChatFragment :
         bottomSheetDialogFragment = null
     }
 
-    private fun showPopup() {
-        val activity = activity ?: return
-        val popup = PopupMenu(activity, binding.popupMenuButton)
-        popup.setOnMenuItemClickListener(this)
+    private fun showPopup() = binding?.apply {
+        val activity = activity ?: return@apply
+        val popup = PopupMenu(activity, popupMenuButton)
+        popup.setOnMenuItemClickListener(this@ChatFragment)
         val inflater = popup.menuInflater
         inflater.inflate(R.menu.ecc_menu_main, popup.menu)
         val menu = popup.menu
@@ -1179,7 +1168,7 @@ class ChatFragment :
         if (item.itemId == R.id.ecc_search) {
             if (!isInMessageSearchMode) {
                 search(false)
-                binding.chatBackButton.visible()
+                binding?.chatBackButton.visible()
             } else {
                 return true
             }
@@ -1332,15 +1321,15 @@ class ChatFragment :
         }
     }
 
-    private fun doFancySearch(request: String, forward: Boolean) {
+    private fun doFancySearch(request: String, forward: Boolean) = binding?.apply {
         updateLastUserActivityTime()
         if (TextUtils.isEmpty(request)) {
             chatAdapter?.removeHighlight()
-            binding.searchUpIb.alpha = DISABLED_ALPHA
-            binding.searchDownIb.alpha = DISABLED_ALPHA
-            binding.searchDownIb.isEnabled = false
-            binding.searchUpIb.isEnabled = false
-            return
+            searchUpIb.alpha = DISABLED_ALPHA
+            searchDownIb.alpha = DISABLED_ALPHA
+            searchDownIb.isEnabled = false
+            searchUpIb.isEnabled = false
+            return@apply
         }
         onSearch(request, forward)
     }
@@ -1349,7 +1338,7 @@ class ChatFragment :
         chatController.fancySearch(request, forward) { dataPair: Pair<List<ChatItem?>?, ChatItem?>? -> onSearchEnd(dataPair) }
     }
 
-    private fun onSearchEnd(dataPair: Pair<List<ChatItem?>?, ChatItem?>?) {
+    private fun onSearchEnd(dataPair: Pair<List<ChatItem?>?, ChatItem?>?) = binding?.apply {
         var first = -1
         var last = -1
         if (dataPair?.first != null) {
@@ -1378,19 +1367,19 @@ class ChatFragment :
                     if (data[i] == highlightedItem) {
                         // для поиска - если можно перемещаться, подсвечиваем
                         if (first != -1 && i > first) {
-                            binding.searchUpIb.alpha = ENABLED_ALPHA
-                            binding.searchUpIb.isEnabled = true
+                            searchUpIb.alpha = ENABLED_ALPHA
+                            searchUpIb.isEnabled = true
                         } else {
-                            binding.searchUpIb.alpha = DISABLED_ALPHA
-                            binding.searchUpIb.isEnabled = false
+                            searchUpIb.alpha = DISABLED_ALPHA
+                            searchUpIb.isEnabled = false
                         }
                         // для поиска - если можно перемещаться, подсвечиваем
                         if (last != -1 && i < last) {
-                            binding.searchDownIb.alpha = ENABLED_ALPHA
-                            binding.searchDownIb.isEnabled = true
+                            searchDownIb.alpha = ENABLED_ALPHA
+                            searchDownIb.isEnabled = true
                         } else {
-                            binding.searchDownIb.alpha = DISABLED_ALPHA
-                            binding.searchDownIb.isEnabled = false
+                            searchDownIb.alpha = DISABLED_ALPHA
+                            searchDownIb.isEnabled = false
                         }
                         break
                     }
@@ -1613,7 +1602,7 @@ class ChatFragment :
     }
 
     private fun clearInput() {
-        binding.inputEditView.setText("")
+        binding?.inputEditView?.setText("")
         mQuoteLayoutHolder?.clear()
         setBottomStateDefault()
         hideCopyControls()
@@ -1623,10 +1612,10 @@ class ChatFragment :
         }
     }
 
-    fun addChatItem(item: ChatItem?) {
-        val layoutManager = binding.recycler.layoutManager as LinearLayoutManager? ?: return
+    fun addChatItem(item: ChatItem?) = binding?.apply {
+        val layoutManager = recycler.layoutManager as LinearLayoutManager? ?: return@apply
         if (item == null) {
-            return
+            return@apply
         }
         val isLastMessageVisible = (
             chatAdapter!!.itemCount - 1 - layoutManager.findLastVisibleItemPosition() < INVISIBLE_MESSAGES_COUNT
@@ -1642,12 +1631,12 @@ class ChatFragment :
             showWelcomeScreen(false)
             addItemsToChat(listOf(item))
             if (!isLastMessageVisible) {
-                binding.scrollDownButtonContainer.visibility = View.VISIBLE
+                scrollDownButtonContainer.visibility = View.VISIBLE
                 showUnreadMessagesCount(chatController.getUnreadMessagesCount())
             }
             scrollDelayedOnNewMessageReceived(item is UserPhrase, isLastMessageVisible)
         } else if (needsModifyImage(item)) {
-            chatAdapter!!.modifyImageInItem((item as ChatPhrase).fileDescription)
+            chatAdapter?.modifyImageInItem((item as ChatPhrase).fileDescription)
         }
     }
 
@@ -1690,12 +1679,12 @@ class ChatFragment :
         }
     }
 
-    private fun scrollToPosition(itemCount: Int, smooth: Boolean) {
+    private fun scrollToPosition(itemCount: Int, smooth: Boolean) = binding?.apply {
         if (itemCount >= 0 && isAdded) {
             if (smooth) {
-                binding.recycler.smoothScrollToPosition(itemCount)
+                recycler.smoothScrollToPosition(itemCount)
             } else {
-                binding.recycler.scrollToPosition(itemCount)
+                recycler.scrollToPosition(itemCount)
             }
         }
     }
@@ -1740,7 +1729,7 @@ class ChatFragment :
         chatAdapter?.let { chatAdapter ->
             val oldAdapterSize = chatAdapter.list.size
             val isBottomItemsVisible = chatAdapter.itemCount - 1 - lastVisibleItemPosition < INVISIBLE_MESSAGES_COUNT
-            val layoutManager = binding.recycler.layoutManager as LinearLayoutManager?
+            val layoutManager = binding?.recycler?.layoutManager as LinearLayoutManager?
             if (layoutManager == null || list.size == 1 && list[0] is ConsultTyping || isInMessageSearchMode) {
                 return
             }
@@ -1773,33 +1762,33 @@ class ChatFragment :
         }
     }
 
-    fun setStateConsultConnected(info: ConsultInfo?) {
+    fun setStateConsultConnected(info: ConsultInfo?) = binding?.apply {
         if (!isAdded) {
-            return
+            return@apply
         }
         handler.post {
             val context = context
             if (context != null && isAdded) {
                 if (!isInMessageSearchMode) {
-                    binding.consultName.visibility = View.VISIBLE
+                    consultName.visibility = View.VISIBLE
                 }
                 if (!resources.getBoolean(style.fixedChatTitle)) {
                     if (!isInMessageSearchMode) {
-                        binding.subtitle.visibility = View.VISIBLE
+                        subtitle.visibility = View.VISIBLE
                     }
                     if (info != null) {
                         if (!TextUtils.isEmpty(info.name) && info.name != "null") {
-                            binding.consultName.text = info.name
+                            consultName.text = info.name
                         } else {
-                            binding.consultName.text = context.getString(R.string.ecc_unknown_operator)
+                            consultName.text = context.getString(R.string.ecc_unknown_operator)
                         }
                         setSubtitle(info, context)
                     } else {
-                        binding.consultName.text = context.getString(R.string.ecc_unknown_operator)
+                        consultName.text = context.getString(R.string.ecc_unknown_operator)
                     }
                 }
                 if (!resources.getBoolean(style.isChatSubtitleVisible)) {
-                    binding.subtitle.visibility = View.GONE
+                    subtitle.visibility = View.GONE
                 }
                 chatAdapter?.removeConsultSearching()
                 showOverflowMenu()
@@ -1822,17 +1811,17 @@ class ChatFragment :
                 context.getString(R.string.ecc_operator)
             }
         }
-        binding.subtitle.text = subtitle
+        binding?.subtitle?.text = subtitle
     }
 
-    fun setTitleStateDefault() {
+    fun setTitleStateDefault() = binding?.apply {
         handler.post {
             if (!isInMessageSearchMode && isAdded) {
-                binding.subtitle.visibility = View.GONE
-                binding.consultName.visibility = View.VISIBLE
-                binding.searchLo.visibility = View.GONE
-                binding.search.setText("")
-                binding.consultName.setText(style.chatTitleTextResId)
+                subtitle.visibility = View.GONE
+                consultName.visibility = View.VISIBLE
+                searchLo.visibility = View.GONE
+                search.setText("")
+                consultName.setText(style.chatTitleTextResId)
             }
         }
     }
@@ -1845,49 +1834,49 @@ class ChatFragment :
         chatAdapter?.changeStateOfSurvey(survey)
     }
 
-    private fun hideCopyControls() {
-        val activity = activity ?: return
+    private fun hideCopyControls() = binding?.apply {
+        val activity = activity ?: return@apply
         setTitleStateCurrentOperatorConnected()
-        ColorsHelper.setTint(activity, binding.chatBackButton, style.chatToolbarTextColorResId)
-        ColorsHelper.setTint(activity, binding.popupMenuButton, style.chatToolbarTextColorResId)
-        ColorsHelper.setBackgroundColor(activity, binding.toolbar, style.chatToolbarColorResId)
-        binding.copyControls.visibility = View.GONE
+        ColorsHelper.setTint(activity, chatBackButton, style.chatToolbarTextColorResId)
+        ColorsHelper.setTint(activity, popupMenuButton, style.chatToolbarTextColorResId)
+        ColorsHelper.setBackgroundColor(activity, toolbar, style.chatToolbarColorResId)
+        copyControls.visibility = View.GONE
         if (!isInMessageSearchMode) {
-            binding.consultName.visibility = View.VISIBLE
+            consultName.visibility = View.VISIBLE
         }
         val isFixedChatTitle = resources.getBoolean(style.fixedChatTitle)
         val isVisibleSubtitle = resources.getBoolean(style.isChatSubtitleVisible)
         if (chatController.isConsultFound && !isInMessageSearchMode && !isFixedChatTitle && isVisibleSubtitle) {
-            binding.subtitle.visibility = View.VISIBLE
+            subtitle.visibility = View.VISIBLE
         }
     }
 
     private fun checkSearch() {
-        if (!TextUtils.isEmpty(binding.search.text)) {
-            doFancySearch(binding.search.text.toString(), false)
+        if (!TextUtils.isEmpty(binding?.search?.text)) {
+            doFancySearch(binding?.search?.text.toString(), false)
         }
     }
 
     private fun setBottomStateDefault() {
         hideBottomSheet()
         if (!isInMessageSearchMode) {
-            binding.searchLo.visibility = View.GONE
-            binding.search.setText("")
+            binding?.searchLo?.visibility = View.GONE
+            binding?.search?.setText("")
         }
     }
 
-    private fun setTitleStateCurrentOperatorConnected() {
-        if (isInMessageSearchMode) return
+    private fun setTitleStateCurrentOperatorConnected() = binding?.apply {
+        if (isInMessageSearchMode) return@apply
         if (chatController.isConsultFound) {
             if (!resources.getBoolean(style.fixedChatTitle)) {
-                binding.subtitle.visibility = View.VISIBLE
+                subtitle.visibility = View.VISIBLE
             }
-            binding.consultName.visibility = View.VISIBLE
-            binding.searchLo.visibility = View.GONE
-            binding.search.setText("")
+            consultName.visibility = View.VISIBLE
+            searchLo.visibility = View.GONE
+            search.setText("")
         }
         if (!resources.getBoolean(style.isChatSubtitleVisible)) {
-            binding.subtitle.visibility = View.GONE
+            subtitle.visibility = View.GONE
         }
     }
 
@@ -1904,16 +1893,16 @@ class ChatFragment :
                 mediaMetadataRetriever,
                 ChatController.getInstance().messageErrorProcessor
             )
-            binding.recycler.adapter = chatAdapter
+            binding?.recycler?.adapter = chatAdapter
             setTitleStateDefault()
             showWelcomeScreen(false)
-            binding.inputEditView.clearFocus()
+            binding?.inputEditView?.clearFocus()
             showWelcomeScreen(chatController.isChatReady())
         }
     }
 
     internal fun showWelcomeScreen(show: Boolean) {
-        binding.welcome.visibility = if (show && binding.chatErrorLayout.errorLayout.isNotVisible()) {
+        binding?.welcome?.visibility = if (show && binding?.chatErrorLayout?.errorLayout.isNotVisible()) {
             View.VISIBLE
         } else {
             View.GONE
@@ -1921,7 +1910,7 @@ class ChatFragment :
     }
 
     internal fun showBottomBar() {
-        binding.bottomLayout.visible()
+        binding?.bottomLayout.visible()
     }
 
     /**
@@ -1977,24 +1966,24 @@ class ChatFragment :
         }
     }
 
-    private fun setTitleStateSearchingConsult() {
+    private fun setTitleStateSearchingConsult() = binding?.apply {
         if (isInMessageSearchMode || !isAdded) {
-            return
+            return@apply
         }
-        binding.subtitle.visibility = View.GONE
-        binding.consultName.visibility = View.VISIBLE
-        binding.searchLo.visibility = View.GONE
-        binding.search.setText("")
+        subtitle.visibility = View.GONE
+        consultName.visibility = View.VISIBLE
+        searchLo.visibility = View.GONE
+        search.setText("")
         if (!resources.getBoolean(style.fixedChatTitle)) {
-            binding.consultName.text = requireContext().getString(R.string.ecc_searching_operator)
+            consultName.text = requireContext().getString(R.string.ecc_searching_operator)
         }
     }
 
-    fun setTitleStateSearchingMessage() {
-        binding.subtitle.visibility = View.GONE
-        binding.consultName.visibility = View.GONE
-        binding.searchLo.visibility = View.VISIBLE
-        binding.search.setText("")
+    fun setTitleStateSearchingMessage() = binding?.apply {
+        subtitle.visibility = View.GONE
+        consultName.visibility = View.GONE
+        searchLo.visibility = View.VISIBLE
+        search.setText("")
     }
 
     fun setStateSearchingConsult() {
@@ -2028,15 +2017,15 @@ class ChatFragment :
         }
     }
 
-    internal fun updateInputEnable(enableModel: InputFieldEnableModel) {
+    internal fun updateInputEnable(enableModel: InputFieldEnableModel) = binding?.apply {
         isSendBlocked = !enableModel.isEnabledSendButton
         val isChatWorking = chatController.isChatWorking() || chatController.isSendDuringInactive()
-        binding.sendMessage.isEnabled = enableModel.isEnabledSendButton && isChatWorking &&
-            (!TextUtils.isEmpty(binding.inputEditView.text) || hasAttachments())
-        binding.inputEditView.isEnabled = enableModel.isEnabledInputField && isChatWorking
-        binding.addAttachment.isEnabled = enableModel.isEnabledInputField && isChatWorking
+        sendMessage.isEnabled = enableModel.isEnabledSendButton && isChatWorking &&
+            (!TextUtils.isEmpty(inputEditView.text) || hasAttachments())
+        inputEditView.isEnabled = enableModel.isEnabledInputField && isChatWorking
+        addAttachment.isEnabled = enableModel.isEnabledInputField && isChatWorking
         if (!enableModel.isEnabledInputField) {
-            binding.inputEditView.hideKeyboard(100)
+            inputEditView.hideKeyboard(100)
         }
     }
 
@@ -2077,14 +2066,14 @@ class ChatFragment :
                 openFile()
             }
             REQUEST_PERMISSION_RECORD_AUDIO -> if (resultCode == PermissionsActivity.RESPONSE_GRANTED) {
-                binding.recordButton.isListenForRecord = true
+                binding?.recordButton?.isListenForRecord = true
                 show(requireContext(), requireContext().getString(R.string.ecc_hold_button_to_record_audio))
             }
         }
     }
 
     private fun scrollToNewMessages() {
-        val layoutManager = binding.recycler.layoutManager as LinearLayoutManager? ?: return
+        val layoutManager = binding?.recycler?.layoutManager as LinearLayoutManager? ?: return
         val list: List<ChatItem> = chatAdapter!!.list
         for (i in 1 until list.size) {
             val currentItem = list[i]
@@ -2097,8 +2086,8 @@ class ChatFragment :
         }
     }
 
-    private fun scrollToFirstUnreadMessage() {
-        val layoutManager = binding.recycler.layoutManager as LinearLayoutManager? ?: return
+    private fun scrollToFirstUnreadMessage() = binding?.apply {
+        val layoutManager = recycler.layoutManager as LinearLayoutManager? ?: return@apply
         val list: List<ChatItem> = chatAdapter?.list ?: listOf()
         val firstUnreadUuid = chatController.firstUnreadUuidId
         if (list.isNotEmpty() && firstUnreadUuid != null) {
@@ -2108,7 +2097,7 @@ class ChatFragment :
                     if (firstUnreadUuid.equals(cp.id, ignoreCase = true)) {
                         handler.post {
                             if (isAdded && !isInMessageSearchMode) {
-                                binding.recycler.post {
+                                recycler.post {
                                     layoutManager.scrollToPositionWithOffset(i - 1, 0)
                                 }
                             }
@@ -2123,23 +2112,23 @@ class ChatFragment :
     private val isPopupMenuEnabled: Boolean
         get() = (resources.getBoolean(config.chatStyle.searchEnabled) || config.filesAndMediaMenuItemEnabled)
 
-    private fun initToolbar() {
-        val activity = activity ?: return
-        binding.toolbar.title = ""
-        ColorsHelper.setBackgroundColor(activity, binding.toolbar, style.chatToolbarColorResId)
+    private fun initToolbar() = binding?.apply {
+        val activity = activity ?: return@apply
+        toolbar.title = ""
+        ColorsHelper.setBackgroundColor(activity, toolbar, style.chatToolbarColorResId)
         initToolbarShadow()
         checkBackButtonVisibility()
-        binding.chatBackButton.setOnClickListener { onActivityBackPressed() }
-        binding.chatBackButton.setImageResource(style.chatToolbarBackIconResId)
-        ColorsHelper.setTint(activity, binding.chatBackButton, style.chatToolbarTextColorResId)
-        binding.popupMenuButton.setImageResource(style.chatToolbarPopUpMenuIconResId)
-        ColorsHelper.setTint(activity, binding.popupMenuButton, style.chatToolbarTextColorResId)
-        binding.popupMenuButton.setOnClickListener { showPopup() }
-        binding.popupMenuButton.visibility = if (isPopupMenuEnabled) View.VISIBLE else View.GONE
+        chatBackButton.setOnClickListener { onActivityBackPressed() }
+        chatBackButton.setImageResource(style.chatToolbarBackIconResId)
+        ColorsHelper.setTint(activity, chatBackButton, style.chatToolbarTextColorResId)
+        popupMenuButton.setImageResource(style.chatToolbarPopUpMenuIconResId)
+        ColorsHelper.setTint(activity, popupMenuButton, style.chatToolbarTextColorResId)
+        popupMenuButton.setOnClickListener { showPopup() }
+        popupMenuButton.visibility = if (isPopupMenuEnabled) View.VISIBLE else View.GONE
         showOverflowMenu()
-        binding.contentCopy.setImageResource(style.chatToolbarContentCopyIconResId)
-        binding.reply.setImageResource(style.chatToolbarReplyIconResId)
-        setContextIconDefaultTint(binding.contentCopy, binding.reply)
+        contentCopy.setImageResource(style.chatToolbarContentCopyIconResId)
+        reply.setImageResource(style.chatToolbarReplyIconResId)
+        setContextIconDefaultTint(contentCopy, reply)
         if (resources.getBoolean(style.fixedChatTitle)) {
             setTitleStateDefault()
         }
@@ -2155,44 +2144,44 @@ class ChatFragment :
         imageButtons.forEach { ColorsHelper.setTint(context, it, toolbarInverseIconTint) }
     }
 
-    private fun initToolbarShadow() {
+    private fun initToolbarShadow() = binding?.apply {
         val isShadowVisible = resources.getBoolean(style.isChatTitleShadowVisible)
-        binding.toolbarShadow.visibility = if (isShadowVisible) View.VISIBLE else View.INVISIBLE
+        toolbarShadow.visibility = if (isShadowVisible) View.VISIBLE else View.INVISIBLE
         if (!isShadowVisible) {
-            binding.toolbar.elevation = 0f
+            toolbar.elevation = 0f
         }
     }
 
-    private fun initToolbarTextPosition() {
+    private fun initToolbarTextPosition() = binding?.apply {
         val isToolbarTextCentered = Config.getInstance().chatStyle.isToolbarTextCentered
         val gravity = if (isToolbarTextCentered) Gravity.CENTER else Gravity.CENTER_VERTICAL
         if (isToolbarTextCentered) {
             val paddingTopBottom = 0
             var paddingLeft = 0
             var paddingRight = 0
-            if (binding.chatBackButton.isVisible() &&
-                !binding.popupMenuButton.isVisible()
+            if (chatBackButton.isVisible() &&
+                !popupMenuButton.isVisible()
             ) {
                 paddingRight = resources.getDimensionPixelSize(R.dimen.ecc_toolbar_button_width)
-            } else if (!binding.chatBackButton.isVisible() &&
-                binding.popupMenuButton.isVisible()
+            } else if (!chatBackButton.isVisible() &&
+                popupMenuButton.isVisible()
             ) {
                 paddingLeft = resources.getDimensionPixelSize(R.dimen.ecc_toolbar_button_width)
             }
-            binding.consultTitle.setPadding(paddingLeft, paddingTopBottom, paddingRight, paddingTopBottom)
+            consultTitle.setPadding(paddingLeft, paddingTopBottom, paddingRight, paddingTopBottom)
         }
-        binding.consultName.gravity = gravity
-        binding.subtitle.gravity = gravity
+        consultName.gravity = gravity
+        subtitle.gravity = gravity
     }
 
     private fun showOverflowMenu() {
         if (isPopupMenuEnabled) {
-            binding.popupMenuButton.visibility = View.VISIBLE
+            binding?.popupMenuButton?.visibility = View.VISIBLE
         }
     }
 
     private fun hideOverflowMenu() {
-        binding.popupMenuButton.visibility = View.GONE
+        binding?.popupMenuButton?.visibility = View.GONE
     }
 
     private fun onActivityBackPressed() {
@@ -2218,18 +2207,16 @@ class ChatFragment :
         return if (bottomSheetDialogFragment != null) {
             hideBottomSheet()
             false
-        } else if (binding.copyControls.visibility == View.VISIBLE &&
-            binding.searchLo.visibility == View.VISIBLE
-        ) {
+        } else if (binding?.copyControls.isVisible() && binding?.searchLo.isVisible()) {
             unChooseItem()
-            binding.search.requestFocus()
-            binding.search.showKeyboard(100)
+            binding?.search?.requestFocus()
+            binding?.search?.showKeyboard(100)
             false
-        } else if (binding.copyControls.visibility == View.VISIBLE) {
+        } else if (binding?.copyControls.isVisible()) {
             unChooseItem()
             checkBackButtonVisibility()
             false
-        } else if (binding.searchLo.visibility == View.VISIBLE) {
+        } else if (binding?.searchLo.isVisible()) {
             hideSearchMode()
             if (chatAdapter != null) {
                 scrollToPosition(chatAdapter!!.itemCount - 1, false)
@@ -2246,15 +2233,15 @@ class ChatFragment :
         }
     }
 
-    private fun hideSearchMode() {
-        activity ?: return
-        binding.searchLo.visibility = View.GONE
+    private fun hideSearchMode() = binding?.apply {
+        activity ?: return@apply
+        searchLo.visibility = View.GONE
         setMenuVisibility(true)
         isInMessageSearchMode = false
-        binding.search.setText("")
-        binding.search.hideKeyboard(100)
-        binding.searchMore.visibility = View.GONE
-        binding.swipeRefresh.isEnabled = true
+        search.setText("")
+        search.hideKeyboard(100)
+        searchMore.visibility = View.GONE
+        swipeRefresh.isEnabled = true
         when (chatController.stateOfConsult) {
             ChatController.CONSULT_STATE_DEFAULT -> setTitleStateDefault()
             ChatController.CONSULT_STATE_FOUND -> setStateConsultConnected(chatController.currentConsultInfo)
@@ -2266,59 +2253,59 @@ class ChatFragment :
     private fun checkBackButtonVisibility() {
         if (!style.showBackButton) {
             info("Back button is disabled in the style")
-            binding.chatBackButton.gone()
+            binding?.chatBackButton.gone()
         } else {
             info("Back button is enabled in the style")
-            binding.chatBackButton.visible()
+            binding?.chatBackButton.visible()
         }
     }
 
-    private fun search(searchInFiles: Boolean) {
-        activity ?: return
+    private fun search(searchInFiles: Boolean) = binding?.apply {
+        activity ?: return@apply
         info("searchInFiles: $searchInFiles")
         isInMessageSearchMode = true
         setBottomStateDefault()
         setTitleStateSearchingMessage()
-        binding.search.requestFocus()
+        search.requestFocus()
         hideOverflowMenu()
         setMenuVisibility(false)
-        binding.search.showKeyboard(100)
-        binding.swipeRefresh.isEnabled = false
-        binding.searchMore.visibility = View.GONE
+        search.showKeyboard(100)
+        swipeRefresh.isEnabled = false
+        searchMore.visibility = View.GONE
     }
 
-    private fun updateUIonPhraseLongClick(chatPhrase: ChatPhrase, position: Int) {
+    private fun updateUIonPhraseLongClick(chatPhrase: ChatPhrase, position: Int) = binding?.apply {
         unChooseItem()
-        val activity = activity ?: return
+        val activity = activity ?: return@apply
         val toolbarInverseIconTint =
             if (style.chatBodyIconsTint == 0) style.chatToolbarInverseIconTintResId else style.chatBodyIconsTint
         // для случая, если popupMenuButton отображается при выделении сообщения
-        ColorsHelper.setTint(activity, binding.popupMenuButton, toolbarInverseIconTint)
-        ColorsHelper.setTint(activity, binding.chatBackButton, toolbarInverseIconTint)
+        ColorsHelper.setTint(activity, popupMenuButton, toolbarInverseIconTint)
+        ColorsHelper.setTint(activity, chatBackButton, toolbarInverseIconTint)
         ColorsHelper.setBackgroundColor(
             activity,
-            binding.toolbar,
+            toolbar,
             style.chatToolbarContextMenuColorResId
         )
-        binding.toolbar.elevation = 0f
-        binding.copyControls.visibility = View.VISIBLE
-        binding.consultName.visibility = View.GONE
-        binding.subtitle.visibility = View.GONE
+        toolbar.elevation = 0f
+        copyControls.visibility = View.VISIBLE
+        consultName.visibility = View.GONE
+        subtitle.visibility = View.GONE
         if (chatPhrase.phraseText.isNullOrEmpty()) {
-            binding.contentCopy.visibility = View.GONE
+            contentCopy.visibility = View.GONE
         } else {
-            binding.contentCopy.visibility = View.VISIBLE
+            contentCopy.visibility = View.VISIBLE
         }
-        if (binding.chatBackButton.isNotVisible()) {
-            binding.chatBackButton.visible()
+        if (chatBackButton.isNotVisible()) {
+            chatBackButton.visible()
         }
 
         CoroutineScope(Dispatchers.IO).launch {
             if (chatController.isMessageSent(chatPhrase.id)) {
                 withMainContext {
-                    setContextIconDefaultTint(binding.reply)
-                    binding.reply.isEnabled = true
-                    binding.reply.setOnClickListener {
+                    setContextIconDefaultTint(reply)
+                    reply.isEnabled = true
+                    reply.setOnClickListener {
                         onReplyClick(chatPhrase, position)
                         checkBackButtonVisibility()
                         unChooseItem()
@@ -2331,14 +2318,14 @@ class ChatFragment :
                     } catch (exc: Exception) {
                         R.color.disabled_icons_color
                     }.also { color ->
-                        ColorsHelper.setTint(context, binding.reply, color)
+                        ColorsHelper.setTint(context, reply, color)
                     }
-                    binding.reply.isEnabled = false
+                    reply.isEnabled = false
                 }
             }
         }
 
-        binding.contentCopy.setOnClickListener {
+        contentCopy.setOnClickListener {
             onCopyClick(activity, chatPhrase)
             checkBackButtonVisibility()
         }
@@ -2393,26 +2380,26 @@ class ChatFragment :
             false
         }
 
-    fun showEmptyState() {
+    fun showEmptyState() = binding?.apply {
         if (chatController.isChatReady()) {
-            binding.flEmpty.visibility = View.VISIBLE
-            binding.tvEmptyStateHint.setText(R.string.ecc_empty_state_hint)
+            flEmpty.visibility = View.VISIBLE
+            tvEmptyStateHint.setText(R.string.ecc_empty_state_hint)
         }
     }
 
     fun hideEmptyState() {
-        binding.flEmpty.visibility = View.GONE
+        binding?.flEmpty.gone()
     }
 
     fun showProgressBar() {
-        binding.welcome.visibility = View.GONE
-        binding.flEmpty.visibility = View.VISIBLE
-        binding.tvEmptyStateHint.setText(style.loaderTextResId)
+        binding?.welcome.gone()
+        binding?.flEmpty.visible()
+        binding?.tvEmptyStateHint?.setText(style.loaderTextResId)
     }
 
     fun hideProgressBar() {
-        binding.flEmpty.visibility = View.GONE
-        binding.swipeRefresh.isRefreshing = false
+        binding?.flEmpty.gone()
+        binding?.swipeRefresh?.isRefreshing = false
     }
 
     fun showBalloon(message: String?) {
@@ -2461,14 +2448,14 @@ class ChatFragment :
 
         init {
             activity?.let { activity ->
-                binding.quoteButtonPlayPause.setColorFilter(
+                binding?.quoteButtonPlayPause?.setColorFilter(
                     ContextCompat.getColor(requireContext(), style.previewPlayPauseButtonColor),
                     PorterDuff.Mode.SRC_ATOP
                 )
-                binding.quoteHeader.setTextColor(ContextCompat.getColor(activity, style.quoteHeaderTextColor))
-                binding.quoteText.setTextColor(ContextCompat.getColor(activity, style.quoteTextTextColor))
-                binding.quoteClear.setOnClickListener { clear() }
-                binding.quoteButtonPlayPause.setOnClickListener {
+                binding?.quoteHeader?.setTextColor(ContextCompat.getColor(activity, style.quoteHeaderTextColor))
+                binding?.quoteText?.setTextColor(ContextCompat.getColor(activity, style.quoteTextTextColor))
+                binding?.quoteClear?.setOnClickListener { clear() }
+                binding?.quoteButtonPlayPause?.setOnClickListener {
                     if (fdMediaPlayer == null) {
                         return@setOnClickListener
                     }
@@ -2478,14 +2465,14 @@ class ChatFragment :
                         fdMediaPlayer?.mediaPlayer?.let { init(it.duration, it.currentPosition, it.isPlaying) }
                     }
                 }
-                binding.quoteSlider.addOnChangeListener(
+                binding?.quoteSlider?.addOnChangeListener(
                     Slider.OnChangeListener { _: Slider?, value: Float, fromUser: Boolean ->
                         if (fromUser) {
                             fdMediaPlayer?.mediaPlayer?.seekTo(value.toInt())
                         }
                     }
                 )
-                binding.quoteSlider.addOnSliderTouchListener(object : Slider.OnSliderTouchListener {
+                binding?.quoteSlider?.addOnSliderTouchListener(object : Slider.OnSliderTouchListener {
                     override fun onStartTrackingTouch(slider: Slider) {
                         ignorePlayerUpdates = true
                     }
@@ -2494,25 +2481,25 @@ class ChatFragment :
                         ignorePlayerUpdates = false
                     }
                 })
-                binding.quoteSlider.setLabelFormatter(VoiceTimeLabelFormatter())
+                binding?.quoteSlider?.setLabelFormatter(VoiceTimeLabelFormatter())
             }
         }
 
         var isVisible: Boolean
-            get() = binding.quoteLayout.visibility == View.VISIBLE
+            get() = binding?.quoteLayout.isVisible()
             private set(isVisible) {
                 if (isVisible) {
-                    binding.quoteLayout.visibility = View.VISIBLE
-                    binding.delimeter.visibility = View.VISIBLE
+                    binding?.quoteLayout.visible()
+                    binding?.delimeter.visible()
                 } else {
-                    binding.quoteLayout.visibility = View.GONE
-                    binding.delimeter.visibility = View.GONE
+                    binding?.quoteLayout.gone()
+                    binding?.delimeter.gone()
                 }
             }
 
-        fun clear() {
-            binding.quoteHeader.text = ""
-            binding.quoteText.text = ""
+        fun clear() = binding?.apply {
+            quoteHeader.text = ""
+            quoteText.text = ""
             isVisible = false
             mQuote = null
             campaignMessage = null
@@ -2525,83 +2512,83 @@ class ChatFragment :
             chatUpdateProcessor.postAttachAudioFile(false)
         }
 
-        fun setContent(header: String?, text: String, imagePath: Uri?, isFromFilePicker: Boolean) {
+        fun setContent(header: String?, text: String, imagePath: Uri?, isFromFilePicker: Boolean) = binding?.apply {
             isVisible = true
             setQuotePast(isFromFilePicker)
             if (header == null || header == "null") {
-                binding.quoteHeader.visibility = View.INVISIBLE
+                quoteHeader.visibility = View.INVISIBLE
             } else {
-                binding.quoteHeader.visibility = View.VISIBLE
-                binding.quoteHeader.text = header
+                quoteHeader.visibility = View.VISIBLE
+                quoteHeader.text = header
             }
-            binding.quoteText.visibility = View.VISIBLE
-            binding.quoteButtonPlayPause.visibility = View.GONE
-            binding.quoteSlider.visibility = View.GONE
-            binding.quoteDuration.visibility = View.GONE
-            binding.quoteText.text = text
+            quoteText.visibility = View.VISIBLE
+            quoteButtonPlayPause.visibility = View.GONE
+            quoteSlider.visibility = View.GONE
+            quoteDuration.visibility = View.GONE
+            quoteText.text = text
             if (imagePath != null) {
-                binding.quoteImage.visibility = View.VISIBLE
+                quoteImage.visibility = View.VISIBLE
                 get()
                     .load(imagePath.toString())
                     .scales(ImageView.ScaleType.FIT_CENTER, ImageView.ScaleType.CENTER_CROP)
-                    .into(binding.quoteImage)
+                    .into(quoteImage)
             } else {
-                binding.quoteImage.visibility = View.GONE
+                quoteImage.visibility = View.GONE
             }
         }
 
-        private fun setQuotePast(isFromFilePicker: Boolean) {
+        private fun setQuotePast(isFromFilePicker: Boolean) = binding?.apply {
             if (isFromFilePicker) {
-                binding.quotePast.visibility = View.GONE
+                quotePast.visibility = View.GONE
             } else {
-                binding.quotePast.visibility = View.VISIBLE
-                binding.quotePast.setImageResource(style.quoteAttachmentIconResId)
+                quotePast.visibility = View.VISIBLE
+                quotePast.setImageResource(style.quoteAttachmentIconResId)
             }
         }
 
-        fun setVoice() {
+        fun setVoice() = binding?.apply {
             isVisible = true
-            binding.quoteButtonPlayPause.visibility = View.VISIBLE
-            binding.quoteSlider.visibility = View.VISIBLE
-            binding.quoteDuration.visibility = View.VISIBLE
-            binding.quoteHeader.visibility = View.GONE
-            binding.quoteText.visibility = View.GONE
-            binding.quotePast.visibility = View.GONE
+            quoteButtonPlayPause.visibility = View.VISIBLE
+            quoteSlider.visibility = View.VISIBLE
+            quoteDuration.visibility = View.VISIBLE
+            quoteHeader.visibility = View.GONE
+            quoteText.visibility = View.GONE
+            quotePast.visibility = View.GONE
             formattedDuration = getFormattedDuration(getFileDescription())
-            binding.quoteDuration.text = formattedDuration
+            quoteDuration.text = formattedDuration
             chatUpdateProcessor.postAttachAudioFile(true)
         }
 
-        private fun init(maxValue: Int, progress: Int, isPlaying: Boolean) {
+        private fun init(maxValue: Int, progress: Int, isPlaying: Boolean) = binding?.apply {
             val effectiveProgress = progress.coerceAtMost(maxValue)
-            binding.quoteDuration.text = effectiveProgress.formatAsDuration()
-            binding.quoteSlider.isEnabled = true
-            binding.quoteSlider.valueTo = maxValue.toFloat()
-            binding.quoteSlider.value = effectiveProgress.toFloat()
-            binding.quoteButtonPlayPause.setImageResource(if (isPlaying) style.voiceMessagePauseButton else style.voiceMessagePlayButton)
+            quoteDuration.text = effectiveProgress.formatAsDuration()
+            quoteSlider.isEnabled = true
+            quoteSlider.valueTo = maxValue.toFloat()
+            quoteSlider.value = effectiveProgress.toFloat()
+            quoteButtonPlayPause.setImageResource(if (isPlaying) style.voiceMessagePauseButton else style.voiceMessagePlayButton)
         }
 
-        fun updateProgress(progress: Int) {
+        fun updateProgress(progress: Int) = binding?.apply {
             info("updateProgress: $progress")
-            binding.quoteDuration.text = progress.formatAsDuration()
-            binding.quoteSlider.value = progress.toFloat().coerceAtMost(binding.quoteSlider.valueTo)
+            quoteDuration.text = progress.formatAsDuration()
+            quoteSlider.value = progress.toFloat().coerceAtMost(quoteSlider.valueTo)
         }
 
         fun updateIsPlaying(isPlaying: Boolean) {
-            binding.quoteButtonPlayPause.setImageResource(if (isPlaying) style.voiceMessagePauseButton else style.voiceMessagePlayButton)
+            binding?.quoteButtonPlayPause?.setImageResource(if (isPlaying) style.voiceMessagePauseButton else style.voiceMessagePlayButton)
         }
 
-        fun resetProgress() {
-            binding.quoteDuration.text = formattedDuration
+        fun resetProgress() = binding?.apply {
+            quoteDuration.text = formattedDuration
             ignorePlayerUpdates = false
-            binding.quoteSlider.isEnabled = false
-            binding.quoteSlider.value = 0f
-            binding.quoteButtonPlayPause.setImageResource(style.voiceMessagePlayButton)
+            quoteSlider.isEnabled = false
+            quoteSlider.value = 0f
+            quoteButtonPlayPause.setImageResource(style.voiceMessagePlayButton)
         }
 
         private fun getFormattedDuration(fileDescription: FileDescription?): String {
             var duration = 0L
-            if (fileDescription != null && fileDescription.fileUri != null) {
+            if (fileDescription?.fileUri != null) {
                 duration = mediaMetadataRetriever.getDuration(fileDescription.fileUri!!)
             }
             return duration.formatAsDuration()
