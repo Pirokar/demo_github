@@ -563,15 +563,17 @@ class ChatController private constructor() {
     }
 
     private fun loadHistoryAfterWithLastMessageCheck(
-        applyUiChanges: Boolean = true
+        applyUiChanges: Boolean = true,
+        forceLoad: Boolean = false
     ) {
         coroutineScope.launch {
-            val lastTimeStampDef = async(Dispatchers.IO) { getNeedItemTimestamp() }
+            val lastTimeStampDef = async(Dispatchers.IO) { getItemTimestampForHistoryLoad() }
             lastTimeStampDef.await()?.let {
                 loadHistory(
                     it,
                     isAfterAnchor = true,
                     loadToTheEnd = true,
+                    forceLoad = true,
                     applyUiChanges = applyUiChanges
                 )
             } ?: loadHistory(applyUiChanges = applyUiChanges)
@@ -1605,7 +1607,7 @@ class ChatController private constructor() {
         }
     }
 
-    private fun getNeedItemTimestamp(): Long? {
+    private fun getItemTimestampForHistoryLoad(): Long? {
         val timeStamp = getUncompletedUserPhraseTimestamp()
         if (timeStamp != null) {
             return timeStamp
