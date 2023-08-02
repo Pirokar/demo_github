@@ -4,6 +4,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteDiskIOException
 import im.threads.R
 import im.threads.business.annotation.OpenForTesting
+import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.ChatItem
 import im.threads.business.models.ConsultInfo
 import im.threads.business.models.ConsultPhrase
@@ -159,8 +160,21 @@ class DatabaseHolder(private val context: Context) {
         return try {
             block()
         } catch (exc: Exception) {
-            checkIsDatabaseCorrupted()
-            block()
+            try {
+                checkIsDatabaseCorrupted()
+                block()
+            } catch (cantOpenExc: android.database.sqlite.SQLiteCantOpenDatabaseException) {
+                try {
+                    myOpenHelper = ThreadsDbHelper.recreateInstance(context)
+                    block()
+                } catch (anyExc: Exception) {
+                    LoggerEdna.error("Processed error when reading database for block: \"${block.javaClass}\"", exc)
+                    null
+                }
+            } catch (anyExc: Exception) {
+                LoggerEdna.error("Processed error when reading database for block: \"${block.javaClass}\"", exc)
+                null
+            }
         }
     }
 }
