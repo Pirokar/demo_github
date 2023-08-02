@@ -94,6 +94,7 @@ import io.reactivex.subjects.PublishSubject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Response
@@ -351,6 +352,7 @@ class ChatController private constructor() {
             transport.sendInitMessages()
         } else if (state < ChatStateEnum.ATTACHMENT_SETTINGS_LOADED) {
             loadSettings()
+            loadConfig()
         }
     }
 
@@ -699,6 +701,23 @@ class ChatController private constructor() {
                     chatUpdateProcessor.postError(TransportException(message))
                 }
         )
+    }
+
+    private fun loadConfig() {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val result = get().config()?.execute()
+                result?.body()?.settings?.typingMessagesIntervalSeconds?.let {
+                    preferences.save(PreferencesCoreKeys.TYPING_MESSAGES_INTERVAL_SECONDS, it)
+                    withContext(Dispatchers.Main) {
+                        delay(500)
+                        fragment?.configureUserTypingSubscription()
+                    }
+                }
+            } catch (exception: Exception) {
+                error("[REST] Error load config data: $exception")
+            }
+        }
     }
 
     internal fun downloadMessagesTillEnd(): Single<List<ChatItem>> {
@@ -1586,6 +1605,7 @@ class ChatController private constructor() {
                         loadItemsFromDB(false)
                         loadHistoryAfterWithLastMessageCheck()
                         loadSettings()
+                        loadConfig()
                     } else if (isChatReady()) {
                         messenger.resendMessages()
                     }
