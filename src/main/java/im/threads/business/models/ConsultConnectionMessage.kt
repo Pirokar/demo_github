@@ -17,7 +17,7 @@ class ConsultConnectionMessage : ConsultChatPhrase, ChatItem, SystemMessage {
     override val timeStamp: Long
 
     @SerializedName("display")
-    val isDisplayMessage: Boolean
+    val display: Boolean
 
     /**
      * Используется в старой БД.
@@ -47,7 +47,7 @@ class ConsultConnectionMessage : ConsultChatPhrase, ChatItem, SystemMessage {
         this.title = title
         this.orgUnit = orgUnit
         role = null
-        isDisplayMessage = displayMessage
+        display = displayMessage
         this.text = text
         this.threadId = threadId
     }
@@ -77,7 +77,7 @@ class ConsultConnectionMessage : ConsultChatPhrase, ChatItem, SystemMessage {
         this.title = title
         this.orgUnit = orgUnit
         this.role = role
-        isDisplayMessage = displayMessage
+        display = displayMessage
         this.text = text
         this.threadId = threadId
     }
@@ -102,7 +102,7 @@ class ConsultConnectionMessage : ConsultChatPhrase, ChatItem, SystemMessage {
         if (this === other) return true
         if (other == null || javaClass != other.javaClass) return false
         val that = other as ConsultConnectionMessage
-        return sex == that.sex && timeStamp == that.timeStamp && isDisplayMessage == that.isDisplayMessage &&
+        return sex == that.sex && timeStamp == that.timeStamp && display == that.display &&
             ObjectsCompat.equals(uuid, that.uuid) &&
             ObjectsCompat.equals(connectionType, that.connectionType) &&
             ObjectsCompat.equals(name, that.name) &&
@@ -116,7 +116,7 @@ class ConsultConnectionMessage : ConsultChatPhrase, ChatItem, SystemMessage {
     override fun hashCode(): Int {
         return ObjectsCompat.hash(
             uuid, connectionType, name, sex, timeStamp, status,
-            title, orgUnit, role, isDisplayMessage, text
+            title, orgUnit, role, display, text
         )
     }
 }

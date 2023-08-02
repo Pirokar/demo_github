@@ -136,7 +136,7 @@ class MessageParser {
                 ?.get(0),
             operator.organizationUnit,
             operator.role,
-            content.isDisplay,
+            content.display,
             content.text,
             content.threadId
         )
