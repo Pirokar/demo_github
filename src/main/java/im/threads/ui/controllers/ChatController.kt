@@ -1217,10 +1217,9 @@ class ChatController private constructor() {
         UnreadMessagesController.INSTANCE.refreshUnreadMessagesCount()
         if (fragment != null) {
             val ci = setLastAvatars(listOf(chatItem))[0]
-            if (ci !is ConsultConnectionMessage || ci.isDisplayMessage) {
+            if (ci !is ConsultConnectionMessage || ci.display) {
                 fragment?.addChatItem(ci)
-            }
-            if (ci is ConsultChatPhrase) {
+            } else {
                 fragment?.notifyConsultAvatarChanged(
                     (ci as ConsultChatPhrase).avatarPath,
                     (ci as ConsultChatPhrase).consultId
@@ -1229,14 +1228,11 @@ class ChatController private constructor() {
         }
         if (chatItem is ConsultPhrase && isActive) {
             handleQuickReplies(listOf<ChatItem>(chatItem))
-        }
-        if (chatItem is SimpleSystemMessage && isActive) {
+        } else if (chatItem is SimpleSystemMessage && isActive) {
             hideQuickReplies()
-        }
-        if (chatItem is Survey && isActive) {
+        } else if (chatItem is Survey && isActive) {
             BaseConfig.getInstance().transport.markMessagesAsRead(listOf(chatItem.uuid))
-        }
-        if (chatItem is RequestResolveThread && isActive) {
+        } else if (chatItem is RequestResolveThread && isActive) {
             BaseConfig.getInstance().transport.markMessagesAsRead(listOf(chatItem.uuid))
         }
         subscribe(
@@ -1538,7 +1534,7 @@ class ChatController private constructor() {
                 val chatItem = listIterator.previous()
                 // При некоторых ситуациях (пока неизвестно каких) последнее сообщение в истории ConsultConnectionMessage, который не отображается, его нужно игнорировать
                 if (chatItem is ConsultConnectionMessage) {
-                    if (!chatItem.isDisplayMessage) {
+                    if (!chatItem.display) {
                         continue
                     }
                 } else if (chatItem is ConsultPhrase) {

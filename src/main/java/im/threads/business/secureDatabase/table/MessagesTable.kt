@@ -720,7 +720,7 @@ class MessagesTable(
         cv.put(COLUMN_CONSULT_ORG_UNIT, consultConnectionMessage.orgUnit)
         cv.put(COLUMN_CONSULT_ROLE, consultConnectionMessage.role)
         cv.put(COLUMN_MESSAGE_CORRELATION_ID, consultConnectionMessage.uuid)
-        cv.put(COLUMN_DISPLAY_MESSAGE, consultConnectionMessage.isDisplayMessage)
+        cv.put(COLUMN_DISPLAY_MESSAGE, consultConnectionMessage.display)
         cv.put(COLUMN_PHRASE, consultConnectionMessage.getText())
         cv.put(COLUMN_THREAD_ID, consultConnectionMessage.threadId)
         return cv

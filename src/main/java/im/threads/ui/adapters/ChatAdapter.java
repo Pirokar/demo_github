@@ -1322,7 +1322,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             if (listToInsertTo.contains(itemToInsert)) {
                 return;
             }
-            if (itemToInsert instanceof ConsultConnectionMessage && !((ConsultConnectionMessage) itemToInsert).isDisplayMessage()) {
+            if (itemToInsert instanceof ConsultConnectionMessage && !((ConsultConnectionMessage) itemToInsert).getDisplay()) {
                 return;
             }
             if (itemToInsert instanceof Survey) {
