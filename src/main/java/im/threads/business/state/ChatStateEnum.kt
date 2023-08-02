@@ -7,9 +7,8 @@ enum class ChatStateEnum(val value: Int) {
     DEVICE_REGISTERED(3),
     SENDING_INIT_USER(4),
     INIT_USER_SENT(5),
-    LOADING_SETTINGS(6),
-    SETTINGS_LOADED(7),
-    HISTORY_LOADED(8);
+    ATTACHMENT_SETTINGS_LOADED(6),
+    HISTORY_LOADED(7);
 
-    fun isLastObservableState() = this == SETTINGS_LOADED
+    fun isLastObservableState() = this == ATTACHMENT_SETTINGS_LOADED
 }

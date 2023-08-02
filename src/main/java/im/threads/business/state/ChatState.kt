@@ -21,14 +21,6 @@ class ChatState(private val preferences: Preferences) {
         }
     }
 
-    private val restTimeout: Long by lazy {
-        try {
-            BaseConfig.getInstance().requestConfig.threadsApiHttpClientSettings.readTimeoutMillis
-        } catch (exc: Exception) {
-            10000L
-        }
-    }
-
     private var coroutineScope: CoroutineScope? = null
 
     private var stateChannel = MutableStateFlow(
@@ -40,10 +32,11 @@ class ChatState(private val preferences: Preferences) {
     var initChatCorrelationId: String = ""
 
     fun changeState(state: ChatStateEnum) {
-        preferences.save(PreferencesCoreKeys.CHAT_STATE, state)
-        stateChannel.value = ChatStateEvent(state)
-        val timeout = if (state < ChatStateEnum.LOADING_SETTINGS) socketTimeout else restTimeout
-        observeState(state, timeout)
+        if (state >= getCurrentState() || state < ChatStateEnum.DEVICE_REGISTERED) {
+            preferences.save(PreferencesCoreKeys.CHAT_STATE, state)
+            stateChannel.value = ChatStateEvent(state)
+            observeState(state, socketTimeout)
+        }
     }
 
     private fun changeState(event: ChatStateEvent, timeout: Long) {
@@ -55,7 +48,7 @@ class ChatState(private val preferences: Preferences) {
     }
 
     private fun observeState(state: ChatStateEnum, timeout: Long) {
-        if (state < ChatStateEnum.SETTINGS_LOADED) {
+        if (state < ChatStateEnum.ATTACHMENT_SETTINGS_LOADED) {
             startTimeoutObserver(state, timeout)
         } else {
             stopTimeoutObserver()
@@ -71,7 +64,7 @@ class ChatState(private val preferences: Preferences) {
     }
 
     fun isChatReady(): Boolean {
-        return getCurrentState() >= ChatStateEnum.SETTINGS_LOADED
+        return getCurrentState() >= ChatStateEnum.ATTACHMENT_SETTINGS_LOADED
     }
 
     private fun startTimeoutObserver(state: ChatStateEnum, timeout: Long) {
