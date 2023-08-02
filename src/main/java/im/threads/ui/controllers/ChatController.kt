@@ -349,7 +349,7 @@ class ChatController private constructor() {
             transport.sendRegisterDevice(false)
         } else if (state < ChatStateEnum.INIT_USER_SENT) {
             transport.sendInitMessages()
-        } else if (state < ChatStateEnum.SETTINGS_LOADED) {
+        } else if (state < ChatStateEnum.ATTACHMENT_SETTINGS_LOADED) {
             loadSettings()
         }
     }
@@ -669,7 +669,6 @@ class ChatController private constructor() {
     }
 
     private fun loadSettings() {
-        chatState.changeState(ChatStateEnum.LOADING_SETTINGS)
         subscribe(
             Single.fromCallable {
                 get().settings()?.execute()
@@ -680,20 +679,19 @@ class ChatController private constructor() {
                     { response: Response<SettingsResponse?>? ->
                         val responseBody = response?.body()
                         if (responseBody != null) {
-                            val clientNotificationType =
-                                responseBody.clientNotificationDisplayType
+                            val clientNotificationType = responseBody.clientNotificationDisplayType
                             if (!clientNotificationType.isNullOrEmpty()) {
                                 val type = ClientNotificationDisplayType.fromString(
                                     clientNotificationType
                                 )
                                 preferences.save(
                                     PreferencesUiKeys.CLIENT_NOTIFICATION_DISPLAY_TYPE,
-                                    type.name
+                                    type.name,
+                                    true
                                 )
                                 chatUpdateProcessor.postClientNotificationDisplayType(type)
                             }
                         }
-                        chatState.changeState(ChatStateEnum.SETTINGS_LOADED)
                     }
                 ) { e: Throwable ->
                     val message = if (e.localizedMessage.isNullOrBlank()) e.message else e.localizedMessage
@@ -1571,24 +1569,23 @@ class ChatController private constructor() {
     private fun subscribeOnChatState() {
         coroutineScope.launch(Dispatchers.IO) {
             chatState.getStateFlow().collect { stateEvent ->
-                if (demoModeProvider.isDemoModeEnabled() && stateEvent.state < ChatStateEnum.SETTINGS_LOADED) {
-                    chatState.changeState(ChatStateEnum.SETTINGS_LOADED)
+                if (demoModeProvider.isDemoModeEnabled() && stateEvent.state < ChatStateEnum.ATTACHMENT_SETTINGS_LOADED) {
+                    chatState.changeState(ChatStateEnum.ATTACHMENT_SETTINGS_LOADED)
                 } else {
                     info("ChatState name: ${stateEvent.state.name}, isTimeout: ${stateEvent.isTimeout}")
                     if (!stateEvent.isTimeout && stateEvent.state < ChatStateEnum.HISTORY_LOADED) {
                         withContext(Dispatchers.Main) { fragment?.showProgressBar() }
                     }
-                    if (stateEvent.isTimeout && chatState.getCurrentState() < ChatStateEnum.SETTINGS_LOADED) {
+                    if (stateEvent.isTimeout && chatState.getCurrentState() < ChatStateEnum.ATTACHMENT_SETTINGS_LOADED) {
                         val timeoutMessage = "${fragment?.getString(R.string.ecc_timeout_message)
                             ?: "Превышен интервал ожидания для запроса"} (${chatState.getCurrentState()})"
                         withContext(Dispatchers.Main) { fragment?.showErrorView(timeoutMessage) }
                     } else if (stateEvent.state == ChatStateEnum.DEVICE_REGISTERED) {
                         BaseConfig.getInstance().transport.sendInitMessages()
-                    } else if (stateEvent.state == ChatStateEnum.INIT_USER_SENT) {
-                        loadSettings()
-                    } else if (stateEvent.state == ChatStateEnum.SETTINGS_LOADED) {
+                    } else if (stateEvent.state == ChatStateEnum.ATTACHMENT_SETTINGS_LOADED) {
                         loadItemsFromDB(false)
                         loadHistoryAfterWithLastMessageCheck()
+                        loadSettings()
                     } else if (isChatReady()) {
                         messenger.resendMessages()
                     }
