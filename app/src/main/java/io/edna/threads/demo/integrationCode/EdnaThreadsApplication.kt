@@ -2,6 +2,7 @@ package io.edna.threads.demo.integrationCode
 
 import android.app.Application
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.google.firebase.perf.FirebasePerformance
 import im.threads.business.logger.LoggerConfig
 import im.threads.business.logger.LoggerRetentionPolicy
 import im.threads.business.markdown.MarkdownConfig
@@ -32,6 +33,7 @@ class EdnaThreadsApplication : Application() {
         }
 
         FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(!BuildConfig.DEBUG)
+        FirebasePerformance.getInstance().isPerformanceCollectionEnabled = !BuildConfig.DEBUG
 
         // Example of the new config
         val chatLightTheme = ChatTheme(
@@ -157,6 +159,7 @@ class EdnaThreadsApplication : Application() {
             .setShowConsultSearching(true)
             .setVoiceMessageEnabled(true)
             .showChatBackButton(true)
+            .enableLinkPreview()
         return chatSettings
     }
 }
