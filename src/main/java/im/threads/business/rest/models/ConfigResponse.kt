@@ -8,5 +8,5 @@ data class ConfigResponse(
 )
 
 data class Settings(
-    var typingMessagesIntervalSeconds: Long = 3
+    var typingMessagesIntervalSeconds: Int = 3
 )

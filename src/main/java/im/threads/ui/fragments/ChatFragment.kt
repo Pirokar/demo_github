@@ -819,19 +819,21 @@ class ChatFragment :
     }
 
     fun configureUserTypingSubscription() {
-        var typingIntevalSeconds = INPUT_DELAY
-        preferences.get<Long>(PreferencesCoreKeys.TYPING_MESSAGES_INTERVAL_SECONDS)?.let {
-            typingIntevalSeconds = it
+        CoroutineScope(Dispatchers.IO).launch {
+            var typingIntervalSeconds = INPUT_DELAY
+            preferences.get<Int>(PreferencesCoreKeys.TYPING_MESSAGES_INTERVAL_SECONDS)?.let {
+                typingIntervalSeconds = it
+            }
+            subscribe(
+                inputTextObservable
+                    .throttleLatest(typingIntervalSeconds.toLong(), TimeUnit.SECONDS)
+                    .filter { charSequence: String -> charSequence.isNotEmpty() }
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({ input: String? ->
+                        onInputChanged(input)
+                    }) { error: Throwable? -> error("configureInputChangesSubscription ", error) }
+            )
         }
-        subscribe(
-            inputTextObservable
-                .throttleLatest(typingIntevalSeconds, TimeUnit.SECONDS)
-                .filter { charSequence: String -> charSequence.isNotEmpty() }
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ input: String? ->
-                    onInputChanged(input)
-                }) { error: Throwable? -> error("configureInputChangesSubscription ", error) }
-        )
     }
 
     private fun onInputChanged(input: String?) {
@@ -2786,7 +2788,7 @@ class ChatFragment :
         private const val DISABLED_ALPHA = 0.5f
         private const val ENABLED_ALPHA = 1.0f
         private const val INVISIBLE_MESSAGES_COUNT = 3
-        private const val INPUT_DELAY: Long = 3
+        private const val INPUT_DELAY: Int = 3
         private const val INPUT_EDIT_VIEW_MIN_LINES_COUNT = 1
         private const val INPUT_EDIT_VIEW_MAX_LINES_COUNT = 7
         var isShown = false
