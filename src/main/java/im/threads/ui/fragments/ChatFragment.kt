@@ -148,6 +148,7 @@ import io.reactivex.subjects.BehaviorSubject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileNotFoundException
 import java.lang.ref.WeakReference
@@ -203,6 +204,7 @@ class ChatFragment :
     var quickReplyItem: QuickReplyItem? = null
     private var previousChatItemsCount = 0
     private val config = Config.getInstance()
+    private val coroutineScope = CoroutineScope(Dispatchers.IO)
     var style: ChatStyle = config.chatStyle
         private set
 
@@ -819,20 +821,22 @@ class ChatFragment :
     }
 
     fun configureUserTypingSubscription() {
-        CoroutineScope(Dispatchers.IO).launch {
+        coroutineScope.launch {
             var typingIntervalSeconds = INPUT_DELAY
             preferences.get<Int>(PreferencesCoreKeys.TYPING_MESSAGES_INTERVAL_SECONDS)?.let {
                 typingIntervalSeconds = it
             }
-            subscribe(
-                inputTextObservable
-                    .throttleLatest(typingIntervalSeconds.toLong(), TimeUnit.SECONDS)
-                    .filter { charSequence: String -> charSequence.isNotEmpty() }
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe({ input: String? ->
-                        onInputChanged(input)
-                    }) { error: Throwable? -> error("configureInputChangesSubscription ", error) }
-            )
+            withContext(Dispatchers.Main) {
+                subscribe(
+                    inputTextObservable
+                        .throttleLatest(typingIntervalSeconds.toLong(), TimeUnit.SECONDS)
+                        .filter { charSequence: String -> charSequence.isNotEmpty() }
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe({ input: String? ->
+                            onInputChanged(input)
+                        }) { error: Throwable? -> error("configureInputChangesSubscription ", error) }
+                )
+            }
         }
     }
 
@@ -2322,7 +2326,7 @@ class ChatFragment :
             binding.chatBackButton.visible()
         }
 
-        CoroutineScope(Dispatchers.IO).launch {
+        coroutineScope.launch {
             if (chatController.isMessageSent(chatPhrase.id)) {
                 withMainContext {
                     setContextIconDefaultTint(binding.reply)

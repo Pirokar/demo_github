@@ -704,7 +704,7 @@ class ChatController private constructor() {
     }
 
     private fun loadConfig() {
-        CoroutineScope(Dispatchers.IO).launch {
+        coroutineScope.launch(Dispatchers.IO) {
             try {
                 val result = get().config()?.execute()
                 result?.body()?.settings?.typingMessagesIntervalSeconds?.let {
