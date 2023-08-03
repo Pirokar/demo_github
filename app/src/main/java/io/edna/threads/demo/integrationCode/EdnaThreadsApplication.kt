@@ -40,7 +40,6 @@ class EdnaThreadsApplication : Application() {
                 main = R.color.light_main,
                 consultSearchingProgress = R.color.light_main,
                 bodyIconsTint = R.color.light_main,
-                title = R.color.alt_threads_chat_toolbar_text,
                 incomingText = R.color.black_color,
                 incomingTimeText = R.color.light_time_text,
                 outgoingTimeText = R.color.light_time_text,
@@ -83,7 +82,6 @@ class EdnaThreadsApplication : Application() {
                 consultSearchingProgress = R.color.dark_main,
                 bodyIconsTint = R.color.dark_main,
                 chatBackground = R.color.dark_chat_background,
-                title = R.color.alt_threads_chat_toolbar_text,
                 incomingText = R.color.dark_messages_text,
                 incomingTimeText = R.color.dark_time_text,
                 outgoingText = R.color.dark_messages_text,
@@ -121,7 +119,6 @@ class EdnaThreadsApplication : Application() {
             .build()
 
         val configBuilder = ConfigBuilder(this)
-            .surveyCompletionDelay(2000)
             .historyLoadingCount(50)
             .applyLightTheme(chatLightTheme)
             .applyDarkTheme(chatDarkTheme)
@@ -136,8 +133,11 @@ class EdnaThreadsApplication : Application() {
             configBuilder.threadsGateUrl(server.threadsGateUrl)
             configBuilder.threadsGateProviderUid(server.threadsGateProviderUid)
             configBuilder.trustedSSLCertificates(server.trustedSSLCertificates)
-            configBuilder.allowUntrustedSSLCertificates(server.allowUntrustedSSLCertificate)
             configBuilder.setNewChatCenterApi()
+
+            if (server.allowUntrustedSSLCertificate) {
+                configBuilder.allowUntrustedSSLCertificates()
+            }
         }
 
         ThreadsLib.init(configBuilder)
@@ -145,18 +145,15 @@ class EdnaThreadsApplication : Application() {
 
     private fun getMainChatTheme(): ChatSettings {
         val chatSettings = ChatSettings()
-            .setScrollChatToEndIfUserTyping(false)
 
         val markdownConfig = MarkdownConfig()
         markdownConfig.isLinkUnderlined = true
         chatSettings
-            .setChatSubtitleShowConsultOrgUnit(true)
+            .enableChatSubtitleShowConsultOrgUnit()
             .setIncomingMarkdownConfiguration(markdownConfig)
             .setOutgoingMarkdownConfiguration(markdownConfig)
-            .setVisibleChatTitleShadow(R.bool.alt_threads_chat_title_shadow_is_visible)
-            .setShowConsultSearching(true)
-            .setVoiceMessageEnabled(true)
-            .showChatBackButton(true)
+            .enableVoiceMessages()
+            .showChatBackButton()
         return chatSettings
     }
 }

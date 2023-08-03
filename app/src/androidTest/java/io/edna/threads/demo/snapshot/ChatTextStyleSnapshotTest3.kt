@@ -11,7 +11,7 @@ import org.junit.runner.RunWith
 import java.io.File
 
 @RunWith(AndroidJUnit4::class)
-class ChatTextSnapshotTest3 : SnapshotBaseTest(R.raw.snapshot_test_history_text_response_3) {
+class ChatTextStyleSnapshotTest3 : SnapshotBaseTest(R.raw.snapshot_test_history_text_response_3) {
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
     private val mockWebHTMLServer = MockWebServer()
     private val mockWebImageServer = MockWebServer()
