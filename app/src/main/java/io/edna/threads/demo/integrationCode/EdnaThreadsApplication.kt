@@ -133,8 +133,11 @@ class EdnaThreadsApplication : Application() {
             configBuilder.threadsGateUrl(server.threadsGateUrl)
             configBuilder.threadsGateProviderUid(server.threadsGateProviderUid)
             configBuilder.trustedSSLCertificates(server.trustedSSLCertificates)
-            configBuilder.allowUntrustedSSLCertificates(server.allowUntrustedSSLCertificate)
             configBuilder.setNewChatCenterApi()
+
+            if (server.allowUntrustedSSLCertificate) {
+                configBuilder.allowUntrustedSSLCertificates()
+            }
         }
 
         ThreadsLib.init(configBuilder)
