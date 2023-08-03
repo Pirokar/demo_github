@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import im.threads.ui.utils.ColorsHelper
+import im.threads.ui.utils.EdnaColors
 import io.edna.threads.demo.R
 import io.edna.threads.demo.appCode.adapters.ListItemClickListener
 import io.edna.threads.demo.appCode.business.UiThemeProvider
@@ -53,10 +53,10 @@ class UserListAdapter(private val onItemClickListener: ListItemClickListener) :
                 binding.userId.text = item.userId
                 if (uiThemeProvider.isDarkThemeOn()) {
                     binding.userId.setTextColor(ContextCompat.getColor(binding.root.context, R.color.white_color_fa))
-                    ColorsHelper.setTint(binding.root.context, binding.image, R.color.white_color_fa)
+                    EdnaColors.setTint(binding.root.context, binding.image, R.color.white_color_fa)
                 } else {
                     binding.userId.setTextColor(ContextCompat.getColor(binding.root.context, R.color.black_color))
-                    ColorsHelper.setTint(binding.root.context, binding.image, R.color.black_color)
+                    EdnaColors.setTint(binding.root.context, binding.image, R.color.black_color)
                 }
                 binding.rootLayout.setOnClickListener { onItemClickListener.onClick(position) }
             }

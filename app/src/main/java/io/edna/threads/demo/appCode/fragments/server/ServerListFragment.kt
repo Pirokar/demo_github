@@ -7,7 +7,7 @@ import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
-import im.threads.ui.utils.ColorsHelper
+import im.threads.ui.utils.EdnaColors
 import io.edna.threads.demo.R
 import io.edna.threads.demo.appCode.adapters.EccTouchHelperCallBack
 import io.edna.threads.demo.appCode.adapters.ListItemClickListener
@@ -101,10 +101,10 @@ class ServerListFragment :
         binding.addServer.background = null
         binding.addServer.setImageResource(R.drawable.ic_plus)
         if (uiThemeProvider.isDarkThemeOn()) {
-            ColorsHelper.setTint(activity, binding.addServer, R.color.black_color)
+            EdnaColors.setTint(activity, binding.addServer, R.color.black_color)
             binding.addServer.setBackgroundResource(R.drawable.buttons_bg_selector_dark)
         } else {
-            ColorsHelper.setTint(activity, binding.addServer, R.color.white_color_fa)
+            EdnaColors.setTint(activity, binding.addServer, R.color.white_color_fa)
             binding.addServer.setBackgroundResource(R.drawable.buttons_bg_selector)
         }
     }
