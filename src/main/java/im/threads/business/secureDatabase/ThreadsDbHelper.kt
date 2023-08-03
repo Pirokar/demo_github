@@ -196,6 +196,17 @@ class ThreadsDbHelper private constructor(val context: Context, password: String
             return dbInstance!!
         }
 
+        @Synchronized
+        internal fun recreateInstance(context: Context): ThreadsDbHelper {
+            return if (dbInstance == null) {
+                getInstance(context)
+            } else {
+                dbInstance?.close()
+                dbInstance = null
+                getInstance(context)
+            }
+        }
+
         private fun getDbPassword(context: Context): String {
             val preferences = Preferences(context)
             var securedPassword = preferences.get<String>(PreferencesCoreKeys.DATABASE_PASSWORD)
