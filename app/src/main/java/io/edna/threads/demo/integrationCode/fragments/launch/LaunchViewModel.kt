@@ -121,10 +121,12 @@ class LaunchViewModel(
         }
     }
 
-    private fun checkUiTheme() {
-        val uiTheme = ThreadsLib.getInstance().currentUiTheme
-        applyCurrentUiTheme(uiTheme)
-        currentUiThemeLiveData.value = getCurrentUiTheme(uiTheme)
+    internal fun checkUiTheme() {
+        if (ThreadsLib.isInitialized()) {
+            val uiTheme = ThreadsLib.getInstance().currentUiTheme
+            currentUiThemeLiveData.postValue(getCurrentUiTheme(uiTheme))
+            applyCurrentUiTheme(uiTheme)
+        }
     }
 
     private fun getCurrentUiTheme(currentUiTheme: CurrentUiTheme): UiTheme {
