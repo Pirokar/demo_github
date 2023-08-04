@@ -1,8 +1,10 @@
 package io.edna.threads.demo.integrationCode
 
 import android.app.Application
+import android.content.Intent
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.perf.FirebasePerformance
+import im.threads.business.UserInfoBuilder
 import im.threads.business.logger.LoggerConfig
 import im.threads.business.logger.LoggerRetentionPolicy
 import im.threads.business.markdown.MarkdownConfig
@@ -14,8 +16,13 @@ import im.threads.ui.uiStyle.settings.theme.ChatColors
 import im.threads.ui.uiStyle.settings.theme.ChatImages
 import io.edna.threads.demo.BuildConfig
 import io.edna.threads.demo.R
+import io.edna.threads.demo.appCode.business.PreferencesProvider
 import io.edna.threads.demo.appCode.business.ServersProvider
 import io.edna.threads.demo.appCode.business.appModule
+import io.edna.threads.demo.integrationCode.fragments.launch.LaunchFragment.Companion.APP_INIT_THREADS_LIB_ACTION
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
@@ -23,6 +30,11 @@ import java.io.File
 
 class EdnaThreadsApplication : Application() {
     private val serversProvider: ServersProvider by inject()
+    private var chatLightTheme: ChatTheme? = null
+    private var chatDarkTheme: ChatTheme? = null
+    private val preferences: PreferencesProvider by inject()
+    private val coroutineScope = CoroutineScope(Dispatchers.IO)
+    private val asyncInit = true
 
     override fun onCreate() {
         super.onCreate()
@@ -35,8 +47,23 @@ class EdnaThreadsApplication : Application() {
         FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(!BuildConfig.DEBUG)
         FirebasePerformance.getInstance().isPerformanceCollectionEnabled = !BuildConfig.DEBUG
 
+        if (asyncInit) {
+            coroutineScope.launch {
+                initThemes()
+                initThreadsLib()
+                initUser()
+                sendBroadcast(Intent(APP_INIT_THREADS_LIB_ACTION))
+            }
+        } else {
+            initThemes()
+            initThreadsLib()
+            initUser()
+        }
+    }
+
+    private fun initThemes() {
         // Example of the new config
-        val chatLightTheme = ChatTheme(
+        chatLightTheme = ChatTheme(
             this,
             colors = ChatColors(
                 main = R.color.light_main,
@@ -77,7 +104,7 @@ class EdnaThreadsApplication : Application() {
             )[IconButtonEnum.REPLY]*/
         }
 
-        val chatDarkTheme = ChatTheme(
+        chatDarkTheme = ChatTheme(
             this,
             colors = ChatColors(
                 main = R.color.dark_main,
@@ -112,7 +139,9 @@ class EdnaThreadsApplication : Application() {
                 scrollDownButtonIcon = R.drawable.alt_threads_scroll_down_icon_black
             )
         )
+    }
 
+    private fun initThreadsLib() {
         val loggerConfig = LoggerConfig.Builder(this)
             .logToFile()
             .dir(File(this.filesDir, "logs"))
@@ -141,8 +170,21 @@ class EdnaThreadsApplication : Application() {
                 configBuilder.allowUntrustedSSLCertificates()
             }
         }
-
         ThreadsLib.init(configBuilder)
+    }
+
+    private fun initUser() {
+        val user = preferences.getSelectedUser()
+        if (user != null) {
+            ThreadsLib.getInstance().initUser(
+                UserInfoBuilder(user.userId!!)
+                    .setAuthData(user.authorizationHeader, user.xAuthSchemaHeader)
+                    .setClientData(user.userData)
+                    .setClientIdSignature(user.signature)
+                    .setAppMarker(user.appMarker),
+                false
+            )
+        }
     }
 
     private fun getMainChatTheme(): ChatSettings {
@@ -160,7 +202,3 @@ class EdnaThreadsApplication : Application() {
         return chatSettings
     }
 }
-
-private const val LATO_BOLD_FONT_PATH = "fonts/lato-bold.ttf"
-private const val LATO_LIGHT_FONT_PATH = "fonts/lato-light.ttf"
-private const val LATO_REGULAR_FONT_PATH = "fonts/lato-regular.ttf"
