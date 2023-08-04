@@ -95,7 +95,7 @@ class EdnaThreadsApplication : Application() {
                     .setClientData(user.userData)
                     .setClientIdSignature(user.signature)
                     .setAppMarker(user.appMarker),
-                true
+                false
             )
         }
     }
