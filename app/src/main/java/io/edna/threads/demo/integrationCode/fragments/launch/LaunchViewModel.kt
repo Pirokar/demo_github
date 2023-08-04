@@ -60,8 +60,8 @@ class LaunchViewModel(
         }
     }
 
-    override fun onResume(owner: LifecycleOwner) {
-        super.onResume(owner)
+    override fun onStart(owner: LifecycleOwner) {
+        super.onStart(owner)
         checkUiTheme()
     }
 
