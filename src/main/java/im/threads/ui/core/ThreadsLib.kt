@@ -171,5 +171,10 @@ class ThreadsLib(context: Context) : ThreadsLibBase(context) {
             check(libInstance == null) { "ThreadsLib has already been initialized" }
             setLibraryInstance(ThreadsLib(context))
         }
+
+        @JvmStatic
+        fun isInitialized(): Boolean {
+            return libInstance != null
+        }
     }
 }
