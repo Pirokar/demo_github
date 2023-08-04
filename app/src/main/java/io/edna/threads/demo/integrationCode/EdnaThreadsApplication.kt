@@ -1,6 +1,7 @@
 package io.edna.threads.demo.integrationCode
 
 import android.app.Application
+import android.content.Intent
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.perf.FirebasePerformance
 import im.threads.business.UserInfoBuilder
@@ -15,9 +16,9 @@ import io.edna.threads.demo.R
 import io.edna.threads.demo.appCode.business.PreferencesProvider
 import io.edna.threads.demo.appCode.business.ServersProvider
 import io.edna.threads.demo.appCode.business.appModule
+import io.edna.threads.demo.integrationCode.fragments.launch.LaunchFragment.Companion.APP_INIT_THREADS_LIB_ACTION
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
@@ -27,7 +28,8 @@ import java.io.File
 class EdnaThreadsApplication : Application() {
     private val serversProvider: ServersProvider by inject()
     private val preferences: PreferencesProvider by inject()
-    private val coroutineScope = CoroutineScope(Dispatchers.Main)
+    private val coroutineScope = CoroutineScope(Dispatchers.IO)
+    private val asyncInit = true
 
     override fun onCreate() {
         super.onCreate()
@@ -40,8 +42,14 @@ class EdnaThreadsApplication : Application() {
         FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(!BuildConfig.DEBUG)
         FirebasePerformance.getInstance().isPerformanceCollectionEnabled = !BuildConfig.DEBUG
 
-        coroutineScope.launch {
-            async(Dispatchers.Main) { initThreadsLib() }.join()
+        if (asyncInit) {
+            coroutineScope.launch {
+                initThreadsLib()
+                initUser()
+                sendBroadcast(Intent(APP_INIT_THREADS_LIB_ACTION))
+            }
+        } else {
+            initThreadsLib()
             initUser()
         }
     }
