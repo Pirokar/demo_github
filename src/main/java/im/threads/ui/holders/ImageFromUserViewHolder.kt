@@ -62,7 +62,7 @@ class ImageFromUserViewHolder(
         )
         loaderLayoutRoot.also { applyBubbleLayoutStyle(it) }
         ColorsHelper.setTextColor(errorText, style.errorMessageTextColor)
-        itemView.findViewById<View>(R.id.delimiter).setBackgroundColor(getColorInt(style.outgoingMessageTextColor))
+        itemView.findViewById<View>(R.id.delimiter).setBackgroundColor(getColorInt(style.outgoingDelimitersColor))
     }
 
     fun onBind(

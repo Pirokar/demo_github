@@ -65,7 +65,7 @@ class ConsultFileViewHolder(
 
     init {
         itemView.findViewById<View>(R.id.delimiter)
-            .setBackgroundColor(getColorInt(style.chatToolbarColorResId))
+            .setBackgroundColor(getColorInt(style.incomingDelimitersColor))
         setTextColorToViews(arrayOf(mFileHeader, mSizeTextView), style.incomingMessageTextColor)
         ColorsHelper.setTextColor(errorText, style.errorMessageTextColor)
         setUpProgressButton(mCircularProgressButton)

@@ -75,7 +75,7 @@ class ImageFromConsultViewHolder(
 
     init {
         itemView.findViewById<View>(R.id.delimiter)
-            .setBackgroundColor(getColorInt(style.chatToolbarColorResId))
+            .setBackgroundColor(getColorInt(style.incomingDelimitersColor))
         setTextColorToViews(arrayOf(fileNameTextView), style.incomingMessageTextColor)
     }
 
