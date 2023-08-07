@@ -120,8 +120,8 @@ public final class ChatStyle implements Serializable {
     @ColorRes
     public int incomingMessageLoaderColor = R.color.ecc_green_83b144;
     @ColorRes
-    public int outgoingMessageLoaderColor = R.color.ecc_outgoing_message_text;
-
+    public int outgoingMessageLoaderColor = R.color.ecc_teal_004d40;
+    
     @DimenRes
     public int incomingMessageTimeTextSize = 0;
     @DimenRes
