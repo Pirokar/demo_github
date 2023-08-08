@@ -121,11 +121,16 @@ public final class ChatStyle implements Serializable {
     public int incomingMessageLoaderColor = R.color.ecc_green_83b144;
     @ColorRes
     public int outgoingMessageLoaderColor = R.color.ecc_teal_004d40;
-
+    
     @DimenRes
     public int incomingMessageTimeTextSize = 0;
     @DimenRes
     public int outgoingMessageTimeTextSize = 0;
+
+    @ColorRes
+    public int incomingDelimitersColor = R.color.ecc_chat_toolbar;
+    @ColorRes
+    public int outgoingDelimitersColor = R.color.ecc_outgoing_message_text;
 
     @DrawableRes
     public int outgoingImageBubbleMask = R.drawable.ecc_outgoing_image_mask;
@@ -2155,6 +2160,20 @@ public final class ChatStyle implements Serializable {
      */
     public ChatStyle enableLinkPreview() {
         linkPreviewEnabled = true;
+        return this;
+    }
+
+    /**
+     * Устанавливает цвет для полос-разделителей внутри элементов чата
+     * @param incomingDelimitersColor - ресурс id цвета для разделителей входящих сообщений. По умолчанию - R.color.ecc_chat_toolbar
+     * @param outgoingDelimitersColor - ресурс id цвета для разделителей изходящих сообщений. По умолчанию - R.color.ecc_outgoing_message_text
+     */
+    public ChatStyle setDelimitersColors(
+            @ColorRes int incomingDelimitersColor,
+            @ColorRes int outgoingDelimitersColor
+    ) {
+        this.incomingDelimitersColor = incomingDelimitersColor;
+        this.outgoingDelimitersColor = outgoingDelimitersColor;
         return this;
     }
 }

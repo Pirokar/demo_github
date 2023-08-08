@@ -152,7 +152,8 @@ class UserPhraseViewHolder(
             ),
             style.outgoingMessageTextColor
         )
-        itemView.findViewById<View>(R.id.delimiter).setBackgroundColor(getColorInt(style.outgoingMessageTextColor))
+        itemView.findViewById<View>(R.id.delimiter).setBackgroundColor(getColorInt(style.outgoingDelimitersColor))
+        itemView.findViewById<View>(R.id.quoteDelimiter).setBackgroundColor(getColorInt(style.outgoingDelimitersColor))
         ColorsHelper.setTextColor(errorText, style.errorMessageTextColor)
         setUpProgressButton(fileImageButton)
     }
