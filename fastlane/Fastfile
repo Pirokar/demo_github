@@ -9,14 +9,14 @@ platform :android do
   desc "Запуск модульных тестов для SDK"
   lane :sdkLint do
     gradle(
-      task: "threads:lintDebug",
+      task: "app:lintDebug",
   )
   end
 
   desc "Запуск модульных тестов для SDK"
   lane :sdkUnitTests do
     gradle(
-      task: "threads:testDebugUnitTest",
+      task: "app:testDebugUnitTest",
   )
   end
 
