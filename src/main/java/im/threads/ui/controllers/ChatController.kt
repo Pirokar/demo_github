@@ -89,6 +89,7 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
+import io.reactivex.processors.PublishProcessor
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import kotlinx.coroutines.CoroutineScope
@@ -121,6 +122,7 @@ class ChatController private constructor() {
 
     // this flag is keeping the visibility state of the request to resolve thread
     private var surveyCompletionInProgress = false
+    private val surveyCompletionProcessor = PublishProcessor.create<Survey>()
 
     // Ссылка на фрагмент, которым управляет контроллер
     private var fragment: ChatFragment? = null
@@ -181,8 +183,9 @@ class ChatController private constructor() {
     internal fun onRatingClick(survey: Survey) {
         if (!surveyCompletionInProgress) {
             surveyCompletionInProgress = true
+            subscribeToSurveyCompletion()
         }
-        BaseConfig.getInstance().transport.sendRatingDone(survey)
+        surveyCompletionProcessor.onNext(survey)
     }
 
     internal fun onResolveThreadClick(approveResolve: Boolean) {
@@ -1083,6 +1086,20 @@ class ChatController private constructor() {
                         }
                     }
                 ) { error: Throwable? -> error("subscribeToMessageSendError ", error) }
+        )
+    }
+
+    private fun subscribeToSurveyCompletion() {
+        subscribe(
+            Flowable.fromPublisher(surveyCompletionProcessor)
+                .throttleLast(Config.getInstance().surveyCompletionDelay.toLong(), TimeUnit.MILLISECONDS)
+                .firstElement()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ survey ->
+                    BaseConfig.getInstance().transport.sendRatingDone(survey)
+                }) { error ->
+                    error("subscribeToSurveyCompletion: $error.message")
+                }
         )
     }
 
