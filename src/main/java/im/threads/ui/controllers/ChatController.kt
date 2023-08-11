@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
+import android.os.Build
 import androidx.annotation.MainThread
 import androidx.core.util.Consumer
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -97,6 +98,9 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Response
+import java.lang.Runnable
+import java.lang.System
+import java.util.Collections
 import java.util.concurrent.TimeUnit
 
 /**
@@ -558,19 +562,26 @@ class ChatController private constructor() {
         if (isChatReady()) loadHistory()
     }
 
-    private fun loadHistoryAfterWithLastMessageCheck(
-        applyUiChanges: Boolean = true
+    internal fun loadHistoryAfterWithLastMessageCheck(
+        applyUiChanges: Boolean = true,
+        forceLoad: Boolean = false,
+        callback: HistoryLoader.HistoryLoadingCallback? = null
     ) {
         coroutineScope.launch {
-            val lastTimeStampDef = async(Dispatchers.IO) { getLastDbItemTimestamp() }
+            val lastTimeStampDef = async(Dispatchers.IO) { getItemTimestampForHistoryLoad() }
             lastTimeStampDef.await()?.let {
                 loadHistory(
                     it,
                     isAfterAnchor = true,
                     loadToTheEnd = true,
-                    applyUiChanges = applyUiChanges
+                    forceLoad = forceLoad,
+                    applyUiChanges = applyUiChanges,
+                    callback = callback
                 )
-            } ?: loadHistory(applyUiChanges = applyUiChanges)
+            } ?: loadHistory(
+                applyUiChanges = applyUiChanges,
+                callback = callback
+            )
         }
     }
 
@@ -580,7 +591,8 @@ class ChatController private constructor() {
         isAfterAnchor: Boolean? = null,
         loadToTheEnd: Boolean = false,
         forceLoad: Boolean = false,
-        applyUiChanges: Boolean = true
+        applyUiChanges: Boolean = true,
+        callback: HistoryLoader.HistoryLoadingCallback? = null
     ) {
         if (!forceLoad && isAllMessagesDownloaded) {
             coroutineScope.launch {
@@ -647,7 +659,9 @@ class ChatController private constructor() {
                                             fragment?.hideErrorView()
                                         }
                                     }
+                                    callback?.onLoaded(items)
                                 }
+                                if (!applyUiChanges) callback?.onLoaded(serverItems)
                                 if (isShouldBeLoadedMore) {
                                     loadHistory(anchorTimestamp, isAfterAnchor, true, applyUiChanges = applyUiChanges)
                                 }
@@ -1306,7 +1320,9 @@ class ChatController private constructor() {
         if (fragment != null && !clientId.isNullOrBlank()) {
             BaseConfig.getInstance().transport.sendRegisterDevice(false)
             clearUnreadPush()
-            loadHistory()
+            if (fragment?.isResumed == true) {
+                loadHistory()
+            }
         }
     }
 
@@ -1584,7 +1600,7 @@ class ChatController private constructor() {
                         BaseConfig.getInstance().transport.sendInitMessages()
                     } else if (stateEvent.state == ChatStateEnum.ATTACHMENT_SETTINGS_LOADED) {
                         loadItemsFromDB(false)
-                        loadHistoryAfterWithLastMessageCheck()
+                        if (fragment?.isResumed == true) loadHistoryAfterWithLastMessageCheck()
                         loadSettings()
                     } else if (isChatReady()) {
                         messenger.resendMessages()
@@ -1592,6 +1608,34 @@ class ChatController private constructor() {
                 }
             }
         }
+    }
+
+    private fun getItemTimestampForHistoryLoad(): Long? {
+        val timeStamp = getUncompletedUserPhraseTimestamp()
+        if (timeStamp != null) {
+            return timeStamp
+        }
+        return getLastDbItemTimestamp()
+    }
+
+    private fun getUncompletedUserPhraseTimestamp(): Long? {
+        val items = database.getChatItems(0, BaseConfig.getInstance().historyLoadingCount).toMutableList()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            Collections.sort(items, Comparator.comparingLong(ChatItem::timeStamp))
+        } else {
+            items.sortWith { lhs: ChatItem, rhs: ChatItem ->
+                lhs.timeStamp.compareTo(rhs.timeStamp)
+            }
+        }
+        for (i in items.size - 1 downTo 0) {
+            if (items[i] is UserPhrase) {
+                val userPhrase = items[i] as UserPhrase
+                if (userPhrase.sentState != MessageStatus.READ) {
+                    return userPhrase.timeStamp - 1
+                }
+            }
+        }
+        return null
     }
 
     private fun getLastDbItemTimestamp(): Long? {
