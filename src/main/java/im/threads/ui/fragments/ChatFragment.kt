@@ -2692,6 +2692,7 @@ class ChatFragment :
         }
 
         override fun onSystemMessageClick(systemMessage: SystemMessage) {}
+
         override fun onRatingClick(survey: Survey, rating: Int) {
             val activity: Activity? = activity
             if (activity != null && !survey.questions.isNullOrEmpty()) {
