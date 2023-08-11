@@ -68,13 +68,6 @@
             </intent-filter>
         </service>
 
-        <receiver android:name=".integrationCode.fragments.launch.LaunchFragment$InitThreadsLibReceiver" android:exported="false"
-            tools:ignore="Instantiatable">
-            <intent-filter>
-                <action android:name="APP_INIT_THREADS_LIB_BROADCAST" />
-            </intent-filter>
-        </receiver>
-
         <meta-data
             android:name="com.pushserver.android.logs"
             android:value="true" />
