@@ -3,6 +3,7 @@ package im.threads.business.core
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
+import androidx.lifecycle.LifecycleOwner
 import im.threads.BuildConfig
 import im.threads.business.AuthMethod
 import im.threads.business.UserInfoBuilder
@@ -120,6 +121,28 @@ open class ThreadsLibBase protected constructor(context: Context) {
         BaseConfig.getInstance().transport.closeWebSocket()
         clientUseCase.saveUserInfo(null)
         ChatController.getInstance().cleanAll()
+    }
+
+    /**
+     * Инициализирует пользователя, предварительно сделав логаут
+     * @param userInfoBuilder данные о пользователе
+     * @param forceRegistration открывает сокет, отправляет данные о регистрации, закрывает сокет
+     */
+    open fun reInitUser(userInfoBuilder: UserInfoBuilder, lifecycleOwner: LifecycleOwner) {
+        coroutineScope.launch {
+            val clientId = clientUseCase.getUserInfo()?.clientId
+            if (!clientId.isNullOrBlank()) {
+                BaseConfig.getInstance().transport.sendClientOffline(clientId, lifecycleOwner) {
+                    ChatController.getInstance().cleanAll()
+                    clientUseCase.saveUserInfo(null)
+                    database.cleanDatabase()
+                    chatState.onLogout()
+                    initUser(userInfoBuilder, true)
+                }
+            } else {
+                info("clientId must not be empty")
+            }
+        }
     }
 
     /**
