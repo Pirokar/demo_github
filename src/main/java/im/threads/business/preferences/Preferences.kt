@@ -38,6 +38,8 @@ open class Preferences(private val context: Context) {
         }
     }
 
+    val preferencesStartKeysCount = sharedPreferences.all.keys.size
+
     /**
      * Предоставляет настройку в соответствии с переданным ключом и типом.
      * При необходимости производит миграцию, если такой ключ присутствует в списке,
@@ -90,7 +92,11 @@ open class Preferences(private val context: Context) {
     inline fun <reified T : Any> get(key: String, default: T? = null): T? {
         val returnType: Type = object : TypeToken<T>() {}.type
         return try {
-            val ret: String = getPreferenceFromRam(key)
+            var ret: String = getPreferenceFromRam(key)
+            if (ret.isEmpty() && !isRamPreferencesLoaded) {
+                ret = sharedPreferences.getString(key, null) ?: ""
+                if (ret.isNotEmpty()) savePreferenceToRam(key, ret)
+            }
             val value = Gson().fromJson(ret, returnType) ?: default ?: throw NullPointerException()
             if (value == "null") null else value
         } catch (exc: Exception) {
@@ -99,9 +105,10 @@ open class Preferences(private val context: Context) {
     }
 
     internal fun loadPreferencesInRam() {
-        PreferencesCoreKeys.allPrefKeys.forEach {
+        sharedPreferences.all.keys.forEach {
             savePreferenceToRam(it, getFromPreferencesFile(it) ?: "")
         }
+        isRamPreferencesLoaded = true
     }
 
     private fun onGetEncryptedPreferencesException(context: Context, exc: Exception): SharedPreferences {
@@ -111,7 +118,9 @@ open class Preferences(private val context: Context) {
 
     companion object {
         private val ramPreferences = HashMap<String, String>()
+        var isRamPreferencesLoaded = false
 
+        @Synchronized
         fun savePreferenceToRam(key: String, value: String?) {
             ramPreferences[key] = value ?: ""
         }

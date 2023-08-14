@@ -3,6 +3,7 @@ package im.threads.business.core
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
+import android.os.Looper
 import im.threads.BuildConfig
 import im.threads.business.AuthMethod
 import im.threads.business.UserInfoBuilder
@@ -170,6 +171,8 @@ open class ThreadsLibBase protected constructor(context: Context) {
                 migrateMainSharedPreferences()
                 migrateUserInfo()
             }
+
+            loadRamPrefs(configBuilder.context)
             initBaseParams()
 
             info("Lib_init_time: ${System.currentTimeMillis() - startInitTime}ms")
@@ -242,6 +245,20 @@ open class ThreadsLibBase protected constructor(context: Context) {
 
             updateTransport()
             showVersionsLog()
+        }
+
+        internal fun loadRamPrefs(context: Context) {
+            if (Looper.myLooper() == Looper.getMainLooper()) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    loadPreferencesInRam(context)
+                }
+            } else {
+                loadPreferencesInRam(context)
+            }
+        }
+
+        private fun loadPreferencesInRam(context: Context) {
+            Preferences(context).loadPreferencesInRam()
         }
 
         /**

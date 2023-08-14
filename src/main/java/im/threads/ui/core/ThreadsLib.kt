@@ -122,12 +122,14 @@ class ThreadsLib(context: Context) : ThreadsLibBase(context) {
             createLibInstance(configBuilder.context)
             Config.setInstance(configBuilder.build())
             BaseConfig.getInstance().loggerConfig?.let { LoggerEdna.init(it) }
+
             PreferencesMigrationUi(BaseConfig.getInstance().context).apply {
                 removeStyleFromPreferences()
                 migrateMainSharedPreferences()
                 migrateUserInfo()
             }
 
+            loadRamPrefs(configBuilder.context)
             initBaseParams()
         }
 

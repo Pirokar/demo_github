@@ -703,8 +703,7 @@ class ChatController private constructor() {
                                 )
                                 preferences.save(
                                     PreferencesUiKeys.CLIENT_NOTIFICATION_DISPLAY_TYPE,
-                                    type.name,
-                                    true
+                                    type.name
                                 )
                                 chatUpdateProcessor.postClientNotificationDisplayType(type)
                             }
