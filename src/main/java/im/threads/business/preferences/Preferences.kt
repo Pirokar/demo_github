@@ -45,10 +45,10 @@ open class Preferences(private val context: Context) {
      * @param key ключ для получения данных
      * @param default значение по умолчанию, если не удалось получить значение
      */
-    inline fun <reified T : Any> get(key: String, default: T? = null): T? {
+    private inline fun <reified T : Any> getFromPreferencesFile(key: String, default: T? = null): T? {
         val returnType: Type = object : TypeToken<T>() {}.type
 
-        @Suppress("UNREACHABLE_CODE", "CommitPrefEdits")
+        @Suppress("CommitPrefEdits")
         return try {
             val ret: String? = sharedPreferences.getString(key, null)
             val value = Gson().fromJson(ret, returnType) ?: default ?: throw NullPointerException()
@@ -58,7 +58,7 @@ open class Preferences(private val context: Context) {
                 val value = sharedPreferences.all.getValue(key)
                 if (value is T) {
                     sharedPreferences.edit().remove(key)
-                    save(key, value, true)
+                    save(key, value)
                     return value
                 } else {
                     return default
@@ -73,22 +73,49 @@ open class Preferences(private val context: Context) {
      * Сохраняет настройку в map по ключу. Возможно синхронное и асинхронное сохранение.
      * @param key ключ для сохранения данных
      * @param obj сохраняемый объект
-     * @param saveAsync указывает, следует ли сохранить объект асинхронно. По умолчанию значение = false
      */
-    inline fun <reified T : Any> save(key: String, obj: T?, saveAsync: Boolean = false) {
+    inline fun <reified T : Any> save(key: String, obj: T?) {
         val json = if (obj != null) Gson().toJson(obj).toString() else null
+        savePreferenceToRam(key, json)
         val editor = sharedPreferences.edit()
         editor.putString(key, json)
+        editor.apply()
+    }
 
-        if (saveAsync) {
-            editor.apply()
-        } else {
-            editor.commit()
+    /**
+     * Предоставляет настройку в соответствии с переданным ключом и типом.
+     * @param key ключ для получения данных
+     * @param default значение по умолчанию, если не удалось получить значение
+     */
+    inline fun <reified T : Any> get(key: String, default: T? = null): T? {
+        val returnType: Type = object : TypeToken<T>() {}.type
+        return try {
+            val ret: String = getPreferenceFromRam(key)
+            val value = Gson().fromJson(ret, returnType) ?: default ?: throw NullPointerException()
+            if (value == "null") null else value
+        } catch (exc: Exception) {
+            null
+        }
+    }
+
+    internal fun loadPreferencesInRam() {
+        PreferencesCoreKeys.allPrefKeys.forEach {
+            savePreferenceToRam(it, getFromPreferencesFile(it) ?: "")
         }
     }
 
     private fun onGetEncryptedPreferencesException(context: Context, exc: Exception): SharedPreferences {
         LoggerEdna.error(exc)
         return context.getSharedPreferences(storeName, Context.MODE_PRIVATE)
+    }
+
+    companion object {
+        private val ramPreferences = HashMap<String, String>()
+
+        fun savePreferenceToRam(key: String, value: String?) {
+            ramPreferences[key] = value ?: ""
+        }
+
+        fun getPreferenceFromRam(key: String) = ramPreferences[key] ?: ""
     }
 }
