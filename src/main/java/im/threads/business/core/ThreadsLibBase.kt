@@ -3,7 +3,6 @@ package im.threads.business.core
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
-import androidx.lifecycle.LifecycleOwner
 import im.threads.BuildConfig
 import im.threads.business.AuthMethod
 import im.threads.business.UserInfoBuilder
@@ -94,6 +93,16 @@ open class ThreadsLibBase protected constructor(context: Context) {
      * @param forceRegistration открывает сокет, отправляет данные о регистрации, закрывает сокет
      */
     open fun initUser(userInfoBuilder: UserInfoBuilder, forceRegistration: Boolean = false) {
+        val clientId = clientUseCase.getUserInfo()?.clientId
+        if (!clientId.isNullOrBlank()) {
+            chatState.onLogout()
+            BaseConfig.getInstance().transport.sendClientOffline(clientId) {
+                ChatController.getInstance().cleanAll()
+                clientUseCase.saveUserInfo(null)
+                database.cleanDatabase()
+                initUser(userInfoBuilder, forceRegistration)
+            }
+        }
         chatState.changeState(ChatStateEnum.LOGGING_IN)
         isForceRegistration = forceRegistration
         clientUseCase.saveUserInfo(userInfoBuilder)
@@ -114,35 +123,12 @@ open class ThreadsLibBase protected constructor(context: Context) {
         val clientId = clientUseCase.getUserInfo()?.clientId
         if (!clientId.isNullOrBlank()) {
             BaseConfig.getInstance().transport.sendClientOffline(clientId)
-            coroutineScope.launch { database.cleanDatabase() }
         } else {
             info("clientId must not be empty")
         }
         BaseConfig.getInstance().transport.closeWebSocket()
         clientUseCase.saveUserInfo(null)
         ChatController.getInstance().cleanAll()
-    }
-
-    /**
-     * Инициализирует пользователя, предварительно сделав логаут
-     * @param userInfoBuilder данные о пользователе
-     * @param forceRegistration открывает сокет, отправляет данные о регистрации, закрывает сокет
-     */
-    open fun reInitUser(userInfoBuilder: UserInfoBuilder, lifecycleOwner: LifecycleOwner) {
-        coroutineScope.launch {
-            val clientId = clientUseCase.getUserInfo()?.clientId
-            if (!clientId.isNullOrBlank()) {
-                BaseConfig.getInstance().transport.sendClientOffline(clientId, lifecycleOwner) {
-                    ChatController.getInstance().cleanAll()
-                    clientUseCase.saveUserInfo(null)
-                    database.cleanDatabase()
-                    chatState.onLogout()
-                    initUser(userInfoBuilder, true)
-                }
-            } else {
-                info("clientId must not be empty")
-            }
-        }
     }
 
     /**

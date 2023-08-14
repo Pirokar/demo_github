@@ -1,7 +1,6 @@
 package im.threads.business.transport
 
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
 import im.threads.business.chatUpdates.ChatUpdateProcessor
 import im.threads.business.logger.LoggerEdna.info
 import im.threads.business.models.ConsultInfo
@@ -71,7 +70,7 @@ abstract class Transport {
      */
     abstract fun sendMessage(userPhrase: UserPhrase, consultInfo: ConsultInfo?, filePath: String?, quoteFilePath: String?): Boolean
     abstract fun sendClientOffline(clientId: String)
-    abstract fun sendClientOffline(clientId: String, lifecycleOwner: LifecycleOwner, callBack: () -> Unit)
+    abstract fun sendClientOffline(clientId: String, callBack: () -> Unit)
     abstract fun updateLocation(latitude: Double, longitude: Double)
     abstract fun getToken(): String
     abstract fun setLifecycle(lifecycle: Lifecycle?)

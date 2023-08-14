@@ -6,8 +6,6 @@ import android.provider.Settings
 import android.text.TextUtils
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.OnLifecycleEvent
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
@@ -61,6 +59,9 @@ import im.threads.ui.utils.FileHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -108,7 +109,8 @@ class ThreadsGateTransport(
     private val appInfo: AppInfo by inject()
     private val deviceInfo: DeviceInfo by inject()
     private val chatState: ChatState by inject()
-    private var logoutCorrelationId: MutableLiveData<String?> = MutableLiveData(null)
+    private var logoutCorrelationId = MutableStateFlow<String?>(null)
+    private var logoutScope: CoroutineScope? = null
 
     init { buildTransport() }
 
@@ -225,17 +227,19 @@ class ThreadsGateTransport(
         sendMessage(content, sendInit = false)
     }
 
-    override fun sendClientOffline(clientId: String, lifecycleOwner: LifecycleOwner, callBack: () -> Unit) {
+    override fun sendClientOffline(clientId: String, callBack: () -> Unit) {
         if (preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS).isNullOrBlank()) {
             return
         }
         val content = outgoingMessageCreator.createMessageClientOffline(clientId)
         sendMessage(content, sendInit = false)
-        coroutineScope.launch {
-            logoutCorrelationId.observe(lifecycleOwner) {
-                if (it == null) {
-                    callBack.invoke()
-                    logoutCorrelationId.removeObservers(lifecycleOwner)
+
+        logoutScope = CoroutineScope(Dispatchers.Unconfined)
+        logoutScope?.launch(Dispatchers.Unconfined) {
+            logoutCorrelationId.collect { correlationId ->
+                if (correlationId == null && isActive) {
+                    callBack()
+                    cancel()
                 }
             }
         }
@@ -308,7 +312,7 @@ class ThreadsGateTransport(
             }
             if (content["type"].toString().contains(ChatItemType.CLIENT_OFFLINE.name)) {
                 coroutineScope.launch {
-                    logoutCorrelationId.postValue(correlationId)
+                    logoutCorrelationId.value = correlationId
                 }
             }
         } catch (ignored: NullPointerException) {}
@@ -493,7 +497,7 @@ class ThreadsGateTransport(
             val correlationId = response.correlationId
             if (logoutCorrelationId.value == correlationId) {
                 coroutineScope.launch {
-                    logoutCorrelationId.postValue(null)
+                    logoutCorrelationId.value = null
                 }
             }
             if (response.data != null && response.data.has(KEY_ERROR)) {
