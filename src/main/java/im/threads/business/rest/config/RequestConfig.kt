@@ -15,7 +15,7 @@ class RequestConfig {
 
     override fun toString(): String {
         return "Request config. " +
-            "  SocketClientSettings. " +
+            "SocketClientSettings. " +
             "resendIntervalMillis: ${socketClientSettings.resendIntervalMillis} | " +
             "resendPingIntervalMillis: ${socketClientSettings.resendPingIntervalMillis} | " +
             "connectTimeoutMillis: ${socketClientSettings.connectTimeoutMillis} | " +
