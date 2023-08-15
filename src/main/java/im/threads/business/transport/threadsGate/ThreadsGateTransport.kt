@@ -59,6 +59,9 @@ import im.threads.ui.utils.FileHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -106,6 +109,8 @@ class ThreadsGateTransport(
     private val appInfo: AppInfo by inject()
     private val deviceInfo: DeviceInfo by inject()
     private val chatState: ChatState by inject()
+    private var logoutCorrelationId = MutableStateFlow<String?>(null)
+    private var logoutScope: CoroutineScope? = null
 
     init { buildTransport() }
 
@@ -222,6 +227,24 @@ class ThreadsGateTransport(
         sendMessage(content, sendInit = false)
     }
 
+    override fun sendClientOffline(clientId: String, callBack: () -> Unit) {
+        if (preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS).isNullOrBlank()) {
+            return
+        }
+        val content = outgoingMessageCreator.createMessageClientOffline(clientId)
+        sendMessage(content, sendInit = false)
+
+        logoutScope = CoroutineScope(Dispatchers.Unconfined)
+        logoutScope?.launch(Dispatchers.Unconfined) {
+            logoutCorrelationId.collect { correlationId ->
+                if (correlationId == null && isActive) {
+                    callBack()
+                    cancel()
+                }
+            }
+        }
+    }
+
     override fun updateLocation(latitude: Double, longitude: Double) {
         val deviceAddress = preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS)
         if (deviceAddress.isNullOrEmpty()) {
@@ -286,6 +309,11 @@ class ThreadsGateTransport(
         try {
             if (content["type"].toString().contains(ChatItemType.INIT_CHAT.name)) {
                 chatState.initChatCorrelationId = correlationId
+            }
+            if (content["type"].toString().contains(ChatItemType.CLIENT_OFFLINE.name)) {
+                coroutineScope.launch {
+                    logoutCorrelationId.value = correlationId
+                }
             }
         } catch (ignored: NullPointerException) {}
 
@@ -467,6 +495,11 @@ class ThreadsGateTransport(
             val response = BaseConfig.getInstance().gson.fromJson(text, BaseResponse::class.java)
             val action = response.action
             val correlationId = response.correlationId
+            if (logoutCorrelationId.value == correlationId) {
+                coroutineScope.launch {
+                    logoutCorrelationId.value = null
+                }
+            }
             if (response.data != null && response.data.has(KEY_ERROR)) {
                 var errorMessage = response.data[KEY_ERROR].asString
                 if (response.data.has(KEY_ERROR_DETAILS)) {

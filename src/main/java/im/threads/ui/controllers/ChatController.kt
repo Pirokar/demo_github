@@ -1610,8 +1610,7 @@ class ChatController private constructor() {
                         withContext(Dispatchers.Main) { fragment?.showProgressBar() }
                     }
                     if (stateEvent.isTimeout && chatState.getCurrentState() < ChatStateEnum.ATTACHMENT_SETTINGS_LOADED) {
-                        val timeoutMessage = "${fragment?.getString(R.string.ecc_timeout_message)
-                            ?: "Превышен интервал ожидания для запроса"} (${chatState.getCurrentState()})"
+                        val timeoutMessage = "${fragment?.getString(R.string.ecc_timeout_message) ?: "Превышен интервал ожидания для запроса"} (${chatState.getCurrentState()})"
                         withContext(Dispatchers.Main) { fragment?.showErrorView(timeoutMessage) }
                     } else if (stateEvent.state == ChatStateEnum.DEVICE_REGISTERED) {
                         BaseConfig.getInstance().transport.sendInitMessages()
