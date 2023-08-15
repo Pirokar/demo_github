@@ -12,6 +12,25 @@ class RequestConfig {
     val authHttpClientSettings = HttpClientSettings(connectTimeoutMillis = 2_000)
 
     val threadsApiHttpClientSettings = HttpClientSettings(connectTimeoutMillis = 60_000)
+
+    override fun toString(): String {
+        return "Request config. " +
+            "SocketClientSettings. " +
+            "resendIntervalMillis: ${socketClientSettings.resendIntervalMillis} | " +
+            "resendPingIntervalMillis: ${socketClientSettings.resendPingIntervalMillis} | " +
+            "connectTimeoutMillis: ${socketClientSettings.connectTimeoutMillis} | " +
+            "readTimeoutMillis: ${socketClientSettings.readTimeoutMillis} | " +
+            "writeTimeoutMillis: ${socketClientSettings.writeTimeoutMillis} | " +
+            "sendIntervalMillis: ${socketClientSettings.sendIntervalMillis}\n" +
+            "PicassoHttpClientSettings. " +
+            "connectTimeoutMillis: ${picassoHttpClientSettings.connectTimeoutMillis} | " +
+            "resendPingIntervalMillis: ${picassoHttpClientSettings.readTimeoutMillis} | " +
+            "connectTimeoutMillis: ${picassoHttpClientSettings.writeTimeoutMillis}\n" +
+            "ThreadsHttpClientSettings. " +
+            "connectTimeoutMillis: ${threadsApiHttpClientSettings.connectTimeoutMillis} | " +
+            "resendPingIntervalMillis: ${threadsApiHttpClientSettings.readTimeoutMillis} | " +
+            "connectTimeoutMillis: ${threadsApiHttpClientSettings.writeTimeoutMillis},"
+    }
 }
 
 data class SocketClientSettings(

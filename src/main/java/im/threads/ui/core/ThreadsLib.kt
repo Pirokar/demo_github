@@ -34,6 +34,7 @@ class ThreadsLib(context: Context) : ThreadsLibBase(context) {
      */
     fun applyLightTheme(lightTheme: ChatStyle?) {
         config.lightTheme = lightTheme
+        LoggerEdna.info("Applied light theme. $lightTheme")
     }
 
     /**
@@ -42,6 +43,7 @@ class ThreadsLib(context: Context) : ThreadsLibBase(context) {
      */
     fun applyDarkTheme(darkTheme: ChatStyle?) {
         config.darkTheme = darkTheme
+        LoggerEdna.info("Applied dark theme. $darkTheme")
     }
 
     fun applyStoragePermissionDescriptionDialogStyle(
@@ -122,6 +124,7 @@ class ThreadsLib(context: Context) : ThreadsLibBase(context) {
             createLibInstance(configBuilder.context)
             Config.setInstance(configBuilder.build())
             BaseConfig.getInstance().loggerConfig?.let { LoggerEdna.init(it) }
+            LoggerEdna.info(configBuilder.toString())
             PreferencesMigrationUi(BaseConfig.getInstance().context).apply {
                 removeStyleFromPreferences()
                 migrateMainSharedPreferences()

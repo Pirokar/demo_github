@@ -18,6 +18,7 @@ class ConfigBuilder(context: Context) : BaseConfigBuilder(context) {
     private var isAttachmentsEnabled: Boolean? = null
     private var lightTheme: ChatStyle? = null
     private var darkTheme: ChatStyle? = null
+    private var isCustomPendingIntentCreatorInstalled = false
 
     private var pendingIntentCreator: PendingIntentCreator =
         object : PendingIntentCreator {
@@ -37,6 +38,7 @@ class ConfigBuilder(context: Context) : BaseConfigBuilder(context) {
 
     fun pendingIntentCreator(pendingIntentCreator: PendingIntentCreator): ConfigBuilder {
         this.pendingIntentCreator = pendingIntentCreator
+        isCustomPendingIntentCreatorInstalled = true
         return this
     }
 
@@ -157,5 +159,28 @@ class ConfigBuilder(context: Context) : BaseConfigBuilder(context) {
             notificationLevel,
             isAttachmentsEnabled
         )
+    }
+
+    override fun toString(): String {
+        return "Config. " +
+            "isAttachmentsEnabled: $isAttachmentsEnabled | " +
+            "is custom pending intent creator installed: $isCustomPendingIntentCreatorInstalled | " +
+            "serverBaseUrl: $serverBaseUrl | " +
+            "datastoreUrl: $datastoreUrl | " +
+            "threadsGateUrl: $threadsGateUrl | " +
+            "threadsGateProviderUid: $threadsGateProviderUid | " +
+            "isNewChatCenterApi: $isNewChatCenterApi\n" +
+            "$loggerConfig\n" +
+            "unreadMessagesCountListener is installed: ${unreadMessagesCountListener != null} | " +
+            "networkInterceptor is installed: ${networkInterceptor != null} | " +
+            "isDebugLoggingEnabled: $isDebugLoggingEnabled | " +
+            "historyLoadingCount: $historyLoadingCount | " +
+            "surveyCompletionDelay: $surveyCompletionDelay\n" +
+            "$requestConfig\n" +
+            "notificationLevel: $notificationLevel | " +
+            "isAttachmentsEnabled: $isAttachmentsEnabled | " +
+            "trustedSSLCertificates count: ${trustedSSLCertificates.count()}\n" +
+            "lightTheme: $lightTheme\n" +
+            "darkTheme: $darkTheme"
     }
 }
