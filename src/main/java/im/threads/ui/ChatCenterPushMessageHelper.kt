@@ -18,7 +18,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class ChatCenterPushMessageHelper() {
+class ChatCenterPushMessageHelper {
     private val preferences: Preferences by inject()
 
     fun setFcmToken(fcmToken: String?) {
