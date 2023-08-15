@@ -18,6 +18,7 @@ import androidx.annotation.StyleRes;
 import java.io.Serializable;
 
 import im.threads.R;
+import im.threads.business.config.BaseConfig;
 import im.threads.business.markdown.MarkdownConfig;
 
 /**
@@ -2175,5 +2176,42 @@ public final class ChatStyle implements Serializable {
         this.incomingDelimitersColor = incomingDelimitersColor;
         this.outgoingDelimitersColor = outgoingDelimitersColor;
         return this;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        Context context = null;
+        try {
+            context = BaseConfig.Companion.getInstance().context;
+        } catch (Exception ignored) {}
+
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("ChatStyle settings:\n");
+        if (context != null) {
+            stringBuilder.append("  windowLightStatusBarResId: ").append(context.getResources().getBoolean(windowLightStatusBarResId)).append("\n");
+            stringBuilder.append("  fixedChatTitle: ").append(context.getResources().getBoolean(fixedChatTitle)).append("\n");
+            stringBuilder.append("  fixedChatSubtitle: ").append(context.getResources().getBoolean(fixedChatSubtitle)).append("\n");
+            stringBuilder.append("  isChatSubtitleVisible: ").append(context.getResources().getBoolean(isChatSubtitleVisible)).append("\n");
+            stringBuilder.append("  isChatTitleShadowVisible: ").append(context.getResources().getBoolean(isChatTitleShadowVisible)).append("\n");
+            stringBuilder.append("  filesAndMediaItemEnabled: ").append(context.getResources().getBoolean(filesAndMediaItemEnabled)).append("\n");
+            stringBuilder.append("  mediaAndFilesWindowLightStatusBarResId: ")
+                    .append(context.getResources().getBoolean(mediaAndFilesWindowLightStatusBarResId))
+                    .append("\n");
+            stringBuilder.append("  searchEnabled: ").append(context.getResources().getBoolean(searchEnabled)).append("\n");
+        }
+        stringBuilder.append("  linkPreviewEnabled: ").append(linkPreviewEnabled).append("\n");
+        stringBuilder.append("  arePermissionDescriptionDialogsEnabled: ").append(arePermissionDescriptionDialogsEnabled).append("\n");
+        stringBuilder.append("  showBackButton: ").append(showBackButton).append("\n");
+        stringBuilder.append("  isToolbarTextCentered: ").append(isToolbarTextCentered).append("\n");
+        stringBuilder.append("  chatSubtitleShowOrgUnit: ").append(chatSubtitleShowOrgUnit).append("\n");
+        stringBuilder.append("  imageBubbleSize: ").append(imageBubbleSize).append("\n");
+        stringBuilder.append("  showConsultSearching: ").append(showConsultSearching).append("\n");
+        stringBuilder.append("  scrollChatToEndIfUserTyping: ").append(scrollChatToEndIfUserTyping).append("\n");
+        stringBuilder.append("  inputEnabledDuringQuickReplies: ").append(inputEnabledDuringQuickReplies).append("\n");
+        stringBuilder.append("  canShowSpecialistInfo: ").append(canShowSpecialistInfo).append("\n");
+        stringBuilder.append("  voiceMessageEnabled: ").append(voiceMessageEnabled).append(",");
+
+        return stringBuilder.toString();
     }
 }
