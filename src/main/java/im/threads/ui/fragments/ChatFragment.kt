@@ -1621,8 +1621,12 @@ class ChatFragment :
             chatAdapter!!.itemCount - 1 - layoutManager.findLastVisibleItemPosition() < INVISIBLE_MESSAGES_COUNT
             )
         if (item is ConsultPhrase) {
+            val previouslyRead = item.read
             item.read = (isLastMessageVisible && isResumed && !isInMessageSearchMode)
             if (item.read) {
+                if (!previouslyRead && !item.id.isNullOrBlank()) {
+                    BaseConfig.getInstance().transport.markMessagesAsRead(listOf(item.id))
+                }
                 chatController.setMessageAsRead(item)
             }
             chatAdapter?.setAvatar(item.consultId, item.avatarPath)
