@@ -2187,30 +2187,30 @@ public final class ChatStyle implements Serializable {
         } catch (Exception ignored) {}
 
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("ChatStyle settings:\n");
+        stringBuilder.append("ChatStyle settings. ");
         if (context != null) {
-            stringBuilder.append("  windowLightStatusBarResId: ").append(context.getResources().getBoolean(windowLightStatusBarResId)).append("\n");
-            stringBuilder.append("  fixedChatTitle: ").append(context.getResources().getBoolean(fixedChatTitle)).append("\n");
-            stringBuilder.append("  fixedChatSubtitle: ").append(context.getResources().getBoolean(fixedChatSubtitle)).append("\n");
-            stringBuilder.append("  isChatSubtitleVisible: ").append(context.getResources().getBoolean(isChatSubtitleVisible)).append("\n");
-            stringBuilder.append("  isChatTitleShadowVisible: ").append(context.getResources().getBoolean(isChatTitleShadowVisible)).append("\n");
-            stringBuilder.append("  filesAndMediaItemEnabled: ").append(context.getResources().getBoolean(filesAndMediaItemEnabled)).append("\n");
-            stringBuilder.append("  mediaAndFilesWindowLightStatusBarResId: ")
+            stringBuilder.append("windowLightStatusBarResId: ").append(context.getResources().getBoolean(windowLightStatusBarResId)).append(" | ");
+            stringBuilder.append("fixedChatTitle: ").append(context.getResources().getBoolean(fixedChatTitle)).append(" | ");
+            stringBuilder.append("fixedChatSubtitle: ").append(context.getResources().getBoolean(fixedChatSubtitle)).append(" | ");
+            stringBuilder.append("isChatSubtitleVisible: ").append(context.getResources().getBoolean(isChatSubtitleVisible)).append(" | ");
+            stringBuilder.append("isChatTitleShadowVisible: ").append(context.getResources().getBoolean(isChatTitleShadowVisible)).append(" | ");
+            stringBuilder.append("filesAndMediaItemEnabled: ").append(context.getResources().getBoolean(filesAndMediaItemEnabled)).append(" | ");
+            stringBuilder.append("mediaAndFilesWindowLightStatusBarResId: ")
                     .append(context.getResources().getBoolean(mediaAndFilesWindowLightStatusBarResId))
-                    .append("\n");
-            stringBuilder.append("  searchEnabled: ").append(context.getResources().getBoolean(searchEnabled)).append("\n");
+                    .append(" | ");
+            stringBuilder.append("searchEnabled: ").append(context.getResources().getBoolean(searchEnabled)).append(" | ");
         }
-        stringBuilder.append("  linkPreviewEnabled: ").append(linkPreviewEnabled).append("\n");
-        stringBuilder.append("  arePermissionDescriptionDialogsEnabled: ").append(arePermissionDescriptionDialogsEnabled).append("\n");
-        stringBuilder.append("  showBackButton: ").append(showBackButton).append("\n");
-        stringBuilder.append("  isToolbarTextCentered: ").append(isToolbarTextCentered).append("\n");
-        stringBuilder.append("  chatSubtitleShowOrgUnit: ").append(chatSubtitleShowOrgUnit).append("\n");
-        stringBuilder.append("  imageBubbleSize: ").append(imageBubbleSize).append("\n");
-        stringBuilder.append("  showConsultSearching: ").append(showConsultSearching).append("\n");
-        stringBuilder.append("  scrollChatToEndIfUserTyping: ").append(scrollChatToEndIfUserTyping).append("\n");
-        stringBuilder.append("  inputEnabledDuringQuickReplies: ").append(inputEnabledDuringQuickReplies).append("\n");
-        stringBuilder.append("  canShowSpecialistInfo: ").append(canShowSpecialistInfo).append("\n");
-        stringBuilder.append("  voiceMessageEnabled: ").append(voiceMessageEnabled).append(",");
+        stringBuilder.append("linkPreviewEnabled: ").append(linkPreviewEnabled).append(" | ");
+        stringBuilder.append("arePermissionDescriptionDialogsEnabled: ").append(arePermissionDescriptionDialogsEnabled).append(" | ");
+        stringBuilder.append("showBackButton: ").append(showBackButton).append(" | ");
+        stringBuilder.append("isToolbarTextCentered: ").append(isToolbarTextCentered).append(" | ");
+        stringBuilder.append("chatSubtitleShowOrgUnit: ").append(chatSubtitleShowOrgUnit).append(" | ");
+        stringBuilder.append("imageBubbleSize: ").append(imageBubbleSize).append(" | ");
+        stringBuilder.append("showConsultSearching: ").append(showConsultSearching).append(" | ");
+        stringBuilder.append("scrollChatToEndIfUserTyping: ").append(scrollChatToEndIfUserTyping).append(" | ");
+        stringBuilder.append("inputEnabledDuringQuickReplies: ").append(inputEnabledDuringQuickReplies).append(" | ");
+        stringBuilder.append("canShowSpecialistInfo: ").append(canShowSpecialistInfo).append(" | ");
+        stringBuilder.append("voiceMessageEnabled: ").append(voiceMessageEnabled).append(",");
 
         return stringBuilder.toString();
     }

@@ -14,22 +14,22 @@ class RequestConfig {
     val threadsApiHttpClientSettings = HttpClientSettings(connectTimeoutMillis = 60_000)
 
     override fun toString(): String {
-        return "Request config:\n" +
-            "  SocketClientSettings:\n" +
-            "    resendIntervalMillis: ${socketClientSettings.resendIntervalMillis}\n" +
-            "    resendPingIntervalMillis: ${socketClientSettings.resendPingIntervalMillis}\n" +
-            "    connectTimeoutMillis: ${socketClientSettings.connectTimeoutMillis}\n" +
-            "    readTimeoutMillis: ${socketClientSettings.readTimeoutMillis}\n" +
-            "    writeTimeoutMillis: ${socketClientSettings.writeTimeoutMillis}\n" +
-            "    sendIntervalMillis: ${socketClientSettings.sendIntervalMillis}\n" +
-            "  PicassoHttpClientSettings:\n" +
-            "    connectTimeoutMillis: ${picassoHttpClientSettings.connectTimeoutMillis}\n" +
-            "    resendPingIntervalMillis: ${picassoHttpClientSettings.readTimeoutMillis}\n" +
-            "    connectTimeoutMillis: ${picassoHttpClientSettings.writeTimeoutMillis}\n" +
-            "  ThreadsHttpClientSettings:\n" +
-            "    connectTimeoutMillis: ${threadsApiHttpClientSettings.connectTimeoutMillis}\n" +
-            "    resendPingIntervalMillis: ${threadsApiHttpClientSettings.readTimeoutMillis}\n" +
-            "    connectTimeoutMillis: ${threadsApiHttpClientSettings.writeTimeoutMillis},"
+        return "Request config. " +
+            "  SocketClientSettings. " +
+            "resendIntervalMillis: ${socketClientSettings.resendIntervalMillis} | " +
+            "resendPingIntervalMillis: ${socketClientSettings.resendPingIntervalMillis} | " +
+            "connectTimeoutMillis: ${socketClientSettings.connectTimeoutMillis} | " +
+            "readTimeoutMillis: ${socketClientSettings.readTimeoutMillis} | " +
+            "writeTimeoutMillis: ${socketClientSettings.writeTimeoutMillis} | " +
+            "sendIntervalMillis: ${socketClientSettings.sendIntervalMillis}\n" +
+            "PicassoHttpClientSettings. " +
+            "connectTimeoutMillis: ${picassoHttpClientSettings.connectTimeoutMillis} | " +
+            "resendPingIntervalMillis: ${picassoHttpClientSettings.readTimeoutMillis} | " +
+            "connectTimeoutMillis: ${picassoHttpClientSettings.writeTimeoutMillis}\n" +
+            "ThreadsHttpClientSettings. " +
+            "connectTimeoutMillis: ${threadsApiHttpClientSettings.connectTimeoutMillis} | " +
+            "resendPingIntervalMillis: ${threadsApiHttpClientSettings.readTimeoutMillis} | " +
+            "connectTimeoutMillis: ${threadsApiHttpClientSettings.writeTimeoutMillis},"
     }
 }
 

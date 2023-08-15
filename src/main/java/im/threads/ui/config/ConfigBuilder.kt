@@ -162,25 +162,25 @@ class ConfigBuilder(context: Context) : BaseConfigBuilder(context) {
     }
 
     override fun toString(): String {
-        return "Config:\n" +
-            "isAttachmentsEnabled: $isAttachmentsEnabled,\n" +
-            "is custom pending intent creator installed: $isCustomPendingIntentCreatorInstalled,\n" +
-            "serverBaseUrl: $serverBaseUrl,\n" +
-            "datastoreUrl: $datastoreUrl,\n" +
-            "threadsGateUrl: $threadsGateUrl,\n" +
-            "threadsGateProviderUid: $threadsGateProviderUid,\n" +
-            "isNewChatCenterApi: $isNewChatCenterApi,\n" +
+        return "Config. " +
+            "isAttachmentsEnabled: $isAttachmentsEnabled | " +
+            "is custom pending intent creator installed: $isCustomPendingIntentCreatorInstalled | " +
+            "serverBaseUrl: $serverBaseUrl | " +
+            "datastoreUrl: $datastoreUrl | " +
+            "threadsGateUrl: $threadsGateUrl | " +
+            "threadsGateProviderUid: $threadsGateProviderUid | " +
+            "isNewChatCenterApi: $isNewChatCenterApi\n" +
             "$loggerConfig\n" +
-            "unreadMessagesCountListener is installed: ${unreadMessagesCountListener != null},\n" +
-            "networkInterceptor is installed: ${networkInterceptor != null},\n" +
-            "isDebugLoggingEnabled: $isDebugLoggingEnabled,\n" +
-            "historyLoadingCount: $historyLoadingCount,\n" +
-            "surveyCompletionDelay: $surveyCompletionDelay,\n" +
+            "unreadMessagesCountListener is installed: ${unreadMessagesCountListener != null} | " +
+            "networkInterceptor is installed: ${networkInterceptor != null} | " +
+            "isDebugLoggingEnabled: $isDebugLoggingEnabled | " +
+            "historyLoadingCount: $historyLoadingCount | " +
+            "surveyCompletionDelay: $surveyCompletionDelay\n" +
             "$requestConfig\n" +
-            "notificationLevel: $notificationLevel,\n" +
-            "isAttachmentsEnabled: $isAttachmentsEnabled,\n" +
-            "trustedSSLCertificates count: ${trustedSSLCertificates.count()},\n" +
+            "notificationLevel: $notificationLevel | " +
+            "isAttachmentsEnabled: $isAttachmentsEnabled | " +
+            "trustedSSLCertificates count: ${trustedSSLCertificates.count()}\n" +
             "lightTheme: $lightTheme\n" +
-            "darkTheme: $darkTheme\n"
+            "darkTheme: $darkTheme"
     }
 }
