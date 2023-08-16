@@ -62,20 +62,18 @@ abstract class BaseAppFragment<T : ViewBinding>(
         }
     }
 
-    protected fun setToolbarColor() = with(binding) {
-        if (ThreadsLib.isInitialized()) {
-            context?.let { context ->
-                val toolbar = try {
-                    root.findViewById<Toolbar>(R.id.toolbar)
-                } catch (ignored: Exception) {
-                    null
-                }
+    private fun setToolbarColor() = with(binding) {
+        context?.let { context ->
+            val toolbar = try {
+                root.findViewById<Toolbar>(R.id.toolbar)
+            } catch (ignored: Exception) {
+                null
+            }
 
-                if (context.isDarkThemeOn()) {
-                    toolbar?.setBackgroundColor(ContextCompat.getColor(context, R.color.dark_toolbar))
-                } else {
-                    toolbar?.setBackgroundColor(ContextCompat.getColor(context, R.color.light_toolbar))
-                }
+            if (context.isDarkThemeOn()) {
+                toolbar?.setBackgroundColor(ContextCompat.getColor(context, R.color.dark_toolbar))
+            } else {
+                toolbar?.setBackgroundColor(ContextCompat.getColor(context, R.color.light_toolbar))
             }
         }
     }
