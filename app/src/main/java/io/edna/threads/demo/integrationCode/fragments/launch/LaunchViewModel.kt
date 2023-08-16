@@ -60,8 +60,8 @@ class LaunchViewModel(
         }
     }
 
-    override fun onResume(owner: LifecycleOwner) {
-        super.onResume(owner)
+    override fun onStart(owner: LifecycleOwner) {
+        super.onStart(owner)
         checkUiTheme()
     }
 
@@ -121,12 +121,10 @@ class LaunchViewModel(
         }
     }
 
-    internal fun checkUiTheme() {
-        if (ThreadsLib.isInitialized()) {
-            val uiTheme = ThreadsLib.getInstance().currentUiTheme
-            currentUiThemeLiveData.postValue(getCurrentUiTheme(uiTheme))
-            applyCurrentUiTheme(uiTheme)
-        }
+    private fun checkUiTheme() {
+        val uiTheme = ThreadsLib.getInstance().currentUiTheme
+        applyCurrentUiTheme(uiTheme)
+        currentUiThemeLiveData.value = getCurrentUiTheme(uiTheme)
     }
 
     private fun getCurrentUiTheme(currentUiTheme: CurrentUiTheme): UiTheme {

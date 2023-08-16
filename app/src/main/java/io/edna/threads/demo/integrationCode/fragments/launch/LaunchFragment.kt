@@ -1,10 +1,6 @@
 package io.edna.threads.demo.integrationCode.fragments.launch
 
 import android.app.AlertDialog
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.content.res.AppCompatResources
@@ -26,12 +22,8 @@ class LaunchFragment : BaseAppFragment<FragmentLaunchBinding>(FragmentLaunchBind
     private val viewModel: LaunchViewModel by viewModel()
     private val stringsProvider: StringsProvider by inject()
 
-    private var receiver: InitThreadsLibReceiver? = null
-    private val filter = IntentFilter(APP_INIT_THREADS_LIB_ACTION)
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        addThreadsLibInitializationReceiver()
         initObservers()
         setResultListeners()
         initView()
@@ -41,27 +33,7 @@ class LaunchFragment : BaseAppFragment<FragmentLaunchBinding>(FragmentLaunchBind
 
     override fun onDestroyView() {
         super.onDestroyView()
-        unregisterReceiver()
         clearResultListeners()
-    }
-
-    private fun addThreadsLibInitializationReceiver() {
-        if (!ThreadsLib.isInitialized()) {
-            receiver = InitThreadsLibReceiver(this)
-            ContextCompat.registerReceiver(
-                requireContext(),
-                receiver,
-                filter,
-                ContextCompat.RECEIVER_VISIBLE_TO_INSTANT_APPS
-            )
-        }
-    }
-
-    private fun unregisterReceiver() {
-        receiver?.let {
-            requireActivity().unregisterReceiver(it)
-            receiver = null
-        }
     }
 
     private fun initView() = with(binding) {
@@ -168,23 +140,8 @@ class LaunchFragment : BaseAppFragment<FragmentLaunchBinding>(FragmentLaunchBind
             "/ ChatCenter SDK ${ThreadsLib.getLibVersion()}"
     }
 
-    fun onThreadsLibInitialized() {
-        setToolbarColor()
-        viewModel.checkUiTheme()
-        unregisterReceiver()
-    }
-
-    class InitThreadsLibReceiver(val fragment: LaunchFragment) : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            if (intent.action == APP_INIT_THREADS_LIB_ACTION) {
-                fragment.onThreadsLibInitialized()
-            }
-        }
-    }
-
     companion object {
         const val SELECTED_USER_KEY = "selected_user_key"
         const val SELECTED_SERVER_CONFIG_KEY = "selected_server_key"
-        const val APP_INIT_THREADS_LIB_ACTION = "APP_INIT_THREADS_LIB_BROADCAST"
     }
 }
