@@ -94,7 +94,7 @@ open class ThreadsLibBase protected constructor(context: Context) {
      */
     open fun initUser(userInfoBuilder: UserInfoBuilder, forceRegistration: Boolean = false) {
         val clientId = clientUseCase.getUserInfo()?.clientId
-        if (!clientId.isNullOrBlank()) {
+        if (!clientId.isNullOrBlank() && userInfoBuilder.clientId != clientId) {
             chatState.onLogout()
             BaseConfig.getInstance().transport.sendClientOffline(clientId) {
                 ChatController.getInstance().cleanAll()
@@ -102,14 +102,15 @@ open class ThreadsLibBase protected constructor(context: Context) {
                 database.cleanDatabase()
                 initUser(userInfoBuilder, forceRegistration)
             }
-        }
-        chatState.changeState(ChatStateEnum.LOGGING_IN)
-        isForceRegistration = forceRegistration
-        clientUseCase.saveUserInfo(userInfoBuilder)
-        if (forceRegistration && preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS).isNullOrBlank()) {
-            BaseConfig.getInstance().transport.sendRegisterDevice(true)
-            if (!ChatFragment.isShown) {
-                BaseConfig.getInstance().transport.closeWebSocket()
+        } else {
+            chatState.changeState(ChatStateEnum.LOGGING_IN)
+            isForceRegistration = forceRegistration
+            clientUseCase.saveUserInfo(userInfoBuilder)
+            if (forceRegistration && preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS).isNullOrBlank()) {
+                BaseConfig.getInstance().transport.sendRegisterDevice(true)
+                if (!ChatFragment.isShown) {
+                    BaseConfig.getInstance().transport.closeWebSocket()
+                }
             }
         }
     }
