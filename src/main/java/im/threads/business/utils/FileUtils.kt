@@ -46,12 +46,9 @@ object FileUtils {
         } else {
             ""
         }
-        val name = getFileName(fd)
+        val name = fd.incomingName ?: getFileName(fd.fileUri)
         return "${prefix}_$name"
     }
-
-    @JvmStatic
-    fun getFileName(fd: FileDescription) = fd.incomingName ?: getFileName(fd.fileUri)
 
     @JvmStatic
     fun getFileName(uri: Uri?): String {

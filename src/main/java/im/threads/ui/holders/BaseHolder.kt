@@ -21,6 +21,7 @@ import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.recyclerview.widget.RecyclerView
 import im.threads.R
+import im.threads.business.extensions.withMainContext
 import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.imageLoading.ImageModifications
 import im.threads.business.imageLoading.loadImage
@@ -30,6 +31,7 @@ import im.threads.business.markdown.LinksHighlighter
 import im.threads.business.models.ChatItem
 import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.ExtractedLink
+import im.threads.business.models.FileDescription
 import im.threads.business.models.MessageStatus
 import im.threads.business.models.enums.ErrorStateEnum
 import im.threads.business.ogParser.OGData
@@ -53,6 +55,7 @@ import io.reactivex.subjects.PublishSubject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 abstract class BaseHolder internal constructor(
@@ -65,7 +68,7 @@ abstract class BaseHolder internal constructor(
     private var isThisItemHighlighted = false
     private var compositeDisposable: CompositeDisposable = CompositeDisposable()
     private val linksHighlighter: LinksHighlighter = LinkifyLinksHighlighter()
-    private val coroutineScope = CoroutineScope(Dispatchers.IO)
+    protected val coroutineScope = CoroutineScope(Dispatchers.IO)
     protected val rotateAnim = RotateAnimation(
         0f,
         360f,
@@ -610,6 +613,22 @@ abstract class BaseHolder internal constructor(
             }
         } else {
             consultAvatar.invisible()
+        }
+    }
+
+    protected fun fileNameFromDescription(fileDescription: FileDescription?, callback: (fileName: String?) -> Unit) {
+        if (fileDescription == null) {
+            callback(null)
+            return
+        }
+
+        if (fileDescription.incomingName != null) {
+            callback(fileDescription.incomingName)
+        } else {
+            coroutineScope.launch {
+                val fileName = FileUtils.getFileName(fileDescription.fileUri)
+                withMainContext { callback(fileName) }
+            }
         }
     }
 
