@@ -79,7 +79,6 @@ import im.threads.ui.activities.ImagesActivity.Companion.getStartIntent
 import im.threads.ui.config.Config
 import im.threads.ui.fragments.ChatFragment
 import im.threads.ui.preferences.PreferencesUiKeys
-import im.threads.ui.utils.preferences.PreferencesMigrationUi
 import im.threads.ui.utils.runOnUiThread
 import im.threads.ui.workers.NotificationWorker.Companion.removeNotification
 import io.reactivex.Completable
@@ -99,8 +98,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Response
-import java.lang.Runnable
-import java.lang.System
 import java.util.Collections
 import java.util.concurrent.TimeUnit
 
@@ -165,7 +162,6 @@ class ChatController private constructor() {
     private var enableModel: InputFieldEnableModel? = null
 
     init {
-        PreferencesMigrationUi(appContext).migrateNamedPreferences(ChatController::class.java.simpleName)
         subscribeToChatEvents()
     }
 

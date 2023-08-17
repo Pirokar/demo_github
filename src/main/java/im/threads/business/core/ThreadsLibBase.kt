@@ -167,15 +167,18 @@ open class ThreadsLibBase protected constructor(context: Context) {
             createLibInstance(configBuilder.context)
             BaseConfig.setInstance(configBuilder.build())
             BaseConfig.getInstance().loggerConfig?.let { LoggerEdna.init(it) }
+
+            loadRamPrefs(this::migratePreference, configBuilder.context)
+            initBaseParams()
+
+            info("Lib_init_time: ${System.currentTimeMillis() - startInitTime}ms")
+        }
+
+        private fun migratePreference() {
             PreferencesMigrationBase(BaseConfig.getInstance().context).apply {
                 migrateMainSharedPreferences()
                 migrateUserInfo()
             }
-
-            loadRamPrefs(configBuilder.context)
-            initBaseParams()
-
-            info("Lib_init_time: ${System.currentTimeMillis() - startInitTime}ms")
         }
 
         @SuppressLint("CheckResult")
@@ -247,17 +250,18 @@ open class ThreadsLibBase protected constructor(context: Context) {
             showVersionsLog()
         }
 
-        internal fun loadRamPrefs(context: Context) {
+        internal fun loadRamPrefs(migratePreference: () -> Unit, context: Context) {
             if (Looper.myLooper() == Looper.getMainLooper()) {
                 CoroutineScope(Dispatchers.IO).launch {
-                    loadPreferencesInRam(context)
+                    loadPreferencesInRam(migratePreference, context)
                 }
             } else {
-                loadPreferencesInRam(context)
+                loadPreferencesInRam(migratePreference, context)
             }
         }
 
-        private fun loadPreferencesInRam(context: Context) {
+        private fun loadPreferencesInRam(migratePreference: () -> Unit, context: Context) {
+            migratePreference()
             Preferences(context).loadPreferencesInRam()
         }
 
