@@ -1121,8 +1121,12 @@ class ChatFragment :
         startActivityForResult(getStartIntent(activity, REQUEST_CODE_PHOTOS), REQUEST_CODE_PHOTOS)
     }
 
-    override fun onImageSelectionChanged(imageList: List<Uri>) {
-        mAttachedImages = ArrayList(imageList)
+    override fun onImageSelectionChanged(imageList: List<Uri>?) {
+        mAttachedImages = if (imageList != null) {
+            ArrayList(imageList)
+        } else {
+            arrayListOf()
+        }
     }
 
     override fun onBottomSheetDetached() {
