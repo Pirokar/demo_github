@@ -369,11 +369,12 @@ class ChatFragment :
     internal fun hideErrorView(showList: Boolean = true) = binding?.apply {
         chatErrorLayout.errorLayout.gone()
         bottomLayout.visible()
-        val isNeedToShowWelcome = chatController.isNeedToShowWelcome
-        if (isNeedToShowWelcome && showList) {
-            showWelcomeScreen(chatController.isChatReady())
-        } else if (showList) {
-            recycler.visible()
+        isNeedToShowWelcome {
+            if (it && showList) {
+                showWelcomeScreen(chatController.isChatReady())
+            } else if (showList) {
+                recycler.visible()
+            }
         }
     }
 
@@ -413,9 +414,17 @@ class ChatFragment :
         }
     }
 
+    private fun isNeedToShowWelcome(callback: (Boolean) -> Unit) {
+        coroutineScope.launch(Dispatchers.IO) {
+            val isNeedToShowWelcome = chatController.isNeedToShowWelcome()
+            withMainContext { callback(isNeedToShowWelcome) }
+        }
+    }
+
     private fun initController() {
         val activity = activity ?: return
-        showWelcomeScreen(chatController.isNeedToShowWelcome)
+
+        isNeedToShowWelcome { showWelcomeScreen(it) }
         chatController.bindFragment(this)
         mChatReceiver = ChatReceiver()
         val intentFilter = IntentFilter(ACTION_SEARCH_CHAT_FILES)
@@ -1931,6 +1940,10 @@ class ChatFragment :
         } else {
             View.GONE
         }
+    }
+
+    internal fun showWelcomeScreenIfNeed() {
+        isNeedToShowWelcome { showWelcomeScreen(it) }
     }
 
     internal fun showBottomBar() {

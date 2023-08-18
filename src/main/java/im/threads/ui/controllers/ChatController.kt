@@ -247,7 +247,7 @@ class ChatController private constructor() {
                         lastSearchQuery = query
                         Runnable {
                             fragment?.hideProgressBar()
-                            fragment?.showWelcomeScreen(isNeedToShowWelcome)
+                            fragment?.showWelcomeScreenIfNeed()
                         }.runOnUiThread()
                     }
                 }
@@ -259,7 +259,7 @@ class ChatController private constructor() {
                     error(e)
                     Runnable {
                         fragment?.hideProgressBar()
-                        fragment?.showWelcomeScreen(isNeedToShowWelcome)
+                        fragment?.showWelcomeScreenIfNeed()
                     }.runOnUiThread()
                 }
         )
@@ -402,8 +402,8 @@ class ChatController private constructor() {
         }
     }
 
-    val isNeedToShowWelcome: Boolean
-        get() = database.getMessagesCount() == 0 && fragment?.getDisplayedMessagesCount() == 0 && isChatReady() && !isDownloadingMessages
+    fun isNeedToShowWelcome(): Boolean =
+        database.getMessagesCount() == 0 && fragment?.getDisplayedMessagesCount() == 0 && isChatReady() && !isDownloadingMessages
 
     val stateOfConsult: Int
         get() = if (consultWriter.isSearchingConsult) {
@@ -493,7 +493,8 @@ class ChatController private constructor() {
                 val itemsDef = async(Dispatchers.IO) { database.getChatItems(0, -1) }
                 it.addChatItems(itemsDef.await())
                 it.hideProgressBar()
-                it.showWelcomeScreen(isWelcomeScreenAllowed && isNeedToShowWelcome)
+                val isNeedToShowWelcomeDef = async(Dispatchers.IO) { isNeedToShowWelcome() }
+                it.showWelcomeScreen(isWelcomeScreenAllowed && isNeedToShowWelcomeDef.await())
             }
         }
     }
@@ -669,7 +670,7 @@ class ChatController private constructor() {
                             isDownloadingMessages = false
                             if (fragment != null) {
                                 fragment?.hideProgressBar()
-                                fragment?.showWelcomeScreen(isNeedToShowWelcome)
+                                fragment?.showWelcomeScreenIfNeed()
                                 fragment?.showBottomBar()
                             }
                             error(e)
