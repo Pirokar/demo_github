@@ -7,6 +7,9 @@ import com.google.gson.reflect.TypeToken
 import im.threads.business.logger.LoggerEdna
 import im.threads.business.preferences.encrypted.EncryptedSharedPreferences
 import im.threads.business.preferences.encrypted.MasterKey
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.IOException
 import java.lang.reflect.Type
 import java.security.GeneralSecurityException
@@ -38,7 +41,9 @@ open class Preferences(private val context: Context) {
         }
     }
 
-    val preferencesStartKeysCount = sharedPreferences.all.keys.size
+    val preferencesStartKeysCount: Int by lazy { sharedPreferences.all.keys.size }
+
+    val coroutineScope = CoroutineScope(Dispatchers.IO)
 
     /**
      * Предоставляет настройку в соответствии с переданным ключом и типом.
@@ -79,9 +84,12 @@ open class Preferences(private val context: Context) {
     inline fun <reified T : Any> save(key: String, obj: T?) {
         val json = if (obj != null) Gson().toJson(obj).toString() else null
         savePreferenceToRam(key, json)
-        val editor = sharedPreferences.edit()
-        editor.putString(key, json)
-        editor.apply()
+
+        coroutineScope.launch {
+            val editor = sharedPreferences.edit()
+            editor.putString(key, json)
+            editor.commit()
+        }
     }
 
     /**

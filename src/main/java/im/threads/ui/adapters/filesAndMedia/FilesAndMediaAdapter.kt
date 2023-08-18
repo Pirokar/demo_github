@@ -19,7 +19,7 @@ internal class FilesAndMediaAdapter(
     private var list: ArrayList<MediaAndFileItem>,
     private val onFileClick: OnFileClick,
     private val onDownloadFileClick: OnFileClick,
-    private val mediaAndFileItemsFilter: (fdList: List<FileDescription?>, callback: (ArrayList<MediaAndFileItem>) -> Unit) -> Unit,
+    private val mediaAndFileItemsFilter: (fdList: List<FileDescription?>, callback: (ArrayList<MediaAndFileItem>) -> Unit) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private var backup = ArrayList<MediaAndFileItem>()
 
