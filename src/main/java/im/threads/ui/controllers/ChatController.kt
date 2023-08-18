@@ -6,6 +6,7 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.media.MediaMetadataRetriever
 import android.net.ConnectivityManager
 import android.os.Build
 import androidx.annotation.MainThread
@@ -18,6 +19,7 @@ import im.threads.business.config.BaseConfig
 import im.threads.business.controllers.UnreadMessagesController
 import im.threads.business.core.ContextHolder
 import im.threads.business.core.ThreadsLibBase
+import im.threads.business.extensions.withMainContext
 import im.threads.business.formatters.ChatItemType
 import im.threads.business.logger.LoggerEdna.error
 import im.threads.business.logger.LoggerEdna.info
@@ -71,6 +73,7 @@ import im.threads.business.utils.DemoModeProvider
 import im.threads.business.utils.FileUtils.getMimeType
 import im.threads.business.utils.FileUtils.isImage
 import im.threads.business.utils.FileUtils.isVoiceMessage
+import im.threads.business.utils.getDuration
 import im.threads.business.utils.messenger.Messenger
 import im.threads.business.utils.messenger.MessengerImpl
 import im.threads.business.workers.FileDownloadWorker.Companion.startDownload
@@ -80,6 +83,7 @@ import im.threads.ui.config.Config
 import im.threads.ui.fragments.ChatFragment
 import im.threads.ui.preferences.PreferencesUiKeys
 import im.threads.ui.utils.runOnUiThread
+import im.threads.ui.views.formatAsDuration
 import im.threads.ui.workers.NotificationWorker.Companion.removeNotification
 import io.reactivex.Completable
 import io.reactivex.Flowable
@@ -1660,6 +1664,35 @@ class ChatController private constructor() {
         } catch (exc: Exception) {
             null
         }
+    }
+
+    internal fun setFormattedDurations(
+        list: List<ChatItem?>?,
+        mediaMetadataRetriever: MediaMetadataRetriever,
+        callback: () -> Unit
+    ) {
+        if (list == null) {
+            callback()
+            return
+        }
+
+        coroutineScope.launch(Dispatchers.IO) {
+            list
+                .filterNotNull()
+                .forEach { chatItem ->
+                    val fileDescription = (chatItem as? ConsultPhrase)?.fileDescription ?: (chatItem as? UserPhrase)?.fileDescription
+                    fileDescription?.voiceFormattedDuration = getFormattedDuration(fileDescription, mediaMetadataRetriever)
+                }
+            withMainContext { callback() }
+        }
+    }
+
+    private fun getFormattedDuration(fileDescription: FileDescription?, mediaMetadataRetriever: MediaMetadataRetriever): String {
+        var duration = 0L
+        if (fileDescription != null && isVoiceMessage(fileDescription) && fileDescription.fileUri != null) {
+            duration = mediaMetadataRetriever.getDuration(fileDescription.fileUri!!)
+        }
+        return duration.formatAsDuration()
     }
 
     companion object {

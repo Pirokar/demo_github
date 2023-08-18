@@ -23,6 +23,7 @@ class FileDescription(var from: String?, var fileUri: Uri?, var size: Long, var 
     var state = AttachmentStateEnum.ANY
     var errorCode = ErrorStateEnum.ANY
     var errorMessage: String? = ""
+    var voiceFormattedDuration: String = ""
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

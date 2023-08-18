@@ -655,14 +655,18 @@ class ChatFragment :
 
     private fun addVoiceMessagePreview(file: File) {
         val context = context ?: return
-        val fd = FileDescription(
-            requireContext().getString(R.string.ecc_voice_message).lowercase(Locale.getDefault()),
-            fileProvider.getUriForFile(context, file),
-            file.length(),
-            System.currentTimeMillis()
-        )
-        setFileDescription(fd)
-        quoteLayoutHolder?.setVoice()
+        coroutineScope.launch(Dispatchers.IO) {
+            val fd = FileDescription(
+                requireContext().getString(R.string.ecc_voice_message).lowercase(Locale.getDefault()),
+                fileProvider.getUriForFile(context, file),
+                file.length(),
+                System.currentTimeMillis()
+            )
+            withMainContext {
+                setFileDescription(fd)
+                quoteLayoutHolder?.setVoice()
+            }
+        }
     }
 
     private fun initMediaPlayer() {
@@ -2591,9 +2595,14 @@ class ChatFragment :
             quoteHeader.visibility = View.GONE
             quoteText.visibility = View.GONE
             quotePast.visibility = View.GONE
-            formattedDuration = getFormattedDuration(getFileDescription())
-            quoteDuration.text = formattedDuration
-            chatUpdateProcessor.postAttachAudioFile(true)
+
+            coroutineScope.launch(Dispatchers.IO) {
+                formattedDuration = getFormattedDuration(getFileDescription())
+                withMainContext {
+                    quoteDuration.text = formattedDuration
+                    chatUpdateProcessor.postAttachAudioFile(true)
+                }
+            }
         }
 
         private fun init(maxValue: Int, progress: Int, isPlaying: Boolean) = binding?.apply {
@@ -2769,10 +2778,12 @@ class ChatFragment :
             if (it.isNotEmpty()) {
                 val isChatReady = chatController.isChatReady()
                 val isAnimationEnabled = withAnimation && isChatReady
-                chatAdapter?.addItems(it, isAnimationEnabled)
-                if (isChatReady) {
-                    hideErrorView()
-                    hideProgressBar()
+                chatController.setFormattedDurations(it, mediaMetadataRetriever) {
+                    chatAdapter?.addItems(it, isAnimationEnabled)
+                    if (isChatReady) {
+                        hideErrorView()
+                        hideProgressBar()
+                    }
                 }
             }
         }
