@@ -8,26 +8,20 @@ import im.threads.business.models.DateRow
 import im.threads.business.models.FileAndMediaItem
 import im.threads.business.models.FileDescription
 import im.threads.business.models.MediaAndFileItem
-import im.threads.business.utils.FileUtils.getFileName
 import im.threads.ui.holders.EmptyViewHolder
 import im.threads.ui.holders.FileAndMediaViewHolder
 import im.threads.ui.holders.FilesDateStampHolder
-import java.util.Calendar
 import java.util.Locale
 
 /** Адаптер для списка файлов, отправленных или полученных в чате */
 @Suppress("NAME_SHADOWING")
 internal class FilesAndMediaAdapter(
-    filesList: List<FileDescription?>,
+    private var list: ArrayList<MediaAndFileItem>,
     private val onFileClick: OnFileClick,
-    private val onDownloadFileClick: OnFileClick
+    private val onDownloadFileClick: OnFileClick,
+    private val mediaAndFileItemsFilter: (fdList: List<FileDescription?>, callback: (ArrayList<MediaAndFileItem>) -> Unit) -> Unit,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    private var list = ArrayList<MediaAndFileItem>()
     private var backup = ArrayList<MediaAndFileItem>()
-
-    init {
-        addItems(filesList)
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
@@ -88,7 +82,7 @@ internal class FilesAndMediaAdapter(
      *
      * @param filter строка для фильтрации
      */
-    inline fun filter(filter: String?, onFiltered: () -> Unit) {
+    inline fun filter(filter: String?, crossinline onFiltered: () -> Unit) {
         var filter = filter
         if (filter == null) filter = ""
         val filteredItems = ArrayList<FileDescription>()
@@ -113,10 +107,10 @@ internal class FilesAndMediaAdapter(
             }
         }
 
-        updateWithDiffUtil {
-            list = getMediaAndFileItems(filteredItems)
+        mediaAndFileItemsFilter(filteredItems) { items ->
+            updateWithDiffUtil { list = items }
+            onFiltered()
         }
-        onFiltered()
     }
 
     /** Восстанавливает список из бэкапа */
@@ -128,7 +122,7 @@ internal class FilesAndMediaAdapter(
     /**
      * Обновляет прогресс загрузки для файла
      *
-     * @param fileDescription характеристики файла для обновление
+     * @param fileDescription характеристики файла для обновления
      *     прогресса
      */
     fun updateProgress(fileDescription: FileDescription?) {
@@ -166,56 +160,6 @@ internal class FilesAndMediaAdapter(
                 }
             }
         }
-    }
-
-    private fun addItems(fileDescriptionList: List<FileDescription?>) {
-        list.addAll(getMediaAndFileItems(fileDescriptionList))
-    }
-
-    private fun getMediaAndFileItems(fileDescriptionList: List<FileDescription?>): ArrayList<MediaAndFileItem> {
-        val result = ArrayList<MediaAndFileItem>()
-        if (fileDescriptionList.isEmpty()) return result
-
-        val current = Calendar.getInstance()
-        val prev = Calendar.getInstance()
-        fileDescriptionList[0]?.let { fd ->
-            result.add(DateRow(fd.timeStamp))
-            result.add(
-                FileAndMediaItem(
-                    fd,
-                    if (fd.fileUri != null) {
-                        getFileName(
-                            fd.fileUri!!
-                        )
-                    } else {
-                        ""
-                    }
-                )
-            )
-        }
-        for (i in 1 until fileDescriptionList.size) {
-            fileDescriptionList[i]?.let { fd ->
-                current.timeInMillis = fd.timeStamp
-                prev.timeInMillis = fileDescriptionList[i - 1]?.timeStamp ?: 0L
-                result.add(
-                    FileAndMediaItem(
-                        fd,
-                        if (fd.fileUri != null) {
-                            getFileName(
-                                fd.fileUri!!
-                            )
-                        } else {
-                            ""
-                        }
-                    )
-                )
-                if (current[Calendar.DAY_OF_YEAR] != prev[Calendar.DAY_OF_YEAR]) {
-                    result.add(DateRow(fd.timeStamp))
-                }
-            }
-        }
-
-        return result
     }
 
     private inline fun updateWithDiffUtil(changeItems: () -> Unit) {
