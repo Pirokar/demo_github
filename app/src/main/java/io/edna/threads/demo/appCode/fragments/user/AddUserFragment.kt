@@ -41,8 +41,8 @@ class AddUserFragment : BaseAppFragment<FragmentAddUserBinding>(FragmentAddUserB
         viewModel.finalUserLiveData.observe(viewLifecycleOwner) {
             val args = Bundle()
             args.putParcelable(USER_KEY, Parcels.wrap(it))
-            viewModel.srcUser?.userId?.let { id ->
-                args.putString(SRC_USER_ID_KEY, id)
+            viewModel.srcUser?.let { user ->
+                args.putString(SRC_USER_ID_KEY, user.userId)
             }
             setFragmentResult(USER_KEY, args)
         }

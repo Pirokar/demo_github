@@ -164,10 +164,15 @@ class ServerListViewModel(
         serverList: ArrayList<ServerConfig>,
         serverName: String
     ): ArrayList<ServerConfig> {
-        for (i in 0 until serverList.size - 1) {
+        var index = -1
+        for (i in 0 until serverList.size) {
             if (serverList[i].name == serverName) {
-                serverList.removeAt(i)
+                index = i
+                break
             }
+        }
+        if (index >= 0) {
+            serverList.removeAt(index)
         }
         return serverList
     }

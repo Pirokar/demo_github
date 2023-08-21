@@ -193,6 +193,7 @@ class EdnaThreadsApplication : Application() {
         val markdownConfig = MarkdownConfig()
         markdownConfig.isLinkUnderlined = true
         chatSettings
+            .enableLinkPreview()
             .enableChatSubtitleShowConsultOrgUnit()
             .setIncomingMarkdownConfiguration(markdownConfig)
             .setOutgoingMarkdownConfiguration(markdownConfig)

@@ -87,10 +87,15 @@ class UserListViewModel(
         userList: ArrayList<UserInfo>,
         userId: String
     ): ArrayList<UserInfo> {
-        for (i in 0 until userList.size - 1) {
+        var index = -1
+        for (i in 0 until userList.size) {
             if (userList[i].userId == userId) {
-                userList.removeAt(i)
+                index = i
+                break
             }
+        }
+        if (index >= 0) {
+            userList.removeAt(index)
         }
         return userList
     }
