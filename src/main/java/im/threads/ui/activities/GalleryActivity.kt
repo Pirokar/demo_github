@@ -16,6 +16,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import im.threads.R
+import im.threads.business.extensions.withMainContext
 import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.MediaPhoto
 import im.threads.business.models.PhotoBucketItem
@@ -35,6 +36,10 @@ import im.threads.ui.utils.visible
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.BehaviorSubject
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import java.util.Locale
 
 class GalleryActivity : BaseActivity(), OnItemClick, OnGalleryItemClick {
@@ -47,6 +52,7 @@ class GalleryActivity : BaseActivity(), OnItemClick, OnGalleryItemClick {
     private val chosenItems: MutableList<MediaPhoto> = ArrayList()
     private val bucketsGalleryDecorator = BucketsGalleryDecorator(4)
     private val galleryDecorator = GalleryDecorator(4)
+    private val coroutineScope = CoroutineScope(Dispatchers.IO)
     private val compositeDisposable = CompositeDisposable()
 
     private lateinit var binding: EccActivityGalleryBinding
@@ -60,9 +66,13 @@ class GalleryActivity : BaseActivity(), OnItemClick, OnGalleryItemClick {
         subscribeToScreenState()
         subscribeToDataIsEmpty()
         initStatusBar()
-        initData()
-        showBucketListState()
-        setButtonsClickListeners()
+        coroutineScope.launch {
+            initData()
+            withMainContext {
+                showBucketListState()
+                setButtonsClickListeners()
+            }
+        }
     }
 
     override fun onDestroy() {

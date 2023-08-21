@@ -1103,17 +1103,20 @@ class ChatFragment :
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q || ThreadsPermissionChecker.isWriteExternalPermissionGranted(activity)
         info("isCameraGranted = $isCameraGranted isWriteGranted $isWriteGranted")
         if (isCameraGranted && isWriteGranted) {
-            try {
-                val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                externalCameraPhotoFile = createImageFile(activity)
-                val photoUri = fileProvider.getUriForFile(activity, externalCameraPhotoFile!!)
-                debug("Image File uri resolved: $photoUri")
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
-                grantPermissionsForImageUri(activity, intent, photoUri)
-                startActivityForResult(intent, REQUEST_EXTERNAL_CAMERA_PHOTO)
-            } catch (e: IllegalArgumentException) {
-                error("Could not start external camera", e)
-                show(requireContext(), requireContext().getString(R.string.ecc_camera_could_not_start_error))
+            coroutineScope.launch {
+                try {
+                    val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                    val externalCameraPhotoFileDef = async(Dispatchers.IO) { createImageFile(activity.applicationContext) }
+                    externalCameraPhotoFile = externalCameraPhotoFileDef.await()
+                    val photoUri = fileProvider.getUriForFile(activity, externalCameraPhotoFile!!)
+                    debug("Image File uri resolved: $photoUri")
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
+                    grantPermissionsForImageUri(activity, intent, photoUri)
+                    startActivityForResult(intent, REQUEST_EXTERNAL_CAMERA_PHOTO)
+                } catch (e: IllegalArgumentException) {
+                    error("Could not start external camera", e)
+                    show(requireContext(), requireContext().getString(R.string.ecc_camera_could_not_start_error))
+                }
             }
         } else {
             val permissions = ArrayList<String>()
@@ -1446,41 +1449,51 @@ class ChatFragment :
                         return@subscribe
                     }
                     unChooseItem()
-                    var fileUri = filteredPhotos[0]
-                    var uum = UpcomingUserMessage(
-                        FileDescription(
-                            requireContext().getString(R.string.ecc_I),
-                            fileUri,
-                            getFileSize(fileUri),
-                            System.currentTimeMillis()
-                        ),
-                        campaignMessage,
-                        mQuote,
-                        inputText.trim { it <= ' ' },
-                        inputText.isLastCopyText()
-                    )
-                    if (isSendBlocked) {
-                        show(requireContext(), getString(R.string.ecc_message_were_unsent))
-                    } else {
-                        chatController.onUserInput(uum)
-                    }
-                    inputTextObservable.onNext("")
-                    quoteLayoutHolder?.clear()
-                    for (i in 1 until filteredPhotos.size) {
-                        fileUri = filteredPhotos[i]
-                        uum = UpcomingUserMessage(
-                            FileDescription(
-                                requireContext().getString(R.string.ecc_I),
-                                fileUri,
-                                getFileSize(fileUri),
-                                System.currentTimeMillis()
-                            ),
-                            null,
-                            null,
-                            null,
-                            false
-                        )
-                        chatController.onUserInput(uum)
+                    coroutineScope.launch(Dispatchers.IO) {
+                        val fileSizes = ArrayList<Long>(filteredPhotos.size)
+                        for (i in filteredPhotos.indices) {
+                            fileSizes.add(getFileSize(filteredPhotos[i]))
+                        }
+                        withMainContext {
+                            var fileUri = filteredPhotos[0]
+                            var fileSize = fileSizes[0]
+                            var uum = UpcomingUserMessage(
+                                FileDescription(
+                                    requireContext().getString(R.string.ecc_I),
+                                    fileUri,
+                                    fileSize,
+                                    System.currentTimeMillis()
+                                ),
+                                campaignMessage,
+                                mQuote,
+                                inputText.trim { it <= ' ' },
+                                inputText.isLastCopyText()
+                            )
+                            if (isSendBlocked) {
+                                show(requireContext(), getString(R.string.ecc_message_were_unsent))
+                            } else {
+                                chatController.onUserInput(uum)
+                            }
+                            inputTextObservable.onNext("")
+                            quoteLayoutHolder?.clear()
+                            for (i in 1 until filteredPhotos.size) {
+                                fileUri = filteredPhotos[i]
+                                fileSize = fileSizes[i]
+                                uum = UpcomingUserMessage(
+                                    FileDescription(
+                                        requireContext().getString(R.string.ecc_I),
+                                        fileUri,
+                                        fileSize,
+                                        System.currentTimeMillis()
+                                    ),
+                                    null,
+                                    null,
+                                    null,
+                                    false
+                                )
+                                chatController.onUserInput(uum)
+                            }
+                        }
                     }
                 }) { onError: Throwable? -> error("onPhotosResult ", onError) }
         )
@@ -1488,26 +1501,29 @@ class ChatFragment :
 
     private fun onExternalCameraPhotoResult() {
         externalCameraPhotoFile?.let { file ->
-            setFileDescription(
-                FileDescription(
-                    requireContext().getString(R.string.ecc_image),
-                    fileProvider.getUriForFile(BaseConfig.getInstance().context, file),
-                    file.length(),
-                    System.currentTimeMillis()
-                )
-            )
-            val inputText = inputTextObservable.value
-            sendMessage(
-                listOf(
-                    UpcomingUserMessage(
-                        getFileDescription(),
-                        campaignMessage,
-                        mQuote,
-                        inputText?.trim { it <= ' ' },
-                        false
+            coroutineScope.launch {
+                val fileLengthDef = async(Dispatchers.IO) { file.length() }
+                setFileDescription(
+                    FileDescription(
+                        requireContext().getString(R.string.ecc_image),
+                        fileProvider.getUriForFile(BaseConfig.getInstance().context, file),
+                        fileLengthDef.await(),
+                        System.currentTimeMillis()
                     )
                 )
-            )
+                val inputText = inputTextObservable.value
+                sendMessage(
+                    listOf(
+                        UpcomingUserMessage(
+                            getFileDescription(),
+                            campaignMessage,
+                            mQuote,
+                            inputText?.trim { it <= ' ' },
+                            false
+                        )
+                    )
+                )
+            }
         }
     }
 
