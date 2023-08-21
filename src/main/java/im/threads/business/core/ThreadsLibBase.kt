@@ -94,13 +94,24 @@ open class ThreadsLibBase protected constructor(context: Context) {
      * @param forceRegistration открывает сокет, отправляет данные о регистрации, закрывает сокет
      */
     open fun initUser(userInfoBuilder: UserInfoBuilder, forceRegistration: Boolean = false) {
-        chatState.changeState(ChatStateEnum.LOGGING_IN)
-        isForceRegistration = forceRegistration
-        clientUseCase.saveUserInfo(userInfoBuilder)
-        if (forceRegistration && preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS).isNullOrBlank()) {
-            BaseConfig.getInstance().transport.sendRegisterDevice(true)
-            if (!ChatFragment.isShown) {
-                BaseConfig.getInstance().transport.closeWebSocket()
+        val clientId = clientUseCase.getUserInfo()?.clientId
+        if (!clientId.isNullOrBlank() && userInfoBuilder.clientId != clientId) {
+            chatState.onLogout()
+            BaseConfig.getInstance().transport.sendClientOffline(clientId) {
+                ChatController.getInstance().cleanAll()
+                clientUseCase.saveUserInfo(null)
+                database.cleanDatabase()
+                initUser(userInfoBuilder, forceRegistration)
+            }
+        } else {
+            chatState.changeState(ChatStateEnum.LOGGING_IN)
+            isForceRegistration = forceRegistration
+            clientUseCase.saveUserInfo(userInfoBuilder)
+            if (forceRegistration && preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS).isNullOrBlank()) {
+                BaseConfig.getInstance().transport.sendRegisterDevice(true)
+                if (!ChatFragment.isShown) {
+                    BaseConfig.getInstance().transport.closeWebSocket()
+                }
             }
         }
     }
@@ -114,7 +125,6 @@ open class ThreadsLibBase protected constructor(context: Context) {
         val clientId = clientUseCase.getUserInfo()?.clientId
         if (!clientId.isNullOrBlank()) {
             BaseConfig.getInstance().transport.sendClientOffline(clientId)
-            coroutineScope.launch { database.cleanDatabase() }
         } else {
             info("clientId must not be empty")
         }

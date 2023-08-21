@@ -410,11 +410,14 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     public void setAllMessagesRead() {
+        ArrayList<String> readMessages = new ArrayList<>();
         for (final Iterator<ChatItem> iter = getList().iterator(); iter.hasNext(); ) {
             final ChatItem item = iter.next();
             if (item instanceof ConsultPhrase) {
                 if (!((ConsultPhrase) item).getRead()) {
                     ((ConsultPhrase) item).setRead(true);
+                    String id = ((ConsultPhrase) item).getId();
+                    if (!TextUtils.isEmpty(id)) readMessages.add(id);
                 }
             }
             if (item instanceof Survey) {
@@ -430,6 +433,10 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 }
                 iter.remove();
             }
+        }
+
+        if (!readMessages.isEmpty()) {
+            BaseConfig.Companion.getInstance().transport.markMessagesAsRead(readMessages);
         }
     }
 

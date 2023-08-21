@@ -70,6 +70,7 @@ abstract class Transport {
      */
     abstract fun sendMessage(userPhrase: UserPhrase, consultInfo: ConsultInfo?, filePath: String?, quoteFilePath: String?): Boolean
     abstract fun sendClientOffline(clientId: String)
+    abstract fun sendClientOffline(clientId: String, callBack: () -> Unit)
     abstract fun updateLocation(latitude: Double, longitude: Double)
     abstract fun getToken(): String
     abstract fun setLifecycle(lifecycle: Lifecycle?)

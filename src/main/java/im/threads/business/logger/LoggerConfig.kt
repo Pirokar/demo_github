@@ -130,6 +130,17 @@ class LoggerConfig(val builder: Builder) {
         }
     }
 
+    override fun toString(): String {
+        return "Logger config: " +
+            "dirPath: ${builder.dirPath} | " +
+            "fileName: ${builder.fileName} | " +
+            "minLevel: ${builder.minLevel} | " +
+            "logToFile: ${builder.logToFile} | " +
+            "retentionPolicy: ${builder.retentionPolicy.name} | " +
+            "maxFileCount: ${builder.maxFileCount} | " +
+            "maxSize: ${builder.maxSize},"
+    }
+
     companion object {
         var config: LoggerConfig? = null
     }
