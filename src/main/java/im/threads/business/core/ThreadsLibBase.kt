@@ -97,16 +97,15 @@ open class ThreadsLibBase protected constructor(context: Context) {
         if (!clientId.isNullOrBlank() && userInfoBuilder.clientId != clientId) {
             chatState.onLogout()
             BaseConfig.getInstance().transport.sendClientOffline(clientId) {
-                ChatController.getInstance().cleanAll()
                 clientUseCase.saveUserInfo(null)
-                database.cleanDatabase()
-                initUser(userInfoBuilder, forceRegistration)
+                ChatController.getInstance().cleanAll()
+                initUser(userInfoBuilder, true)
             }
         } else {
             chatState.changeState(ChatStateEnum.LOGGING_IN)
             isForceRegistration = forceRegistration
             clientUseCase.saveUserInfo(userInfoBuilder)
-            if (forceRegistration && preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS).isNullOrBlank()) {
+            if (forceRegistration && preferences.get(PreferencesCoreKeys.DEVICE_ADDRESS, "").isNullOrBlank()) {
                 BaseConfig.getInstance().transport.sendRegisterDevice(true)
                 if (!ChatFragment.isShown) {
                     BaseConfig.getInstance().transport.closeWebSocket()
