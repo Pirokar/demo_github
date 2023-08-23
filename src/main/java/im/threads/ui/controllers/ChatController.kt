@@ -1613,7 +1613,13 @@ class ChatController private constructor() {
                         val timeoutMessage = "${fragment?.getString(R.string.ecc_timeout_message) ?: "Превышен интервал ожидания для запроса"} (${chatState.getCurrentState()})"
                         withContext(Dispatchers.Main) { fragment?.showErrorView(timeoutMessage) }
                     } else if (stateEvent.state == ChatStateEnum.DEVICE_REGISTERED) {
-                        BaseConfig.getInstance().transport.sendInitMessages()
+                        error("ChatState name DEVICE_REGISTERED. DeviceAddress - null or blank: ${preferences.get(PreferencesCoreKeys.DEVICE_ADDRESS, "").isNullOrBlank()}")
+                        if (preferences.get(PreferencesCoreKeys.DEVICE_ADDRESS, "").isNullOrBlank()) {
+                            error("ChatState name DEVICE_REGISTERED. Need send RegisterDevice()")
+                            BaseConfig.getInstance().transport.sendRegisterDevice(false)
+                        } else {
+                            BaseConfig.getInstance().transport.sendInitMessages()
+                        }
                     } else if (stateEvent.state == ChatStateEnum.ATTACHMENT_SETTINGS_LOADED) {
                         loadItemsFromDB(false)
                         if (fragment?.isResumed == true) loadHistoryAfterWithLastMessageCheck()

@@ -99,13 +99,13 @@ open class ThreadsLibBase protected constructor(context: Context) {
             BaseConfig.getInstance().transport.sendClientOffline(clientId) {
                 clientUseCase.saveUserInfo(null)
                 ChatController.getInstance().cleanAll()
-                initUser(userInfoBuilder, true)
+                initUser(userInfoBuilder, forceRegistration)
             }
         } else {
             chatState.changeState(ChatStateEnum.LOGGING_IN)
             isForceRegistration = forceRegistration
             clientUseCase.saveUserInfo(userInfoBuilder)
-            if (forceRegistration && preferences.get(PreferencesCoreKeys.DEVICE_ADDRESS, "").isNullOrBlank()) {
+            if (forceRegistration && preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS).isNullOrBlank()) {
                 BaseConfig.getInstance().transport.sendRegisterDevice(true)
                 if (!ChatFragment.isShown) {
                     BaseConfig.getInstance().transport.closeWebSocket()

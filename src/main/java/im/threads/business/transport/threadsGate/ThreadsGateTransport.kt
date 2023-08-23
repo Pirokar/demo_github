@@ -177,8 +177,8 @@ class ThreadsGateTransport(
     }
 
     override fun sendRegisterDevice(forceRegistration: Boolean) {
-        val deviceAddress = preferences.get(PreferencesCoreKeys.DEVICE_ADDRESS, "")
-        if (!deviceAddress.isNullOrBlank() || forceRegistration) {
+        val deviceAddress = preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS)
+        if (deviceAddress.isNullOrBlank() || forceRegistration) {
             if (deviceAddress.isNullOrBlank()) sendRegisterDevice()
         } else {
             openWebSocket()
@@ -228,7 +228,7 @@ class ThreadsGateTransport(
     }
 
     override fun sendClientOffline(clientId: String, callBack: () -> Unit) {
-        if (preferences.get(PreferencesCoreKeys.DEVICE_ADDRESS, "").isNullOrBlank()) {
+        if (preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS).isNullOrBlank()) {
             return
         }
         val content = outgoingMessageCreator.createMessageClientOffline(clientId)
@@ -246,7 +246,7 @@ class ThreadsGateTransport(
     }
 
     override fun updateLocation(latitude: Double, longitude: Double) {
-        val deviceAddress = preferences.get(PreferencesCoreKeys.DEVICE_ADDRESS,"")
+        val deviceAddress = preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS)
         if (deviceAddress.isNullOrEmpty()) {
             location = LatLng(latitude, longitude)
         } else {
@@ -261,7 +261,7 @@ class ThreadsGateTransport(
 
     override fun getToken(): String {
         val userInfo = clientUseCase.getUserInfo()
-        val deviceAddress = preferences.get(PreferencesCoreKeys.DEVICE_ADDRESS, "")
+        val deviceAddress = preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS)
         return (
             (if (userInfo?.clientIdSignature.isNullOrEmpty()) deviceAddress else userInfo?.clientIdSignature) +
                 ":" + userInfo?.clientId
@@ -294,7 +294,7 @@ class ThreadsGateTransport(
         }
         webSocket ?: return false
         val clientId = clientUseCase.getUserInfo()?.clientId
-        val deviceAddress = preferences.get(PreferencesCoreKeys.DEVICE_ADDRESS, "")
+        val deviceAddress = preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS)
         if (sendInit && !clientId.isNullOrBlank() && !deviceAddress.isNullOrBlank()) {
             sendInitChatMessage(false)
             sendEnvironmentMessage(false)
@@ -354,7 +354,7 @@ class ThreadsGateTransport(
 
         val deviceModel = getSimpleDeviceName()
         val deviceName = getDeviceName()
-        val deviceAddress = preferences.get(PreferencesCoreKeys.DEVICE_ADDRESS, "")
+        val deviceAddress = preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS)
         val data = RegisterDeviceRequest.Data(
             appInfo.appId,
             appInfo.appVersion,
@@ -515,7 +515,7 @@ class ThreadsGateTransport(
                         response.data.toString(),
                         RegisterDeviceData::class.java
                     )
-                    val previousDeviceAddress = preferences.get(PreferencesCoreKeys.DEVICE_ADDRESS, "")
+                    val previousDeviceAddress = preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS)
                     preferences.save(PreferencesCoreKeys.DEVICE_ADDRESS, data.deviceAddress)
                     if (data.deviceAddress != null && previousDeviceAddress != data.deviceAddress) {
                         chatUpdateProcessor.postDeviceAddressChanged(data.deviceAddress)
