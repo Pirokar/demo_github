@@ -36,7 +36,6 @@ import im.threads.business.models.UserPhrase
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.ogParser.OGDataContent
 import im.threads.business.ogParser.OpenGraphParser
-import im.threads.business.utils.FileUtils
 import im.threads.business.utils.FileUtils.isImage
 import im.threads.business.utils.FileUtils.isVoiceMessage
 import im.threads.business.utils.UrlUtils
@@ -320,7 +319,11 @@ class UserPhraseViewHolder(
         userPhrase.fileDescription?.let {
             fileDescription = it
             subscribeForVoiceMessageDownloaded()
-            rightTextDescription.text = getFileDescriptionText(it)
+
+            fileNameFromDescription(it) { fileName ->
+                rightTextDescription.text = getFileDescriptionText(fileName, it)
+            }
+
             val statusKey = "${it.incomingName}:${it.size}"
             val lastStatus = fileStatuses[statusKey]
             val status = if (lastStatus != null && it.state < lastStatus) {
@@ -649,8 +652,8 @@ class UserPhraseViewHolder(
         rotateAnim.reset()
     }
 
-    private fun getFileDescriptionText(fileDescription: FileDescription): String {
-        return "${FileUtils.getFileName(fileDescription)} " +
+    private fun getFileDescriptionText(fileName: String?, fileDescription: FileDescription): String {
+        return (fileName ?: "file") +
             if (fileDescription.size > 0) {
                 fileDescription.size.toFileSize().trimIndent()
             } else {

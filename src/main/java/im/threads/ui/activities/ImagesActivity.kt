@@ -59,7 +59,7 @@ class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionCl
         mViewPager = findViewById(R.id.pager)
         mViewPager.addOnPageChangeListener(this)
         compositeDisposable?.add(
-            database.allFileDescriptions
+            database.getAllFileDescriptions()
                 .doOnSuccess { data: List<FileDescription?>? ->
                     data?.forEach {
                         if (isImage(it)) {

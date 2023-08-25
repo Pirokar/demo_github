@@ -6,6 +6,7 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.media.MediaMetadataRetriever
 import android.net.ConnectivityManager
 import android.os.Build
 import androidx.annotation.MainThread
@@ -18,6 +19,7 @@ import im.threads.business.config.BaseConfig
 import im.threads.business.controllers.UnreadMessagesController
 import im.threads.business.core.ContextHolder
 import im.threads.business.core.ThreadsLibBase
+import im.threads.business.extensions.withMainContext
 import im.threads.business.formatters.ChatItemType
 import im.threads.business.logger.LoggerEdna.error
 import im.threads.business.logger.LoggerEdna.info
@@ -71,6 +73,7 @@ import im.threads.business.utils.DemoModeProvider
 import im.threads.business.utils.FileUtils.getMimeType
 import im.threads.business.utils.FileUtils.isImage
 import im.threads.business.utils.FileUtils.isVoiceMessage
+import im.threads.business.utils.getDuration
 import im.threads.business.utils.messenger.Messenger
 import im.threads.business.utils.messenger.MessengerImpl
 import im.threads.business.workers.FileDownloadWorker.Companion.startDownload
@@ -79,8 +82,8 @@ import im.threads.ui.activities.ImagesActivity.Companion.getStartIntent
 import im.threads.ui.config.Config
 import im.threads.ui.fragments.ChatFragment
 import im.threads.ui.preferences.PreferencesUiKeys
-import im.threads.ui.utils.preferences.PreferencesMigrationUi
 import im.threads.ui.utils.runOnUiThread
+import im.threads.ui.views.formatAsDuration
 import im.threads.ui.workers.NotificationWorker.Companion.removeNotification
 import io.reactivex.Completable
 import io.reactivex.Flowable
@@ -99,8 +102,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Response
-import java.lang.Runnable
-import java.lang.System
 import java.util.Collections
 import java.util.concurrent.TimeUnit
 
@@ -165,7 +166,6 @@ class ChatController private constructor() {
     private var enableModel: InputFieldEnableModel? = null
 
     init {
-        PreferencesMigrationUi(appContext).migrateNamedPreferences(ChatController::class.java.simpleName)
         subscribeToChatEvents()
     }
 
@@ -251,7 +251,7 @@ class ChatController private constructor() {
                         lastSearchQuery = query
                         Runnable {
                             fragment?.hideProgressBar()
-                            fragment?.showWelcomeScreen(isNeedToShowWelcome)
+                            fragment?.showWelcomeScreenIfNeed()
                         }.runOnUiThread()
                     }
                 }
@@ -263,7 +263,7 @@ class ChatController private constructor() {
                     error(e)
                     Runnable {
                         fragment?.hideProgressBar()
-                        fragment?.showWelcomeScreen(isNeedToShowWelcome)
+                        fragment?.showWelcomeScreenIfNeed()
                     }.runOnUiThread()
                 }
         )
@@ -406,8 +406,8 @@ class ChatController private constructor() {
         }
     }
 
-    val isNeedToShowWelcome: Boolean
-        get() = database.getMessagesCount() == 0 && fragment?.getDisplayedMessagesCount() == 0 && isChatReady() && !isDownloadingMessages
+    fun isNeedToShowWelcome(): Boolean =
+        database.getMessagesCount() == 0 && fragment?.getDisplayedMessagesCount() == 0 && isChatReady() && !isDownloadingMessages
 
     val stateOfConsult: Int
         get() = if (consultWriter.isSearchingConsult) {
@@ -497,7 +497,8 @@ class ChatController private constructor() {
                 val itemsDef = async(Dispatchers.IO) { database.getChatItems(0, -1) }
                 it.addChatItems(itemsDef.await())
                 it.hideProgressBar()
-                it.showWelcomeScreen(isWelcomeScreenAllowed && isNeedToShowWelcome)
+                val isNeedToShowWelcomeDef = async(Dispatchers.IO) { isNeedToShowWelcome() }
+                it.showWelcomeScreen(isWelcomeScreenAllowed && isNeedToShowWelcomeDef.await())
             }
         }
     }
@@ -673,7 +674,7 @@ class ChatController private constructor() {
                             isDownloadingMessages = false
                             if (fragment != null) {
                                 fragment?.hideProgressBar()
-                                fragment?.showWelcomeScreen(isNeedToShowWelcome)
+                                fragment?.showWelcomeScreenIfNeed()
                                 fragment?.showBottomBar()
                             }
                             error(e)
@@ -703,8 +704,7 @@ class ChatController private constructor() {
                                 )
                                 preferences.save(
                                     PreferencesUiKeys.CLIENT_NOTIFICATION_DISPLAY_TYPE,
-                                    type.name,
-                                    true
+                                    type.name
                                 )
                                 chatUpdateProcessor.postClientNotificationDisplayType(type)
                             }
@@ -1663,6 +1663,35 @@ class ChatController private constructor() {
         } catch (exc: Exception) {
             null
         }
+    }
+
+    internal fun setFormattedDurations(
+        list: List<ChatItem?>?,
+        mediaMetadataRetriever: MediaMetadataRetriever,
+        callback: () -> Unit
+    ) {
+        if (list == null) {
+            callback()
+            return
+        }
+
+        coroutineScope.launch(Dispatchers.IO) {
+            list
+                .filterNotNull()
+                .forEach { chatItem ->
+                    val fileDescription = (chatItem as? ConsultPhrase)?.fileDescription ?: (chatItem as? UserPhrase)?.fileDescription
+                    fileDescription?.voiceFormattedDuration = getFormattedDuration(fileDescription, mediaMetadataRetriever)
+                }
+            withMainContext { callback() }
+        }
+    }
+
+    private fun getFormattedDuration(fileDescription: FileDescription?, mediaMetadataRetriever: MediaMetadataRetriever): String {
+        var duration = 0L
+        if (fileDescription != null && isVoiceMessage(fileDescription) && fileDescription.fileUri != null) {
+            duration = mediaMetadataRetriever.getDuration(fileDescription.fileUri!!)
+        }
+        return duration.formatAsDuration()
     }
 
     companion object {

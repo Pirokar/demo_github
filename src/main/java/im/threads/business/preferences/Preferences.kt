@@ -7,6 +7,9 @@ import com.google.gson.reflect.TypeToken
 import im.threads.business.logger.LoggerEdna
 import im.threads.business.preferences.encrypted.EncryptedSharedPreferences
 import im.threads.business.preferences.encrypted.MasterKey
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.IOException
 import java.lang.reflect.Type
 import java.security.GeneralSecurityException
@@ -38,6 +41,10 @@ open class Preferences(private val context: Context) {
         }
     }
 
+    val preferencesStartKeysCount: Int by lazy { sharedPreferences.all.keys.size }
+
+    val coroutineScope = CoroutineScope(Dispatchers.IO)
+
     /**
      * Предоставляет настройку в соответствии с переданным ключом и типом.
      * При необходимости производит миграцию, если такой ключ присутствует в списке,
@@ -45,10 +52,10 @@ open class Preferences(private val context: Context) {
      * @param key ключ для получения данных
      * @param default значение по умолчанию, если не удалось получить значение
      */
-    inline fun <reified T : Any> get(key: String, default: T? = null): T? {
+    private inline fun <reified T : Any> getFromPreferencesFile(key: String, default: T? = null): T? {
         val returnType: Type = object : TypeToken<T>() {}.type
 
-        @Suppress("UNREACHABLE_CODE", "CommitPrefEdits")
+        @Suppress("CommitPrefEdits")
         return try {
             val ret: String? = sharedPreferences.getString(key, null)
             val value = Gson().fromJson(ret, returnType) ?: default ?: throw NullPointerException()
@@ -58,7 +65,7 @@ open class Preferences(private val context: Context) {
                 val value = sharedPreferences.all.getValue(key)
                 if (value is T) {
                     sharedPreferences.edit().remove(key)
-                    save(key, value, true)
+                    save(key, value)
                     return value
                 } else {
                     return default
@@ -73,22 +80,59 @@ open class Preferences(private val context: Context) {
      * Сохраняет настройку в map по ключу. Возможно синхронное и асинхронное сохранение.
      * @param key ключ для сохранения данных
      * @param obj сохраняемый объект
-     * @param saveAsync указывает, следует ли сохранить объект асинхронно. По умолчанию значение = false
      */
-    inline fun <reified T : Any> save(key: String, obj: T?, saveAsync: Boolean = false) {
+    inline fun <reified T : Any> save(key: String, obj: T?) {
         val json = if (obj != null) Gson().toJson(obj).toString() else null
-        val editor = sharedPreferences.edit()
-        editor.putString(key, json)
+        savePreferenceToRam(key, json)
 
-        if (saveAsync) {
-            editor.apply()
-        } else {
+        coroutineScope.launch {
+            val editor = sharedPreferences.edit()
+            editor.putString(key, json)
             editor.commit()
         }
+    }
+
+    /**
+     * Предоставляет настройку в соответствии с переданным ключом и типом.
+     * @param key ключ для получения данных
+     * @param default значение по умолчанию, если не удалось получить значение
+     */
+    inline fun <reified T : Any> get(key: String, default: T? = null): T? {
+        val returnType: Type = object : TypeToken<T>() {}.type
+        return try {
+            var ret: String = getPreferenceFromRam(key)
+            if (ret.isEmpty() && !isRamPreferencesLoaded) {
+                ret = sharedPreferences.getString(key, null) ?: ""
+                if (ret.isNotEmpty()) savePreferenceToRam(key, ret)
+            }
+            val value = Gson().fromJson(ret, returnType) ?: default ?: throw NullPointerException()
+            if (value == "null") null else value
+        } catch (exc: Exception) {
+            null
+        }
+    }
+
+    internal fun loadPreferencesInRam() {
+        sharedPreferences.all.keys.forEach {
+            savePreferenceToRam(it, getFromPreferencesFile(it) ?: "")
+        }
+        isRamPreferencesLoaded = true
     }
 
     private fun onGetEncryptedPreferencesException(context: Context, exc: Exception): SharedPreferences {
         LoggerEdna.error(exc)
         return context.getSharedPreferences(storeName, Context.MODE_PRIVATE)
+    }
+
+    companion object {
+        private val ramPreferences = HashMap<String, String>()
+        var isRamPreferencesLoaded = false
+
+        @Synchronized
+        fun savePreferenceToRam(key: String, value: String?) {
+            ramPreferences[key] = value ?: ""
+        }
+
+        fun getPreferenceFromRam(key: String) = ramPreferences[key] ?: ""
     }
 }

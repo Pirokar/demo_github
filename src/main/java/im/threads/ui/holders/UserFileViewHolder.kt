@@ -25,7 +25,6 @@ import im.threads.business.models.MessageStatus
 import im.threads.business.models.UserPhrase
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.ogParser.OpenGraphParser
-import im.threads.business.utils.FileUtils.getFileName
 import im.threads.business.utils.toFileSize
 import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.utils.gone
@@ -105,7 +104,7 @@ class UserFileViewHolder(
         userPhrase.fileDescription?.let {
             this.fileDescription = it
             val viewGroup = itemView as ViewGroup
-            fileHeaderTextView.text = getFileName(it)
+            fileNameFromDescription(it) { fileName -> fileHeaderTextView.text = fileName }
             fileSizeTextView.text = it.size.toFileSize()
             fileSizeTextView.visibility = if (it.size > 0) View.VISIBLE else View.GONE
             for (i in 0 until viewGroup.childCount) {

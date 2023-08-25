@@ -144,6 +144,7 @@ import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileNotFoundException
@@ -181,7 +182,7 @@ class ChatFragment :
     private var chatAdapter: ChatAdapter? = null
     private var mLayoutManager: LinearLayoutManager? = null
     private var chatAdapterCallback: ChatAdapter.Callback? = null
-    private var mQuoteLayoutHolder: QuoteLayoutHolder? = null
+    private var quoteLayoutHolder: QuoteLayoutHolder? = null
     private var mQuote: Quote? = null
     private var campaignMessage: CampaignMessage? = null
     private var mChatReceiver: ChatReceiver? = null
@@ -199,6 +200,7 @@ class ChatFragment :
     var quickReplyItem: QuickReplyItem? = null
     private var previousChatItemsCount = 0
     private val config = Config.getInstance()
+    private val coroutineScope = CoroutineScope(Dispatchers.Main)
     var style: ChatStyle = config.chatStyle
         private set
 
@@ -233,7 +235,7 @@ class ChatFragment :
         val fileDescriptionDraft = chatController.fileDescriptionDraft
         if (isVoiceMessage(fileDescriptionDraft)) {
             setFileDescription(fileDescriptionDraft)
-            mQuoteLayoutHolder?.setVoice()
+            quoteLayoutHolder?.setVoice()
         }
         val campaignMessage = chatController.campaignMessage
         val arguments = arguments
@@ -245,7 +247,7 @@ class ChatFragment :
             val uid = UUID.randomUUID().toString()
             mQuote = Quote(uid, campaignMessage.senderName, campaignMessage.text, null, campaignMessage.receivedDate.time)
             this.campaignMessage = campaignMessage
-            mQuoteLayoutHolder?.setContent(
+            quoteLayoutHolder?.setContent(
                 campaignMessage.senderName,
                 campaignMessage.text,
                 null,
@@ -367,11 +369,12 @@ class ChatFragment :
     internal fun hideErrorView(showList: Boolean = true) = binding?.apply {
         chatErrorLayout.errorLayout.gone()
         bottomLayout.visible()
-        val isNeedToShowWelcome = chatController.isNeedToShowWelcome
-        if (isNeedToShowWelcome && showList) {
-            showWelcomeScreen(chatController.isChatReady())
-        } else if (showList) {
-            recycler.visible()
+        isNeedToShowWelcome {
+            if (it && showList) {
+                showWelcomeScreen(chatController.isChatReady())
+            } else if (showList) {
+                recycler.visible()
+            }
         }
     }
 
@@ -411,9 +414,17 @@ class ChatFragment :
         }
     }
 
+    private fun isNeedToShowWelcome(callback: (Boolean) -> Unit) {
+        coroutineScope.launch(Dispatchers.IO) {
+            val isNeedToShowWelcome = chatController.isNeedToShowWelcome()
+            withMainContext { callback(isNeedToShowWelcome) }
+        }
+    }
+
     private fun initController() {
         val activity = activity ?: return
-        showWelcomeScreen(chatController.isNeedToShowWelcome)
+
+        isNeedToShowWelcome { showWelcomeScreen(it) }
         chatController.bindFragment(this)
         mChatReceiver = ChatReceiver()
         val intentFilter = IntentFilter(ACTION_SEARCH_CHAT_FILES)
@@ -428,7 +439,7 @@ class ChatFragment :
             return@apply
         }
         initInputLayout(activity)
-        mQuoteLayoutHolder = QuoteLayoutHolder()
+        quoteLayoutHolder = QuoteLayoutHolder()
         mLayoutManager = LinearLayoutManager(activity)
         recycler.layoutManager = mLayoutManager
         chatAdapter = ChatAdapter(
@@ -644,14 +655,18 @@ class ChatFragment :
 
     private fun addVoiceMessagePreview(file: File) {
         val context = context ?: return
-        val fd = FileDescription(
-            requireContext().getString(R.string.ecc_voice_message).lowercase(Locale.getDefault()),
-            fileProvider.getUriForFile(context, file),
-            file.length(),
-            System.currentTimeMillis()
-        )
-        setFileDescription(fd)
-        mQuoteLayoutHolder?.setVoice()
+        coroutineScope.launch(Dispatchers.IO) {
+            val fd = FileDescription(
+                requireContext().getString(R.string.ecc_voice_message).lowercase(Locale.getDefault()),
+                fileProvider.getUriForFile(context, file),
+                file.length(),
+                System.currentTimeMillis()
+            )
+            withMainContext {
+                setFileDescription(fd)
+                quoteLayoutHolder?.setVoice()
+            }
+        }
     }
 
     private fun initMediaPlayer() {
@@ -665,18 +680,18 @@ class ChatFragment :
                             return@subscribe
                         }
                         if (isPreviewPlaying) {
-                            if (mQuoteLayoutHolder!!.ignorePlayerUpdates) {
+                            if (quoteLayoutHolder!!.ignorePlayerUpdates) {
                                 return@subscribe
                             }
                             val mediaPlayer = player.mediaPlayer
                             if (mediaPlayer != null) {
-                                mQuoteLayoutHolder?.updateProgress(mediaPlayer.currentPosition)
-                                mQuoteLayoutHolder?.updateIsPlaying(mediaPlayer.isPlaying)
+                                quoteLayoutHolder?.updateProgress(mediaPlayer.currentPosition)
+                                quoteLayoutHolder?.updateIsPlaying(mediaPlayer.isPlaying)
                             }
                             chatAdapter?.resetPlayingHolder()
                         } else {
                             chatAdapter?.playerUpdate()
-                            mQuoteLayoutHolder?.resetProgress()
+                            quoteLayoutHolder?.resetProgress()
                         }
                     }
                 ) { error: Throwable? -> error("initMediaPlayer ", error) }
@@ -1088,17 +1103,20 @@ class ChatFragment :
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q || ThreadsPermissionChecker.isWriteExternalPermissionGranted(activity)
         info("isCameraGranted = $isCameraGranted isWriteGranted $isWriteGranted")
         if (isCameraGranted && isWriteGranted) {
-            try {
-                val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                externalCameraPhotoFile = createImageFile(activity)
-                val photoUri = fileProvider.getUriForFile(activity, externalCameraPhotoFile!!)
-                debug("Image File uri resolved: $photoUri")
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
-                grantPermissionsForImageUri(activity, intent, photoUri)
-                startActivityForResult(intent, REQUEST_EXTERNAL_CAMERA_PHOTO)
-            } catch (e: IllegalArgumentException) {
-                error("Could not start external camera", e)
-                show(requireContext(), requireContext().getString(R.string.ecc_camera_could_not_start_error))
+            coroutineScope.launch {
+                try {
+                    val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                    val externalCameraPhotoFileDef = async(Dispatchers.IO) { createImageFile(activity.applicationContext) }
+                    externalCameraPhotoFile = externalCameraPhotoFileDef.await()
+                    val photoUri = fileProvider.getUriForFile(activity, externalCameraPhotoFile!!)
+                    debug("Image File uri resolved: $photoUri")
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
+                    grantPermissionsForImageUri(activity, intent, photoUri)
+                    startActivityForResult(intent, REQUEST_EXTERNAL_CAMERA_PHOTO)
+                } catch (e: IllegalArgumentException) {
+                    error("Could not start external camera", e)
+                    show(requireContext(), requireContext().getString(R.string.ecc_camera_could_not_start_error))
+                }
             }
         } else {
             val permissions = ArrayList<String>()
@@ -1121,8 +1139,12 @@ class ChatFragment :
         startActivityForResult(getStartIntent(activity, REQUEST_CODE_PHOTOS), REQUEST_CODE_PHOTOS)
     }
 
-    override fun onImageSelectionChanged(imageList: List<Uri>) {
-        mAttachedImages = ArrayList(imageList)
+    override fun onImageSelectionChanged(imageList: List<Uri>?) {
+        mAttachedImages = if (imageList != null) {
+            ArrayList(imageList)
+        } else {
+            arrayListOf()
+        }
     }
 
     override fun onBottomSheetDetached() {
@@ -1204,7 +1226,7 @@ class ChatFragment :
         }
         setFileDescription(null)
         if (isImage(cp.fileDescription)) {
-            mQuoteLayoutHolder?.setContent(
+            quoteLayoutHolder?.setContent(
                 if (mQuote?.phraseOwnerTitle.isNullOrEmpty()) "" else mQuote?.phraseOwnerTitle,
                 (if (text.isNullOrEmpty()) requireContext().getString(R.string.ecc_image) else text),
                 cp.fileDescription?.fileUri,
@@ -1229,7 +1251,7 @@ class ChatFragment :
                 error("onReplyClick", e)
             }
             val phraseOwnerTitleIsNotEmpty = mQuote != null && !mQuote?.phraseOwnerTitle.isNullOrEmpty()
-            mQuoteLayoutHolder?.setContent(
+            quoteLayoutHolder?.setContent(
                 if (phraseOwnerTitleIsNotEmpty) mQuote?.phraseOwnerTitle else "",
                 fileName,
                 null,
@@ -1237,7 +1259,7 @@ class ChatFragment :
             )
         } else {
             val phraseOwnerTitleIsNotEmpty = mQuote != null && !mQuote?.phraseOwnerTitle.isNullOrEmpty()
-            mQuoteLayoutHolder?.setContent(
+            quoteLayoutHolder?.setContent(
                 if (phraseOwnerTitleIsNotEmpty) mQuote?.phraseOwnerTitle else "",
                 (if (text.isNullOrEmpty()) "" else text),
                 null,
@@ -1289,18 +1311,23 @@ class ChatFragment :
                             return@subscribe
                         }
                         val inputText = inputTextObservable.value ?: return@subscribe
-                        val messages = getUpcomingUserMessagesFromSelection(
-                            filteredPhotos,
-                            inputText,
-                            requireContext().getString(R.string.ecc_I),
-                            campaignMessage,
-                            mQuote
-                        )
-                        if (isSendBlocked) {
-                            clearInput()
-                            show(requireContext(), requireContext().getString(R.string.ecc_message_were_unsent))
-                        } else {
-                            sendMessage(messages)
+                        coroutineScope.launch {
+                            val messagesDef = async(Dispatchers.IO) {
+                                getUpcomingUserMessagesFromSelection(
+                                    filteredPhotos,
+                                    inputText,
+                                    requireContext().getString(R.string.ecc_I),
+                                    campaignMessage,
+                                    mQuote
+                                )
+                            }
+                            val messages = messagesDef.await()
+                            if (isSendBlocked) {
+                                clearInput()
+                                show(requireContext(), requireContext().getString(R.string.ecc_message_were_unsent))
+                            } else {
+                                sendMessage(messages)
+                            }
                         }
                     }
                 ) { onError: Throwable? -> error("onSendClick ", onError) }
@@ -1422,41 +1449,51 @@ class ChatFragment :
                         return@subscribe
                     }
                     unChooseItem()
-                    var fileUri = filteredPhotos[0]
-                    var uum = UpcomingUserMessage(
-                        FileDescription(
-                            requireContext().getString(R.string.ecc_I),
-                            fileUri,
-                            getFileSize(fileUri),
-                            System.currentTimeMillis()
-                        ),
-                        campaignMessage,
-                        mQuote,
-                        inputText.trim { it <= ' ' },
-                        inputText.isLastCopyText()
-                    )
-                    if (isSendBlocked) {
-                        show(requireContext(), getString(R.string.ecc_message_were_unsent))
-                    } else {
-                        chatController.onUserInput(uum)
-                    }
-                    inputTextObservable.onNext("")
-                    mQuoteLayoutHolder?.clear()
-                    for (i in 1 until filteredPhotos.size) {
-                        fileUri = filteredPhotos[i]
-                        uum = UpcomingUserMessage(
-                            FileDescription(
-                                requireContext().getString(R.string.ecc_I),
-                                fileUri,
-                                getFileSize(fileUri),
-                                System.currentTimeMillis()
-                            ),
-                            null,
-                            null,
-                            null,
-                            false
-                        )
-                        chatController.onUserInput(uum)
+                    coroutineScope.launch(Dispatchers.IO) {
+                        val fileSizes = ArrayList<Long>(filteredPhotos.size)
+                        for (i in filteredPhotos.indices) {
+                            fileSizes.add(getFileSize(filteredPhotos[i]))
+                        }
+                        withMainContext {
+                            var fileUri = filteredPhotos[0]
+                            var fileSize = fileSizes[0]
+                            var uum = UpcomingUserMessage(
+                                FileDescription(
+                                    requireContext().getString(R.string.ecc_I),
+                                    fileUri,
+                                    fileSize,
+                                    System.currentTimeMillis()
+                                ),
+                                campaignMessage,
+                                mQuote,
+                                inputText.trim { it <= ' ' },
+                                inputText.isLastCopyText()
+                            )
+                            if (isSendBlocked) {
+                                show(requireContext(), getString(R.string.ecc_message_were_unsent))
+                            } else {
+                                chatController.onUserInput(uum)
+                            }
+                            inputTextObservable.onNext("")
+                            quoteLayoutHolder?.clear()
+                            for (i in 1 until filteredPhotos.size) {
+                                fileUri = filteredPhotos[i]
+                                fileSize = fileSizes[i]
+                                uum = UpcomingUserMessage(
+                                    FileDescription(
+                                        requireContext().getString(R.string.ecc_I),
+                                        fileUri,
+                                        fileSize,
+                                        System.currentTimeMillis()
+                                    ),
+                                    null,
+                                    null,
+                                    null,
+                                    false
+                                )
+                                chatController.onUserInput(uum)
+                            }
+                        }
                     }
                 }) { onError: Throwable? -> error("onPhotosResult ", onError) }
         )
@@ -1464,26 +1501,29 @@ class ChatFragment :
 
     private fun onExternalCameraPhotoResult() {
         externalCameraPhotoFile?.let { file ->
-            setFileDescription(
-                FileDescription(
-                    requireContext().getString(R.string.ecc_image),
-                    fileProvider.getUriForFile(BaseConfig.getInstance().context, file),
-                    file.length(),
-                    System.currentTimeMillis()
-                )
-            )
-            val inputText = inputTextObservable.value
-            sendMessage(
-                listOf(
-                    UpcomingUserMessage(
-                        getFileDescription(),
-                        campaignMessage,
-                        mQuote,
-                        inputText?.trim { it <= ' ' },
-                        false
+            coroutineScope.launch {
+                val fileLengthDef = async(Dispatchers.IO) { file.length() }
+                setFileDescription(
+                    FileDescription(
+                        requireContext().getString(R.string.ecc_image),
+                        fileProvider.getUriForFile(BaseConfig.getInstance().context, file),
+                        fileLengthDef.await(),
+                        System.currentTimeMillis()
                     )
                 )
-            )
+                val inputText = inputTextObservable.value
+                sendMessage(
+                    listOf(
+                        UpcomingUserMessage(
+                            getFileDescription(),
+                            campaignMessage,
+                            mQuote,
+                            inputText?.trim { it <= ' ' },
+                            false
+                        )
+                    )
+                )
+            }
         }
     }
 
@@ -1491,52 +1531,65 @@ class ChatFragment :
     private fun onFileResult(data: Intent) {
         val uri = data.data
         if (uri != null) {
-            if (isAllowedFileExtension(getExtensionFromMediaStore(BaseConfig.getInstance().context, uri))) {
-                if (isAllowedFileSize(getFileSizeFromMediaStore(BaseConfig.getInstance().context, uri))) {
-                    try {
-                        if (canBeSent(requireContext(), uri)) {
-                            onFileResult(uri)
-                            val takeFlags = (
-                                data.flags
-                                    and (
-                                        Intent.FLAG_GRANT_READ_URI_PERMISSION
-                                            or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+            coroutineScope.launch(Dispatchers.IO) {
+                val isAllowedFileExtension = isAllowedFileExtension(getExtensionFromMediaStore(BaseConfig.getInstance().context, uri))
+                val isAllowedFileSize = isAllowedFileSize(getFileSizeFromMediaStore(BaseConfig.getInstance().context, uri))
+                val isCanBeSent = canBeSent(requireContext(), uri)
+
+                withMainContext {
+                    if (isAllowedFileExtension) {
+                        if (isAllowedFileSize) {
+                            try {
+                                if (isCanBeSent) {
+                                    onFileResult(uri)
+                                    val takeFlags = (
+                                        data.flags
+                                            and (
+                                                Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                                    or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                                                )
                                         )
-                                )
-                            requireActivity().contentResolver.takePersistableUriPermission(uri, takeFlags)
+                                    requireActivity().contentResolver.takePersistableUriPermission(uri, takeFlags)
+                                } else {
+                                    show(requireContext(), getString(R.string.ecc_failed_to_open_file))
+                                }
+                            } catch (e: SecurityException) {
+                                error("file can't be sent", e)
+                                show(requireContext(), getString(R.string.ecc_failed_to_open_file))
+                            }
                         } else {
-                            show(requireContext(), getString(R.string.ecc_failed_to_open_file))
+                            // Недопустимый размер файла
+                            show(
+                                requireContext(),
+                                getString(
+                                    R.string.ecc_not_allowed_file_size,
+                                    maxAllowedFileSize
+                                )
+                            )
                         }
-                    } catch (e: SecurityException) {
-                        error("file can't be sent", e)
-                        show(requireContext(), getString(R.string.ecc_failed_to_open_file))
+                    } else {
+                        // Недопустимое расширение файла
+                        show(requireContext(), getString(R.string.ecc_not_allowed_file_extension))
                     }
-                } else {
-                    // Недопустимый размер файла
-                    show(
-                        requireContext(),
-                        getString(
-                            R.string.ecc_not_allowed_file_size,
-                            maxAllowedFileSize
-                        )
-                    )
                 }
-            } else {
-                // Недопустимое расширение файла
-                show(requireContext(), getString(R.string.ecc_not_allowed_file_extension))
             }
         }
     }
 
     private fun onFileResult(uri: Uri) {
         info("onFileSelected: $uri")
-        setFileDescription(FileDescription(requireContext().getString(R.string.ecc_I), uri, getFileSize(uri), System.currentTimeMillis()))
-        mQuoteLayoutHolder!!.setContent(
-            requireContext().getString(R.string.ecc_file),
-            getFileName(uri),
-            null,
-            true
-        )
+        coroutineScope.launch(Dispatchers.IO) {
+            setFileDescription(FileDescription(requireContext().getString(R.string.ecc_I), uri, getFileSize(uri), System.currentTimeMillis()))
+            val fileName = getFileName(uri)
+            withMainContext {
+                quoteLayoutHolder?.setContent(
+                    requireContext().getString(R.string.ecc_file),
+                    fileName,
+                    null,
+                    true
+                )
+            }
+        }
     }
 
     private fun onPhotoResult(data: Intent) {
@@ -1603,7 +1656,7 @@ class ChatFragment :
 
     private fun clearInput() {
         binding?.inputEditView?.setText("")
-        mQuoteLayoutHolder?.clear()
+        quoteLayoutHolder?.clear()
         setBottomStateDefault()
         hideCopyControls()
         mAttachedImages?.clear()
@@ -1911,6 +1964,10 @@ class ChatFragment :
         } else {
             View.GONE
         }
+    }
+
+    internal fun showWelcomeScreenIfNeed() {
+        isNeedToShowWelcome { showWelcomeScreen(it) }
     }
 
     internal fun showBottomBar() {
@@ -2226,8 +2283,8 @@ class ChatFragment :
                 scrollToPosition(chatAdapter!!.itemCount - 1, false)
             }
             false
-        } else if (mQuoteLayoutHolder?.isVisible == true) {
-            mQuoteLayoutHolder?.clear()
+        } else if (quoteLayoutHolder?.isVisible == true) {
+            quoteLayoutHolder?.clear()
             false
         } else if (isInMessageSearchMode) {
             hideSearchMode()
@@ -2558,9 +2615,14 @@ class ChatFragment :
             quoteHeader.visibility = View.GONE
             quoteText.visibility = View.GONE
             quotePast.visibility = View.GONE
-            formattedDuration = getFormattedDuration(getFileDescription())
-            quoteDuration.text = formattedDuration
-            chatUpdateProcessor.postAttachAudioFile(true)
+
+            coroutineScope.launch(Dispatchers.IO) {
+                formattedDuration = getFormattedDuration(getFileDescription())
+                withMainContext {
+                    quoteDuration.text = formattedDuration
+                    chatUpdateProcessor.postAttachAudioFile(true)
+                }
+            }
         }
 
         private fun init(maxValue: Int, progress: Int, isPlaying: Boolean) = binding?.apply {
@@ -2736,10 +2798,12 @@ class ChatFragment :
             if (it.isNotEmpty()) {
                 val isChatReady = chatController.isChatReady()
                 val isAnimationEnabled = withAnimation && isChatReady
-                chatAdapter?.addItems(it, isAnimationEnabled)
-                if (isChatReady) {
-                    hideErrorView()
-                    hideProgressBar()
+                chatController.setFormattedDurations(it, mediaMetadataRetriever) {
+                    chatAdapter?.addItems(it, isAnimationEnabled)
+                    if (isChatReady) {
+                        hideErrorView()
+                        hideProgressBar()
+                    }
                 }
             }
         }

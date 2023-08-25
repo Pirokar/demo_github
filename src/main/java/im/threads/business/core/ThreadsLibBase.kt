@@ -3,6 +3,7 @@ package im.threads.business.core
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
+import android.os.Looper
 import im.threads.BuildConfig
 import im.threads.business.AuthMethod
 import im.threads.business.UserInfoBuilder
@@ -176,13 +177,18 @@ open class ThreadsLibBase protected constructor(context: Context) {
             createLibInstance(configBuilder.context)
             BaseConfig.setInstance(configBuilder.build())
             BaseConfig.getInstance().loggerConfig?.let { LoggerEdna.init(it) }
+
+            loadRamPrefs(this::migratePreference, configBuilder.context)
+            initBaseParams()
+
+            info("Lib_init_time: ${System.currentTimeMillis() - startInitTime}ms")
+        }
+
+        private fun migratePreference() {
             PreferencesMigrationBase(BaseConfig.getInstance().context).apply {
                 migrateMainSharedPreferences()
                 migrateUserInfo()
             }
-            initBaseParams()
-
-            info("Lib_init_time: ${System.currentTimeMillis() - startInitTime}ms")
         }
 
         @SuppressLint("CheckResult")
@@ -252,6 +258,21 @@ open class ThreadsLibBase protected constructor(context: Context) {
 
             updateTransport()
             showVersionsLog()
+        }
+
+        internal fun loadRamPrefs(migratePreference: () -> Unit, context: Context) {
+            if (Looper.myLooper() == Looper.getMainLooper()) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    loadPreferencesInRam(migratePreference, context)
+                }
+            } else {
+                loadPreferencesInRam(migratePreference, context)
+            }
+        }
+
+        private fun loadPreferencesInRam(migratePreference: () -> Unit, context: Context) {
+            migratePreference()
+            Preferences(context).loadPreferencesInRam()
         }
 
         /**

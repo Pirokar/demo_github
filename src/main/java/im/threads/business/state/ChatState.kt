@@ -23,11 +23,13 @@ class ChatState(private val preferences: Preferences) {
 
     private var coroutineScope: CoroutineScope? = null
 
-    private var stateChannel = MutableStateFlow(
-        ChatStateEvent(
-            preferences.get(PreferencesCoreKeys.CHAT_STATE, ChatStateEnum.LOGGED_OUT) ?: ChatStateEnum.LOGGED_OUT
+    private val stateChannel by lazy {
+        MutableStateFlow(
+            ChatStateEvent(
+                preferences.get(PreferencesCoreKeys.CHAT_STATE, ChatStateEnum.LOGGED_OUT) ?: ChatStateEnum.LOGGED_OUT
+            )
         )
-    )
+    }
 
     var initChatCorrelationId: String = ""
 

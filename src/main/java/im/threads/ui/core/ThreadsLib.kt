@@ -125,12 +125,8 @@ class ThreadsLib(context: Context) : ThreadsLibBase(context) {
             Config.setInstance(configBuilder.build())
             BaseConfig.getInstance().loggerConfig?.let { LoggerEdna.init(it) }
             LoggerEdna.info(configBuilder.toString())
-            PreferencesMigrationUi(BaseConfig.getInstance().context).apply {
-                removeStyleFromPreferences()
-                migrateMainSharedPreferences()
-                migrateUserInfo()
-            }
 
+            loadRamPrefs(this::migratePreference, configBuilder.context)
             initBaseParams()
         }
 
@@ -173,6 +169,15 @@ class ThreadsLib(context: Context) : ThreadsLibBase(context) {
         private fun createLibInstance(context: Context) {
             check(libInstance == null) { "ThreadsLib has already been initialized" }
             setLibraryInstance(ThreadsLib(context))
+        }
+
+        internal fun migratePreference() {
+            PreferencesMigrationUi(BaseConfig.getInstance().context).apply {
+                migrateNamedPreferences(ChatController::class.java.simpleName)
+                removeStyleFromPreferences()
+                migrateMainSharedPreferences()
+                migrateUserInfo()
+            }
         }
 
         @JvmStatic
