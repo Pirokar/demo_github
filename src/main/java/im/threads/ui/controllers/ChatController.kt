@@ -1614,7 +1614,7 @@ class ChatController private constructor() {
                         val timeoutMessage = "${fragment?.getString(R.string.ecc_timeout_message) ?: "Превышен интервал ожидания для запроса"} (${chatState.getCurrentState()})"
                         withContext(Dispatchers.Main) { fragment?.showErrorView(timeoutMessage) }
                     } else if (stateEvent.state == ChatStateEnum.DEVICE_REGISTERED) {
-                        if (preferences.get(PreferencesCoreKeys.DEVICE_ADDRESS, "").isNullOrBlank()) {
+                        if (preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS).isNullOrBlank()) {
                             BaseConfig.getInstance().transport.sendRegisterDevice(false)
                         } else {
                             BaseConfig.getInstance().transport.sendInitMessages()
