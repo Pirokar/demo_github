@@ -1285,6 +1285,7 @@ class ChatController private constructor() {
         consultWriter.setCurrentConsultLeft()
         consultWriter.isSearchingConsult = false
         removePushNotification()
+        clientUseCase.cleanUserInfoFromRam()
         clearPreferences(keepClientId)
         UnreadMessagesController.INSTANCE.refreshUnreadMessagesCount()
         localUserMessages.clear()

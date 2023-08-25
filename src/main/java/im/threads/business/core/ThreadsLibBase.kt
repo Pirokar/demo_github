@@ -97,7 +97,6 @@ open class ThreadsLibBase protected constructor(context: Context) {
         if (!clientId.isNullOrBlank() && userInfoBuilder.clientId != clientId) {
             chatState.onLogout()
             BaseConfig.getInstance().transport.sendClientOffline(clientId) {
-                clientUseCase.saveUserInfo(null)
                 ChatController.getInstance().cleanAll()
                 initUser(userInfoBuilder, forceRegistration)
             }
