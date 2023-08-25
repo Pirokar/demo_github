@@ -30,8 +30,8 @@ class Config(
     val pendingIntentCreator: PendingIntentCreator,
     unreadMessagesCountListener: UnreadMessagesCountListener?,
     networkInterceptor: Interceptor?,
-    lightTheme: ChatStyle?,
-    darkTheme: ChatStyle?,
+    var lightTheme: ChatStyle?,
+    var darkTheme: ChatStyle?,
     isDebugLoggingEnabled: Boolean,
     historyLoadingCount: Int,
     surveyCompletionDelay: Int,
@@ -72,9 +72,6 @@ class Config(
                 }
             }
         }
-
-    var lightTheme: ChatStyle? = null
-    var darkTheme: ChatStyle? = null
 
     @Volatile
     private var storagePermissionDescriptionDialogStyle: PermissionDescriptionDialogStyle? = null
