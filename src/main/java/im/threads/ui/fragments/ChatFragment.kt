@@ -26,18 +26,15 @@ import android.text.style.ForegroundColorSpan
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.HapticFeedbackConstants
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
-import android.view.inputmethod.EditorInfo
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
@@ -132,7 +129,6 @@ import im.threads.ui.utils.hideKeyboard
 import im.threads.ui.utils.invisible
 import im.threads.ui.utils.isNotVisible
 import im.threads.ui.utils.isVisible
-import im.threads.ui.utils.showKeyboard
 import im.threads.ui.utils.visible
 import im.threads.ui.views.VoiceTimeLabelFormatter
 import im.threads.ui.views.formatAsDuration
@@ -453,10 +449,6 @@ class ChatFragment :
             itemAnimator.changeDuration = 0
         }
         recycler.adapter = chatAdapter
-        searchDownIb.alpha = DISABLED_ALPHA
-        searchUpIb.alpha = DISABLED_ALPHA
-        searchDownIb.isEnabled = false
-        searchUpIb.isEnabled = false
     }
 
     private fun initInputLayout(activity: Activity) = binding?.apply {
@@ -726,32 +718,6 @@ class ChatFragment :
         }
         configureUserTypingSubscription()
         configureRecordButtonVisibility()
-        searchUpIb.setOnClickListener {
-            if (TextUtils.isEmpty(search.text)) return@setOnClickListener
-            doFancySearch(search.text.toString(), false)
-        }
-        searchDownIb.setOnClickListener {
-            if (TextUtils.isEmpty(search.text)) return@setOnClickListener
-            doFancySearch(search.text.toString(), true)
-        }
-        search.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: Editable) {
-                if (!isInMessageSearchMode) {
-                    return
-                }
-                doFancySearch(s.toString(), true)
-            }
-        })
-        search.setOnEditorActionListener { v: TextView, actionId: Int, _: KeyEvent? ->
-            if (isInMessageSearchMode && actionId == EditorInfo.IME_ACTION_SEARCH) {
-                doFancySearch(v.text.toString(), false)
-                return@setOnEditorActionListener true
-            } else {
-                return@setOnEditorActionListener false
-            }
-        }
         recycler.addOnLayoutChangeListener { v: View?, left: Int, top: Int, right: Int, bottom: Int, oldLeft: Int, oldTop: Int, oldRight: Int, oldBottom: Int ->
             if (bottom < oldBottom) {
                 recycler.postDelayed({
@@ -960,8 +926,6 @@ class ChatFragment :
         ColorsHelper.setBackgroundColor(activity, inputLayout, style.chatMessageInputColor)
         ColorsHelper.setBackgroundColor(activity, bottomLayout, style.chatMessageInputColor)
         ColorsHelper.setBackgroundColor(activity, recordView, style.chatMessageInputColor)
-        ColorsHelper.setDrawableColor(activity, searchUpIb.drawable, style.chatToolbarTextColorResId)
-        ColorsHelper.setDrawableColor(activity, searchDownIb.drawable, style.chatToolbarTextColorResId)
         searchMore.setBackgroundColor(ContextCompat.getColor(activity, style.iconsAndSeparatorsColor))
         searchMore.setTextColor(ContextCompat.getColor(activity, style.iconsAndSeparatorsColor))
         swipeRefresh.setColorSchemeColors(*resources.getIntArray(style.threadsSwipeRefreshColors))
@@ -1012,13 +976,11 @@ class ChatFragment :
                 sendMessage.isEnabled = !TextUtils.isEmpty(s) || hasAttachments()
             }
         })
-        ColorsHelper.setTextColor(activity, search, style.chatToolbarTextColorResId)
         ColorsHelper.setTextColor(activity, subtitle, style.chatToolbarTextColorResId)
         ColorsHelper.setTextColor(activity, consultName, style.chatToolbarTextColorResId)
         ColorsHelper.setTextColor(activity, subtitle, style.chatToolbarTextColorResId)
         ColorsHelper.setTextColor(activity, consultName, style.chatToolbarTextColorResId)
         ColorsHelper.setHintTextColor(activity, inputEditView, style.chatMessageInputHintTextColor)
-        ColorsHelper.setHintTextColor(activity, search, style.chatToolbarHintTextColor)
         ColorsHelper.setTextColor(activity, inputEditView, style.inputTextColor)
         if (!TextUtils.isEmpty(style.inputTextFont)) {
             try {
@@ -1189,7 +1151,7 @@ class ChatFragment :
         }
         if (item.itemId == R.id.ecc_search) {
             if (!isInMessageSearchMode) {
-                search(false)
+                search()
                 binding?.chatBackButton.visible()
             } else {
                 return true
@@ -1345,85 +1307,6 @@ class ChatFragment :
         if (bottomSheetDialogFragment == null && isAdded) {
             bottomSheetDialogFragment = AttachmentBottomSheetDialogFragment()
             bottomSheetDialogFragment!!.show(childFragmentManager, AttachmentBottomSheetDialogFragment.TAG)
-        }
-    }
-
-    private fun doFancySearch(request: String, forward: Boolean) = binding?.apply {
-        updateLastUserActivityTime()
-        if (TextUtils.isEmpty(request)) {
-            chatAdapter?.removeHighlight()
-            searchUpIb.alpha = DISABLED_ALPHA
-            searchDownIb.alpha = DISABLED_ALPHA
-            searchDownIb.isEnabled = false
-            searchUpIb.isEnabled = false
-            return@apply
-        }
-        onSearch(request, forward)
-    }
-
-    private fun onSearch(request: String, forward: Boolean) {
-        chatController.fancySearch(request, forward) { dataPair: Pair<List<ChatItem?>?, ChatItem?>? -> onSearchEnd(dataPair) }
-    }
-
-    private fun onSearchEnd(dataPair: Pair<List<ChatItem?>?, ChatItem?>?) = binding?.apply {
-        var first = -1
-        var last = -1
-        if (dataPair?.first != null) {
-            val data = dataPair.first ?: listOf()
-            val highlightedItem = dataPair.second
-            // для поиска - ищем индекс первого совпадения
-            for (i in data.indices) {
-                if (data[i] is ChatPhrase) {
-                    if ((data[i] as ChatPhrase?)!!.found) {
-                        first = i
-                        break
-                    }
-                }
-            }
-            // для поиска - ищем индекс последнего совпадения
-            for (i in data.indices.reversed()) {
-                if (data[i] is ChatPhrase) {
-                    if ((data[i] as ChatPhrase?)!!.found) {
-                        last = i
-                        break
-                    }
-                }
-            }
-            for (i in data.indices) {
-                if (data[i] is ChatPhrase) {
-                    if (data[i] == highlightedItem) {
-                        // для поиска - если можно перемещаться, подсвечиваем
-                        if (first != -1 && i > first) {
-                            searchUpIb.alpha = ENABLED_ALPHA
-                            searchUpIb.isEnabled = true
-                        } else {
-                            searchUpIb.alpha = DISABLED_ALPHA
-                            searchUpIb.isEnabled = false
-                        }
-                        // для поиска - если можно перемещаться, подсвечиваем
-                        if (last != -1 && i < last) {
-                            searchDownIb.alpha = ENABLED_ALPHA
-                            searchDownIb.isEnabled = true
-                        } else {
-                            searchDownIb.alpha = DISABLED_ALPHA
-                            searchDownIb.isEnabled = false
-                        }
-                        break
-                    }
-                }
-            }
-            if (first == -1 && last == -1) {
-                chatAdapter?.removeHighlight()
-            }
-            chatAdapter?.let {
-                addItemsToChat(data)
-                if (highlightedItem != null) {
-                    chatAdapter?.removeHighlight()
-                    scrollToPosition(it.setItemHighlighted(highlightedItem), true)
-                }
-            }
-        } else {
-            chatAdapter?.removeHighlight()
         }
     }
 
@@ -1815,7 +1698,6 @@ class ChatFragment :
                 layoutManager.scrollToPosition(chatAdapter.getPositionByTimeStamp(lastVisibleItemTimestamp))
             }
             resumeAfterSecondLevelScreen = false
-            checkSearch()
         }
     }
 
@@ -1876,8 +1758,8 @@ class ChatFragment :
             if (!isInMessageSearchMode && isAdded) {
                 subtitle.visibility = View.GONE
                 consultName.visibility = View.VISIBLE
-                searchLo.visibility = View.GONE
-                search.setText("")
+                searchBar.gone()
+                searchBar.clearSearch()
                 consultName.setText(style.chatTitleTextResId)
             }
         }
@@ -1908,17 +1790,11 @@ class ChatFragment :
         }
     }
 
-    private fun checkSearch() {
-        if (!TextUtils.isEmpty(binding?.search?.text)) {
-            doFancySearch(binding?.search?.text.toString(), false)
-        }
-    }
-
     private fun setBottomStateDefault() {
         hideBottomSheet()
         if (!isInMessageSearchMode) {
-            binding?.searchLo?.visibility = View.GONE
-            binding?.search?.setText("")
+            binding?.searchBar.gone()
+            binding?.searchBar?.clearSearch()
         }
     }
 
@@ -1929,8 +1805,8 @@ class ChatFragment :
                 subtitle.visibility = View.VISIBLE
             }
             consultName.visibility = View.VISIBLE
-            searchLo.visibility = View.GONE
-            search.setText("")
+            binding?.searchBar.gone()
+            binding?.searchBar?.clearSearch()
         }
         if (!resources.getBoolean(style.isChatSubtitleVisible)) {
             subtitle.visibility = View.GONE
@@ -2033,18 +1909,11 @@ class ChatFragment :
         }
         subtitle.visibility = View.GONE
         consultName.visibility = View.VISIBLE
-        searchLo.visibility = View.GONE
-        search.setText("")
+        binding?.searchBar.gone()
+        binding?.searchBar?.clearSearch()
         if (!resources.getBoolean(style.fixedChatTitle)) {
             consultName.text = requireContext().getString(R.string.ecc_searching_operator)
         }
-    }
-
-    fun setTitleStateSearchingMessage() = binding?.apply {
-        subtitle.visibility = View.GONE
-        consultName.visibility = View.GONE
-        searchLo.visibility = View.VISIBLE
-        search.setText("")
     }
 
     fun setStateSearchingConsult() {
@@ -2268,16 +2137,16 @@ class ChatFragment :
         return if (bottomSheetDialogFragment != null) {
             hideBottomSheet()
             false
-        } else if (binding?.copyControls.isVisible() && binding?.searchLo.isVisible()) {
+        } else if (binding?.copyControls.isVisible() && binding?.searchBar.isVisible()) {
             unChooseItem()
-            binding?.search?.requestFocus()
-            binding?.search?.showKeyboard(100)
+            binding?.searchBar?.requestFocus()
+            binding?.searchBar?.showKeyboard(100)
             false
         } else if (binding?.copyControls.isVisible()) {
             unChooseItem()
             checkBackButtonVisibility()
             false
-        } else if (binding?.searchLo.isVisible()) {
+        } else if (binding?.searchBar.isVisible()) {
             hideSearchMode()
             if (chatAdapter != null) {
                 scrollToPosition(chatAdapter!!.itemCount - 1, false)
@@ -2296,11 +2165,11 @@ class ChatFragment :
 
     private fun hideSearchMode() = binding?.apply {
         activity ?: return@apply
-        searchLo.visibility = View.GONE
+        searchBar.gone()
         setMenuVisibility(true)
         isInMessageSearchMode = false
-        search.setText("")
-        search.hideKeyboard(100)
+        searchBar.clearSearch()
+        searchBar.hideKeyboard(100)
         searchMore.visibility = View.GONE
         swipeRefresh.isEnabled = true
         when (chatController.stateOfConsult) {
@@ -2321,16 +2190,18 @@ class ChatFragment :
         }
     }
 
-    private fun search(searchInFiles: Boolean) = binding?.apply {
+    private fun search() = binding?.apply {
         activity ?: return@apply
-        info("searchInFiles: $searchInFiles")
+        info("starting search")
         isInMessageSearchMode = true
+        consultName.gone()
+        subtitle.gone()
         setBottomStateDefault()
-        setTitleStateSearchingMessage()
-        search.requestFocus()
+        searchBar.visible()
+        searchBar.requestFocus()
         hideOverflowMenu()
         setMenuVisibility(false)
-        search.showKeyboard(100)
+        searchBar.showKeyboard(100)
         swipeRefresh.isEnabled = false
         searchMore.visibility = View.GONE
     }
@@ -2811,10 +2682,8 @@ class ChatFragment :
 
     private inner class ChatReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            if (intent.action != null && intent.action == ACTION_SEARCH_CHAT_FILES) {
-                search(true)
-            } else if (intent.action != null && intent.action == ACTION_SEARCH) {
-                search(false)
+            if (intent.action != null && intent.action == ACTION_SEARCH) {
+                search()
             }
         }
     }

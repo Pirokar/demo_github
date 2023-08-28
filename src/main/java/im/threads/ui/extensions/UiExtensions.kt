@@ -2,6 +2,9 @@ package im.threads.ui.extensions
 
 import android.content.Context
 import android.content.res.Configuration
+import android.view.View
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewTreeLifecycleOwner
 import im.threads.business.models.enums.CurrentUiTheme
 import im.threads.ui.core.ThreadsLib
 
@@ -13,3 +16,5 @@ fun Context.isDarkThemeOn(): Boolean {
     return isDarkThemeEnabledLocally ||
         (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES)
 }
+
+fun View.lifecycle(): Lifecycle? = ViewTreeLifecycleOwner.get(this)?.lifecycle

@@ -10,7 +10,6 @@ import android.media.MediaMetadataRetriever
 import android.net.ConnectivityManager
 import android.os.Build
 import androidx.annotation.MainThread
-import androidx.core.util.Consumer
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import im.threads.R
 import im.threads.business.broadcastReceivers.ProgressReceiver
@@ -85,7 +84,6 @@ import im.threads.ui.preferences.PreferencesUiKeys
 import im.threads.ui.utils.runOnUiThread
 import im.threads.ui.views.formatAsDuration
 import im.threads.ui.workers.NotificationWorker.Companion.removeNotification
-import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Maybe
 import io.reactivex.Observable
@@ -213,60 +211,6 @@ class ChatController private constructor() {
         }
         addMessage(um)
         messenger.queueMessageSending(um)
-    }
-
-    internal fun fancySearch(
-        query: String?,
-        forward: Boolean,
-        consumer: Consumer<Pair<List<ChatItem?>?, ChatItem?>?>
-    ) {
-        info("Trying to start search")
-        subscribe(
-            Single.just(isAllMessagesDownloaded)
-                .flatMap { isAllMessagesDownloaded: Boolean ->
-                    if (!isAllMessagesDownloaded) {
-                        info("Not all messages has been downloaded before the search.")
-
-                        if (query?.length == 1) {
-                            Runnable {
-                                fragment?.showProgressBar()
-                                fragment?.showBalloon(appContext.getString(R.string.ecc_history_loading_message))
-                            }.runOnUiThread()
-                        }
-                        return@flatMap messenger.downloadMessagesTillEnd()
-                    } else {
-                        return@flatMap Single.fromCallable { ArrayList<Any>() }
-                    }
-                }
-                .flatMapCompletable {
-                    Completable.fromAction {
-                        if (System.currentTimeMillis() > lastFancySearchDate + 3000) {
-                            lastItems = database.getChatItems(0, -1)
-                            lastFancySearchDate = System.currentTimeMillis()
-                        }
-                        if (query != null && (query.isEmpty() || query != lastSearchQuery)) {
-                            info("Search starting")
-                            seeker = ChatMessageSeeker()
-                        }
-                        lastSearchQuery = query
-                        Runnable {
-                            fragment?.hideProgressBar()
-                            fragment?.showWelcomeScreenIfNeed()
-                        }.runOnUiThread()
-                    }
-                }
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { consumer.accept(seeker.searchMessages(lastItems, !forward, query)) }
-                ) { e: Throwable? ->
-                    error(e)
-                    Runnable {
-                        fragment?.hideProgressBar()
-                        fragment?.showWelcomeScreenIfNeed()
-                    }.runOnUiThread()
-                }
-        )
     }
 
     internal fun onFileClick(fileDescription: FileDescription) {
@@ -491,14 +435,12 @@ class ChatController private constructor() {
         }
     }
 
-    private fun loadItemsFromDB(isWelcomeScreenAllowed: Boolean = true) {
+    private fun loadItemsFromDB() {
         fragment?.let {
             coroutineScope.launch() {
                 val itemsDef = async(Dispatchers.IO) { database.getChatItems(0, -1) }
                 it.addChatItems(itemsDef.await())
                 it.hideProgressBar()
-                val isNeedToShowWelcomeDef = async(Dispatchers.IO) { isNeedToShowWelcome() }
-                it.showWelcomeScreen(isWelcomeScreenAllowed && isNeedToShowWelcomeDef.await())
             }
         }
     }
@@ -1615,7 +1557,7 @@ class ChatController private constructor() {
                     } else if (stateEvent.state == ChatStateEnum.DEVICE_REGISTERED) {
                         BaseConfig.getInstance().transport.sendInitMessages()
                     } else if (stateEvent.state == ChatStateEnum.ATTACHMENT_SETTINGS_LOADED) {
-                        loadItemsFromDB(false)
+                        loadItemsFromDB()
                         if (fragment?.isResumed == true) loadHistoryAfterWithLastMessageCheck()
                         loadSettings()
                     } else if (isChatReady()) {

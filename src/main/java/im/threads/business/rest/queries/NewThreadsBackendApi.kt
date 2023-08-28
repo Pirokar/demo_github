@@ -2,6 +2,7 @@ package im.threads.business.rest.queries
 
 import im.threads.business.rest.models.ConfigResponse
 import im.threads.business.rest.models.HistoryResponse
+import im.threads.business.rest.models.SearchResponse
 import im.threads.business.rest.models.SettingsResponse
 import im.threads.business.rest.models.VersionsModel
 import retrofit2.Call
@@ -30,6 +31,14 @@ interface NewThreadsBackendApi {
         @Query("libVersion") version: String?,
         @Query("chatApiVersion") chatApiVersion: String = ThreadsApi.API_VERSION
     ): Call<HistoryResponse?>?
+
+    @GET("api/client/search")
+    fun search(
+        @HeaderMap headerMap: Map<String, String?>,
+        @Query("term") searchString: String,
+        @Query("page") page: Int,
+        @Query("chatApiVersion") chatApiVersion: String = ThreadsApi.API_VERSION
+    ): Call<SearchResponse?>?
 
     @POST("api/messages/read")
     fun markMessageAsRead(@Body ids: List<String?>?): Call<Void?>?
