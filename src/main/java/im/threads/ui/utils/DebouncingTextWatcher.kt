@@ -8,6 +8,10 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+/**
+ * [TextWatcher], предоставляющий результаты ввода спустя определенный период и отменяет
+ * предыдущие результаты, если пришла новая строка
+ */
 internal class DebouncingTextWatcher(
     lifecycle: Lifecycle?,
     private val onDebouncingQueryTextChange: (String?) -> Unit

@@ -141,6 +141,7 @@ import io.reactivex.subjects.BehaviorSubject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileNotFoundException
@@ -252,6 +253,7 @@ class ChatFragment :
             chatController.campaignMessage = null
         }
         initToolbar()
+        initSearch()
     }
 
     override fun onStart() {
@@ -2063,6 +2065,12 @@ class ChatFragment :
             setTitleStateDefault()
         }
         initToolbarTextPosition()
+    }
+
+    private fun initSearch() = binding?.apply {
+        val searchQueryChannel: MutableStateFlow<String?> = MutableStateFlow("")
+        searchBar.setSearchChannel(searchQueryChannel)
+        searchResultsList.setSearchChannel(searchQueryChannel)
     }
 
     private fun setContextIconDefaultTint(vararg imageButtons: ImageButton) {

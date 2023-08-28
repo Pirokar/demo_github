@@ -46,6 +46,12 @@
 
             </im.threads.ui.views.MySwipeRefreshLayout>
 
+            <im.threads.ui.views.search.SearchListView
+                android:id="@+id/search_results_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"/>
+
             <im.threads.ui.views.WelcomeScreen
                 android:id="@+id/welcome"
                 android:layout_width="match_parent"

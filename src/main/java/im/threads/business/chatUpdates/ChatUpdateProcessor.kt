@@ -17,7 +17,6 @@ import im.threads.business.transport.models.AttachmentSettings
 import im.threads.business.transport.threadsGate.responses.Status
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
-import kotlinx.coroutines.flow.MutableStateFlow
 
 class ChatUpdateProcessor {
 
@@ -40,7 +39,6 @@ class ChatUpdateProcessor {
     val attachAudioFilesProcessor: FlowableProcessor<Boolean> = PublishProcessor.create()
     val errorProcessor: FlowableProcessor<TransportException> = PublishProcessor.create()
     val uploadResultProcessor: FlowableProcessor<FileDescription> = PublishProcessor.create()
-    var searchQueryChannel: MutableStateFlow<String> = MutableStateFlow("")
 
     /**
      * Передаёт ответы от коллбэков сокетного соединения.
