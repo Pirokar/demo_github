@@ -38,13 +38,14 @@ class Config(
     requestConfig: RequestConfig,
     trustedSSLCertificate: List<Int>?,
     allowUntrustedSSLCertificate: Boolean,
+    keepSocketActive: Boolean,
     notificationImportance: Int,
     private val isAttachmentsEnabled: Boolean?
 ) : BaseConfig(
     context, serverBaseUrl, datastoreUrl, threadsGateUrl, threadsGateProviderUid,
     isNewChatCenterApi, loggerConfig, unreadMessagesCountListener, networkInterceptor, isDebugLoggingEnabled,
     historyLoadingCount, surveyCompletionDelay, requestConfig, notificationImportance, trustedSSLCertificate,
-    allowUntrustedSSLCertificate
+    allowUntrustedSSLCertificate, keepSocketActive
 ) {
     val chatStyle: ChatStyle
         get() {
