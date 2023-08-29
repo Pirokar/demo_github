@@ -2069,8 +2069,9 @@ class ChatFragment :
 
     private fun initSearch() = binding?.apply {
         val searchQueryChannel: MutableStateFlow<String?> = MutableStateFlow("")
-        searchBar.setSearchChannel(searchQueryChannel)
-        searchResultsList.setSearchChannel(searchQueryChannel)
+        val loadingChannel: MutableStateFlow<Boolean> = MutableStateFlow(false)
+        searchBar.setSearchChannels(searchQueryChannel, loadingChannel)
+        searchResultsList.setSearchChannels(searchQueryChannel, loadingChannel)
     }
 
     private fun setContextIconDefaultTint(vararg imageButtons: ImageButton) {

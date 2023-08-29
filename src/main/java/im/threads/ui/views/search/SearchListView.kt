@@ -23,11 +23,16 @@ class SearchListView : ConstraintLayout {
     }
 
     /**
-     * Устанавливает канал, в котором считывается текущий ввод в поле поиска.
-     * Передайте данный канал также в [SearchBarView].
-     * @param channel канал для проброса значения поля ввода
+     * Устанавливает каналы, в которых считываются текущий ввод в поле поиска
+     * и отправляется статус загрузки результатов.
+     * Передайте данные каналы также в [SearchBarView].
+     * @param searchChannel канал для проброса значения поля ввода
+     * @param loadingChannel канал для показа лоадера
      */
-    fun setSearchChannel(channel: MutableStateFlow<String?>?) {
+    fun setSearchChannels(
+        searchChannel: MutableStateFlow<String?>?,
+        loadingChannel: MutableStateFlow<Boolean>?
+    ) {
         // TODO: subscribe for channel
     }
 }

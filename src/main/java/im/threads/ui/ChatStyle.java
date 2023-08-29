@@ -33,6 +33,13 @@ public final class ChatStyle implements Serializable {
 
     public boolean arePermissionDescriptionDialogsEnabled = false;
 
+    public boolean isClearSearchBtnVisible = true;
+
+    public boolean isSearchLoaderBtnVisible = true;
+
+    @DrawableRes
+    public Integer searchLoaderDrawable = null;
+
     //common styles
     @ColorRes
     public int chatDisabledTextColor = R.color.ecc_disabled_text_color;
@@ -237,6 +244,13 @@ public final class ChatStyle implements Serializable {
 
     @ColorRes
     public int chatBodyIconsTint = R.color.ecc_chat_icons_tint;
+
+    @ColorRes
+    public int searchClearIconTintColor = R.color.ecc_white;
+
+    @DrawableRes
+    public int searchClearIconDrawable = R.drawable.ecc_ic_clear_36dp;
+
     public int[] chatBodyIconsColorState = null;
 
     @ColorRes
@@ -2175,6 +2189,47 @@ public final class ChatStyle implements Serializable {
     ) {
         this.incomingDelimitersColor = incomingDelimitersColor;
         this.outgoingDelimitersColor = outgoingDelimitersColor;
+        return this;
+    }
+
+    /**
+     * Устанавливает видимость элементов для SearchBar чат-фрагмента
+     * @param isClearSearchBtnVisible устанавливает видимость кнопки очистки для поля ввода. По умолчанию true
+     * @param isSearchLoaderBtnVisible устанавливает видимость лоадера при загрузке результатов поиска для поля ввода. По умолчанию true
+     */
+    public ChatStyle setSearchBarItemsVisibility(
+            boolean isClearSearchBtnVisible,
+            boolean isSearchLoaderBtnVisible
+    ) {
+        this.isClearSearchBtnVisible = isClearSearchBtnVisible;
+        this.isSearchLoaderBtnVisible = isSearchLoaderBtnVisible;
+        return this;
+    }
+
+    /**
+     * Устанавливает иконку поиска для лоадера при загрузке результатов поиска в поле ввода. По умолчанию отображается дефолтный лоадер
+     * @param searchLoaderDrawableRes иконка поиска для лоадера (ссылка на ресурс)
+     */
+    public ChatStyle setSearchLoaderDrawable(@DrawableRes int searchLoaderDrawableRes) {
+        this.searchLoaderDrawable = searchLoaderDrawableRes;
+        return this;
+    }
+
+    /**
+     * Устанавливает цвет иконки очистки поля ввода при поиске
+     * @param clearIconColorRes ресурс цвета иконки для очистки поля ввода при поиске
+     */
+    public ChatStyle setClearIconColor(@ColorRes int clearIconColorRes) {
+        this.searchClearIconTintColor = clearIconColorRes;
+        return this;
+    }
+
+    /**
+     * Устанавливает ресурс иконки для очистки поля ввода при поиске
+     * @param clearIconDrawableRes ресурс иконки для очистки поля ввода при поиске
+     */
+    public ChatStyle setClearIconDrawable(@DrawableRes int clearIconDrawableRes) {
+        this.searchClearIconDrawable = clearIconDrawableRes;
         return this;
     }
 
