@@ -40,6 +40,9 @@ public final class ChatStyle implements Serializable {
     @DrawableRes
     public Integer searchLoaderDrawable = null;
 
+    @ColorRes
+    public int searchResultsDividerColor = R.color.ecc_user_message_timestamp;
+
     //common styles
     @ColorRes
     public int chatDisabledTextColor = R.color.ecc_disabled_text_color;
@@ -2230,6 +2233,15 @@ public final class ChatStyle implements Serializable {
      */
     public ChatStyle setClearIconDrawable(@DrawableRes int clearIconDrawableRes) {
         this.searchClearIconDrawable = clearIconDrawableRes;
+        return this;
+    }
+
+    /**
+     * Устанавливает цвет разделителя между элементами в результатах поиска
+     * @param searchResultsDividerColor цвет разделителя (ресурс)
+     */
+    public ChatStyle setSearchResultsDividerColor(@ColorRes int searchResultsDividerColor) {
+        this.searchResultsDividerColor = searchResultsDividerColor;
         return this;
     }
 
