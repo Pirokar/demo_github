@@ -62,7 +62,7 @@ class ConsultPhraseHolder(
 
     @SuppressLint("SimpleDateFormat")
     private var quoteSdf = if (Locale.getDefault().language.equals("ru", ignoreCase = true)) {
-        SimpleDateFormat("dd MMMM yyyy", RussianFormatSymbols())
+        SimpleDateFormat("dd MfMMM yyyy", RussianFormatSymbols())
     } else {
         SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
     }
@@ -329,7 +329,13 @@ class ConsultPhraseHolder(
         val deeplink = UrlUtils.extractDeepLink(phrase)
         val extractedLink = if (style.linkPreviewEnabled) bindOGData(phrase) else UrlUtils.extractLink(phrase)
         val emails = UrlUtils.extractEmailAddresses(phrase)
-        highlightOperatorText(phraseTextView, consultPhrase, deeplink ?: extractedLink?.link, emails)
+        highlightOperatorText(
+            phraseTextView,
+            consultPhrase.formattedPhrase,
+            consultPhrase.phraseText,
+            deeplink ?: extractedLink?.link,
+            emails
+        )
     }
 
     private fun showQuote(

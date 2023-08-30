@@ -191,6 +191,11 @@ object FileUtils {
         }
     }
 
+    /**
+     * Конвертирует относительный (неполный) url в абсолютный, подставляя значение datastore
+     */
+    internal fun String?.toAbsoluteUrl() = convertRelativeUrlToAbsolute(this)
+
     @JvmStatic
     fun convertRelativeUrlToAbsolute(relativeUrl: String?): String? {
         return if (TextUtils.isEmpty(relativeUrl) || relativeUrl!!.startsWith("http")) {

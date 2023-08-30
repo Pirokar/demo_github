@@ -155,7 +155,12 @@ class ConsultVoiceMessageViewHolder(
         if (!consultPhrase.phraseText.isNullOrBlank()) {
             val extractedLink = UrlUtils.extractLink(consultPhrase.phraseText)
             phraseTextView.visible()
-            highlightOperatorText(phraseTextView, consultPhrase, extractedLink?.link)
+            highlightOperatorText(
+                phraseTextView,
+                consultPhrase.formattedPhrase,
+                consultPhrase.phraseText,
+                extractedLink?.link
+            )
         } else {
             phraseTextView.gone()
         }

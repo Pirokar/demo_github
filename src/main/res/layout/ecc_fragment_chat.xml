@@ -47,7 +47,7 @@
             </im.threads.ui.views.MySwipeRefreshLayout>
 
             <im.threads.ui.views.search.SearchListView
-                android:id="@+id/search_results_list"
+                android:id="@+id/searchListView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:visibility="gone"/>

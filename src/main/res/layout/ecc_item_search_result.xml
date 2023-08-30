@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="?attr/selectableItemBackground">
 
     <ImageView
         android:id="@+id/avatarImage"
@@ -61,7 +62,7 @@
         android:layout_height="wrap_content"
         android:gravity="start"
         android:textSize="17sp"
-        android:lines="3"
+        android:maxLines="3"
         android:ellipsize="end"
         app:layout_constraintTop_toBottomOf="@id/nameTextView"
         app:layout_constraintStart_toStartOf="@id/nameTextView"
@@ -69,6 +70,7 @@
         tools:text="С учётом сложившейся обучения международной обстановки, граница обучения кадров cпособствует обучению кадров."/>
 
     <View
+        android:id="@+id/dividerView"
         android:layout_width="0dp"
         android:layout_height="1dp"
         android:background="@color/ecc_search_divider_color"

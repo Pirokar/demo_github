@@ -8,6 +8,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.coroutineScope
+import im.threads.business.logger.LoggerEdna
 import im.threads.databinding.EccViewSearchbarBinding
 import im.threads.ui.config.Config
 import im.threads.ui.extensions.lifecycle
@@ -18,9 +19,12 @@ import im.threads.ui.utils.isNotVisible
 import im.threads.ui.utils.showKeyboard
 import im.threads.ui.utils.visible
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 /**
@@ -28,12 +32,12 @@ import kotlinx.coroutines.launch
  */
 internal class SearchBarView : ConstraintLayout {
     private lateinit var binding: EccViewSearchbarBinding
-    private val coroutineScope: CoroutineScope? by lazy { lifecycle()?.coroutineScope }
     private val chatStyle = Config.getInstance().chatStyle
     private var searchChannel: MutableStateFlow<String?>? = null
     private var loadingChannel: MutableStateFlow<Boolean>? = null
     private var debouncePeriod: Long = 500
     private var textWatcherJob: Job? = null
+    private var loaderCoroutineScope: CoroutineScope? = null
 
     constructor(context: Context) : super(context) {
         init()
@@ -63,10 +67,12 @@ internal class SearchBarView : ConstraintLayout {
                 searchClearButton.invisible()
             }
             textWatcherJob?.cancel()
-            textWatcherJob = coroutineScope?.launch {
-                newText?.let {
-                    delay(debouncePeriod)
-                    searchChannel?.value = it
+            textWatcherJob = lifecycle()?.coroutineScope?.launch {
+                if (isActive) {
+                    newText?.let {
+                        delay(debouncePeriod)
+                        searchChannel?.value = it
+                    }
                 }
             }
         }
@@ -129,12 +135,17 @@ internal class SearchBarView : ConstraintLayout {
     }
 
     private fun subscribeForLoading() {
-        coroutineScope?.launch {
+        loaderCoroutineScope?.cancel()
+        loaderCoroutineScope = CoroutineScope(Dispatchers.Main)
+        loaderCoroutineScope?.launch {
             loadingChannel?.collect { showLoader ->
-                if (showLoader) {
-                    binding.searchProgressBar.visible()
-                } else {
-                    binding.searchProgressBar.invisible()
+                if (isActive && isAttachedToWindow) {
+                    LoggerEdna.info("showLoader")
+                    if (showLoader) {
+                        binding.searchProgressBar.visible()
+                    } else {
+                        binding.searchProgressBar.invisible()
+                    }
                 }
             }
         }

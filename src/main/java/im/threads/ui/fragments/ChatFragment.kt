@@ -40,6 +40,7 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.core.util.ObjectsCompat
 import androidx.core.view.ViewCompat
+import androidx.lifecycle.coroutineScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.annimon.stream.Optional
@@ -197,7 +198,7 @@ class ChatFragment :
     var quickReplyItem: QuickReplyItem? = null
     private var previousChatItemsCount = 0
     private val config = Config.getInstance()
-    private val coroutineScope = CoroutineScope(Dispatchers.Main)
+    private val coroutineScope = lifecycle.coroutineScope
     var style: ChatStyle = config.chatStyle
         private set
 
@@ -1762,6 +1763,7 @@ class ChatFragment :
                 consultName.visibility = View.VISIBLE
                 searchBar.gone()
                 searchBar.clearSearch()
+                searchListView.gone()
                 consultName.setText(style.chatTitleTextResId)
             }
         }
@@ -1796,6 +1798,7 @@ class ChatFragment :
         hideBottomSheet()
         if (!isInMessageSearchMode) {
             binding?.searchBar.gone()
+            binding?.searchListView.gone()
             binding?.searchBar?.clearSearch()
         }
     }
@@ -1808,6 +1811,7 @@ class ChatFragment :
             }
             consultName.visibility = View.VISIBLE
             binding?.searchBar.gone()
+            binding?.searchListView.gone()
             binding?.searchBar?.clearSearch()
         }
         if (!resources.getBoolean(style.isChatSubtitleVisible)) {
@@ -1913,6 +1917,7 @@ class ChatFragment :
         consultName.visibility = View.VISIBLE
         binding?.searchBar.gone()
         binding?.searchBar?.clearSearch()
+        binding?.searchListView.gone()
         if (!resources.getBoolean(style.fixedChatTitle)) {
             consultName.text = requireContext().getString(R.string.ecc_searching_operator)
         }
@@ -2070,8 +2075,17 @@ class ChatFragment :
     private fun initSearch() = binding?.apply {
         val searchQueryChannel: MutableStateFlow<String?> = MutableStateFlow("")
         val loadingChannel: MutableStateFlow<Boolean> = MutableStateFlow(false)
+
         searchBar.setSearchChannels(searchQueryChannel, loadingChannel)
-        searchResultsList.setSearchChannels(searchQueryChannel, loadingChannel)
+        searchListView.setSearchChannels(searchQueryChannel, loadingChannel)
+
+        coroutineScope.launch {
+            searchQueryChannel.collect {
+                if (!it.isNullOrBlank() && it.length > 2) {
+                    searchListView.visible()
+                }
+            }
+        }
     }
 
     private fun setContextIconDefaultTint(vararg imageButtons: ImageButton) {
@@ -2175,6 +2189,7 @@ class ChatFragment :
     private fun hideSearchMode() = binding?.apply {
         activity ?: return@apply
         searchBar.gone()
+        searchListView.gone()
         setMenuVisibility(true)
         isInMessageSearchMode = false
         searchBar.clearSearch()

@@ -64,17 +64,11 @@ internal class BottomGallery : FrameLayout {
         val uri = item.imagePath
         return if (uri != null) {
             if (FileHelper.isAllowedFileExtension(
-                    FileUtils.getExtensionFromMediaStore(
-                        BaseConfig.getInstance().context,
-                        uri
-                    )
+                    FileUtils.getExtensionFromMediaStore(BaseConfig.getInstance().context, uri)
                 )
             ) {
                 if (FileHelper.isAllowedFileSize(
-                        FileUtils.getFileSizeFromMediaStore(
-                            BaseConfig.getInstance().context,
-                            uri
-                        )
+                        FileUtils.getFileSizeFromMediaStore(BaseConfig.getInstance().context, uri)
                     )
                 ) {
                     true
@@ -91,10 +85,7 @@ internal class BottomGallery : FrameLayout {
                 }
             } else {
                 // Недопустимое расширение файла
-                Balloon.show(
-                    context,
-                    context.getString(R.string.ecc_not_allowed_file_extension)
-                )
+                Balloon.show(context, context.getString(R.string.ecc_not_allowed_file_extension))
                 false
             }
         } else {
