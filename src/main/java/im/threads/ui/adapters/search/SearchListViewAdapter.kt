@@ -52,7 +52,7 @@ internal class SearchListViewAdapter(private val onClickCallback: (String?) -> U
             setMessageText(messageTextView, message)
             setDate(dateTextView, message)
             setDividerVisibility(dividerView, isLastItem)
-            setOnItemClick(root, message.uuid)
+            setOnItemClick(binding.clickableView, message.uuid)
         }
 
         private fun loadAvatar(message: MessageFromHistory) {
@@ -120,8 +120,18 @@ internal class SearchListViewAdapter(private val onClickCallback: (String?) -> U
             }
         }
 
-        private fun setOnItemClick(rootView: View, messageUuid: String?) {
-            rootView.setOnClickListener { onClickCallback(messageUuid) }
+        private fun setOnItemClick(clickableView: View, messageUuid: String?) {
+            clickableView.setOnClickListener { onClickCallback(messageUuid) }
         }
+
+        /*private fun setChildListener(parent: View, listener: View.OnClickListener) {
+            parent.setOnClickListener(listener)
+
+            if (parent !is ViewGroup) return
+
+            for (i in 0 until parent.childCount) {
+                setChildListener(parent.getChildAt(i), listener)
+            }
+        }*/
     }
 }

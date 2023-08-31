@@ -3,8 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:background="?attr/selectableItemBackground">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <ImageView
         android:id="@+id/avatarImage"
@@ -12,6 +11,8 @@
         android:layout_height="40dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="10dp"
+        android:clickable="false"
+        android:focusable="false"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:contentDescription="@string/ecc_operator_avatar"
@@ -24,6 +25,8 @@
         app:layout_constraintStart_toEndOf="@id/avatarImage"
         app:layout_constraintTop_toTopOf="@id/avatarImage"
         app:layout_constraintEnd_toStartOf="@id/dateTextView"
+        android:clickable="false"
+        android:focusable="false"
         android:gravity="start"
         android:lines="1"
         android:ellipsize="end"
@@ -40,6 +43,8 @@
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toStartOf="@id/rightArrowImageView"
         app:layout_constraintTop_toTopOf="@id/nameTextView"
+        android:clickable="false"
+        android:focusable="false"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:includeFontPadding="false"
@@ -51,6 +56,8 @@
         android:id="@+id/rightArrowImageView"
         android:layout_width="20dp"
         android:layout_height="20dp"
+        android:clickable="false"
+        android:focusable="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/avatarImage"
         android:src="@drawable/right_arrow"
@@ -64,6 +71,8 @@
         android:textSize="17sp"
         android:maxLines="3"
         android:ellipsize="end"
+        android:clickable="false"
+        android:focusable="false"
         app:layout_constraintTop_toBottomOf="@id/nameTextView"
         app:layout_constraintStart_toStartOf="@id/nameTextView"
         app:layout_constraintEnd_toEndOf="@id/rightArrowImageView"
@@ -73,9 +82,21 @@
         android:id="@+id/dividerView"
         android:layout_width="0dp"
         android:layout_height="1dp"
+        android:clickable="false"
+        android:focusable="false"
         android:background="@color/ecc_search_divider_color"
         app:layout_constraintTop_toBottomOf="@id/messageTextView"
         app:layout_constraintStart_toStartOf="@id/messageTextView"
         android:layout_marginTop="8dp"/>
+
+    <View
+        android:id="@+id/clickableView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/dividerView"
+        android:background="?attr/selectableItemBackground"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
