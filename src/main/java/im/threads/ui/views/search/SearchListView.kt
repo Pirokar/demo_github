@@ -4,6 +4,9 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.FrameLayout
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.OnScrollListener
 import im.threads.business.config.BaseConfig
 import im.threads.business.extensions.plus
 import im.threads.business.logger.LoggerEdna
@@ -17,16 +20,29 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import kotlin.math.ceil
 
 internal class SearchListView : FrameLayout {
     private lateinit var binding: EccViewSearchListBinding
     private var searchChannel: MutableStateFlow<String?>? = null
-    private var loadingChannel: MutableStateFlow<Boolean>? = null
+    private var loadingChannel: MutableStateFlow<Boolean> = MutableStateFlow(false)
     private var searchChannelCoroutineScope: CoroutineScope? = null
     private var searchListViewAdapter: SearchListViewAdapter? = null
     private var lastSearchResults: SearchResponse? = null
     private var lastSearchString: String? = null
+
+    private var onScrollListener = object : OnScrollListener() {
+        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+            onListScrolled()
+        }
+    }
+
+    private var onListItemClickCallback: ((uuid: String) -> Unit)? = null
+
+    private val invisibleMessagesCount = 3
 
     constructor(context: Context) : super(context) {
         init()
@@ -43,9 +59,14 @@ internal class SearchListView : FrameLayout {
     private fun init() {
         binding = EccViewSearchListBinding.inflate(LayoutInflater.from(context), this, true)
         searchListViewAdapter = SearchListViewAdapter { messageUuid ->
-            // TODO: open message in chat
+            messageUuid?.let { onListItemClickCallback?.invoke(it) }
         }
         binding.searchListView.adapter = searchListViewAdapter
+        subscribeForListScroll()
+    }
+
+    fun setOnClickListener(listener: (uuid: String) -> Unit) {
+        onListItemClickCallback = listener
     }
 
     /**
@@ -60,48 +81,101 @@ internal class SearchListView : FrameLayout {
         loadingChannel: MutableStateFlow<Boolean>?
     ) {
         this.searchChannel = searchChannel
-        this.loadingChannel = loadingChannel
+        if (loadingChannel != null) {
+            this.loadingChannel = loadingChannel
+        }
         subscribeForSearchChannel()
     }
 
     private fun subscribeForSearchChannel() {
         searchChannelCoroutineScope?.cancel()
-        searchChannelCoroutineScope = CoroutineScope(Dispatchers.IO)
+        searchChannelCoroutineScope = CoroutineScope(Dispatchers.Main)
         searchChannelCoroutineScope?.launch {
             searchChannel?.collect { draftSearchString ->
                 val searchString = draftSearchString?.trim()
                 val isSubscriptionAlive = isActive && isAttachedToWindow
-                if (isSubscriptionAlive && !searchString.isNullOrEmpty()) {
-                    loadingChannel?.value = true
-                    val searchResultResponse = try {
-                        BackendApi.get().search(
-                            BaseConfig.getInstance().transport.getToken(),
-                            searchString
-                        )?.execute()
-                    } catch (exc: Exception) {
-                        loadingChannel?.value = false
-                        LoggerEdna.error("Error when search", exc)
-                        null
-                    }
-                    val searchResults = if (searchResultResponse?.isSuccessful == true) {
-                        searchResultResponse.body()
-                    } else {
-                        null
-                    }
-                    lastSearchResults = if (!lastSearchString.isNullOrBlank() && searchString.contains(lastSearchString!!)) {
-                        lastSearchResults plus searchResults
-                    } else {
-                        searchResults
-                    }
-                    lastSearchString = searchString
-                    withContext(Dispatchers.Main) {
-                        searchListViewAdapter?.updateData(lastSearchResults?.content)
-                        loadingChannel?.value = false
-                    }
+                if (isSubscriptionAlive && !searchString.isNullOrEmpty() && searchString.length > 2) {
+                    loadSearchResults(searchString, 1)
                 } else if (isSubscriptionAlive) {
-                    // TODO: show "no results" window
+                    lastSearchResults = null
+                    lastSearchString = null
                 }
             }
+        }
+    }
+
+    @Synchronized
+    private fun setLoadingChannelValue(value: Boolean) {
+        loadingChannel.value = value
+    }
+
+    private fun loadSearchResults(searchString: String, page: Int) {
+        if (searchString.isBlank() || loadingChannel.value) return
+
+        setLoadingChannelValue(true)
+
+        val query = BackendApi.get().search(
+            BaseConfig.getInstance().transport.getToken(),
+            searchString,
+            page
+        )
+
+        if (query == null) {
+            setLoadingChannelValue(false)
+            return
+        }
+
+        query.enqueue(object : Callback<SearchResponse?> {
+            override fun onResponse(
+                call: Call<SearchResponse?>,
+                response: Response<SearchResponse?>
+            ) {
+                if (response.isSuccessful) {
+                    val searchResults = response.body()
+                    lastSearchResults =
+                        if (!lastSearchString.isNullOrBlank() && searchString.contains(lastSearchString!!)) {
+                            lastSearchResults plus searchResults
+                        } else {
+                            searchResults
+                        }
+                    lastSearchString = searchString
+                    searchListViewAdapter?.updateData(lastSearchResults?.content)
+                    setLoadingChannelValue(false)
+                }
+            }
+
+            override fun onFailure(call: Call<SearchResponse?>, t: Throwable) {
+                setLoadingChannelValue(false)
+                LoggerEdna.error("Error when search", t)
+            }
+        })
+    }
+
+    private fun isLastVisibleItemPosition(): Boolean {
+        return if (isAttachedToWindow) {
+            val lastVisiblePosition =
+                (binding.searchListView.layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
+            searchListViewAdapter?.let { adapter ->
+                adapter.itemCount - 1 - lastVisiblePosition < invisibleMessagesCount
+            } ?: false
+        } else {
+            false
+        }
+    }
+
+    private fun subscribeForListScroll() {
+        binding.searchListView.removeOnScrollListener(onScrollListener)
+        binding.searchListView.addOnScrollListener(onScrollListener)
+    }
+
+    private fun onListScrolled() {
+        val total = lastSearchResults?.total ?: 0
+        val countPerPage = 20
+        val pages = lastSearchResults?.pages ?: 0
+        val currentPage = ceil((lastSearchResults?.content?.size ?: 0) / countPerPage.toDouble())
+
+        if (isLastVisibleItemPosition() && pages - currentPage > 0) {
+            loadSearchResults(lastSearchString ?: "", currentPage.toInt() + 1)
         }
     }
 }

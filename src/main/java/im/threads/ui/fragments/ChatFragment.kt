@@ -2083,6 +2083,8 @@ class ChatFragment :
             searchQueryChannel.collect {
                 if (!it.isNullOrBlank() && it.length > 2) {
                     searchListView.visible()
+                } else {
+                    searchListView.gone()
                 }
             }
         }

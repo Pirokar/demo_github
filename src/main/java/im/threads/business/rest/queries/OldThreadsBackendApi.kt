@@ -35,7 +35,7 @@ interface OldThreadsBackendApi {
         @Query("term") searchString: String,
         @Query("page") page: Int,
         @Query("chatApiVersion") chatApiVersion: String = ThreadsApi.API_VERSION
-    ): Call<SearchResponse?>?
+    ): Call<SearchResponse?>
 
     @POST("messages/read")
     fun markMessageAsRead(@Body ids: List<String?>?): Call<Void?>?

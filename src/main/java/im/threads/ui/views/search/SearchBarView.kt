@@ -142,9 +142,13 @@ internal class SearchBarView : ConstraintLayout {
                 if (isActive && isAttachedToWindow) {
                     LoggerEdna.info("showLoader")
                     if (showLoader) {
+                        binding.searchClearButton.invisible()
                         binding.searchProgressBar.visible()
                     } else {
                         binding.searchProgressBar.invisible()
+                        if (binding.searchInput.text?.toString()?.isNotEmpty() == true) {
+                            binding.searchClearButton.visible()
+                        }
                     }
                 }
             }
