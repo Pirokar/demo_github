@@ -1622,12 +1622,12 @@ class ChatFragment :
         }
     }
 
-    private fun scrollToPosition(itemCount: Int, smooth: Boolean) = binding?.apply {
-        if (itemCount >= 0 && isAdded) {
+    internal fun scrollToPosition(itemPosition: Int, smooth: Boolean) = binding?.apply {
+        if (itemPosition >= 0 && isAdded) {
             if (smooth) {
-                recycler.smoothScrollToPosition(itemCount)
+                recycler.smoothScrollToPosition(itemPosition)
             } else {
-                recycler.scrollToPosition(itemCount)
+                recycler.scrollToPosition(itemPosition)
             }
         }
     }
@@ -2088,6 +2088,11 @@ class ChatFragment :
                 }
             }
         }
+
+        searchListView.setOnClickListener { uuid, date ->
+            hideSearchMode()
+            chatController.onSearchResultsClick(uuid, date)
+        }
     }
 
     private fun setContextIconDefaultTint(vararg imageButtons: ImageButton) {
@@ -2362,6 +2367,10 @@ class ChatFragment :
 
     fun showBalloon(message: String?) {
         show(requireContext(), message!!)
+    }
+
+    internal fun showBalloon(messageResId: Int) {
+        show(requireContext(), getString(messageResId))
     }
 
     internal fun getDisplayedMessagesCount() = chatAdapter?.itemCount ?: 0

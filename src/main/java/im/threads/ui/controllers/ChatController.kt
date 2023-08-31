@@ -68,6 +68,7 @@ import im.threads.business.transport.threadsGate.responses.Status
 import im.threads.business.utils.ChatMessageSeeker
 import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.ConsultWriter
+import im.threads.business.utils.DateHelper
 import im.threads.business.utils.DemoModeProvider
 import im.threads.business.utils.FileUtils.getMimeType
 import im.threads.business.utils.FileUtils.isImage
@@ -97,6 +98,7 @@ import io.reactivex.subjects.PublishSubject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Response
@@ -350,6 +352,44 @@ class ChatController private constructor() {
         }
     }
 
+    internal fun onSearchResultsClick(uuid: String, date: String?) {
+        val position = getItemPositionByUuid(fragment?.elements, uuid)
+        if (position >= 0) {
+            fragment?.scrollToPosition(position, true)
+        } else {
+            fragment?.showBalloon(R.string.ecc_history_loading_message)
+            val dateTimestamp = DateHelper.getMessageTimestampFromDateString(date)
+            loadHistory(
+                dateTimestamp + 1,
+                untilCondition = { items ->
+                    val isItemsOutdated = items.isEmpty() || items.first().timeStamp < dateTimestamp
+                    isItemsOutdated || getItemPositionByUuid(items, uuid) >= 0
+                },
+                callback = object : HistoryLoader.HistoryLoadingCallback {
+                    override fun onLoaded(items: List<ChatItem>) {
+                        coroutineScope.launch(Dispatchers.Main) {
+                            delay(500)
+                            val itemPosition = getItemPositionByUuid(fragment?.elements, uuid)
+                            if (itemPosition >= 0) {
+                                fragment?.scrollToPosition(itemPosition, true)
+                            } else {
+                                fragment?.showBalloon(R.string.ecc_request_failed)
+                            }
+                        }
+                    }
+                }
+            )
+        }
+    }
+
+    private fun getItemPositionByUuid(items: List<ChatItem>?, uuid: String): Int {
+        val notNullItems = items ?: listOf()
+        val item = notNullItems
+            .mapNotNull { it as? ChatPhrase }
+            .firstOrNull { it.id == uuid }
+        return fragment?.elements?.indexOfFirst { it.timeStamp == item?.timeStamp } ?: -1
+    }
+
     fun isNeedToShowWelcome(): Boolean =
         database.getMessagesCount() == 0 && fragment?.getDisplayedMessagesCount() == 0 && isChatReady() && !isDownloadingMessages
 
@@ -538,6 +578,7 @@ class ChatController private constructor() {
         loadToTheEnd: Boolean = false,
         forceLoad: Boolean = false,
         applyUiChanges: Boolean = true,
+        untilCondition: ((List<ChatItem>) -> Boolean)? = null,
         callback: HistoryLoader.HistoryLoadingCallback? = null
     ) {
         if (!forceLoad && isAllMessagesDownloaded) {
@@ -586,7 +627,9 @@ class ChatController private constructor() {
                                 chatState.changeState(ChatStateEnum.HISTORY_LOADED)
                                 isDownloadingMessages = false
                                 val (consultInfo, serverItems) = pair
-                                val isShouldBeLoadedMore = loadToTheEnd && serverItems.size == BaseConfig.getInstance().historyLoadingCount
+                                val moreWithUntilCondition = untilCondition?.invoke(serverItems) ?: false
+                                val isShouldBeLoadedMore = (loadToTheEnd || moreWithUntilCondition) &&
+                                    serverItems.size == BaseConfig.getInstance().historyLoadingCount
                                 if (applyUiChanges) {
                                     val items = setLastAvatars(serverItems)
                                     if (fragment != null) {

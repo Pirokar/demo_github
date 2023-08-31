@@ -21,7 +21,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-internal class SearchListViewAdapter(private val onClickCallback: (String?) -> Unit) :
+internal class SearchListViewAdapter(private val onClickCallback: (String?, date: String?) -> Unit) :
     RecyclerView.Adapter<SearchListViewAdapter.SearchListViewHolder>() {
 
     private var data: List<MessageFromHistory> = listOf()
@@ -52,7 +52,7 @@ internal class SearchListViewAdapter(private val onClickCallback: (String?) -> U
             setMessageText(messageTextView, message)
             setDate(dateTextView, message)
             setDividerVisibility(dividerView, isLastItem)
-            setOnItemClick(binding.clickableView, message.uuid)
+            setOnItemClick(binding.clickableView, message.uuid, message.receivedDate)
         }
 
         private fun loadAvatar(message: MessageFromHistory) {
@@ -72,8 +72,7 @@ internal class SearchListViewAdapter(private val onClickCallback: (String?) -> U
             nameTextView: CustomFontTextView,
             message: MessageFromHistory
         ) {
-            nameTextView.text = message.operator?.name
-                ?: this@SearchListViewHolder.itemView.context.getString(R.string.ecc_I)
+            nameTextView.text = message.operator?.name ?: this@SearchListViewHolder.itemView.context.getString(R.string.ecc_I)
         }
 
         private fun setMessageText(
@@ -120,18 +119,8 @@ internal class SearchListViewAdapter(private val onClickCallback: (String?) -> U
             }
         }
 
-        private fun setOnItemClick(clickableView: View, messageUuid: String?) {
-            clickableView.setOnClickListener { onClickCallback(messageUuid) }
+        private fun setOnItemClick(clickableView: View, messageUuid: String?, date: String?) {
+            clickableView.setOnClickListener { onClickCallback(messageUuid, date) }
         }
-
-        /*private fun setChildListener(parent: View, listener: View.OnClickListener) {
-            parent.setOnClickListener(listener)
-
-            if (parent !is ViewGroup) return
-
-            for (i in 0 until parent.childCount) {
-                setChildListener(parent.getChildAt(i), listener)
-            }
-        }*/
     }
 }

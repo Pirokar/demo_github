@@ -36,10 +36,8 @@ object HistoryParser {
         var list: List<ChatItem> = ArrayList()
         if (response != null) {
             val responseList = response.messages
-            if (responseList != null) {
-                list = getChatItems(responseList)
-                historyLoader.setupLastItemIdFromHistory(responseList)
-            }
+            list = getChatItems(responseList)
+            historyLoader.setupLastItemIdFromHistory(responseList)
         }
         return list
     }

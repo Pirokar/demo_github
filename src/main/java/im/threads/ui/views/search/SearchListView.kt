@@ -40,7 +40,7 @@ internal class SearchListView : FrameLayout {
         }
     }
 
-    private var onListItemClickCallback: ((uuid: String) -> Unit)? = null
+    private var onListItemClickCallback: ((uuid: String, date: String?) -> Unit)? = null
 
     private val invisibleMessagesCount = 3
 
@@ -58,14 +58,18 @@ internal class SearchListView : FrameLayout {
 
     private fun init() {
         binding = EccViewSearchListBinding.inflate(LayoutInflater.from(context), this, true)
-        searchListViewAdapter = SearchListViewAdapter { messageUuid ->
-            messageUuid?.let { onListItemClickCallback?.invoke(it) }
+        searchListViewAdapter = SearchListViewAdapter { messageUuid, date ->
+            messageUuid?.let { onListItemClickCallback?.invoke(it, date) }
         }
         binding.searchListView.adapter = searchListViewAdapter
         subscribeForListScroll()
     }
 
-    fun setOnClickListener(listener: (uuid: String) -> Unit) {
+    /**
+     * Устанавливает коллбэк при нажатии на элемент из списка
+     * @param listener слушатель события нажатия на элемент из списка. Передает uuid выбранного элемента
+     */
+    fun setOnClickListener(listener: (uuid: String, date: String?) -> Unit) {
         onListItemClickCallback = listener
     }
 
