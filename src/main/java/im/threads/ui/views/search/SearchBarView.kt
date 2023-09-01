@@ -56,9 +56,21 @@ internal class SearchBarView : ConstraintLayout {
 
     private fun init() {
         binding = EccViewSearchbarBinding.inflate(LayoutInflater.from(context), this, true)
+        initSearchTexts()
         initSearchListener()
         initClearSearchBtn()
         initLoader()
+    }
+
+    private fun initSearchTexts() {
+        val chatStyle = Config.getInstance().chatStyle
+        val context = binding.searchInput.context
+
+        binding.searchInput.apply {
+            setHint(chatStyle.searchMessageHintText)
+            setHintTextColor(ContextCompat.getColor(context, chatStyle.chatToolbarHintTextColor))
+            setTextColor(ContextCompat.getColor(context, chatStyle.searchBarTextColor))
+        }
     }
 
     private fun initSearchListener() = with(binding) {

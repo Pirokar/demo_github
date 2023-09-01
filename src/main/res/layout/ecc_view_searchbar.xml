@@ -17,12 +17,10 @@
         android:layout_marginEnd="@dimen/ecc_search_bar_side_margins"
         android:background="@null"
         android:layout_marginBottom="9dp"
-        android:hint="@string/ecc_search_messages"
         android:imeOptions="actionSearch"
-        android:inputType="textVisiblePassword"
+        android:inputType="text"
         android:lines="1"
         android:textColor="@color/ecc_chat_toolbar_text"
-        android:textColorHint="@color/ecc_chat_toolbar_hint"
         android:textCursorDrawable="@null"
         android:textSize="@dimen/ecc_text_big"/>
 

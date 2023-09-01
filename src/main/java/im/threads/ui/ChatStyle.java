@@ -70,6 +70,15 @@ public final class ChatStyle implements Serializable {
     @StringRes
     public int searchResultNoItemsText = R.string.ecc_no_results_found;
 
+    @ColorRes
+    public int searchBarTextColor = R.color.ecc_white;
+
+    @StringRes
+    public int searchMessageHintText = R.string.ecc_search_messages;
+
+    @ColorRes
+    public int chatToolbarHintTextColor = R.color.ecc_chat_toolbar_hint;
+
     //common styles
     @ColorRes
     public int chatDisabledTextColor = R.color.ecc_disabled_text_color;
@@ -91,8 +100,6 @@ public final class ChatStyle implements Serializable {
     public int menuItemTextColorResId = R.color.ecc_chat_toolbar_menu_item;
     @ColorRes
     public int chatToolbarTextColorResId = R.color.ecc_chat_toolbar_text;
-    @ColorRes
-    public int chatToolbarHintTextColor = R.color.ecc_chat_toolbar_hint;
     @BoolRes
     public int fixedChatTitle = R.bool.ecc_chat_fixed_chat_title;
     @BoolRes
@@ -2334,6 +2341,24 @@ public final class ChatStyle implements Serializable {
         if (noResultFoundImageRes != null) this.searchResultNoItemsImageDrawable = noResultFoundImageRes;
         if (noResultFoundTextRes != null) this.searchResultNoItemsText = noResultFoundTextRes;
         if (noResultFoundTextColorRes != null) this.searchResultNoItemsTextColor = noResultFoundTextColorRes;
+
+        return this;
+    }
+
+    /**
+     * Устанавливает цвет подсказки и ее текст при поиске сообщений, а также цвет текста при вводе запроса
+     * @param hintTextColorRes ресурс текста для подсказки при поиске в поле ввода. Передайте null, если хотите оставить значение по умолчанию
+     * @param hintTextRes ресурс цвета текста для подсказки при поиске в поле ввода. Передайте null, если хотите оставить значение по умолчанию
+     * @param searchTextColorRes ресурс цвета текста при вводе запроса. Передайте null, если хотите оставить значение по умолчанию
+     */
+    public ChatStyle setSearchBarText(
+            @ColorRes Integer hintTextColorRes,
+            @StringRes Integer hintTextRes,
+            @ColorRes Integer searchTextColorRes
+    ) {
+        if (hintTextColorRes != null) this.chatToolbarHintTextColor = hintTextColorRes;
+        if (hintTextRes != null) this.searchMessageHintText = hintTextRes;
+        if (searchTextColorRes != null) this.searchBarTextColor = searchTextColorRes;
 
         return this;
     }
