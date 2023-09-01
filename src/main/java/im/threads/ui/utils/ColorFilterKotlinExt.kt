@@ -13,7 +13,7 @@ import androidx.annotation.RequiresApi
  * @param mode ColorFilterMode, описывающий флаги для отрисовки цвета
  */
 @Suppress("EXTENSION_SHADOWED_BY_MEMBER")
-internal fun Drawable.setColorFilter(color: Int, mode: ColorFilterMode = ColorFilterMode.SRC_ATOP) {
+internal fun Drawable.applyColorFilter(color: Int, mode: ColorFilterMode = ColorFilterMode.SRC_ATOP) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
         colorFilter = BlendModeColorFilter(color, mode.getBlendMode())
     } else {

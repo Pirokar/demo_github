@@ -2,6 +2,7 @@ package im.threads.ui.views.search
 
 import android.content.Context
 import android.graphics.Rect
+import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -12,7 +13,9 @@ import im.threads.business.logger.LoggerEdna
 import im.threads.databinding.EccViewSearchbarBinding
 import im.threads.ui.config.Config
 import im.threads.ui.extensions.lifecycle
+import im.threads.ui.utils.ColorFilterMode
 import im.threads.ui.utils.ColorsHelper
+import im.threads.ui.utils.applyColorFilter
 import im.threads.ui.utils.hideKeyboard
 import im.threads.ui.utils.invisible
 import im.threads.ui.utils.isNotVisible
@@ -88,6 +91,12 @@ internal class SearchBarView : ConstraintLayout {
         chatStyle.searchLoaderDrawable?.let {
             searchProgressBar.indeterminateDrawable = ContextCompat.getDrawable(this@SearchBarView.context, it)
         }
+        val progressDrawable: Drawable = searchProgressBar.indeterminateDrawable.mutate()
+        progressDrawable.applyColorFilter(
+            ContextCompat.getColor(this@SearchBarView.context, chatStyle.searchLoaderColorTint),
+            ColorFilterMode.SRC_ATOP
+        )
+        searchProgressBar.progressDrawable = progressDrawable
     }
 
     override fun requestFocus(direction: Int, previouslyFocusedRect: Rect?): Boolean {

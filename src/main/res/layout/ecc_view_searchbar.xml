@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/searchRightLayout"
+        app:layout_constraintEnd_toStartOf="@id/searchClearButton"
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginEnd="@dimen/ecc_search_bar_side_margins"
         android:background="@null"
@@ -26,8 +26,8 @@
         android:textCursorDrawable="@null"
         android:textSize="@dimen/ecc_text_big"/>
 
-    <FrameLayout
-        android:id="@+id/searchRightLayout"
+    <ImageButton
+        android:id="@+id/searchClearButton"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintHeight_percent="0.25"
@@ -35,23 +35,22 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/searchInput"
         app:layout_constraintBottom_toBottomOf="@id/searchInput"
-        android:layout_marginEnd="@dimen/ecc_search_bar_side_margins">
+        android:layout_marginEnd="@dimen/ecc_search_bar_side_margins"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:visibility="invisible"
+        tools:visibility="visible"/>
 
-        <ImageButton
-            android:id="@+id/searchClearButton"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:visibility="invisible"
-            tools:visibility="visible"/>
-
-        <ProgressBar
-            android:id="@+id/searchProgressBar"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:indeterminateOnly="true"
-            android:visibility="invisible"/>
-
-    </FrameLayout>
+    <ProgressBar
+        android:id="@+id/searchProgressBar"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.45"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/searchInput"
+        app:layout_constraintBottom_toBottomOf="@id/searchInput"
+        android:layout_marginEnd="@dimen/ecc_search_bar_side_margins"
+        android:indeterminateOnly="true"
+        android:visibility="invisible"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

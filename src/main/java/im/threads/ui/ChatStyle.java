@@ -41,6 +41,9 @@ public final class ChatStyle implements Serializable {
     public Integer searchLoaderDrawable = null;
 
     @ColorRes
+    public int searchLoaderColorTint = R.color.ecc_white;
+
+    @ColorRes
     public int searchResultsDividerColor = R.color.ecc_user_message_timestamp;
 
     //common styles
@@ -2215,6 +2218,15 @@ public final class ChatStyle implements Serializable {
      */
     public ChatStyle setSearchLoaderDrawable(@DrawableRes int searchLoaderDrawableRes) {
         this.searchLoaderDrawable = searchLoaderDrawableRes;
+        return this;
+    }
+
+    /**
+     * Устанавливает цвет иконки поиска для лоадера при загрузке результатов поиска в поле ввода. По умолчанию #fff
+     * @param searchLoaderColorTintRes цвет иконка поиска для лоадера (ссылка на ресурс)
+     */
+    public ChatStyle setSearchLoaderColorTint(@ColorRes int searchLoaderColorTintRes) {
+        this.searchLoaderColorTint = searchLoaderColorTintRes;
         return this;
     }
 
