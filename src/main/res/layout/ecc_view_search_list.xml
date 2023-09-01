@@ -20,7 +20,7 @@
         android:visibility="gone">
 
         <ImageView
-            android:id="@+id/searchNoResultsImage"
+            android:id="@+id/noResultsImage"
             android:layout_width="175dp"
             android:layout_height="175dp"
             android:src="@drawable/ecc_search_not_found"/>

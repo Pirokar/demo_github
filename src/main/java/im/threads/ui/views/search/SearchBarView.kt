@@ -148,7 +148,7 @@ internal class SearchBarView : ConstraintLayout {
         loaderCoroutineScope = CoroutineScope(Dispatchers.Main)
         loaderCoroutineScope?.launch {
             loadingChannel?.collect { showLoader ->
-                if (isActive && isAttachedToWindow) {
+                if (isActive && isAttachedToWindow && chatStyle.isSearchLoaderVisible) {
                     LoggerEdna.info("showLoader")
                     if (showLoader) {
                         binding.searchClearButton.invisible()

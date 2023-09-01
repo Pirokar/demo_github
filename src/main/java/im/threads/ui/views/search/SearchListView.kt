@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.FrameLayout
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener
@@ -14,6 +15,7 @@ import im.threads.business.rest.models.SearchResponse
 import im.threads.business.rest.queries.BackendApi
 import im.threads.databinding.EccViewSearchListBinding
 import im.threads.ui.adapters.search.SearchListViewAdapter
+import im.threads.ui.config.Config
 import im.threads.ui.utils.gone
 import im.threads.ui.utils.visible
 import kotlinx.coroutines.CoroutineScope
@@ -64,6 +66,7 @@ internal class SearchListView : FrameLayout {
             messageUuid?.let { onListItemClickCallback?.invoke(it, date) }
         }
         binding.searchListView.adapter = searchListViewAdapter
+        initNoResultsView()
         subscribeForListScroll()
     }
 
@@ -176,6 +179,17 @@ internal class SearchListView : FrameLayout {
         } else {
             false
         }
+    }
+
+    private fun initNoResultsView() = with(binding) {
+        val chatStyle = Config.getInstance().chatStyle
+        val context = noResultsImage.context
+
+        noResultsImage.setImageDrawable(
+            ContextCompat.getDrawable(noResultsImage.context, chatStyle.searchResultNoItemsImageDrawable)
+        )
+        noResultsTextView.text = context.getString(chatStyle.searchResultNoItemsText)
+        noResultsTextView.setTextColor(ContextCompat.getColor(context, chatStyle.searchResultNoItemsTextColor))
     }
 
     private fun subscribeForListScroll() {

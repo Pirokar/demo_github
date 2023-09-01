@@ -50,6 +50,7 @@
     <color name="ecc_incoming_message_text">@color/ecc_black</color>
     <color name="ecc_outgoing_message_text">@color/ecc_white</color>
     <color name="ecc_user_message_timestamp">#9FA5A9</color>
+    <color name="ecc_search_results_item_secondary">#9FA5A9</color>
     <color name="ecc_search_divider_color">#D3D4D5</color>
     <color name="ecc_operator_message_timestamp">@color/ecc_black</color>
 
@@ -143,4 +144,5 @@
     <color name="ecc_consult_searching_progress_color">@color/ecc_teal_009688</color>
     <color name="ecc_button_normal">@color/ecc_teal_009688</color>
     <color name="ecc_button_pressed">#03C6B4</color>
+    <color name="ecc_search_results_message_color">#6F7378</color>
 </resources>
