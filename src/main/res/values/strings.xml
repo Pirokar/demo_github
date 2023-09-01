@@ -164,4 +164,5 @@
     <string name="ecc_timeout_message">Request timed out</string>
     <string name="ecc_no_user_id">User not set, please login first</string>
     <string name="ecc_request_failed">Request failed, please try again</string>
+    <string name="ecc_no_results_found">No results found</string>
 </resources>

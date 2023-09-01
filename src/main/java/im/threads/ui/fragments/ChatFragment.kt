@@ -2201,7 +2201,7 @@ class ChatFragment :
         isInMessageSearchMode = false
         searchBar.clearSearch()
         searchBar.hideKeyboard(100)
-        searchMore.visibility = View.GONE
+        searchMore.gone()
         swipeRefresh.isEnabled = true
         when (chatController.stateOfConsult) {
             ChatController.CONSULT_STATE_DEFAULT -> setTitleStateDefault()

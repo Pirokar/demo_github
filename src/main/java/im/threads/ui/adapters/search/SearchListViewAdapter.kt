@@ -27,11 +27,10 @@ internal class SearchListViewAdapter(private val onClickCallback: (String?, date
     private var data: List<MessageFromHistory> = listOf()
 
     fun updateData(newData: List<MessageFromHistory>?) {
-        if (!newData.isNullOrEmpty()) {
-            val diffResult = DiffUtil.calculateDiff(SearchListDiffCallback(data, newData))
-            data = newData
-            diffResult.dispatchUpdatesTo(this)
-        }
+        val dataForUpdate = newData ?: listOf()
+        val diffResult = DiffUtil.calculateDiff(SearchListDiffCallback(data, dataForUpdate))
+        data = dataForUpdate
+        diffResult.dispatchUpdatesTo(this)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchListViewHolder {

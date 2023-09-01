@@ -14,6 +14,8 @@ import im.threads.business.rest.models.SearchResponse
 import im.threads.business.rest.queries.BackendApi
 import im.threads.databinding.EccViewSearchListBinding
 import im.threads.ui.adapters.search.SearchListViewAdapter
+import im.threads.ui.utils.gone
+import im.threads.ui.utils.visible
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -137,7 +139,7 @@ internal class SearchListView : FrameLayout {
                 if (response.isSuccessful) {
                     val searchResults = response.body()
                     lastSearchResults =
-                        if (!lastSearchString.isNullOrBlank() && searchString.contains(lastSearchString!!)) {
+                        if (!lastSearchString.isNullOrBlank() && searchString == lastSearchString!!) {
                             lastSearchResults plus searchResults
                         } else {
                             searchResults
@@ -145,6 +147,7 @@ internal class SearchListView : FrameLayout {
                     lastSearchString = searchString
                     searchListViewAdapter?.updateData(lastSearchResults?.content)
                     setLoadingChannelValue(false)
+                    checkListSize()
                 }
             }
 
@@ -153,6 +156,14 @@ internal class SearchListView : FrameLayout {
                 LoggerEdna.error("Error when search", t)
             }
         })
+    }
+
+    private fun checkListSize() {
+        if (searchListViewAdapter?.itemCount == 0) {
+            binding.noResultsView.visible()
+        } else {
+            binding.noResultsView.gone()
+        }
     }
 
     private fun isLastVisibleItemPosition(): Boolean {
