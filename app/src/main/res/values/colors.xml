@@ -29,7 +29,7 @@
     <color name="alt_threads_chat_status_bar">#000000</color>
     <color name="alt_threads_chat_toolbar_menu_item_light">#505050</color>
     <color name="alt_threads_chat_toolbar_menu_item_black">@color/white_color_ec</color>
-    <color name="alt_threads_chat_toolbar_hint">@color/white_color_ec</color>
+    <color name="alt_threads_chat_toolbar_hint">#A9A9A9</color>
 
     <!-- Light theme colors -->
     <color name="light_outgoing_bubble">#BBF1D1</color>
