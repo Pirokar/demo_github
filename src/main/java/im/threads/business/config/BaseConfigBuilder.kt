@@ -33,8 +33,8 @@ open class BaseConfigBuilder(var context: Context) {
         return this
     }
 
-    open fun keepSocketActive(): BaseConfigBuilder {
-        this.keepSocketActive = true
+    open fun keepSocketActive(keepSocketActive: Boolean): BaseConfigBuilder {
+        this.keepSocketActive = keepSocketActive
         return this
     }
 

@@ -42,8 +42,8 @@ class ConfigBuilder(context: Context) : BaseConfigBuilder(context) {
         return this
     }
 
-    override fun keepSocketActive(): ConfigBuilder {
-        super.keepSocketActive()
+    override fun keepSocketActive(keepSocketActive: Boolean): ConfigBuilder {
+        super.keepSocketActive(keepSocketActive)
         return this
     }
 
