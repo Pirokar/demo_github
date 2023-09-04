@@ -810,7 +810,13 @@ class ChatController private constructor() {
             Flowable.fromPublisher(chatUpdateProcessor.campaignMessageReplySuccessProcessor)
                 .observeOn(Schedulers.io())
                 .delay(1000, TimeUnit.MILLISECONDS)
-                .subscribe({ loadHistory() }) { onError: Throwable? ->
+                .subscribe(
+                    {
+                        if (isChatReady()) {
+                            loadHistory()
+                        }
+                    }
+                ) { onError: Throwable? ->
                     error("subscribeToCampaignMessageReplySuccess ", onError)
                 }
         )
@@ -1338,7 +1344,7 @@ class ChatController private constructor() {
         if (fragment != null && !clientId.isNullOrBlank()) {
             BaseConfig.getInstance().transport.sendRegisterDevice(false)
             clearUnreadPush()
-            if (fragment?.isResumed == true) {
+            if (fragment?.isResumed == true && isChatReady()) {
                 loadHistory()
             }
         }

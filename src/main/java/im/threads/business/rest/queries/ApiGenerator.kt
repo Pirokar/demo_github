@@ -60,9 +60,10 @@ abstract class ApiGenerator protected constructor(
             )
             .addInterceptor(authInterceptor)
             .apply { config.networkInterceptor?.let { addInterceptor(it) } }
-            .connectTimeout(connectTimeoutMillis.toLong(), TimeUnit.MILLISECONDS)
-            .readTimeout(readTimeoutMillis.toLong(), TimeUnit.MILLISECONDS)
-            .writeTimeout(writeTimeoutMillis.toLong(), TimeUnit.MILLISECONDS)
+            .connectTimeout(connectTimeoutMillis, TimeUnit.MILLISECONDS)
+            .readTimeout(readTimeoutMillis, TimeUnit.MILLISECONDS)
+            .writeTimeout(writeTimeoutMillis, TimeUnit.MILLISECONDS)
+            .retryOnConnectionFailure(false)
         if (config.isDebugLoggingEnabled) {
             HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
         }
