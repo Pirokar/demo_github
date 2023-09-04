@@ -99,8 +99,6 @@ open class ThreadsLibBase protected constructor(context: Context) {
             chatState.onLogout()
             BaseConfig.getInstance().transport.sendClientOffline(clientId) {
                 ChatController.getInstance().cleanAll()
-                clientUseCase.saveUserInfo(null)
-                database.cleanDatabase()
                 initUser(userInfoBuilder, forceRegistration)
             }
         } else {

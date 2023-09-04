@@ -178,7 +178,7 @@ class ThreadsGateTransport(
 
     override fun sendRegisterDevice(forceRegistration: Boolean) {
         val deviceAddress = preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS)
-        if (!deviceAddress.isNullOrBlank() || forceRegistration) {
+        if (deviceAddress.isNullOrBlank() || forceRegistration) {
             if (deviceAddress.isNullOrBlank()) sendRegisterDevice()
         } else {
             openWebSocket()
