@@ -781,7 +781,8 @@ class ChatFragment :
                     if (firstVisibleItemPosition == 0 &&
                         !chatController.isAllMessagesDownloaded &&
                         itemCount != null &&
-                        itemCount > BaseConfig.getInstance().historyLoadingCount / 2
+                        itemCount > BaseConfig.getInstance().historyLoadingCount / 2 &&
+                        chatController.isChatReady()
                     ) {
                         swipeRefresh.isRefreshing = true
                         chatController.loadHistory(isAfterAnchor = false) // before
@@ -951,7 +952,9 @@ class ChatFragment :
     }
 
     private fun onRefresh() {
-        chatController.loadHistory(forceLoad = true)
+        if (chatController.isChatReady()) {
+            chatController.loadHistory(forceLoad = true)
+        }
     }
 
     private fun setFragmentStyle() = binding?.apply {
