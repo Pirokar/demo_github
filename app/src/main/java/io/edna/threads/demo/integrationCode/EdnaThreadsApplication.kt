@@ -1,8 +1,10 @@
 package io.edna.threads.demo.integrationCode
 
 import android.app.Application
+import android.content.Intent
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.perf.FirebasePerformance
+import im.threads.business.core.UnreadMessagesCountListener
 import im.threads.business.logger.LoggerConfig
 import im.threads.business.logger.LoggerRetentionPolicy
 import im.threads.business.markdown.MarkdownConfig
@@ -13,6 +15,8 @@ import io.edna.threads.demo.BuildConfig
 import io.edna.threads.demo.R
 import io.edna.threads.demo.appCode.business.ServersProvider
 import io.edna.threads.demo.appCode.business.appModule
+import io.edna.threads.demo.integrationCode.fragments.launch.LaunchFragment.Companion.APP_UNREAD_COUNT_BROADCAST
+import io.edna.threads.demo.integrationCode.fragments.launch.LaunchFragment.Companion.UNREAD_COUNT_KEY
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
@@ -40,12 +44,18 @@ class EdnaThreadsApplication : Application() {
             .build()
 
         val configBuilder = ConfigBuilder(this)
+            .unreadMessagesCountListener(object : UnreadMessagesCountListener {
+                override fun onUnreadMessagesCountChanged(count: Int) {
+                    val intent = Intent(APP_UNREAD_COUNT_BROADCAST)
+                    intent.putExtra(UNREAD_COUNT_KEY, count)
+                    sendBroadcast(intent)
+                }
+            })
             .surveyCompletionDelay(2000)
             .historyLoadingCount(50)
             .isDebugLoggingEnabled(true)
             .showAttachmentsButton()
             .enableLogging(loggerConfig)
-            .keepSocketActive()
 
         serversProvider.getSelectedServer()?.let { server ->
             configBuilder.serverBaseUrl(server.serverBaseUrl)

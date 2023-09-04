@@ -17,6 +17,7 @@ import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import im.threads.business.UserInfoBuilder
+import im.threads.business.config.BaseConfig
 import im.threads.business.models.enums.CurrentUiTheme
 import im.threads.ui.core.ThreadsLib
 import io.edna.threads.demo.R
@@ -41,6 +42,9 @@ class LaunchViewModel(
     val themeSelectorLiveData: VolatileLiveData<CurrentUiTheme> = VolatileLiveData()
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
+    private var _autoLogoutLiveData = MutableLiveData(true)
+    var autoLogoutLiveData: LiveData<Boolean> = _autoLogoutLiveData
+
     private var _selectedUserLiveData = MutableLiveData(getSelectedUser())
     var selectedUserLiveData: LiveData<UserInfo?> = _selectedUserLiveData
 
@@ -58,6 +62,10 @@ class LaunchViewModel(
                 _selectedServerLiveData.postValue(server)
             }
         }
+    }
+
+    fun setAutoLogout(value: Boolean) {
+        _autoLogoutLiveData.postValue(value)
     }
 
     override fun onStart(owner: LifecycleOwner) {
@@ -91,6 +99,9 @@ class LaunchViewModel(
         val isUserHasRequiredFields = user?.userId != null
 
         if (serverConfig != null && isUserHasRequiredFields) {
+            autoLogoutLiveData.value?.let {
+                BaseConfig.getInstance().keepSocketActive = !it
+            }
             ThreadsLib.changeServerSettings(
                 serverConfig.serverBaseUrl,
                 serverConfig.datastoreUrl,
