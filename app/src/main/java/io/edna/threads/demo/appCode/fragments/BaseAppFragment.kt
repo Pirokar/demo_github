@@ -56,10 +56,8 @@ abstract class BaseAppFragment<T : ViewBinding>(
         val isDemoListFragment = this is DemoSamplesListFragment
         val chatBackPressed = fragment?.onBackPressed() == true
         if ((chatBackPressed || isDemoListFragment) && isAdded) {
-            if (this@BaseAppFragment is ChatAppFragment || this@BaseAppFragment is DemoSamplesListFragment) {
-                if (!BaseConfig.getInstance().keepSocketActive) {
-                    ThreadsLib.getInstance().logoutClient()
-                }
+            if (this@BaseAppFragment is DemoSamplesListFragment) {
+                ThreadsLib.getInstance().logoutClient()
             }
             findNavController().navigateUp()
         }

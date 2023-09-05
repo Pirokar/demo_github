@@ -3,8 +3,6 @@ package io.edna.threads.demo.integrationCode.fragments.chatFragment
 import android.os.Bundle
 import android.view.View
 import im.threads.business.annotation.OpenWay
-import im.threads.business.config.BaseConfig
-import im.threads.ui.core.ThreadsLib
 import im.threads.ui.fragments.ChatFragment
 import io.edna.threads.demo.R
 import io.edna.threads.demo.appCode.fragments.BaseAppFragment
@@ -21,13 +19,6 @@ class ChatAppFragment : BaseAppFragment<FragmentChatBinding>(FragmentChatBinding
                 .beginTransaction()
                 .add(R.id.chatFragmentContainer, it)
                 .commit()
-        }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        if (!BaseConfig.getInstance().keepSocketActive) {
-            ThreadsLib.getInstance().logoutClient()
         }
     }
 }
