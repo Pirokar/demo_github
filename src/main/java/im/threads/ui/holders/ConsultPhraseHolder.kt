@@ -62,7 +62,7 @@ class ConsultPhraseHolder(
 
     @SuppressLint("SimpleDateFormat")
     private var quoteSdf = if (Locale.getDefault().language.equals("ru", ignoreCase = true)) {
-        SimpleDateFormat("dd MfMMM yyyy", RussianFormatSymbols())
+        SimpleDateFormat("dd MMMM yyyy", RussianFormatSymbols())
     } else {
         SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
     }
