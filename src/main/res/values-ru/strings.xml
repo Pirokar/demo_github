@@ -171,5 +171,6 @@
     <string name="ecc_error_when_chat_init">Ошибка при инициализации чата</string>
     <string name="ecc_timeout_message">Превышен интервал ожидания для запроса</string>
     <string name="ecc_no_user_id">Пользователь не установлен, выполните авторизацию</string>
+    <string name="ecc_attachments_not_loaded">Не удалось загрузить настройки чата</string>
 
 </resources>
