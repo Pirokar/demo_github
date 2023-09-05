@@ -57,12 +57,10 @@ class LaunchFragment : BaseAppFragment<FragmentLaunchBinding>(FragmentLaunchBind
         userButton.setOnClickListener { viewModel.click(userButton) }
         demonstrations.setOnClickListener { viewModel.click(demonstrations) }
         uiTheme.setOnClickListener { viewModel.click(uiTheme) }
+        logout.setOnClickListener { viewModel.logout() }
         login.setOnClickListener {
             viewModel.click(login)
             setUnreadCount(0)
-        }
-        autoLogout.setOnCheckedChangeListener { _, isChecked ->
-            viewModel.setAutoLogout(isChecked)
         }
     }
 
@@ -81,6 +79,7 @@ class LaunchFragment : BaseAppFragment<FragmentLaunchBinding>(FragmentLaunchBind
     private fun initObservers() {
         viewModel.currentUiThemeLiveData.observe(viewLifecycleOwner) { setUiThemeDependentViews(it) }
         viewModel.themeSelectorLiveData.observe(viewLifecycleOwner) { showUiThemesSelector(it) }
+        viewModel.loggedUserLiveData.observe(viewLifecycleOwner) { setLoggedUser(it) }
         viewLifecycleOwner.lifecycle.addObserver(viewModel)
         viewModel.subscribeForData(viewLifecycleOwner)
     }
@@ -123,6 +122,15 @@ class LaunchFragment : BaseAppFragment<FragmentLaunchBinding>(FragmentLaunchBind
                     )
                 }
             }
+        }
+    }
+
+    private fun setLoggedUser(userId: String?) {
+        if (userId.isNullOrBlank()) {
+            binding.logoutLayout.isVisible = false
+        } else {
+            binding.logoutLayout.isVisible = true
+            binding.logoutText.text = getString(R.string.logout_client_text)+" "+userId
         }
     }
 

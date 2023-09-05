@@ -5,7 +5,8 @@
     <string name="server">Сервер</string>
     <string name="user">Пользователь</string>
     <string name="login">Войти</string>
-    <string name="close_socket_text">Закрывать сокет и вызвать logoutClient() при выходе из чата</string>
+    <string name="logout">Logout</string>
+    <string name="logout_client_text">Вход под пользователем: </string>
     <string name="demonstrations_examples">Демонстрационные примеры</string>
     <string name="functional_not_support">Функционал не поддерживается в текущей версии приложения.</string>
 

@@ -17,8 +17,9 @@ import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import im.threads.business.UserInfoBuilder
-import im.threads.business.config.BaseConfig
 import im.threads.business.models.enums.CurrentUiTheme
+import im.threads.business.serviceLocator.core.inject
+import im.threads.business.utils.ClientUseCase
 import im.threads.ui.core.ThreadsLib
 import io.edna.threads.demo.R
 import io.edna.threads.demo.appCode.business.PreferencesProvider
@@ -41,9 +42,10 @@ class LaunchViewModel(
     val currentUiThemeLiveData: MutableLiveData<UiTheme> = MutableLiveData()
     val themeSelectorLiveData: VolatileLiveData<CurrentUiTheme> = VolatileLiveData()
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
+    private val clientUseCase: ClientUseCase by inject()
 
-    private var _autoLogoutLiveData = MutableLiveData(true)
-    var autoLogoutLiveData: LiveData<Boolean> = _autoLogoutLiveData
+    private var _loggedUserLiveData = MutableLiveData("")
+    var loggedUserLiveData: LiveData<String> = _loggedUserLiveData
 
     private var _selectedUserLiveData = MutableLiveData(getSelectedUser())
     var selectedUserLiveData: LiveData<UserInfo?> = _selectedUserLiveData
@@ -64,13 +66,10 @@ class LaunchViewModel(
         }
     }
 
-    fun setAutoLogout(value: Boolean) {
-        _autoLogoutLiveData.postValue(value)
-    }
-
     override fun onStart(owner: LifecycleOwner) {
         super.onStart(owner)
         checkUiTheme()
+        checkLoggedUser()
     }
 
     fun click(view: View) {
@@ -99,9 +98,6 @@ class LaunchViewModel(
         val isUserHasRequiredFields = user?.userId != null
 
         if (serverConfig != null && isUserHasRequiredFields) {
-            autoLogoutLiveData.value?.let {
-                BaseConfig.getInstance().keepSocketActive = !it
-            }
             ThreadsLib.changeServerSettings(
                 serverConfig.serverBaseUrl,
                 serverConfig.datastoreUrl,
@@ -220,5 +216,14 @@ class LaunchViewModel(
         } else {
             null
         }
+    }
+
+    private fun checkLoggedUser() {
+        _loggedUserLiveData.postValue(clientUseCase.getUserInfo()?.clientId)
+    }
+
+    fun logout() {
+        ThreadsLib.getInstance().logoutClient()
+        checkLoggedUser()
     }
 }
