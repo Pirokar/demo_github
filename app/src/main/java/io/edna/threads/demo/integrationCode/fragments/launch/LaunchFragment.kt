@@ -34,10 +34,6 @@ class LaunchFragment : BaseAppFragment<FragmentLaunchBinding>(FragmentLaunchBind
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        addThreadsLibInitializationReceiver()
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         initReceivers()
         initObservers()
         setResultListeners()
@@ -49,33 +45,21 @@ class LaunchFragment : BaseAppFragment<FragmentLaunchBinding>(FragmentLaunchBind
     override fun onDestroyView() {
         super.onDestroyView()
         clearResultListeners()
-        unregisterReceiver()
-    }
-
-    private fun addThreadsLibInitializationReceiver() {
-        if (!ThreadsLib.isInitialized()) {
-            initLibReceiver = InitThreadsLibReceiver(this)
-            ContextCompat.registerReceiver(
-                requireContext(),
-                receiver,
-                filter,
-                ContextCompat.RECEIVER_VISIBLE_TO_INSTANT_APPS
-            )
-        }
+        unregisterReceivers()
     }
 
     private fun unregisterReceivers() {
         unregisterInitLibReceivers()
         unreadCountReceiver?.let {
             requireActivity().unregisterReceiver(it)
-            receiver = null
+            unreadCountReceiver = null
         }
     }
 
     private fun unregisterInitLibReceivers() {
         initLibReceiver?.let {
             requireActivity().unregisterReceiver(it)
-            receiver = null
+            initLibReceiver = null
         }
     }
 
@@ -163,7 +147,7 @@ class LaunchFragment : BaseAppFragment<FragmentLaunchBinding>(FragmentLaunchBind
             binding.logoutLayout.isVisible = false
         } else {
             binding.logoutLayout.isVisible = true
-            binding.logoutText.text = getString(R.string.logout_client_text)+" "+userId
+            binding.logoutText.text = getString(R.string.logout_client_text) + " " + userId
         }
     }
 
@@ -172,12 +156,21 @@ class LaunchFragment : BaseAppFragment<FragmentLaunchBinding>(FragmentLaunchBind
         binding.count.text = count.toString()
     }
 
-    private fun initReceiver() {
-        receiver = InitUnreadCountReceiver(this)
+    private fun initReceivers() {
+        if (!ThreadsLib.isInitialized()) {
+            initLibReceiver = InitThreadsLibReceiver(this)
+            ContextCompat.registerReceiver(
+                requireContext(),
+                initLibReceiver,
+                initLibFilter,
+                ContextCompat.RECEIVER_VISIBLE_TO_INSTANT_APPS
+            )
+        }
+        unreadCountReceiver = InitUnreadCountReceiver(this)
         ContextCompat.registerReceiver(
             requireContext(),
-            receiver,
-            filter,
+            unreadCountReceiver,
+            unreadCountFilter,
             ContextCompat.RECEIVER_VISIBLE_TO_INSTANT_APPS
         )
     }
