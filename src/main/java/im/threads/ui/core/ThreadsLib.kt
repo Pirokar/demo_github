@@ -12,6 +12,7 @@ import im.threads.business.serviceLocator.core.inject
 import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.FileProvider
 import im.threads.business.utils.FileUtils.getFileSize
+import im.threads.ui.ChatCenterPushMessageHelper
 import im.threads.ui.ChatStyle
 import im.threads.ui.config.Config
 import im.threads.ui.config.ConfigBuilder
@@ -20,16 +21,16 @@ import im.threads.ui.styles.permissions.PermissionDescriptionDialogStyle
 import im.threads.ui.utils.preferences.PreferencesMigrationUi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import java.io.File
 
 class ThreadsLib(context: Context) : ThreadsLibBase(context) {
     private val config by lazy { Config.getInstance() }
     private val clientUseCase: ClientUseCase by inject()
     private val fileProvider: FileProvider by inject()
+    private val chatCenterPushMessageHelper: ChatCenterPushMessageHelper by inject()
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
+    private val unconfinedScope = CoroutineScope(Dispatchers.Unconfined)
 
     /**
      * Применяет настройки светлой темы
@@ -117,6 +118,32 @@ class ThreadsLib(context: Context) : ThreadsLibBase(context) {
         }
     }
 
+    private fun subscribeToPushEvent() {
+        unconfinedScope.launch {
+            ChatCenterPushMessageHelper.fcmTokenStateFlow.collect { fcmToken ->
+                if (!fcmToken.isNullOrBlank()) {
+                    chatCenterPushMessageHelper.setInternalFcmToken(fcmToken)
+                }
+            }
+        }
+
+        unconfinedScope.launch {
+            ChatCenterPushMessageHelper.hcmTokenStateFlow.collect { hcmToken ->
+                if (!hcmToken.isNullOrBlank()) {
+                    chatCenterPushMessageHelper.setInternalHcmToken(hcmToken)
+                }
+            }
+        }
+
+        unconfinedScope.launch {
+            ChatCenterPushMessageHelper.pushBundleStateFlow.collect { bundle ->
+                if (bundle != null) {
+                    chatCenterPushMessageHelper.processPush(config.context, bundle)
+                }
+            }
+        }
+    }
+
     companion object {
         @JvmStatic
         fun getLibVersion() = ThreadsLibBase.getLibVersion()
@@ -130,7 +157,7 @@ class ThreadsLib(context: Context) : ThreadsLibBase(context) {
 
             loadRamPrefs(this::migratePreference, configBuilder.context)
             initBaseParams()
-            libInitializedStateFlow.tryEmit(true)
+            getInstance().subscribeToPushEvent()
         }
 
         /**
@@ -187,10 +214,5 @@ class ThreadsLib(context: Context) : ThreadsLibBase(context) {
         fun isInitialized(): Boolean {
             return libInstance != null
         }
-
-        internal var libInitializedStateFlow = MutableSharedFlow<Boolean>(
-            replay = 1,
-            onBufferOverflow = BufferOverflow.DROP_OLDEST,
-        )
     }
 }
