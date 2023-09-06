@@ -795,7 +795,13 @@ class ChatController private constructor() {
             Flowable.fromPublisher(chatUpdateProcessor.campaignMessageReplySuccessProcessor)
                 .observeOn(Schedulers.io())
                 .delay(1000, TimeUnit.MILLISECONDS)
-                .subscribe({ loadHistory() }) { onError: Throwable? ->
+                .subscribe(
+                    {
+                        if (isChatReady()) {
+                            loadHistory()
+                        }
+                    }
+                ) { onError: Throwable? ->
                     error("subscribeToCampaignMessageReplySuccess ", onError)
                 }
         )
@@ -1270,6 +1276,7 @@ class ChatController private constructor() {
         consultWriter.setCurrentConsultLeft()
         consultWriter.isSearchingConsult = false
         removePushNotification()
+        clientUseCase.cleanUserInfoFromRam()
         clearPreferences(keepClientId)
         UnreadMessagesController.INSTANCE.refreshUnreadMessagesCount()
         localUserMessages.clear()
@@ -1322,7 +1329,7 @@ class ChatController private constructor() {
         if (fragment != null && !clientId.isNullOrBlank()) {
             BaseConfig.getInstance().transport.sendRegisterDevice(false)
             clearUnreadPush()
-            if (fragment?.isResumed == true) {
+            if (fragment?.isResumed == true && isChatReady()) {
                 loadHistory()
             }
         }
@@ -1595,10 +1602,18 @@ class ChatController private constructor() {
                         withContext(Dispatchers.Main) { fragment?.showProgressBar() }
                     }
                     if (stateEvent.isTimeout && chatState.getCurrentState() < ChatStateEnum.ATTACHMENT_SETTINGS_LOADED) {
-                        val timeoutMessage = "${fragment?.getString(R.string.ecc_timeout_message) ?: "Превышен интервал ожидания для запроса"} (${chatState.getCurrentState()})"
+                        val timeoutMessage = if (stateEvent.state > ChatStateEnum.INIT_USER_SENT && fragment != null) {
+                            fragment?.getString(R.string.ecc_attachments_not_loaded)
+                        } else {
+                            "${fragment?.getString(R.string.ecc_timeout_message) ?: "Превышен интервал ожидания для запроса"} (${chatState.getCurrentState()})"
+                        }
                         withContext(Dispatchers.Main) { fragment?.showErrorView(timeoutMessage) }
                     } else if (stateEvent.state == ChatStateEnum.DEVICE_REGISTERED) {
-                        BaseConfig.getInstance().transport.sendInitMessages()
+                        if (preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS).isNullOrBlank()) {
+                            BaseConfig.getInstance().transport.sendRegisterDevice(false)
+                        } else {
+                            BaseConfig.getInstance().transport.sendInitMessages()
+                        }
                     } else if (stateEvent.state == ChatStateEnum.ATTACHMENT_SETTINGS_LOADED) {
                         loadItemsFromDB()
                         if (fragment?.isResumed == true) loadHistoryAfterWithLastMessageCheck()

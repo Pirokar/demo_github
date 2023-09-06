@@ -50,6 +50,14 @@ class ClientUseCase(private val preferences: Preferences) {
     }
 
     /**
+     * Очищает сведения о пользователе в памяти
+     */
+    fun cleanUserInfoFromRam() {
+        ramUserInfo = null
+        tagNewClientId = null
+    }
+
+    /**
      * Возвращает данные о клиенте
      */
     fun getUserInfo() = ramUserInfo ?: preferences.get(USER_INFO_PREFS_KEY)

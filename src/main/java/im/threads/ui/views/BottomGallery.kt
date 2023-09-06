@@ -74,13 +74,7 @@ internal class BottomGallery : FrameLayout {
                     true
                 } else {
                     // Недопустимый размер файла
-                    Balloon.show(
-                        context,
-                        context.getString(
-                            R.string.ecc_not_allowed_file_size,
-                            FileHelper.maxAllowedFileSize
-                        )
-                    )
+                    Balloon.show(context, context.getString(R.string.ecc_not_allowed_file_size, FileHelper.maxAllowedFileSize))
                     false
                 }
             } else {
