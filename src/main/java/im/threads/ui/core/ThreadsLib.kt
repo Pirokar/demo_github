@@ -20,7 +20,6 @@ import im.threads.ui.styles.permissions.PermissionDescriptionDialogStyle
 import im.threads.ui.utils.preferences.PreferencesMigrationUi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import java.io.File
 
 class ThreadsLib(context: Context) : ThreadsLibBase(context) {
@@ -116,9 +115,6 @@ class ThreadsLib(context: Context) : ThreadsLibBase(context) {
     }
 
     companion object {
-        private const val DELAY_THREAD_MILLIS = 300L
-        private const val DELAY_TIMEOUT_MILLIS = 10000L
-
         @JvmStatic
         fun getLibVersion() = ThreadsLibBase.getLibVersion()
 
@@ -181,14 +177,6 @@ class ThreadsLib(context: Context) : ThreadsLibBase(context) {
         @JvmStatic
         fun isInitialized(): Boolean {
             return libInstance != null
-        }
-
-        @JvmStatic
-        suspend fun waitInitialization() {
-            val startTime = System.currentTimeMillis()
-            while (!isInitialized() || System.currentTimeMillis() - startTime < DELAY_TIMEOUT_MILLIS) {
-                delay(DELAY_THREAD_MILLIS)
-            }
         }
     }
 }
