@@ -24,11 +24,17 @@ open class BaseConfigBuilder(var context: Context) {
     protected var requestConfig = RequestConfig()
     protected var trustedSSLCertificates = emptyList<Int>()
     protected var allowUntrustedSSLCertificate = false
+    protected var keepSocketActive = false
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     protected var notificationImportance = NotificationManager.IMPORTANCE_DEFAULT
     open fun serverBaseUrl(serverBaseUrl: String?): BaseConfigBuilder? {
         this.serverBaseUrl = serverBaseUrl
+        return this
+    }
+
+    open fun keepSocketActive(keepSocketActive: Boolean): BaseConfigBuilder {
+        this.keepSocketActive = keepSocketActive
         return this
     }
 
@@ -133,7 +139,8 @@ open class BaseConfigBuilder(var context: Context) {
             requestConfig,
             notificationLevel,
             trustedSSLCertificates,
-            allowUntrustedSSLCertificate
+            allowUntrustedSSLCertificate,
+            keepSocketActive
         )
     }
 }
