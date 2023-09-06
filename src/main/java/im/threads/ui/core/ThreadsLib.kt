@@ -20,6 +20,8 @@ import im.threads.ui.styles.permissions.PermissionDescriptionDialogStyle
 import im.threads.ui.utils.preferences.PreferencesMigrationUi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.io.File
 
@@ -128,7 +130,7 @@ class ThreadsLib(context: Context) : ThreadsLibBase(context) {
 
             loadRamPrefs(this::migratePreference, configBuilder.context)
             initBaseParams()
-            libInstanceStateFlow.value = libInstance!!
+            libInitializedStateFlow.tryEmit(true)
         }
 
         /**
@@ -186,6 +188,9 @@ class ThreadsLib(context: Context) : ThreadsLibBase(context) {
             return libInstance != null
         }
 
-        internal var libInstanceStateFlow = MutableStateFlow(libInstance)
+        internal var libInitializedStateFlow = MutableSharedFlow<Boolean>(
+            replay = 1,
+            onBufferOverflow = BufferOverflow.DROP_OLDEST,
+        )
     }
 }

@@ -1,8 +1,6 @@
 package im.threads.ui
 
-import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import androidx.core.os.bundleOf
 import im.threads.business.config.BaseConfig
 import im.threads.business.logger.LoggerEdna
@@ -15,6 +13,7 @@ import im.threads.business.transport.CloudMessagingType
 import im.threads.business.transport.MessageAttributes
 import im.threads.business.transport.PushMessageAttributes
 import im.threads.ui.core.ThreadsLib
+import im.threads.ui.core.ThreadsLib.Companion.libInitializedStateFlow
 import im.threads.ui.workers.NotificationWorker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -33,28 +32,43 @@ class ChatCenterPushMessageHelper {
         subscribe()
     }
 
+    fun setFcmToken(token: String?) {
+        fcmTokenStateFlow.value = token
+    }
+
+    fun setHcmToken(token: String?) {
+        hcmTokenStateFlow.value = token
+    }
+
+    fun process(data: Map<String, String>) {
+        process(bundleOf(*data.toList().toTypedArray()))
+    }
+
+    fun process(bundle: Bundle) {
+        pushBundleStateFlow.value = bundle
+    }
+
     private fun updateFields() {
         if (!fcmTokenStateFlow.value.isNullOrBlank()) {
-            setFcmToken(fcmTokenStateFlow.value)
+            setFcmToken()
             fcmTokenStateFlow.value = null
         }
 
         if (!hcmTokenStateFlow.value.isNullOrBlank()) {
-            setHcmToken(hcmTokenStateFlow.value)
+            setHcmToken()
             hcmTokenStateFlow.value = null
         }
 
         pushBundleStateFlow.value?.let {
-            process(it)
+            processPush(it)
             pushBundleStateFlow.value = null
         }
     }
 
     private fun subscribe() {
-        Log.e("Push", "!!!!!!!!!!!!!!!!!    subscribe()    ")
         scope.launch {
-            fcmTokenStateFlow.collect { libInstance ->
-                if (libInstance != null) {
+            libInitializedStateFlow.collect { isInitialized ->
+                if (isInitialized) {
                     updateFields()
                     cancel()
                 }
@@ -63,7 +77,7 @@ class ChatCenterPushMessageHelper {
 
         scope.launch {
             fcmTokenStateFlow.collect { fcmToken ->
-                if (fcmToken != null) {
+                if (!fcmToken.isNullOrBlank()) {
                     setFcmToken()
                 }
             }
@@ -79,17 +93,11 @@ class ChatCenterPushMessageHelper {
 
         scope.launch {
             pushBundleStateFlow.collect { bundle ->
-                Log.e("Push", "!!!!!!!!!!!!!!!!!    pushBundleStateFlow    $pushBundleStateFlow")
                 if (bundle != null) {
                     processPush(bundle)
                 }
             }
         }
-    }
-
-    fun setFcmToken(token: String?) {
-        subscribe()
-        fcmTokenStateFlow.value = token
     }
 
     private fun setFcmToken() {
@@ -110,11 +118,6 @@ class ChatCenterPushMessageHelper {
         }
     }
 
-    fun setHcmToken(token: String?) {
-        subscribe()
-        hcmTokenStateFlow.value = token
-    }
-
     private fun setHcmToken() {
         if (ThreadsLib.isInitialized()) {
             val token = hcmTokenStateFlow.value
@@ -133,18 +136,7 @@ class ChatCenterPushMessageHelper {
         }
     }
 
-    fun process(data: Map<String, String>) {
-        process(bundleOf(*data.toList().toTypedArray()))
-    }
-
-    fun process(bundle: Bundle) {
-        Log.e("Push", "!!!!!!!!!!!!!!!!!    process()   ")
-        subscribe()
-        pushBundleStateFlow.value = bundle
-    }
-
     private fun processPush(bundle: Bundle) {
-        Log.e("Push", "!!!!!!!!!!!!!!!!!    processPush()    $bundle     $ThreadsLib.isInitialized()")
         if (ThreadsLib.isInitialized()) {
             val sdf = SimpleDateFormat(CAMPAIGN_DATE_FORMAT_PARSE, Locale.getDefault())
             if (PushMessageAttributes.THREADS.equals(
