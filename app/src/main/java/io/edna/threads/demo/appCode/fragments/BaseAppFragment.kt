@@ -10,6 +10,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.viewbinding.ViewBinding
+import im.threads.business.config.BaseConfig
 import im.threads.ui.core.ThreadsLib
 import im.threads.ui.extensions.isDarkThemeOn
 import im.threads.ui.fragments.ChatFragment
@@ -55,7 +56,7 @@ abstract class BaseAppFragment<T : ViewBinding>(
         val isDemoListFragment = this is DemoSamplesListFragment
         val chatBackPressed = fragment?.onBackPressed() == true
         if ((chatBackPressed || isDemoListFragment) && isAdded) {
-            if (this@BaseAppFragment is ChatAppFragment || this@BaseAppFragment is DemoSamplesListFragment) {
+            if (this@BaseAppFragment is DemoSamplesListFragment) {
                 ThreadsLib.getInstance().logoutClient()
             }
             findNavController().navigateUp()

@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.clearFragmentResultListener
 import androidx.fragment.app.setFragmentResultListener
 import im.threads.business.models.enums.CurrentUiTheme
@@ -26,12 +27,18 @@ class LaunchFragment : BaseAppFragment<FragmentLaunchBinding>(FragmentLaunchBind
     private val viewModel: LaunchViewModel by viewModel()
     private val stringsProvider: StringsProvider by inject()
 
-    private var receiver: InitThreadsLibReceiver? = null
-    private val filter = IntentFilter(APP_INIT_THREADS_LIB_ACTION)
+    private var initLibReceiver: InitThreadsLibReceiver? = null
+    private var unreadCountReceiver: InitUnreadCountReceiver? = null
+    private val initLibFilter = IntentFilter(APP_INIT_THREADS_LIB_ACTION)
+    private val unreadCountFilter = IntentFilter(APP_UNREAD_COUNT_BROADCAST)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         addThreadsLibInitializationReceiver()
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initReceivers()
         initObservers()
         setResultListeners()
         initView()
@@ -41,13 +48,13 @@ class LaunchFragment : BaseAppFragment<FragmentLaunchBinding>(FragmentLaunchBind
 
     override fun onDestroyView() {
         super.onDestroyView()
-        unregisterReceiver()
         clearResultListeners()
+        unregisterReceiver()
     }
 
     private fun addThreadsLibInitializationReceiver() {
         if (!ThreadsLib.isInitialized()) {
-            receiver = InitThreadsLibReceiver(this)
+            initLibReceiver = InitThreadsLibReceiver(this)
             ContextCompat.registerReceiver(
                 requireContext(),
                 receiver,
@@ -57,8 +64,16 @@ class LaunchFragment : BaseAppFragment<FragmentLaunchBinding>(FragmentLaunchBind
         }
     }
 
-    private fun unregisterReceiver() {
-        receiver?.let {
+    private fun unregisterReceivers() {
+        unregisterInitLibReceivers()
+        unreadCountReceiver?.let {
+            requireActivity().unregisterReceiver(it)
+            receiver = null
+        }
+    }
+
+    private fun unregisterInitLibReceivers() {
+        initLibReceiver?.let {
             requireActivity().unregisterReceiver(it)
             receiver = null
         }
@@ -73,9 +88,13 @@ class LaunchFragment : BaseAppFragment<FragmentLaunchBinding>(FragmentLaunchBind
         uiTheme.setOnClickListener { viewModel.click(uiTheme) }
         serverButton.setOnClickListener { viewModel.click(serverButton) }
         userButton.setOnClickListener { viewModel.click(userButton) }
-        login.setOnClickListener { viewModel.click(login) }
         demonstrations.setOnClickListener { viewModel.click(demonstrations) }
         uiTheme.setOnClickListener { viewModel.click(uiTheme) }
+        logout.setOnClickListener { viewModel.logout() }
+        login.setOnClickListener {
+            viewModel.click(login)
+            setUnreadCount(0)
+        }
     }
 
     private fun subscribeForData() = with(binding) {
@@ -93,6 +112,7 @@ class LaunchFragment : BaseAppFragment<FragmentLaunchBinding>(FragmentLaunchBind
     private fun initObservers() {
         viewModel.currentUiThemeLiveData.observe(viewLifecycleOwner) { setUiThemeDependentViews(it) }
         viewModel.themeSelectorLiveData.observe(viewLifecycleOwner) { showUiThemesSelector(it) }
+        viewModel.loggedUserLiveData.observe(viewLifecycleOwner) { setLoggedUser(it) }
         viewLifecycleOwner.lifecycle.addObserver(viewModel)
         viewModel.subscribeForData(viewLifecycleOwner)
     }
@@ -138,6 +158,39 @@ class LaunchFragment : BaseAppFragment<FragmentLaunchBinding>(FragmentLaunchBind
         }
     }
 
+    private fun setLoggedUser(userId: String?) {
+        if (userId.isNullOrBlank()) {
+            binding.logoutLayout.isVisible = false
+        } else {
+            binding.logoutLayout.isVisible = true
+            binding.logoutText.text = getString(R.string.logout_client_text)+" "+userId
+        }
+    }
+
+    fun setUnreadCount(count: Int) {
+        binding.count.isVisible = count > 0
+        binding.count.text = count.toString()
+    }
+
+    private fun initReceiver() {
+        receiver = InitUnreadCountReceiver(this)
+        ContextCompat.registerReceiver(
+            requireContext(),
+            receiver,
+            filter,
+            ContextCompat.RECEIVER_VISIBLE_TO_INSTANT_APPS
+        )
+    }
+
+    class InitUnreadCountReceiver(val fragment: LaunchFragment) : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            if (intent.action == APP_UNREAD_COUNT_BROADCAST) {
+                val count = intent.getIntExtra(UNREAD_COUNT_KEY, 0)
+                fragment.setUnreadCount(count)
+            }
+        }
+    }
+
     private fun showUiThemesSelector(theme: CurrentUiTheme) {
         context?.let { context ->
             val alertDialogBuilder: AlertDialog.Builder = AlertDialog.Builder(context)
@@ -171,7 +224,7 @@ class LaunchFragment : BaseAppFragment<FragmentLaunchBinding>(FragmentLaunchBind
     fun onThreadsLibInitialized() {
         setToolbarColor()
         viewModel.checkUiTheme()
-        unregisterReceiver()
+        unregisterInitLibReceivers()
     }
 
     class InitThreadsLibReceiver(val fragment: LaunchFragment) : BroadcastReceiver() {
@@ -186,5 +239,7 @@ class LaunchFragment : BaseAppFragment<FragmentLaunchBinding>(FragmentLaunchBind
         const val SELECTED_USER_KEY = "selected_user_key"
         const val SELECTED_SERVER_CONFIG_KEY = "selected_server_key"
         const val APP_INIT_THREADS_LIB_ACTION = "APP_INIT_THREADS_LIB_BROADCAST"
+        const val UNREAD_COUNT_KEY = "unread_cont_key"
+        const val APP_UNREAD_COUNT_BROADCAST = "unread_count_broadcast"
     }
 }
