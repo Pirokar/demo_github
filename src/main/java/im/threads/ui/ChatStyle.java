@@ -33,6 +33,52 @@ public final class ChatStyle implements Serializable {
 
     public boolean arePermissionDescriptionDialogsEnabled = false;
 
+    public boolean isClearSearchBtnVisible = true;
+
+    public boolean isSearchLoaderVisible = true;
+
+    @DrawableRes
+    public Integer searchLoaderDrawable = null;
+
+    @ColorRes
+    public int searchLoaderColorTint = R.color.ecc_white;
+
+    @ColorRes
+    public int searchResultsDividerColor = R.color.ecc_search_divider_color;
+
+    @DrawableRes
+    public int searchResultsItemRightArrowDrawable = R.drawable.right_arrow;
+
+    @ColorRes
+    public int searchResultsItemRightArrowTintColor = R.color.ecc_search_results_item_secondary;
+
+    @ColorRes
+    public int searchResultsItemDateTextColor = R.color.ecc_search_results_item_secondary;
+
+    @ColorRes
+    public int searchResultsItemMessageTextColor = R.color.ecc_search_results_message_color;
+
+    @ColorRes
+    public int searchResultsItemNameTextColor = R.color.ecc_black;
+
+    @DrawableRes
+    public int searchResultNoItemsImageDrawable = R.drawable.ecc_search_not_found;
+
+    @ColorRes
+    public int searchResultNoItemsTextColor = R.color.ecc_black;
+
+    @StringRes
+    public int searchResultNoItemsText = R.string.ecc_no_results_found;
+
+    @ColorRes
+    public int searchBarTextColor = R.color.ecc_white;
+
+    @StringRes
+    public int searchMessageHintText = R.string.ecc_search_messages;
+
+    @ColorRes
+    public int chatToolbarHintTextColor = R.color.ecc_chat_toolbar_hint;
+
     //common styles
     @ColorRes
     public int chatDisabledTextColor = R.color.ecc_disabled_text_color;
@@ -54,8 +100,6 @@ public final class ChatStyle implements Serializable {
     public int menuItemTextColorResId = R.color.ecc_chat_toolbar_menu_item;
     @ColorRes
     public int chatToolbarTextColorResId = R.color.ecc_chat_toolbar_text;
-    @ColorRes
-    public int chatToolbarHintTextColor = R.color.ecc_chat_toolbar_hint;
     @BoolRes
     public int fixedChatTitle = R.bool.ecc_chat_fixed_chat_title;
     @BoolRes
@@ -237,6 +281,13 @@ public final class ChatStyle implements Serializable {
 
     @ColorRes
     public int chatBodyIconsTint = R.color.ecc_chat_icons_tint;
+
+    @ColorRes
+    public int searchClearIconTintColor = R.color.ecc_white;
+
+    @DrawableRes
+    public int searchClearIconDrawable = R.drawable.ecc_ic_clear_36dp;
+
     public int[] chatBodyIconsColorState = null;
 
     @ColorRes
@@ -2175,6 +2226,140 @@ public final class ChatStyle implements Serializable {
     ) {
         this.incomingDelimitersColor = incomingDelimitersColor;
         this.outgoingDelimitersColor = outgoingDelimitersColor;
+        return this;
+    }
+
+    /**
+     * Устанавливает видимость элементов для SearchBar чат-фрагмента
+     * @param isClearSearchBtnVisible устанавливает видимость кнопки очистки для поля ввода. По умолчанию true
+     * @param isSearchLoaderVisible устанавливает видимость лоадера при загрузке результатов поиска для поля ввода. По умолчанию true
+     */
+    public ChatStyle setSearchBarItemsVisibility(
+            boolean isClearSearchBtnVisible,
+            boolean isSearchLoaderVisible
+    ) {
+        this.isClearSearchBtnVisible = isClearSearchBtnVisible;
+        this.isSearchLoaderVisible = isSearchLoaderVisible;
+        return this;
+    }
+
+    /**
+     * Устанавливает иконку поиска для лоадера при загрузке результатов поиска в поле ввода. По умолчанию отображается дефолтный лоадер
+     * @param searchLoaderDrawableRes иконка поиска для лоадера (ссылка на ресурс)
+     */
+    public ChatStyle setSearchLoaderDrawable(@DrawableRes int searchLoaderDrawableRes) {
+        this.searchLoaderDrawable = searchLoaderDrawableRes;
+        return this;
+    }
+
+    /**
+     * Устанавливает цвет иконки поиска для лоадера при загрузке результатов поиска в поле ввода. По умолчанию #fff
+     * @param searchLoaderColorTintRes цвет иконка поиска для лоадера (ссылка на ресурс)
+     */
+    public ChatStyle setSearchLoaderColorTint(@ColorRes int searchLoaderColorTintRes) {
+        this.searchLoaderColorTint = searchLoaderColorTintRes;
+        return this;
+    }
+
+    /**
+     * Устанавливает цвет иконки очистки поля ввода при поиске
+     * @param clearIconColorRes ресурс цвета иконки для очистки поля ввода при поиске
+     */
+    public ChatStyle setSearchClearIconColor(@ColorRes int clearIconColorRes) {
+        this.searchClearIconTintColor = clearIconColorRes;
+        return this;
+    }
+
+    /**
+     * Устанавливает ресурс иконки для очистки поля ввода при поиске
+     * @param clearIconDrawableRes ресурс иконки для очистки поля ввода при поиске
+     */
+    public ChatStyle setSearchClearIconDrawable(@DrawableRes int clearIconDrawableRes) {
+        this.searchClearIconDrawable = clearIconDrawableRes;
+        return this;
+    }
+
+    /**
+     * Устанавливает цвет разделителя между элементами в результатах поиска
+     * @param searchResultsDividerColorRes цвет разделителя (ресурс)
+     */
+    public ChatStyle setSearchResultsDividerColor(@ColorRes int searchResultsDividerColorRes) {
+        this.searchResultsDividerColor = searchResultsDividerColorRes;
+        return this;
+    }
+
+    /**
+     * Устанавливает цвета текста для одного элемента с результатами поиска
+     * @param messageTextColorRes ресурс цвета для текста с сообщением. Передайте null, если хотите оставить значение по умолчанию
+     * @param nameTextColorRes ресурс цвета для текста с автором сообщения. Передайте null, если хотите оставить значение по умолчанию
+     */
+    public ChatStyle setSearchResultsTextColors(
+            @ColorRes Integer messageTextColorRes,
+            @ColorRes Integer nameTextColorRes
+    ) {
+        if (messageTextColorRes != null) this.searchResultsItemMessageTextColor = messageTextColorRes;
+        if (nameTextColorRes != null) this.searchResultsItemNameTextColor = nameTextColorRes;
+
+        return this;
+    }
+
+    /**
+     * Устанавливает drawable и цвет для иконки "стрелка вправо" в результатах поиска
+     * @param rightArrowIconRes ресурс иконки. Передайте null, если не хотите менять данную иконку
+     * @param rightArrowTintColorRes ресурс цвета иконки. Передайте null, если хотите оставить значение по умолчанию
+     */
+    public ChatStyle setSearchResultsRightArrow(
+            @DrawableRes Integer rightArrowIconRes,
+            @ColorRes Integer rightArrowTintColorRes
+    ) {
+        if (rightArrowIconRes != null) this.searchResultsItemRightArrowDrawable = rightArrowIconRes;
+        if (rightArrowTintColorRes != null) this.searchResultsItemRightArrowTintColor = rightArrowTintColorRes;
+
+        return this;
+    }
+
+    /**
+     * Устанавливает цвет текста для даты в результатах поиска
+     * @param dateTextColorRes ресурс цвета для текста
+     */
+    public ChatStyle setSearchResultsDateTextColor(@ColorRes int dateTextColorRes) {
+        this.searchResultsItemDateTextColor = dateTextColorRes;
+        return this;
+    }
+
+    /**
+     * Устанавливает элементы, отображаемые при отсутствии результатов поиска
+     * @param noResultFoundImageRes ресурс изображения. Передайте null, если хотите оставить значение по умолчанию
+     * @param noResultFoundTextRes ресурс текста. Передайте null, если хотите оставить значение по умолчанию
+     * @param noResultFoundTextColorRes ресурс цвета текста. Передайте null, если хотите оставить значение по умолчанию
+     */
+    public ChatStyle setSearchResultsNoItemsElements(
+            @DrawableRes Integer noResultFoundImageRes,
+            @StringRes Integer noResultFoundTextRes,
+            @ColorRes Integer noResultFoundTextColorRes
+    ) {
+        if (noResultFoundImageRes != null) this.searchResultNoItemsImageDrawable = noResultFoundImageRes;
+        if (noResultFoundTextRes != null) this.searchResultNoItemsText = noResultFoundTextRes;
+        if (noResultFoundTextColorRes != null) this.searchResultNoItemsTextColor = noResultFoundTextColorRes;
+
+        return this;
+    }
+
+    /**
+     * Устанавливает цвет подсказки и ее текст при поиске сообщений, а также цвет текста при вводе запроса
+     * @param hintTextColorRes ресурс текста для подсказки при поиске в поле ввода. Передайте null, если хотите оставить значение по умолчанию
+     * @param hintTextRes ресурс цвета текста для подсказки при поиске в поле ввода. Передайте null, если хотите оставить значение по умолчанию
+     * @param searchTextColorRes ресурс цвета текста при вводе запроса. Передайте null, если хотите оставить значение по умолчанию
+     */
+    public ChatStyle setSearchBarText(
+            @ColorRes Integer hintTextColorRes,
+            @StringRes Integer hintTextRes,
+            @ColorRes Integer searchTextColorRes
+    ) {
+        if (hintTextColorRes != null) this.chatToolbarHintTextColor = hintTextColorRes;
+        if (hintTextRes != null) this.searchMessageHintText = hintTextRes;
+        if (searchTextColorRes != null) this.searchBarTextColor = searchTextColorRes;
+
         return this;
     }
 

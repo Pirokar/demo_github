@@ -51,6 +51,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
+            <im.threads.ui.views.search.SearchListView
+                android:id="@+id/searchListView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"/>
+
             <include
                 android:id="@+id/chatErrorLayout"
                 layout="@layout/ecc_chat_error_layout"
@@ -387,50 +393,11 @@
                         android:textSize="@dimen/ecc_text_regular"
                         android:visibility="gone" />
 
-                    <RelativeLayout
-                        android:id="@+id/search_lo"
+                    <im.threads.ui.views.search.SearchBarView
+                        android:id="@+id/searchBar"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:visibility="gone">
-
-                        <im.threads.ui.widget.CustomFontEditText
-                            android:id="@+id/search"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_alignParentStart="true"
-                            android:layout_alignParentTop="true"
-                            android:layout_toStartOf="@+id/search_down_ib"
-                            android:background="@null"
-                            android:hint="@string/ecc_search_messages"
-                            android:imeOptions="actionSearch"
-                            android:inputType="text"
-                            android:lines="1"
-                            android:textColor="@color/ecc_chat_toolbar_text"
-                            android:textColorHint="@color/ecc_chat_toolbar_hint"
-                            android:textCursorDrawable="@null"
-                            android:textSize="@dimen/ecc_text_big"
-                            android:visibility="visible" />
-
-                        <androidx.appcompat.widget.AppCompatImageButton
-                            android:id="@+id/search_down_ib"
-                            android:layout_width="36dp"
-                            android:layout_height="match_parent"
-                            android:layout_toStartOf="@+id/search_up_ib"
-                            android:alpha="0.5"
-                            app:backgroundTint="@android:color/transparent"
-                            app:srcCompat="@drawable/ecc_ic_expand_more_white_24dp" />
-
-                        <androidx.appcompat.widget.AppCompatImageButton
-                            android:id="@+id/search_up_ib"
-                            android:layout_width="36dp"
-                            android:layout_height="match_parent"
-                            android:layout_alignParentEnd="true"
-                            android:layout_marginEnd="@dimen/ecc_margin_half"
-                            android:alpha="0.5"
-                            app:backgroundTint="@android:color/transparent"
-                            app:srcCompat="@drawable/ecc_ic_expand_less_white_24dp" />
-
-                    </RelativeLayout>
+                        android:visibility="gone"/>
 
                 </LinearLayout>
 

@@ -39,9 +39,9 @@ import im.threads.ui.adapters.filesAndMedia.FilesAndMediaAdapter
 import im.threads.ui.adapters.filesAndMedia.FilesAndMediaAdapter.OnFileClick
 import im.threads.ui.config.Config
 import im.threads.ui.utils.ColorsHelper
+import im.threads.ui.utils.applyColorFilter
 import im.threads.ui.utils.gone
 import im.threads.ui.utils.hideKeyboard
-import im.threads.ui.utils.setColorFilter
 import im.threads.ui.utils.showKeyboard
 import im.threads.ui.utils.visible
 import kotlinx.coroutines.CoroutineScope
@@ -295,7 +295,7 @@ internal class FilesActivity : BaseActivity(), OnFileClick {
             PorterDuff.Mode.SRC_ATOP
         )
         searchEditText.setTextColor(getColorInt(style.mediaAndFilesToolbarTextColorResId))
-        toolbar.navigationIcon?.mutate()?.setColorFilter(
+        toolbar.navigationIcon?.mutate()?.applyColorFilter(
             ContextCompat.getColor(baseContext, style.mediaAndFilesToolbarTextColorResId)
         )
         searchEditText.setHintTextColor(getColorInt(style.mediaAndFilesToolbarHintTextColor))

@@ -4,6 +4,7 @@ import im.threads.business.config.BaseConfig
 import im.threads.business.models.FileUploadResponse
 import im.threads.business.rest.models.ConfigResponse
 import im.threads.business.rest.models.HistoryResponse
+import im.threads.business.rest.models.SearchResponse
 import im.threads.business.rest.models.SettingsResponse
 import im.threads.business.rest.models.VersionsModel
 import im.threads.business.serviceLocator.core.inject
@@ -62,6 +63,22 @@ class ThreadsApi(
                 version,
                 API_VERSION
             )
+        }
+    }
+
+    fun search(
+        token: String?,
+        searchString: String?,
+        page: Int = 1
+    ): Call<SearchResponse?>? {
+        if (searchString == null) {
+            return null
+        }
+
+        return if (BaseConfig.getInstance().newChatCenterApi) {
+            newThreadsApi?.search(getHeadersMap(token), searchString, page)
+        } else {
+            oldThreadsApi?.search(getHeadersMap(token), searchString, page)
         }
     }
 

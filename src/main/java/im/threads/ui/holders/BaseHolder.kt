@@ -179,21 +179,22 @@ abstract class BaseHolder internal constructor(
     }
 
     /**
-     * Подсчвечивает ссылки, email, номера телефонов. Если поле formattedText
+     * Подсвечивает ссылки, email, номера телефонов. Если поле formattedText
      * внутри phrase не будет пустым, производится форматирование текста.
      *
-     * @param textView вью, где необходимо произвести обработку - подсветку,
-     *     форматирование
-     * @param phrase данные для отображение во вью
+     * @param textView вью, где необходимо произвести обработку - подсветку, форматирование
+     * @param formattedText форматированный текст с markdown
+     * @param usualText обычный текст без форматирования
      * @param url url, содержащийся в сообщении (если известен)
      */
     protected fun highlightOperatorText(
         textView: TextView,
-        phrase: ConsultPhrase,
+        formattedText: String? = null,
+        usualText: String? = null,
         url: String? = null,
         emails: List<String> = arrayListOf()
     ) {
-        if (!phrase.formattedPhrase.isNullOrBlank()) {
+        if (!formattedText.isNullOrBlank()) {
             (textView as? BubbleMessageTextView)?.let {
                 val emailLinksPairs = ArrayList<Pair<String?, View.OnClickListener>>()
                 emails.forEach { email ->
@@ -210,16 +211,16 @@ abstract class BaseHolder internal constructor(
                     )
                 }
                 it.setFormattedText(
-                    phrase.formattedPhrase,
+                    formattedText,
                     true,
                     emailLinksPairs
                 )
             } ?: run {
                 setMovementMethod(textView)
-                textView.setText(phrase.phraseText?.trimIndent(), TextView.BufferType.NORMAL)
+                textView.setText(usualText?.trimIndent(), TextView.BufferType.NORMAL)
             }
-        } else if (!phrase.phraseText.isNullOrEmpty()) {
-            textView.setText(phrase.phraseText.trimIndent(), TextView.BufferType.NORMAL)
+        } else if (!usualText.isNullOrEmpty()) {
+            textView.setText(usualText.trimIndent(), TextView.BufferType.NORMAL)
             setTextWithHighlighting(
                 textView,
                 style.incomingMarkdownConfiguration.isLinkUnderlined,
