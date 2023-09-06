@@ -21,6 +21,11 @@ android {
         versionCode 1
 
         testInstrumentationRunner "io.edna.threads.demo.MockTestRunner"
+        testInstrumentationRunnerArguments clearPackageData: 'true'
+    }
+
+    testOptions {
+        execution 'ANDROIDX_TEST_ORCHESTRATOR'
     }
 
     signingConfigs {
@@ -43,12 +48,14 @@ android {
         debug {
             debuggable = true
             minifyEnabled false
+            buildConfigField "java.util.concurrent.atomic.AtomicReference", "TEST_DATA", "new java.util.concurrent.atomic.AtomicReference<String>()"
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.debug
         }
         release {
             debuggable = false
             minifyEnabled true
+            buildConfigField "java.util.concurrent.atomic.AtomicReference", "TEST_DATA", "new java.util.concurrent.atomic.AtomicReference<String>()"
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.debug
         }
@@ -101,9 +108,14 @@ dependencies {
     releaseImplementation "com.edna.android:push-lite-huawei-release:$pushVersion"
 
     testImplementation "junit:junit:$rootProject.testJunitVersion"
+    androidTestUtil 'androidx.test:orchestrator:1.4.2'
+    androidTestImplementation 'androidx.test:runner:1.5.2'
+    androidTestImplementation "org.mockito.kotlin:mockito-kotlin:5.1.0"
+    androidTestImplementation "com.squareup.okhttp3:mockwebserver:$okhttp_webserver_version"
+    androidTestImplementation "androidx.test.ext:junit-ktx:$test_ext"
+    androidTestImplementation "com.kaspersky.android-components:kaspresso:$kaspresso_version"
     androidTestImplementation "androidx.test:runner:$rootProject.androidXTestVersion"
-    androidTestImplementation "androidx.test.ext:junit:$rootProject.testJunitAndroidVersion"
     androidTestImplementation "androidx.test:rules:$rootProject.androidXTestVersion"
-    androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
-    androidTestImplementation "com.squareup.okhttp3:mockwebserver:4.10.0"
+    androidTestImplementation "org.mockito:mockito-core:$rootProject.mockitoVersion"
+    androidTestImplementation "org.mockito:mockito-android:$rootProject.mockitoVersion"
 }
