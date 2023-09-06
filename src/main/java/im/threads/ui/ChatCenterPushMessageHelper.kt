@@ -14,10 +14,11 @@ import im.threads.business.transport.CloudMessagingType
 import im.threads.business.transport.MessageAttributes
 import im.threads.business.transport.PushMessageAttributes
 import im.threads.ui.core.ThreadsLib
+import im.threads.ui.core.ThreadsLib.Companion.libInstanceStateFlow
 import im.threads.ui.workers.NotificationWorker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -25,16 +26,6 @@ import java.util.Locale
 
 class ChatCenterPushMessageHelper {
     private val preferences: Preferences by inject()
-
-    init {
-        if (hasStaticFields()) {
-            subscribe()
-        }
-    }
-
-    private fun hasStaticFields(): Boolean {
-        return !fcmToken.isNullOrBlank() || !hcmToken.isNullOrBlank() || pushBundle != null
-    }
 
     private fun updateStaticFields() {
         if (!fcmToken.isNullOrBlank()) {
@@ -54,16 +45,13 @@ class ChatCenterPushMessageHelper {
     }
 
     private fun subscribe() {
-        CoroutineScope(Dispatchers.IO).launch {
-            waitInitialization()
-            updateStaticFields()
-        }
-    }
-
-    private suspend fun waitInitialization() {
-        val startTime = System.currentTimeMillis()
-        while (!ThreadsLib.isInitialized() || System.currentTimeMillis() - startTime < DELAY_TIMEOUT_MILLIS) {
-            delay(DELAY_THREAD_MILLIS)
+        CoroutineScope(Dispatchers.Unconfined).launch(Dispatchers.Unconfined) {
+            libInstanceStateFlow.collect { libInstance ->
+                if (libInstance != null) {
+                    updateStaticFields()
+                    cancel()
+                }
+            }
         }
     }
 
@@ -82,6 +70,7 @@ class ChatCenterPushMessageHelper {
             }
         } else {
             fcmToken = token
+            subscribe()
         }
     }
 
@@ -100,6 +89,7 @@ class ChatCenterPushMessageHelper {
             }
         } else {
             hcmToken = token
+            subscribe()
         }
     }
 
@@ -164,12 +154,11 @@ class ChatCenterPushMessageHelper {
             }
         } else {
             pushBundle = bundle
+            subscribe()
         }
     }
 
     companion object {
-        private const val DELAY_THREAD_MILLIS = 300L
-        private const val DELAY_TIMEOUT_MILLIS = 10000L
         private var fcmToken: String? = null
         private var hcmToken: String? = null
         private var pushBundle: Bundle? = null

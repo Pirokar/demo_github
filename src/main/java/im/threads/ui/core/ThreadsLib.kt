@@ -20,6 +20,7 @@ import im.threads.ui.styles.permissions.PermissionDescriptionDialogStyle
 import im.threads.ui.utils.preferences.PreferencesMigrationUi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import java.io.File
 
 class ThreadsLib(context: Context) : ThreadsLibBase(context) {
@@ -131,6 +132,7 @@ class ThreadsLib(context: Context) : ThreadsLibBase(context) {
             }
 
             initBaseParams()
+            libInstanceStateFlow.value = libInstance!!
         }
 
         /**
@@ -178,5 +180,7 @@ class ThreadsLib(context: Context) : ThreadsLibBase(context) {
         fun isInitialized(): Boolean {
             return libInstance != null
         }
+
+        internal var libInstanceStateFlow = MutableStateFlow(libInstance)
     }
 }
