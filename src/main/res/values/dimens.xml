@@ -92,4 +92,6 @@
     <dimen name="ecc_toolbar_button_width">56dp</dimen>
     <dimen name="ecc_dropdown_horizontal_offset">-40dp</dimen>
 
+    <dimen name="ecc_search_bar_side_margins">16dp</dimen>
+
 </resources>

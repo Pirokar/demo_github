@@ -26,23 +26,21 @@ import android.text.style.ForegroundColorSpan
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.HapticFeedbackConstants
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
-import android.view.inputmethod.EditorInfo
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.core.util.ObjectsCompat
 import androidx.core.view.ViewCompat
+import androidx.lifecycle.coroutineScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.annimon.stream.Optional
@@ -132,7 +130,6 @@ import im.threads.ui.utils.hideKeyboard
 import im.threads.ui.utils.invisible
 import im.threads.ui.utils.isNotVisible
 import im.threads.ui.utils.isVisible
-import im.threads.ui.utils.showKeyboard
 import im.threads.ui.utils.visible
 import im.threads.ui.views.VoiceTimeLabelFormatter
 import im.threads.ui.views.formatAsDuration
@@ -144,6 +141,8 @@ import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileNotFoundException
@@ -181,7 +180,7 @@ class ChatFragment :
     private var chatAdapter: ChatAdapter? = null
     private var mLayoutManager: LinearLayoutManager? = null
     private var chatAdapterCallback: ChatAdapter.Callback? = null
-    private var mQuoteLayoutHolder: QuoteLayoutHolder? = null
+    private var quoteLayoutHolder: QuoteLayoutHolder? = null
     private var mQuote: Quote? = null
     private var campaignMessage: CampaignMessage? = null
     private var mChatReceiver: ChatReceiver? = null
@@ -199,6 +198,7 @@ class ChatFragment :
     var quickReplyItem: QuickReplyItem? = null
     private var previousChatItemsCount = 0
     private val config = Config.getInstance()
+    private val coroutineScope = lifecycle.coroutineScope
     var style: ChatStyle = config.chatStyle
         private set
 
@@ -233,7 +233,7 @@ class ChatFragment :
         val fileDescriptionDraft = chatController.fileDescriptionDraft
         if (isVoiceMessage(fileDescriptionDraft)) {
             setFileDescription(fileDescriptionDraft)
-            mQuoteLayoutHolder?.setVoice()
+            quoteLayoutHolder?.setVoice()
         }
         val campaignMessage = chatController.campaignMessage
         val arguments = arguments
@@ -245,7 +245,7 @@ class ChatFragment :
             val uid = UUID.randomUUID().toString()
             mQuote = Quote(uid, campaignMessage.senderName, campaignMessage.text, null, campaignMessage.receivedDate.time)
             this.campaignMessage = campaignMessage
-            mQuoteLayoutHolder?.setContent(
+            quoteLayoutHolder?.setContent(
                 campaignMessage.senderName,
                 campaignMessage.text,
                 null,
@@ -254,6 +254,7 @@ class ChatFragment :
             chatController.campaignMessage = null
         }
         initToolbar()
+        initSearch()
     }
 
     override fun onStart() {
@@ -367,11 +368,12 @@ class ChatFragment :
     internal fun hideErrorView(showList: Boolean = true) = binding?.apply {
         chatErrorLayout.errorLayout.gone()
         bottomLayout.visible()
-        val isNeedToShowWelcome = chatController.isNeedToShowWelcome
-        if (isNeedToShowWelcome && showList) {
-            showWelcomeScreen(chatController.isChatReady())
-        } else if (showList) {
-            recycler.visible()
+        isNeedToShowWelcome {
+            if (it && showList) {
+                showWelcomeScreen(chatController.isChatReady())
+            } else if (showList) {
+                recycler.visible()
+            }
         }
     }
 
@@ -411,9 +413,17 @@ class ChatFragment :
         }
     }
 
+    private fun isNeedToShowWelcome(callback: (Boolean) -> Unit) {
+        coroutineScope.launch(Dispatchers.IO) {
+            val isNeedToShowWelcome = chatController.isNeedToShowWelcome()
+            withMainContext { callback(isNeedToShowWelcome) }
+        }
+    }
+
     private fun initController() {
         val activity = activity ?: return
-        showWelcomeScreen(chatController.isNeedToShowWelcome)
+
+        isNeedToShowWelcome { showWelcomeScreen(it) }
         chatController.bindFragment(this)
         mChatReceiver = ChatReceiver()
         val intentFilter = IntentFilter(ACTION_SEARCH_CHAT_FILES)
@@ -428,7 +438,7 @@ class ChatFragment :
             return@apply
         }
         initInputLayout(activity)
-        mQuoteLayoutHolder = QuoteLayoutHolder()
+        quoteLayoutHolder = QuoteLayoutHolder()
         mLayoutManager = LinearLayoutManager(activity)
         recycler.layoutManager = mLayoutManager
         chatAdapter = ChatAdapter(
@@ -442,10 +452,6 @@ class ChatFragment :
             itemAnimator.changeDuration = 0
         }
         recycler.adapter = chatAdapter
-        searchDownIb.alpha = DISABLED_ALPHA
-        searchUpIb.alpha = DISABLED_ALPHA
-        searchDownIb.isEnabled = false
-        searchUpIb.isEnabled = false
     }
 
     private fun initInputLayout(activity: Activity) = binding?.apply {
@@ -644,14 +650,18 @@ class ChatFragment :
 
     private fun addVoiceMessagePreview(file: File) {
         val context = context ?: return
-        val fd = FileDescription(
-            requireContext().getString(R.string.ecc_voice_message).lowercase(Locale.getDefault()),
-            fileProvider.getUriForFile(context, file),
-            file.length(),
-            System.currentTimeMillis()
-        )
-        setFileDescription(fd)
-        mQuoteLayoutHolder?.setVoice()
+        coroutineScope.launch(Dispatchers.IO) {
+            val fd = FileDescription(
+                requireContext().getString(R.string.ecc_voice_message).lowercase(Locale.getDefault()),
+                fileProvider.getUriForFile(context, file),
+                file.length(),
+                System.currentTimeMillis()
+            )
+            withMainContext {
+                setFileDescription(fd)
+                quoteLayoutHolder?.setVoice()
+            }
+        }
     }
 
     private fun initMediaPlayer() {
@@ -665,18 +675,18 @@ class ChatFragment :
                             return@subscribe
                         }
                         if (isPreviewPlaying) {
-                            if (mQuoteLayoutHolder!!.ignorePlayerUpdates) {
+                            if (quoteLayoutHolder!!.ignorePlayerUpdates) {
                                 return@subscribe
                             }
                             val mediaPlayer = player.mediaPlayer
                             if (mediaPlayer != null) {
-                                mQuoteLayoutHolder?.updateProgress(mediaPlayer.currentPosition)
-                                mQuoteLayoutHolder?.updateIsPlaying(mediaPlayer.isPlaying)
+                                quoteLayoutHolder?.updateProgress(mediaPlayer.currentPosition)
+                                quoteLayoutHolder?.updateIsPlaying(mediaPlayer.isPlaying)
                             }
                             chatAdapter?.resetPlayingHolder()
                         } else {
                             chatAdapter?.playerUpdate()
-                            mQuoteLayoutHolder?.resetProgress()
+                            quoteLayoutHolder?.resetProgress()
                         }
                     }
                 ) { error: Throwable? -> error("initMediaPlayer ", error) }
@@ -711,32 +721,6 @@ class ChatFragment :
         }
         configureUserTypingSubscription()
         configureRecordButtonVisibility()
-        searchUpIb.setOnClickListener {
-            if (TextUtils.isEmpty(search.text)) return@setOnClickListener
-            doFancySearch(search.text.toString(), false)
-        }
-        searchDownIb.setOnClickListener {
-            if (TextUtils.isEmpty(search.text)) return@setOnClickListener
-            doFancySearch(search.text.toString(), true)
-        }
-        search.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: Editable) {
-                if (!isInMessageSearchMode) {
-                    return
-                }
-                doFancySearch(s.toString(), true)
-            }
-        })
-        search.setOnEditorActionListener { v: TextView, actionId: Int, _: KeyEvent? ->
-            if (isInMessageSearchMode && actionId == EditorInfo.IME_ACTION_SEARCH) {
-                doFancySearch(v.text.toString(), false)
-                return@setOnEditorActionListener true
-            } else {
-                return@setOnEditorActionListener false
-            }
-        }
         recycler.addOnLayoutChangeListener { v: View?, left: Int, top: Int, right: Int, bottom: Int, oldLeft: Int, oldTop: Int, oldRight: Int, oldBottom: Int ->
             if (bottom < oldBottom) {
                 recycler.postDelayed({
@@ -766,7 +750,8 @@ class ChatFragment :
                     if (firstVisibleItemPosition == 0 &&
                         !chatController.isAllMessagesDownloaded &&
                         itemCount != null &&
-                        itemCount > BaseConfig.getInstance().historyLoadingCount / 2
+                        itemCount > BaseConfig.getInstance().historyLoadingCount / 2 &&
+                        chatController.isChatReady()
                     ) {
                         swipeRefresh.isRefreshing = true
                         chatController.loadHistory(isAfterAnchor = false) // before
@@ -936,7 +921,9 @@ class ChatFragment :
     }
 
     private fun onRefresh() {
-        chatController.loadHistory(forceLoad = true)
+        if (chatController.isChatReady()) {
+            chatController.loadHistory(forceLoad = true)
+        }
     }
 
     private fun setFragmentStyle() = binding?.apply {
@@ -945,8 +932,6 @@ class ChatFragment :
         ColorsHelper.setBackgroundColor(activity, inputLayout, style.chatMessageInputColor)
         ColorsHelper.setBackgroundColor(activity, bottomLayout, style.chatMessageInputColor)
         ColorsHelper.setBackgroundColor(activity, recordView, style.chatMessageInputColor)
-        ColorsHelper.setDrawableColor(activity, searchUpIb.drawable, style.chatToolbarTextColorResId)
-        ColorsHelper.setDrawableColor(activity, searchDownIb.drawable, style.chatToolbarTextColorResId)
         searchMore.setBackgroundColor(ContextCompat.getColor(activity, style.iconsAndSeparatorsColor))
         searchMore.setTextColor(ContextCompat.getColor(activity, style.iconsAndSeparatorsColor))
         swipeRefresh.setColorSchemeColors(*resources.getIntArray(style.threadsSwipeRefreshColors))
@@ -997,13 +982,11 @@ class ChatFragment :
                 sendMessage.isEnabled = !TextUtils.isEmpty(s) || hasAttachments()
             }
         })
-        ColorsHelper.setTextColor(activity, search, style.chatToolbarTextColorResId)
         ColorsHelper.setTextColor(activity, subtitle, style.chatToolbarTextColorResId)
         ColorsHelper.setTextColor(activity, consultName, style.chatToolbarTextColorResId)
         ColorsHelper.setTextColor(activity, subtitle, style.chatToolbarTextColorResId)
         ColorsHelper.setTextColor(activity, consultName, style.chatToolbarTextColorResId)
         ColorsHelper.setHintTextColor(activity, inputEditView, style.chatMessageInputHintTextColor)
-        ColorsHelper.setHintTextColor(activity, search, style.chatToolbarHintTextColor)
         ColorsHelper.setTextColor(activity, inputEditView, style.inputTextColor)
         if (!TextUtils.isEmpty(style.inputTextFont)) {
             try {
@@ -1088,17 +1071,20 @@ class ChatFragment :
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q || ThreadsPermissionChecker.isWriteExternalPermissionGranted(activity)
         info("isCameraGranted = $isCameraGranted isWriteGranted $isWriteGranted")
         if (isCameraGranted && isWriteGranted) {
-            try {
-                val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                externalCameraPhotoFile = createImageFile(activity)
-                val photoUri = fileProvider.getUriForFile(activity, externalCameraPhotoFile!!)
-                debug("Image File uri resolved: $photoUri")
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
-                grantPermissionsForImageUri(activity, intent, photoUri)
-                startActivityForResult(intent, REQUEST_EXTERNAL_CAMERA_PHOTO)
-            } catch (e: IllegalArgumentException) {
-                error("Could not start external camera", e)
-                show(requireContext(), requireContext().getString(R.string.ecc_camera_could_not_start_error))
+            coroutineScope.launch {
+                try {
+                    val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                    val externalCameraPhotoFileDef = async(Dispatchers.IO) { createImageFile(activity.applicationContext) }
+                    externalCameraPhotoFile = externalCameraPhotoFileDef.await()
+                    val photoUri = fileProvider.getUriForFile(activity, externalCameraPhotoFile!!)
+                    debug("Image File uri resolved: $photoUri")
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
+                    grantPermissionsForImageUri(activity, intent, photoUri)
+                    startActivityForResult(intent, REQUEST_EXTERNAL_CAMERA_PHOTO)
+                } catch (e: IllegalArgumentException) {
+                    error("Could not start external camera", e)
+                    show(requireContext(), requireContext().getString(R.string.ecc_camera_could_not_start_error))
+                }
             }
         } else {
             val permissions = ArrayList<String>()
@@ -1121,8 +1107,12 @@ class ChatFragment :
         startActivityForResult(getStartIntent(activity, REQUEST_CODE_PHOTOS), REQUEST_CODE_PHOTOS)
     }
 
-    override fun onImageSelectionChanged(imageList: List<Uri>) {
-        mAttachedImages = ArrayList(imageList)
+    override fun onImageSelectionChanged(imageList: List<Uri>?) {
+        mAttachedImages = if (imageList != null) {
+            ArrayList(imageList)
+        } else {
+            arrayListOf()
+        }
     }
 
     override fun onBottomSheetDetached() {
@@ -1167,7 +1157,7 @@ class ChatFragment :
         }
         if (item.itemId == R.id.ecc_search) {
             if (!isInMessageSearchMode) {
-                search(false)
+                search()
                 binding?.chatBackButton.visible()
             } else {
                 return true
@@ -1204,7 +1194,7 @@ class ChatFragment :
         }
         setFileDescription(null)
         if (isImage(cp.fileDescription)) {
-            mQuoteLayoutHolder?.setContent(
+            quoteLayoutHolder?.setContent(
                 if (mQuote?.phraseOwnerTitle.isNullOrEmpty()) "" else mQuote?.phraseOwnerTitle,
                 (if (text.isNullOrEmpty()) requireContext().getString(R.string.ecc_image) else text),
                 cp.fileDescription?.fileUri,
@@ -1229,7 +1219,7 @@ class ChatFragment :
                 error("onReplyClick", e)
             }
             val phraseOwnerTitleIsNotEmpty = mQuote != null && !mQuote?.phraseOwnerTitle.isNullOrEmpty()
-            mQuoteLayoutHolder?.setContent(
+            quoteLayoutHolder?.setContent(
                 if (phraseOwnerTitleIsNotEmpty) mQuote?.phraseOwnerTitle else "",
                 fileName,
                 null,
@@ -1237,7 +1227,7 @@ class ChatFragment :
             )
         } else {
             val phraseOwnerTitleIsNotEmpty = mQuote != null && !mQuote?.phraseOwnerTitle.isNullOrEmpty()
-            mQuoteLayoutHolder?.setContent(
+            quoteLayoutHolder?.setContent(
                 if (phraseOwnerTitleIsNotEmpty) mQuote?.phraseOwnerTitle else "",
                 (if (text.isNullOrEmpty()) "" else text),
                 null,
@@ -1289,18 +1279,23 @@ class ChatFragment :
                             return@subscribe
                         }
                         val inputText = inputTextObservable.value ?: return@subscribe
-                        val messages = getUpcomingUserMessagesFromSelection(
-                            filteredPhotos,
-                            inputText,
-                            requireContext().getString(R.string.ecc_I),
-                            campaignMessage,
-                            mQuote
-                        )
-                        if (isSendBlocked) {
-                            clearInput()
-                            show(requireContext(), requireContext().getString(R.string.ecc_message_were_unsent))
-                        } else {
-                            sendMessage(messages)
+                        coroutineScope.launch {
+                            val messagesDef = async(Dispatchers.IO) {
+                                getUpcomingUserMessagesFromSelection(
+                                    filteredPhotos,
+                                    inputText,
+                                    requireContext().getString(R.string.ecc_I),
+                                    campaignMessage,
+                                    mQuote
+                                )
+                            }
+                            val messages = messagesDef.await()
+                            if (isSendBlocked) {
+                                clearInput()
+                                show(requireContext(), requireContext().getString(R.string.ecc_message_were_unsent))
+                            } else {
+                                sendMessage(messages)
+                            }
                         }
                     }
                 ) { onError: Throwable? -> error("onSendClick ", onError) }
@@ -1318,85 +1313,6 @@ class ChatFragment :
         if (bottomSheetDialogFragment == null && isAdded) {
             bottomSheetDialogFragment = AttachmentBottomSheetDialogFragment()
             bottomSheetDialogFragment!!.show(childFragmentManager, AttachmentBottomSheetDialogFragment.TAG)
-        }
-    }
-
-    private fun doFancySearch(request: String, forward: Boolean) = binding?.apply {
-        updateLastUserActivityTime()
-        if (TextUtils.isEmpty(request)) {
-            chatAdapter?.removeHighlight()
-            searchUpIb.alpha = DISABLED_ALPHA
-            searchDownIb.alpha = DISABLED_ALPHA
-            searchDownIb.isEnabled = false
-            searchUpIb.isEnabled = false
-            return@apply
-        }
-        onSearch(request, forward)
-    }
-
-    private fun onSearch(request: String, forward: Boolean) {
-        chatController.fancySearch(request, forward) { dataPair: Pair<List<ChatItem?>?, ChatItem?>? -> onSearchEnd(dataPair) }
-    }
-
-    private fun onSearchEnd(dataPair: Pair<List<ChatItem?>?, ChatItem?>?) = binding?.apply {
-        var first = -1
-        var last = -1
-        if (dataPair?.first != null) {
-            val data = dataPair.first ?: listOf()
-            val highlightedItem = dataPair.second
-            // для поиска - ищем индекс первого совпадения
-            for (i in data.indices) {
-                if (data[i] is ChatPhrase) {
-                    if ((data[i] as ChatPhrase?)!!.found) {
-                        first = i
-                        break
-                    }
-                }
-            }
-            // для поиска - ищем индекс последнего совпадения
-            for (i in data.indices.reversed()) {
-                if (data[i] is ChatPhrase) {
-                    if ((data[i] as ChatPhrase?)!!.found) {
-                        last = i
-                        break
-                    }
-                }
-            }
-            for (i in data.indices) {
-                if (data[i] is ChatPhrase) {
-                    if (data[i] == highlightedItem) {
-                        // для поиска - если можно перемещаться, подсвечиваем
-                        if (first != -1 && i > first) {
-                            searchUpIb.alpha = ENABLED_ALPHA
-                            searchUpIb.isEnabled = true
-                        } else {
-                            searchUpIb.alpha = DISABLED_ALPHA
-                            searchUpIb.isEnabled = false
-                        }
-                        // для поиска - если можно перемещаться, подсвечиваем
-                        if (last != -1 && i < last) {
-                            searchDownIb.alpha = ENABLED_ALPHA
-                            searchDownIb.isEnabled = true
-                        } else {
-                            searchDownIb.alpha = DISABLED_ALPHA
-                            searchDownIb.isEnabled = false
-                        }
-                        break
-                    }
-                }
-            }
-            if (first == -1 && last == -1) {
-                chatAdapter?.removeHighlight()
-            }
-            chatAdapter?.let {
-                addItemsToChat(data)
-                if (highlightedItem != null) {
-                    chatAdapter?.removeHighlight()
-                    scrollToPosition(it.setItemHighlighted(highlightedItem), true)
-                }
-            }
-        } else {
-            chatAdapter?.removeHighlight()
         }
     }
 
@@ -1422,41 +1338,51 @@ class ChatFragment :
                         return@subscribe
                     }
                     unChooseItem()
-                    var fileUri = filteredPhotos[0]
-                    var uum = UpcomingUserMessage(
-                        FileDescription(
-                            requireContext().getString(R.string.ecc_I),
-                            fileUri,
-                            getFileSize(fileUri),
-                            System.currentTimeMillis()
-                        ),
-                        campaignMessage,
-                        mQuote,
-                        inputText.trim { it <= ' ' },
-                        inputText.isLastCopyText()
-                    )
-                    if (isSendBlocked) {
-                        show(requireContext(), getString(R.string.ecc_message_were_unsent))
-                    } else {
-                        chatController.onUserInput(uum)
-                    }
-                    inputTextObservable.onNext("")
-                    mQuoteLayoutHolder?.clear()
-                    for (i in 1 until filteredPhotos.size) {
-                        fileUri = filteredPhotos[i]
-                        uum = UpcomingUserMessage(
-                            FileDescription(
-                                requireContext().getString(R.string.ecc_I),
-                                fileUri,
-                                getFileSize(fileUri),
-                                System.currentTimeMillis()
-                            ),
-                            null,
-                            null,
-                            null,
-                            false
-                        )
-                        chatController.onUserInput(uum)
+                    coroutineScope.launch(Dispatchers.IO) {
+                        val fileSizes = ArrayList<Long>(filteredPhotos.size)
+                        for (i in filteredPhotos.indices) {
+                            fileSizes.add(getFileSize(filteredPhotos[i]))
+                        }
+                        withMainContext {
+                            var fileUri = filteredPhotos[0]
+                            var fileSize = fileSizes[0]
+                            var uum = UpcomingUserMessage(
+                                FileDescription(
+                                    requireContext().getString(R.string.ecc_I),
+                                    fileUri,
+                                    fileSize,
+                                    System.currentTimeMillis()
+                                ),
+                                campaignMessage,
+                                mQuote,
+                                inputText.trim { it <= ' ' },
+                                inputText.isLastCopyText()
+                            )
+                            if (isSendBlocked) {
+                                show(requireContext(), getString(R.string.ecc_message_were_unsent))
+                            } else {
+                                chatController.onUserInput(uum)
+                            }
+                            inputTextObservable.onNext("")
+                            quoteLayoutHolder?.clear()
+                            for (i in 1 until filteredPhotos.size) {
+                                fileUri = filteredPhotos[i]
+                                fileSize = fileSizes[i]
+                                uum = UpcomingUserMessage(
+                                    FileDescription(
+                                        requireContext().getString(R.string.ecc_I),
+                                        fileUri,
+                                        fileSize,
+                                        System.currentTimeMillis()
+                                    ),
+                                    null,
+                                    null,
+                                    null,
+                                    false
+                                )
+                                chatController.onUserInput(uum)
+                            }
+                        }
                     }
                 }) { onError: Throwable? -> error("onPhotosResult ", onError) }
         )
@@ -1464,26 +1390,29 @@ class ChatFragment :
 
     private fun onExternalCameraPhotoResult() {
         externalCameraPhotoFile?.let { file ->
-            setFileDescription(
-                FileDescription(
-                    requireContext().getString(R.string.ecc_image),
-                    fileProvider.getUriForFile(BaseConfig.getInstance().context, file),
-                    file.length(),
-                    System.currentTimeMillis()
-                )
-            )
-            val inputText = inputTextObservable.value
-            sendMessage(
-                listOf(
-                    UpcomingUserMessage(
-                        getFileDescription(),
-                        campaignMessage,
-                        mQuote,
-                        inputText?.trim { it <= ' ' },
-                        false
+            coroutineScope.launch {
+                val fileLengthDef = async(Dispatchers.IO) { file.length() }
+                setFileDescription(
+                    FileDescription(
+                        requireContext().getString(R.string.ecc_image),
+                        fileProvider.getUriForFile(BaseConfig.getInstance().context, file),
+                        fileLengthDef.await(),
+                        System.currentTimeMillis()
                     )
                 )
-            )
+                val inputText = inputTextObservable.value
+                sendMessage(
+                    listOf(
+                        UpcomingUserMessage(
+                            getFileDescription(),
+                            campaignMessage,
+                            mQuote,
+                            inputText?.trim { it <= ' ' },
+                            false
+                        )
+                    )
+                )
+            }
         }
     }
 
@@ -1491,52 +1420,65 @@ class ChatFragment :
     private fun onFileResult(data: Intent) {
         val uri = data.data
         if (uri != null) {
-            if (isAllowedFileExtension(getExtensionFromMediaStore(BaseConfig.getInstance().context, uri))) {
-                if (isAllowedFileSize(getFileSizeFromMediaStore(BaseConfig.getInstance().context, uri))) {
-                    try {
-                        if (canBeSent(requireContext(), uri)) {
-                            onFileResult(uri)
-                            val takeFlags = (
-                                data.flags
-                                    and (
-                                        Intent.FLAG_GRANT_READ_URI_PERMISSION
-                                            or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+            coroutineScope.launch(Dispatchers.IO) {
+                val isAllowedFileExtension = isAllowedFileExtension(getExtensionFromMediaStore(BaseConfig.getInstance().context, uri))
+                val isAllowedFileSize = isAllowedFileSize(getFileSizeFromMediaStore(BaseConfig.getInstance().context, uri))
+                val isCanBeSent = canBeSent(requireContext(), uri)
+
+                withMainContext {
+                    if (isAllowedFileExtension) {
+                        if (isAllowedFileSize) {
+                            try {
+                                if (isCanBeSent) {
+                                    onFileResult(uri)
+                                    val takeFlags = (
+                                        data.flags
+                                            and (
+                                                Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                                    or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                                                )
                                         )
-                                )
-                            requireActivity().contentResolver.takePersistableUriPermission(uri, takeFlags)
+                                    requireActivity().contentResolver.takePersistableUriPermission(uri, takeFlags)
+                                } else {
+                                    show(requireContext(), getString(R.string.ecc_failed_to_open_file))
+                                }
+                            } catch (e: SecurityException) {
+                                error("file can't be sent", e)
+                                show(requireContext(), getString(R.string.ecc_failed_to_open_file))
+                            }
                         } else {
-                            show(requireContext(), getString(R.string.ecc_failed_to_open_file))
+                            // Недопустимый размер файла
+                            show(
+                                requireContext(),
+                                getString(
+                                    R.string.ecc_not_allowed_file_size,
+                                    maxAllowedFileSize
+                                )
+                            )
                         }
-                    } catch (e: SecurityException) {
-                        error("file can't be sent", e)
-                        show(requireContext(), getString(R.string.ecc_failed_to_open_file))
+                    } else {
+                        // Недопустимое расширение файла
+                        show(requireContext(), getString(R.string.ecc_not_allowed_file_extension))
                     }
-                } else {
-                    // Недопустимый размер файла
-                    show(
-                        requireContext(),
-                        getString(
-                            R.string.ecc_not_allowed_file_size,
-                            maxAllowedFileSize
-                        )
-                    )
                 }
-            } else {
-                // Недопустимое расширение файла
-                show(requireContext(), getString(R.string.ecc_not_allowed_file_extension))
             }
         }
     }
 
     private fun onFileResult(uri: Uri) {
         info("onFileSelected: $uri")
-        setFileDescription(FileDescription(requireContext().getString(R.string.ecc_I), uri, getFileSize(uri), System.currentTimeMillis()))
-        mQuoteLayoutHolder!!.setContent(
-            requireContext().getString(R.string.ecc_file),
-            getFileName(uri),
-            null,
-            true
-        )
+        coroutineScope.launch(Dispatchers.IO) {
+            setFileDescription(FileDescription(requireContext().getString(R.string.ecc_I), uri, getFileSize(uri), System.currentTimeMillis()))
+            val fileName = getFileName(uri)
+            withMainContext {
+                quoteLayoutHolder?.setContent(
+                    requireContext().getString(R.string.ecc_file),
+                    fileName,
+                    null,
+                    true
+                )
+            }
+        }
     }
 
     private fun onPhotoResult(data: Intent) {
@@ -1603,7 +1545,7 @@ class ChatFragment :
 
     private fun clearInput() {
         binding?.inputEditView?.setText("")
-        mQuoteLayoutHolder?.clear()
+        quoteLayoutHolder?.clear()
         setBottomStateDefault()
         hideCopyControls()
         mAttachedImages?.clear()
@@ -1683,12 +1625,12 @@ class ChatFragment :
         }
     }
 
-    private fun scrollToPosition(itemCount: Int, smooth: Boolean) = binding?.apply {
-        if (itemCount >= 0 && isAdded) {
+    internal fun scrollToPosition(itemPosition: Int, smooth: Boolean) = binding?.apply {
+        if (itemPosition >= 0 && isAdded) {
             if (smooth) {
-                recycler.smoothScrollToPosition(itemCount)
+                recycler.smoothScrollToPosition(itemPosition)
             } else {
-                recycler.scrollToPosition(itemCount)
+                recycler.scrollToPosition(itemPosition)
             }
         }
     }
@@ -1762,7 +1704,6 @@ class ChatFragment :
                 layoutManager.scrollToPosition(chatAdapter.getPositionByTimeStamp(lastVisibleItemTimestamp))
             }
             resumeAfterSecondLevelScreen = false
-            checkSearch()
         }
     }
 
@@ -1823,8 +1764,9 @@ class ChatFragment :
             if (!isInMessageSearchMode && isAdded) {
                 subtitle.visibility = View.GONE
                 consultName.visibility = View.VISIBLE
-                searchLo.visibility = View.GONE
-                search.setText("")
+                searchBar.gone()
+                searchBar.clearSearch()
+                searchListView.gone()
                 consultName.setText(style.chatTitleTextResId)
             }
         }
@@ -1855,17 +1797,12 @@ class ChatFragment :
         }
     }
 
-    private fun checkSearch() {
-        if (!TextUtils.isEmpty(binding?.search?.text)) {
-            doFancySearch(binding?.search?.text.toString(), false)
-        }
-    }
-
     private fun setBottomStateDefault() {
         hideBottomSheet()
         if (!isInMessageSearchMode) {
-            binding?.searchLo?.visibility = View.GONE
-            binding?.search?.setText("")
+            binding?.searchBar.gone()
+            binding?.searchListView.gone()
+            binding?.searchBar?.clearSearch()
         }
     }
 
@@ -1876,8 +1813,9 @@ class ChatFragment :
                 subtitle.visibility = View.VISIBLE
             }
             consultName.visibility = View.VISIBLE
-            searchLo.visibility = View.GONE
-            search.setText("")
+            binding?.searchBar.gone()
+            binding?.searchListView.gone()
+            binding?.searchBar?.clearSearch()
         }
         if (!resources.getBoolean(style.isChatSubtitleVisible)) {
             subtitle.visibility = View.GONE
@@ -1911,6 +1849,10 @@ class ChatFragment :
         } else {
             View.GONE
         }
+    }
+
+    internal fun showWelcomeScreenIfNeed() {
+        isNeedToShowWelcome { showWelcomeScreen(it) }
     }
 
     internal fun showBottomBar() {
@@ -1976,18 +1918,12 @@ class ChatFragment :
         }
         subtitle.visibility = View.GONE
         consultName.visibility = View.VISIBLE
-        searchLo.visibility = View.GONE
-        search.setText("")
+        binding?.searchBar.gone()
+        binding?.searchBar?.clearSearch()
+        binding?.searchListView.gone()
         if (!resources.getBoolean(style.fixedChatTitle)) {
             consultName.text = requireContext().getString(R.string.ecc_searching_operator)
         }
-    }
-
-    fun setTitleStateSearchingMessage() = binding?.apply {
-        subtitle.visibility = View.GONE
-        consultName.visibility = View.GONE
-        searchLo.visibility = View.VISIBLE
-        search.setText("")
     }
 
     fun setStateSearchingConsult() {
@@ -2139,6 +2075,29 @@ class ChatFragment :
         initToolbarTextPosition()
     }
 
+    private fun initSearch() = binding?.apply {
+        val searchQueryChannel: MutableStateFlow<String?> = MutableStateFlow("")
+        val loadingChannel: MutableStateFlow<Boolean> = MutableStateFlow(false)
+
+        searchBar.setSearchChannels(searchQueryChannel, loadingChannel)
+        searchListView.setSearchChannels(searchQueryChannel, loadingChannel)
+
+        coroutineScope.launch {
+            searchQueryChannel.collect {
+                if (!it.isNullOrBlank() && it.length > 2) {
+                    searchListView.visible()
+                } else {
+                    searchListView.gone()
+                }
+            }
+        }
+
+        searchListView.setOnClickListener { uuid, date ->
+            hideSearchMode()
+            chatController.onSearchResultsClick(uuid, date)
+        }
+    }
+
     private fun setContextIconDefaultTint(vararg imageButtons: ImageButton) {
         val toolbarInverseIconTint = if (style.chatBodyIconsTint == 0) {
             style.chatToolbarInverseIconTintResId
@@ -2211,23 +2170,23 @@ class ChatFragment :
         return if (bottomSheetDialogFragment != null) {
             hideBottomSheet()
             false
-        } else if (binding?.copyControls.isVisible() && binding?.searchLo.isVisible()) {
+        } else if (binding?.copyControls.isVisible() && binding?.searchBar.isVisible()) {
             unChooseItem()
-            binding?.search?.requestFocus()
-            binding?.search?.showKeyboard(100)
+            binding?.searchBar?.requestFocus()
+            binding?.searchBar?.showKeyboard(100)
             false
         } else if (binding?.copyControls.isVisible()) {
             unChooseItem()
             checkBackButtonVisibility()
             false
-        } else if (binding?.searchLo.isVisible()) {
+        } else if (binding?.searchBar.isVisible()) {
             hideSearchMode()
             if (chatAdapter != null) {
                 scrollToPosition(chatAdapter!!.itemCount - 1, false)
             }
             false
-        } else if (mQuoteLayoutHolder?.isVisible == true) {
-            mQuoteLayoutHolder?.clear()
+        } else if (quoteLayoutHolder?.isVisible == true) {
+            quoteLayoutHolder?.clear()
             false
         } else if (isInMessageSearchMode) {
             hideSearchMode()
@@ -2239,12 +2198,13 @@ class ChatFragment :
 
     private fun hideSearchMode() = binding?.apply {
         activity ?: return@apply
-        searchLo.visibility = View.GONE
+        searchBar.gone()
+        searchListView.gone()
         setMenuVisibility(true)
         isInMessageSearchMode = false
-        search.setText("")
-        search.hideKeyboard(100)
-        searchMore.visibility = View.GONE
+        searchBar.clearSearch()
+        searchBar.hideKeyboard(100)
+        searchMore.gone()
         swipeRefresh.isEnabled = true
         when (chatController.stateOfConsult) {
             ChatController.CONSULT_STATE_DEFAULT -> setTitleStateDefault()
@@ -2264,16 +2224,18 @@ class ChatFragment :
         }
     }
 
-    private fun search(searchInFiles: Boolean) = binding?.apply {
+    private fun search() = binding?.apply {
         activity ?: return@apply
-        info("searchInFiles: $searchInFiles")
+        info("starting search")
         isInMessageSearchMode = true
+        consultName.gone()
+        subtitle.gone()
         setBottomStateDefault()
-        setTitleStateSearchingMessage()
-        search.requestFocus()
+        searchBar.visible()
+        searchBar.requestFocus()
         hideOverflowMenu()
         setMenuVisibility(false)
-        search.showKeyboard(100)
+        searchBar.showKeyboard(100)
         swipeRefresh.isEnabled = false
         searchMore.visibility = View.GONE
     }
@@ -2408,6 +2370,10 @@ class ChatFragment :
 
     fun showBalloon(message: String?) {
         show(requireContext(), message!!)
+    }
+
+    internal fun showBalloon(messageResId: Int) {
+        show(requireContext(), getString(messageResId))
     }
 
     internal fun getDisplayedMessagesCount() = chatAdapter?.itemCount ?: 0
@@ -2558,9 +2524,14 @@ class ChatFragment :
             quoteHeader.visibility = View.GONE
             quoteText.visibility = View.GONE
             quotePast.visibility = View.GONE
-            formattedDuration = getFormattedDuration(getFileDescription())
-            quoteDuration.text = formattedDuration
-            chatUpdateProcessor.postAttachAudioFile(true)
+
+            coroutineScope.launch(Dispatchers.IO) {
+                formattedDuration = getFormattedDuration(getFileDescription())
+                withMainContext {
+                    quoteDuration.text = formattedDuration
+                    chatUpdateProcessor.postAttachAudioFile(true)
+                }
+            }
         }
 
         private fun init(maxValue: Int, progress: Int, isPlaying: Boolean) = binding?.apply {
@@ -2736,10 +2707,12 @@ class ChatFragment :
             if (it.isNotEmpty()) {
                 val isChatReady = chatController.isChatReady()
                 val isAnimationEnabled = withAnimation && isChatReady
-                chatAdapter?.addItems(it, isAnimationEnabled)
-                if (isChatReady) {
-                    hideErrorView()
-                    hideProgressBar()
+                chatController.setFormattedDurations(it, mediaMetadataRetriever) {
+                    chatAdapter?.addItems(it, isAnimationEnabled)
+                    if (isChatReady) {
+                        hideErrorView()
+                        hideProgressBar()
+                    }
                 }
             }
         }
@@ -2747,10 +2720,8 @@ class ChatFragment :
 
     private inner class ChatReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            if (intent.action != null && intent.action == ACTION_SEARCH_CHAT_FILES) {
-                search(true)
-            } else if (intent.action != null && intent.action == ACTION_SEARCH) {
-                search(false)
+            if (intent.action != null && intent.action == ACTION_SEARCH) {
+                search()
             }
         }
     }

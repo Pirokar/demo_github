@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.slider.Slider;
 
+import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -852,7 +853,6 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     private void bindConsultPhraseVH(@NonNull final ConsultPhraseHolder holder, ConsultPhrase consultPhrase) {
-        downloadImageIfNeeded(consultPhrase.getFileDescription());
         holder
                 .onBind(
                         consultPhrase,
@@ -877,11 +877,14 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     @SuppressLint("RestrictedApi")
     private void bindUserPhraseVH(@NonNull final UserPhraseViewHolder holder, UserPhrase userPhrase) {
-        downloadImageIfNeeded(userPhrase.getFileDescription());
         downloadVoiceIfNeeded(userPhrase.getFileDescription());
+        String voiceFormattedDuration = "";
+        if (userPhrase.getFileDescription() != null) {
+            voiceFormattedDuration = userPhrase.getFileDescription().getVoiceFormattedDuration();
+        }
         holder.onBind(
                 userPhrase,
-                getFormattedDuration(userPhrase.getFileDescription()),
+                voiceFormattedDuration,
                 v -> mCallback.onImageClick(userPhrase),
                 v -> {
                     if (userPhrase.getFileDescription() != null) {
@@ -942,7 +945,6 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     private void bindImageFromConsultVH(@NonNull final ImageFromConsultViewHolder holder, ConsultPhrase consultPhrase) {
-        downloadImageIfNeeded(consultPhrase.getFileDescription());
         holder.onBind(
                 consultPhrase,
                 consultPhrase.equals(highlightedItem),
@@ -956,21 +958,12 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     private void bindImageFromUserVH(@NonNull final ImageFromUserViewHolder holder, UserPhrase userPhrase) {
-        downloadImageIfNeeded(userPhrase.getFileDescription());
         if (userPhrase.getFileDescription() != null) {
             holder.onBind(userPhrase,
                     userPhrase.equals(highlightedItem),
                     () -> mCallback.onImageClick(userPhrase),
                     () -> mCallback.onPhraseLongClick(userPhrase, holder.getAdapterPosition())
             );
-        }
-    }
-
-    private void downloadImageIfNeeded(@Nullable FileDescription fileDescription) {
-        if (fileDescription != null) {
-            if (isImage(fileDescription) && fileDescription.getFileUri() == null) {
-                mCallback.onFileDownloadRequest(fileDescription);
-            }
         }
     }
 
@@ -1011,10 +1004,14 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     @SuppressLint("RestrictedApi")
     private void bindVoiceMessageFromConsultVH(@NonNull final ConsultVoiceMessageViewHolder holder, ConsultPhrase consultPhrase) {
         downloadVoiceIfNeeded(consultPhrase.getFileDescription());
+        String voiceFormattedDuration = "";
+        if (consultPhrase.getFileDescription() != null) {
+            voiceFormattedDuration = consultPhrase.getFileDescription().getVoiceFormattedDuration();
+        }
         holder.onBind(
                 consultPhrase,
                 consultPhrase.equals(highlightedItem),
-                getFormattedDuration(consultPhrase.getFileDescription()),
+                voiceFormattedDuration,
                 v -> {
                     phraseLongClick(consultPhrase, holder.getAdapterPosition());
                     return true;
@@ -1115,14 +1112,6 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             }
         }
         return null;
-    }
-
-    private String getFormattedDuration(@Nullable FileDescription fileDescription) {
-        long duration = 0L;
-        if (fileDescription != null && FileUtils.isVoiceMessage(fileDescription) && fileDescription.getFileUri() != null) {
-            duration = FileUtilsKt.getDuration(mediaMetadataRetriever, fileDescription.getFileUri());
-        }
-        return VoiceTimeLabelFormatterKt.formatAsDuration(duration);
     }
 
     public void removeItem(ChatItem chatItem) {

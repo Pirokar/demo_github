@@ -46,12 +46,9 @@ object FileUtils {
         } else {
             ""
         }
-        val name = getFileName(fd)
+        val name = fd.incomingName ?: getFileName(fd.fileUri)
         return "${prefix}_$name"
     }
-
-    @JvmStatic
-    fun getFileName(fd: FileDescription) = fd.incomingName ?: getFileName(fd.fileUri)
 
     @JvmStatic
     fun getFileName(uri: Uri?): String {
@@ -193,6 +190,11 @@ object FileUtils {
             }
         }
     }
+
+    /**
+     * Конвертирует относительный (неполный) url в абсолютный, подставляя значение datastore
+     */
+    internal fun String?.toAbsoluteUrl() = convertRelativeUrlToAbsolute(this)
 
     @JvmStatic
     fun convertRelativeUrlToAbsolute(relativeUrl: String?): String? {

@@ -45,7 +45,8 @@ open class BaseConfig(
     val requestConfig: RequestConfig,
     val notificationImportance: Int,
     var trustedSSLCertificates: List<Int>?,
-    var allowUntrustedSSLCertificate: Boolean
+    var allowUntrustedSSLCertificate: Boolean,
+    var keepSocketActive: Boolean
 ) {
     @JvmField val context: Context
     var sslSocketFactoryConfig: SslSocketFactoryConfig?

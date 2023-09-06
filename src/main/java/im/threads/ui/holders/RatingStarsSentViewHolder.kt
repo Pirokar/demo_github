@@ -11,7 +11,7 @@ import androidx.core.content.ContextCompat
 import im.threads.R
 import im.threads.business.models.MessageStatus
 import im.threads.business.models.Survey
-import im.threads.ui.utils.setColorFilter
+import im.threads.ui.utils.applyColorFilter
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -39,7 +39,7 @@ class RatingStarsSentViewHolder(parent: ViewGroup) : BaseHolder(
             AppCompatResources.getDrawable(itemView.context, style.outgoingMessageBubbleBackground)
         setPaddings(false, mBubble)
         setLayoutMargins(false, mBubble)
-        mBubble.background.setColorFilter(ContextCompat.getColor(itemView.context, style.outgoingMessageBubbleColor))
+        mBubble.background.applyColorFilter(ContextCompat.getColor(itemView.context, style.outgoingMessageBubbleColor))
         setTextColorToViews(arrayOf(mHeader, from, totalStarsCount), style.outgoingMessageTextColor)
         timeStampTextView.setTextColor(getColorInt(style.outgoingMessageTimeColor))
         star.setImageResource(style.optionsSurveySelectedIconResId)
@@ -61,27 +61,27 @@ class RatingStarsSentViewHolder(parent: ViewGroup) : BaseHolder(
         when (survey.sentState ?: MessageStatus.FAILED) {
             MessageStatus.SENDING -> {
                 drawable = AppCompatResources.getDrawable(itemView.context, style.messageSendingIconResId)
-                drawable?.setColorFilter(ContextCompat.getColor(itemView.context, style.messageSendingIconColorResId))
+                drawable?.applyColorFilter(ContextCompat.getColor(itemView.context, style.messageSendingIconColorResId))
                 timeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null)
             }
             MessageStatus.SENT -> {
                 drawable = AppCompatResources.getDrawable(itemView.context, style.messageSentIconResId)
-                drawable?.setColorFilter(ContextCompat.getColor(itemView.context, style.messageSentIconColorResId))
+                drawable?.applyColorFilter(ContextCompat.getColor(itemView.context, style.messageSentIconColorResId))
                 timeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null)
             }
             MessageStatus.DELIVERED -> {
                 drawable = AppCompatResources.getDrawable(itemView.context, style.messageDeliveredIconResId)
-                drawable?.setColorFilter(ContextCompat.getColor(itemView.context, style.messageDeliveredIconColorResId))
+                drawable?.applyColorFilter(ContextCompat.getColor(itemView.context, style.messageDeliveredIconColorResId))
                 timeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null)
             }
             MessageStatus.READ -> {
                 drawable = AppCompatResources.getDrawable(itemView.context, style.messageReadIconResId)
-                drawable?.setColorFilter(ContextCompat.getColor(itemView.context, style.messageReadIconColorResId))
+                drawable?.applyColorFilter(ContextCompat.getColor(itemView.context, style.messageReadIconColorResId))
                 timeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null)
             }
             MessageStatus.FAILED -> {
                 drawable = AppCompatResources.getDrawable(itemView.context, style.messageFailedIconResId)
-                drawable?.setColorFilter(ContextCompat.getColor(itemView.context, style.messageFailedIconColorResId))
+                drawable?.applyColorFilter(ContextCompat.getColor(itemView.context, style.messageFailedIconColorResId))
                 timeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null)
             }
         }

@@ -23,7 +23,6 @@ import im.threads.business.models.MessageStatus
 import im.threads.business.models.UserPhrase
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.ogParser.OpenGraphParser
-import im.threads.business.utils.FileUtils
 import im.threads.ui.config.Config
 import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.widget.textView.BubbleTimeTextView
@@ -219,7 +218,7 @@ class ImageFromUserViewHolder(
         if (fileDescription != null) {
             loader.setImageResource(getErrorImageResByErrorCode(fileDescription.errorCode))
             ColorsHelper.setTint(itemView.context, loader, Config.getInstance().chatStyle.messageNotSentErrorImageColor)
-            fileName.text = FileUtils.getFileName(fileDescription)
+            fileNameFromDescription(fileDescription) { fileName.text = it }
             val errorString = getString(getErrorStringResByErrorCode(fileDescription.errorCode))
             errorText.text = errorString
             rotateAnim.cancel()

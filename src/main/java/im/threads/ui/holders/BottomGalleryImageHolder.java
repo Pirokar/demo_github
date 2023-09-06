@@ -33,7 +33,7 @@ public final class BottomGalleryImageHolder extends BaseHolder {
         setChosenMarkBackgroundDrawable(item);
         ImageLoader
                 .get()
-                .load(item.getImagePath().toString())
+                .load(item.imagePath.toString())
                 .disableEdnaSsl()
                 .scales(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP)
                 .into(image);
@@ -41,7 +41,7 @@ public final class BottomGalleryImageHolder extends BaseHolder {
 
     private void setChosenMarkBackgroundDrawable(@NonNull BottomGalleryItem item) {
         Drawable drawable;
-        if (item.isChosen()) {
+        if (item.isChosen) {
             drawable = AppCompatResources.getDrawable(itemView.getContext(),
                     getStyle().attachmentDoneIconResId);
             if (drawable != null) {

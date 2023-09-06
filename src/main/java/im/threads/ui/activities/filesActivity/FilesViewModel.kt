@@ -96,7 +96,7 @@ internal class FilesViewModel(
      */
     fun getFilesAsync() {
         compositeDisposable.add(
-            database.allFileDescriptions
+            database.getAllFileDescriptions()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(::onFilesReceived, ::onFilesReceivedError)

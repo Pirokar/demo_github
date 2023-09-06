@@ -19,7 +19,6 @@ import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.FileDescription
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.ogParser.OpenGraphParser
-import im.threads.business.utils.FileUtils
 import im.threads.business.utils.toFileSize
 import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.utils.gone
@@ -112,7 +111,7 @@ class ConsultFileViewHolder(
                 AttachmentStateEnum.PENDING -> showPendingState()
                 else -> showImageLayout(fileDescription)
             }
-            mFileHeader.text = FileUtils.getFileName(fileDescription)
+            fileNameFromDescription(fileDescription) { mFileHeader.text = it }
             if (mFileHeader.text.toString().equals("null", ignoreCase = true)) mFileHeader.text = ""
             val size = fileDescription.size
             mSizeTextView.text = size.toFileSize()

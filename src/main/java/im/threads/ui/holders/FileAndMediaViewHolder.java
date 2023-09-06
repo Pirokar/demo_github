@@ -23,6 +23,7 @@ import im.threads.business.utils.FileUtils;
 import im.threads.business.utils.FileUtilsKt;
 import im.threads.ui.utils.ColorsHelper;
 import im.threads.ui.views.CircularProgressButton;
+import kotlin.Unit;
 
 public final class FileAndMediaViewHolder extends BaseHolder {
     private ImageButton mImageButton;
@@ -92,7 +93,7 @@ public final class FileAndMediaViewHolder extends BaseHolder {
         } else {
             mImageButton.setImageDrawable(tintedDrawable);
         }
-        fileHeaderTextView.setText(FileUtils.getFileName(fileDescription));
+        fileNameFromDescription(fileDescription, this::setFileHeaderTextName);
         long fileSize = fileDescription.getSize();
         fileSizeTextView.setText(FileUtilsKt.toFileSize(fileSize));
         fileSizeTextView.setVisibility(fileSize > 0 ? View.VISIBLE : View.GONE);
@@ -102,6 +103,11 @@ public final class FileAndMediaViewHolder extends BaseHolder {
         for (int i = 0; i < vg.getChildCount(); i++) {
             vg.getChildAt(i).setOnClickListener(fileClickListener);
         }
+    }
+
+    public Unit setFileHeaderTextName(String fileName) {
+        fileHeaderTextView.setText(fileName);
+        return Unit.INSTANCE;
     }
 
     private void setUpDownloadButton(CircularProgressButton button) {

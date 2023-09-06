@@ -21,6 +21,7 @@ import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.recyclerview.widget.RecyclerView
 import im.threads.R
+import im.threads.business.extensions.withMainContext
 import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.imageLoading.ImageModifications
 import im.threads.business.imageLoading.loadImage
@@ -30,6 +31,7 @@ import im.threads.business.markdown.LinksHighlighter
 import im.threads.business.models.ChatItem
 import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.ExtractedLink
+import im.threads.business.models.FileDescription
 import im.threads.business.models.MessageStatus
 import im.threads.business.models.enums.ErrorStateEnum
 import im.threads.business.ogParser.OGData
@@ -53,6 +55,7 @@ import io.reactivex.subjects.PublishSubject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 abstract class BaseHolder internal constructor(
@@ -65,7 +68,7 @@ abstract class BaseHolder internal constructor(
     private var isThisItemHighlighted = false
     private var compositeDisposable: CompositeDisposable = CompositeDisposable()
     private val linksHighlighter: LinksHighlighter = LinkifyLinksHighlighter()
-    private val coroutineScope = CoroutineScope(Dispatchers.IO)
+    protected val coroutineScope = CoroutineScope(Dispatchers.IO)
     protected val rotateAnim = RotateAnimation(
         0f,
         360f,
@@ -176,21 +179,22 @@ abstract class BaseHolder internal constructor(
     }
 
     /**
-     * Подсчвечивает ссылки, email, номера телефонов. Если поле formattedText
+     * Подсвечивает ссылки, email, номера телефонов. Если поле formattedText
      * внутри phrase не будет пустым, производится форматирование текста.
      *
-     * @param textView вью, где необходимо произвести обработку - подсветку,
-     *     форматирование
-     * @param phrase данные для отображение во вью
+     * @param textView вью, где необходимо произвести обработку - подсветку, форматирование
+     * @param formattedText форматированный текст с markdown
+     * @param usualText обычный текст без форматирования
      * @param url url, содержащийся в сообщении (если известен)
      */
     protected fun highlightOperatorText(
         textView: TextView,
-        phrase: ConsultPhrase,
+        formattedText: String? = null,
+        usualText: String? = null,
         url: String? = null,
         emails: List<String> = arrayListOf()
     ) {
-        if (!phrase.formattedPhrase.isNullOrBlank()) {
+        if (!formattedText.isNullOrBlank()) {
             (textView as? BubbleMessageTextView)?.let {
                 val emailLinksPairs = ArrayList<Pair<String?, View.OnClickListener>>()
                 emails.forEach { email ->
@@ -207,16 +211,16 @@ abstract class BaseHolder internal constructor(
                     )
                 }
                 it.setFormattedText(
-                    phrase.formattedPhrase,
+                    formattedText,
                     true,
                     emailLinksPairs
                 )
             } ?: run {
                 setMovementMethod(textView)
-                textView.setText(phrase.phraseText?.trimIndent(), TextView.BufferType.NORMAL)
+                textView.setText(usualText?.trimIndent(), TextView.BufferType.NORMAL)
             }
-        } else if (!phrase.phraseText.isNullOrEmpty()) {
-            textView.setText(phrase.phraseText.trimIndent(), TextView.BufferType.NORMAL)
+        } else if (!usualText.isNullOrEmpty()) {
+            textView.setText(usualText.trimIndent(), TextView.BufferType.NORMAL)
             setTextWithHighlighting(
                 textView,
                 style.incomingMarkdownConfiguration.isLinkUnderlined,
@@ -610,6 +614,22 @@ abstract class BaseHolder internal constructor(
             }
         } else {
             consultAvatar.invisible()
+        }
+    }
+
+    protected fun fileNameFromDescription(fileDescription: FileDescription?, callback: (fileName: String?) -> Unit) {
+        if (fileDescription == null) {
+            callback(null)
+            return
+        }
+
+        if (fileDescription.incomingName != null) {
+            callback(fileDescription.incomingName)
+        } else {
+            coroutineScope.launch {
+                val fileName = FileUtils.getFileName(fileDescription.fileUri)
+                withMainContext { callback(fileName) }
+            }
         }
     }
 

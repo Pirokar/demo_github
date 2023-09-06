@@ -30,21 +30,22 @@ class Config(
     val pendingIntentCreator: PendingIntentCreator,
     unreadMessagesCountListener: UnreadMessagesCountListener?,
     networkInterceptor: Interceptor?,
-    lightTheme: ChatStyle?,
-    darkTheme: ChatStyle?,
+    var lightTheme: ChatStyle?,
+    var darkTheme: ChatStyle?,
     isDebugLoggingEnabled: Boolean,
     historyLoadingCount: Int,
     surveyCompletionDelay: Int,
     requestConfig: RequestConfig,
     trustedSSLCertificate: List<Int>?,
     allowUntrustedSSLCertificate: Boolean,
+    keepSocketActive: Boolean,
     notificationImportance: Int,
     private val isAttachmentsEnabled: Boolean?
 ) : BaseConfig(
     context, serverBaseUrl, datastoreUrl, threadsGateUrl, threadsGateProviderUid,
     isNewChatCenterApi, loggerConfig, unreadMessagesCountListener, networkInterceptor, isDebugLoggingEnabled,
     historyLoadingCount, surveyCompletionDelay, requestConfig, notificationImportance, trustedSSLCertificate,
-    allowUntrustedSSLCertificate
+    allowUntrustedSSLCertificate, keepSocketActive
 ) {
     val chatStyle: ChatStyle
         get() {
@@ -72,9 +73,6 @@ class Config(
                 }
             }
         }
-
-    var lightTheme: ChatStyle? = null
-    var darkTheme: ChatStyle? = null
 
     @Volatile
     private var storagePermissionDescriptionDialogStyle: PermissionDescriptionDialogStyle? = null

@@ -23,10 +23,15 @@ import androidx.annotation.DimenRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import im.threads.R
+import im.threads.business.extensions.withMainContext
+import im.threads.business.models.DateRow
+import im.threads.business.models.FileAndMediaItem
 import im.threads.business.models.FileDescription
+import im.threads.business.models.MediaAndFileItem
 import im.threads.business.secureDatabase.DatabaseHolder
 import im.threads.business.serviceLocator.core.inject
 import im.threads.business.utils.Balloon
+import im.threads.business.utils.FileUtils
 import im.threads.databinding.EccActivityFilesAndMediaBinding
 import im.threads.ui.ChatStyle
 import im.threads.ui.activities.BaseActivity
@@ -34,11 +39,15 @@ import im.threads.ui.adapters.filesAndMedia.FilesAndMediaAdapter
 import im.threads.ui.adapters.filesAndMedia.FilesAndMediaAdapter.OnFileClick
 import im.threads.ui.config.Config
 import im.threads.ui.utils.ColorsHelper
+import im.threads.ui.utils.applyColorFilter
 import im.threads.ui.utils.gone
 import im.threads.ui.utils.hideKeyboard
-import im.threads.ui.utils.setColorFilter
 import im.threads.ui.utils.showKeyboard
 import im.threads.ui.utils.visible
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.util.Calendar
 
 /**
  * Показывает список файлов, которые присутствовали в диалоге с оператором с обоих сторон
@@ -55,6 +64,7 @@ internal class FilesActivity : BaseActivity(), OnFileClick {
         FilesViewModel.Factory(config.context, database)
     }
     private var filesAndMediaAdapter: FilesAndMediaAdapter? = null
+    private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,16 +98,61 @@ internal class FilesActivity : BaseActivity(), OnFileClick {
     }
 
     private fun onFileReceive(descriptions: List<FileDescription?>?) = with(binding) {
-        if (descriptions != null && descriptions.isNotEmpty()) {
+        if (!descriptions.isNullOrEmpty()) {
             searchButton.visibility = View.VISIBLE
             emptyListLayout.visibility = View.GONE
             filesRecycler.visibility = View.VISIBLE
-            filesAndMediaAdapter = FilesAndMediaAdapter(
-                descriptions,
-                this@FilesActivity,
-                this@FilesActivity
-            )
-            filesRecycler.adapter = filesAndMediaAdapter
+            getMediaAndFileItems(descriptions) { items ->
+                filesAndMediaAdapter = FilesAndMediaAdapter(
+                    items,
+                    this@FilesActivity,
+                    this@FilesActivity,
+                    this@FilesActivity::getMediaAndFileItems
+                )
+                filesRecycler.adapter = filesAndMediaAdapter
+            }
+        }
+    }
+
+    private fun getMediaAndFileItems(
+        fileDescriptionList: List<FileDescription?>,
+        callback: (items: ArrayList<MediaAndFileItem>) -> Unit
+    ) {
+        val result = ArrayList<MediaAndFileItem>()
+        if (fileDescriptionList.isEmpty()) {
+            callback(arrayListOf())
+            return
+        }
+
+        coroutineScope.launch {
+            val current = Calendar.getInstance()
+            val prev = Calendar.getInstance()
+            fileDescriptionList[0]?.let { fd ->
+                result.add(DateRow(fd.timeStamp))
+                result.add(
+                    FileAndMediaItem(
+                        fd,
+                        fd.fileUri?.let { FileUtils.getFileName(it) } ?: ""
+                    )
+                )
+            }
+            for (i in 1 until fileDescriptionList.size) {
+                fileDescriptionList[i]?.let { fd ->
+                    current.timeInMillis = fd.timeStamp
+                    prev.timeInMillis = fileDescriptionList[i - 1]?.timeStamp ?: 0L
+                    result.add(
+                        FileAndMediaItem(
+                            fd,
+                            fd.fileUri?.let { FileUtils.getFileName(it) } ?: ""
+                        )
+                    )
+                    if (current[Calendar.DAY_OF_YEAR] != prev[Calendar.DAY_OF_YEAR]) {
+                        result.add(DateRow(fd.timeStamp))
+                    }
+                }
+            }
+
+            withMainContext { callback(result) }
         }
     }
 
@@ -112,8 +167,10 @@ internal class FilesActivity : BaseActivity(), OnFileClick {
     }
 
     private fun setStatusBarColor() {
-        val statusBarColor = ContextCompat.getColor(baseContext, config.chatStyle.mediaAndFilesStatusBarColorResId)
-        val isStatusBarLight = resources.getBoolean(config.chatStyle.mediaAndFilesWindowLightStatusBarResId)
+        val statusBarColor =
+            ContextCompat.getColor(baseContext, config.chatStyle.mediaAndFilesStatusBarColorResId)
+        val isStatusBarLight =
+            resources.getBoolean(config.chatStyle.mediaAndFilesWindowLightStatusBarResId)
         super.setStatusBarColor(isStatusBarLight, statusBarColor)
     }
 
@@ -126,8 +183,17 @@ internal class FilesActivity : BaseActivity(), OnFileClick {
             val noElevation = 0f
             toolbar.elevation = noElevation
         }
-        ColorsHelper.setTint(this@FilesActivity, backButton, config.chatStyle.chatToolbarTextColorResId)
-        title.setTextColor(ContextCompat.getColor(this@FilesActivity, config.chatStyle.chatToolbarTextColorResId))
+        ColorsHelper.setTint(
+            this@FilesActivity,
+            backButton,
+            config.chatStyle.chatToolbarTextColorResId
+        )
+        title.setTextColor(
+            ContextCompat.getColor(
+                this@FilesActivity,
+                config.chatStyle.chatToolbarTextColorResId
+            )
+        )
         initToolbarTextPosition()
         setClickForBackBtn()
     }
@@ -173,7 +239,14 @@ internal class FilesActivity : BaseActivity(), OnFileClick {
 
     private fun setOnSearchTextChanged() = with(binding) {
         searchEditText.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(text: CharSequence, start: Int, count: Int, after: Int) {}
+            override fun beforeTextChanged(
+                text: CharSequence,
+                start: Int,
+                count: Int,
+                after: Int
+            ) {
+            }
+
             override fun onTextChanged(text: CharSequence, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(text: Editable) {
                 search(text.toString())
@@ -222,7 +295,7 @@ internal class FilesActivity : BaseActivity(), OnFileClick {
             PorterDuff.Mode.SRC_ATOP
         )
         searchEditText.setTextColor(getColorInt(style.mediaAndFilesToolbarTextColorResId))
-        toolbar.navigationIcon?.mutate()?.setColorFilter(
+        toolbar.navigationIcon?.mutate()?.applyColorFilter(
             ContextCompat.getColor(baseContext, style.mediaAndFilesToolbarTextColorResId)
         )
         searchEditText.setHintTextColor(getColorInt(style.mediaAndFilesToolbarHintTextColor))
@@ -278,9 +351,11 @@ internal class FilesActivity : BaseActivity(), OnFileClick {
             is FilesFlow.UpdatedProgress -> {
                 filesAndMediaAdapter?.updateProgress(filesFlow.fileDescription)
             }
+
             is FilesFlow.DownloadError -> {
                 filesAndMediaAdapter?.onDownloadError(filesFlow.fileDescription)
             }
+
             is FilesFlow.FilesReceived -> {
                 onFileReceive(filesFlow.files)
             }

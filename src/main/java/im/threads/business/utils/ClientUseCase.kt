@@ -45,8 +45,16 @@ class ClientUseCase(private val preferences: Preferences) {
     fun saveUserInfo(userInfo: UserInfoBuilder?) {
         ramUserInfo = userInfo
         tagNewClientId = userInfo?.clientId ?: ""
-        preferences.save(USER_INFO_PREFS_KEY, userInfo, saveAsync = true)
-        preferences.save(TAG_NEW_CLIENT_ID_PREFS_KEY, tagNewClientId, saveAsync = true)
+        preferences.save(USER_INFO_PREFS_KEY, userInfo)
+        preferences.save(TAG_NEW_CLIENT_ID_PREFS_KEY, tagNewClientId)
+    }
+
+    /**
+     * Очищает сведения о пользователе в памяти
+     */
+    fun cleanUserInfoFromRam() {
+        ramUserInfo = null
+        tagNewClientId = null
     }
 
     /**

@@ -260,8 +260,8 @@ class ConsultPhraseHolder(
         }
     }
 
-    private fun getFileDescriptionText(fileDescription: FileDescription): String {
-        return "${FileUtils.getFileName(fileDescription)} " +
+    private fun getFileDescriptionText(fileName: String?, fileDescription: FileDescription): String {
+        return (fileName ?: "file") +
             if (fileDescription.size > 0) {
                 fileDescription.size.toFileSize().trimIndent()
             } else {
@@ -329,7 +329,13 @@ class ConsultPhraseHolder(
         val deeplink = UrlUtils.extractDeepLink(phrase)
         val extractedLink = if (style.linkPreviewEnabled) bindOGData(phrase) else UrlUtils.extractLink(phrase)
         val emails = UrlUtils.extractEmailAddresses(phrase)
-        highlightOperatorText(phraseTextView, consultPhrase, deeplink ?: extractedLink?.link, emails)
+        highlightOperatorText(
+            phraseTextView,
+            consultPhrase.formattedPhrase,
+            consultPhrase.phraseText,
+            deeplink ?: extractedLink?.link,
+            emails
+        )
     }
 
     private fun showQuote(
@@ -370,7 +376,11 @@ class ConsultPhraseHolder(
                     fileImage.setOnClickListener(onQuoteClickListener)
                 } else {
                     circularProgressButton.visibility = View.VISIBLE
-                    rightTextDescription.text = getFileDescriptionText(quoteFileDescription)
+
+                    fileNameFromDescription(quoteFileDescription) { fileName ->
+                        rightTextDescription.text = getFileDescriptionText(fileName, quoteFileDescription)
+                    }
+
                     circularProgressButton.setOnClickListener(onQuoteClickListener)
                     circularProgressButton.setProgress(if (quoteFileDescription.fileUri != null) 100 else quoteFileDescription.downloadProgress)
                 }
@@ -449,7 +459,9 @@ class ConsultPhraseHolder(
             } else {
                 rightTextHeader.visibility = View.GONE
             }
-            rightTextDescription.text = getFileDescriptionText(fileDescription)
+            fileNameFromDescription(fileDescription) { fileName ->
+                getFileDescriptionText(fileName, fileDescription)
+            }
             rightTextFileStamp.text = itemView.context.getString(
                 R.string.ecc_sent_at,
                 quoteSdf.format(Date(fileDescription.timeStamp))

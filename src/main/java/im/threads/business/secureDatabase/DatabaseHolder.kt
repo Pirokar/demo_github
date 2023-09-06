@@ -4,10 +4,10 @@ import android.content.Context
 import android.database.sqlite.SQLiteDiskIOException
 import im.threads.R
 import im.threads.business.annotation.OpenForTesting
+import im.threads.business.extensions.mutableLazy
 import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.ChatItem
 import im.threads.business.models.ConsultInfo
-import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.FileDescription
 import im.threads.business.models.MessageStatus
 import im.threads.business.models.SpeechMessageUpdate
@@ -20,21 +20,16 @@ import io.reactivex.schedulers.Schedulers
 
 @OpenForTesting
 class DatabaseHolder(private val context: Context) {
+    private var myOpenHelper = mutableLazy { ThreadsDbHelper.getInstance(context) }
 
-    init {
-        checkAndUpdate()
-    }
-
-    private var myOpenHelper = ThreadsDbHelper.getInstance(context)
-
-    fun cleanDatabase() = tryExecute { myOpenHelper.cleanDatabase() }
+    fun cleanDatabase() = tryExecute { myOpenHelper.value.cleanDatabase() }
 
     fun getChatItems(offset: Int, limit: Int): List<ChatItem> {
         return tryExecute {
-            val items = myOpenHelper.getChatItems(offset, limit).toMutableList()
+            val items = myOpenHelper.value.getChatItems(offset, limit).toMutableList()
             val surveysWithQuestions = mutableListOf<Survey>()
             items.filterIsInstance<Survey>().forEach { survey ->
-                (myOpenHelper.getChatItemByCorrelationId(survey.uuid) as? Survey)?.let { surveyWithQuestions ->
+                (myOpenHelper.value.getChatItemByCorrelationId(survey.uuid) as? Survey)?.let { surveyWithQuestions ->
                     surveysWithQuestions.add(surveyWithQuestions)
                 }
             }
@@ -48,106 +43,100 @@ class DatabaseHolder(private val context: Context) {
         } ?: arrayListOf()
     }
 
-    fun getSendingChatItems(): List<UserPhrase> = tryExecute { myOpenHelper.getSendingChatItems() } ?: arrayListOf()
+    fun getSendingChatItems(): List<UserPhrase> = tryExecute { myOpenHelper.value.getSendingChatItems() } ?: arrayListOf()
 
-    fun getNotDeliveredChatItems(): List<UserPhrase> = tryExecute { myOpenHelper.getNotDeliveredChatItems() } ?: arrayListOf()
+    fun getNotDeliveredChatItems(): List<UserPhrase> = tryExecute { myOpenHelper.value.getNotDeliveredChatItems() } ?: arrayListOf()
 
     fun getChatItemByCorrelationId(messageUuid: String?): ChatItem? =
-        tryExecute { myOpenHelper.getChatItemByCorrelationId(messageUuid) }
+        tryExecute { myOpenHelper.value.getChatItemByCorrelationId(messageUuid) }
 
     fun getChatItemByBackendMessageId(messageId: String?): ChatItem? =
-        tryExecute { myOpenHelper.getChatItemByBackendMessageId(messageId) }
+        tryExecute { myOpenHelper.value.getChatItemByBackendMessageId(messageId) }
 
-    fun putChatItems(items: List<ChatItem?>?) = tryExecute { myOpenHelper.putChatItems(items) }
+    fun putChatItems(items: List<ChatItem?>?) = tryExecute { myOpenHelper.value.putChatItems(items) }
 
-    fun putChatItem(chatItem: ChatItem?): Boolean = tryExecute { myOpenHelper.putChatItem(chatItem) } ?: false
+    fun putChatItem(chatItem: ChatItem?): Boolean = tryExecute { myOpenHelper.value.putChatItem(chatItem) } ?: false
 
     // FileDescriptions
-    val allFileDescriptions: Single<List<FileDescription?>?>
-        get() = Single.fromCallable { tryExecute { myOpenHelper.getAllFileDescriptions() } }
+    fun getAllFileDescriptions(): Single<List<FileDescription?>?> =
+        Single.fromCallable { tryExecute { myOpenHelper.value.getAllFileDescriptions() } }
             .subscribeOn(Schedulers.io())
 
     // UserPhrase
     fun updateFileDescription(fileDescription: FileDescription) {
-        tryExecute { myOpenHelper.updateFileDescription(fileDescription) }
+        tryExecute { myOpenHelper.value.updateFileDescription(fileDescription) }
     }
 
     fun updateChatItemByTimeStamp(chatItem: ChatItem) {
-        tryExecute { myOpenHelper.updateChatItemByTimeStamp(chatItem) }
+        tryExecute { myOpenHelper.value.updateChatItemByTimeStamp(chatItem) }
     }
 
-    fun getConsultInfo(id: String): ConsultInfo? = tryExecute { myOpenHelper.getLastConsultInfo(id) }
+    fun getConsultInfo(id: String): ConsultInfo? = tryExecute { myOpenHelper.value.getLastConsultInfo(id) }
 
-    fun getUnsendUserPhrase(count: Int): List<UserPhrase> = tryExecute { myOpenHelper.getUnsendUserPhrase(count) } ?: arrayListOf()
+    fun getUnsendUserPhrase(count: Int): List<UserPhrase> = tryExecute { myOpenHelper.value.getUnsendUserPhrase(count) } ?: arrayListOf()
 
     fun setStateOfUserPhraseByCorrelationId(uuid: String?, messageStatus: MessageStatus?) {
-        tryExecute { myOpenHelper.setUserPhraseStateByCorrelationId(uuid, messageStatus) }
+        tryExecute { myOpenHelper.value.setUserPhraseStateByCorrelationId(uuid, messageStatus) }
     }
 
     fun setStateOfUserPhraseByBackendMessageId(messageId: String?, messageStatus: MessageStatus?) {
-        tryExecute { myOpenHelper.setUserPhraseStateByBackendMessageId(messageId, messageStatus) }
+        tryExecute { myOpenHelper.value.setUserPhraseStateByBackendMessageId(messageId, messageStatus) }
     }
 
-    val lastConsultPhrase: ConsultPhrase? = tryExecute { myOpenHelper.getLastConsultPhrase() }
-
     fun setAllConsultMessagesWereRead(): Completable {
-        return Completable.fromCallable { tryExecute { myOpenHelper.setAllConsultMessagesWereRead() } }
+        return Completable.fromCallable { tryExecute { myOpenHelper.value.setAllConsultMessagesWereRead() } }
             .subscribeOn(Schedulers.io())
     }
 
     fun setAllConsultMessagesWereReadInThread(threadId: Long?): Completable {
-        return Completable.fromCallable { tryExecute { myOpenHelper.setAllConsultMessagesWereReadWithThreadId(threadId) } }
+        return Completable.fromCallable { tryExecute { myOpenHelper.value.setAllConsultMessagesWereReadWithThreadId(threadId) } }
             .subscribeOn(Schedulers.io())
     }
 
     fun setMessageWasRead(uuid: String?) {
-        uuid?.let { tryExecute { myOpenHelper.setMessageWasRead(it) } }
+        uuid?.let { tryExecute { myOpenHelper.value.setMessageWasRead(it) } }
     }
 
     fun saveSpeechMessageUpdate(speechMessageUpdate: SpeechMessageUpdate?) {
-        tryExecute { myOpenHelper.speechMessageUpdated(speechMessageUpdate) }
+        tryExecute { myOpenHelper.value.speechMessageUpdated(speechMessageUpdate) }
     }
 
     fun setNotSentSurveyDisplayMessageToFalse(): Completable {
-        return Completable.fromCallable { tryExecute { myOpenHelper.setNotSentSurveyDisplayMessageToFalse() } }
+        return Completable.fromCallable { tryExecute { myOpenHelper.value.setNotSentSurveyDisplayMessageToFalse() } }
             .subscribeOn(Schedulers.io())
     }
 
     fun setOldRequestResolveThreadDisplayMessageToFalse(): Completable {
-        return Completable.fromCallable { tryExecute { myOpenHelper.setOldRequestResolveThreadDisplayMessageToFalse() } }
+        return Completable.fromCallable { tryExecute { myOpenHelper.value.setOldRequestResolveThreadDisplayMessageToFalse() } }
             .subscribeOn(Schedulers.io())
     }
 
-    fun getMessagesCount(): Int = tryExecute { myOpenHelper.getMessagesCount() } ?: 0
+    fun getMessagesCount(): Int = tryExecute { myOpenHelper.value.getMessagesCount() } ?: 0
 
-    fun getUnreadMessagesCount(): Int = tryExecute { myOpenHelper.getUnreadMessagesCount() } ?: 0
+    fun getUnreadMessagesCount(): Int = tryExecute { myOpenHelper.value.getUnreadMessagesCount() } ?: 0
 
-    fun getUnreadMessagesUuid(): List<String?> = tryExecute { myOpenHelper.getUnreadMessagesUuid() } ?: arrayListOf()
+    fun getUnreadMessagesUuid(): List<String?> = tryExecute { myOpenHelper.value.getUnreadMessagesUuid() } ?: arrayListOf()
 
     fun setOrUpdateMessageId(correlationId: String?, backendMessageId: String?) {
-        tryExecute { myOpenHelper.setOrUpdateMessageId(correlationId, backendMessageId) }
+        tryExecute { myOpenHelper.value.setOrUpdateMessageId(correlationId, backendMessageId) }
     }
 
     fun removeItem(correlationId: String?, messageId: String?) = tryExecute {
-        myOpenHelper.removeItem(correlationId, messageId)
-    }
-
-    private fun checkIsDatabaseCorrupted() {
-        myOpenHelper = ThreadsDbHelper.getInstance(context)
+        myOpenHelper.value.removeItem(correlationId, messageId)
     }
 
     private fun checkAndUpdate() {
         val oldHelper = im.threads.business.database.ThreadsDbHelper(context)
         if (needMigrateToNewDB(oldHelper)) {
             putChatItems(oldHelper.getChatItems(0, -1))
-            myOpenHelper.putFileDescriptions(oldHelper.allFileDescriptions)
+            myOpenHelper.value.putFileDescriptions(oldHelper.allFileDescriptions)
             oldHelper.cleanDatabase()
         }
     }
 
     private fun needMigrateToNewDB(helper: im.threads.business.database.ThreadsDbHelper): Boolean {
         return try {
-            helper.getChatItems(0, -1).size > 0 || helper.allFileDescriptions.size > 0
+            helper.getChatItems(0, -1).isNotEmpty() || helper.allFileDescriptions.isNotEmpty()
         } catch (exc: SQLiteDiskIOException) {
             Balloon.show(context, context.getString(R.string.ecc_not_enough_space))
             false
@@ -159,11 +148,11 @@ class DatabaseHolder(private val context: Context) {
             block()
         } catch (exc: Exception) {
             try {
-                checkIsDatabaseCorrupted()
+                checkAndUpdate()
                 block()
             } catch (cantOpenExc: android.database.sqlite.SQLiteCantOpenDatabaseException) {
                 try {
-                    myOpenHelper = ThreadsDbHelper.recreateInstance(context)
+                    myOpenHelper.reset()
                     block()
                 } catch (anyExc: Exception) {
                     LoggerEdna.error("Processed error when reading database for block: \"${block.javaClass}\"", exc)

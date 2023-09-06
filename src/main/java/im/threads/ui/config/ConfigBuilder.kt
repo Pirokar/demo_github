@@ -42,6 +42,11 @@ class ConfigBuilder(context: Context) : BaseConfigBuilder(context) {
         return this
     }
 
+    override fun keepSocketActive(keepSocketActive: Boolean): ConfigBuilder {
+        super.keepSocketActive(keepSocketActive)
+        return this
+    }
+
     override fun serverBaseUrl(serverBaseUrl: String?): ConfigBuilder {
         super.serverBaseUrl(serverBaseUrl)
         return this
@@ -156,6 +161,7 @@ class ConfigBuilder(context: Context) : BaseConfigBuilder(context) {
             requestConfig,
             trustedSSLCertificates,
             allowUntrustedSSLCertificate,
+            keepSocketActive,
             notificationLevel,
             isAttachmentsEnabled
         )
@@ -180,6 +186,7 @@ class ConfigBuilder(context: Context) : BaseConfigBuilder(context) {
             "notificationLevel: $notificationLevel | " +
             "isAttachmentsEnabled: $isAttachmentsEnabled | " +
             "trustedSSLCertificates count: ${trustedSSLCertificates.count()}\n" +
+            "keepSocketActive: $keepSocketActive\n" +
             "lightTheme: $lightTheme\n" +
             "darkTheme: $darkTheme"
     }

@@ -17,7 +17,7 @@ import im.threads.business.models.ConsultInfo
 import im.threads.business.utils.FileUtils.convertRelativeUrlToAbsolute
 import im.threads.databinding.EccActivityConsultPageBinding
 import im.threads.ui.config.Config
-import im.threads.ui.utils.setColorFilter
+import im.threads.ui.utils.applyColorFilter
 
 open class ConsultActivity : BaseActivity() {
     private val binding: EccActivityConsultPageBinding by lazy {
@@ -80,7 +80,7 @@ open class ConsultActivity : BaseActivity() {
         setSupportActionBar(toolbar)
         toolbar.setNavigationOnClickListener { finish() }
         toolbar.showOverflowMenu()
-        toolbar.overflowIcon?.setColorFilter(
+        toolbar.overflowIcon?.applyColorFilter(
             ContextCompat.getColor(
                 baseContext,
                 config.chatStyle.chatToolbarTextColorResId
