@@ -82,7 +82,11 @@ open class Preferences(private val context: Context) {
      * @param obj сохраняемый объект
      */
     inline fun <reified T : Any> save(key: String, obj: T?) {
-        val json = if (obj != null) Gson().toJson(obj).toString() else null
+        val json = when (obj) {
+            null -> null
+            is String -> obj
+            else -> Gson().toJson(obj).toString()
+        }
         savePreferenceToRam(key, json)
 
         coroutineScope.launch {
@@ -105,7 +109,12 @@ open class Preferences(private val context: Context) {
                 ret = sharedPreferences.getString(key, null) ?: ""
                 if (ret.isNotEmpty()) savePreferenceToRam(key, ret)
             }
-            val value = Gson().fromJson(ret, returnType) ?: default ?: throw NullPointerException()
+            val value =
+                if (returnType.toString().contains("String")) {
+                    ret as T
+                } else {
+                    Gson().fromJson(ret, returnType) ?: default ?: throw NullPointerException()
+                }
             if (value == "null") null else value
         } catch (exc: Exception) {
             null

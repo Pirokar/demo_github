@@ -13,7 +13,6 @@ import im.threads.business.serviceLocator.core.inject
 import im.threads.business.transport.CloudMessagingType
 import im.threads.business.transport.MessageAttributes
 import im.threads.business.transport.PushMessageAttributes
-import im.threads.ui.core.ThreadsLib
 import im.threads.ui.workers.NotificationWorker
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -38,6 +37,16 @@ class ChatCenterPushMessageHelper {
 
     fun process(bundle: Bundle) {
         pushBundleStateFlow.tryEmit(bundle)
+    }
+
+    @Deprecated("Deprecated method", ReplaceWith("process(data)"))
+    fun process(context: Context, data: Map<String, String>) {
+        process(data)
+    }
+
+    @Deprecated("Deprecated method", ReplaceWith("process(bundle)"))
+    fun process(context: Context, bundle: Bundle) {
+        process(bundle)
     }
 
     internal fun setInternalFcmToken(token: String?) {
@@ -69,60 +78,58 @@ class ChatCenterPushMessageHelper {
     }
 
     internal fun processPush(context: Context, bundle: Bundle) {
-        if (ThreadsLib.isInitialized()) {
-            val sdf = SimpleDateFormat(CAMPAIGN_DATE_FORMAT_PARSE, Locale.getDefault())
-            if (PushMessageAttributes.THREADS.equals(
-                    bundle.getString(PushMessageAttributes.ORIGIN),
-                    ignoreCase = true
-                )
-            ) {
-                when {
-                    bundle.containsKey(PushMessageAttributes.GATE_MESSAGE_ID) -> {
-                        val alertStr = bundle.getString(PushMessageAttributes.ALERT) ?: ""
-                        val campaign = bundle.getString(PushMessageAttributes.CAMPAIGN) ?: ""
-                        val senderName = bundle.getString(PushMessageAttributes.SENDER_NAME) ?: ""
-                        val campaignMessage = CampaignMessage(
-                            alertStr,
-                            senderName,
-                            Date(),
-                            bundle.getString(PushMessageAttributes.CHAT_MESSAGE_ID)
-                                ?: "",
-                            bundle.getString(PushMessageAttributes.GATE_MESSAGE_ID)?.toLong()
-                                ?: 0,
-                            bundle.getString(PushMessageAttributes.EXPIRED_AT)
-                                ?.let { sdf.parse(it) }
-                                ?: Date(),
-                            bundle.getString(MessageAttributes.SKILL_ID)?.toInt() ?: 0,
-                            campaign,
-                            bundle.getString(MessageAttributes.PRIORITY)?.toInt() ?: 0
-                        )
-                        preferences.save(PreferencesCoreKeys.CAMPAIGN_MESSAGE, campaignMessage)
-                        NotificationWorker.addCampaignMessage(context, alertStr)
-                        LoggerEdna.info("campaign message handled: $campaignMessage")
-                    }
-                    bundle.containsKey(PushMessageAttributes.MESSAGE) || bundle.containsKey(
-                        PushMessageAttributes.ALERT
-                    ) -> {
-                        val operatorUrl = bundle[PushMessageAttributes.OPERATOR_URL] as String?
-                        val appMarker = bundle[PushMessageAttributes.APP_MARKER_KEY] as String?
-                        val text = bundle[PushMessageAttributes.MESSAGE] as String?
-                            ?: bundle[PushMessageAttributes.ALERT] as String?
-                        NotificationWorker.addUnreadMessage(
-                            context,
-                            Date().hashCode(),
-                            text,
-                            operatorUrl,
-                            appMarker
-                        )
-                        LoggerEdna.info("text message handled: $text")
-                    }
-                    else -> {
-                        LoggerEdna.info("unparsed message with origin=threads ")
-                    }
+        val sdf = SimpleDateFormat(CAMPAIGN_DATE_FORMAT_PARSE, Locale.getDefault())
+        if (PushMessageAttributes.THREADS.equals(
+                bundle.getString(PushMessageAttributes.ORIGIN),
+                ignoreCase = true
+            )
+        ) {
+            when {
+                bundle.containsKey(PushMessageAttributes.GATE_MESSAGE_ID) -> {
+                    val alertStr = bundle.getString(PushMessageAttributes.ALERT) ?: ""
+                    val campaign = bundle.getString(PushMessageAttributes.CAMPAIGN) ?: ""
+                    val senderName = bundle.getString(PushMessageAttributes.SENDER_NAME) ?: ""
+                    val campaignMessage = CampaignMessage(
+                        alertStr,
+                        senderName,
+                        Date(),
+                        bundle.getString(PushMessageAttributes.CHAT_MESSAGE_ID)
+                            ?: "",
+                        bundle.getString(PushMessageAttributes.GATE_MESSAGE_ID)?.toLong()
+                            ?: 0,
+                        bundle.getString(PushMessageAttributes.EXPIRED_AT)
+                            ?.let { sdf.parse(it) }
+                            ?: Date(),
+                        bundle.getString(MessageAttributes.SKILL_ID)?.toInt() ?: 0,
+                        campaign,
+                        bundle.getString(MessageAttributes.PRIORITY)?.toInt() ?: 0
+                    )
+                    preferences.save(PreferencesCoreKeys.CAMPAIGN_MESSAGE, campaignMessage)
+                    NotificationWorker.addCampaignMessage(context, alertStr)
+                    LoggerEdna.info("campaign message handled: $campaignMessage")
                 }
-            } else {
-                LoggerEdna.info("origin=threads not found in bundle")
+                bundle.containsKey(PushMessageAttributes.MESSAGE) || bundle.containsKey(
+                    PushMessageAttributes.ALERT
+                ) -> {
+                    val operatorUrl = bundle[PushMessageAttributes.OPERATOR_URL] as String?
+                    val appMarker = bundle[PushMessageAttributes.APP_MARKER_KEY] as String?
+                    val text = bundle[PushMessageAttributes.MESSAGE] as String?
+                        ?: bundle[PushMessageAttributes.ALERT] as String?
+                    NotificationWorker.addUnreadMessage(
+                        context,
+                        Date().hashCode(),
+                        text,
+                        operatorUrl,
+                        appMarker
+                    )
+                    LoggerEdna.info("text message handled: $text")
+                }
+                else -> {
+                    LoggerEdna.info("unparsed message with origin=threads ")
+                }
             }
+        } else {
+            LoggerEdna.info("origin=threads not found in bundle")
         }
     }
 
