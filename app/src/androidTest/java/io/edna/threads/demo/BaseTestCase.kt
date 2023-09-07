@@ -27,7 +27,7 @@ import org.mockito.kotlin.anyOrNull
 
 abstract class BaseTestCase : TestCase() {
     private val port = 8000
-    private val localhostUrl = "10.0.2.2"
+    protected val localhostUrl = "10.0.2.2"
     protected val testServerBaseUrl = "http://$localhostUrl:$port/"
     protected val testDatastoreUrl = "http://$localhostUrl:$port/"
     protected val testThreadsGateUrl = "ws://$localhostUrl:$port/gate/socket"
