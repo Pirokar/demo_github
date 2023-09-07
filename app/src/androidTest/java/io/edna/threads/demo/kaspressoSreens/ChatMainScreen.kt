@@ -1,4 +1,4 @@
-package io.edna.threads.demo.mainChatScreen
+package io.edna.threads.demo.kaspressoSreens
 
 import android.view.View
 import com.kaspersky.kaspresso.screens.KScreen

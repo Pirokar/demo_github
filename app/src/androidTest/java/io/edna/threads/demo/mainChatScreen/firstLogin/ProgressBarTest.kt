@@ -7,7 +7,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import im.threads.BuildConfig
 import im.threads.ui.activities.ChatActivity
 import io.edna.threads.demo.TestCaseWithLoginInfo
-import io.edna.threads.demo.mainChatScreen.ChatMainScreen
+import io.edna.threads.demo.kaspressoSreens.ChatMainScreen
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith

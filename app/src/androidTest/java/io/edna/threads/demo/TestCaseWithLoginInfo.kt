@@ -10,6 +10,8 @@ import im.threads.ui.core.ThreadsLib
 import io.edna.threads.demo.appCode.models.ServerConfig
 import io.edna.threads.demo.appCode.models.TestData
 import io.edna.threads.demo.appCode.models.UserInfo
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import okhttp3.OkHttpClient
 import okhttp3.WebSocket
 import org.mockito.Mock
@@ -30,6 +32,8 @@ abstract class TestCaseWithLoginInfo : TestCase() {
     private val testAllowUntrustedSSLCertificate = true
     private val userId = (10000..99999).random().toString()
 
+    protected val coroutineScope = CoroutineScope(Dispatchers.Unconfined)
+
     protected val context = InstrumentationRegistry.getInstrumentation().targetContext
     protected val tgMocksMap = HashMap<String, String>().apply {
         put("registerDevice", TestMessages.registerDeviceWsAnswer)
@@ -48,9 +52,6 @@ abstract class TestCaseWithLoginInfo : TestCase() {
     }
 
     init {
-        ThreadsLib.cleanLibInstance()
-        val existedTestData = BuildConfig.TEST_DATA.get() as? String ?: ""
-
         val testData = getExistedTestData().copy(
             serverConfig = getDefaultServerConfig()
         )
@@ -82,7 +83,7 @@ abstract class TestCaseWithLoginInfo : TestCase() {
     }
 
     protected fun initUserDirectly() {
-        ThreadsLib.getInstance().initUser(UserInfoBuilder(userId))
+        ThreadsLib.getInstance().initUser(UserInfoBuilder(userId), true)
     }
 
     protected fun sendMessageToSocket(message: String) {
@@ -108,7 +109,6 @@ abstract class TestCaseWithLoginInfo : TestCase() {
             }
             null
         }.`when`(socket).send(Mockito.anyString())
-        (BaseConfig.getInstance().transport as ThreadsGateTransport).client = okHttpClient
     }
 
     private fun getAnswersForWebSocket(

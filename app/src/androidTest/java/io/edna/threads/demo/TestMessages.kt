@@ -44,4 +44,7 @@ object TestMessages {
 
     const val clientInfoWsAnswer = "{\"action\":\"sendMessage\",\"correlationId\":\"8112dcad-237f-44b2-af78-c350250ebe8f\"," +
         "\"data\":{\"messageId\":\"9426bc3c-1194-4499-98e6-2210df4a37e0\",\"sentAt\":\"2023-08-24T12:19:11.480Z\",\"status\":\"sent\"}}"
+
+    const val emptyHistoryMessage = "{\"messages\":[],\"agentInfo\":{\"action\":\"AGENT_LOOKUP\",\"actionDate\":\"2023-03-22T08:51:43.124Z\"," +
+        "\"thread\":{\"id\":304,\"state\":\"UNASSIGNED\"},\"agent\":null},\"allowedToSendMessages\":true}"
 }

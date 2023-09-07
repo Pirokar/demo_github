@@ -8,7 +8,7 @@ import im.threads.BuildConfig
 import im.threads.R
 import im.threads.ui.activities.ChatActivity
 import io.edna.threads.demo.TestCaseWithLoginInfo
-import io.edna.threads.demo.mainChatScreen.ChatMainScreen
+import io.edna.threads.demo.kaspressoSreens.ChatMainScreen
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith

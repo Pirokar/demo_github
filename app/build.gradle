@@ -20,7 +20,7 @@ android {
         versionName "1.0.2"
         versionCode 1
 
-        testInstrumentationRunner "io.edna.threads.demo.MockTestRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments clearPackageData: 'true'
     }
 
@@ -118,4 +118,10 @@ dependencies {
     androidTestImplementation "androidx.test:rules:$rootProject.androidXTestVersion"
     androidTestImplementation "org.mockito:mockito-core:$rootProject.mockitoVersion"
     androidTestImplementation "org.mockito:mockito-android:$rootProject.mockitoVersion"
+    androidTestImplementation("org.wiremock:wiremock:3.0.1") {
+        exclude group: 'org.apache.httpcomponents', module: 'httpclient'
+        exclude group: 'asm', module: 'asm'
+        exclude group: 'org.json', module: 'json'
+        exclude group: 'com.google.guava', module:'guava'
+    }
 }
