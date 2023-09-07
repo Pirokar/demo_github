@@ -65,6 +65,7 @@ abstract class TestCaseWithLoginInfo : TestCase() {
         )
         AtomicReference<String>()
         BuildConfig.TEST_DATA.set(testData.toJson())
+        im.threads.BuildConfig.IS_ANIMATIONS_DISABLED.set(true)
         ChatController.getInstance().cleanAll()
     }
 
