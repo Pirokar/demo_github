@@ -46,6 +46,20 @@
       "threadsGateUrl": "ws://tg.dev4.chc.dte/gate/socket"
     },
     {
+      "name": "TGM 1",
+      "threadsGateProviderUid": "TG_OTNqTHJ2cmlwWmVEWFNLSnpkUmZFdTlRcE1NdkllNUxLS0hRbA",
+      "serverBaseUrl": "http://arm.tgm1.chc.dte/",
+      "datastoreUrl": "http://datastore.tgm1.chc.dte/",
+      "threadsGateUrl": "ws://tg.tgm1.chc.dte/gate/socket"
+    },
+    {
+      "name": "Multi 1",
+      "threadsGateProviderUid": "DEV4_9M2pMcnZyaXBaZURYU0tKemRSZkV1OVFwTU12SWU1TEtLSFFs",
+      "serverBaseUrl": "http://arm.multi1.chc.dte/",
+      "datastoreUrl": "http://datastore.multi1.chc.dte/",
+      "threadsGateUrl": "ws://tg.multi1.chc.dte/gate/socket"
+    },
+    {
       "name": "GPB",
       "threadsGateProviderUid": "GPB-TEST_iT6VrvripZeDCCVJzdRfEu9QpMMvIe5L5KcEM",
       "serverBaseUrl": "http://open-ig.gpb-test.chc.dte/",
