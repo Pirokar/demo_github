@@ -32,7 +32,7 @@ class EdnaThreadsApplication : Application() {
     private val serversProvider: ServersProvider by inject()
     private val preferences: PreferencesProvider by inject()
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
-    private val asyncInit = true
+    private val asyncInit = false
 
     override fun onCreate() {
         super.onCreate()
