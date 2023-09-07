@@ -14,6 +14,6 @@ class CustomPushFcmIntentService : FirebaseMessagingService() {
 
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
-        chatCenterPushMessageHelper.process(this@CustomPushFcmIntentService, message.data)
+        chatCenterPushMessageHelper.process(message.data)
     }
 }

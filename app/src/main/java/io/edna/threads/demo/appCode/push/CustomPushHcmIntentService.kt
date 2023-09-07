@@ -17,9 +17,6 @@ class CustomPushHcmIntentService : HmsMessageService() {
     @SuppressLint("RestrictedApi")
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
-        chatCenterPushMessageHelper.process(
-            this@CustomPushHcmIntentService,
-            CommonUtils.base64JsonStringToBundle(message.data)
-        )
+        chatCenterPushMessageHelper.process(CommonUtils.base64JsonStringToBundle(message.data))
     }
 }
