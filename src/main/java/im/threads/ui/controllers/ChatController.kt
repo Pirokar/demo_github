@@ -1605,7 +1605,7 @@ class ChatController private constructor() {
                         withContext(Dispatchers.Main) { fragment?.showProgressBar() }
                     }
                     if (stateEvent.isTimeout && chatState.getCurrentState() < ChatStateEnum.ATTACHMENT_SETTINGS_LOADED) {
-                        val timeoutMessage = if (stateEvent.state > ChatStateEnum.INIT_USER_SENT && fragment != null) {
+                        val timeoutMessage = if (stateEvent.state >= ChatStateEnum.INIT_USER_SENT && fragment != null) {
                             fragment?.getString(R.string.ecc_attachments_not_loaded)
                         } else {
                             "${fragment?.getString(R.string.ecc_timeout_message) ?: "Превышен интервал ожидания для запроса"} (${chatState.getCurrentState()})"
