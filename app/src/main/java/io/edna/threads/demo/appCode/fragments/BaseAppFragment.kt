@@ -10,13 +10,11 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.viewbinding.ViewBinding
-import im.threads.business.config.BaseConfig
 import im.threads.ui.core.ThreadsLib
 import im.threads.ui.extensions.isDarkThemeOn
 import im.threads.ui.fragments.ChatFragment
 import io.edna.threads.demo.R
 import io.edna.threads.demo.appCode.fragments.demoSamplesList.DemoSamplesListFragment
-import io.edna.threads.demo.integrationCode.fragments.chatFragment.ChatAppFragment
 
 abstract class BaseAppFragment<T : ViewBinding>(
     private val bindingInflater: (layoutInflater: LayoutInflater) -> T
@@ -63,18 +61,20 @@ abstract class BaseAppFragment<T : ViewBinding>(
         }
     }
 
-    private fun setToolbarColor() = with(binding) {
-        context?.let { context ->
-            val toolbar = try {
-                root.findViewById<Toolbar>(R.id.toolbar)
-            } catch (ignored: Exception) {
-                null
-            }
+    protected fun setToolbarColor() = with(binding) {
+        if (ThreadsLib.isInitialized()) {
+            context?.let { context ->
+                val toolbar = try {
+                    root.findViewById<Toolbar>(R.id.toolbar)
+                } catch (ignored: Exception) {
+                    null
+                }
 
-            if (context.isDarkThemeOn()) {
-                toolbar?.setBackgroundColor(ContextCompat.getColor(context, R.color.dark_toolbar))
-            } else {
-                toolbar?.setBackgroundColor(ContextCompat.getColor(context, R.color.light_toolbar))
+                if (context.isDarkThemeOn()) {
+                    toolbar?.setBackgroundColor(ContextCompat.getColor(context, R.color.dark_toolbar))
+                } else {
+                    toolbar?.setBackgroundColor(ContextCompat.getColor(context, R.color.light_toolbar))
+                }
             }
         }
     }

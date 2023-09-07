@@ -93,6 +93,10 @@ class LaunchViewModel(
     }
 
     private fun login(navigationController: NavController) {
+        if (!ThreadsLib.isInitialized()) {
+            return
+        }
+
         val serverConfig = _selectedServerLiveData.value
         val user = _selectedUserLiveData.value
         val isUserHasRequiredFields = user?.userId != null
@@ -128,10 +132,12 @@ class LaunchViewModel(
         }
     }
 
-    private fun checkUiTheme() {
-        val uiTheme = ThreadsLib.getInstance().currentUiTheme
-        applyCurrentUiTheme(uiTheme)
-        currentUiThemeLiveData.value = getCurrentUiTheme(uiTheme)
+    internal fun checkUiTheme() {
+        if (ThreadsLib.isInitialized()) {
+            val uiTheme = ThreadsLib.getInstance().currentUiTheme
+            currentUiThemeLiveData.postValue(getCurrentUiTheme(uiTheme))
+            applyCurrentUiTheme(uiTheme)
+        }
     }
 
     private fun getCurrentUiTheme(currentUiTheme: CurrentUiTheme): UiTheme {

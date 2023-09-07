@@ -27,12 +27,14 @@ class LaunchFragment : BaseAppFragment<FragmentLaunchBinding>(FragmentLaunchBind
     private val viewModel: LaunchViewModel by viewModel()
     private val stringsProvider: StringsProvider by inject()
 
-    private var receiver: InitUnreadCountReceiver? = null
-    private val filter = IntentFilter(APP_UNREAD_COUNT_BROADCAST)
+    private var initLibReceiver: InitThreadsLibReceiver? = null
+    private var unreadCountReceiver: InitUnreadCountReceiver? = null
+    private val initLibFilter = IntentFilter(APP_INIT_THREADS_LIB_ACTION)
+    private val unreadCountFilter = IntentFilter(APP_UNREAD_COUNT_BROADCAST)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initReceiver()
+        initReceivers()
         initObservers()
         setResultListeners()
         initView()
@@ -43,7 +45,22 @@ class LaunchFragment : BaseAppFragment<FragmentLaunchBinding>(FragmentLaunchBind
     override fun onDestroyView() {
         super.onDestroyView()
         clearResultListeners()
-        unregisterReceiver()
+        unregisterReceivers()
+    }
+
+    private fun unregisterReceivers() {
+        unregisterInitLibReceivers()
+        unreadCountReceiver?.let {
+            requireActivity().unregisterReceiver(it)
+            unreadCountReceiver = null
+        }
+    }
+
+    private fun unregisterInitLibReceivers() {
+        initLibReceiver?.let {
+            requireActivity().unregisterReceiver(it)
+            initLibReceiver = null
+        }
     }
 
     private fun initView() = with(binding) {
@@ -130,7 +147,7 @@ class LaunchFragment : BaseAppFragment<FragmentLaunchBinding>(FragmentLaunchBind
             binding.logoutLayout.isVisible = false
         } else {
             binding.logoutLayout.isVisible = true
-            binding.logoutText.text = getString(R.string.logout_client_text)+" "+userId
+            binding.logoutText.text = getString(R.string.logout_client_text) + " " + userId
         }
     }
 
@@ -139,12 +156,21 @@ class LaunchFragment : BaseAppFragment<FragmentLaunchBinding>(FragmentLaunchBind
         binding.count.text = count.toString()
     }
 
-    private fun initReceiver() {
-        receiver = InitUnreadCountReceiver(this)
+    private fun initReceivers() {
+        if (!ThreadsLib.isInitialized()) {
+            initLibReceiver = InitThreadsLibReceiver(this)
+            ContextCompat.registerReceiver(
+                requireContext(),
+                initLibReceiver,
+                initLibFilter,
+                ContextCompat.RECEIVER_VISIBLE_TO_INSTANT_APPS
+            )
+        }
+        unreadCountReceiver = InitUnreadCountReceiver(this)
         ContextCompat.registerReceiver(
             requireContext(),
-            receiver,
-            filter,
+            unreadCountReceiver,
+            unreadCountFilter,
             ContextCompat.RECEIVER_VISIBLE_TO_INSTANT_APPS
         )
     }
@@ -155,13 +181,6 @@ class LaunchFragment : BaseAppFragment<FragmentLaunchBinding>(FragmentLaunchBind
                 val count = intent.getIntExtra(UNREAD_COUNT_KEY, 0)
                 fragment.setUnreadCount(count)
             }
-        }
-    }
-
-    private fun unregisterReceiver() {
-        receiver?.let {
-            requireActivity().unregisterReceiver(it)
-            receiver = null
         }
     }
 
@@ -195,9 +214,24 @@ class LaunchFragment : BaseAppFragment<FragmentLaunchBinding>(FragmentLaunchBind
             "/ ChatCenter SDK ${ThreadsLib.getLibVersion()}"
     }
 
+    fun onThreadsLibInitialized() {
+        setToolbarColor()
+        viewModel.checkUiTheme()
+        unregisterInitLibReceivers()
+    }
+
+    class InitThreadsLibReceiver(val fragment: LaunchFragment) : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            if (intent.action == APP_INIT_THREADS_LIB_ACTION) {
+                fragment.onThreadsLibInitialized()
+            }
+        }
+    }
+
     companion object {
         const val SELECTED_USER_KEY = "selected_user_key"
         const val SELECTED_SERVER_CONFIG_KEY = "selected_server_key"
+        const val APP_INIT_THREADS_LIB_ACTION = "APP_INIT_THREADS_LIB_BROADCAST"
         const val UNREAD_COUNT_KEY = "unread_cont_key"
         const val APP_UNREAD_COUNT_BROADCAST = "unread_count_broadcast"
     }
