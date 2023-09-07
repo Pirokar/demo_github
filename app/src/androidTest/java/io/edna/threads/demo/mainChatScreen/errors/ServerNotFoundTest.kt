@@ -5,7 +5,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import im.threads.BuildConfig
-import im.threads.ui.activities.ChatActivity
+import im.threads.business.config.BaseConfig
 import io.edna.threads.demo.BaseTestCase
 import io.edna.threads.demo.appCode.activity.MainActivity
 import io.edna.threads.demo.kaspressoSreens.ChatMainScreen
@@ -28,6 +28,7 @@ class ServerNotFoundTest : BaseTestCase() {
     @Test
     fun testServerNotFound() {
         openChatFromDemoLoginPage()
+        Thread.sleep(BaseConfig.getInstance().requestConfig.socketClientSettings.connectTimeoutMillis)
         ChatMainScreen {
             errorImage { isVisible() }
             errorText {
