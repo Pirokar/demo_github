@@ -29,6 +29,7 @@ class QuickAnswerController : Fragment() {
         ChatController.getInstance().loadHistoryAfterWithLastMessageCheck(
             applyUiChanges = false,
             forceLoad = true,
+            fromQuickAnswerController = true,
             callback = object : HistoryLoader.HistoryLoadingCallback {
                 override fun onLoaded(items: List<ChatItem>) {
                     coroutineScope.launch {

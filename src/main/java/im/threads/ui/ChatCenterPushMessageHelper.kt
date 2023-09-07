@@ -14,6 +14,8 @@ import im.threads.business.transport.CloudMessagingType
 import im.threads.business.transport.MessageAttributes
 import im.threads.business.transport.PushMessageAttributes
 import im.threads.ui.workers.NotificationWorker
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -21,33 +23,61 @@ import java.util.Locale
 class ChatCenterPushMessageHelper {
     private val preferences: Preferences by inject()
 
-    fun setFcmToken(fcmToken: String?) {
-        val cloudMessagingType = preferences.get<String>(PreferencesCoreKeys.CLOUD_MESSAGING_TYPE)
-        if (cloudMessagingType == null) {
-            preferences.save(PreferencesCoreKeys.CLOUD_MESSAGING_TYPE, CloudMessagingType.FCM.toString())
-        }
-        if (fcmToken != preferences.get(PreferencesCoreKeys.FCM_TOKEN, "")) {
-            preferences.save(PreferencesCoreKeys.FCM_TOKEN, fcmToken)
-            BaseConfig.getInstance().transport.updatePushToken()
-        }
+    fun setFcmToken(token: String?) {
+        fcmTokenStateFlow.tryEmit(token)
     }
 
-    fun setHcmToken(hcmToken: String?) {
-        val cloudMessagingType = preferences.get<String>(PreferencesCoreKeys.CLOUD_MESSAGING_TYPE)
-        if (cloudMessagingType == null) {
-            preferences.save(PreferencesCoreKeys.CLOUD_MESSAGING_TYPE, CloudMessagingType.HCM.toString())
-        }
-        if (hcmToken != preferences.get(PreferencesCoreKeys.HCM_TOKEN, "")) {
-            preferences.save(PreferencesCoreKeys.HCM_TOKEN, hcmToken)
-            BaseConfig.getInstance().transport.updatePushToken()
-        }
+    fun setHcmToken(token: String?) {
+        hcmTokenStateFlow.tryEmit(token)
     }
 
+    fun process(data: Map<String, String>) {
+        process(bundleOf(*data.toList().toTypedArray()))
+    }
+
+    fun process(bundle: Bundle) {
+        pushBundleStateFlow.tryEmit(bundle)
+    }
+
+    @Deprecated("Deprecated method", ReplaceWith("process(data)"))
     fun process(context: Context, data: Map<String, String>) {
-        process(context, bundleOf(*data.toList().toTypedArray()))
+        process(data)
     }
 
+    @Deprecated("Deprecated method", ReplaceWith("process(bundle)"))
     fun process(context: Context, bundle: Bundle) {
+        process(bundle)
+    }
+
+    internal fun setInternalFcmToken(token: String?) {
+        val cloudMessagingType = preferences.get<String>(PreferencesCoreKeys.CLOUD_MESSAGING_TYPE)
+        if (cloudMessagingType == null) {
+            preferences.save(
+                PreferencesCoreKeys.CLOUD_MESSAGING_TYPE,
+                CloudMessagingType.FCM.toString()
+            )
+        }
+        if (token != preferences.get(PreferencesCoreKeys.FCM_TOKEN, "")) {
+            preferences.save(PreferencesCoreKeys.FCM_TOKEN, token)
+            BaseConfig.getInstance().transport.updatePushToken()
+        }
+    }
+
+    internal fun setInternalHcmToken(token: String?) {
+        val cloudMessagingType = preferences.get<String>(PreferencesCoreKeys.CLOUD_MESSAGING_TYPE)
+        if (cloudMessagingType == null) {
+            preferences.save(
+                PreferencesCoreKeys.CLOUD_MESSAGING_TYPE,
+                CloudMessagingType.HCM.toString()
+            )
+        }
+        if (token != preferences.get(PreferencesCoreKeys.HCM_TOKEN, "")) {
+            preferences.save(PreferencesCoreKeys.HCM_TOKEN, token)
+            BaseConfig.getInstance().transport.updatePushToken()
+        }
+    }
+
+    internal fun processPush(context: Context, bundle: Bundle) {
         val sdf = SimpleDateFormat(CAMPAIGN_DATE_FORMAT_PARSE, Locale.getDefault())
         if (PushMessageAttributes.THREADS.equals(
                 bundle.getString(PushMessageAttributes.ORIGIN),
@@ -78,10 +108,13 @@ class ChatCenterPushMessageHelper {
                     NotificationWorker.addCampaignMessage(context, alertStr)
                     LoggerEdna.info("campaign message handled: $campaignMessage")
                 }
-                bundle.containsKey(PushMessageAttributes.MESSAGE) || bundle.containsKey(PushMessageAttributes.ALERT) -> {
+                bundle.containsKey(PushMessageAttributes.MESSAGE) || bundle.containsKey(
+                    PushMessageAttributes.ALERT
+                ) -> {
                     val operatorUrl = bundle[PushMessageAttributes.OPERATOR_URL] as String?
                     val appMarker = bundle[PushMessageAttributes.APP_MARKER_KEY] as String?
-                    val text = bundle[PushMessageAttributes.MESSAGE] as String? ?: bundle[PushMessageAttributes.ALERT] as String?
+                    val text = bundle[PushMessageAttributes.MESSAGE] as String?
+                        ?: bundle[PushMessageAttributes.ALERT] as String?
                     NotificationWorker.addUnreadMessage(
                         context,
                         Date().hashCode(),
@@ -98,5 +131,20 @@ class ChatCenterPushMessageHelper {
         } else {
             LoggerEdna.info("origin=threads not found in bundle")
         }
+    }
+
+    companion object {
+        internal var fcmTokenStateFlow = MutableSharedFlow<String?>(
+            replay = 1,
+            onBufferOverflow = BufferOverflow.DROP_OLDEST
+        )
+        internal var hcmTokenStateFlow = MutableSharedFlow<String?>(
+            replay = 1,
+            onBufferOverflow = BufferOverflow.DROP_OLDEST
+        )
+        internal var pushBundleStateFlow = MutableSharedFlow<Bundle?>(
+            replay = 1,
+            onBufferOverflow = BufferOverflow.DROP_OLDEST
+        )
     }
 }

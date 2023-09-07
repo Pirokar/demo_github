@@ -551,6 +551,7 @@ class ChatController private constructor() {
     internal fun loadHistoryAfterWithLastMessageCheck(
         applyUiChanges: Boolean = true,
         forceLoad: Boolean = false,
+        fromQuickAnswerController: Boolean = false,
         callback: HistoryLoader.HistoryLoadingCallback? = null
     ) {
         coroutineScope.launch {
@@ -562,6 +563,7 @@ class ChatController private constructor() {
                     loadToTheEnd = true,
                     forceLoad = forceLoad,
                     applyUiChanges = applyUiChanges,
+                    fromQuickAnswerController = fromQuickAnswerController,
                     callback = callback
                 )
             } ?: loadHistory(
@@ -578,6 +580,7 @@ class ChatController private constructor() {
         loadToTheEnd: Boolean = false,
         forceLoad: Boolean = false,
         applyUiChanges: Boolean = true,
+        fromQuickAnswerController: Boolean = false,
         untilCondition: ((List<ChatItem>) -> Boolean)? = null,
         callback: HistoryLoader.HistoryLoadingCallback? = null
     ) {
@@ -588,7 +591,7 @@ class ChatController private constructor() {
             }
             return
         }
-        if (!chatState.isChatReady()) return
+        if (!chatState.isChatReady() && !fromQuickAnswerController) return
         synchronized(this) {
             if (!isDownloadingMessages) {
                 isDownloadingMessages = true
