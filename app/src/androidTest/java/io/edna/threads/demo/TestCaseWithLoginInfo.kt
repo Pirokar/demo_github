@@ -1,6 +1,8 @@
 package io.edna.threads.demo
 
 import androidx.test.platform.app.InstrumentationRegistry
+import com.github.tomakehurst.wiremock.client.WireMock
+import com.github.tomakehurst.wiremock.junit.WireMockRule
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import im.threads.business.UserInfoBuilder
 import im.threads.business.config.BaseConfig
@@ -10,10 +12,13 @@ import im.threads.ui.core.ThreadsLib
 import io.edna.threads.demo.appCode.models.ServerConfig
 import io.edna.threads.demo.appCode.models.TestData
 import io.edna.threads.demo.appCode.models.UserInfo
+import io.edna.threads.demo.kaspressoSreens.DemoLoginScreen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.WebSocket
+import org.junit.Rule
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
@@ -22,7 +27,7 @@ import org.mockito.kotlin.anyOrNull
 import java.util.concurrent.atomic.AtomicReference
 
 abstract class TestCaseWithLoginInfo : TestCase() {
-    protected val port = 8000
+    private val port = 8000
     private val localhostUrl = "10.0.2.2"
     private val testServerBaseUrl = "http://$localhostUrl:$port/"
     private val testDatastoreUrl = "http://$localhostUrl:$port/"
@@ -40,6 +45,9 @@ abstract class TestCaseWithLoginInfo : TestCase() {
         put("INIT_CHAT", TestMessages.initChatWsAnswer)
         put("CLIENT_INFO", TestMessages.clientInfoWsAnswer)
     }
+
+    @get:Rule
+    val wireMockRule = WireMockRule(port)
 
     @Mock
     protected lateinit var okHttpClient: OkHttpClient
@@ -94,6 +102,14 @@ abstract class TestCaseWithLoginInfo : TestCase() {
         socketListener.onFailure(socket, throwable, null)
     }
 
+    protected fun openChatFromDemoLoginPage() {
+        DemoLoginScreen {
+            loginButton {
+                click()
+            }
+        }
+    }
+
     protected fun prepareMocks(mocksMap: HashMap<String, String>? = null) {
         im.threads.BuildConfig.IS_MOCK_WEB_SERVER.set(true)
         MockitoAnnotations.openMocks(this)
@@ -110,6 +126,22 @@ abstract class TestCaseWithLoginInfo : TestCase() {
             }
             null
         }.`when`(socket).send(Mockito.anyString())
+
+        wireMockRule.stubFor(
+            WireMock.get(WireMock.urlEqualTo("/history"))
+                .willReturn(
+                    WireMock.aResponse()
+                        .withBody(TestMessages.emptyHistoryMessage)
+                        .withHeader("Content-Type", "application/json")
+                )
+        )
+
+        coroutineScope.launch {
+            ThreadsGateTransport.transportUpdatedChannel.collect {
+                it.client = okHttpClient
+                it.webSocket = null
+            }
+        }
     }
 
     private fun getAnswersForWebSocket(
