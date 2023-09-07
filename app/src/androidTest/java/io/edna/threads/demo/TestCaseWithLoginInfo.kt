@@ -22,7 +22,7 @@ import org.mockito.kotlin.anyOrNull
 import java.util.concurrent.atomic.AtomicReference
 
 abstract class TestCaseWithLoginInfo : TestCase() {
-    private val port = 8000
+    protected val port = 8000
     private val localhostUrl = "10.0.2.2"
     private val testServerBaseUrl = "http://$localhostUrl:$port/"
     private val testDatastoreUrl = "http://$localhostUrl:$port/"
@@ -95,6 +95,7 @@ abstract class TestCaseWithLoginInfo : TestCase() {
     }
 
     protected fun prepareMocks(mocksMap: HashMap<String, String>? = null) {
+        im.threads.BuildConfig.IS_MOCK_WEB_SERVER.set(true)
         MockitoAnnotations.openMocks(this)
         Mockito.`when`(okHttpClient.newWebSocket(anyOrNull(), anyOrNull())).thenReturn(socket)
         Mockito.doAnswer { mock: InvocationOnMock ->

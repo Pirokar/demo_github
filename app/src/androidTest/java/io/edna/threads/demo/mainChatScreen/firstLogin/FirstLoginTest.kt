@@ -26,7 +26,7 @@ class FirstLoginTest : TestCaseWithLoginInfo() {
     internal val activityRule = ActivityScenarioRule<MainActivity>(intent)
 
     @get:Rule
-    val wireMockRule = WireMockRule(8080)
+    val wireMockRule = WireMockRule(port)
 
     init {
         applyDefaultUserToDemoApp()

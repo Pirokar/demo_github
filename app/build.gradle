@@ -118,10 +118,5 @@ dependencies {
     androidTestImplementation "androidx.test:rules:$rootProject.androidXTestVersion"
     androidTestImplementation "org.mockito:mockito-core:$rootProject.mockitoVersion"
     androidTestImplementation "org.mockito:mockito-android:$rootProject.mockitoVersion"
-    androidTestImplementation("org.wiremock:wiremock:3.0.1") {
-        exclude group: 'org.apache.httpcomponents', module: 'httpclient'
-        exclude group: 'asm', module: 'asm'
-        exclude group: 'org.json', module: 'json'
-        exclude group: 'com.google.guava', module:'guava'
-    }
+    androidTestImplementation "com.github.tomakehurst:wiremock-standalone:2.26.3"
 }
