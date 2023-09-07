@@ -24,23 +24,22 @@ import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.kotlin.anyOrNull
-import java.util.concurrent.atomic.AtomicReference
 
-abstract class TestCaseWithLoginInfo : TestCase() {
+abstract class BaseTestCase : TestCase() {
     private val port = 8000
     private val localhostUrl = "10.0.2.2"
-    private val testServerBaseUrl = "http://$localhostUrl:$port/"
-    private val testDatastoreUrl = "http://$localhostUrl:$port/"
-    private val testThreadsGateUrl = "ws://$localhostUrl:$port/gate/socket"
-    private val testThreadsGateProviderUid = "TEST_93jLrtnipZsfbTddRfEfbyfEe5LKKhTl"
-    private val testTrustedSSLCertificates: ArrayList<Int>? = null
-    private val testAllowUntrustedSSLCertificate = true
-    private val userId = (10000..99999).random().toString()
+    protected val testServerBaseUrl = "http://$localhostUrl:$port/"
+    protected val testDatastoreUrl = "http://$localhostUrl:$port/"
+    protected val testThreadsGateUrl = "ws://$localhostUrl:$port/gate/socket"
+    protected val testThreadsGateProviderUid = "TEST_93jLrtnipZsfbTddRfEfbyfEe5LKKhTl"
+    protected val testTrustedSSLCertificates: ArrayList<Int>? = null
+    protected val testAllowUntrustedSSLCertificate = true
+    protected val userId = (10000..99999).random().toString()
 
-    protected val coroutineScope = CoroutineScope(Dispatchers.Unconfined)
+    private val coroutineScope = CoroutineScope(Dispatchers.Unconfined)
 
     protected val context = InstrumentationRegistry.getInstrumentation().targetContext
-    protected val tgMocksMap = HashMap<String, String>().apply {
+    private val tgMocksMap = HashMap<String, String>().apply {
         put("registerDevice", TestMessages.registerDeviceWsAnswer)
         put("INIT_CHAT", TestMessages.initChatWsAnswer)
         put("CLIENT_INFO", TestMessages.clientInfoWsAnswer)
@@ -63,7 +62,6 @@ abstract class TestCaseWithLoginInfo : TestCase() {
         val testData = getExistedTestData().copy(
             serverConfig = getDefaultServerConfig()
         )
-        AtomicReference<String>()
         BuildConfig.TEST_DATA.set(testData.toJson())
         im.threads.BuildConfig.IS_ANIMATIONS_DISABLED.set(true)
         ChatController.getInstance().cleanAll()

@@ -1,20 +1,11 @@
 package io.edna.threads.demo.mainChatScreen.errors
 
-import android.content.Context
-import androidx.test.core.app.ApplicationProvider
-import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import im.threads.ui.config.ConfigBuilder
 import im.threads.ui.core.ThreadsLib
+import io.edna.threads.demo.BaseTestCase
 import org.junit.Test
 
-class TestInitUrls : TestCase() {
-    private val context: Context = ApplicationProvider.getApplicationContext()
-
-    private val port = 9100
-    private val testServerBaseUrl = "http://localhost:$port/"
-    private val testDatastoreUrl = "http://localhost:$port/"
-    private val testThreadsGateUrl = "ws://localhost:$port/gate/socket"
-    private val testThreadsGateProviderUid = "TEST_93jLrtnipZsfbTddRfEfbyfEe5LKKhTl"
+class InitUrlsTest : BaseTestCase() {
 
     @Test
     fun testWithoutServerBaseUrl() {

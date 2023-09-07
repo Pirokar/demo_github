@@ -5,11 +5,11 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import im.threads.business.models.ConsultInfo
 import im.threads.ui.activities.ConsultActivity
-import io.edna.threads.demo.TestCaseWithLoginInfo
+import io.edna.threads.demo.BaseTestCase
 import org.junit.Rule
 import org.junit.Test
 
-class ConsultActivityTest : TestCaseWithLoginInfo() {
+class ConsultActivityTest : BaseTestCase() {
     private val avatarUrl = "https://img.freepik.com/free-photo/pretty-smiling-joyfully-female-with-fair-hair-dressed-casually-looking-with-satisfaction_176420-15187.jpg?w=826&t=st=1660821591~exp=1660822191~hmac=03ad70b2616db9df41c6174265f7a97806338958ef738236badc63c5b0ff1897"
     private val status = "Active"
     private val name = "Operator Alisa"
