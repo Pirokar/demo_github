@@ -41,11 +41,8 @@ abstract class BaseTestCase : TestCase() {
     private val coroutineScope = CoroutineScope(Dispatchers.Unconfined)
 
     protected val context = InstrumentationRegistry.getInstrumentation().targetContext
-    private val tgMocksMap = HashMap<String, String>().apply {
-        put("registerDevice", TestMessages.registerDeviceWsAnswer)
-        put("INIT_CHAT", TestMessages.initChatWsAnswer)
-        put("CLIENT_INFO", TestMessages.clientInfoWsAnswer)
-    }
+    protected var wsMocksMap = getDefaultWsMocksMap()
+    protected var clientInfoWsMessages = getDefaultClientInfoWsMessages()
 
     @get:Rule
     val wireMockRule = WireMockRule(
@@ -116,18 +113,17 @@ abstract class BaseTestCase : TestCase() {
         }
     }
 
-    protected fun prepareWsMocks(mocksMap: HashMap<String, String>? = null) {
+    protected fun prepareWsMocks() {
         im.threads.BuildConfig.IS_MOCK_WEB_SERVER.set(true)
         MockitoAnnotations.openMocks(this)
         Mockito.`when`(okHttpClient.newWebSocket(anyOrNull(), anyOrNull())).thenReturn(socket)
         Mockito.doAnswer { mock: InvocationOnMock ->
             val stringArg = mock.arguments[0] as String
-            val (answer, isClientInfo) = getAnswersForWebSocket(stringArg, mocksMap)
-            answer?.let {
-                sendMessageToSocket(it)
+            val (answer, isClientInfo) = getAnswersForWebSocket(stringArg)
+            answer?.let { wsAnswer ->
+                sendMessageToSocket(wsAnswer)
                 if (isClientInfo) {
-                    sendMessageToSocket(TestMessages.scheduleWsMessage)
-                    sendMessageToSocket(TestMessages.attachmentSettingsWsMessage)
+                    clientInfoWsMessages.forEach { sendMessageToSocket(it) }
                 }
             }
             null
@@ -143,7 +139,7 @@ abstract class BaseTestCase : TestCase() {
 
     protected fun prepareHttpMocks(withAnswerDelayInMs: Int = 0) {
         wireMockRule.stubFor(
-            WireMock.get(WireMock.urlMatching("./history"))
+            WireMock.get(WireMock.urlPathMatching(".*/history.*"))
                 .willReturn(
                     WireMock.aResponse()
                         .withBody(TestMessages.emptyHistoryMessage)
@@ -153,14 +149,23 @@ abstract class BaseTestCase : TestCase() {
         )
     }
 
+    protected fun getDefaultWsMocksMap() = HashMap<String, String>().apply {
+        put("registerDevice", TestMessages.registerDeviceWsAnswer)
+        put("INIT_CHAT", TestMessages.initChatWsAnswer)
+        put("CLIENT_INFO", TestMessages.clientInfoWsAnswer)
+    }
+
+    protected fun getDefaultClientInfoWsMessages() = listOf(
+        TestMessages.scheduleWsMessage,
+        TestMessages.attachmentSettingsWsMessage
+    )
+
     private fun getAnswersForWebSocket(
-        websocketMessage: String,
-        mocksMap: HashMap<String, String>? = null
+        websocketMessage: String
     ): Pair<String?, Boolean> {
-        val socketMocksMap = mocksMap ?: tgMocksMap
-        socketMocksMap.keys.forEach { key ->
+        wsMocksMap.keys.forEach { key ->
             if (websocketMessage.contains(key)) {
-                return Pair(socketMocksMap[key], key == "CLIENT_INFO")
+                return Pair(wsMocksMap[key], key == "CLIENT_INFO")
             }
         }
         return Pair(null, false)
