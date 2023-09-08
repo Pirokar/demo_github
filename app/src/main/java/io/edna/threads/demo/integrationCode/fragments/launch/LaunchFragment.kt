@@ -146,7 +146,7 @@ class LaunchFragment : BaseAppFragment<FragmentLaunchBinding>(FragmentLaunchBind
         if (userId.isNullOrBlank()) {
             binding.logoutLayout.isVisible = false
         } else {
-            binding.logoutLayout.isVisible = true
+            binding.logoutLayout.isVisible = false
             binding.logoutText.text = getString(R.string.logout_client_text) + " " + userId
         }
     }
