@@ -90,7 +90,6 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
                     e?.let { sendDownloadErrorBroadcast(fileDescription, e) }
                 }
             },
-            preferences,
             authHeadersProvider
         )
 
