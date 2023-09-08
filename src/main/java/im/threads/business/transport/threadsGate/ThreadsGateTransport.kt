@@ -594,6 +594,11 @@ class ThreadsGateTransport(
                         response.data.toString(),
                         GetStatusesData::class.java
                     )
+                    data.statuses?.forEach {
+                        if (it.correlationId.isNullOrBlank()) {
+                            it.correlationId = it.messageId
+                        }
+                    }
                     data.statuses?.let { chatUpdateProcessor.postOutgoingMessageStatusChanged(it) }
                 }
                 if (action == Action.GET_MESSAGES) {
