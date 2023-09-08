@@ -78,7 +78,6 @@ class EdnaThreadsApplication : Application() {
             .isDebugLoggingEnabled(true)
             .showAttachmentsButton()
             .enableLogging(loggerConfig)
-            .keepSocketActive(true)
 
         serversProvider.getSelectedServer()?.let { server ->
             configBuilder.serverBaseUrl(server.serverBaseUrl)
