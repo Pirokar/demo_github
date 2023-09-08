@@ -1441,7 +1441,6 @@ class ChatController private constructor() {
             threadId = systemMessage.threadId
             fragment?.setCurrentThreadId(systemMessage.threadId)
             if (ChatItemType.THREAD_ENQUEUED.name.equals(type, ignoreCase = true) ||
-                ChatItemType.THREAD_WILL_BE_REASSIGNED.name.equals(type, ignoreCase = true) ||
                 ChatItemType.AVERAGE_WAIT_TIME.name.equals(type, ignoreCase = true)
             ) {
                 fragment?.setStateSearchingConsult()
