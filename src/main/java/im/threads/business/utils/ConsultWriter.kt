@@ -56,7 +56,7 @@ class ConsultWriter(private val preferences: Preferences) {
     }
 
     val isConsultConnected: Boolean
-        get() = preferences.get<String>(OPERATOR_ID) != null
+        get() = !preferences.get<String>(OPERATOR_ID).isNullOrBlank()
 
     fun getConsultInfo(id: String): ConsultInfo {
         return ConsultInfo(
