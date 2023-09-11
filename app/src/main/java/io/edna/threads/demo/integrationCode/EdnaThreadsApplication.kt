@@ -98,7 +98,7 @@ class EdnaThreadsApplication : Application() {
 
     private fun initUser() {
         val user = preferences.getSelectedUser()
-        if (user != null) {
+        if (user != null && user.isAllFieldsFilled()) {
             ThreadsLib.getInstance().initUser(
                 UserInfoBuilder(user.userId!!)
                     .setAuthData(user.authorizationHeader, user.xAuthSchemaHeader)
