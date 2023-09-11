@@ -49,7 +49,7 @@ class ConsultPhrase constructor(
         get() = (speechStatus != SpeechStatus.NO_SPEECH_STATUS || isVoiceMessage(fileDescription))
 
     override val timeStamp
-        get() = date
+        get() = fileDescription?.timeStamp ?: date
 
     override fun isTheSameItem(otherItem: ChatItem?): Boolean {
         return if (otherItem is ConsultPhrase) {

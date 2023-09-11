@@ -1629,15 +1629,29 @@ class ChatController private constructor() {
     }
 
     private fun getItemTimestampForHistoryLoad(): Long? {
-        val timeStamp = getUncompletedUserPhraseTimestamp()
-        if (timeStamp != null) {
-            return timeStamp
+        val items = database.getChatItems(0, BaseConfig.getInstance().historyLoadingCount).toMutableList()
+        val uncompletedUserPhraseTimeStamp = getUncompletedUserPhraseTimestamp(items)
+        val lastNotReadyAttachItem = items
+            .filter {
+                val state = it.attachmentState()
+                state > AttachmentStateEnum.ANY && state < AttachmentStateEnum.READY
+            }.minByOrNull { it.timeStamp }
+        val results = ArrayList<Long>().apply {
+            if (uncompletedUserPhraseTimeStamp != null) {
+                add(uncompletedUserPhraseTimeStamp)
+            }
+            if (lastNotReadyAttachItem != null) {
+                add(lastNotReadyAttachItem.timeStamp)
+            }
+            val lastDbItem = getLastDbItemTimestamp()
+            if (lastDbItem != null) {
+                add(lastDbItem)
+            }
         }
-        return getLastDbItemTimestamp()
+        return results.minOrNull()
     }
 
-    private fun getUncompletedUserPhraseTimestamp(): Long? {
-        val items = database.getChatItems(0, BaseConfig.getInstance().historyLoadingCount).toMutableList()
+    private fun getUncompletedUserPhraseTimestamp(items: MutableList<ChatItem>): Long? {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             Collections.sort(items, Comparator.comparingLong(ChatItem::timeStamp))
         } else {
