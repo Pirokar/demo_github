@@ -27,6 +27,7 @@ import im.threads.ui.utils.invisible
 import im.threads.ui.utils.visible
 import im.threads.ui.widget.textView.BubbleTimeTextView
 import io.reactivex.subjects.PublishSubject
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

@@ -13,6 +13,7 @@ import androidx.viewpager.widget.PagerAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import im.threads.business.logger.LoggerEdna;
 import im.threads.business.models.FileDescription;

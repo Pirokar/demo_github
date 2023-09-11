@@ -92,11 +92,12 @@ class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionCl
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                     {
-                        mViewPager.adapter = ImagesAdapter(files, supportFragmentManager)
                         val fd = intent.getParcelableExtra<FileDescription>("FileDescription")
+                        mViewPager.adapter = ImagesAdapter(files, supportFragmentManager)
                         if (fd != null) {
                             val page = files.indexOf(fd)
                             if (page != -1) {
+                                files[page] = fd
                                 mViewPager.currentItem = page
                                 onPageSelected(page)
                             }
