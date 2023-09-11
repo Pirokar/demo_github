@@ -63,10 +63,11 @@ public final class ImageFragment extends Fragment {
             date.setText("");
         }
         if (FileUtils.isImage(fd)) {
-            if(fd.getFileUri() != null) {
+            String uri = fd.getFileUri() != null ? fd.getFileUri().toString() : fd.getDownloadPath();
+            if(uri != null) {
                 ImageLoader
                         .get()
-                        .load(fd.getFileUri().toString())
+                        .load(uri)
                         .autoRotateWithExif(true)
                         .scales(ImageView.ScaleType.FIT_CENTER, ImageView.ScaleType.CENTER_INSIDE)
                         .errorDrawableResourceId(style.imagePlaceholder)
