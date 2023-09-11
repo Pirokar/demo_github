@@ -111,7 +111,11 @@ open class Preferences(private val context: Context) {
             }
             val value =
                 if (returnType.toString().contains("String")) {
-                    ret as T
+                    if (ret.startsWith("\"") && ret.endsWith("\"")) {
+                        ret.drop(1).dropLast(1) as T
+                    } else {
+                        ret as T
+                    }
                 } else {
                     Gson().fromJson(ret, returnType) ?: default ?: throw NullPointerException()
                 }
