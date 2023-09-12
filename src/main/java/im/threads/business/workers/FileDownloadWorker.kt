@@ -64,7 +64,7 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
                     var downloadProgress = progress
                     if (downloadProgress < 1) downloadProgress = 1.0
                     fileDescription.downloadProgress = downloadProgress.toInt()
-                    database.updateFileDescriptionByName(fileDescription)
+                    database.updateFileDescription(fileDescription)
                     sendDownloadProgressBroadcast(fileDescription)
                 }
 
@@ -75,7 +75,7 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
                         file
                     )
                     fileDescription.fileUri = fileUri
-                    database.updateFileDescriptionByName(fileDescription)
+                    database.updateFileDescription(fileDescription)
                     runningDownloads.remove(fileDescription)
                     sendFinishBroadcast(fileDescription)
                     fileDescription.onCompleteSubject.onNext(
@@ -86,7 +86,7 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
                 override fun onFileDownloadError(e: Exception?) {
                     LoggerEdna.error("error while downloading file: $e")
                     fileDescription.downloadProgress = 0
-                    database.updateFileDescriptionByName(fileDescription)
+                    database.updateFileDescription(fileDescription)
                     e?.let { sendDownloadErrorBroadcast(fileDescription, e) }
                 }
             },
@@ -100,7 +100,7 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
                 downloader?.stop()
                 fileDescription.downloadProgress = 0
                 sendDownloadProgressBroadcast(fileDescription)
-                database.updateFileDescriptionByName(fileDescription)
+                database.updateFileDescription(fileDescription)
             } else {
                 runningDownloads[fileDescription] = fileDownloader
                 fileDescription.downloadProgress = 1

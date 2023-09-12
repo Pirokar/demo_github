@@ -112,12 +112,8 @@ class ThreadsDbHelper private constructor(val context: Context, password: String
         fileDescriptionTable.putFileDescriptions(this, fileDescriptions)
     }
 
-    override fun updateFileDescriptionByName(fileDescription: FileDescription) {
+    override fun updateFileDescription(fileDescription: FileDescription) {
         fileDescriptionTable.updateFileDescriptionByName(this, fileDescription)
-    }
-
-    override fun updateFileDescriptionByUrl(fileDescription: FileDescription) {
-        fileDescriptionTable.updateFileDescriptionByUrl(this, fileDescription)
     }
 
     override fun updateChatItemByTimeStamp(chatItem: ChatItem) {

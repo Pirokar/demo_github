@@ -633,6 +633,7 @@ class ThreadsGateTransport(
                                 if (attachments.isNotEmpty()) {
                                     chatUpdateProcessor.updateAttachments(attachments)
                                 }
+                                chatState.changeState(ChatStateEnum.ATTACHMENT_SETTINGS_LOADED)
                             } else if (ChatItemType.SPEECH_MESSAGE_UPDATED == type) {
                                 val chatItem = messageParser.format(message)
                                 if (chatItem is SpeechMessageUpdate) {

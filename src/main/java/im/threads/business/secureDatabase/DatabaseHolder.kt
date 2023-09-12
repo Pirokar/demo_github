@@ -63,12 +63,8 @@ class DatabaseHolder(private val context: Context) {
             .subscribeOn(Schedulers.io())
 
     // UserPhrase
-    fun updateFileDescriptionByName(fileDescription: FileDescription) {
-        tryExecute { myOpenHelper.value.updateFileDescriptionByName(fileDescription) }
-    }
-
-    fun updateFileDescriptionByUrl(fileDescription: FileDescription) {
-        tryExecute { myOpenHelper.value.updateFileDescriptionByUrl(fileDescription) }
+    fun updateFileDescription(fileDescription: FileDescription) {
+        tryExecute { myOpenHelper.value.updateFileDescription(fileDescription) }
     }
 
     fun updateChatItemByTimeStamp(chatItem: ChatItem) {

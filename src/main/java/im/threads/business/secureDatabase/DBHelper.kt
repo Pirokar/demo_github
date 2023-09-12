@@ -21,8 +21,7 @@ interface DBHelper {
 
     fun getAllFileDescriptions(): List<FileDescription?>?
     fun putFileDescriptions(fileDescriptions: List<FileDescription?>)
-    fun updateFileDescriptionByName(fileDescription: FileDescription)
-    fun updateFileDescriptionByUrl(fileDescription: FileDescription)
+    fun updateFileDescription(fileDescription: FileDescription)
 
     fun updateChatItemByTimeStamp(chatItem: ChatItem)
     fun getLastConsultInfo(id: String): ConsultInfo?
