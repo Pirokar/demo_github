@@ -20,11 +20,12 @@ class FirstLoginTest : BaseTestCase() {
 
     init {
         applyDefaultUserToDemoApp()
-        prepareMocks()
+        prepareWsMocks()
     }
 
     @Test
     fun firstLogin() {
+        prepareHttpMocks()
         val textToSend = "Hello, Edna! This is a test message"
 
         openChatFromDemoLoginPage()
@@ -43,6 +44,15 @@ class FirstLoginTest : BaseTestCase() {
                     itemText.containsText(textToSend)
                 }
             }
+        }
+    }
+
+    @Test
+    fun progressbarOnStart() {
+        prepareHttpMocks(9000)
+        openChatFromDemoLoginPage()
+        ChatMainScreen {
+            progressBar { isVisible() }
         }
     }
 }

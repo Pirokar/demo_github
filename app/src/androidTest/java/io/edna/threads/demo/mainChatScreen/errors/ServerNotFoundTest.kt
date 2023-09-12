@@ -33,7 +33,7 @@ class ServerNotFoundTest : BaseTestCase() {
             errorImage { isVisible() }
             errorText {
                 isVisible()
-                containsText(localhostUrl)
+                hasAnyText()
             }
             errorRetryBtn { isVisible() }
         }

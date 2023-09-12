@@ -2,10 +2,14 @@ package io.edna.threads.demo
 
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.tomakehurst.wiremock.client.WireMock
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import com.github.tomakehurst.wiremock.junit.WireMockRule
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import im.threads.business.UserInfoBuilder
 import im.threads.business.config.BaseConfig
+import im.threads.business.rest.queries.ednaMockHost
+import im.threads.business.rest.queries.ednaMockPort
+import im.threads.business.rest.queries.ednaMockUrl
 import im.threads.business.transport.threadsGate.ThreadsGateTransport
 import im.threads.ui.controllers.ChatController
 import im.threads.ui.core.ThreadsLib
@@ -26,11 +30,9 @@ import org.mockito.invocation.InvocationOnMock
 import org.mockito.kotlin.anyOrNull
 
 abstract class BaseTestCase : TestCase() {
-    private val port = 8000
-    protected val localhostUrl = "10.0.2.2"
-    protected val testServerBaseUrl = "http://$localhostUrl:$port/"
-    protected val testDatastoreUrl = "http://$localhostUrl:$port/"
-    protected val testThreadsGateUrl = "ws://$localhostUrl:$port/gate/socket"
+    protected val testServerBaseUrl = ednaMockUrl
+    protected val testDatastoreUrl = ednaMockUrl
+    protected val testThreadsGateUrl = "ws://$ednaMockHost:$ednaMockPort/gate/socket"
     protected val testThreadsGateProviderUid = "TEST_93jLrtnipZsfbTddRfEfbyfEe5LKKhTl"
     protected val testTrustedSSLCertificates: ArrayList<Int>? = null
     protected val testAllowUntrustedSSLCertificate = true
@@ -46,7 +48,12 @@ abstract class BaseTestCase : TestCase() {
     }
 
     @get:Rule
-    val wireMockRule = WireMockRule(port)
+    val wireMockRule = WireMockRule(
+        WireMockConfiguration.wireMockConfig().apply {
+            port(ednaMockPort)
+        },
+        false
+    )
 
     @Mock
     protected lateinit var okHttpClient: OkHttpClient
@@ -109,7 +116,7 @@ abstract class BaseTestCase : TestCase() {
         }
     }
 
-    protected fun prepareMocks(mocksMap: HashMap<String, String>? = null) {
+    protected fun prepareWsMocks(mocksMap: HashMap<String, String>? = null) {
         im.threads.BuildConfig.IS_MOCK_WEB_SERVER.set(true)
         MockitoAnnotations.openMocks(this)
         Mockito.`when`(okHttpClient.newWebSocket(anyOrNull(), anyOrNull())).thenReturn(socket)
@@ -126,21 +133,24 @@ abstract class BaseTestCase : TestCase() {
             null
         }.`when`(socket).send(Mockito.anyString())
 
-        wireMockRule.stubFor(
-            WireMock.get(WireMock.urlEqualTo("/history"))
-                .willReturn(
-                    WireMock.aResponse()
-                        .withBody(TestMessages.emptyHistoryMessage)
-                        .withHeader("Content-Type", "application/json")
-                )
-        )
-
         coroutineScope.launch {
             ThreadsGateTransport.transportUpdatedChannel.collect {
                 it.client = okHttpClient
                 it.webSocket = null
             }
         }
+    }
+
+    protected fun prepareHttpMocks(withAnswerDelayInMs: Int = 0) {
+        wireMockRule.stubFor(
+            WireMock.get(WireMock.urlMatching("./history"))
+                .willReturn(
+                    WireMock.aResponse()
+                        .withBody(TestMessages.emptyHistoryMessage)
+                        .withHeader("Content-Type", "application/json")
+                        .withFixedDelay(withAnswerDelayInMs)
+                )
+        )
     }
 
     private fun getAnswersForWebSocket(

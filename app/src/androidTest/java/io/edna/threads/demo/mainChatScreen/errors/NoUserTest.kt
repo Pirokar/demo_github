@@ -22,7 +22,7 @@ class NoUserTest : BaseTestCase() {
 
     init {
         BuildConfig.IS_ANIMATIONS_DISABLED.set(true)
-        prepareMocks()
+        prepareWsMocks()
     }
 
     @Test

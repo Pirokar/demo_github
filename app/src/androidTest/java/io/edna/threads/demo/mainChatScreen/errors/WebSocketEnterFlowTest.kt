@@ -22,7 +22,7 @@ class WebSocketEnterFlowTest : BaseTestCase() {
     init {
         applyServerSettings()
         applyDefaultUserToDemoApp()
-        prepareMocks(HashMap())
+        prepareWsMocks(HashMap())
     }
 
     @Test
