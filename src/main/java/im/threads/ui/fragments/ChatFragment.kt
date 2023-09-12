@@ -2643,6 +2643,9 @@ class ChatFragment :
         }
 
         override fun onImageClick(chatPhrase: ChatPhrase) {
+            if (chatPhrase.fileDescription?.fileUri == null) {
+                return
+            }
             if (chatPhrase is UserPhrase) {
                 if (chatPhrase.sentState !== MessageStatus.READ) {
                     chatController.forceResend(chatPhrase)

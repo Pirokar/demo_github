@@ -3,6 +3,7 @@ package im.threads.business.utils
 import android.content.Context
 import im.threads.business.config.BaseConfig
 import im.threads.business.logger.LoggerEdna
+import im.threads.business.preferences.Preferences
 import im.threads.business.serviceLocator.core.inject
 import im.threads.business.transport.AuthHeadersProvider
 import java.io.BufferedInputStream
@@ -25,6 +26,7 @@ class FileDownloader(
     private val fileName: String,
     private val ctx: Context,
     private val downloadListener: DownloadListener,
+    private val preferences: Preferences,
     private val authHeadersProvider: AuthHeadersProvider
 ) {
     private val clientUseCase: ClientUseCase by inject()

@@ -3,8 +3,6 @@ package im.threads.ui.activities
 import android.Manifest
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.Menu
@@ -17,14 +15,11 @@ import androidx.core.content.ContextCompat
 import androidx.viewpager.widget.ViewPager
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener
 import im.threads.R
-import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.logger.LoggerEdna.error
 import im.threads.business.models.FileDescription
 import im.threads.business.secureDatabase.DatabaseHolder
 import im.threads.business.serviceLocator.core.inject
 import im.threads.business.utils.Balloon
-import im.threads.business.utils.FileDownloader
-import im.threads.business.utils.FileUtils
 import im.threads.business.utils.FileUtils.isImage
 import im.threads.business.utils.FileUtils.saveToDownloads
 import im.threads.business.utils.ThreadsPermissionChecker
@@ -44,13 +39,6 @@ import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
 import java.util.Collections
 
 class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionClickListener {
@@ -63,7 +51,6 @@ class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionCl
     private val config: Config by lazy { Config.getInstance() }
     private lateinit var titleTextView: TextView
     private val database: DatabaseHolder by inject()
-    private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -185,14 +172,14 @@ class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionCl
     }
 
     private fun downloadImage() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q &&
-            !ThreadsPermissionChecker.isWriteExternalPermissionGranted(this)
-        ) {
-            requestPermission()
-            return
-        }
-
         files[mViewPager.currentItem].fileUri?.let {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q &&
+                !ThreadsPermissionChecker.isWriteExternalPermissionGranted(this)
+            ) {
+                requestPermission()
+                return
+            }
+
             compositeDisposable?.add(
                 Completable.fromAction {
                     saveToDownloads(files[mViewPager.currentItem])
@@ -211,43 +198,6 @@ class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionCl
                         error("downloadImage", throwable)
                     }
             )
-        } ?: run {
-            Balloon.show(applicationContext, getString(R.string.ecc_loading_animation))
-            val fileDescription = files[mViewPager.currentItem]
-            fileDescription.downloadPath?.let { downloadPath ->
-                coroutineScope.launch {
-                    val bitmap = ImageLoader.get().load(downloadPath).getBitmapSync(applicationContext)
-                    if (bitmap != null) {
-                        val fileName = FileUtils.generateFileName(fileDescription)
-                        val outputFile = File(FileDownloader.getDownloadDir(applicationContext), fileName)
-                        if (outputFile.exists()) {
-                            outputFile.delete()
-                        }
-                        try {
-                            outputFile.createNewFile()
-                            val ostream = FileOutputStream(outputFile)
-                            bitmap.compress(Bitmap.CompressFormat.JPEG, 80, ostream)
-                            ostream.flush()
-                            ostream.close()
-
-                            fileDescription.fileUri = Uri.fromFile(outputFile)
-                            saveToDownloads(files[mViewPager.currentItem])
-                            withContext(Dispatchers.Main) {
-                                Balloon.show(applicationContext, getString(R.string.ecc_saved_to_downloads))
-                            }
-                        } catch (e: IOException) {
-                            error("Error when downloading image", e)
-                            withContext(Dispatchers.Main) {
-                                Balloon.show(applicationContext, getString(R.string.ecc_unable_to_save))
-                            }
-                        }
-                    } else {
-                        withContext(Dispatchers.Main) {
-                            Balloon.show(applicationContext, getString(R.string.ecc_unable_to_save))
-                        }
-                    }
-                }
-            }
         }
     }
 
