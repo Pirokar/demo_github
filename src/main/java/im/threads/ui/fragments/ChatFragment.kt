@@ -1668,7 +1668,10 @@ class ChatFragment :
         }
     }
 
-    fun addChatItems(list: List<ChatItem?>) {
+    fun addChatItems(
+        list: List<ChatItem?>,
+        initRequest: Boolean = false
+    ) {
         if (list.isEmpty()) {
             return
         }
@@ -1688,8 +1691,8 @@ class ChatFragment :
             }
             addItemsToChat(list, isBottomItemsVisible)
             val newAdapterSize = chatAdapter.list.size
-            if (oldAdapterSize == 0) {
-                scrollToPosition(chatAdapter.itemCount - 1, false)
+            if (oldAdapterSize == 0 || (initRequest && !isStartSecondLevelScreen())) {
+                handler.postDelayed({ scrollToPosition(chatAdapter.itemCount - 1, false) }, 100)
             } else if (afterResume) {
                 if (!isStartSecondLevelScreen() && isBottomItemsVisible && newAdapterSize != oldAdapterSize) {
                     scrollToPosition(chatAdapter.itemCount - 1, false)
