@@ -1672,12 +1672,13 @@ class ChatFragment :
      * Добавляет список элементов в чат и осуществляет прокрутку по необходимости
      *
      * @param list - список элементов для добавления
-     * @param initRequest - флаг, означающий, что добавление элементов при инициализации,
-     * что подразумевает прокрутку списка в конец чата. По умолчанию - false
+     * @param forceScrollToTheEnd -  Принудительный скролл в конец чата.
+     * При возврате с дополнительного экрана (галереи, например) данный флаг не имеет силы.
+     * По умолчанию - false
      */
     fun addChatItems(
         list: List<ChatItem?>,
-        initRequest: Boolean = false
+        forceScrollToTheEnd: Boolean = false
     ) {
         if (list.isEmpty()) {
             return
@@ -1698,7 +1699,7 @@ class ChatFragment :
             }
             addItemsToChat(list, isBottomItemsVisible)
             val newAdapterSize = chatAdapter.list.size
-            if (oldAdapterSize == 0 || (initRequest && !isStartSecondLevelScreen())) {
+            if (oldAdapterSize == 0 || (forceScrollToTheEnd && !isStartSecondLevelScreen())) {
                 handler.postDelayed({ scrollToPosition(chatAdapter.itemCount - 1, false) }, 100)
             } else if (afterResume) {
                 if (!isStartSecondLevelScreen() && isBottomItemsVisible && newAdapterSize != oldAdapterSize) {
