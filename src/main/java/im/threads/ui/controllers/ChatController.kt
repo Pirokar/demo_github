@@ -1612,7 +1612,9 @@ class ChatController private constructor() {
                         }
                         withContext(Dispatchers.Main) { fragment?.showErrorView(timeoutMessage) }
                     } else if (stateEvent.state == ChatStateEnum.DEVICE_REGISTERED) {
+                        error("ChatState name DEVICE_REGISTERED. DeviceAddress - null or blank: ${preferences.get(PreferencesCoreKeys.DEVICE_ADDRESS, "").isNullOrBlank()}")
                         if (preferences.get(PreferencesCoreKeys.DEVICE_ADDRESS, "").isNullOrBlank()) {
+                            error("ChatState name DEVICE_REGISTERED. Need send RegisterDevice()")
                             BaseConfig.getInstance().transport.sendRegisterDevice(false)
                         } else {
                             BaseConfig.getInstance().transport.sendInitMessages()
