@@ -165,7 +165,21 @@ abstract class BaseTestCase : TestCase() {
     ): Pair<String?, Boolean> {
         wsMocksMap.keys.forEach { key ->
             if (websocketMessage.contains(key)) {
-                return Pair(wsMocksMap[key], key == "CLIENT_INFO")
+                val draftAnswer = wsMocksMap[key]
+                val correlationIdKey = "correlationId\":\""
+                return if (websocketMessage.contains(correlationIdKey) && draftAnswer?.contains(correlationIdKey) == true) {
+                    val split = websocketMessage.split(correlationIdKey)
+                    if (split.size > 1 && split[1].length > 1) {
+                        val endOfCorrelationValueIndex = split[1].indexOf("\"")
+                        val correlationId = split[1].subSequence(0, endOfCorrelationValueIndex).toString()
+                        val answer = draftAnswer.replace(TestMessages.correlationId, correlationId)
+                        Pair(answer, key == "CLIENT_INFO")
+                    } else {
+                        Pair(wsMocksMap[key], key == "CLIENT_INFO")
+                    }
+                } else {
+                    Pair(wsMocksMap[key], key == "CLIENT_INFO")
+                }
             }
         }
         return Pair(null, false)

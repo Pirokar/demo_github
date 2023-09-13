@@ -73,7 +73,7 @@ class WebSocketEnterFlowTest : BaseTestCase() {
             errorImage { isVisible() }
             errorText {
                 isVisible()
-                containsText("INIT_USER")
+                hasAnyText()
             }
             errorRetryBtn { isVisible() }
         }

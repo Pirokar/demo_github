@@ -1,6 +1,8 @@
 package io.edna.threads.demo
 
 object TestMessages {
+    const val correlationId = "8112dcad-237f-44b2-af78-c350250ebe8f"
+
     const val scheduleWsMessage = "{\"action\":\"getMessages\"," +
         "\"data\":{\"messages\":[{\"messageId\":\"66f7c734-3a70-4d12-8fba-efda645c32ef\"," +
         "\"sentAt\":\"2023-08-24T12:19:11.855Z\",\"content\":{\"type\":\"SCHEDULE\"," +
@@ -36,13 +38,13 @@ object TestMessages {
         "\"attributes\":\"{\\\"clientId\\\":\\\"5555555\\\",\\\"aps/sound\\\":\\\"default\\\",\\\"origin\\\":\\\"threads\\\"}\"," +
         "\"important\":false,\"messageType\":\"NORMAL\"}]}}"
 
-    const val registerDeviceWsAnswer = "{\"action\":\"registerDevice\",\"correlationId\":\"3e4983f4-e4aa-42dd-8351-a121c1664675\"," +
+    const val registerDeviceWsAnswer = "{\"action\":\"registerDevice\",\"correlationId\":\"$correlationId\"," +
         "\"data\":{\"deviceAddress\":\"gcm_5555555_jzxn0m4r87pz9rp4hx6ugrnq3n64r3so\"}}"
 
-    const val initChatWsAnswer = "{\"action\":\"sendMessage\",\"correlationId\":\"8112dcad-237f-44b2-af78-c350250ebe8f\"," +
+    const val initChatWsAnswer = "{\"action\":\"sendMessage\",\"correlationId\":\"$correlationId\"," +
         "\"data\":{\"messageId\":\"9426bc3c-1194-4499-98e6-2210df4a37e0\",\"sentAt\":\"2023-08-24T12:19:11.480Z\",\"status\":\"sent\"}}"
 
-    const val clientInfoWsAnswer = "{\"action\":\"sendMessage\",\"correlationId\":\"8112dcad-237f-44b2-af78-c350250ebe8f\"," +
+    const val clientInfoWsAnswer = "{\"action\":\"sendMessage\",\"correlationId\":\"$correlationId\"," +
         "\"data\":{\"messageId\":\"9426bc3c-1194-4499-98e6-2210df4a37e0\",\"sentAt\":\"2023-08-24T12:19:11.480Z\",\"status\":\"sent\"}}"
 
     const val emptyHistoryMessage = "{\"messages\":[],\"agentInfo\":{\"action\":\"AGENT_LOOKUP\",\"actionDate\":\"2023-03-22T08:51:43.124Z\"," +
