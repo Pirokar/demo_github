@@ -95,14 +95,10 @@ open class ThreadsLibBase protected constructor(context: Context) {
      */
     open fun initUser(userInfoBuilder: UserInfoBuilder, forceRegistration: Boolean = false) {
         val clientId = clientUseCase.getUserInfo()?.clientId
+
         if (!clientId.isNullOrBlank() && userInfoBuilder.clientId != clientId) {
-            chatState.onLogout()
-            BaseConfig.getInstance().transport.sendClientOffline(clientId) {
-                ChatController.getInstance().cleanAll()
-                clientUseCase.saveUserInfo(null)
-                database.cleanDatabase()
-                initUser(userInfoBuilder, forceRegistration)
-            }
+            logoutClient()
+            initUser(userInfoBuilder, forceRegistration)
         } else {
             chatState.changeState(ChatStateEnum.LOGGING_IN)
             isForceRegistration = forceRegistration
@@ -154,6 +150,12 @@ open class ThreadsLibBase protected constructor(context: Context) {
             clientUseCase.saveUserInfo(it)
         }
         BaseConfig.getInstance().transport.buildTransport()
+    }
+
+    private fun forceLogout() {
+        ChatController.getInstance().cleanAll()
+        clientUseCase.saveUserInfo(null)
+        database.cleanDatabase()
     }
 
     companion object {

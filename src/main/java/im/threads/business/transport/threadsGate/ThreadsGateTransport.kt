@@ -178,8 +178,8 @@ class ThreadsGateTransport(
 
     override fun sendRegisterDevice(forceRegistration: Boolean) {
         val deviceAddress = preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS)
-        if (!deviceAddress.isNullOrBlank() || forceRegistration) {
-            if (deviceAddress.isNullOrBlank()) sendRegisterDevice()
+        if (deviceAddress.isNullOrBlank() || forceRegistration) {
+            sendRegisterDevice()
         } else {
             openWebSocket()
         }
@@ -232,7 +232,10 @@ class ThreadsGateTransport(
             return
         }
         val content = outgoingMessageCreator.createMessageClientOffline(clientId)
-        sendMessage(content, sendInit = false)
+        sendMessage(
+            content,
+            sendInit = false
+        )
 
         logoutScope = CoroutineScope(Dispatchers.Unconfined)
         logoutScope?.launch(Dispatchers.Unconfined) {
