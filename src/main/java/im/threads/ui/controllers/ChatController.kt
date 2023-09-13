@@ -568,7 +568,8 @@ class ChatController private constructor() {
                 )
             } ?: loadHistory(
                 applyUiChanges = applyUiChanges,
-                callback = callback
+                callback = callback,
+                fromQuickAnswerController = fromQuickAnswerController
             )
         }
     }

@@ -1701,19 +1701,31 @@ class ChatFragment :
             val newAdapterSize = chatAdapter.list.size
             if (oldAdapterSize == 0 || (forceScrollToTheEnd && !isStartSecondLevelScreen())) {
                 handler.postDelayed({ scrollToPosition(chatAdapter.itemCount - 1, false) }, 100)
-            } else if (afterResume) {
-                if (!isStartSecondLevelScreen() && isBottomItemsVisible && newAdapterSize != oldAdapterSize) {
+                afterResume = false
+                resumeAfterSecondLevelScreen = false
+                return
+            }
+
+            var needScrollDown = false
+            if (list.isNotEmpty()) {
+                val currMinTimeStamp = chatAdapter.list[0].timeStamp
+                val newMinTimeStamp = list[0]?.timeStamp ?: 0
+                if (newMinTimeStamp > currMinTimeStamp && !isStartSecondLevelScreen()) {
+                    needScrollDown = true
+                }
+            }
+            if (afterResume) {
+                if ((!isStartSecondLevelScreen() && isBottomItemsVisible && newAdapterSize != oldAdapterSize) || needScrollDown) {
                     scrollToPosition(chatAdapter.itemCount - 1, false)
                 } else if (lastVisibleItemTimestamp != null) {
                     layoutManager.scrollToPosition(chatAdapter.getPositionByTimeStamp(lastVisibleItemTimestamp))
                 }
-                afterResume = false
-            } else if (isBottomItemsVisible && newAdapterSize > oldAdapterSize) {
+            } else if ((isBottomItemsVisible && newAdapterSize > oldAdapterSize) || needScrollDown) {
                 handler.postDelayed({ scrollToPosition(chatAdapter.itemCount - 1, false) }, 100)
-                afterResume = false
             } else if (lastVisibleItemTimestamp != null) {
                 layoutManager.scrollToPosition(chatAdapter.getPositionByTimeStamp(lastVisibleItemTimestamp))
             }
+            afterResume = false
             resumeAfterSecondLevelScreen = false
         }
     }
