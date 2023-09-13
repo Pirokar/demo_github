@@ -220,7 +220,7 @@ class ThreadsGateTransport(
     }
 
     override fun sendClientOffline(clientId: String) {
-        if (preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS).isNullOrBlank()) {
+        if (preferences.get(PreferencesCoreKeys.DEVICE_ADDRESS, "").isNullOrBlank()) {
             return
         }
         val content = outgoingMessageCreator.createMessageClientOffline(clientId)
