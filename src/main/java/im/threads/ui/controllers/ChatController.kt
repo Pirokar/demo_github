@@ -435,7 +435,7 @@ class ChatController private constructor() {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                     { chatItems: List<ChatItem> ->
-                        chatFragment.addChatItems(chatItems)
+                        chatFragment.addChatItems(chatItems, true)
                         handleQuickReplies(chatItems)
                     }
                 ) { obj: Throwable -> obj.message }
@@ -479,7 +479,7 @@ class ChatController private constructor() {
         fragment?.let {
             coroutineScope.launch() {
                 val itemsDef = async(Dispatchers.IO) { database.getChatItems(0, -1) }
-                it.addChatItems(itemsDef.await())
+                it.addChatItems(itemsDef.await(), true)
                 it.hideProgressBar()
             }
         }
@@ -568,7 +568,8 @@ class ChatController private constructor() {
                 )
             } ?: loadHistory(
                 applyUiChanges = applyUiChanges,
-                callback = callback
+                callback = callback,
+                fromQuickAnswerController = fromQuickAnswerController
             )
         }
     }

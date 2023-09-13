@@ -1668,7 +1668,18 @@ class ChatFragment :
         }
     }
 
-    fun addChatItems(list: List<ChatItem?>) {
+    /**
+     * Добавляет список элементов в чат и осуществляет прокрутку по необходимости
+     *
+     * @param list - список элементов для добавления
+     * @param forceScrollToTheEnd -  Принудительный скролл в конец чата.
+     * При возврате с дополнительного экрана (галереи, например) данный флаг не имеет силы.
+     * По умолчанию - false
+     */
+    fun addChatItems(
+        list: List<ChatItem?>,
+        forceScrollToTheEnd: Boolean = false
+    ) {
         if (list.isEmpty()) {
             return
         }
@@ -1688,21 +1699,31 @@ class ChatFragment :
             }
             addItemsToChat(list, isBottomItemsVisible)
             val newAdapterSize = chatAdapter.list.size
-            if (oldAdapterSize == 0) {
-                scrollToPosition(chatAdapter.itemCount - 1, false)
-            } else if (afterResume) {
-                if (!isStartSecondLevelScreen() && isBottomItemsVisible && newAdapterSize != oldAdapterSize) {
+            if (oldAdapterSize == 0 || (forceScrollToTheEnd && !isStartSecondLevelScreen())) {
+                handler.postDelayed({ scrollToPosition(chatAdapter.itemCount - 1, false) }, 100)
+                afterResume = false
+                resumeAfterSecondLevelScreen = false
+                return
+            }
+
+            var needScrollDown = false
+            if (list.isNotEmpty()) {
+                val currMinTimeStamp = chatAdapter.list[0].timeStamp
+                val newMinTimeStamp = list[0]?.timeStamp ?: 0
+                needScrollDown = newMinTimeStamp > currMinTimeStamp && !isStartSecondLevelScreen()
+            }
+            if (afterResume) {
+                if ((!isStartSecondLevelScreen() && isBottomItemsVisible && newAdapterSize != oldAdapterSize) || needScrollDown) {
                     scrollToPosition(chatAdapter.itemCount - 1, false)
                 } else if (lastVisibleItemTimestamp != null) {
                     layoutManager.scrollToPosition(chatAdapter.getPositionByTimeStamp(lastVisibleItemTimestamp))
                 }
-                afterResume = false
-            } else if (isBottomItemsVisible && newAdapterSize > oldAdapterSize) {
+            } else if ((isBottomItemsVisible && newAdapterSize > oldAdapterSize) || needScrollDown) {
                 handler.postDelayed({ scrollToPosition(chatAdapter.itemCount - 1, false) }, 100)
-                afterResume = false
             } else if (lastVisibleItemTimestamp != null) {
                 layoutManager.scrollToPosition(chatAdapter.getPositionByTimeStamp(lastVisibleItemTimestamp))
             }
+            afterResume = false
             resumeAfterSecondLevelScreen = false
         }
     }
