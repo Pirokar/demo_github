@@ -20,6 +20,7 @@ import im.threads.business.core.ContextHolder
 import im.threads.business.core.ThreadsLibBase
 import im.threads.business.extensions.withMainContext
 import im.threads.business.formatters.ChatItemType
+import im.threads.business.logger.LoggerEdna
 import im.threads.business.logger.LoggerEdna.error
 import im.threads.business.logger.LoggerEdna.info
 import im.threads.business.logger.LoggerEdna.warning
@@ -1328,6 +1329,7 @@ class ChatController private constructor() {
     }
 
     private fun onDeviceAddressChanged() {
+        error("onDeviceAddressChanged. Loading history.")
         info(ThreadsApi.REST_TAG, "onDeviceAddressChanged. Loading history.")
         val clientId = clientUseCase.getUserInfo()?.clientId
         if (fragment != null && !clientId.isNullOrBlank()) {
