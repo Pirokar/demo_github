@@ -1710,9 +1710,7 @@ class ChatFragment :
             if (list.isNotEmpty()) {
                 val currMinTimeStamp = chatAdapter.list[0].timeStamp
                 val newMinTimeStamp = list[0]?.timeStamp ?: 0
-                if (newMinTimeStamp > currMinTimeStamp && !isStartSecondLevelScreen()) {
-                    needScrollDown = true
-                }
+                needScrollDown = newMinTimeStamp > currMinTimeStamp && !isStartSecondLevelScreen()
             }
             if (afterResume) {
                 if ((!isStartSecondLevelScreen() && isBottomItemsVisible && newAdapterSize != oldAdapterSize) || needScrollDown) {
