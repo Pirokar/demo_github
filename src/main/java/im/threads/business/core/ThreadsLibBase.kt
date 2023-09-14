@@ -152,12 +152,6 @@ open class ThreadsLibBase protected constructor(context: Context) {
         BaseConfig.getInstance().transport.buildTransport()
     }
 
-    private fun forceLogout() {
-        ChatController.getInstance().cleanAll()
-        clientUseCase.saveUserInfo(null)
-        database.cleanDatabase()
-    }
-
     companion object {
         internal var isForceRegistration = false
 
