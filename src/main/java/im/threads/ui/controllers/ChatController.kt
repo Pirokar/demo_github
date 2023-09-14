@@ -396,17 +396,18 @@ class ChatController private constructor() {
     val stateOfConsult: Int
         get() = if (consultWriter.isSearchingConsult) {
             CONSULT_STATE_SEARCHING
-        } else if (consultWriter.isConsultConnected) {
+        } else if (consultWriter.isConsultConnected()) {
             CONSULT_STATE_FOUND
         } else {
             CONSULT_STATE_DEFAULT
         }
 
-    val isConsultFound: Boolean
-        get() = isChatWorking() && consultWriter.isConsultConnected
+    fun isConsultFound(): Boolean {
+        return isChatWorking() && consultWriter.isConsultConnected()
+    }
 
     val currentConsultInfo: ConsultInfo?
-        get() = consultWriter.currentConsultInfo
+        get() = consultWriter.getCurrentConsultInfo()
 
     internal fun bindFragment(chatFragment: ChatFragment?) {
         info("bindFragment: $chatFragment")
@@ -440,8 +441,8 @@ class ChatController private constructor() {
                     }
                 ) { obj: Throwable -> obj.message }
         )
-        if (consultWriter.isConsultConnected) {
-            chatFragment.setStateConsultConnected(consultWriter.currentConsultInfo)
+        if (consultWriter.isConsultConnected()) {
+            chatFragment.setStateConsultConnected(consultWriter.getCurrentConsultInfo())
         } else if (consultWriter.isSearchingConsult) {
             chatFragment.setStateSearchingConsult()
         } else {
@@ -816,9 +817,9 @@ class ChatController private constructor() {
             Flowable.fromPublisher(chatUpdateProcessor.typingProcessor)
                 .map {
                     ConsultTyping(
-                        consultWriter.currentConsultId,
+                        consultWriter.getCurrentConsultId(),
                         System.currentTimeMillis(),
-                        consultWriter.currentPhotoUrl
+                        consultWriter.getCurrentPhotoUrl()
                     )
                 }
                 .observeOn(AndroidSchedulers.mainThread())
