@@ -1612,11 +1612,7 @@ class ChatController private constructor() {
                         }
                         withContext(Dispatchers.Main) { fragment?.showErrorView(timeoutMessage) }
                     } else if (stateEvent.state == ChatStateEnum.DEVICE_REGISTERED) {
-                        if (preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS).isNullOrBlank()) {
-                            BaseConfig.getInstance().transport.sendRegisterDevice(false)
-                        } else {
-                            BaseConfig.getInstance().transport.sendInitMessages()
-                        }
+                        BaseConfig.getInstance().transport.sendInitMessages()
                     } else if (stateEvent.state == ChatStateEnum.ATTACHMENT_SETTINGS_LOADED) {
                         loadItemsFromDB()
                         if (fragment?.isResumed == true) loadHistoryAfterWithLastMessageCheck()
