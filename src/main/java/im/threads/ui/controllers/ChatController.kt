@@ -70,6 +70,7 @@ import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.ConsultWriter
 import im.threads.business.utils.DateHelper
 import im.threads.business.utils.DemoModeProvider
+import im.threads.business.utils.FileUtils
 import im.threads.business.utils.FileUtils.getMimeType
 import im.threads.business.utils.FileUtils.isImage
 import im.threads.business.utils.FileUtils.isVoiceMessage
@@ -327,6 +328,25 @@ class ChatController private constructor() {
             }
         }
         serverItems.addAll(sendingItems)
+    }
+
+    internal fun removeCorruptedFiles(list: List<ChatItem>, callback: (() -> Unit)? = null) {
+        coroutineScope.launch(Dispatchers.IO) {
+            val userFiles = list
+                .mapNotNull { it as? UserPhrase }
+                .filter { it.fileDescription?.fileUri != null && (isImage(it.fileDescription) || isVoiceMessage(it.fileDescription)) }
+                .mapNotNull { it.fileDescription }
+
+            val consultFiles = list
+                .mapNotNull { it as? ConsultPhrase }
+                .filter { it.fileDescription?.fileUri != null && (isImage(it.fileDescription) || isVoiceMessage(it.fileDescription)) }
+                .mapNotNull { it.fileDescription }
+
+            userFiles.forEach { FileUtils.removeFileIfCorrupted(it) }
+            consultFiles.forEach { FileUtils.removeFileIfCorrupted(it) }
+
+            callback?.invoke()
+        }
     }
 
     internal fun onFileDownloadRequest(fileDescription: FileDescription?) {
