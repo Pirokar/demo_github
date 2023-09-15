@@ -22,7 +22,7 @@ class ThreadsApi(
     private val clientInfo: ClientUseCase by inject()
 
     fun versions(): Call<VersionsModel?>? {
-        return if (BaseConfig.getInstance().newChatCenterApi) {
+        return if (BaseConfig.getInstance().isNewChatCenterApi) {
             newThreadsApi?.versions()
         } else {
             oldThreadsApi?.versions()
@@ -30,7 +30,7 @@ class ThreadsApi(
     }
 
     fun settings(): Call<SettingsResponse?>? {
-        return if (BaseConfig.getInstance().newChatCenterApi) {
+        return if (BaseConfig.getInstance().isNewChatCenterApi) {
             newThreadsApi?.settings()
         } else {
             oldThreadsApi?.settings()
@@ -38,7 +38,7 @@ class ThreadsApi(
     }
 
     fun config(): Call<ConfigResponse?>? {
-        return if (BaseConfig.getInstance().newChatCenterApi) {
+        return if (BaseConfig.getInstance().isNewChatCenterApi) {
             newThreadsApi?.config(API_VERSION)
         } else {
             oldThreadsApi?.config(API_VERSION)
@@ -52,7 +52,7 @@ class ThreadsApi(
         count: Int?,
         version: String?
     ): Call<HistoryResponse?>? {
-        return if (BaseConfig.getInstance().newChatCenterApi) {
+        return if (BaseConfig.getInstance().isNewChatCenterApi) {
             newThreadsApi?.history(getHeadersMap(token), beforeDate, afterDate, count, version)
         } else {
             oldThreadsApi?.history(
@@ -75,7 +75,7 @@ class ThreadsApi(
             return null
         }
 
-        return if (BaseConfig.getInstance().newChatCenterApi) {
+        return if (BaseConfig.getInstance().isNewChatCenterApi) {
             newThreadsApi?.search(getHeadersMap(token), searchString, page)
         } else {
             oldThreadsApi?.search(getHeadersMap(token), searchString, page)
@@ -83,7 +83,7 @@ class ThreadsApi(
     }
 
     fun markMessageAsRead(ids: List<String?>?): Call<Void?>? {
-        return if (BaseConfig.getInstance().newChatCenterApi) {
+        return if (BaseConfig.getInstance().isNewChatCenterApi) {
             newThreadsApi?.markMessageAsRead(ids)
         } else {
             oldThreadsApi?.markMessageAsRead(ids)

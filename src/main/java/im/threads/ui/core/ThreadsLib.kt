@@ -150,6 +150,7 @@ class ThreadsLib(context: Context) : ThreadsLibBase(context) {
 
         @JvmStatic
         fun init(configBuilder: ConfigBuilder) {
+            insertMetaDataToConfigBuilder(configBuilder)
             createLibInstance(configBuilder.context)
             Config.setInstance(configBuilder.build())
             BaseConfig.getInstance().loggerConfig?.let { LoggerEdna.init(it) }
