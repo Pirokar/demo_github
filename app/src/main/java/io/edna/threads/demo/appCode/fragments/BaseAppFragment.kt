@@ -15,6 +15,7 @@ import im.threads.ui.extensions.isDarkThemeOn
 import im.threads.ui.fragments.ChatFragment
 import io.edna.threads.demo.R
 import io.edna.threads.demo.appCode.fragments.demoSamplesList.DemoSamplesListFragment
+import io.edna.threads.demo.integrationCode.fragments.chatFragment.ChatAppFragment
 
 abstract class BaseAppFragment<T : ViewBinding>(
     private val bindingInflater: (layoutInflater: LayoutInflater) -> T
@@ -54,7 +55,7 @@ abstract class BaseAppFragment<T : ViewBinding>(
         val isDemoListFragment = this is DemoSamplesListFragment
         val chatBackPressed = fragment?.onBackPressed() == true
         if ((chatBackPressed || isDemoListFragment) && isAdded) {
-            if (this@BaseAppFragment is DemoSamplesListFragment) {
+            if (this@BaseAppFragment is ChatAppFragment || this@BaseAppFragment is DemoSamplesListFragment) {
                 ThreadsLib.getInstance().logoutClient()
             }
             findNavController().navigateUp()

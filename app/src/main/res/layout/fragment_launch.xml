@@ -60,7 +60,7 @@
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/login"
         style="@style/ButtonsStyle"
-        android:layout_marginTop="@dimen/login_screen_top_margin_extra_large"
+        android:layout_marginTop="@dimen/login_screen_top_margin_large"
         android:text="@string/login"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -79,39 +79,6 @@
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/login"
         app:layout_constraintEnd_toEndOf="parent" />
-
-    <LinearLayout
-        android:id="@+id/logoutLayout"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/height_25"
-        android:layout_marginBottom="@dimen/login_screen_top_margin_small"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:textSize="@dimen/text_size_11"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/login"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/logoutText"
-            style="@style/LogoTextStyle"
-            android:layout_width="0dp"
-            android:layout_marginStart="@dimen/margin_16"
-            android:layout_weight="1"
-            android:text="@string/logout_client_text" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/logout"
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/height_25"
-            android:layout_marginStart="@dimen/margin_16"
-            android:layout_marginEnd="@dimen/margin_16"
-            android:text="@string/logout"
-            android:textColor="@drawable/secondary_buttons_text_color_selector"
-            android:textSize="@dimen/text_size_16" />
-
-    </LinearLayout>
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/demonstrations"
