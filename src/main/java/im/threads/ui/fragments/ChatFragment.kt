@@ -703,7 +703,7 @@ class ChatFragment :
             }
         }
         consultName.setOnClickListener {
-            if (chatController.isConsultFound) {
+            if (chatController.isConsultFound()) {
                 chatAdapterCallback?.onConsultAvatarClick(chatController.currentConsultInfo!!.id)
             }
         }
@@ -715,7 +715,7 @@ class ChatFragment :
             true
         }
         subtitle.setOnClickListener {
-            if (chatController.isConsultFound) {
+            if (chatController.isConsultFound()) {
                 chatAdapterCallback?.onConsultAvatarClick(chatController.currentConsultInfo?.id)
             }
         }
@@ -1813,7 +1813,7 @@ class ChatFragment :
         }
         val isFixedChatTitle = resources.getBoolean(style.fixedChatTitle)
         val isVisibleSubtitle = resources.getBoolean(style.isChatSubtitleVisible)
-        if (chatController.isConsultFound && !isInMessageSearchMode && !isFixedChatTitle && isVisibleSubtitle) {
+        if (chatController.isConsultFound() && !isInMessageSearchMode && !isFixedChatTitle && isVisibleSubtitle) {
             subtitle.visibility = View.VISIBLE
         }
     }
@@ -1829,7 +1829,7 @@ class ChatFragment :
 
     private fun setTitleStateCurrentOperatorConnected() = binding?.apply {
         if (isInMessageSearchMode) return@apply
-        if (chatController.isConsultFound) {
+        if (chatController.isConsultFound()) {
             if (!resources.getBoolean(style.fixedChatTitle)) {
                 subtitle.visibility = View.VISIBLE
             }
