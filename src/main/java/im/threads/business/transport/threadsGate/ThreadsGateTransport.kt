@@ -179,7 +179,7 @@ class ThreadsGateTransport(
     override fun sendRegisterDevice(forceRegistration: Boolean) {
         val deviceAddress = preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS)
         if (deviceAddress.isNullOrBlank() || forceRegistration) {
-            if (deviceAddress.isNullOrBlank()) sendRegisterDevice()
+            sendRegisterDevice()
         } else {
             openWebSocket()
         }
@@ -232,7 +232,10 @@ class ThreadsGateTransport(
             return
         }
         val content = outgoingMessageCreator.createMessageClientOffline(clientId)
-        sendMessage(content, sendInit = false)
+        sendMessage(
+            content,
+            sendInit = false
+        )
 
         logoutScope = CoroutineScope(Dispatchers.Unconfined)
         logoutScope?.launch(Dispatchers.Unconfined) {
@@ -594,6 +597,11 @@ class ThreadsGateTransport(
                         response.data.toString(),
                         GetStatusesData::class.java
                     )
+                    data.statuses?.forEach {
+                        if (it.correlationId.isNullOrBlank()) {
+                            it.correlationId = it.messageId
+                        }
+                    }
                     data.statuses?.let { chatUpdateProcessor.postOutgoingMessageStatusChanged(it) }
                 }
                 if (action == Action.GET_MESSAGES) {

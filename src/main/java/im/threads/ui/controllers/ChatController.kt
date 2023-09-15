@@ -396,17 +396,18 @@ class ChatController private constructor() {
     val stateOfConsult: Int
         get() = if (consultWriter.isSearchingConsult) {
             CONSULT_STATE_SEARCHING
-        } else if (consultWriter.isConsultConnected) {
+        } else if (consultWriter.isConsultConnected()) {
             CONSULT_STATE_FOUND
         } else {
             CONSULT_STATE_DEFAULT
         }
 
-    val isConsultFound: Boolean
-        get() = isChatWorking() && consultWriter.isConsultConnected
+    fun isConsultFound(): Boolean {
+        return isChatWorking() && consultWriter.isConsultConnected()
+    }
 
     val currentConsultInfo: ConsultInfo?
-        get() = consultWriter.currentConsultInfo
+        get() = consultWriter.getCurrentConsultInfo()
 
     internal fun bindFragment(chatFragment: ChatFragment?) {
         info("bindFragment: $chatFragment")
@@ -435,13 +436,13 @@ class ChatController private constructor() {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                     { chatItems: List<ChatItem> ->
-                        chatFragment.addChatItems(chatItems)
+                        chatFragment.addChatItems(chatItems, true)
                         handleQuickReplies(chatItems)
                     }
                 ) { obj: Throwable -> obj.message }
         )
-        if (consultWriter.isConsultConnected) {
-            chatFragment.setStateConsultConnected(consultWriter.currentConsultInfo)
+        if (consultWriter.isConsultConnected()) {
+            chatFragment.setStateConsultConnected(consultWriter.getCurrentConsultInfo())
         } else if (consultWriter.isSearchingConsult) {
             chatFragment.setStateSearchingConsult()
         } else {
@@ -479,7 +480,7 @@ class ChatController private constructor() {
         fragment?.let {
             coroutineScope.launch() {
                 val itemsDef = async(Dispatchers.IO) { database.getChatItems(0, -1) }
-                it.addChatItems(itemsDef.await())
+                it.addChatItems(itemsDef.await(), true)
                 it.hideProgressBar()
             }
         }
@@ -568,7 +569,8 @@ class ChatController private constructor() {
                 )
             } ?: loadHistory(
                 applyUiChanges = applyUiChanges,
-                callback = callback
+                callback = callback,
+                fromQuickAnswerController = fromQuickAnswerController
             )
         }
     }
@@ -815,9 +817,9 @@ class ChatController private constructor() {
             Flowable.fromPublisher(chatUpdateProcessor.typingProcessor)
                 .map {
                     ConsultTyping(
-                        consultWriter.currentConsultId,
+                        consultWriter.getCurrentConsultId(),
                         System.currentTimeMillis(),
-                        consultWriter.currentPhotoUrl
+                        consultWriter.getCurrentPhotoUrl()
                     )
                 }
                 .observeOn(AndroidSchedulers.mainThread())
@@ -1441,7 +1443,6 @@ class ChatController private constructor() {
             threadId = systemMessage.threadId
             fragment?.setCurrentThreadId(systemMessage.threadId)
             if (ChatItemType.THREAD_ENQUEUED.name.equals(type, ignoreCase = true) ||
-                ChatItemType.THREAD_WILL_BE_REASSIGNED.name.equals(type, ignoreCase = true) ||
                 ChatItemType.AVERAGE_WAIT_TIME.name.equals(type, ignoreCase = true)
             ) {
                 fragment?.setStateSearchingConsult()
@@ -1605,18 +1606,14 @@ class ChatController private constructor() {
                         withContext(Dispatchers.Main) { fragment?.showProgressBar() }
                     }
                     if (stateEvent.isTimeout && chatState.getCurrentState() < ChatStateEnum.ATTACHMENT_SETTINGS_LOADED) {
-                        val timeoutMessage = if (stateEvent.state > ChatStateEnum.INIT_USER_SENT && fragment != null) {
+                        val timeoutMessage = if (stateEvent.state >= ChatStateEnum.INIT_USER_SENT && fragment != null) {
                             fragment?.getString(R.string.ecc_attachments_not_loaded)
                         } else {
                             "${fragment?.getString(R.string.ecc_timeout_message) ?: "Превышен интервал ожидания для запроса"} (${chatState.getCurrentState()})"
                         }
                         withContext(Dispatchers.Main) { fragment?.showErrorView(timeoutMessage) }
                     } else if (stateEvent.state == ChatStateEnum.DEVICE_REGISTERED) {
-                        if (preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS).isNullOrBlank()) {
-                            BaseConfig.getInstance().transport.sendRegisterDevice(false)
-                        } else {
-                            BaseConfig.getInstance().transport.sendInitMessages()
-                        }
+                        BaseConfig.getInstance().transport.sendInitMessages()
                     } else if (stateEvent.state == ChatStateEnum.ATTACHMENT_SETTINGS_LOADED) {
                         loadItemsFromDB()
                         if (fragment?.isResumed == true) loadHistoryAfterWithLastMessageCheck()

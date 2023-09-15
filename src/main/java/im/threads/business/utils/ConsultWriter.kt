@@ -12,20 +12,17 @@ class ConsultWriter(private val preferences: Preferences) {
         }
 
     fun setCurrentConsultInfo(message: ConsultConnectionMessage) {
-        val editor = preferences.sharedPreferences.edit()
         val consultId = message.consultId
-        editor
-            .putString(OPERATOR_ID, consultId)
-            .putString(OPERATOR_STATUS + consultId, message.status)
-            .putString(OPERATOR_NAME + consultId, message.name)
-            .putString(OPERATOR_TITLE + consultId, message.title)
-            .putString(OPERATOR_ORG_UNIT + consultId, message.orgUnit)
-            .putString(OPERATOR_ROLE + consultId, message.role)
-            .putString(OPERATOR_PHOTO + consultId, message.avatarPath)
-            .commit()
+        preferences.save(OPERATOR_ID, consultId)
+        preferences.save(OPERATOR_STATUS + consultId, message.status)
+        preferences.save(OPERATOR_NAME + consultId, message.name)
+        preferences.save(OPERATOR_TITLE + consultId, message.title)
+        preferences.save(OPERATOR_ORG_UNIT + consultId, message.orgUnit)
+        preferences.save(OPERATOR_ROLE + consultId, message.role)
+        preferences.save(OPERATOR_PHOTO + consultId, message.avatarPath)
     }
 
-    fun getName(id: String): String? {
+    private fun getName(id: String): String? {
         return preferences.get("$OPERATOR_NAME$id")
     }
 
@@ -45,18 +42,25 @@ class ConsultWriter(private val preferences: Preferences) {
         return preferences.get("$OPERATOR_PHOTO$id")
     }
 
-    val currentPhotoUrl: String?
-        get() = if (currentConsultId != null) getPhotoUrl(currentConsultId) else null
+    fun getCurrentPhotoUrl(): String? {
+        return if (getCurrentConsultId() != null) {
+            getPhotoUrl(getCurrentConsultId())
+        } else {
+            null
+        }
+    }
 
-    val currentConsultId: String?
-        get() = preferences.get(OPERATOR_ID)
+    fun getCurrentConsultId(): String? {
+        return preferences.get(OPERATOR_ID)
+    }
 
     fun setCurrentConsultLeft() {
         preferences.save<String>(OPERATOR_ID, null)
     }
 
-    val isConsultConnected: Boolean
-        get() = preferences.get<String>(OPERATOR_ID) != null
+    fun isConsultConnected(): Boolean {
+        return !preferences.get<String>(OPERATOR_ID).isNullOrBlank()
+    }
 
     fun getConsultInfo(id: String): ConsultInfo {
         return ConsultInfo(
@@ -69,11 +73,10 @@ class ConsultWriter(private val preferences: Preferences) {
         )
     }
 
-    val currentConsultInfo: ConsultInfo?
-        get() {
-            val currentId = currentConsultId
-            return currentId?.let { getConsultInfo(it) }
-        }
+    fun getCurrentConsultInfo(): ConsultInfo? {
+        val currentId = getCurrentConsultId()
+        return currentId?.let { getConsultInfo(it) }
+    }
 
     companion object {
         private const val OPERATOR_STATUS = "OPERATOR_STATUS"
