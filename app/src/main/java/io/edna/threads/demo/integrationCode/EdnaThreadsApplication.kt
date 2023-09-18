@@ -5,6 +5,8 @@ import android.content.Intent
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.perf.FirebasePerformance
 import im.threads.business.UserInfoBuilder
+import im.threads.business.UserInfoBuilder
+import im.threads.business.core.UnreadMessagesCountListener
 import im.threads.business.logger.LoggerConfig
 import im.threads.business.logger.LoggerRetentionPolicy
 import im.threads.business.markdown.MarkdownConfig
@@ -20,6 +22,12 @@ import io.edna.threads.demo.appCode.business.PreferencesProvider
 import io.edna.threads.demo.appCode.business.ServersProvider
 import io.edna.threads.demo.appCode.business.appModule
 import io.edna.threads.demo.integrationCode.fragments.launch.LaunchFragment.Companion.APP_INIT_THREADS_LIB_ACTION
+import io.edna.threads.demo.integrationCode.fragments.launch.LaunchFragment.Companion.APP_UNREAD_COUNT_BROADCAST
+import io.edna.threads.demo.integrationCode.fragments.launch.LaunchFragment.Companion.UNREAD_COUNT_KEY
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import io.edna.threads.demo.integrationCode.fragments.launch.LaunchFragment.Companion.APP_INIT_THREADS_LIB_ACTION
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -34,7 +42,7 @@ class EdnaThreadsApplication : Application() {
     private var chatDarkTheme: ChatTheme? = null
     private val preferences: PreferencesProvider by inject()
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
-    private val asyncInit = true
+    private val asyncInit = false
 
     override fun onCreate() {
         super.onCreate()
@@ -150,6 +158,13 @@ class EdnaThreadsApplication : Application() {
             .build()
 
         val configBuilder = ConfigBuilder(this)
+            .unreadMessagesCountListener(object : UnreadMessagesCountListener {
+                override fun onUnreadMessagesCountChanged(count: Int) {
+                    val intent = Intent(APP_UNREAD_COUNT_BROADCAST)
+                    intent.putExtra(UNREAD_COUNT_KEY, count)
+                    sendBroadcast(intent)
+                }
+            })
             .historyLoadingCount(50)
             .applyLightTheme(chatLightTheme)
             .applyDarkTheme(chatDarkTheme)
@@ -175,7 +190,7 @@ class EdnaThreadsApplication : Application() {
 
     private fun initUser() {
         val user = preferences.getSelectedUser()
-        if (user != null) {
+        if (user != null && user.isAllFieldsFilled()) {
             ThreadsLib.getInstance().initUser(
                 UserInfoBuilder(user.userId!!)
                     .setAuthData(user.authorizationHeader, user.xAuthSchemaHeader)
