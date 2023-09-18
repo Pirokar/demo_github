@@ -87,7 +87,7 @@
     <dimen name="ecc_last_line_extra_padding_symbols">2</dimen>
     <dimen name="ecc_halo_radius">13dp</dimen>
     <dimen name="ecc_thumb_size">8dp</dimen>
-    <dimen name="ecc_message_image_size">350dp</dimen>
+    <dimen name="ecc_message_image_size">300dp</dimen>
     <dimen name="ecc_toolbar_height">56dp</dimen>
     <dimen name="ecc_toolbar_button_width">56dp</dimen>
     <dimen name="ecc_dropdown_horizontal_offset">-40dp</dimen>
