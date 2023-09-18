@@ -12,6 +12,7 @@ import android.view.ViewGroup.MarginLayoutParams
 import android.view.animation.Animation
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.BlendModeColorFilterCompat
@@ -68,6 +69,12 @@ class ConsultPhraseHolder(
     }
 
     private val fileRow: View = itemView.findViewById(R.id.rightTextRow)
+    private val quoteLayout: LinearLayout = itemView.findViewById(R.id.quoteLayout)
+    private val quoteTextHeader: TextView = itemView.findViewById(R.id.quoteTo)
+    private val quoteTextDescription: TextView = itemView.findViewById(R.id.quoteFileSpecs)
+    private val quoteTextTimeStamp: TextView = itemView.findViewById(R.id.quoteSendAt)
+    private val quoteFileImage = itemView.findViewById<ImageView>(R.id.quoteFileImage)
+    private val quoteProgressButton: CircularProgressButton = itemView.findViewById(R.id.quoteButtonDownload)
     private val circularProgressButton: CircularProgressButton = itemView.findViewById(R.id.buttonDownload)
     private val errorTextView: TextView = itemView.findViewById(R.id.errorText)
     private val fileImage = itemView.findViewById<ImageView>(R.id.fileImage)
@@ -160,6 +167,7 @@ class ConsultPhraseHolder(
         timeStampTextView.text = timeText
         ogTimestamp.text = timeText
         imageLayout.isVisible = false
+        fileRow.isVisible = false
 
         consultPhrase.phraseText?.let {
             showPhrase(consultPhrase, it.trim())
@@ -170,7 +178,7 @@ class ConsultPhraseHolder(
         consultPhrase.quote?.let {
             showQuote(it, onQuoteClickListener)
         } ?: run {
-            fileRow.isVisible = false
+            quoteLayout.isVisible = false
         }
 
         setLayoutMargins(true, bubbleLayout)
@@ -200,7 +208,7 @@ class ConsultPhraseHolder(
         } else {
             phraseFrame.layoutParams.width = FrameLayout.LayoutParams.WRAP_CONTENT
         }
-        if (consultPhrase.fileDescription == null && consultPhrase.quote == null) {
+        if (consultPhrase.fileDescription == null) {
             fileRow.isVisible = false
         }
     }
@@ -228,6 +236,7 @@ class ConsultPhraseHolder(
 
             if (isBordersNotSet) {
                 phraseFrame.setPadding(0, 0, 0, 0)
+                quoteLayout.setPadding(0, 0, 0, 0)
                 setPaddings(true, this)
             } else {
                 setPadding(0, 0, 0, 0)
@@ -240,6 +249,12 @@ class ConsultPhraseHolder(
                     0,
                     borderRight,
                     resources.getDimensionPixelSize(style.bubbleIncomingPaddingBottom)
+                )
+                quoteLayout.setPadding(
+                    borderLeft,
+                    resources.getDimensionPixelSize(style.bubbleIncomingPaddingTop),
+                    borderRight,
+                    0
                 )
             }
             image.invalidate()
@@ -256,6 +271,7 @@ class ConsultPhraseHolder(
             imageRoot.gone()
 
             phraseFrame.setPadding(0, 0, 0, 0)
+            quoteLayout.setPadding(0, 0, 0, 0)
             setPaddings(true, this)
         }
     }
@@ -342,47 +358,44 @@ class ConsultPhraseHolder(
         quote: Quote,
         onQuoteClickListener: View.OnClickListener
     ) {
-        fileRow.visibility = View.VISIBLE
-        fileImage.visibility = View.GONE
-        circularProgressButton.visibility = View.GONE
-        rightTextHeader.text = if (quote.phraseOwnerTitle == null) {
+        quoteLayout.isVisible = true
+        quoteTextHeader.text = if (quote.phraseOwnerTitle == null) {
             itemView.context
                 .getString(R.string.ecc_I)
         } else {
             quote.phraseOwnerTitle
         }
-        rightTextDescription.text = quote.text
-        rightTextFileStamp.text = itemView.context
+        quoteProgressButton.isVisible = false
+        quoteTextDescription.text = quote.text
+        quoteTextTimeStamp.text = itemView.context
             .getString(R.string.ecc_sent_at, quoteSdf.format(Date(quote.timeStamp)))
-        viewUtils.setClickListener(fileRow as ViewGroup, onQuoteClickListener)
+        viewUtils.setClickListener(quoteLayout, onQuoteClickListener)
         val quoteFileDescription = quote.fileDescription
         if (quoteFileDescription != null) {
             if (FileUtils.isVoiceMessage(quoteFileDescription)) {
-                rightTextDescription.setText(R.string.ecc_voice_message)
+                quoteTextDescription.setText(R.string.ecc_voice_message)
             } else {
                 if (isImage(quote.fileDescription)) {
-                    fileImage.visibility = View.VISIBLE
+                    quoteFileImage.visibility = View.VISIBLE
                     val fileUri = quoteFileDescription.fileUri?.toString() ?: quoteFileDescription.downloadPath
                     if (!fileUri.isNullOrEmpty()) {
-                        fileImage.loadImage(
+                        quoteFileImage.loadImage(
                             quoteFileDescription.downloadPath,
                             listOf(ImageView.ScaleType.FIT_CENTER, ImageView.ScaleType.CENTER_CROP),
                             style.imagePlaceholder,
                             autoRotateWithExif = true
                         )
                     } else {
-                        fileImage.setImageResource(style.imagePlaceholder)
+                        quoteFileImage.setImageResource(style.imagePlaceholder)
                     }
-                    fileImage.setOnClickListener(onQuoteClickListener)
+                    quoteFileImage.setOnClickListener(onQuoteClickListener)
                 } else {
-                    circularProgressButton.visibility = View.VISIBLE
-
+                    quoteProgressButton.isVisible = true
                     fileNameFromDescription(quoteFileDescription) { fileName ->
-                        rightTextDescription.text = getFileDescriptionText(fileName, quoteFileDescription)
+                        quoteTextDescription.text = getFileDescriptionText(fileName, quoteFileDescription)
                     }
-
-                    circularProgressButton.setOnClickListener(onQuoteClickListener)
-                    circularProgressButton.setProgress(if (quoteFileDescription.fileUri != null) 100 else quoteFileDescription.downloadProgress)
+                    quoteProgressButton.setOnClickListener(onQuoteClickListener)
+                    quoteProgressButton.setProgress(if (quoteFileDescription.fileUri != null) 100 else quoteFileDescription.downloadProgress)
                 }
             }
         }
