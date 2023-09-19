@@ -65,7 +65,7 @@ internal class SearchListView : FrameLayout {
         searchListViewAdapter = SearchListViewAdapter { messageUuid, date ->
             messageUuid?.let { onListItemClickCallback?.invoke(it, date) }
         }
-        binding.searchListView.adapter = searchListViewAdapter
+        binding.searchResultsListView.adapter = searchListViewAdapter
         initNoResultsView()
         subscribeForListScroll()
     }
@@ -172,7 +172,7 @@ internal class SearchListView : FrameLayout {
     private fun isLastVisibleItemPosition(): Boolean {
         return if (isAttachedToWindow) {
             val lastVisiblePosition =
-                (binding.searchListView.layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
+                (binding.searchResultsListView.layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
             searchListViewAdapter?.let { adapter ->
                 adapter.itemCount - 1 - lastVisiblePosition < invisibleMessagesCount
             } ?: false
@@ -193,8 +193,8 @@ internal class SearchListView : FrameLayout {
     }
 
     private fun subscribeForListScroll() {
-        binding.searchListView.removeOnScrollListener(onScrollListener)
-        binding.searchListView.addOnScrollListener(onScrollListener)
+        binding.searchResultsListView.removeOnScrollListener(onScrollListener)
+        binding.searchResultsListView.addOnScrollListener(onScrollListener)
     }
 
     private fun onListScrolled() {
