@@ -266,7 +266,7 @@ class ImageFromUserViewHolder(
         if (fileDescription != null) {
             val isDownloadError = fileDescription.isDownloadError
             val uri = fileDescription.fileUri
-            val path = fileDescription.downloadPath
+            val path = fileDescription.getSmallImageDownloadPath()
             val fileUri = uri?.toString() ?: path
             if (!fileUri.isNullOrEmpty() && !isDownloadError) {
                 ImageLoader.get()

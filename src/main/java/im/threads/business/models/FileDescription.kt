@@ -25,6 +25,10 @@ class FileDescription(var from: String?, var fileUri: Uri?, var size: Long, var 
     var errorMessage: String? = ""
     var voiceFormattedDuration: String = ""
 
+    fun getSmallImageDownloadPath(): String {
+        return "$downloadPath?size=small"
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is FileDescription) return false

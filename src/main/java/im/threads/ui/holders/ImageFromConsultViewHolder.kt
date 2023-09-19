@@ -177,10 +177,10 @@ class ImageFromConsultViewHolder(
         val fileUri = if (fileDescription.fileUri?.toString()?.isNotBlank() == true) {
             fileDescription.fileUri.toString()
         } else {
-            fileDescription.downloadPath
+            fileDescription.getSmallImageDownloadPath()
         }
         val isStateReady = fileDescription.state == AttachmentStateEnum.READY
-        if (isStateReady && fileUri != null && !fileDescription.isDownloadError) {
+        if (isStateReady && !fileDescription.isDownloadError) {
             if (fileUri.isNotEmpty()) {
                 showLoadImageAnimation()
                 ImageLoader.get()

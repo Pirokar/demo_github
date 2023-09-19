@@ -365,7 +365,7 @@ class UserPhraseViewHolder(
                         val downloadPath: String? = if (it.fileUri == null) {
                             it.downloadPath
                         } else {
-                            it.fileUri.toString()
+                            it.getSmallImageDownloadPath()
                         }
                         if (!downloadPath.isNullOrEmpty()) {
                             get()

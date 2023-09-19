@@ -83,7 +83,7 @@ public final class FileAndMediaViewHolder extends BaseHolder {
             if (fileDescription.getFileUri() != null) {
                 downloadPath = fileDescription.getFileUri().toString();
             } else if (fileDescription.getDownloadPath() != null) {
-                downloadPath = fileDescription.getDownloadPath();
+                downloadPath = fileDescription.getSmallImageDownloadPath();
             }
             ImageLoader
                     .get()
