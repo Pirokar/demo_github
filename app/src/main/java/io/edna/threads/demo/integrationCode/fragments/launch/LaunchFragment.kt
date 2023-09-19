@@ -64,22 +64,10 @@ class LaunchFragment : BaseAppFragment<FragmentLaunchBinding>(FragmentLaunchBind
         }
     }
 
-    private fun addThreadsLibInitializationReceiver() {
-        if (!ThreadsLib.isInitialized()) {
-            receiver = InitThreadsLibReceiver(this)
-            ContextCompat.registerReceiver(
-                requireContext(),
-                receiver,
-                filter,
-                ContextCompat.RECEIVER_VISIBLE_TO_INSTANT_APPS
-            )
-        }
-    }
-
     private fun unregisterReceiver() {
-        receiver?.let {
+        initLibReceiver?.let {
             requireActivity().unregisterReceiver(it)
-            receiver = null
+            initLibReceiver = null
         }
     }
 
