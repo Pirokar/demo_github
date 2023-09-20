@@ -14,12 +14,12 @@ open class BaseConfigBuilder(var context: Context) {
     protected var isDebugLoggingEnabled = false
     protected var historyLoadingCount = 50
     protected var surveyCompletionDelay = 2000
-    protected var serverBaseUrl: String? = null
-    protected var datastoreUrl: String? = null
-    protected var threadsGateUrl: String? = null
-    protected var threadsGateProviderUid: String? = null
+    internal var serverBaseUrl: String? = null
+    internal var datastoreUrl: String? = null
+    internal var threadsGateUrl: String? = null
+    internal var threadsGateProviderUid: String? = null
     protected var networkInterceptor: Interceptor? = null
-    protected var isNewChatCenterApi: Boolean? = false
+    internal var isNewChatCenterApi: Boolean = false
     protected var loggerConfig: LoggerConfig? = null
     protected var requestConfig = RequestConfig()
     protected var trustedSSLCertificates = emptyList<Int>()

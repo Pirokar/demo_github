@@ -14,11 +14,6 @@ import im.threads.business.rest.config.SocketClientSettings
 import im.threads.business.serviceLocator.core.inject
 import im.threads.business.transport.Transport
 import im.threads.business.transport.threadsGate.ThreadsGateTransport
-import im.threads.business.utils.MetadataBusiness.getDatastoreUrl
-import im.threads.business.utils.MetadataBusiness.getNewChatCenterApi
-import im.threads.business.utils.MetadataBusiness.getServerBaseUrl
-import im.threads.business.utils.MetadataBusiness.getThreadsGateProviderUid
-import im.threads.business.utils.MetadataBusiness.getThreadsGateUrl
 import im.threads.business.utils.createSslSocketFactoryConfig
 import im.threads.business.utils.createTlsPinningKeyStore
 import im.threads.business.utils.getTrustManagers
@@ -35,7 +30,7 @@ open class BaseConfig(
     var datastoreUrl: String?,
     var threadsGateUrl: String?,
     var threadsGateProviderUid: String?,
-    var isNewChatCenterApi: Boolean?,
+    var isNewChatCenterApi: Boolean = false,
     val loggerConfig: LoggerConfig?,
     val unreadMessagesCountListener: UnreadMessagesCountListener?,
     val networkInterceptor: Interceptor?,
@@ -54,11 +49,6 @@ open class BaseConfig(
     @JvmField
     var transport: Transport
 
-    /**
-     * set history loading count
-     */
-    val newChatCenterApi: Boolean
-
     @JvmField
     val gson = GsonBuilder()
         .registerTypeAdapter(Uri::class.java, UriSerializer())
@@ -69,10 +59,7 @@ open class BaseConfig(
 
     init {
         this.context = context.applicationContext
-        newChatCenterApi = getIsNewChatCenterApi(isNewChatCenterApi)
         transport = getTransport(threadsGateUrl, threadsGateProviderUid, requestConfig.socketClientSettings)
-        this.serverBaseUrl = getServerBaseUrl(serverBaseUrl)
-        this.datastoreUrl = getDatastoreUrl(datastoreUrl)
         sslSocketFactoryConfig = getSslSocketFactoryConfig(trustedSSLCertificates)
         imageLoaderOkHttpProvider.createOkHttpClient(
             requestConfig.picassoHttpClientSettings,
@@ -125,54 +112,21 @@ open class BaseConfig(
         providedThreadsGateProviderUid: String?,
         socketClientSettings: SocketClientSettings
     ): Transport {
-        val threadsGateProviderUid = if (!providedThreadsGateProviderUid.isNullOrBlank()) {
-            providedThreadsGateProviderUid
-        } else {
-            getThreadsGateProviderUid(context)
-        }
-
-        val threadsGateUrl = if (!providedThreadsGateUrl.isNullOrBlank()) {
-            providedThreadsGateUrl
-        } else {
-            getThreadsGateUrl(context)
-        }
-        if (threadsGateUrl.isNullOrBlank()) {
+        if (providedThreadsGateUrl.isNullOrBlank()) {
             throw MetaConfigurationException("Threads gate url is not set")
         }
-        if (threadsGateProviderUid.isNullOrBlank()) {
+        if (providedThreadsGateProviderUid.isNullOrBlank()) {
             throw MetaConfigurationException("Threads gate provider uid is not set")
         }
         return ThreadsGateTransport(
-            threadsGateUrl,
-            threadsGateProviderUid,
+            providedThreadsGateUrl,
+            providedThreadsGateProviderUid,
             isDebugLoggingEnabled,
             socketClientSettings,
             sslSocketFactoryConfig,
             networkInterceptor,
             context
         )
-    }
-
-    private fun getServerBaseUrl(serverBaseUrl: String?): String {
-        var baseUrl = (if (serverBaseUrl.isNullOrBlank()) getServerBaseUrl(context) else serverBaseUrl)
-            ?: throw MetaConfigurationException("Neither im.threads.getServerUrl meta variable, nor serverBaseUrl were provided")
-        if (!baseUrl.endsWith("/")) {
-            baseUrl = "$baseUrl/"
-        }
-        return baseUrl
-    }
-
-    private fun getDatastoreUrl(dataStoreUrl: String?): String {
-        var datastoreUrl = (if (dataStoreUrl.isNullOrBlank()) getDatastoreUrl(context) else dataStoreUrl)
-            ?: throw MetaConfigurationException("Neither im.threads.getDatastoreUrl meta variable, nor datastoreUrl were provided")
-        if (!datastoreUrl.endsWith("/")) {
-            datastoreUrl = "$datastoreUrl/"
-        }
-        return datastoreUrl
-    }
-
-    private fun getIsNewChatCenterApi(isNewChatCenterApi: Boolean?): Boolean {
-        return isNewChatCenterApi ?: getNewChatCenterApi(context)
     }
 
     companion object {
