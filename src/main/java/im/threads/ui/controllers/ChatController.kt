@@ -496,12 +496,12 @@ class ChatController private constructor() {
         }
     }
 
-    private fun loadItemsFromDB() {
+    private fun loadItemsFromDB(hideProgressBar: Boolean = true) {
         fragment?.let {
             coroutineScope.launch() {
                 val itemsDef = async(Dispatchers.IO) { database.getChatItems(0, -1) }
                 it.addChatItems(itemsDef.await(), true)
-                it.hideProgressBar()
+                if (hideProgressBar) it.hideProgressBar()
             }
         }
     }
@@ -1635,7 +1635,7 @@ class ChatController private constructor() {
                     } else if (stateEvent.state == ChatStateEnum.DEVICE_REGISTERED) {
                         BaseConfig.getInstance().transport.sendInitMessages()
                     } else if (stateEvent.state == ChatStateEnum.ATTACHMENT_SETTINGS_LOADED) {
-                        loadItemsFromDB()
+                        loadItemsFromDB(false)
                         if (fragment?.isResumed == true) loadHistoryAfterWithLastMessageCheck()
                         loadSettings()
                     } else if (isChatReady()) {
