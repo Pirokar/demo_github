@@ -13,6 +13,7 @@ import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.text.TextUtils
 import android.webkit.MimeTypeMap
+import androidx.documentfile.provider.DocumentFile
 import im.threads.R
 import im.threads.business.config.BaseConfig
 import im.threads.business.imageLoading.ImageLoader
@@ -22,6 +23,8 @@ import im.threads.business.models.CampaignMessage
 import im.threads.business.models.FileDescription
 import im.threads.business.models.Quote
 import im.threads.business.models.UpcomingUserMessage
+import im.threads.business.secureDatabase.DatabaseHolder
+import im.threads.business.serviceLocator.core.inject
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileNotFoundException
@@ -100,6 +103,13 @@ object FileUtils {
             )
     }
 
+    private fun isFileCorrupted(fileDescription: FileDescription): Boolean {
+        val actualSize = fileDescription.fileUri?.let {
+            getFileSize(it)
+        } ?: 0
+        return fileDescription.size != actualSize
+    }
+
     @JvmStatic
     fun isVoiceMessage(fileDescription: FileDescription?): Boolean {
         return (
@@ -146,6 +156,29 @@ object FileUtils {
     @JvmStatic
     fun safeParse(source: String?): Uri? {
         return if (source != null) Uri.parse(source) else null
+    }
+
+    @JvmStatic
+    fun removeFileIfCorrupted(fileDescription: FileDescription?) {
+        val database: DatabaseHolder by inject()
+        val context = BaseConfig.getInstance().context
+
+        if (fileDescription?.fileUri != null && isFileCorrupted(fileDescription)) {
+            DocumentFile
+                .fromSingleUri(context, fileDescription.fileUri!!)
+                ?.delete()
+            val files = FileDownloader.getDownloadDir(context).listFiles { _, name ->
+                name.endsWith(fileDescription.incomingName ?: "no name")
+            }
+            files?.forEach {
+                if (it.exists()) {
+                    it.delete()
+                }
+            }
+            fileDescription.fileUri = null
+            fileDescription.downloadProgress = 0
+            database.updateFileDescription(fileDescription)
+        }
     }
 
     @JvmStatic
