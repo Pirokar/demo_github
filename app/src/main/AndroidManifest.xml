@@ -46,7 +46,7 @@
         </activity>
 
         <activity
-            android:name=".appCode.activity.MainActivity"
+            android:name=".integrationCode.mainActivity.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.EdnaChatCenter.NoActionBar"
             android:screenOrientation="portrait"/>

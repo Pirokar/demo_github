@@ -9,6 +9,7 @@ import io.edna.threads.demo.appCode.fragments.server.ServerListViewModel
 import io.edna.threads.demo.appCode.fragments.user.AddUserViewModel
 import io.edna.threads.demo.appCode.fragments.user.UserListViewModel
 import io.edna.threads.demo.integrationCode.fragments.launch.LaunchViewModel
+import io.edna.threads.demo.integrationCode.mainActivity.MainActivityViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -19,6 +20,7 @@ val appModule = module {
     single { PreferencesProvider(get()) }
     single { UiThemeProvider(get()) }
     factory { ServersProvider(get(), get()) }
+    viewModel { MainActivityViewModel(get(), get(), get()) }
     viewModel { LaunchViewModel(get(), get(), get()) }
     viewModel { UserListViewModel(get()) }
     viewModel { AddUserViewModel(get()) }
