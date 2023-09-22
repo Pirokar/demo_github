@@ -250,5 +250,6 @@ class MessagesTable(
         private const val COLUMN_BLOCK_INPUT = "COLUMN_BLOCK_INPUT"
         private const val COLUMN_SPEECH_STATUS = "COLUMN_SPEECH_STATUS"
         private const val COLUMN_ROLE = "COLUMN_ROLE"
+        private const val COLUMN_CONTENT = "COLUMN_CONTENT"
     }
 }
