@@ -1,4 +1,4 @@
-package io.edna.threads.demo.integrationCode
+package io.edna.threads.demo.appCode
 
 import android.app.Application
 import com.google.firebase.crashlytics.FirebaseCrashlytics

@@ -3,7 +3,7 @@ package io.edna.threads.demo
 import android.app.Application
 import android.content.Context
 import androidx.test.runner.AndroidJUnitRunner
-import io.edna.threads.demo.integrationCode.EdnaThreadsApplication
+import io.edna.threads.demo.appCode.EdnaThreadsApplication
 
 class MockTestRunner : AndroidJUnitRunner() {
 

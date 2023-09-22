@@ -7,15 +7,15 @@ import com.github.tomakehurst.wiremock.junit.WireMockRule
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import im.threads.business.UserInfoBuilder
 import im.threads.business.config.BaseConfig
-import im.threads.business.rest.queries.ednaMockHost
 import im.threads.business.rest.queries.ednaMockPort
 import im.threads.business.rest.queries.ednaMockUrl
 import im.threads.business.transport.threadsGate.ThreadsGateTransport
-import im.threads.ui.controllers.ChatController
 import im.threads.ui.core.ThreadsLib
 import io.edna.threads.demo.appCode.models.ServerConfig
 import io.edna.threads.demo.appCode.models.TestData
 import io.edna.threads.demo.appCode.models.UserInfo
+import io.edna.threads.demo.integrationCode.mainActivity.ednaMockThreadsGateProviderUid
+import io.edna.threads.demo.integrationCode.mainActivity.ednaMockThreadsGateUrl
 import io.edna.threads.demo.kaspressoSreens.DemoLoginScreen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -30,13 +30,7 @@ import org.mockito.invocation.InvocationOnMock
 import org.mockito.kotlin.anyOrNull
 
 abstract class BaseTestCase : TestCase() {
-    protected val testServerBaseUrl = ednaMockUrl
-    protected val testDatastoreUrl = ednaMockUrl
-    protected val testThreadsGateUrl = "ws://$ednaMockHost:$ednaMockPort/gate/socket"
-    protected val testThreadsGateProviderUid = "TEST_93jLrtnipZsfbTddRfEfbyfEe5LKKhTl"
-    protected val testTrustedSSLCertificates: ArrayList<Int>? = null
-    protected val testAllowUntrustedSSLCertificate = true
-    protected val userId = (10000..99999).random().toString()
+    private val userId = (10000..99999).random().toString()
 
     private val coroutineScope = CoroutineScope(Dispatchers.Unconfined)
 
@@ -68,27 +62,11 @@ abstract class BaseTestCase : TestCase() {
         )
         BuildConfig.TEST_DATA.set(testData.toJson())
         im.threads.BuildConfig.IS_ANIMATIONS_DISABLED.set(true)
-        ChatController.getInstance().cleanAll()
     }
 
-    protected fun applyServerSettings(
-        serverBaseUrl: String? = null,
-        datastoreUrl: String? = null,
-        threadsGateUrl: String? = null
-    ) {
-        ThreadsLib.changeServerSettings(
-            serverBaseUrl ?: testServerBaseUrl,
-            datastoreUrl ?: testDatastoreUrl,
-            threadsGateUrl ?: testThreadsGateUrl,
-            testThreadsGateProviderUid,
-            testTrustedSSLCertificates,
-            testAllowUntrustedSSLCertificate
-        )
-    }
-
-    protected fun applyDefaultUserToDemoApp() {
+    protected fun applyDefaultUserToDemoApp(noUserId: Boolean = false) {
         val testData = getExistedTestData().copy(
-            userInfo = UserInfo(userId = userId)
+            userInfo = UserInfo(userId = if (noUserId) null else userId)
         )
         BuildConfig.TEST_DATA.set(testData.toJson())
     }
@@ -114,7 +92,7 @@ abstract class BaseTestCase : TestCase() {
     }
 
     protected fun prepareWsMocks() {
-        im.threads.BuildConfig.IS_MOCK_WEB_SERVER.set(true)
+        BuildConfig.IS_MOCK_WEB_SERVER.set(true)
         MockitoAnnotations.openMocks(this)
         Mockito.`when`(okHttpClient.newWebSocket(anyOrNull(), anyOrNull())).thenReturn(socket)
         Mockito.doAnswer { mock: InvocationOnMock ->
@@ -187,10 +165,10 @@ abstract class BaseTestCase : TestCase() {
 
     private fun getDefaultServerConfig() = ServerConfig(
         name = "TestServer",
-        threadsGateProviderUid = testThreadsGateProviderUid,
-        datastoreUrl = testDatastoreUrl,
-        serverBaseUrl = testServerBaseUrl,
-        threadsGateUrl = testThreadsGateUrl,
+        threadsGateProviderUid = ednaMockThreadsGateProviderUid,
+        datastoreUrl = ednaMockUrl,
+        serverBaseUrl = ednaMockUrl,
+        threadsGateUrl = ednaMockThreadsGateUrl,
         isShowMenu = true,
         allowUntrustedSSLCertificate = true
     )

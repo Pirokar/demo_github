@@ -21,7 +21,6 @@ class WebSocketEnterFlowTest : BaseTestCase() {
     internal val activityRule = ActivityScenarioRule<MainActivity>(intent)
 
     init {
-        applyServerSettings()
         applyDefaultUserToDemoApp()
         prepareWsMocks()
     }

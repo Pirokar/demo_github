@@ -49,6 +49,7 @@ android {
             debuggable = true
             minifyEnabled false
             buildConfigField "java.util.concurrent.atomic.AtomicReference", "TEST_DATA", "new java.util.concurrent.atomic.AtomicReference<String>()"
+            buildConfigField "java.util.concurrent.atomic.AtomicBoolean", "IS_MOCK_WEB_SERVER", "new java.util.concurrent.atomic.AtomicBoolean(false)"
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.debug
         }
@@ -56,6 +57,7 @@ android {
             debuggable = false
             minifyEnabled true
             buildConfigField "java.util.concurrent.atomic.AtomicReference", "TEST_DATA", "new java.util.concurrent.atomic.AtomicReference<String>()"
+            buildConfigField "java.util.concurrent.atomic.AtomicBoolean", "IS_MOCK_WEB_SERVER", "new java.util.concurrent.atomic.AtomicBoolean(false)"
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.debug
         }
