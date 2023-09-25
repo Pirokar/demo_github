@@ -5,11 +5,14 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import io.edna.threads.demo.BaseTestCase
+import io.edna.threads.demo.TestMessages
 import io.edna.threads.demo.appCode.activity.MainActivity
 import io.edna.threads.demo.kaspressoSreens.ChatMainScreen
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.text.SimpleDateFormat
+import java.util.Date
 
 @RunWith(AndroidJUnit4::class)
 class FirstLoginTest : BaseTestCase() {
@@ -24,7 +27,7 @@ class FirstLoginTest : BaseTestCase() {
     }
 
     @Test
-    fun firstLogin() {
+    fun textMessages() {
         prepareHttpMocks()
         val textToSend = "Hello, Edna! This is a test message"
 
@@ -42,6 +45,24 @@ class FirstLoginTest : BaseTestCase() {
                 isVisible()
                 lastChild<ChatMainScreen.ChatRecyclerItem> {
                     itemText.containsText(textToSend)
+                }
+            }
+            val currentTimeMs = System.currentTimeMillis()
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd")
+            val timeFormat = SimpleDateFormat("HH:mm:ss")
+            val currentDateObj = Date(currentTimeMs)
+            val currentDate = dateFormat.format(currentDateObj)
+            val currentTime = timeFormat.format(currentDateObj)
+
+            val operatorMessage = TestMessages.operatorHelloMessage
+                .replace("2023-09-25", currentDate)
+                .replace("13:07:29", currentTime)
+
+            sendMessageToSocket(operatorMessage)
+            recyclerView {
+                isVisible()
+                lastChild<ChatMainScreen.ChatRecyclerItem> {
+                    itemText.containsText("привет!")
                 }
             }
         }

@@ -49,4 +49,18 @@ object TestMessages {
 
     const val emptyHistoryMessage = "{\"messages\":[],\"agentInfo\":{\"action\":\"AGENT_LOOKUP\",\"actionDate\":\"2023-03-22T08:51:43.124Z\"," +
         "\"thread\":{\"id\":304,\"state\":\"UNASSIGNED\"},\"agent\":null},\"allowedToSendMessages\":true}"
+
+    const val operatorHelloMessage = "{\"action\":\"getMessages\",\"data\":{\"messages\":[" +
+        "{\"messageId\":\"0238fafc-132e-4a7c-87e6-834d50c3a551\",\"sentAt\":\"2023-09-25T13:07:29.213Z\"," +
+        "\"notification\":\"New chat message received\",\"content\":{\"type\":\"MESSAGE\",\"clientId\":\"545\"," +
+        "\"threadId\":386,\"isPreRegister\":false,\"providerIds\":[],\"uuid\":\"0238fafc-132e-4a7c-87e6-834d50c3a551\"," +
+        "\"operator\":{\"id\":4,\"name\":\"Оператор1 Петровна\",\"photoUrl\":\"20230703-e8c30f10-aa04-417f-bd97-99544fab26f2.jpg\"," +
+        "\"gender\":\"FEMALE\",\"organizationUnit\":\"Skill Credit\",\"role\":\"OPERATOR\"},\"text\":\"привет!\"," +
+        "\"receivedDate\":\"2023-09-25T13:07:29.213Z\",\"attachments\":[],\"quotes\":[],\"quickReplies\":[]," +
+        "\"read\":false,\"settings\":{\"blockInput\":false,\"masked\":false},\"authorized\":true," +
+        "\"massPushMessage\":false,\"externalClientId\":\"545\",\"origin\":\"threads\"}," +
+        "\"attributes\":\"{\\\"organizationUnit\\\":\\\"Skill Credit\\\",\\\"clientId\\\":\\\"545\\\"," +
+        "\\\"operatorPhotoUrl\\\":\\\"20230703-e8c30f10-aa04-417f-bd97-99544fab26f2.jpg\\\"," +
+        "\\\"operatorName\\\":\\\"Оператор1 Петровна\\\",\\\"isPreRegister\\\":\\\"false\\\"," +
+        "\\\"aps/sound\\\":\\\"default\\\",\\\"origin\\\":\\\"threads\\\"}\",\"important\":true,\"messageType\":\"NORMAL\"}]}}"
 }
