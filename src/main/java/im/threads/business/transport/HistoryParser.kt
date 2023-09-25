@@ -1,7 +1,6 @@
 package im.threads.business.transport
 
 import android.text.TextUtils
-import com.google.gson.JsonSyntaxException
 import im.threads.R
 import im.threads.business.config.BaseConfig
 import im.threads.business.formatters.ChatItemType
@@ -27,7 +26,6 @@ import im.threads.business.rest.models.HistoryResponse
 import im.threads.business.serviceLocator.core.inject
 import im.threads.business.utils.DateHelper
 import java.util.ArrayList
-import java.util.Date
 
 object HistoryParser {
     private val historyLoader: HistoryLoader by inject()
@@ -81,11 +79,12 @@ object HistoryParser {
                         )
                     )
                     ChatItemType.SURVEY -> {
-                        val survey = getSurveyFromJsonString(message.text ?: "")
+                        val survey = message.content
                         if (survey != null) {
                             survey.isRead = message.read
                             survey.timeStamp = message.timeStamp
-
+                            survey.sentState = MessageStatus.FAILED
+                            survey.isDisplayMessage = true
                             survey.questions?.indices?.forEach { index ->
                                 survey.questions!![index].phraseTimeStamp = message.timeStamp
                             }
@@ -174,25 +173,6 @@ object HistoryParser {
             error("error while formatting: $messages", e)
         }
         return out
-    }
-
-    private fun getSurveyFromJsonString(text: String): Survey? {
-        return try {
-            val survey = BaseConfig.getInstance().gson.fromJson(text, Survey::class.java)
-            val time = Date().time
-            survey.timeStamp = time
-            survey.sentState = MessageStatus.FAILED
-            survey.isDisplayMessage = true
-            if (survey.questions != null) {
-                for (questionDTO in survey.questions!!) {
-                    questionDTO.phraseTimeStamp = time
-                }
-            }
-            survey
-        } catch (e: JsonSyntaxException) {
-            error("getSurveyFromJsonString", e)
-            null
-        }
     }
 
     private fun getCompletedSurveyFromHistory(message: MessageFromHistory): Survey {

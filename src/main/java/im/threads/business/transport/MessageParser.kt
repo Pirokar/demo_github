@@ -164,7 +164,7 @@ class MessageParser {
 
     private fun getSurvey(sentAt: Long, fullMessage: JsonObject): Survey {
         val content = BaseConfig.getInstance().gson.fromJson(fullMessage, SurveyContent::class.java)
-        val survey = BaseConfig.getInstance().gson.fromJson(content.text, Survey::class.java)
+        val survey = BaseConfig.getInstance().gson.fromJson(content.content.toString(), Survey::class.java)
         survey.uuid = content.uuid
         survey.timeStamp = sentAt
         survey.sentState = MessageStatus.FAILED
