@@ -11,11 +11,11 @@ import im.threads.business.rest.queries.ednaMockPort
 import im.threads.business.rest.queries.ednaMockUrl
 import im.threads.business.transport.threadsGate.ThreadsGateTransport
 import im.threads.ui.core.ThreadsLib
+import io.edna.threads.demo.appCode.ednaMockThreadsGateProviderUid
+import io.edna.threads.demo.appCode.ednaMockThreadsGateUrl
 import io.edna.threads.demo.appCode.models.ServerConfig
 import io.edna.threads.demo.appCode.models.TestData
 import io.edna.threads.demo.appCode.models.UserInfo
-import io.edna.threads.demo.integrationCode.mainActivity.ednaMockThreadsGateProviderUid
-import io.edna.threads.demo.integrationCode.mainActivity.ednaMockThreadsGateUrl
 import io.edna.threads.demo.kaspressoSreens.DemoLoginScreen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

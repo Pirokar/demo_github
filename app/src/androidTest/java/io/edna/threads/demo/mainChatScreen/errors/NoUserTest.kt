@@ -11,8 +11,8 @@ import im.threads.ui.activities.ChatActivity
 import im.threads.ui.config.ConfigBuilder
 import im.threads.ui.core.ThreadsLib
 import io.edna.threads.demo.BaseTestCase
-import io.edna.threads.demo.integrationCode.mainActivity.ednaMockThreadsGateProviderUid
-import io.edna.threads.demo.integrationCode.mainActivity.ednaMockThreadsGateUrl
+import io.edna.threads.demo.appCode.ednaMockThreadsGateProviderUid
+import io.edna.threads.demo.appCode.ednaMockThreadsGateUrl
 import io.edna.threads.demo.kaspressoSreens.ChatMainScreen
 import org.junit.Rule
 import org.junit.Test
@@ -26,6 +26,8 @@ class NoUserTest : BaseTestCase() {
     internal val activityRule = ActivityScenarioRule<ChatActivity>(intent)
 
     init {
+        ThreadsLib.cleanLibInstance()
+
         val configBuilder = ConfigBuilder(context)
             .isDebugLoggingEnabled(true)
             .serverBaseUrl(ednaMockUrl)
