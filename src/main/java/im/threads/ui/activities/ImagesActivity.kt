@@ -67,7 +67,10 @@ class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionCl
                         }
                     }
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                        Collections.sort(files, Comparator.comparingLong(FileDescription::timeStamp))
+                        Collections.sort(
+                            files,
+                            Comparator.comparingLong(FileDescription::timeStamp)
+                        )
                     } else {
                         files.sortWith { lhs: FileDescription, rhs: FileDescription ->
                             lhs.timeStamp.compareTo(rhs.timeStamp)
@@ -172,33 +175,30 @@ class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionCl
     }
 
     private fun downloadImage() {
-        files[mViewPager.currentItem].fileUri?.let {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q &&
-                !ThreadsPermissionChecker.isWriteExternalPermissionGranted(this)
-            ) {
-                requestPermission()
-                return
-            }
-
-            compositeDisposable?.add(
-                Completable.fromAction {
-                    saveToDownloads(files[mViewPager.currentItem])
-                }
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                        {
-                            Balloon.show(
-                                this,
-                                getString(R.string.ecc_saved_to_downloads)
-                            )
-                        }
-                    ) { throwable: Throwable? ->
-                        Balloon.show(this, getString(R.string.ecc_unable_to_save))
-                        error("downloadImage", throwable)
-                    }
-            )
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q &&
+            !ThreadsPermissionChecker.isWriteExternalPermissionGranted(this)
+        ) {
+            requestPermission()
+            return
         }
+        compositeDisposable?.add(
+            Completable.fromAction {
+                saveToDownloads(files[mViewPager.currentItem])
+            }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    {
+                        Balloon.show(
+                            this,
+                            getString(R.string.ecc_saved_to_downloads)
+                        )
+                    }
+                ) { throwable: Throwable? ->
+                    Balloon.show(this, getString(R.string.ecc_unable_to_save))
+                    error("downloadImage", throwable)
+                }
+        )
     }
 
     private fun requestPermission() {

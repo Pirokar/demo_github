@@ -329,11 +329,11 @@ class ChatController private constructor() {
         serverItems.addAll(sendingItems)
     }
 
-    internal fun onFileDownloadRequest(fileDescription: FileDescription?) {
+    internal fun onFileDownloadRequest(fileDescription: FileDescription?, isPreview: Boolean = false) {
         if (fragment?.isAdded == true) {
             fragment?.activity?.let {
                 if (fileDescription != null) {
-                    startDownload(it, fileDescription, true)
+                    startDownload(it, fileDescription, true, isPreview)
                 }
             }
         }

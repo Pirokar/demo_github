@@ -266,8 +266,9 @@ class ImageFromUserViewHolder(
         if (fileDescription != null) {
             val isDownloadError = fileDescription.isDownloadError
             val uri = fileDescription.fileUri
-            val path = fileDescription.getSmallImageDownloadPath()
-            val fileUri = uri?.toString() ?: path
+            val previewUri = getPreviewUri(fileDescription.getPreviewFileDescription())
+            val path = fileDescription.getPreviewFileDescription()?.downloadPath
+            val fileUri = uri?.toString() ?: previewUri?.toString() ?: path
             if (!fileUri.isNullOrEmpty() && !isDownloadError) {
                 ImageLoader.get()
                     .autoRotateWithExif(true)

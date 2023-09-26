@@ -1,15 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/ecc_attachments_background">
 
     <ImageView
         android:id="@+id/image"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:contentDescription="@string/ecc_image" />
+
+    <ImageView
+        android:id="@+id/preview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/ecc_image" />
+
+    <ImageView
+        android:visibility="gone"
+        android:id="@+id/loader"
+        android:layout_width="@dimen/ecc_operator_photo_size"
+        android:layout_height="@dimen/ecc_operator_photo_size"
+        android:layout_gravity="center_vertical|center_horizontal"
+        android:contentDescription="@string/ecc_loading" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -21,24 +35,25 @@
             android:id="@+id/from"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical|left"
-            android:paddingLeft="@dimen/ecc_margin_material"
+            android:gravity="center_vertical|start"
+            android:paddingStart="@dimen/ecc_margin_material"
             android:paddingTop="@dimen/ecc_margin_quarter"
             android:textColor="@color/ecc_attachments_author_text_color"
             android:textSize="@dimen/ecc_attachments_author_text_size"
-            tools:text="from"/>
+            tools:ignore="RtlSymmetry"
+            tools:text="from" />
 
         <im.threads.ui.widget.CustomFontTextView
             android:id="@+id/date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical|left"
-            android:paddingLeft="@dimen/ecc_margin_material"
+            android:gravity="center_vertical|start"
+            android:paddingStart="@dimen/ecc_margin_material"
             android:paddingBottom="@dimen/ecc_margin_quarter"
             android:textColor="@color/ecc_attachments_date_text_color"
             android:textSize="@dimen/ecc_attachments_date_text_size"
-            tools:text="date"/>
+            tools:ignore="RtlSymmetry"
+            tools:text="date" />
 
     </LinearLayout>
-
 </FrameLayout>

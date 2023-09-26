@@ -362,14 +362,13 @@ class UserPhraseViewHolder(
                         imageRoot.visible()
                         hideErrorImage(imageLayout, errorImage)
                         image.setOnClickListener(imageClickListener)
-                        val downloadPath: String? = if (it.fileUri == null) {
-                            it.downloadPath
-                        } else {
-                            it.getSmallImageDownloadPath()
-                        }
-                        if (!downloadPath.isNullOrEmpty()) {
+                        val uri = it.fileUri
+                        val previewUri = getPreviewUri(it.getPreviewFileDescription())
+                        val path = it.getPreviewFileDescription()?.downloadPath
+                        val fileUri = uri?.toString() ?: previewUri?.toString() ?: path
+                        if (!fileUri.isNullOrEmpty()) {
                             get()
-                                .load(downloadPath)
+                                .load(fileUri)
                                 .autoRotateWithExif(true)
                                 .scales(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP)
                                 .modifications(maskedTransformation)

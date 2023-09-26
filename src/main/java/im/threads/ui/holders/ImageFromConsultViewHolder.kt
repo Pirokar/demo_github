@@ -174,14 +174,15 @@ class ImageFromConsultViewHolder(
         timeStampLoader.gone()
         errorTextView.gone()
         rotateAnim.cancel()
-        val fileUri = if (fileDescription.fileUri?.toString()?.isNotBlank() == true) {
-            fileDescription.fileUri.toString()
+        val previewUri = getPreviewUri(fileDescription.getPreviewFileDescription())
+        val fileUri = if (previewUri?.toString().isNullOrBlank()) {
+            fileDescription.getPreviewFileDescription()?.downloadPath
         } else {
-            fileDescription.getSmallImageDownloadPath()
+            previewUri?.toString()
         }
         val isStateReady = fileDescription.state == AttachmentStateEnum.READY
         if (isStateReady && !fileDescription.isDownloadError) {
-            if (fileUri.isNotEmpty()) {
+            if (!fileUri.isNullOrEmpty()) {
                 showLoadImageAnimation()
                 ImageLoader.get()
                     .load(fileUri)

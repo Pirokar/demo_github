@@ -9,6 +9,7 @@ import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.models.enums.AttachmentStateEnum.Companion.fromString
 import im.threads.business.models.enums.ErrorStateEnum
 import im.threads.business.models.enums.ErrorStateEnum.Companion.errorStateEnumFromString
+import im.threads.business.utils.FileUtils
 import io.reactivex.subjects.PublishSubject
 
 class FileDescription(var from: String?, var fileUri: Uri?, var size: Long, var timeStamp: Long) :
@@ -24,9 +25,17 @@ class FileDescription(var from: String?, var fileUri: Uri?, var size: Long, var 
     var errorCode = ErrorStateEnum.ANY
     var errorMessage: String? = ""
     var voiceFormattedDuration: String = ""
+    private var smallFileDescription: FileDescription? = null
 
-    fun getSmallImageDownloadPath(): String {
-        return "$downloadPath?size=small"
+    fun getPreviewFileDescription(): FileDescription? {
+        if (smallFileDescription == null && FileUtils.isImage(this)) {
+            smallFileDescription = FileDescription(from, null, size, timeStamp)
+            smallFileDescription?.downloadPath = "$downloadPath?size=small"
+            smallFileDescription?.originalPath = "$originalPath?size=small"
+            smallFileDescription?.incomingName = FileUtils.generatePreviewFileName(incomingName)
+            smallFileDescription?.state = state
+        }
+        return smallFileDescription
     }
 
     override fun equals(other: Any?): Boolean {
@@ -70,7 +79,7 @@ class FileDescription(var from: String?, var fileUri: Uri?, var size: Long, var 
     override fun toString(): String {
         return "FileDescription{" +
             "from='" + from + '\'' +
-            ", filePath='" + fileUri + '\'' +
+            ", fileUri='" + fileUri + '\'' +
             ", downloadPath='" + downloadPath + '\'' +
             ", incomingName='" + incomingName + '\'' +
             ", size=" + size +

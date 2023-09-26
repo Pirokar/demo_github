@@ -78,12 +78,12 @@ public final class FileAndMediaViewHolder extends BaseHolder {
             mImageButton.setVisibility(View.VISIBLE);
         }
         mDownloadButton.setProgress(fileDescription.getFileUri() != null ? 100 : fileDescription.getDownloadProgress());
-        if (FileUtils.isImage(fileDescription)) {
+        if (FileUtils.isImage(fileDescription) && fileDescription.getPreviewFileDescription() != null) {
             String downloadPath = "";
-            if (fileDescription.getFileUri() != null) {
-                downloadPath = fileDescription.getFileUri().toString();
+            if (fileDescription.getPreviewFileDescription().getFileUri() != null) {
+                downloadPath = fileDescription.getPreviewFileDescription().getFileUri().toString();
             } else if (fileDescription.getDownloadPath() != null) {
-                downloadPath = fileDescription.getSmallImageDownloadPath();
+                downloadPath = fileDescription.getPreviewFileDescription().getDownloadPath();
             }
             ImageLoader
                     .get()
