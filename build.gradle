@@ -94,7 +94,7 @@ ext {
     mockitoInlineVersion = '2.21.0'
     webserver_version = '2.35.0'
     test_ext = '1.1.5'
-    kaspresso_version = '1.5.2'
+    kaspresso_version = '1.5.3'
     retrofitVersion = '2.9.0'
     parcelerVersion = '1.1.12'
 }

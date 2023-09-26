@@ -28,6 +28,10 @@ import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.kotlin.anyOrNull
+import java.io.BufferedReader
+import java.io.IOException
+import java.io.InputStream
+import java.io.InputStreamReader
 
 abstract class BaseTestCase : TestCase() {
     private val userId = (10000..99999).random().toString()
@@ -115,12 +119,15 @@ abstract class BaseTestCase : TestCase() {
         }
     }
 
-    protected fun prepareHttpMocks(withAnswerDelayInMs: Int = 0) {
+    protected fun prepareHttpMocks(
+        withAnswerDelayInMs: Int = 0,
+        historyAnswer: String? = null
+    ) {
         wireMockRule.stubFor(
             WireMock.get(WireMock.urlPathMatching(".*/history.*"))
                 .willReturn(
                     WireMock.aResponse()
-                        .withBody(TestMessages.emptyHistoryMessage)
+                        .withBody(historyAnswer ?: TestMessages.emptyHistoryMessage)
                         .withHeader("Content-Type", "application/json")
                         .withFixedDelay(withAnswerDelayInMs)
                 )
@@ -137,6 +144,23 @@ abstract class BaseTestCase : TestCase() {
         TestMessages.scheduleWsMessage,
         TestMessages.attachmentSettingsWsMessage
     )
+
+    protected fun readTextFileFromRawResourceId(resourceId: Int): String {
+        var string: String? = ""
+        val stringBuilder = StringBuilder()
+        val inputStream: InputStream = context.resources.openRawResource(resourceId)
+        val reader = BufferedReader(InputStreamReader(inputStream))
+        while (true) {
+            try {
+                if (reader.readLine().also { string = it } == null) break
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+            stringBuilder.append(string).append("\n")
+        }
+        inputStream.close()
+        return stringBuilder.toString()
+    }
 
     private fun getAnswersForWebSocket(
         websocketMessage: String

@@ -5,6 +5,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import io.edna.threads.demo.BaseTestCase
+import io.edna.threads.demo.R
 import io.edna.threads.demo.TestMessages
 import io.edna.threads.demo.appCode.activity.MainActivity
 import io.edna.threads.demo.kaspressoSreens.ChatMainScreen
@@ -15,7 +16,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 
 @RunWith(AndroidJUnit4::class)
-class FirstLoginTest : BaseTestCase() {
+class TextMessagesTest : BaseTestCase() {
     private val intent = Intent(ApplicationProvider.getApplicationContext(), MainActivity::class.java)
 
     @get:Rule
@@ -64,6 +65,34 @@ class FirstLoginTest : BaseTestCase() {
                 lastChild<ChatMainScreen.ChatRecyclerItem> {
                     itemText.containsText("привет!")
                 }
+            }
+        }
+    }
+
+    @Test
+    fun historyTest() {
+        prepareHttpMocks(historyAnswer = readTextFileFromRawResourceId(R.raw.history_text_response))
+        openChatFromDemoLoginPage()
+        ChatMainScreen {
+            inputEditView { isVisible() }
+            recyclerView {
+                isVisible()
+                childAt<ChatMainScreen.ChatRecyclerItem>(1) {
+                    itemText.containsText("Добрый день! Мы создаем экосистему бизнеса")
+                }
+
+                hasDescendant { containsText("Добро пожаловать в наш чат") }
+                hasDescendant { containsText("Edna – современное решение для построения диалога с клиентом") }
+
+                lastChild<ChatMainScreen.ChatRecyclerItem> {
+                    itemText.containsText("Тогда до связи!")
+                }
+            }
+            recyclerView {
+                hasDescendant { containsText("То есть это все про вас?") }
+                hasDescendant { containsText("Именно! А еще у нас есть различные каналы коммуникации с клиентами! Подробнее: https://edna.ru/channels/") }
+                hasDescendant { containsText("Отлично! Давайте проверим ваши контакты. Ваш email: info@edna.ru, телефон: +7 (495) 609-60-80. Верно?") }
+                hasDescendant { containsText("Да, все верно") }
             }
         }
     }

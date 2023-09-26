@@ -28,7 +28,7 @@ object ChatMainScreen : KScreen<ChatMainScreen>() {
     val errorRetryBtn = KButton { withId(R.id.retryInitChatBtn) }
 
     val recyclerView = KRecyclerView(
-        builder = { withId(R.id.recycler) },
+        builder = { withId(R.id.chatItemsRecycler) },
         itemTypeBuilder = { itemType(ChatMainScreen::ChatRecyclerItem) }
     )
 
