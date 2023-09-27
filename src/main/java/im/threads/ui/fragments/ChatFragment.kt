@@ -2737,11 +2737,13 @@ class ChatFragment :
             if (it.isNotEmpty()) {
                 val isChatReady = chatController.isChatReady()
                 val isAnimationEnabled = withAnimation && isChatReady
-                chatController.setFormattedDurations(it, mediaMetadataRetriever) {
-                    chatAdapter?.addItems(it, isAnimationEnabled)
-                    if (isChatReady) {
-                        hideErrorView()
-                        hideProgressBar()
+                chatController.removeCorruptedFiles(it) {
+                    chatController.setFormattedDurations(it, mediaMetadataRetriever) {
+                        chatAdapter?.addItems(it, isAnimationEnabled)
+                        if (isChatReady) {
+                            hideErrorView()
+                            hideProgressBar()
+                        }
                     }
                 }
             }

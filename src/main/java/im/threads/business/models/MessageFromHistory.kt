@@ -22,6 +22,7 @@ class MessageFromHistory : ChatItem {
     var type: String? = null
     var isDisplay = false
     val speechStatus: String? = null
+    val content: Survey? = null
 
     // SURVEY
     val hideAfter: Long? = null

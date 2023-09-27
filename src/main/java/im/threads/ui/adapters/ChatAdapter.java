@@ -68,7 +68,6 @@ import im.threads.business.ogParser.OpenGraphParser;
 import im.threads.business.ogParser.OpenGraphParserJsoupImpl;
 import im.threads.business.utils.ChatItemListFinder;
 import im.threads.business.utils.FileUtils;
-import im.threads.business.utils.FileUtilsKt;
 import im.threads.business.workers.FileDownloadWorker;
 import im.threads.ui.ChatStyle;
 import im.threads.ui.adapters.utils.SendingStatusObserver;
@@ -99,7 +98,6 @@ import im.threads.ui.holders.VoiceMessageBaseHolder;
 import im.threads.ui.holders.helper.SurveySplitterKt;
 import im.threads.ui.preferences.PreferencesJavaUI;
 import im.threads.ui.utils.ThreadRunnerKt;
-import im.threads.ui.views.VoiceTimeLabelFormatterKt;
 import io.reactivex.subjects.PublishSubject;
 import kotlin.jvm.Synchronized;
 
