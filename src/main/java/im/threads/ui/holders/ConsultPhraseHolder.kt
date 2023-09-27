@@ -223,6 +223,7 @@ class ConsultPhraseHolder(
         val isBordersNotSet = borderLeft == 0 && borderTop == 0 && borderRight == 0 && borderBottom == 0
         val isImage = isImage(fileDescription)
 
+        setImageSize(imageRoot)
         setLayoutMargins(true, bubbleLayout)
         if (isImage && fileDescription?.state == AttachmentStateEnum.READY) {
             imageRoot.visible()

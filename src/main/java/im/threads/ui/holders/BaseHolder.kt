@@ -42,6 +42,7 @@ import im.threads.business.utils.UrlUtils
 import im.threads.ui.config.Config
 import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.utils.NoLongClickMovementMethod
+import im.threads.ui.utils.ScreenSizeGetter
 import im.threads.ui.utils.ViewUtils
 import im.threads.ui.utils.gone
 import im.threads.ui.utils.invisible
@@ -55,7 +56,6 @@ import io.reactivex.subjects.PublishSubject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 abstract class BaseHolder internal constructor(
@@ -633,7 +633,61 @@ abstract class BaseHolder internal constructor(
         }
     }
 
+    internal fun getImageViewSize(): Int {
+        if (imageViewSize == null) {
+            calculateImageSize()
+        }
+        return imageViewSize!!
+    }
+
+    private fun calculateImageSize() {
+        val chatStyle = Config.getInstance().chatStyle
+        val resources = itemView.context.resources
+        val screenWidth = ScreenSizeGetter().getScreenSize(itemView.context).width
+        val incomingBorderLeft = resources.getDimensionPixelSize(chatStyle.incomingImageLeftBorderSize)
+        val incomingBorderRight = resources.getDimensionPixelSize(chatStyle.incomingImageRightBorderSize)
+        val isIncomingBordersNotSet = incomingBorderLeft == 0 && incomingBorderRight == 0
+        val outgoingBorderLeft = resources.getDimensionPixelSize(chatStyle.outgoingImageLeftBorderSize)
+        val outgoingBorderRight = resources.getDimensionPixelSize(chatStyle.outgoingImageRightBorderSize)
+        val outgoingMarginLeft = resources.getDimensionPixelSize(chatStyle.bubbleOutgoingMarginLeft)
+        val outgoingMarginRight = resources.getDimensionPixelSize(chatStyle.bubbleOutgoingMarginRight)
+        val incomingMarginLeft = resources.getDimensionPixelSize(chatStyle.bubbleIncomingMarginLeft)
+        val incomingMarginRight = resources.getDimensionPixelSize(chatStyle.bubbleIncomingMarginRight)
+        val outgoingPaddingLeft = resources.getDimensionPixelSize(chatStyle.bubbleOutgoingPaddingLeft)
+        val outgoingPaddingRight = resources.getDimensionPixelSize(chatStyle.bubbleOutgoingPaddingRight)
+        val incomingPaddingLeft = resources.getDimensionPixelSize(chatStyle.bubbleIncomingPaddingLeft)
+        val incomingPaddingRight = resources.getDimensionPixelSize(chatStyle.bubbleIncomingPaddingRight)
+        val isOutgoingBordersNotSet = outgoingBorderLeft == 0 && outgoingBorderRight == 0
+
+        val incomingBordersAndMargins = if (isIncomingBordersNotSet) {
+            incomingMarginRight + incomingMarginLeft + incomingPaddingLeft + incomingPaddingRight
+        } else {
+            incomingBorderLeft + incomingBorderRight + incomingMarginRight + incomingMarginLeft
+        }
+
+        val outgoingBordersAndMargins = if (isOutgoingBordersNotSet) {
+            outgoingMarginRight + outgoingMarginLeft + outgoingPaddingLeft + outgoingPaddingRight
+        } else {
+            outgoingBorderLeft + outgoingBorderRight + outgoingMarginRight + outgoingMarginLeft
+        }
+
+        imageViewSize = if (incomingBordersAndMargins > outgoingBordersAndMargins) {
+            screenWidth - incomingBordersAndMargins
+        } else {
+            screenWidth - outgoingBordersAndMargins
+        }
+    }
+
+    protected fun setImageSize(view: View) {
+        val size = getImageViewSize()
+        val params: ViewGroup.LayoutParams = view.layoutParams
+        params.width = size
+        params.height = size
+        view.layoutParams = params
+    }
+
     companion object {
         val statuses = HashMap<Long, MessageStatus?>()
+        var imageViewSize: Int? = null
     }
 }
