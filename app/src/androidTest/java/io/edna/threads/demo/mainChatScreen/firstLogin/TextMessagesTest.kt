@@ -1,6 +1,9 @@
 package io.edna.threads.demo.mainChatScreen.firstLogin
 
+import android.content.ClipboardManager
+import android.content.Context.CLIPBOARD_SERVICE
 import android.content.Intent
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -118,6 +121,34 @@ class TextMessagesTest : BaseTestCase() {
                 hasAnyText()
             }
             quoteClear { isVisible() }
+        }
+    }
+
+    @Test
+    fun copyOperatorMessageTest() {
+        prepareHttpMocks()
+        openChatFromDemoLoginPage()
+        sendMessageFromOperator()
+
+        ChatMainScreen {
+            recyclerView {
+                isVisible()
+                lastChild<ChatMainScreen.ChatRecyclerItem> {
+                    isVisible()
+                    perform { longClick() }
+                }
+            }
+            copyBtn {
+                isVisible()
+                click()
+            }
+        }
+
+        val clipboard = context.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager?
+        if (clipboard?.hasPrimaryClip() == true) {
+            assert(clipboard.primaryClip?.getItemAt(0)?.text == "привет!")
+        } else {
+            assert(false)
         }
     }
 
