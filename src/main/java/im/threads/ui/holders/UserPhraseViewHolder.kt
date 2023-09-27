@@ -10,6 +10,7 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TableRow
 import android.widget.TextView
@@ -203,6 +204,8 @@ class UserPhraseViewHolder(
         if (userPhrase.sentState == MessageStatus.FAILED) {
             showErrorText()
         }
+        quote?.let { showQuote(it, onQuoteClickListener) }
+            ?: campaignMessage?.let { showCampaign(it) }
 
         showFiles(userPhrase, imageClickListener, fileClickListener)
         setTimestamp(timeStamp)
@@ -213,8 +216,6 @@ class UserPhraseViewHolder(
             phraseTextView.gone()
         }
 
-        quote?.let { showQuote(it, onQuoteClickListener) }
-            ?: campaignMessage?.let { showCampaign(it) }
         if ((quote != null || fileDescription != null) && voiceMessage.visibility != VISIBLE) {
             phraseFrame.layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
         } else {
@@ -268,9 +269,9 @@ class UserPhraseViewHolder(
 
             if (isBordersNotSet) {
                 phraseFrame.setPadding(borderLeft, 0, borderRight, 0)
+                quoteTextRow.setPadding(borderLeft, 0, borderRight, 0)
                 setPaddings(false, this)
             } else {
-                setPadding(0, 0, 0, 0)
                 (image.layoutParams as FrameLayout.LayoutParams).apply {
                     setMargins(borderLeft, borderTop, borderRight, borderBottom)
                     image.layoutParams = this
@@ -281,6 +282,11 @@ class UserPhraseViewHolder(
                     borderRight,
                     resources.getDimensionPixelSize(style.bubbleIncomingPaddingBottom)
                 )
+                (quoteTextRow.layoutParams as LinearLayout.LayoutParams).apply {
+                    setMargins(borderLeft, 0, borderRight, 0)
+                    quoteTextRow.layoutParams = this
+                }
+                setPadding(0, 0, 0, 0)
             }
             image.invalidate()
             image.requestLayout()
