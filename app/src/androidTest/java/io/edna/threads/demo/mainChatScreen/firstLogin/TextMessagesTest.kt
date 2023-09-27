@@ -22,6 +22,8 @@ class TextMessagesTest : BaseTestCase() {
     @get:Rule
     internal val activityRule = ActivityScenarioRule<MainActivity>(intent)
 
+    private val textToSend = "Hello, Edna! This is a test message"
+
     init {
         applyDefaultUserToDemoApp()
         prepareWsMocks()
@@ -30,7 +32,6 @@ class TextMessagesTest : BaseTestCase() {
     @Test
     fun textMessages() {
         prepareHttpMocks()
-        val textToSend = "Hello, Edna! This is a test message"
 
         openChatFromDemoLoginPage()
         ChatMainScreen {
@@ -48,18 +49,11 @@ class TextMessagesTest : BaseTestCase() {
                     itemText.containsText(textToSend)
                 }
             }
-            val currentTimeMs = System.currentTimeMillis()
-            val dateFormat = SimpleDateFormat("yyyy-MM-dd")
-            val timeFormat = SimpleDateFormat("HH:mm:ss")
-            val currentDateObj = Date(currentTimeMs)
-            val currentDate = dateFormat.format(currentDateObj)
-            val currentTime = timeFormat.format(currentDateObj)
+        }
 
-            val operatorMessage = TestMessages.operatorHelloMessage
-                .replace("2023-09-25", currentDate)
-                .replace("13:07:29", currentTime)
+        sendMessageFromOperator()
 
-            sendMessageToSocket(operatorMessage)
+        ChatMainScreen {
             recyclerView {
                 isVisible()
                 lastChild<ChatMainScreen.ChatRecyclerItem> {
@@ -98,11 +92,56 @@ class TextMessagesTest : BaseTestCase() {
     }
 
     @Test
+    fun operatorQuoteTest() {
+        prepareHttpMocks()
+        openChatFromDemoLoginPage()
+        sendMessageFromOperator()
+
+        ChatMainScreen {
+            recyclerView {
+                isVisible()
+                lastChild<ChatMainScreen.ChatRecyclerItem> {
+                    isVisible()
+                    perform { longClick() }
+                }
+            }
+            replyBtn {
+                isVisible()
+                click()
+            }
+            quoteText {
+                isVisible()
+                hasText("привет!")
+            }
+            quoteHeader {
+                isVisible()
+                hasAnyText()
+            }
+            quoteClear { isVisible() }
+        }
+    }
+
+    @Test
     fun progressbarOnStart() {
         prepareHttpMocks(9000)
         openChatFromDemoLoginPage()
         ChatMainScreen {
             progressBar { isVisible() }
         }
+    }
+
+    private fun sendMessageFromOperator() {
+        val currentTimeMs = System.currentTimeMillis()
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd")
+        val timeFormat = SimpleDateFormat("HH:mm:ss")
+        val currentDateObj = Date(currentTimeMs)
+        val currentDate = dateFormat.format(currentDateObj)
+        val currentTime = timeFormat.format(currentDateObj)
+
+        val operatorMessage = TestMessages.operatorHelloMessage
+            .replace("2023-09-25", currentDate)
+            .replace("13:07:29", currentTime)
+
+        sendMessageToSocket(operatorMessage)
     }
 }

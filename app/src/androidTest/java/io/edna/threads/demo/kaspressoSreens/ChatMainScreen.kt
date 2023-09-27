@@ -26,6 +26,11 @@ object ChatMainScreen : KScreen<ChatMainScreen>() {
     val errorImage = KImageView { withId(R.id.errorImage) }
     val errorText = KTextView { withId(R.id.errorMessage) }
     val errorRetryBtn = KButton { withId(R.id.retryInitChatBtn) }
+    val replyBtn = KImageView { withId(R.id.reply) }
+    val copyBtn = KImageView { withId(R.id.content_copy) }
+    val quoteText = KTextView { withId(R.id.quote_text) }
+    val quoteHeader = KTextView { withId(R.id.quote_header) }
+    val quoteClear = KImageView { withId(R.id.quote_clear) }
 
     val recyclerView = KRecyclerView(
         builder = { withId(R.id.chatItemsRecycler) },
