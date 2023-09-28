@@ -85,6 +85,18 @@ class ImagesTest : BaseTestCase() {
 
             assert(chatItemsRecyclerView.getSize() > 0)
 
+            chatItemsRecyclerView {
+                lastChild<ChatMainScreen.ChatRecyclerItem> {
+                    image.isClickable()
+                    image.click()
+                }
+            }
+            imagePager.isVisible()
+            imagePager.isAtPage(0)
+
+            pressBack()
+            chatItemsRecyclerView { waitListForNotEmpty(5000) }
+
             sendMessageToSocket(TestMessages.operatorImageMessage)
 
             assert(chatItemsRecyclerView.getSize() > 1)
@@ -100,8 +112,12 @@ class ImagesTest : BaseTestCase() {
                 waitListForNotEmpty(5000)
                 lastChild<ChatMainScreen.ChatRecyclerItem> {
                     itemText.containsText("Великолепно! Как и вот это.")
+                    image.isClickable()
+                    image.click()
                 }
             }
+            imagePager.isVisible()
+            imagePager.isAtPage(3)
         }
     }
 
@@ -145,7 +161,8 @@ class ImagesTest : BaseTestCase() {
             }
             chatItemsRecyclerView {
                 isVisible()
-                lastChild<ChatMainScreen.ChatRecyclerItem> {
+                scrollTo(0)
+                firstChild<ChatMainScreen.ChatRecyclerItem> {
                     itemText.containsText(textToType)
                 }
             }

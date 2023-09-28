@@ -8,6 +8,7 @@ import im.threads.ui.fragments.ChatFragment
 import io.github.kakaocup.kakao.common.views.KView
 import io.github.kakaocup.kakao.edit.KEditText
 import io.github.kakaocup.kakao.image.KImageView
+import io.github.kakaocup.kakao.pager.KViewPager
 import io.github.kakaocup.kakao.recycler.KRecyclerItem
 import io.github.kakaocup.kakao.recycler.KRecyclerView
 import io.github.kakaocup.kakao.text.KButton
@@ -35,6 +36,8 @@ object ChatMainScreen : KScreen<ChatMainScreen>() {
     val quoteImage = KImageView { withId(R.id.quote_image) }
     val quoteClear = KImageView { withId(R.id.quote_clear) }
     val addAttachmentBtn = KImageView { withId(R.id.add_attachment) }
+    val fullScreenImage = KImageView { withId(R.id.image) }
+    val imagePager = KViewPager { withId(R.id.pager) }
 
     val chatItemsRecyclerView = KRecyclerView(
         builder = { withId(R.id.chatItemsRecycler) },
@@ -49,6 +52,7 @@ object ChatMainScreen : KScreen<ChatMainScreen>() {
     class ChatRecyclerItem(matcher: Matcher<View>) : KRecyclerItem<ChatRecyclerItem>(matcher) {
         val itemText = KTextView(matcher) { withId(R.id.text) }
         val itemTime = KTextView(matcher) { withId(R.id.timeStamp) }
+        val image = KImageView(matcher) { withId(R.id.image) }
     }
 
     class BottomGalleryItem(matcher: Matcher<View>) : KRecyclerItem<BottomGalleryItem>(matcher)
