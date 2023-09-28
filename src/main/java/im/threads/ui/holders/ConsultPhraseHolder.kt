@@ -130,6 +130,8 @@ class ConsultPhraseHolder(
     init {
         itemView.findViewById<View>(R.id.delimiter)
             .setBackgroundColor(getColorInt(style.incomingDelimitersColor))
+        itemView.findViewById<View>(R.id.quoteDelimiter)
+            .setBackgroundColor(getColorInt(style.incomingDelimitersColor))
         setTextColorToViews(
             arrayOf(
                 phraseTextView,
