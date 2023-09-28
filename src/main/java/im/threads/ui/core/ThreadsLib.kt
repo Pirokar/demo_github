@@ -9,6 +9,7 @@ import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.FileDescription
 import im.threads.business.models.UpcomingUserMessage
 import im.threads.business.serviceLocator.core.inject
+import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.FileProvider
 import im.threads.business.utils.FileUtils.getFileSize
 import im.threads.ui.ChatCenterPushMessageHelper
@@ -25,6 +26,7 @@ import java.io.File
 
 class ThreadsLib(context: Context) : ThreadsLibBase(context) {
     private val config by lazy { Config.getInstance() }
+    private val clientUseCase: ClientUseCase by inject()
     private val fileProvider: FileProvider by inject()
     private val chatCenterPushMessageHelper: ChatCenterPushMessageHelper by inject()
     private val coroutineScope = CoroutineScope(Dispatchers.IO)

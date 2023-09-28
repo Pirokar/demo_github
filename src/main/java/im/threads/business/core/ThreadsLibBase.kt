@@ -56,7 +56,7 @@ open class ThreadsLibBase protected constructor(context: Context) {
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
     val preferences: Preferences by inject()
-    protected val clientUseCase: ClientUseCase by inject()
+    private val clientUseCase: ClientUseCase by inject()
     private val chatUpdateProcessor: ChatUpdateProcessor by inject()
     private val database: DatabaseHolder by inject()
     private val chatState: ChatState by inject()
