@@ -6,12 +6,6 @@
     android:background="@color/ecc_attachments_background">
 
     <ImageView
-        android:id="@+id/image"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:contentDescription="@string/ecc_image" />
-
-    <ImageView
         android:id="@+id/preview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -24,6 +18,12 @@
         android:layout_height="@dimen/ecc_operator_photo_size"
         android:layout_gravity="center_vertical|center_horizontal"
         android:contentDescription="@string/ecc_loading" />
+
+    <ImageView
+        android:id="@+id/image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/ecc_image" />
 
     <LinearLayout
         android:layout_width="match_parent"
