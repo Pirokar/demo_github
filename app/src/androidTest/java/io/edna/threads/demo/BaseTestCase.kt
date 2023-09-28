@@ -1,10 +1,18 @@
 package io.edna.threads.demo
 
+import android.app.DownloadManager
+import android.content.ContentValues
+import android.content.Context
+import android.net.Uri
+import android.os.Environment
+import android.provider.MediaStore
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import com.github.tomakehurst.wiremock.junit.WireMockRule
+import com.kaspersky.kaspresso.internal.extensions.other.createFileIfNeeded
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
+import im.threads.R
 import im.threads.business.UserInfoBuilder
 import im.threads.business.config.BaseConfig
 import im.threads.business.rest.queries.ednaMockPort
@@ -29,6 +37,7 @@ import org.mockito.MockitoAnnotations
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.kotlin.anyOrNull
 import java.io.BufferedReader
+import java.io.File
 import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
@@ -162,6 +171,83 @@ abstract class BaseTestCase : TestCase() {
         return stringBuilder.toString()
     }
 
+    @Suppress("DEPRECATION")
+    protected fun copyToDownloadsApiBelow29(filePathRelativeToAssets: String) {
+        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)?.absolutePath?.let {
+            val fileName = filePathRelativeToAssets.split("/").last()
+            val toFile = File("$it/$fileName")
+            if (toFile.exists() && toFile.length() > 0) {
+                return
+            } else if (toFile.exists()) {
+                toFile.delete()
+            }
+            context.assets.open(filePathRelativeToAssets).toFile(toFile.createFileIfNeeded())
+            val dm = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+
+            dm.addCompletedDownload(
+                fileName,
+                BaseConfig.getInstance().context.getString(R.string.ecc_media_description),
+                true,
+                getMimeType(fileName),
+                toFile.path,
+                toFile.length(),
+                false
+            )
+        }
+    }
+
+    protected fun copyToDownloadsApi29(filePathRelativeToAssets: String) {
+        val fileName = filePathRelativeToAssets.split("/").last()
+        val values = ContentValues()
+        values.put(
+            MediaStore.MediaColumns.DISPLAY_NAME,
+            fileName
+        )
+        values.put(
+            MediaStore.MediaColumns.MIME_TYPE,
+            getMimeType(fileName)
+        )
+        values.put(
+            MediaStore.MediaColumns.RELATIVE_PATH,
+            Environment.DIRECTORY_DOWNLOADS
+        )
+        val uri: Uri? = context.contentResolver.insert(
+            MediaStore.Files.getContentUri("external"),
+            values
+        )
+        context.assets.open(filePathRelativeToAssets).copyToUri(uri!!, context)
+    }
+
+    private fun getMimeType(fileName: String): String {
+        return if (fileName.endsWith(".jpg")) {
+            "image/jpeg"
+        } else if (fileName.endsWith(".jpeg")) {
+            "image/pjpeg"
+        } else if (fileName.endsWith(".png")) {
+            "image/png"
+        } else if (fileName.endsWith(".gif")) {
+            "image/gif"
+        } else if (fileName.endsWith(".tiff")) {
+            "image/tiff"
+        } else if (fileName.endsWith(".ogg")) {
+            "audio/ogg"
+        } else if (fileName.endsWith(".aac")) {
+            "image/aac"
+        } else if (fileName.endsWith(".pdf")) {
+            "application/pdf"
+        } else if (fileName.endsWith(".doc") || fileName.endsWith(".docx")) {
+            "application/msword"
+        } else if (fileName.endsWith(".zip")) {
+            "application/zip"
+        } else if (fileName.endsWith(".gzip")) {
+            "application/gzip"
+        } else if (fileName.endsWith(".xml")) {
+            "application/xml"
+        } else {
+            "*/*"
+        }
+    }
+
     private fun getAnswersForWebSocket(
         websocketMessage: String
     ): Pair<String?, Boolean> {
@@ -203,6 +289,22 @@ abstract class BaseTestCase : TestCase() {
             TestData.fromJson(existedTestData)
         } else {
             TestData()
+        }
+    }
+}
+
+fun InputStream.toFile(to: File) {
+    this.use { input ->
+        to.outputStream().use { out ->
+            input.copyTo(out)
+        }
+    }
+}
+
+fun InputStream.copyToUri(to: Uri, context: Context) {
+    this.use { input ->
+        context.contentResolver.openOutputStream(to).use { out ->
+            input.copyTo(out!!)
         }
     }
 }

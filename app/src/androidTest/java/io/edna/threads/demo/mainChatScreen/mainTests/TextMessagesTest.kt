@@ -1,9 +1,8 @@
-package io.edna.threads.demo.mainChatScreen.firstLogin
+package io.edna.threads.demo.mainChatScreen.mainTests
 
 import android.content.ClipboardManager
 import android.content.Context.CLIPBOARD_SERVICE
 import android.content.Intent
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
