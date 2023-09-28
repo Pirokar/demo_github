@@ -103,7 +103,7 @@ class ImageFragment : BaseFragment() {
 
     private fun loadPreview(fileDescription: FileDescription) {
         binding.preview.isVisible = true
-        val fileUri = if (getPreviewUri(fileDescription.getPreviewFileDescription())?.toString()?.isNotBlank() == true) {
+        val fileUri = if (getPreviewUri(fileDescription.getPreviewFileDescription())?.toString().isNullOrBlank()) {
             fileDescription.getPreviewFileDescription()?.downloadPath
         } else {
             getPreviewUri(fileDescription.getPreviewFileDescription())?.toString()
