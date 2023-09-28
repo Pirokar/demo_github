@@ -17,6 +17,7 @@
             android:id="@+id/quoteTextRow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingTop="@dimen/ecc_margin_half"
             android:layout_gravity="start">
 
             <ImageView
