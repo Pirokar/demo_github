@@ -114,17 +114,15 @@ open class ThreadsLibBase protected constructor(context: Context) {
     }
 
     internal fun updateUnreadCountMessagesIfNeed() {
-        if (BaseConfig.getInstance().unreadMessagesCountListener != null) {
-            val userInfo = clientUseCase.getUserInfo()
-            if (userInfo != null) {
-                ChatController.getInstance().loadHistory(fromQuickAnswerController = true)
-            }
+        if (BaseConfig.getInstance().unreadMessagesCountListener != null &&
+            clientUseCase.getUserInfo() != null
+        ) {
+            ChatController.getInstance().loadHistory(fromQuickAnswerController = true)
         }
     }
 
     internal fun sendRegisterDeviceIfNeed() {
-        val userInfo = clientUseCase.getUserInfo()
-        if (userInfo != null) {
+        if (BaseConfig.getInstance().keepSocketActive && clientUseCase.getUserInfo() != null) {
             BaseConfig.getInstance().transport.sendRegisterDevice(false)
         }
     }
