@@ -56,7 +56,7 @@ open class ThreadsLibBase protected constructor(context: Context) {
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
     val preferences: Preferences by inject()
-    private val clientUseCase: ClientUseCase by inject()
+    protected val clientUseCase: ClientUseCase by inject()
     private val chatUpdateProcessor: ChatUpdateProcessor by inject()
     private val database: DatabaseHolder by inject()
     private val chatState: ChatState by inject()
@@ -106,10 +106,26 @@ open class ThreadsLibBase protected constructor(context: Context) {
             clientUseCase.saveUserInfo(userInfoBuilder)
             if (forceRegistration && preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS).isNullOrBlank()) {
                 BaseConfig.getInstance().transport.sendRegisterDevice(true)
-                if (!ChatFragment.isShown) {
+                if (!ChatFragment.isShown && !BaseConfig.getInstance().keepSocketActive) {
                     BaseConfig.getInstance().transport.closeWebSocket()
                 }
             }
+        }
+    }
+
+    internal fun updateUnreadCountMessagesIfNeed() {
+        if (BaseConfig.getInstance().unreadMessagesCountListener != null) {
+            val userInfo = clientUseCase.getUserInfo()
+            if (userInfo != null) {
+                ChatController.getInstance().loadHistory(fromQuickAnswerController = true)
+            }
+        }
+    }
+
+    internal fun sendRegisterDeviceIfNeed() {
+        val userInfo = clientUseCase.getUserInfo()
+        if (userInfo != null) {
+            BaseConfig.getInstance().transport.sendRegisterDevice(false)
         }
     }
 
