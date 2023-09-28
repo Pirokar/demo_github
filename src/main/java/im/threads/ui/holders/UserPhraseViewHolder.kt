@@ -283,7 +283,12 @@ class UserPhraseViewHolder(
                     resources.getDimensionPixelSize(style.bubbleIncomingPaddingBottom)
                 )
                 (quoteTextRow.layoutParams as LinearLayout.LayoutParams).apply {
-                    setMargins(borderLeft, resources.getDimensionPixelSize(style.bubbleIncomingPaddingTop), borderRight, 0)
+                    setMargins(
+                        borderLeft,
+                        resources.getDimensionPixelSize(style.bubbleIncomingPaddingTop),
+                        borderRight,
+                        resources.getDimensionPixelSize(style.bubbleIncomingPaddingTop)
+                    )
                     quoteTextRow.layoutParams = this
                 }
                 setPadding(0, 0, 0, 0)
