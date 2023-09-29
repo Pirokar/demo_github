@@ -155,10 +155,11 @@ class ThreadsLib(context: Context) : ThreadsLibBase(context) {
             Config.setInstance(configBuilder.build())
             BaseConfig.getInstance().loggerConfig?.let { LoggerEdna.init(it) }
             LoggerEdna.info(configBuilder.toString())
-
             loadRamPrefs(this::migratePreference, configBuilder.context)
             initBaseParams()
             getInstance().subscribeToPushEvent()
+            getInstance().sendRegisterDeviceIfNeed()
+            getInstance().updateUnreadCountMessagesIfNeed()
         }
 
         /**

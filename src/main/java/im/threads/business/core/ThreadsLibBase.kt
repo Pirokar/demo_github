@@ -106,10 +106,24 @@ open class ThreadsLibBase protected constructor(context: Context) {
             clientUseCase.saveUserInfo(userInfoBuilder)
             if (forceRegistration && preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS).isNullOrBlank()) {
                 BaseConfig.getInstance().transport.sendRegisterDevice(true)
-                if (!ChatFragment.isShown) {
+                if (!ChatFragment.isShown && !BaseConfig.getInstance().keepSocketActive) {
                     BaseConfig.getInstance().transport.closeWebSocket()
                 }
             }
+        }
+    }
+
+    internal fun updateUnreadCountMessagesIfNeed() {
+        if (BaseConfig.getInstance().unreadMessagesCountListener != null &&
+            clientUseCase.getUserInfo() != null
+        ) {
+            ChatController.getInstance().loadHistory(fromQuickAnswerController = true)
+        }
+    }
+
+    internal fun sendRegisterDeviceIfNeed() {
+        if (BaseConfig.getInstance().keepSocketActive && clientUseCase.getUserInfo() != null) {
+            BaseConfig.getInstance().transport.sendRegisterDevice(false)
         }
     }
 
