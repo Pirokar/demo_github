@@ -26,10 +26,23 @@ class ImagesTest : BaseTestCase() {
 
     @Rule
     @JvmField
-    val rule = if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+    val storageApiBelow29Rule = if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         GrantPermissionRule.grant(
             "android.permission.READ_EXTERNAL_STORAGE",
             "android.permission.WRITE_EXTERNAL_STORAGE"
+        )
+    } else {
+        null
+    }
+
+    @Rule
+    @JvmField
+    val storageApi29Rule = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        GrantPermissionRule.grant(
+            "android.permission.READ_MEDIA_IMAGES",
+            "android.permission.READ_MEDIA_VIDEO",
+            "android.permission.READ_MEDIA_AUDIO",
+            "android.permission.ACCESS_MEDIA_LOCATION"
         )
     } else {
         null

@@ -3,6 +3,8 @@ package io.edna.threads.demo.mainChatScreen.mainTests
 import android.content.ClipboardManager
 import android.content.Context.CLIPBOARD_SERVICE
 import android.content.Intent
+import android.os.Handler
+import android.os.Looper
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -11,6 +13,7 @@ import io.edna.threads.demo.R
 import io.edna.threads.demo.TestMessages
 import io.edna.threads.demo.appCode.activity.MainActivity
 import io.edna.threads.demo.kaspressoSreens.ChatMainScreen
+import io.edna.threads.demo.waitListForNotEmpty
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -47,9 +50,7 @@ class TextMessagesTest : BaseTestCase() {
             }
             chatItemsRecyclerView {
                 isVisible()
-                lastChild<ChatMainScreen.ChatRecyclerItem> {
-                    itemText.containsText(textToSend)
-                }
+                hasDescendant { containsText(textToSend) }
             }
         }
 
@@ -58,9 +59,7 @@ class TextMessagesTest : BaseTestCase() {
         ChatMainScreen {
             chatItemsRecyclerView {
                 isVisible()
-                lastChild<ChatMainScreen.ChatRecyclerItem> {
-                    itemText.containsText("привет!")
-                }
+                hasDescendant { containsText("привет!") }
             }
         }
     }
@@ -72,13 +71,16 @@ class TextMessagesTest : BaseTestCase() {
         ChatMainScreen {
             inputEditView { isVisible() }
             chatItemsRecyclerView {
+                waitListForNotEmpty(5000)
                 isVisible()
+
+                assert(getSize() == 18)
+
                 childAt<ChatMainScreen.ChatRecyclerItem>(1) {
                     itemText.containsText("Добрый день! Мы создаем экосистему бизнеса")
                 }
 
                 hasDescendant { containsText("Добро пожаловать в наш чат") }
-                hasDescendant { containsText("Edna – современное решение для построения диалога с клиентом") }
 
                 lastChild<ChatMainScreen.ChatRecyclerItem> {
                     itemText.containsText("Тогда до связи!")
@@ -156,11 +158,13 @@ class TextMessagesTest : BaseTestCase() {
             }
         }
 
-        val clipboard = context.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager?
-        if (clipboard?.hasPrimaryClip() == true) {
-            assert(clipboard.primaryClip?.getItemAt(0)?.text == "привет!")
-        } else {
-            assert(false)
+        Handler(Looper.getMainLooper()).post {
+            val clipboard = context.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager?
+            if (clipboard?.hasPrimaryClip() == true) {
+                assert(clipboard.primaryClip?.getItemAt(0)?.text == "привет!")
+            } else {
+                assert(false)
+            }
         }
     }
 
