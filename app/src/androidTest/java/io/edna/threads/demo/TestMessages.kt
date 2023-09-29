@@ -63,4 +63,19 @@ object TestMessages {
         "\\\"operatorPhotoUrl\\\":\\\"20230703-e8c30f10-aa04-417f-bd97-99544fab26f2.jpg\\\"," +
         "\\\"operatorName\\\":\\\"Оператор1 Петровна\\\",\\\"isPreRegister\\\":\\\"false\\\"," +
         "\\\"aps/sound\\\":\\\"default\\\",\\\"origin\\\":\\\"threads\\\"}\",\"important\":true,\"messageType\":\"NORMAL\"}]}}"
+
+    const val operatorImageMessage = "{\"action\":\"getMessages\",\"data\":{\"messages\":[{\"messageId\":\"9cedfc0d-c3d9-495d-ae27-252ff40f5408\"," +
+        "\"sentAt\":\"2023-09-29T10:37:09.120Z\",\"notification\":\"New chat message received\",\"content\":{\"type\":\"MESSAGE\",\"clientId\":\"12345\"," +
+        "\"threadId\":141,\"isPreRegister\":false,\"providerIds\":[],\"uuid\":\"9cedfc0d-c3d9-495d-ae27-252ff40f5408\"," +
+        "\"operator\":{\"id\":4,\"name\":\"Оператор1 Петровна\",\"photoUrl\":\"20230703-e8c30f10-aa04-417f-bd97-99544fab26f2.jpg\"," +
+        "\"gender\":\"FEMALE\",\"organizationUnit\":\"Skill Credit\",\"role\":\"OPERATOR\"},\"text\":\"\"," +
+        "\"receivedDate\":\"2023-09-29T10:37:09.120Z\",\"attachments\":[{\"id\":273,\"result\":\"file:///android_asset/test_images/test_image6.jpg\"," +
+        "\"optional\":{\"size\":95576,\"name\":\"test_image6.jpg\",\"type\":\"image/jpeg\"},\"state\":\"READY\",\"fileId\":\"test_image6.jpg\"," +
+        "\"url\":\"file:///android_asset/test_images/test_image6.jpg\",\"name\":\"test_image6.jpg\",\"type\":\"image/jpeg\",\"size\":95576}]," +
+        "\"quotes\":[],\"quickReplies\":[],\"read\":false,\"settings\":{\"blockInput\":false,\"masked\":false},\"authorized\":true," +
+        "\"massPushMessage\":false,\"externalClientId\":\"12345\",\"origin\":\"threads\"}," +
+        "\"attributes\":\"{\\\"organizationUnit\\\":\\\"Skill Credit\\\",\\\"clientId\\\":\\\"12345\\\"," +
+        "\\\"operatorPhotoUrl\\\":\\\"file:///android_asset/test_images/test_image6.jpg\\\",\\\"operatorName\\\":\\\"Оператор1 Петровна\\\"," +
+        "\\\"isPreRegister\\\":\\\"false\\\",\\\"aps/sound\\\":\\\"default\\\",\\\"origin\\\":\\\"threads\\\"}\"," +
+        "\"important\":true,\"messageType\":\"NORMAL\"}]}}"
 }

@@ -8,6 +8,7 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
 import io.edna.threads.demo.BaseTestCase
+import io.edna.threads.demo.TestMessages
 import io.edna.threads.demo.appCode.activity.MainActivity
 import io.edna.threads.demo.kaspressoSreens.ChatMainScreen
 import org.junit.Rule
@@ -38,7 +39,7 @@ class ImagesTest : BaseTestCase() {
     }
 
     @Test
-    fun sendImage() {
+    fun sendReceiveImage() {
         prepareHttpMocks()
         openChatFromDemoLoginPage()
 
@@ -66,7 +67,12 @@ class ImagesTest : BaseTestCase() {
                 isClickable()
                 click()
             }
+
             assert(chatItemsRecyclerView.getSize() > 0)
+
+            sendMessageToSocket(TestMessages.operatorImageMessage)
+
+            assert(chatItemsRecyclerView.getSize() > 1)
         }
     }
 }
