@@ -94,7 +94,7 @@ class TextMessagesTest : BaseTestCase() {
     }
 
     @Test
-    fun operatorQuoteTest() {
+    fun operatorTextQuoteTest() {
         prepareHttpMocks()
         openChatFromDemoLoginPage()
         sendMessageFromOperator()
@@ -120,6 +120,19 @@ class TextMessagesTest : BaseTestCase() {
                 hasAnyText()
             }
             quoteClear { isVisible() }
+            inputEditView {
+                isVisible()
+                typeText(textToSend)
+            }
+            sendMessageBtn {
+                isVisible()
+                click()
+            }
+            chatItemsRecyclerView {
+                lastChild<ChatMainScreen.ChatRecyclerItem> {
+                    itemText.containsText(textToSend)
+                }
+            }
         }
     }
 
