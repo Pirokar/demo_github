@@ -831,7 +831,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         if (holder.getFileDescription().getFileUri() == null) {
             fdMediaPlayer.setClickedDownloadPath(holder.getFileDescription().getDownloadPath());
             holder.startLoader();
-            FileDownloadWorker.startDownload(ctx, holder.getFileDescription(), false);
+            FileDownloadWorker.startDownload(ctx, holder.getFileDescription(), false, false);
         } else {
             fdMediaPlayer.clearClickedDownloadPath();
             holder.stopLoader();
@@ -968,18 +968,10 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
     }
 
-    private void downloadImageIfNeeded(@Nullable FileDescription fileDescription) {
-        if (fileDescription != null) {
-            if (isImage(fileDescription) && fileDescription.getFileUri() == null) {
-                mCallback.onFileDownloadRequest(fileDescription);
-            }
-        }
-    }
-
     private void downloadVoiceIfNeeded(@Nullable FileDescription fileDescription) {
         if (fileDescription != null) {
             if (FileUtils.isVoiceMessage(fileDescription) && fileDescription.getFileUri() == null) {
-                mCallback.onFileDownloadRequest(fileDescription);
+                mCallback.onFileDownloadRequest(fileDescription, false);
             }
         }
     }
@@ -1165,6 +1157,17 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         return -1;
     }
 
+    private void downloadImageIfNeeded(@Nullable FileDescription fileDescription) {
+        if (fileDescription != null) {
+            FileDescription previewFileDescription = fileDescription.getPreviewFileDescription();
+            if (previewFileDescription != null) {
+                if (isImage(previewFileDescription) && previewFileDescription.getFileUri() == null) {
+                    mCallback.onFileDownloadRequest(previewFileDescription, true);
+                }
+            }
+        }
+    }
+
     public interface Callback {
         void onFileClick(FileDescription fileDescription);
 
@@ -1178,7 +1181,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
         void onImageClick(ChatPhrase chatPhrase);
 
-        void onFileDownloadRequest(FileDescription fileDescription);
+        void onFileDownloadRequest(FileDescription fileDescription, boolean isPreview);
 
         void onSystemMessageClick(SystemMessage systemMessage);
 

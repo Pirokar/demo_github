@@ -37,6 +37,7 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
     private val fileProvider: FileProvider by inject()
 
     override fun doWork(): Result {
+        val isPreview = inputData.getBoolean(PREVIEW_TAG, false)
         val data = inputData.getByteArray(FD_TAG)?.let { unmarshall(it) }
         val fileDescription: FileDescription = FileDescription.CREATOR.createFromParcel(data)
             ?: return Result.failure()
@@ -64,8 +65,10 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
                     var downloadProgress = progress
                     if (downloadProgress < 1) downloadProgress = 1.0
                     fileDescription.downloadProgress = downloadProgress.toInt()
-                    database.updateFileDescription(fileDescription)
-                    sendDownloadProgressBroadcast(fileDescription)
+                    if (!isPreview) {
+                        database.updateFileDescription(fileDescription)
+                        sendDownloadProgressBroadcast(fileDescription)
+                    }
                 }
 
                 override fun onComplete(file: File) {
@@ -75,7 +78,9 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
                         file
                     )
                     fileDescription.fileUri = fileUri
-                    database.updateFileDescription(fileDescription)
+                    if (!isPreview) {
+                        database.updateFileDescription(fileDescription)
+                    }
                     runningDownloads.remove(fileDescription)
                     sendFinishBroadcast(fileDescription)
                     fileDescription.onCompleteSubject.onNext(
@@ -86,7 +91,9 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
                 override fun onFileDownloadError(e: Exception?) {
                     LoggerEdna.error("error while downloading file: $e")
                     fileDescription.downloadProgress = 0
-                    database.updateFileDescription(fileDescription)
+                    if (!isPreview) {
+                        database.updateFileDescription(fileDescription)
+                    }
                     e?.let { sendDownloadErrorBroadcast(fileDescription, e) }
                 }
             },
@@ -101,7 +108,9 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
                 downloader?.stop()
                 fileDescription.downloadProgress = 0
                 sendDownloadProgressBroadcast(fileDescription)
-                database.updateFileDescription(fileDescription)
+                if (!isPreview) {
+                    database.updateFileDescription(fileDescription)
+                }
             } else {
                 runningDownloads[fileDescription] = fileDownloader
                 fileDescription.downloadProgress = 1
@@ -149,24 +158,33 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
         private const val WORKER_NAME = "im.threads.business.workers.FileDownloadWorker"
 
         const val FD_TAG = "im.threads.business.workers.FileDownloadWorker.FD_TAG"
+        const val PREVIEW_TAG = "im.threads.business.workers.FileDownloadWorker.PREVIEW_TAG"
         const val START_DOWNLOAD_ACTION = "im.threads.business.workers.FileDownloadWorker.Action"
-        const val START_DOWNLOAD_FD_TAG =
-            "im.threads.business.workers.FileDownloadWorker.START_DOWNLOAD_FD_TAG"
-        const val START_DOWNLOAD_WITH_NO_STOP =
-            "im.threads.business.workers.FileDownloadWorker.START_DOWNLOAD_WITH_NO_STOP"
+        const val START_DOWNLOAD_FD_TAG = "im.threads.business.workers.FileDownloadWorker.START_DOWNLOAD_FD_TAG"
+        const val START_DOWNLOAD_WITH_NO_STOP = "im.threads.business.workers.FileDownloadWorker.START_DOWNLOAD_WITH_NO_STOP"
 
         @JvmStatic
         @Synchronized
-        fun startDownload(context: Context, fileDescription: FileDescription, isDownloadNonstop: Boolean = false) {
+        fun startDownload(
+            context: Context,
+            fileDescription: FileDescription,
+            isDownloadNonstop: Boolean = false,
+            isPreview: Boolean = false
+        ) {
             val downloadKey = if (isDownloadNonstop) START_DOWNLOAD_WITH_NO_STOP else START_DOWNLOAD_FD_TAG
             val inputData = Data.Builder()
                 .putString(START_DOWNLOAD_ACTION, downloadKey)
+                .putBoolean(PREVIEW_TAG, isPreview)
                 .putByteArray(FD_TAG, marshall(fileDescription))
             val workRequest = OneTimeWorkRequestBuilder<FileDownloadWorker>()
                 .setInputData(inputData.build())
                 .build()
             WorkManager.getInstance(context)
-                .enqueueUniqueWork(WORKER_NAME + fileDescription.downloadPath, ExistingWorkPolicy.KEEP, workRequest)
+                .enqueueUniqueWork(
+                    WORKER_NAME + fileDescription.downloadPath,
+                    ExistingWorkPolicy.KEEP,
+                    workRequest
+                )
         }
     }
 }

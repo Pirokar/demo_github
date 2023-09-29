@@ -88,6 +88,7 @@ import im.threads.business.serviceLocator.core.inject
 import im.threads.business.useractivity.UserActivityTimeProvider.getLastUserActivityTimeCounter
 import im.threads.business.utils.Balloon.show
 import im.threads.business.utils.FileProvider
+import im.threads.business.utils.FileUtils
 import im.threads.business.utils.FileUtils.canBeSent
 import im.threads.business.utils.FileUtils.createImageFile
 import im.threads.business.utils.FileUtils.getExtensionFromMediaStore
@@ -2664,9 +2665,10 @@ class ChatFragment :
         }
 
         override fun onImageClick(chatPhrase: ChatPhrase) {
-            if (chatPhrase.fileDescription?.fileUri == null) {
+            if (!isPreviewFileExist(chatPhrase.fileDescription?.getPreviewFileDescription())) {
                 return
             }
+
             if (chatPhrase is UserPhrase) {
                 if (chatPhrase.sentState !== MessageStatus.READ) {
                     chatController.forceResend(chatPhrase)
@@ -2683,8 +2685,15 @@ class ChatFragment :
             }
         }
 
-        override fun onFileDownloadRequest(fileDescription: FileDescription) {
-            chatController.onFileDownloadRequest(fileDescription)
+        fun isPreviewFileExist(fileDescription: FileDescription?): Boolean {
+            fileDescription?.let {
+                return FileUtils.isPreviewFileExist(requireContext(), it)
+            }
+            return false
+        }
+
+        override fun onFileDownloadRequest(fileDescription: FileDescription?, isPreview: Boolean) {
+            chatController.onFileDownloadRequest(fileDescription, isPreview)
         }
 
         override fun onSystemMessageClick(systemMessage: SystemMessage) {}

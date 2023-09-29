@@ -1,5 +1,7 @@
 package im.threads.ui.adapters;
 
+import static im.threads.ui.fragments.ImageFragment.createImageFragment;
+
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.view.View;
@@ -16,7 +18,6 @@ import java.util.List;
 
 import im.threads.business.logger.LoggerEdna;
 import im.threads.business.models.FileDescription;
-import im.threads.ui.fragments.ImageFragment;
 import im.threads.ui.utils.ThreadRunnerKt;
 
 /**
@@ -24,11 +25,11 @@ import im.threads.ui.utils.ThreadRunnerKt;
  */
 public class ImagesAdapter extends PagerAdapter {
     private final FragmentManager mFragmentManager;
-    private List<FileDescription> fileDescriptions;
+    private final List<FileDescription> fileDescriptions;
     private FragmentTransaction mCurTransaction = null;
 
-    private ArrayList<Fragment.SavedState> mSavedState = new ArrayList<>();
-    private ArrayList<Fragment> mFragments = new ArrayList<>();
+    private final ArrayList<Fragment.SavedState> mSavedState = new ArrayList<>();
+    private final ArrayList<Fragment> mFragments = new ArrayList<>();
     private Fragment mCurrentPrimaryItem = null;
 
     public ImagesAdapter(List<FileDescription> fileDescriptions, FragmentManager mFragmentManager) {
@@ -179,6 +180,6 @@ public class ImagesAdapter extends PagerAdapter {
     }
 
     private Fragment getItem(int position) {
-        return ImageFragment.getInstance(fileDescriptions.get(position));
+        return createImageFragment(fileDescriptions.get(position));
     }
 }
