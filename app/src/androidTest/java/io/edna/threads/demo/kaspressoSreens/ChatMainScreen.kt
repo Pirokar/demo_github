@@ -1,6 +1,7 @@
 package io.edna.threads.demo.kaspressoSreens
 
 import android.view.View
+import androidx.test.espresso.matcher.ViewMatchers.withId
 import com.kaspersky.kaspresso.screens.KScreen
 import im.threads.R
 import im.threads.ui.fragments.ChatFragment
@@ -23,6 +24,7 @@ object ChatMainScreen : KScreen<ChatMainScreen>() {
     val inputEditView = KEditText { withId(R.id.input_edit_view) }
     val welcomeScreen = KView { withId(R.id.welcome) }
     val sendMessageBtn = KImageView { withId(R.id.send_message) }
+    val sendImageBtn = KButton { withId(R.id.send) }
     val errorImage = KImageView { withId(R.id.errorImage) }
     val errorText = KTextView { withId(R.id.errorMessage) }
     val errorRetryBtn = KButton { withId(R.id.retryInitChatBtn) }
@@ -31,14 +33,22 @@ object ChatMainScreen : KScreen<ChatMainScreen>() {
     val quoteText = KTextView { withId(R.id.quote_text) }
     val quoteHeader = KTextView { withId(R.id.quote_header) }
     val quoteClear = KImageView { withId(R.id.quote_clear) }
+    val addAttachmentBtn = KImageView { withId(R.id.add_attachment) }
 
-    val recyclerView = KRecyclerView(
+    val chatItemsRecyclerView = KRecyclerView(
         builder = { withId(R.id.chatItemsRecycler) },
-        itemTypeBuilder = { itemType(ChatMainScreen::ChatRecyclerItem) }
+        itemTypeBuilder = { itemType(::ChatRecyclerItem) }
+    )
+
+    val bottomGalleryRecycler = KRecyclerView(
+        builder = { withId(R.id.bottom_gallery_recycler) },
+        itemTypeBuilder = { itemType(::BottomGalleryItem) }
     )
 
     class ChatRecyclerItem(matcher: Matcher<View>) : KRecyclerItem<ChatRecyclerItem>(matcher) {
         val itemText = KTextView(matcher) { withId(R.id.text) }
         val itemTime = KTextView(matcher) { withId(R.id.timeStamp) }
     }
+
+    class BottomGalleryItem(matcher: Matcher<View>) : KRecyclerItem<BottomGalleryItem>(matcher)
 }

@@ -34,8 +34,8 @@ class TextMessagesTest : BaseTestCase() {
     @Test
     fun textMessages() {
         prepareHttpMocks()
-
         openChatFromDemoLoginPage()
+
         ChatMainScreen {
             inputEditView { isVisible() }
             welcomeScreen { isVisible() }
@@ -45,7 +45,7 @@ class TextMessagesTest : BaseTestCase() {
                 isVisible()
                 click()
             }
-            recyclerView {
+            chatItemsRecyclerView {
                 isVisible()
                 lastChild<ChatMainScreen.ChatRecyclerItem> {
                     itemText.containsText(textToSend)
@@ -56,7 +56,7 @@ class TextMessagesTest : BaseTestCase() {
         sendMessageFromOperator()
 
         ChatMainScreen {
-            recyclerView {
+            chatItemsRecyclerView {
                 isVisible()
                 lastChild<ChatMainScreen.ChatRecyclerItem> {
                     itemText.containsText("привет!")
@@ -71,7 +71,7 @@ class TextMessagesTest : BaseTestCase() {
         openChatFromDemoLoginPage()
         ChatMainScreen {
             inputEditView { isVisible() }
-            recyclerView {
+            chatItemsRecyclerView {
                 isVisible()
                 childAt<ChatMainScreen.ChatRecyclerItem>(1) {
                     itemText.containsText("Добрый день! Мы создаем экосистему бизнеса")
@@ -84,7 +84,7 @@ class TextMessagesTest : BaseTestCase() {
                     itemText.containsText("Тогда до связи!")
                 }
             }
-            recyclerView {
+            chatItemsRecyclerView {
                 hasDescendant { containsText("То есть это все про вас?") }
                 hasDescendant { containsText("Именно! А еще у нас есть различные каналы коммуникации с клиентами! Подробнее: https://edna.ru/channels/") }
                 hasDescendant { containsText("Отлично! Давайте проверим ваши контакты. Ваш email: info@edna.ru, телефон: +7 (495) 609-60-80. Верно?") }
@@ -100,7 +100,7 @@ class TextMessagesTest : BaseTestCase() {
         sendMessageFromOperator()
 
         ChatMainScreen {
-            recyclerView {
+            chatItemsRecyclerView {
                 isVisible()
                 lastChild<ChatMainScreen.ChatRecyclerItem> {
                     isVisible()
@@ -130,7 +130,7 @@ class TextMessagesTest : BaseTestCase() {
         sendMessageFromOperator()
 
         ChatMainScreen {
-            recyclerView {
+            chatItemsRecyclerView {
                 isVisible()
                 lastChild<ChatMainScreen.ChatRecyclerItem> {
                     isVisible()

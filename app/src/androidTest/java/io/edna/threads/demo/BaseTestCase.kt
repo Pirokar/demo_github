@@ -4,6 +4,7 @@ import android.app.DownloadManager
 import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
+import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import androidx.test.platform.app.InstrumentationRegistry
@@ -171,8 +172,16 @@ abstract class BaseTestCase : TestCase() {
         return stringBuilder.toString()
     }
 
+    protected fun copyFileToDownloads(assetsPath: String) {
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
+            copyToDownloadsApiBelow29(assetsPath)
+        } else {
+            copyToDownloadsApi29(assetsPath)
+        }
+    }
+
     @Suppress("DEPRECATION")
-    protected fun copyToDownloadsApiBelow29(filePathRelativeToAssets: String) {
+    private fun copyToDownloadsApiBelow29(filePathRelativeToAssets: String) {
         Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)?.absolutePath?.let {
             val fileName = filePathRelativeToAssets.split("/").last()
             val toFile = File("$it/$fileName")
@@ -196,7 +205,7 @@ abstract class BaseTestCase : TestCase() {
         }
     }
 
-    protected fun copyToDownloadsApi29(filePathRelativeToAssets: String) {
+    private fun copyToDownloadsApi29(filePathRelativeToAssets: String) {
         val fileName = filePathRelativeToAssets.split("/").last()
         val values = ContentValues()
         values.put(
