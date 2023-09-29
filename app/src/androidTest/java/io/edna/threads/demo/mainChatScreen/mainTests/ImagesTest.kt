@@ -8,9 +8,11 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
 import io.edna.threads.demo.BaseTestCase
+import io.edna.threads.demo.R
 import io.edna.threads.demo.TestMessages
 import io.edna.threads.demo.appCode.activity.MainActivity
 import io.edna.threads.demo.kaspressoSreens.ChatMainScreen
+import io.edna.threads.demo.waitListForNotEmpty
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -73,6 +75,20 @@ class ImagesTest : BaseTestCase() {
             sendMessageToSocket(TestMessages.operatorImageMessage)
 
             assert(chatItemsRecyclerView.getSize() > 1)
+        }
+    }
+
+    @Test
+    fun imagesHistoryTest() {
+        prepareHttpMocks(historyAnswer = readTextFileFromRawResourceId(R.raw.history_images_response))
+        openChatFromDemoLoginPage()
+        ChatMainScreen {
+            chatItemsRecyclerView {
+                waitListForNotEmpty(5000)
+                lastChild<ChatMainScreen.ChatRecyclerItem> {
+                    itemText.containsText("Великолепно! Как и вот это.")
+                }
+            }
         }
     }
 }
