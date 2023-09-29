@@ -91,4 +91,51 @@ class ImagesTest : BaseTestCase() {
             }
         }
     }
+
+    @Test
+    fun operatorImageQuoteTest() {
+        val textToType = "Such a beautiful image!"
+        prepareHttpMocks(historyAnswer = readTextFileFromRawResourceId(R.raw.history_images_response))
+        openChatFromDemoLoginPage()
+
+        ChatMainScreen {
+            chatItemsRecyclerView {
+                waitListForNotEmpty(5000)
+                isVisible()
+                lastChild<ChatMainScreen.ChatRecyclerItem> {
+                    isVisible()
+                    perform { longClick() }
+                }
+            }
+            replyBtn {
+                isVisible()
+                click()
+            }
+            quoteText {
+                isVisible()
+                hasText("Великолепно! Как и вот это.")
+            }
+            quoteHeader {
+                isVisible()
+                hasText("Оператор Елена")
+            }
+            quoteImage { isVisible() }
+            quoteClear { isVisible() }
+
+            inputEditView {
+                isVisible()
+                typeText(textToType)
+            }
+            sendMessageBtn {
+                isVisible()
+                click()
+            }
+            chatItemsRecyclerView {
+                isVisible()
+                lastChild<ChatMainScreen.ChatRecyclerItem> {
+                    itemText.containsText(textToType)
+                }
+            }
+        }
+    }
 }
