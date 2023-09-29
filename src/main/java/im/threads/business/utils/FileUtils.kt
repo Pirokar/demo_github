@@ -201,13 +201,11 @@ object FileUtils {
                 saveToUri(uri, outputUri)
             }
         } else {
-            val uri = fileDescription.fileUri
+            val uri = Uri.parse(fileDescription.downloadPath)
             if (uri != null) {
                 val outputFile = File(
                     Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-                    getFileName(
-                        uri!!
-                    )
+                    generateFileName(fileDescription)
                 )
                 if (outputFile.exists() || outputFile.createNewFile()) {
                     saveImageToFile(uri, outputFile)
