@@ -1,6 +1,5 @@
 package im.threads.ui.holders
 
-import android.annotation.SuppressLint
 import android.app.ActionBar
 import android.text.TextUtils
 import android.util.TypedValue
@@ -12,27 +11,23 @@ import android.view.ViewGroup.MarginLayoutParams
 import android.view.animation.Animation
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.core.view.isVisible
 import im.threads.R
-import im.threads.business.formatters.RussianFormatSymbols
 import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.imageLoading.ImageModifications
-import im.threads.business.imageLoading.loadImage
 import im.threads.business.models.ChatItem
 import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.FileDescription
-import im.threads.business.models.Quote
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.ogParser.OGDataContent
 import im.threads.business.ogParser.OpenGraphParser
-import im.threads.business.utils.FileUtils
 import im.threads.business.utils.FileUtils.isImage
 import im.threads.business.utils.UrlUtils
-import im.threads.business.utils.toFileSize
 import im.threads.ui.config.Config
 import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.utils.gone
@@ -59,15 +54,13 @@ class ConsultPhraseHolder(
     openGraphParser
 ) {
     private val timeStampSdf = SimpleDateFormat("HH:mm", Locale.getDefault())
-
-    @SuppressLint("SimpleDateFormat")
-    private var quoteSdf = if (Locale.getDefault().language.equals("ru", ignoreCase = true)) {
-        SimpleDateFormat("dd MMMM yyyy", RussianFormatSymbols())
-    } else {
-        SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
-    }
-
     private val fileRow: View = itemView.findViewById(R.id.rightTextRow)
+    private val quoteLayout: LinearLayout = itemView.findViewById(R.id.quoteLayout)
+    private val quoteTextHeader: TextView = itemView.findViewById(R.id.quoteTo)
+    private val quoteTextDescription: TextView = itemView.findViewById(R.id.quoteFileSpecs)
+    private val quoteTextTimeStamp: TextView = itemView.findViewById(R.id.quoteSendAt)
+    private val quoteFileImage = itemView.findViewById<ImageView>(R.id.quoteFileImage)
+    private val quoteProgressButton: CircularProgressButton = itemView.findViewById(R.id.quoteButtonDownload)
     private val circularProgressButton: CircularProgressButton = itemView.findViewById(R.id.buttonDownload)
     private val errorTextView: TextView = itemView.findViewById(R.id.errorText)
     private val fileImage = itemView.findViewById<ImageView>(R.id.fileImage)
@@ -123,6 +116,8 @@ class ConsultPhraseHolder(
     init {
         itemView.findViewById<View>(R.id.delimiter)
             .setBackgroundColor(getColorInt(style.incomingDelimitersColor))
+        itemView.findViewById<View>(R.id.quoteDelimiter)
+            .setBackgroundColor(getColorInt(style.incomingDelimitersColor))
         setTextColorToViews(
             arrayOf(
                 phraseTextView,
@@ -160,7 +155,9 @@ class ConsultPhraseHolder(
         timeStampTextView.text = timeText
         ogTimestamp.text = timeText
         imageLayout.isVisible = false
+        fileRow.isVisible = false
 
+        phraseTextView.text = ""
         consultPhrase.phraseText?.let {
             showPhrase(consultPhrase, it.trim())
         } ?: run {
@@ -168,9 +165,18 @@ class ConsultPhraseHolder(
         }
 
         consultPhrase.quote?.let {
-            showQuote(it, onQuoteClickListener)
+            showQuote(
+                it,
+                onQuoteClickListener,
+                quoteLayout,
+                quoteTextHeader,
+                quoteTextDescription,
+                quoteTextTimeStamp,
+                quoteFileImage,
+                quoteProgressButton
+            )
         } ?: run {
-            fileRow.isVisible = false
+            quoteLayout.isVisible = false
         }
 
         setLayoutMargins(true, bubbleLayout)
@@ -200,7 +206,7 @@ class ConsultPhraseHolder(
         } else {
             phraseFrame.layoutParams.width = FrameLayout.LayoutParams.WRAP_CONTENT
         }
-        if (consultPhrase.fileDescription == null && consultPhrase.quote == null) {
+        if (consultPhrase.fileDescription == null) {
             fileRow.isVisible = false
         }
     }
@@ -215,6 +221,7 @@ class ConsultPhraseHolder(
         val isBordersNotSet = borderLeft == 0 && borderTop == 0 && borderRight == 0 && borderBottom == 0
         val isImage = isImage(fileDescription)
 
+        setImageSize(imageRoot)
         setLayoutMargins(true, bubbleLayout)
         if (isImage && fileDescription?.state == AttachmentStateEnum.READY) {
             imageRoot.visible()
@@ -228,6 +235,7 @@ class ConsultPhraseHolder(
 
             if (isBordersNotSet) {
                 phraseFrame.setPadding(0, 0, 0, 0)
+                quoteLayout.setPadding(0, 0, 0, 0)
                 setPaddings(true, this)
             } else {
                 setPadding(0, 0, 0, 0)
@@ -240,6 +248,12 @@ class ConsultPhraseHolder(
                     0,
                     borderRight,
                     resources.getDimensionPixelSize(style.bubbleIncomingPaddingBottom)
+                )
+                quoteLayout.setPadding(
+                    borderLeft,
+                    resources.getDimensionPixelSize(style.bubbleIncomingPaddingTop),
+                    borderRight,
+                    0
                 )
             }
             image.invalidate()
@@ -256,17 +270,9 @@ class ConsultPhraseHolder(
             imageRoot.gone()
 
             phraseFrame.setPadding(0, 0, 0, 0)
+            quoteLayout.setPadding(0, 0, 0, 0)
             setPaddings(true, this)
         }
-    }
-
-    private fun getFileDescriptionText(fileName: String?, fileDescription: FileDescription): String {
-        return (fileName ?: "file") +
-            if (fileDescription.size > 0) {
-                fileDescription.size.toFileSize().trimIndent()
-            } else {
-                ""
-            }
     }
 
     private fun loadImage(
@@ -339,56 +345,6 @@ class ConsultPhraseHolder(
             deeplink ?: extractedLink?.link,
             emails
         )
-    }
-
-    private fun showQuote(
-        quote: Quote,
-        onQuoteClickListener: View.OnClickListener
-    ) {
-        fileRow.visibility = View.VISIBLE
-        fileImage.visibility = View.GONE
-        circularProgressButton.visibility = View.GONE
-        rightTextHeader.text = if (quote.phraseOwnerTitle == null) {
-            itemView.context
-                .getString(R.string.ecc_I)
-        } else {
-            quote.phraseOwnerTitle
-        }
-        rightTextDescription.text = quote.text
-        rightTextFileStamp.text = itemView.context
-            .getString(R.string.ecc_sent_at, quoteSdf.format(Date(quote.timeStamp)))
-        viewUtils.setClickListener(fileRow as ViewGroup, onQuoteClickListener)
-        val quoteFileDescription = quote.fileDescription
-        if (quoteFileDescription != null) {
-            if (FileUtils.isVoiceMessage(quoteFileDescription)) {
-                rightTextDescription.setText(R.string.ecc_voice_message)
-            } else {
-                if (isImage(quote.fileDescription)) {
-                    fileImage.visibility = View.VISIBLE
-                    val fileUri = quoteFileDescription.fileUri?.toString() ?: quoteFileDescription.downloadPath
-                    if (!fileUri.isNullOrEmpty()) {
-                        fileImage.loadImage(
-                            quoteFileDescription.downloadPath,
-                            listOf(ImageView.ScaleType.FIT_CENTER, ImageView.ScaleType.CENTER_CROP),
-                            style.imagePlaceholder,
-                            autoRotateWithExif = true
-                        )
-                    } else {
-                        fileImage.setImageResource(style.imagePlaceholder)
-                    }
-                    fileImage.setOnClickListener(onQuoteClickListener)
-                } else {
-                    circularProgressButton.visibility = View.VISIBLE
-
-                    fileNameFromDescription(quoteFileDescription) { fileName ->
-                        rightTextDescription.text = getFileDescriptionText(fileName, quoteFileDescription)
-                    }
-
-                    circularProgressButton.setOnClickListener(onQuoteClickListener)
-                    circularProgressButton.setProgress(if (quoteFileDescription.fileUri != null) 100 else quoteFileDescription.downloadProgress)
-                }
-            }
-        }
     }
 
     private fun startLoaderAnimation() {

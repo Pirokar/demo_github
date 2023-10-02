@@ -31,6 +31,76 @@
         android:layout_toEndOf="@+id/consultAvatar"
         android:orientation="vertical">
 
+        <LinearLayout
+            android:id="@+id/quoteLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/ecc_margin_quarter"
+            android:orientation="horizontal"
+            android:paddingTop="@dimen/ecc_margin_half">
+
+            <ImageView
+                android:id="@+id/quoteFileImage"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="@dimen/ecc_margin_half"
+                android:layout_marginEnd="@dimen/ecc_margin_three_fourth"
+                android:layout_marginBottom="@dimen/ecc_margin_half"
+                android:visibility="gone" />
+
+            <im.threads.ui.views.CircularProgressButton
+                android:id="@+id/quoteButtonDownload"
+                style="@style/CircularProgressButtonStyle" />
+
+            <View
+                android:id="@+id/quoteDelimiter"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="@dimen/ecc_margin_half"
+                android:layout_marginBottom="@dimen/ecc_margin_half"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <im.threads.ui.widget.textView.QuoteAuthorTextView
+                    android:id="@+id/quoteTo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/ecc_margin_half"
+                    android:layout_marginTop="2dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="@dimen/ecc_margin_material"
+                    android:textColor="@color/ecc_incoming_message_text"
+                    android:textStyle="bold"
+                    tools:text="Иван Петров" />
+
+                <im.threads.ui.widget.textView.QuoteMessageTextView
+                    android:id="@+id/quoteFileSpecs"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/ecc_margin_half"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginEnd="@dimen/ecc_margin_half"
+                    android:ellipsize="end"
+                    android:maxLines="3"
+                    android:textColor="@color/ecc_incoming_message_text"
+                    tools:text="счет на оплату очень длинное название очень длинное название очень длинное название.pdf" />
+
+                <im.threads.ui.widget.textView.QuoteTimeTextView
+                    android:id="@+id/quoteSendAt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/ecc_margin_half"
+                    android:layout_marginTop="2dp"
+                    android:textColor="@color/ecc_incoming_message_text"
+                    android:textSize="12sp"
+                    tools:text="отправлено 21 апр 2016" />
+            </LinearLayout>
+        </LinearLayout>
+
         <FrameLayout
             android:id="@+id/imageRoot"
             android:layout_width="@dimen/ecc_message_image_size"

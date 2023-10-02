@@ -1,26 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rootLayout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:id="@+id/rootLayout">
+    android:layout_height="wrap_content">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/bubble"
         style="@style/consultBubble"
         android:layout_width="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/consultAvatar"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:id="@+id/quoteLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="@dimen/ecc_margin_half"
+            android:paddingBottom="@dimen/ecc_margin_half"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/quoteFileImage"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="@dimen/ecc_margin_half"
+                android:layout_marginEnd="@dimen/ecc_margin_three_fourth"
+                android:layout_marginBottom="@dimen/ecc_margin_half"
+                android:visibility="gone" />
+
+            <im.threads.ui.views.CircularProgressButton
+                android:id="@+id/quoteButtonDownload"
+                style="@style/CircularProgressButtonStyle" />
+
+            <View
+                android:id="@+id/quoteDelimiter"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="@dimen/ecc_margin_half"
+                android:layout_marginBottom="@dimen/ecc_margin_half" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <im.threads.ui.widget.textView.QuoteAuthorTextView
+                    android:id="@+id/quoteTo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/ecc_margin_half"
+                    android:layout_marginTop="2dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="@dimen/ecc_margin_material"
+                    android:textColor="@color/ecc_incoming_message_text"
+                    android:textStyle="bold"
+                    tools:text="Иван Петров" />
+
+                <im.threads.ui.widget.textView.QuoteMessageTextView
+                    android:id="@+id/quoteFileSpecs"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/ecc_margin_half"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginEnd="@dimen/ecc_margin_half"
+                    android:ellipsize="end"
+                    android:maxLines="3"
+                    android:textColor="@color/ecc_incoming_message_text"
+                    tools:text="счет на оплату очень длинное название очень длинное название очень длинное название.pdf" />
+
+                <im.threads.ui.widget.textView.QuoteTimeTextView
+                    android:id="@+id/quoteSendAt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/ecc_margin_half"
+                    android:layout_marginTop="2dp"
+                    android:textColor="@color/ecc_incoming_message_text"
+                    android:textSize="12sp"
+                    tools:text="отправлено 21 апр 2016" />
+            </LinearLayout>
+        </LinearLayout>
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/buttonsStartGuideline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_begin="@dimen/ecc_margin_zero"/>
+            app:layout_constraintGuide_begin="@dimen/ecc_margin_zero"
+            app:layout_constraintTop_toBottomOf="@id/quoteLayout" />
 
         <ImageButton
             android:id="@+id/voiceMessageConsultButtonPlayPause"
@@ -28,57 +100,57 @@
             android:layout_height="@dimen/ecc_file_icon_size"
             android:layout_marginEnd="@dimen/ecc_margin_half"
             android:layout_marginBottom="@dimen/ecc_margin_three_fourth"
-            app:layout_constraintStart_toEndOf="@id/buttonsStartGuideline"
-            app:layout_constraintTop_toTopOf="parent"
             android:background="@null"
-            tools:background="@color/ecc_toolbar_gray"
+            android:contentDescription="@string/ecc_play_button"
             android:scaleType="fitXY"
+            app:layout_constraintStart_toEndOf="@id/buttonsStartGuideline"
+            app:layout_constraintTop_toBottomOf="@id/quoteLayout"
             app:srcCompat="@drawable/ecc_voice_message_play"
-            android:contentDescription="@string/ecc_play_button" />
+            tools:background="@color/ecc_toolbar_gray" />
 
         <ImageView
             android:id="@+id/loader"
             android:layout_width="@dimen/ecc_file_icon_size"
             android:layout_height="@dimen/ecc_file_icon_size"
+            android:layout_gravity="center_vertical"
             android:layout_marginEnd="@dimen/ecc_margin_half"
             android:layout_marginBottom="@dimen/ecc_margin_three_fourth"
+            android:contentDescription="@string/ecc_loading_animation"
             app:layout_constraintStart_toEndOf="@id/buttonsStartGuideline"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_gravity="center_vertical"
-            android:contentDescription="@string/ecc_loading_animation" />
+            app:layout_constraintTop_toBottomOf="@id/quoteLayout" />
 
         <com.google.android.material.slider.Slider
             android:id="@+id/voiceMessageConsultSlider"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="-11dp"
+            android:theme="@style/ThemeOverlay.ChatCenter.Slider.Consult"
+            app:haloRadius="@dimen/ecc_halo_radius"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/voiceMessageConsultButtonPlayPause"
             app:layout_constraintTop_toTopOf="@id/voiceMessageConsultButtonPlayPause"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:thumbRadius="@dimen/ecc_thumb_size"
-            app:haloRadius="@dimen/ecc_halo_radius"
-            android:theme="@style/ThemeOverlay.ChatCenter.Slider.Consult"/>
+            app:thumbRadius="@dimen/ecc_thumb_size" />
 
         <im.threads.ui.widget.textView.BubbleMessageTextView
             android:id="@+id/voiceMessageConsultAudioStatus"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:textSize="@dimen/ecc_text_small"
-            android:maxLines="1"
-            android:ellipsize="end"
-            android:layout_marginTop="-10dp"
-            app:layout_constraintStart_toStartOf="@id/voiceMessageConsultSlider"
-            app:layout_constraintTop_toBottomOf="@id/voiceMessageConsultSlider"
-            app:layout_constraintEnd_toEndOf="@id/voiceMessageConsultSlider"
             android:layout_below="@id/voiceMessageConsultSlider"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="@dimen/ecc_margin_half"
+            android:layout_marginTop="-10dp"
+            android:layout_marginEnd="@dimen/ecc_margin_half"
+            android:layout_marginBottom="@dimen/ecc_margin_half"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:text="@string/ecc_voice_message_is_processing"
             android:textColor="@color/ecc_incoming_message_text"
+            android:textSize="@dimen/ecc_text_small"
             android:visibility="gone"
-            tools:visibility="visible"
-            android:layout_marginStart="@dimen/ecc_margin_half"
-            android:layout_marginEnd="@dimen/ecc_margin_half"
-            android:layout_marginBottom="@dimen/ecc_margin_half" />
+            app:layout_constraintEnd_toEndOf="@id/voiceMessageConsultSlider"
+            app:layout_constraintStart_toStartOf="@id/voiceMessageConsultSlider"
+            app:layout_constraintTop_toBottomOf="@id/voiceMessageConsultSlider"
+            tools:visibility="visible" />
 
         <im.threads.ui.widget.textView.BubbleMessageTextView
             android:id="@+id/fileSize"
@@ -87,49 +159,49 @@
             android:layout_gravity="center_vertical"
             android:layout_marginStart="@dimen/ecc_margin_half"
             android:layout_marginTop="-10dp"
+            android:textColor="@color/ecc_incoming_message_text"
+            android:textSize="@dimen/ecc_text_small"
             app:layout_constraintStart_toStartOf="@id/voiceMessageConsultSlider"
             app:layout_constraintTop_toBottomOf="@id/voiceMessageConsultSlider"
-            android:textSize="@dimen/ecc_text_small"
-            android:textColor="@color/ecc_incoming_message_text"
             tools:text="1:20" />
 
         <im.threads.ui.widget.textView.BubbleTimeTextView
             android:id="@+id/timeStamp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="@id/voiceMessageConsultSlider"
-            app:layout_constraintTop_toBottomOf="@id/voiceMessageConsultText"
             android:layout_marginTop="@dimen/ecc_margin_material"
             android:drawablePadding="@dimen/ecc_margin_half"
             android:paddingStart="0dp"
             android:paddingEnd="@dimen/ecc_margin_half"
             android:paddingBottom="@dimen/ecc_margin_half"
             android:textColor="@color/ecc_user_message_timestamp"
+            app:layout_constraintEnd_toEndOf="@id/voiceMessageConsultSlider"
+            app:layout_constraintTop_toBottomOf="@id/voiceMessageConsultText"
             tools:text="10:19" />
 
         <im.threads.ui.widget.textView.QuoteMessageTextView
             android:id="@+id/voiceMessageConsultText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/ecc_margin_material"
             android:ellipsize="end"
             android:paddingBottom="@dimen/ecc_margin_half"
-            android:layout_marginTop="@dimen/ecc_margin_material"
             android:textColor="@color/ecc_incoming_message_text"
             android:textStyle="italic"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/voiceMessageConsultButtonPlayPause"
             app:layout_constraintTop_toBottomOf="@+id/voiceMessageConsultButtonPlayPause"
-            app:layout_constraintEnd_toEndOf="parent"
             tools:text="счет на оплату очень длинное название очень длинное название очень длинное название или счет на оплату очень длинное название очень длинное название очень длинное название" />
 
         <im.threads.ui.widget.textView.BubbleTimeTextView
             android:id="@+id/errorText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="@id/voiceMessageConsultButtonPlayPause"
-            app:layout_constraintEnd_toStartOf="@id/timeStamp"
-            app:layout_constraintTop_toBottomOf="@id/voiceMessageConsultText"
             android:textSize="@dimen/ecc_error_text_size"
             android:visibility="gone"
+            app:layout_constraintEnd_toStartOf="@id/timeStamp"
+            app:layout_constraintStart_toStartOf="@id/voiceMessageConsultButtonPlayPause"
+            app:layout_constraintTop_toBottomOf="@id/voiceMessageConsultText"
             tools:text="Some error text"
             tools:visibility="visible" />
 
@@ -139,9 +211,9 @@
         android:id="@+id/consultAvatar"
         android:layout_width="@dimen/ecc_operator_photo_size"
         android:layout_height="@dimen/ecc_operator_photo_size"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="@id/bubble"
         android:layout_marginStart="@dimen/ecc_margin_half"
-        android:contentDescription="@string/ecc_operator_avatar" />
+        android:contentDescription="@string/ecc_operator_avatar"
+        app:layout_constraintBottom_toBottomOf="@id/bubble"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

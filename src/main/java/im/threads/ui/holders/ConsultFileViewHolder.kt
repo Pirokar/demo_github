@@ -6,6 +6,7 @@ import android.view.View
 import android.view.View.OnLongClickListener
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
@@ -40,6 +41,12 @@ class ConsultFileViewHolder(
 ) {
     private val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
 
+    private val quoteLayout: LinearLayout = itemView.findViewById(R.id.quoteLayout)
+    private val quoteTextHeader: TextView = itemView.findViewById(R.id.quoteTo)
+    private val quoteTextDescription: TextView = itemView.findViewById(R.id.quoteFileSpecs)
+    private val quoteTextTimeStamp: TextView = itemView.findViewById(R.id.quoteSendAt)
+    private val quoteFileImage = itemView.findViewById<ImageView>(R.id.quoteFileImage)
+    private val quoteProgressButton: CircularProgressButton = itemView.findViewById(R.id.quoteButtonDownload)
     private val mCircularProgressButton: CircularProgressButton = itemView.findViewById(R.id.circ_button)
     private val errorText: TextView = itemView.findViewById(R.id.errorText)
     private val loader: ImageView = itemView.findViewById(R.id.loader)
@@ -63,6 +70,8 @@ class ConsultFileViewHolder(
     }
 
     init {
+        itemView.findViewById<View>(R.id.quoteDelimiter)
+            .setBackgroundColor(getColorInt(style.incomingDelimitersColor))
         itemView.findViewById<View>(R.id.delimiter)
             .setBackgroundColor(getColorInt(style.incomingDelimitersColor))
         setTextColorToViews(arrayOf(mFileHeader, mSizeTextView), style.incomingMessageTextColor)
@@ -75,10 +84,25 @@ class ConsultFileViewHolder(
         highlighted: Boolean,
         buttonClickListener: View.OnClickListener,
         onLongClickListener: OnLongClickListener,
+        onQuoteClickListener: View.OnClickListener,
         onAvatarClickListener: View.OnClickListener
     ) {
         subscribeForHighlighting(consultPhrase, rootLayout)
         applyBubbleLayoutStyle()
+        consultPhrase.quote?.let {
+            showQuote(
+                it,
+                onQuoteClickListener,
+                quoteLayout,
+                quoteTextHeader,
+                quoteTextDescription,
+                quoteTextTimeStamp,
+                quoteFileImage,
+                quoteProgressButton
+            )
+        } ?: run {
+            quoteLayout.isVisible = false
+        }
         showFile(consultPhrase.fileDescription)
         mTimeStampTextView.text = sdf.format(Date(consultPhrase.timeStamp))
         val vg = itemView as ViewGroup

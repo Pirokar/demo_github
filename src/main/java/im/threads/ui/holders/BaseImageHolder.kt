@@ -81,6 +81,7 @@ open class BaseImageHolder(
                 BlendModeCompat.SRC_ATOP
             )
 
+        setImageSize(imageLayout)
         bordersCreator.addMargins(image, imageLayout, itemView)
 
         setLayoutMargins(isIncomingMessage, imageLayout)
