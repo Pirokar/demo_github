@@ -31,6 +31,7 @@ import im.threads.business.state.ChatStateEnum
 import im.threads.business.useractivity.UserActivityTimeProvider.getLastUserActivityTimeCounter
 import im.threads.business.useractivity.UserActivityTimeProvider.initializeLastUserActivity
 import im.threads.business.utils.ClientUseCase
+import im.threads.business.utils.MetadataBusiness
 import im.threads.business.utils.preferences.PreferencesMigrationBase
 import im.threads.ui.controllers.ChatController
 import im.threads.ui.fragments.ChatFragment
@@ -105,10 +106,24 @@ open class ThreadsLibBase protected constructor(context: Context) {
             clientUseCase.saveUserInfo(userInfoBuilder)
             if (forceRegistration && preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS).isNullOrBlank()) {
                 BaseConfig.getInstance().transport.sendRegisterDevice(true)
-                if (!ChatFragment.isShown) {
+                if (!ChatFragment.isShown && !BaseConfig.getInstance().keepSocketActive) {
                     BaseConfig.getInstance().transport.closeWebSocket()
                 }
             }
+        }
+    }
+
+    internal fun updateUnreadCountMessagesIfNeed() {
+        if (BaseConfig.getInstance().unreadMessagesCountListener != null &&
+            clientUseCase.getUserInfo() != null
+        ) {
+            ChatController.getInstance().loadHistory(fromQuickAnswerController = true)
+        }
+    }
+
+    internal fun sendRegisterDeviceIfNeed() {
+        if (BaseConfig.getInstance().keepSocketActive && clientUseCase.getUserInfo() != null) {
+            BaseConfig.getInstance().transport.sendRegisterDevice(false)
         }
     }
 
@@ -170,6 +185,7 @@ open class ThreadsLibBase protected constructor(context: Context) {
         fun init(configBuilder: BaseConfigBuilder) {
             val startInitTime = System.currentTimeMillis()
 
+            insertMetaDataToConfigBuilder(configBuilder)
             createLibInstance(configBuilder.context)
             BaseConfig.setInstance(configBuilder.build())
             BaseConfig.getInstance().loggerConfig?.let { LoggerEdna.init(it) }
@@ -184,6 +200,16 @@ open class ThreadsLibBase protected constructor(context: Context) {
             PreferencesMigrationBase(BaseConfig.getInstance().context).apply {
                 migrateMainSharedPreferences()
                 migrateUserInfo()
+            }
+        }
+
+        internal fun insertMetaDataToConfigBuilder(configBuilder: BaseConfigBuilder) {
+            configBuilder.apply {
+                if (datastoreUrl.isNullOrBlank()) datastoreUrl = MetadataBusiness.getDatastoreUrl(context)
+                if (serverBaseUrl.isNullOrBlank()) serverBaseUrl = MetadataBusiness.getServerBaseUrl(context)
+                if (threadsGateUrl.isNullOrBlank()) threadsGateUrl = MetadataBusiness.getThreadsGateUrl(context)
+                if (threadsGateProviderUid.isNullOrBlank()) threadsGateProviderUid = MetadataBusiness.getThreadsGateProviderUid(context)
+                if (!isNewChatCenterApi) isNewChatCenterApi = MetadataBusiness.getNewChatCenterApi(context)
             }
         }
 

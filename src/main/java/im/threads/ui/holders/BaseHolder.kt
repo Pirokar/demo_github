@@ -42,7 +42,11 @@ import im.threads.business.models.enums.ErrorStateEnum
 import im.threads.business.ogParser.OGData
 import im.threads.business.ogParser.OGDataContent
 import im.threads.business.ogParser.OpenGraphParser
+import im.threads.business.serviceLocator.core.inject
+import im.threads.business.utils.FileDownloader
+import im.threads.business.utils.FileProvider
 import im.threads.business.utils.FileUtils
+import im.threads.business.utils.FileUtils.generateFileName
 import im.threads.business.utils.UrlUtils
 import im.threads.business.utils.toFileSize
 import im.threads.ui.config.Config
@@ -66,12 +70,14 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.io.File
 
 abstract class BaseHolder internal constructor(
     itemView: View,
     private val highlightingStream: PublishSubject<ChatItem>? = null,
     private val openGraphParser: OpenGraphParser? = null
 ) : RecyclerView.ViewHolder(itemView) {
+    private val fileProvider: FileProvider by inject()
     private var currentChatItem: ChatItem? = null
     private var viewsToHighlight: Array<out View>? = null
     private var isThisItemHighlighted = false
@@ -762,6 +768,16 @@ abstract class BaseHolder internal constructor(
                 }
             }
         }
+    }
+
+    protected fun getPreviewUri(fileDescription: FileDescription?): Uri? {
+        fileDescription?.let {
+            val file = File(FileDownloader.getDownloadDir(itemView.context), generateFileName(fileDescription))
+            if (file.exists()) {
+                return fileProvider.getUriForFile(itemView.context, file)
+            }
+        }
+        return null
     }
 
     companion object {

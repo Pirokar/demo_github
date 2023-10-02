@@ -25,7 +25,7 @@ class Config(
     datastoreUrl: String?,
     threadsGateUrl: String?,
     threadsGateProviderUid: String?,
-    isNewChatCenterApi: Boolean?,
+    isNewChatCenterApi: Boolean,
     loggerConfig: LoggerConfig?,
     val pendingIntentCreator: PendingIntentCreator,
     unreadMessagesCountListener: UnreadMessagesCountListener?,

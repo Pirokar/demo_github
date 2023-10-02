@@ -127,7 +127,7 @@
     </plurals>
 
     <string name="ecc_not_allowed_file_extension">Not allowed file format</string>
-    <string name="ecc_not_allowed_file_size">The file exceeds the maximum allowed size of %1$d MB</string>
+    <string name="ecc_not_allowed_file_size">File size exceeded (%1$d MB)</string>
     <string name="ecc_message_sending_is_unavailable">You cannot send message at the moment</string>
     <string name="ecc_hold_button_to_record_audio">Hold record button to send voice message</string>
     <string name="ecc_voice_message">Voice message</string>

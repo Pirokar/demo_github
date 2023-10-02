@@ -280,12 +280,15 @@ class ConsultPhraseHolder(
         imageClickListener: View.OnClickListener,
         isExternalImage: Boolean = false
     ) {
-        val fileUri = if (fileDescription.fileUri?.toString()?.isNotBlank() == true) {
-            fileDescription.fileUri.toString()
-        } else {
-            fileDescription.downloadPath
+        fileDescription.getPreviewFileDescription()?.let {
+            val previewUri = getPreviewUri(it.getPreviewFileDescription())
+            val fileUri = if (previewUri?.toString().isNullOrBlank()) {
+                it.downloadPath
+            } else {
+                previewUri?.toString()
+            }
+            loadImage(fileUri, imageClickListener, isExternalImage)
         }
-        loadImage(fileUri, imageClickListener, isExternalImage)
     }
 
     private fun loadImage(

@@ -4,9 +4,9 @@ import android.content.Context
 import android.os.Build
 import android.provider.Settings
 import android.text.TextUtils
+import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.LifecycleOwner
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import im.threads.R
@@ -87,7 +87,7 @@ class ThreadsGateTransport(
     private val sslSocketFactoryConfig: SslSocketFactoryConfig? = null,
     private val networkInterceptor: Interceptor?,
     private val context: Context
-) : Transport(), LifecycleObserver {
+) : Transport(), DefaultLifecycleObserver {
     private lateinit var client: OkHttpClient
     private lateinit var request: Request
     private lateinit var listener: WebSocketListener
@@ -293,7 +293,7 @@ class ThreadsGateTransport(
             messageInProcessIds.add(correlationId)
         }
         if (webSocket == null && tryOpeningWebSocket) {
-            openWebSocket()
+            openWebSocket(content.toString().contains(ChatItemType.CLIENT_OFFLINE.name))
         }
         webSocket ?: return false
         val clientId = clientUseCase.getUserInfo()?.clientId
@@ -335,18 +335,34 @@ class ThreadsGateTransport(
         return isSent
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_START)
+    override fun onStart(owner: LifecycleOwner) {
+        super.onStart(owner)
+        openWebSocket()
+    }
+
+    override fun onStop(owner: LifecycleOwner) {
+        super.onStop(owner)
+        closeWebSocketIfNeeded()
+    }
+
     @Synchronized
-    private fun openWebSocket() {
+    private fun openWebSocket(isLoggingOut: Boolean = false) {
         if (webSocket == null) {
             webSocket = client.newWebSocket(request, listener)
-            sendRegisterDevice()
+            if (isLoggingOut) {
+                sendRegisterDeviceWithoutStateChanging()
+            } else {
+                sendRegisterDevice()
+            }
         }
     }
 
     private fun sendRegisterDevice() {
         chatState.changeState(ChatStateEnum.REGISTERING_DEVICE)
+        sendRegisterDeviceWithoutStateChanging()
+    }
 
+    private fun sendRegisterDeviceWithoutStateChanging() {
         val clientId = clientUseCase.getUserInfo()?.clientId
 
         if (clientId.isNullOrBlank()) {
@@ -419,7 +435,6 @@ class ThreadsGateTransport(
      * Closes websocket connection if there are no messages left to send
      * and user is not interacting with chat screen
      */
-    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     private fun closeWebSocketIfNeeded() {
         if (messageInProcessIds.isEmpty() &&
             lifecycle?.currentState?.isAtLeast(Lifecycle.State.STARTED)?.not() != false &&
@@ -525,7 +540,9 @@ class ThreadsGateTransport(
                         chatUpdateProcessor.postDeviceAddressChanged(data.deviceAddress)
                     }
                     location?.let { updateLocation(it.latitude, it.longitude) }
-                    chatState.changeState(ChatStateEnum.DEVICE_REGISTERED)
+                    if (chatState.getCurrentState() >= ChatStateEnum.REGISTERING_DEVICE) {
+                        chatState.changeState(ChatStateEnum.DEVICE_REGISTERED)
+                    }
                 }
                 if (action == Action.SEND_MESSAGE) {
                     val data = BaseConfig.getInstance().gson.fromJson(

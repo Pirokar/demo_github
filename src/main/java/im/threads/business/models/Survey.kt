@@ -14,6 +14,18 @@ class Survey : ChatItem, Hidable {
     var sentState: MessageStatus
     var isRead: Boolean
 
+    override fun toString(): String {
+        return "Survey. uuid:\n = $uuid, " +
+            "\nsendingId = $sendingId, " +
+            "\nhideAfter = $hideAfter, " +
+            "\nisDisplayMessage = $isDisplayMessage, " +
+            "\nsentState = $sentState, " +
+            "\nisRead = $isRead, " +
+            "\ntimeStamp = $timeStamp, " +
+            "\nthreadId = $threadId, " +
+            "\nquestions = ${questions?.toString()}"
+    }
+
     constructor(
         uuid: String?,
         surveySendingId: Long,

@@ -13,6 +13,7 @@ import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.text.TextUtils
 import android.webkit.MimeTypeMap
+import androidx.documentfile.provider.DocumentFile
 import im.threads.R
 import im.threads.business.config.BaseConfig
 import im.threads.business.imageLoading.ImageLoader
@@ -22,6 +23,8 @@ import im.threads.business.models.CampaignMessage
 import im.threads.business.models.FileDescription
 import im.threads.business.models.Quote
 import im.threads.business.models.UpcomingUserMessage
+import im.threads.business.secureDatabase.DatabaseHolder
+import im.threads.business.serviceLocator.core.inject
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileNotFoundException
@@ -100,6 +103,13 @@ object FileUtils {
             )
     }
 
+    private fun isFileCorrupted(fileDescription: FileDescription): Boolean {
+        val actualSize = fileDescription.fileUri?.let {
+            getFileSize(it)
+        } ?: 0
+        return fileDescription.size != actualSize
+    }
+
     @JvmStatic
     fun isVoiceMessage(fileDescription: FileDescription?): Boolean {
         return (
@@ -149,46 +159,90 @@ object FileUtils {
     }
 
     @JvmStatic
+    fun removeFileIfCorrupted(fileDescription: FileDescription?) {
+        val database: DatabaseHolder by inject()
+        val context = BaseConfig.getInstance().context
+
+        if (fileDescription?.fileUri != null && isFileCorrupted(fileDescription)) {
+            DocumentFile
+                .fromSingleUri(context, fileDescription.fileUri!!)
+                ?.delete()
+            val files = FileDownloader.getDownloadDir(context).listFiles { _, name ->
+                name.endsWith(fileDescription.incomingName ?: "no name")
+            }
+            files?.forEach {
+                if (it.exists()) {
+                    it.delete()
+                }
+            }
+            fileDescription.fileUri = null
+            fileDescription.downloadProgress = 0
+            database.updateFileDescription(fileDescription)
+        }
+    }
+
+    @JvmStatic
     @Throws(IOException::class)
     fun saveToDownloads(fileDescription: FileDescription) {
-        val uri = fileDescription.fileUri
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            val resolver = BaseConfig.getInstance().context.contentResolver
-            val imageCV = ContentValues()
-            imageCV.put(MediaStore.Images.Media.DISPLAY_NAME, fileDescription.incomingName)
-            imageCV.put(MediaStore.Images.Media.MIME_TYPE, getMimeType(fileDescription))
-            val imagesCollection =
-                MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
-            var outputUri = resolver.insert(imagesCollection, imageCV)
-            if (outputUri == null) {
-                imageCV.put(MediaStore.Images.Media.DISPLAY_NAME, "threads" + UUID.randomUUID())
-                outputUri = resolver.insert(imagesCollection, imageCV)
+            val uri = Uri.parse(fileDescription.downloadPath)
+            if (uri != null) {
+                val resolver = BaseConfig.getInstance().context.contentResolver
+                val imageCV = ContentValues()
+                imageCV.put(MediaStore.Images.Media.DISPLAY_NAME, fileDescription.incomingName)
+                imageCV.put(MediaStore.Images.Media.MIME_TYPE, getMimeType(fileDescription))
+                val imagesCollection =
+                    MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+                var outputUri = resolver.insert(imagesCollection, imageCV)
+                if (outputUri == null) {
+                    imageCV.put(MediaStore.Images.Media.DISPLAY_NAME, "threads" + UUID.randomUUID())
+                    outputUri = resolver.insert(imagesCollection, imageCV)
+                }
+                saveToUri(uri, outputUri)
             }
-            saveToUri(uri, outputUri)
         } else {
-            val outputFile = File(
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-                getFileName(
-                    uri!!
+            val uri = Uri.parse(fileDescription.downloadPath)
+            if (uri != null) {
+                val outputFile = File(
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+                    generateFileName(fileDescription)
                 )
-            )
-            if (outputFile.exists() || outputFile.createNewFile()) {
-                saveImageToFile(uri, outputFile)
-                val dm =
-                    BaseConfig.getInstance().context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-                dm.addCompletedDownload(
-                    getFileName(uri),
-                    BaseConfig.getInstance().context.getString(R.string.ecc_media_description),
-                    true,
-                    getMimeType(uri),
-                    outputFile.path,
-                    outputFile.length(),
-                    false
-                )
-            } else {
-                throw FileNotFoundException()
+                if (outputFile.exists() || outputFile.createNewFile()) {
+                    saveImageToFile(uri, outputFile)
+                    val dm =
+                        BaseConfig.getInstance().context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+                    dm.addCompletedDownload(
+                        getFileName(uri),
+                        BaseConfig.getInstance().context.getString(R.string.ecc_media_description),
+                        true,
+                        getMimeType(uri),
+                        outputFile.path,
+                        outputFile.length(),
+                        false
+                    )
+                } else {
+                    throw FileNotFoundException()
+                }
             }
         }
+    }
+
+    internal fun generatePreviewFileName(fileName: String?): String? {
+        if (!fileName.isNullOrEmpty()) {
+            val fileNameParts = fileName.split(".").toTypedArray()
+            if (fileNameParts.size >= 2) {
+                return fileNameParts[0] + "_small." + fileNameParts[fileNameParts.size - 1]
+            }
+        }
+        return null
+    }
+
+    internal fun isPreviewFileExist(context: Context, fileDescription: FileDescription?): Boolean {
+        if (fileDescription != null) {
+            val outputFile = File(FileDownloader.getDownloadDir(context), generateFileName(fileDescription))
+            return outputFile.exists()
+        }
+        return false
     }
 
     /**

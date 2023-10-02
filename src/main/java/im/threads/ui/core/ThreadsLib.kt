@@ -150,14 +150,16 @@ class ThreadsLib(context: Context) : ThreadsLibBase(context) {
 
         @JvmStatic
         fun init(configBuilder: ConfigBuilder) {
+            insertMetaDataToConfigBuilder(configBuilder)
             createLibInstance(configBuilder.context)
             Config.setInstance(configBuilder.build())
             BaseConfig.getInstance().loggerConfig?.let { LoggerEdna.init(it) }
             LoggerEdna.info(configBuilder.toString())
-
             loadRamPrefs(this::migratePreference, configBuilder.context)
             initBaseParams()
             getInstance().subscribeToPushEvent()
+            getInstance().sendRegisterDeviceIfNeed()
+            getInstance().updateUnreadCountMessagesIfNeed()
         }
 
         /**

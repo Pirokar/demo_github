@@ -135,7 +135,7 @@
     <string name="ecc_message_text_copied">Текст скопирован в буфер обмена</string>
 
     <string name="ecc_not_allowed_file_extension">Недопустимый формат файла</string>
-    <string name="ecc_not_allowed_file_size">Файл превышает максимально допустимый размер %1$d МБ</string>
+    <string name="ecc_not_allowed_file_size">Превышен размер файла (%1$d МБ)</string>
     <string name="ecc_message_sending_is_unavailable">Отправка сообщения временно недоступна</string>
     <string name="ecc_hold_button_to_record_audio">Удерживайте кнопку записи для отправки голосового сообщения</string>
     <string name="ecc_voice_message">Голосовое сообщение</string>
