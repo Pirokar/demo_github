@@ -36,7 +36,6 @@ object ChatMainScreen : KScreen<ChatMainScreen>() {
     val quoteImage = KImageView { withId(R.id.quote_image) }
     val quoteClear = KImageView { withId(R.id.quote_clear) }
     val addAttachmentBtn = KImageView { withId(R.id.add_attachment) }
-    val fullScreenImage = KImageView { withId(R.id.image) }
     val imagePager = KViewPager { withId(R.id.pager) }
 
     val chatItemsRecyclerView = KRecyclerView(

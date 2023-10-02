@@ -1,58 +1,17 @@
 package io.edna.threads.demo.mainChatScreen.mainTests
 
-import android.content.Intent
-import android.os.Build
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.PerformException
-import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.rule.GrantPermissionRule
-import io.edna.threads.demo.BaseTestCase
+import io.edna.threads.demo.BaseFilesTestCase
 import io.edna.threads.demo.R
 import io.edna.threads.demo.TestMessages
-import io.edna.threads.demo.appCode.activity.MainActivity
 import io.edna.threads.demo.kaspressoSreens.ChatMainScreen
 import io.edna.threads.demo.waitListForNotEmpty
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class ImagesTest : BaseTestCase() {
-    private val intent = Intent(ApplicationProvider.getApplicationContext(), MainActivity::class.java)
-
-    @get:Rule
-    internal val activityRule = ActivityScenarioRule<MainActivity>(intent)
-
-    @Rule
-    @JvmField
-    val storageApiBelow29Rule = if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        GrantPermissionRule.grant(
-            "android.permission.READ_EXTERNAL_STORAGE",
-            "android.permission.WRITE_EXTERNAL_STORAGE"
-        )
-    } else {
-        null
-    }
-
-    @Rule
-    @JvmField
-    val storageApi29Rule = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-        GrantPermissionRule.grant(
-            "android.permission.READ_MEDIA_IMAGES",
-            "android.permission.READ_MEDIA_VIDEO",
-            "android.permission.READ_MEDIA_AUDIO",
-            "android.permission.ACCESS_MEDIA_LOCATION"
-        )
-    } else {
-        null
-    }
-
-    init {
-        applyDefaultUserToDemoApp()
-        prepareWsMocks()
-    }
-
+class ImagesTest : BaseFilesTestCase() {
     @Test
     fun sendReceiveImage() {
         prepareHttpMocks()
@@ -159,10 +118,11 @@ class ImagesTest : BaseTestCase() {
                 isVisible()
                 click()
             }
+            closeSoftKeyboard()
             chatItemsRecyclerView {
                 isVisible()
                 scrollTo(0)
-                firstChild<ChatMainScreen.ChatRecyclerItem> {
+                lastChild<ChatMainScreen.ChatRecyclerItem> {
                     itemText.containsText(textToType)
                 }
             }
