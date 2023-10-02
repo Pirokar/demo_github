@@ -40,7 +40,6 @@ import im.threads.business.ogParser.OpenGraphParser
 import im.threads.business.utils.FileUtils.isImage
 import im.threads.business.utils.FileUtils.isVoiceMessage
 import im.threads.business.utils.UrlUtils
-import im.threads.business.utils.toFileSize
 import im.threads.ui.config.Config
 import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.utils.gone
@@ -663,15 +662,6 @@ class UserPhraseViewHolder(
         loader.gone()
         rotateAnim.cancel()
         rotateAnim.reset()
-    }
-
-    private fun getFileDescriptionText(fileName: String?, fileDescription: FileDescription): String {
-        return (fileName ?: "file") +
-            if (fileDescription.size > 0) {
-                fileDescription.size.toFileSize().trimIndent()
-            } else {
-                ""
-            }
     }
 
     private fun initTimeStampView(userPhrase: UserPhrase) {

@@ -1008,6 +1008,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     phraseLongClick(consultPhrase, holder.getAdapterPosition());
                     return true;
                 },
+                v -> mCallback.onQuoteClick(consultPhrase.getQuote()),
                 v -> mCallback.onConsultAvatarClick(consultPhrase.getConsultId())
         );
     }
@@ -1027,6 +1028,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     phraseLongClick(consultPhrase, holder.getAdapterPosition());
                     return true;
                 },
+                v -> mCallback.onQuoteClick(consultPhrase.getQuote()),
                 v -> mCallback.onConsultAvatarClick(consultPhrase.getConsultId()),
                 v -> onVoiceMessagePlayClick(holder),
                 (slider, value, fromUser) -> {

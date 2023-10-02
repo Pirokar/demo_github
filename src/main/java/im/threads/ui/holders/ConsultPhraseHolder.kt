@@ -1,6 +1,5 @@
 package im.threads.ui.holders
 
-import android.annotation.SuppressLint
 import android.app.ActionBar
 import android.text.TextUtils
 import android.util.TypedValue
@@ -19,21 +18,16 @@ import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.core.view.isVisible
 import im.threads.R
-import im.threads.business.formatters.RussianFormatSymbols
 import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.imageLoading.ImageModifications
-import im.threads.business.imageLoading.loadImage
 import im.threads.business.models.ChatItem
 import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.FileDescription
-import im.threads.business.models.Quote
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.ogParser.OGDataContent
 import im.threads.business.ogParser.OpenGraphParser
-import im.threads.business.utils.FileUtils
 import im.threads.business.utils.FileUtils.isImage
 import im.threads.business.utils.UrlUtils
-import im.threads.business.utils.toFileSize
 import im.threads.ui.config.Config
 import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.utils.gone
@@ -60,14 +54,6 @@ class ConsultPhraseHolder(
     openGraphParser
 ) {
     private val timeStampSdf = SimpleDateFormat("HH:mm", Locale.getDefault())
-
-    @SuppressLint("SimpleDateFormat")
-    private var quoteSdf = if (Locale.getDefault().language.equals("ru", ignoreCase = true)) {
-        SimpleDateFormat("dd MMMM yyyy", RussianFormatSymbols())
-    } else {
-        SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
-    }
-
     private val fileRow: View = itemView.findViewById(R.id.rightTextRow)
     private val quoteLayout: LinearLayout = itemView.findViewById(R.id.quoteLayout)
     private val quoteTextHeader: TextView = itemView.findViewById(R.id.quoteTo)
@@ -171,6 +157,7 @@ class ConsultPhraseHolder(
         imageLayout.isVisible = false
         fileRow.isVisible = false
 
+        phraseTextView.text = ""
         consultPhrase.phraseText?.let {
             showPhrase(consultPhrase, it.trim())
         } ?: run {
@@ -178,7 +165,16 @@ class ConsultPhraseHolder(
         }
 
         consultPhrase.quote?.let {
-            showQuote(it, onQuoteClickListener)
+            showQuote(
+                it,
+                onQuoteClickListener,
+                quoteLayout,
+                quoteTextHeader,
+                quoteTextDescription,
+                quoteTextTimeStamp,
+                quoteFileImage,
+                quoteProgressButton
+            )
         } ?: run {
             quoteLayout.isVisible = false
         }
@@ -279,15 +275,6 @@ class ConsultPhraseHolder(
         }
     }
 
-    private fun getFileDescriptionText(fileName: String?, fileDescription: FileDescription): String {
-        return (fileName ?: "file") +
-            if (fileDescription.size > 0) {
-                fileDescription.size.toFileSize().trimIndent()
-            } else {
-                ""
-            }
-    }
-
     private fun loadImage(
         fileDescription: FileDescription,
         imageClickListener: View.OnClickListener,
@@ -355,53 +342,6 @@ class ConsultPhraseHolder(
             deeplink ?: extractedLink?.link,
             emails
         )
-    }
-
-    private fun showQuote(
-        quote: Quote,
-        onQuoteClickListener: View.OnClickListener
-    ) {
-        quoteLayout.isVisible = true
-        quoteTextHeader.text = if (quote.phraseOwnerTitle == null) {
-            itemView.context
-                .getString(R.string.ecc_I)
-        } else {
-            quote.phraseOwnerTitle
-        }
-        quoteProgressButton.isVisible = false
-        quoteTextDescription.text = quote.text
-        quoteTextTimeStamp.text = itemView.context
-            .getString(R.string.ecc_sent_at, quoteSdf.format(Date(quote.timeStamp)))
-        viewUtils.setClickListener(quoteLayout, onQuoteClickListener)
-        val quoteFileDescription = quote.fileDescription
-        if (quoteFileDescription != null) {
-            if (FileUtils.isVoiceMessage(quoteFileDescription)) {
-                quoteTextDescription.setText(R.string.ecc_voice_message)
-            } else {
-                if (isImage(quote.fileDescription)) {
-                    quoteFileImage.visibility = View.VISIBLE
-                    val fileUri = quoteFileDescription.fileUri?.toString() ?: quoteFileDescription.downloadPath
-                    if (!fileUri.isNullOrEmpty()) {
-                        quoteFileImage.loadImage(
-                            quoteFileDescription.downloadPath,
-                            listOf(ImageView.ScaleType.FIT_CENTER, ImageView.ScaleType.CENTER_CROP),
-                            style.imagePlaceholder,
-                            autoRotateWithExif = true
-                        )
-                    } else {
-                        quoteFileImage.setImageResource(style.imagePlaceholder)
-                    }
-                    quoteFileImage.setOnClickListener(onQuoteClickListener)
-                } else {
-                    quoteProgressButton.isVisible = true
-                    fileNameFromDescription(quoteFileDescription) { fileName ->
-                        quoteTextDescription.text = getFileDescriptionText(fileName, quoteFileDescription)
-                    }
-                    quoteProgressButton.setOnClickListener(onQuoteClickListener)
-                    quoteProgressButton.setProgress(if (quoteFileDescription.fileUri != null) 100 else quoteFileDescription.downloadProgress)
-                }
-            }
-        }
     }
 
     private fun startLoaderAnimation() {
