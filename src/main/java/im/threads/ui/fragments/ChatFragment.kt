@@ -2665,7 +2665,9 @@ class ChatFragment :
         }
 
         override fun onImageClick(chatPhrase: ChatPhrase) {
-            if (!isPreviewFileExist(chatPhrase.fileDescription?.getPreviewFileDescription())) {
+            if (!isPreviewFileExist(chatPhrase.fileDescription?.getPreviewFileDescription()) &&
+                chatPhrase.fileDescription?.fileUri == null
+            ) {
                 return
             }
 

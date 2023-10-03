@@ -184,8 +184,12 @@ object FileUtils {
     @JvmStatic
     @Throws(IOException::class)
     fun saveToDownloads(fileDescription: FileDescription) {
+        val uri = if (fileDescription.downloadPath.isNullOrEmpty()) {
+            fileDescription.fileUri
+        } else {
+            Uri.parse(fileDescription.downloadPath)
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            val uri = Uri.parse(fileDescription.downloadPath)
             if (uri != null) {
                 val resolver = BaseConfig.getInstance().context.contentResolver
                 val imageCV = ContentValues()
@@ -201,7 +205,6 @@ object FileUtils {
                 saveToUri(uri, outputUri)
             }
         } else {
-            val uri = Uri.parse(fileDescription.downloadPath)
             if (uri != null) {
                 val outputFile = File(
                     Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
