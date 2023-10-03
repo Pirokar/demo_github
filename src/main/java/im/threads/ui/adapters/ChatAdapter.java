@@ -579,6 +579,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public void addItems(@NonNull List<ChatItem> items, boolean withAnimation) {
         boolean withTyping = false;
         boolean withRequestResolveThread = false;
+        checkIdsForReplacingToNull(items);
         items = SurveySplitterKt.splitSurveyQuestions(items);
         for (final ChatItem ci : items) {
             if (ci instanceof ConsultTyping) {
@@ -609,6 +610,22 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             getList().clear();
             getList().addAll(newList);
             notifyDataSetChanged();
+        }
+    }
+
+    private void checkIdsForReplacingToNull(@NonNull List<ChatItem> items) {
+        List<ChatItem> currentItems = getList();
+        for (ChatItem newItem : items) {
+            for (ChatItem currentItem : currentItems) {
+                if (newItem.isTheSameItem(currentItem) && newItem instanceof UserPhrase) {
+                    UserPhrase currentPhrase = (UserPhrase) currentItem;
+                    UserPhrase newPhrase = (UserPhrase) newItem;
+
+                    if (!TextUtils.isEmpty(currentPhrase.getBackendMessageId()) && TextUtils.isEmpty(newPhrase.getBackendMessageId())) {
+                        newPhrase.setBackendMessageId(currentPhrase.getBackendMessageId());
+                    }
+                }
+            }
         }
     }
 
@@ -729,7 +746,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     if (backendMessageId != null) {
                         ((UserPhrase) cm).setBackendMessageId(backendMessageId);
                     }
-                    if (up.getSentState().ordinal() <= status.ordinal()) {
+                    if (up.getSentState().ordinal() < status.ordinal()) {
                         ((UserPhrase) cm).setSentState(status);
                         notifyItemChangedOnUi(cm);
                     }
