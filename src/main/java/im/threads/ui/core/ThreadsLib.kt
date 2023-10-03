@@ -158,7 +158,6 @@ class ThreadsLib(context: Context) : ThreadsLibBase(context) {
             loadRamPrefs(this::migratePreference, configBuilder.context)
             initBaseParams()
             getInstance().subscribeToPushEvent()
-            getInstance().sendRegisterDeviceIfNeed()
             getInstance().updateUnreadCountMessagesIfNeed()
         }
 
