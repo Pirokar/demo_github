@@ -52,6 +52,15 @@ object ChatMainScreen : KScreen<ChatMainScreen>() {
         val itemText = KTextView(matcher) { withId(R.id.text) }
         val itemTime = KTextView(matcher) { withId(R.id.timeStamp) }
         val image = KImageView(matcher) { withId(R.id.image) }
+        val star = KImageView(matcher) { withId(R.id.star) }
+        val surveyHeader = KTextView(matcher) { withId(R.id.header) }
+        val rateStarsCount = KTextView(matcher) { withId(R.id.rate_stars_count) }
+        val totalStarsCount = KTextView(matcher) { withId(R.id.total_stars_count) }
+        val fromTextSurvey = KTextView(matcher) { withId(R.id.from) }
+        val askForRateText = KTextView(matcher) { withId(R.id.ask_for_rate) }
+        val thumbUp = KImageView(matcher) { withId(R.id.thumb_up) }
+        val thumbDown = KImageView(matcher) { withId(R.id.thumb_down) }
+        val ratingStars = KView(matcher) { withId(R.id.mark) }
     }
 
     class BottomGalleryItem(matcher: Matcher<View>) : KRecyclerItem<BottomGalleryItem>(matcher)
