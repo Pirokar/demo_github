@@ -90,4 +90,18 @@ class SystemMessages : BaseTestCase() {
             }
         }
     }
+
+    @Test
+    fun waitingTimeTest() {
+        prepareHttpMocks(historyAnswer = readTextFileFromRawResourceId(R.raw.history_errors_response))
+        openChatFromDemoLoginPage()
+
+        ChatMainScreen {
+            chatItemsRecyclerView {
+                waitListForNotEmpty(5000)
+                isVisible()
+                hasDescendant { withText("Среднее время ожидания ответа составляет 2 минуты") }
+            }
+        }
+    }
 }
