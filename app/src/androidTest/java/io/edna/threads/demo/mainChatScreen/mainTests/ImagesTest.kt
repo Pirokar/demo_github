@@ -29,7 +29,11 @@ class ImagesTest : BaseFilesTestCase() {
                 false
             }
             if (isRecyclerHasItems.not()) {
-                copyFileToDownloads("test_files/test_image2.jpg")
+                val usualFileNameLength = "test_image2.jpg".length
+                val fileName = copyFileToDownloads("test_files/test_image2.jpg")
+                if (fileName?.length != null && fileName.length > usualFileNameLength) {
+                    fileNamesToDelete.add(fileName)
+                }
                 Thread.sleep(500)
                 pressBack()
                 addAttachmentBtn { click() }
@@ -44,6 +48,10 @@ class ImagesTest : BaseFilesTestCase() {
 
             assert(chatItemsRecyclerView.getSize() > 0)
 
+            sendMessageToSocket(TestMessages.operatorImageMessage)
+
+            assert(chatItemsRecyclerView.getSize() > 1)
+
             chatItemsRecyclerView {
                 lastChild<ChatMainScreen.ChatRecyclerItem> {
                     image.isClickable()
@@ -51,14 +59,7 @@ class ImagesTest : BaseFilesTestCase() {
                 }
             }
             imagePager.isVisible()
-            imagePager.isAtPage(0)
-
-            pressBack()
-            chatItemsRecyclerView { waitListForNotEmpty(5000) }
-
-            sendMessageToSocket(TestMessages.operatorImageMessage)
-
-            assert(chatItemsRecyclerView.getSize() > 1)
+            imagePager.isAtPage(1)
         }
     }
 

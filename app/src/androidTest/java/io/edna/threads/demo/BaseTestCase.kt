@@ -172,8 +172,8 @@ abstract class BaseTestCase : TestCase() {
         return stringBuilder.toString()
     }
 
-    protected fun copyFileToDownloads(assetsPath: String) {
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
+    protected fun copyFileToDownloads(assetsPath: String): String? {
+        return if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
             copyToDownloadsApiBelow29(assetsPath)
         } else {
             copyToDownloadsApi29(assetsPath)
@@ -181,12 +181,12 @@ abstract class BaseTestCase : TestCase() {
     }
 
     @Suppress("DEPRECATION")
-    private fun copyToDownloadsApiBelow29(filePathRelativeToAssets: String) {
+    private fun copyToDownloadsApiBelow29(filePathRelativeToAssets: String): String? {
         Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)?.absolutePath?.let {
             val fileName = filePathRelativeToAssets.split("/").last()
             val toFile = File("$it/$fileName")
             if (toFile.exists() && toFile.length() > 0) {
-                return
+                return fileName
             } else if (toFile.exists()) {
                 toFile.delete()
             }
@@ -202,29 +202,61 @@ abstract class BaseTestCase : TestCase() {
                 toFile.length(),
                 false
             )
+            return fileName
+        }
+
+        return null
+    }
+
+    /**
+     * Возвращает newFileName, если в процессе копирования файла
+     * случилась ошибка UNIQUE constraint failed
+     */
+    private fun copyToDownloadsApi29(filePathRelativeToAssets: String, nameOfFile: String? = null): String? {
+        try {
+            val fileName = nameOfFile ?: getNameOfFile(filePathRelativeToAssets)
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)?.absolutePath?.let {
+                val toFile = File("$it/$fileName")
+                if (toFile.exists() && toFile.length() > 0) {
+                    return null
+                } else if (toFile.exists()) {
+                    toFile.delete()
+                }
+            }
+            val values = ContentValues()
+            values.put(
+                MediaStore.MediaColumns.DISPLAY_NAME,
+                fileName
+            )
+            values.put(
+                MediaStore.MediaColumns.MIME_TYPE,
+                getMimeType(fileName)
+            )
+            values.put(
+                MediaStore.MediaColumns.RELATIVE_PATH,
+                Environment.DIRECTORY_DOWNLOADS
+            )
+            val uri: Uri? = context.contentResolver.insert(
+                MediaStore.Files.getContentUri(MediaStore.VOLUME_EXTERNAL),
+                values
+            )
+            context.assets.open(filePathRelativeToAssets).copyToUri(uri!!, context)
+            return fileName
+        } catch (exc: android.database.sqlite.SQLiteConstraintException) {
+            val name = getNameOfFile(filePathRelativeToAssets, true)
+            copyToDownloadsApi29(filePathRelativeToAssets, name)
+            return name
         }
     }
 
-    private fun copyToDownloadsApi29(filePathRelativeToAssets: String) {
-        val fileName = filePathRelativeToAssets.split("/").last()
-        val values = ContentValues()
-        values.put(
-            MediaStore.MediaColumns.DISPLAY_NAME,
-            fileName
-        )
-        values.put(
-            MediaStore.MediaColumns.MIME_TYPE,
-            getMimeType(fileName)
-        )
-        values.put(
-            MediaStore.MediaColumns.RELATIVE_PATH,
-            Environment.DIRECTORY_DOWNLOADS
-        )
-        val uri: Uri? = context.contentResolver.insert(
-            MediaStore.Files.getContentUri("external"),
-            values
-        )
-        context.assets.open(filePathRelativeToAssets).copyToUri(uri!!, context)
+    private fun getNameOfFile(filePathRelativeToAssets: String, plusRandom: Boolean = false): String {
+        val usualName = filePathRelativeToAssets.split("/").last()
+        return if (plusRandom) {
+            val nameParts = usualName.split(".")
+            "${nameParts[0]}$userId.${nameParts[1]}"
+        } else {
+            usualName
+        }
     }
 
     private fun getMimeType(fileName: String): String {
