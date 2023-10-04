@@ -121,12 +121,6 @@ open class ThreadsLibBase protected constructor(context: Context) {
         }
     }
 
-    internal fun sendRegisterDeviceIfNeed() {
-        if (BaseConfig.getInstance().keepSocketActive && clientUseCase.getUserInfo() != null) {
-            BaseConfig.getInstance().transport.sendRegisterDevice(false)
-        }
-    }
-
     /**
      * Used to stop receiving messages for user
      */
