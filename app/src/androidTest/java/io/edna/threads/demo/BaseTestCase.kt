@@ -76,6 +76,7 @@ abstract class BaseTestCase : TestCase() {
         )
         BuildConfig.TEST_DATA.set(testData.toJson())
         im.threads.BuildConfig.IS_ANIMATIONS_DISABLED.set(true)
+        im.threads.BuildConfig.IS_QUERY_RETRY_ENABLED.set(true)
     }
 
     protected fun applyDefaultUserToDemoApp(noUserId: Boolean = false) {
@@ -133,6 +134,16 @@ abstract class BaseTestCase : TestCase() {
         withAnswerDelayInMs: Int = 0,
         historyAnswer: String? = null
     ) {
+        BuildConfig.IS_MOCK_WEB_SERVER.set(true)
+        wireMockRule.stubFor(
+            WireMock.get(WireMock.urlPathMatching(".*/search.*"))
+                .willReturn(
+                    WireMock.aResponse()
+                        .withStatus(200)
+                        .withBody(TestMessages.searchEdnHttpMock)
+                        .withHeader("Content-Type", "application/json")
+                )
+        )
         wireMockRule.stubFor(
             WireMock.get(WireMock.urlPathMatching(".*/history.*"))
                 .willReturn(
@@ -320,8 +331,7 @@ abstract class BaseTestCase : TestCase() {
         datastoreUrl = ednaMockUrl,
         serverBaseUrl = ednaMockUrl,
         threadsGateUrl = ednaMockThreadsGateUrl,
-        isShowMenu = true,
-        allowUntrustedSSLCertificate = true
+        isShowMenu = true
     )
 
     private fun getExistedTestData(): TestData {

@@ -37,6 +37,10 @@ object ChatMainScreen : KScreen<ChatMainScreen>() {
     val quoteClear = KImageView { withId(R.id.quote_clear) }
     val addAttachmentBtn = KImageView { withId(R.id.add_attachment) }
     val imagePager = KViewPager { withId(R.id.pager) }
+    val popupMenuButton = KButton { withId(R.id.popup_menu_button) }
+    val searchInput = KEditText { withId(R.id.searchInput) }
+    val searchClearButton = KImageView { withId(R.id.searchClearButton) }
+    val searchProgressBar = KImageView { withId(R.id.searchProgressBar) }
 
     val chatItemsRecyclerView = KRecyclerView(
         builder = { withId(R.id.chatItemsRecycler) },
@@ -46,6 +50,11 @@ object ChatMainScreen : KScreen<ChatMainScreen>() {
     val bottomGalleryRecycler = KRecyclerView(
         builder = { withId(R.id.bottom_gallery_recycler) },
         itemTypeBuilder = { itemType(::BottomGalleryItem) }
+    )
+
+    val searchRecycler = KRecyclerView(
+        builder = { withId(R.id.searchResultsListView) },
+        itemTypeBuilder = { itemType(::SearchRecyclerItem) }
     )
 
     class ChatRecyclerItem(matcher: Matcher<View>) : KRecyclerItem<ChatRecyclerItem>(matcher) {
@@ -64,4 +73,14 @@ object ChatMainScreen : KScreen<ChatMainScreen>() {
     }
 
     class BottomGalleryItem(matcher: Matcher<View>) : KRecyclerItem<BottomGalleryItem>(matcher)
+
+    class SearchRecyclerItem(matcher: Matcher<View>) : KRecyclerItem<SearchRecyclerItem>(matcher) {
+        val avatarImage = KImageView(matcher) { withId(R.id.avatarImage) }
+        val nameTextView = KTextView(matcher) { withId(R.id.nameTextView) }
+        val dateTextView = KTextView(matcher) { withId(R.id.dateTextView) }
+        val rightArrowImageView = KImageView(matcher) { withId(R.id.rightArrowImageView) }
+        val messageTextView = KTextView(matcher) { withId(R.id.messageTextView) }
+        val dividerView = KView(matcher) { withId(R.id.dividerView) }
+        val clickableView = KView(matcher) { withId(R.id.clickableView) }
+    }
 }

@@ -78,4 +78,16 @@ object TestMessages {
         "\\\"operatorPhotoUrl\\\":\\\"file:///android_asset/test_images/test_image6.jpg\\\",\\\"operatorName\\\":\\\"Оператор1 Петровна\\\"," +
         "\\\"isPreRegister\\\":\\\"false\\\",\\\"aps/sound\\\":\\\"default\\\",\\\"origin\\\":\\\"threads\\\"}\"," +
         "\"important\":true,\"messageType\":\"NORMAL\"}]}}"
+
+    const val searchEdnHttpMock = "{\"total\":2,\"pages\":1,\"content\":[{\"type\":\"MESSAGE\",\"threadId\":304,\"providerIds\":[]," +
+        "\"uuid\":\"eda36c57-7286-4360-bb42-0cf3d7932113\",\"text\":\"Добро пожаловать в наш чат! А кто такие Edna?\"," +
+        "\"receivedDate\":\"2023-10-06T07:53:32.023Z\",\"attachments\":[],\"quotes\":[],\"quickReplies\":[],\"read\":false," +
+        "\"settings\":{\"blockInput\":false,\"masked\":false},\"authorized\":true,\"massPushMessage\":false,\"origin\":\"threads\"}," +
+        "{\"type\":\"MESSAGE\",\"threadId\":304,\"providerIds\":[],\"uuid\":\"110c8a46-8c38-45df-9949-5f12b7922f01\"," +
+        "\"operator\":{\"id\":9,\"name\":\"Оператор5 Фёдоровна\",\"alias\":null,\"status\":null,\"photoUrl\":null,\"gender\":\"FEMALE\"," +
+        "\"organizationUnit\":\"Skill Debet\",\"role\":\"OPERATOR\"}," +
+        "\"text\":\"Edna – современное решение для построения диалога с клиентом\",\"receivedDate\":\"2023-10-06T07:32:44.260Z\"," +
+        "\"attachments\":[],\"quotes\":[],\"quickReplies\":[],\"read\":true,\"settings\":{\"blockInput\":false,\"masked\":false}," +
+        "\"authorized\":true,\"massPushMessage\":false,\"origin\":\"threads\"}],\"pageable\":{\"sort\":{\"empty\":false,\"unsorted\":false," +
+        "\"sorted\":true},\"offset\":0,\"pageSize\":20,\"pageNumber\":0,\"unpaged\":false,\"paged\":true}}"
 }
