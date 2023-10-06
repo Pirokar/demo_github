@@ -6,7 +6,6 @@ import im.threads.business.utils.hasSubstrings
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
-import okhttp3.ResponseBody
 import okhttp3.ResponseBody.Companion.toResponseBody
 import okio.Buffer
 
@@ -19,11 +18,10 @@ class NetworkLoggerInterceptor(private val isImage: Boolean = false) : Intercept
         val response = chain.proceed(chain.request())
 
         val newResponse = if (!isImage) {
-            val responseBody: ResponseBody? = response.body
-            val responseBodyString = response.body?.string() ?: ""
+            val responseBodyString = response.peekBody(Long.MAX_VALUE).string()
 
             val newResponse = response.newBuilder()
-                .body(responseBodyString.toResponseBody(responseBody?.contentType()))
+                .body(responseBodyString.toResponseBody(response.body?.contentType()))
                 .build()
 
             LoggerEdna.info(getResponseLog(response, responseBodyString))
