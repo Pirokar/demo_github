@@ -33,8 +33,6 @@ class SearchTests : BaseTestCase() {
         prepareHttpMocks(historyAnswer = readTextFileFromRawResourceId(R.raw.history_text_response))
         openChatFromDemoLoginPage()
 
-        Thread.sleep(2000)
-
         val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
 
         ChatMainScreen {
@@ -70,6 +68,40 @@ class SearchTests : BaseTestCase() {
                     isDisplayed()
                 }
             }
+        }
+    }
+
+    @Test
+    fun testSearchClear() {
+        prepareHttpMocks(historyAnswer = readTextFileFromRawResourceId(R.raw.history_text_response))
+        openChatFromDemoLoginPage()
+
+        val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+
+        ChatMainScreen {
+            popupMenuButton.isClickable()
+            popupMenuButton.click()
+
+            val menuList = device.findObject(By.clazz("android.widget.ListView")).children
+            val searchAction = menuList[0]
+            searchAction.click()
+            searchAction.recycle()
+
+            searchInput.isVisible()
+
+            searchInput.typeText("Edn")
+
+            searchRecycler.isVisible()
+            searchInput.clearText()
+            searchRecycler.isGone()
+            chatItemsRecyclerView.isVisible()
+
+            searchInput.typeText("Edn")
+            searchRecycler.isVisible()
+            closeSoftKeyboard()
+            pressBack()
+            searchRecycler.isGone()
+            chatItemsRecyclerView.isVisible()
         }
     }
 }
