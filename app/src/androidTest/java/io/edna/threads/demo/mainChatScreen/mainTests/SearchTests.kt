@@ -62,6 +62,13 @@ class SearchTests : BaseTestCase() {
                     nameTextView.hasText("Оператор5 Фёдоровна")
                     messageTextView.hasText("Edna – современное решение для построения диалога с клиентом")
                 }
+                firstChild<ChatMainScreen.SearchRecyclerItem> { click() }
+            }
+            chatItemsRecyclerView {
+                childAt<ChatMainScreen.ChatRecyclerItem>(5) {
+                    isVisible()
+                    isDisplayed()
+                }
             }
         }
     }
