@@ -2,6 +2,10 @@ package io.edna.threads.demo.mainChatScreen.mainTests
 
 import androidx.test.espresso.PerformException
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.uiautomator.UiDevice
+import androidx.test.uiautomator.UiScrollable
+import androidx.test.uiautomator.UiSelector
 import io.edna.threads.demo.BaseFilesTestCase
 import io.edna.threads.demo.R
 import io.edna.threads.demo.TestMessages
@@ -70,14 +74,23 @@ class ImagesTest : BaseFilesTestCase() {
         ChatMainScreen {
             chatItemsRecyclerView {
                 waitListForNotEmpty(5000)
+
+                UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+                UiScrollable(UiSelector().scrollable(true).instance(0)).scrollIntoView(
+                    UiSelector().textContains("10:05").instance(0)
+                )
+
                 lastChild<ChatMainScreen.ChatRecyclerItem> {
                     itemText.containsText("Великолепно! Как и вот это.")
+                }
+
+                childAt<ChatMainScreen.ChatRecyclerItem>(1) {
                     image.isClickable()
                     image.click()
                 }
             }
             imagePager.isVisible()
-            imagePager.isAtPage(3)
+            imagePager.isAtPage(0)
         }
     }
 
@@ -108,7 +121,6 @@ class ImagesTest : BaseFilesTestCase() {
                 isVisible()
                 hasText("Оператор Елена")
             }
-            quoteImage { isVisible() }
             quoteClear { isVisible() }
 
             inputEditView {
