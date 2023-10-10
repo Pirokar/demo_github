@@ -42,7 +42,6 @@ import im.threads.business.transport.Transport
 import im.threads.business.transport.TransportException
 import im.threads.business.transport.models.Attachment
 import im.threads.business.transport.models.AttachmentSettings
-import im.threads.business.transport.models.TypingContent
 import im.threads.business.transport.threadsGate.requests.RegisterDeviceRequest
 import im.threads.business.transport.threadsGate.requests.SendMessageRequest
 import im.threads.business.transport.threadsGate.responses.BaseResponse
@@ -632,11 +631,7 @@ class ThreadsGateTransport(
                         if (message.content != null && message.content.has(MessageAttributes.TYPE)) {
                             val type = ChatItemType.fromString(messageParser.getType(message))
                             if (ChatItemType.TYPING == type) {
-                                val content = gson.fromJson(
-                                    message.content,
-                                    TypingContent::class.java
-                                )
-                                content.clientId?.let { chatUpdateProcessor.postTyping(content.clientId) }
+                                chatUpdateProcessor.postTyping()
                             } else if (ChatItemType.ATTACHMENT_SETTINGS == type) {
                                 val attachmentSettings = gson.fromJson(
                                     message.content,

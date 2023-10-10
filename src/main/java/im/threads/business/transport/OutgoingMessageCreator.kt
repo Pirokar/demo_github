@@ -75,7 +75,6 @@ class OutgoingMessageCreator(
         val userInfo = clientUseCase.getUserInfo()
         val deviceAddress = preferences.get(PreferencesCoreKeys.DEVICE_ADDRESS) ?: ""
         val jsonObject = JsonObject().apply {
-            addProperty(MessageAttributes.CLIENT_ID, userInfo?.clientId)
             addProperty(MessageAttributes.TYPE, ChatItemType.TYPING.name)
             addProperty(MessageAttributes.TYPING_DRAFT, input)
             addProperty(MessageAttributes.APP_MARKER_KEY, userInfo?.appMarker)

@@ -45,8 +45,8 @@ class ChatUpdateProcessor {
      * Предоставляется с целью обработки ошибок разрыва соединений.
      */
     val socketResponseMapProcessor: FlowableProcessor<Map<String, Any>> = PublishProcessor.create()
-    fun postTyping(clientId: String) {
-        typingProcessor.onNext(clientId)
+    fun postTyping() {
+        typingProcessor.onNext("")
     }
 
     fun postAttachmentSettings(attachmentSettings: AttachmentSettings) {
