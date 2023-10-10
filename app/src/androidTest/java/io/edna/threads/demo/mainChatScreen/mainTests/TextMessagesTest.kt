@@ -64,23 +64,13 @@ class TextMessagesTest : BaseTestCase() {
         prepareHttpMocks()
         openChatFromDemoLoginPage()
 
-        ChatMainScreen {
-            inputEditView { isVisible() }
-            welcomeScreen { isVisible() }
-
-            inputEditView.typeText(textToSend)
-            sendMessageBtn {
-                isVisible()
-                click()
-            }
-            chatItemsRecyclerView {
-                isVisible()
-                hasDescendant { containsText(textToSend) }
-            }
+        sendMessageFromUser()
+        ChatMainScreen.chatItemsRecyclerView {
+            isVisible()
+            hasDescendant { containsText(textToSend) }
         }
 
         sendMessageFromOperator()
-
         ChatMainScreen {
             chatItemsRecyclerView {
                 isVisible()
@@ -261,6 +251,19 @@ class TextMessagesTest : BaseTestCase() {
     }
 
     @Test
+    fun testThreadIsClosed() {
+        prepareHttpMocks()
+        openChatFromDemoLoginPage()
+        sendMessageFromUser()
+        sendMessageToSocket(TestMessages.threadIsClosed)
+
+        ChatMainScreen.chatItemsRecyclerView {
+            isVisible()
+            hasDescendant { containsText("Диалог завершен. Будем рады проконсультировать вас снова!") }
+        }
+    }
+
+    @Test
     fun progressbarOnStart() {
         prepareHttpMocks(9000)
         openChatFromDemoLoginPage()
@@ -278,6 +281,19 @@ class TextMessagesTest : BaseTestCase() {
                 isVisible()
 
                 assert(getSize() == 18)
+            }
+        }
+    }
+
+    private fun sendMessageFromUser() {
+        ChatMainScreen {
+            inputEditView { isVisible() }
+            welcomeScreen { isVisible() }
+
+            inputEditView.typeText(textToSend)
+            sendMessageBtn {
+                isVisible()
+                click()
             }
         }
     }

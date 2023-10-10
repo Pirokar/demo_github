@@ -90,4 +90,13 @@ object TestMessages {
         "\"attachments\":[],\"quotes\":[],\"quickReplies\":[],\"read\":true,\"settings\":{\"blockInput\":false,\"masked\":false}," +
         "\"authorized\":true,\"massPushMessage\":false,\"origin\":\"threads\"}],\"pageable\":{\"sort\":{\"empty\":false,\"unsorted\":false," +
         "\"sorted\":true},\"offset\":0,\"pageSize\":20,\"pageNumber\":0,\"unpaged\":false,\"paged\":true}}"
+
+    const val threadIsClosed = "{\"action\":\"getMessages\",\"data\":{\"messages\":[{\"messageId\":\"8377f464-331a-46aa-89d1-7747cf26b7af\"," +
+        "\"sentAt\":\"2099-10-10T14:25:30.317Z\",\"notification\":\"Диалог завершен. Будем рады проконсультировать вас снова!\"," +
+        "\"content\":{\"type\":\"THREAD_CLOSED\",\"clientId\":\"12345\",\"threadId\":0,\"isPreRegister\":false,\"providerIds\":[]," +
+        "\"uuid\":\"8377f464-331a-46aa-89d1-7747cf26b7af\",\"text\":\"Диалог завершен. Будем рады проконсультировать вас снова!\"," +
+        "\"receivedDate\":\"2099-10-10T14:25:30.258Z\",\"display\":true,\"authorized\":true,\"massPushMessage\":false," +
+        "\"externalClientId\":\"12345\",\"aps/sound\":\"default\",\"origin\":\"threads\"}," +
+        "\"attributes\":\"{\\\"clientId\\\":\\\"12345\\\",\\\"isPreRegister\\\":\\\"false\\\",\\\"aps/sound\\\":\\\"default\\\"," +
+        "\\\"origin\\\":\\\"threads\\\"}\",\"important\":false,\"messageType\":\"NORMAL\"}]}}"
 }
