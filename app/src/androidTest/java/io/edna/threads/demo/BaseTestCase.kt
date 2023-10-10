@@ -76,7 +76,6 @@ abstract class BaseTestCase : TestCase() {
         )
         BuildConfig.TEST_DATA.set(testData.toJson())
         im.threads.BuildConfig.IS_ANIMATIONS_DISABLED.set(true)
-        im.threads.BuildConfig.IS_QUERY_RETRY_ENABLED.set(true)
     }
 
     protected fun applyDefaultUserToDemoApp(noUserId: Boolean = false) {
