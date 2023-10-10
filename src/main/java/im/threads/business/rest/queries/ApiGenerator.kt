@@ -63,7 +63,6 @@ abstract class ApiGenerator protected constructor(
             .connectTimeout(connectTimeoutMillis, TimeUnit.MILLISECONDS)
             .readTimeout(readTimeoutMillis, TimeUnit.MILLISECONDS)
             .writeTimeout(writeTimeoutMillis, TimeUnit.MILLISECONDS)
-            .retryOnConnectionFailure(false)
         if (config.isDebugLoggingEnabled) {
             HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
         }
