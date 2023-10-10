@@ -124,4 +124,5 @@ dependencies {
     androidTestImplementation "org.mockito:mockito-core:$rootProject.mockitoVersion"
     androidTestImplementation "org.mockito:mockito-android:$rootProject.mockitoVersion"
     androidTestImplementation "com.github.tomakehurst:wiremock-standalone:2.26.3"
+    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.5.1'
 }

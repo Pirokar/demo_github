@@ -1,19 +1,35 @@
 package io.edna.threads.demo.mainChatScreen.mainTests
 
+import android.app.Activity
+import android.app.Instrumentation
 import android.content.ClipboardManager
 import android.content.Context.CLIPBOARD_SERVICE
 import android.content.Intent
 import android.os.Handler
 import android.os.Looper
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.espresso.intent.Intents.intended
+import androidx.test.espresso.intent.Intents.intending
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasAction
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasData
+import androidx.test.espresso.intent.matcher.IntentMatchers.isInternal
+import androidx.test.espresso.intent.matcher.IntentMatchers.toPackage
+import androidx.test.espresso.intent.rule.IntentsRule
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.uiautomator.UiDevice
+import androidx.test.uiautomator.UiScrollable
+import androidx.test.uiautomator.UiSelector
 import io.edna.threads.demo.BaseTestCase
 import io.edna.threads.demo.R
 import io.edna.threads.demo.TestMessages
 import io.edna.threads.demo.appCode.activity.MainActivity
 import io.edna.threads.demo.kaspressoSreens.ChatMainScreen
 import io.edna.threads.demo.waitListForNotEmpty
+import org.hamcrest.CoreMatchers.allOf
+import org.hamcrest.CoreMatchers.not
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -27,11 +43,24 @@ class TextMessagesTest : BaseTestCase() {
     @get:Rule
     internal val activityRule = ActivityScenarioRule<MainActivity>(intent)
 
+    @get:Rule
+    val intentsTestRule = IntentsRule()
+
     private val textToSend = "Hello, Edna! This is a test message"
 
     init {
         applyDefaultUserToDemoApp()
         prepareWsMocks()
+    }
+
+    @Before
+    fun stubAllExternalIntents() {
+        intending(not(isInternal())).respondWith(
+            Instrumentation.ActivityResult(
+                Activity.RESULT_OK,
+                null
+            )
+        )
     }
 
     @Test
@@ -166,6 +195,40 @@ class TextMessagesTest : BaseTestCase() {
                 assert(false)
             }
         }
+    }
+
+    @Test
+    fun testIsEmailClickable() {
+        prepareHttpMocks(historyAnswer = readTextFileFromRawResourceId(R.raw.history_text_response))
+        openChatFromDemoLoginPage()
+        ChatMainScreen {
+            inputEditView { isVisible() }
+            chatItemsRecyclerView {
+                waitListForNotEmpty(5000)
+                isVisible()
+
+                assert(getSize() == 18)
+            }
+        }
+
+        UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+        UiScrollable(UiSelector().scrollable(true).instance(0)).scrollIntoView(
+            UiSelector().textContains("info@edna.ru").instance(0)
+        )
+        ChatMainScreen {
+            chatItemsRecyclerView {
+                childAt<ChatMainScreen.ChatRecyclerItem>(13) {
+                    itemText.clickSpanWithText("info@edna.ru")
+                }
+            }
+        }
+        intended(
+            allOf(
+                hasAction(Intent.ACTION_VIEW),
+                hasData("mailto:info@edna.ru"),
+                toPackage("com.google.android.gm")
+            )
+        )
     }
 
     @Test
