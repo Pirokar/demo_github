@@ -17,10 +17,6 @@ import androidx.test.espresso.intent.matcher.IntentMatchers.toPackage
 import androidx.test.espresso.intent.rule.IntentsRule
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.uiautomator.UiDevice
-import androidx.test.uiautomator.UiScrollable
-import androidx.test.uiautomator.UiSelector
 import io.edna.threads.demo.BaseTestCase
 import io.edna.threads.demo.R
 import io.edna.threads.demo.TestMessages
@@ -95,16 +91,9 @@ class TextMessagesTest : BaseTestCase() {
 
     @Test
     fun historyTest() {
-        prepareHttpMocks(historyAnswer = readTextFileFromRawResourceId(R.raw.history_text_response))
-        openChatFromDemoLoginPage()
+        openMessagesHistory()
         ChatMainScreen {
-            inputEditView { isVisible() }
             chatItemsRecyclerView {
-                waitListForNotEmpty(5000)
-                isVisible()
-
-                assert(getSize() == 18)
-
                 childAt<ChatMainScreen.ChatRecyclerItem>(1) {
                     itemText.containsText("Добрый день! Мы создаем экосистему бизнеса")
                 }
@@ -199,22 +188,8 @@ class TextMessagesTest : BaseTestCase() {
 
     @Test
     fun testIsEmailClickable() {
-        prepareHttpMocks(historyAnswer = readTextFileFromRawResourceId(R.raw.history_text_response))
-        openChatFromDemoLoginPage()
-        ChatMainScreen {
-            inputEditView { isVisible() }
-            chatItemsRecyclerView {
-                waitListForNotEmpty(5000)
-                isVisible()
+        openMessagesHistory()
 
-                assert(getSize() == 18)
-            }
-        }
-
-        UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
-        UiScrollable(UiSelector().scrollable(true).instance(0)).scrollIntoView(
-            UiSelector().textContains("info@edna.ru").instance(0)
-        )
         ChatMainScreen {
             chatItemsRecyclerView {
                 childAt<ChatMainScreen.ChatRecyclerItem>(13) {
@@ -232,11 +207,78 @@ class TextMessagesTest : BaseTestCase() {
     }
 
     @Test
+    fun testIsPhoneClickable() {
+        openMessagesHistory()
+
+        ChatMainScreen {
+            chatItemsRecyclerView {
+                childAt<ChatMainScreen.ChatRecyclerItem>(13) {
+                    itemText.clickSpanWithText("+7 (495) 609-60-80")
+                }
+            }
+        }
+        intended(
+            allOf(
+                hasAction(Intent.ACTION_VIEW),
+                hasData("tel:+74956096080"),
+                toPackage("com.google.android.dialer")
+            )
+        )
+    }
+
+    @Test
+    fun testIsUrlClickable() {
+        openMessagesHistory()
+
+        ChatMainScreen {
+            chatItemsRecyclerView {
+                childAt<ChatMainScreen.ChatRecyclerItem>(1) {
+                    itemText.clickSpanWithText("https://edna.ru/")
+                }
+            }
+        }
+        intended(
+            allOf(
+                hasAction(Intent.ACTION_VIEW),
+                hasData("https://edna.ru/"),
+                toPackage("com.android.chrome")
+            )
+        )
+        ChatMainScreen {
+            chatItemsRecyclerView {
+                childAt<ChatMainScreen.ChatRecyclerItem>(11) {
+                    itemText.clickSpanWithText("https://edna.ru/channels/")
+                }
+            }
+        }
+        intended(
+            allOf(
+                hasAction(Intent.ACTION_VIEW),
+                hasData("https://edna.ru/channels/"),
+                toPackage("com.android.chrome")
+            )
+        )
+    }
+
+    @Test
     fun progressbarOnStart() {
         prepareHttpMocks(9000)
         openChatFromDemoLoginPage()
         ChatMainScreen {
             progressBar { isVisible() }
+        }
+    }
+
+    private fun openMessagesHistory() {
+        prepareHttpMocks(historyAnswer = readTextFileFromRawResourceId(R.raw.history_text_response))
+        openChatFromDemoLoginPage()
+        ChatMainScreen {
+            chatItemsRecyclerView {
+                waitListForNotEmpty(5000)
+                isVisible()
+
+                assert(getSize() == 18)
+            }
         }
     }
 
