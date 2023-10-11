@@ -42,8 +42,6 @@ class TextMessagesTest : BaseTestCase() {
     @get:Rule
     val intentsTestRule = IntentsRule()
 
-    private val textToSend = "Hello, Edna! This is a test message"
-
     init {
         applyDefaultUserToDemoApp()
         prepareWsMocks()
@@ -64,10 +62,10 @@ class TextMessagesTest : BaseTestCase() {
         prepareHttpMocks()
         openChatFromDemoLoginPage()
 
-        sendMessageFromUser()
+        sendHelloMessageFromUser()
         ChatMainScreen.chatItemsRecyclerView {
             isVisible()
-            hasDescendant { containsText(textToSend) }
+            hasDescendant { containsText(helloTextToSend) }
         }
 
         sendMessageFromOperator()
@@ -132,7 +130,7 @@ class TextMessagesTest : BaseTestCase() {
             quoteClear { isVisible() }
             inputEditView {
                 isVisible()
-                typeText(textToSend)
+                typeText(helloTextToSend)
             }
             sendMessageBtn {
                 isVisible()
@@ -140,7 +138,7 @@ class TextMessagesTest : BaseTestCase() {
             }
             chatItemsRecyclerView {
                 lastChild<ChatMainScreen.ChatRecyclerItem> {
-                    itemText.containsText(textToSend)
+                    itemText.containsText(helloTextToSend)
                 }
             }
         }
@@ -254,7 +252,7 @@ class TextMessagesTest : BaseTestCase() {
     fun testThreadIsClosed() {
         prepareHttpMocks()
         openChatFromDemoLoginPage()
-        sendMessageFromUser()
+        sendHelloMessageFromUser()
         sendMessageToSocket(TestMessages.threadIsClosed)
 
         ChatMainScreen.chatItemsRecyclerView {
@@ -267,7 +265,7 @@ class TextMessagesTest : BaseTestCase() {
     fun testClientIsBlocked() {
         prepareHttpMocks()
         openChatFromDemoLoginPage()
-        sendMessageFromUser()
+        sendHelloMessageFromUser()
         sendMessageToSocket(TestMessages.clientIsBlocked)
 
         ChatMainScreen.chatItemsRecyclerView {
@@ -280,7 +278,7 @@ class TextMessagesTest : BaseTestCase() {
     fun testClientTransfer() {
         prepareHttpMocks()
         openChatFromDemoLoginPage()
-        sendMessageFromUser()
+        sendHelloMessageFromUser()
         sendMessageToSocket(TestMessages.operatorTransfer)
         sendMessageToSocket(TestMessages.operatorAssigned)
 
@@ -298,7 +296,7 @@ class TextMessagesTest : BaseTestCase() {
     fun testOperatorWaiting() {
         prepareHttpMocks()
         openChatFromDemoLoginPage()
-        sendMessageFromUser()
+        sendHelloMessageFromUser()
         sendMessageToSocket(TestMessages.operatorWaiting)
 
         ChatMainScreen {
@@ -345,19 +343,6 @@ class TextMessagesTest : BaseTestCase() {
                 isVisible()
 
                 assert(getSize() == 18)
-            }
-        }
-    }
-
-    private fun sendMessageFromUser() {
-        ChatMainScreen {
-            inputEditView { isVisible() }
-            welcomeScreen { isVisible() }
-
-            inputEditView.typeText(textToSend)
-            sendMessageBtn {
-                isVisible()
-                click()
             }
         }
     }

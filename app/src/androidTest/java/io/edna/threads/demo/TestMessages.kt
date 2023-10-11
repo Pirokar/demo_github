@@ -138,4 +138,9 @@ object TestMessages {
         "\"externalClientId\":\"5522\",\"aps/sound\":\"default\",\"origin\":\"threads\"},\"attributes\":\"{\\\"clientId\\\":\\\"12345\\\"," +
         "\\\"isPreRegister\\\":\\\"false\\\",\\\"aps/sound\\\":\\\"default\\\",\\\"origin\\\":\\\"threads\\\"}\",\"important\":true," +
         "\"messageType\":\"NORMAL\"}]}}"
+
+    const val typingMessage = "{\"action\":\"getMessages\",\"data\":{\"messages\":[{\"messageId\":\"a6102344-5055-4bdc-8ddd-ac57e2875899\"," +
+        "\"sentAt\":\"2023-10-11T10:50:25.318Z\",\"content\":{\"type\":\"TYPING\",\"clientId\":\"12345\",\"timestamp\":\"2023-10-11T10:50:25.303Z\"," +
+        "\"operatorPhotoUrl\":\"20230703-e8c30f10-aa04-417f-bd97-99544fab26f2.jpg\",\"operatorName\":\"Оператор1 Петровна\",\"isPreRegister\":\"false\"," +
+        "\"aps/content-available\":\"1\",\"origin\":\"threads\"},\"important\":false,\"messageType\":\"NORMAL\"}]}}"
 }

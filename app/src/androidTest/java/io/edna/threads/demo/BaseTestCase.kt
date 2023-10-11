@@ -25,6 +25,7 @@ import io.edna.threads.demo.appCode.ednaMockThreadsGateUrl
 import io.edna.threads.demo.appCode.models.ServerConfig
 import io.edna.threads.demo.appCode.models.TestData
 import io.edna.threads.demo.appCode.models.UserInfo
+import io.edna.threads.demo.kaspressoSreens.ChatMainScreen
 import io.edna.threads.demo.kaspressoSreens.DemoLoginScreen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -51,6 +52,8 @@ abstract class BaseTestCase : TestCase() {
     protected val context = InstrumentationRegistry.getInstrumentation().targetContext
     protected var wsMocksMap = getDefaultWsMocksMap()
     protected var clientInfoWsMessages = getDefaultClientInfoWsMessages()
+
+    protected val helloTextToSend = "Hello, Edna! This is a test message"
 
     @get:Rule
     val wireMockRule = WireMockRule(
@@ -187,6 +190,19 @@ abstract class BaseTestCase : TestCase() {
             copyToDownloadsApiBelow29(assetsPath)
         } else {
             copyToDownloadsApi29(assetsPath)
+        }
+    }
+
+    protected fun sendHelloMessageFromUser() {
+        ChatMainScreen {
+            inputEditView { isVisible() }
+            welcomeScreen { isVisible() }
+
+            inputEditView.typeText(helloTextToSend)
+            sendMessageBtn {
+                isVisible()
+                click()
+            }
         }
     }
 

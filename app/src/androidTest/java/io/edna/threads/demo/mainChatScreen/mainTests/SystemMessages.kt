@@ -6,6 +6,7 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import io.edna.threads.demo.BaseTestCase
 import io.edna.threads.demo.R
+import io.edna.threads.demo.TestMessages
 import io.edna.threads.demo.appCode.activity.MainActivity
 import io.edna.threads.demo.kaspressoSreens.ChatMainScreen
 import io.edna.threads.demo.waitListForNotEmpty
@@ -101,6 +102,20 @@ class SystemMessages : BaseTestCase() {
                 waitListForNotEmpty(5000)
                 isVisible()
                 hasDescendant { withText("Среднее время ожидания ответа составляет 2 минуты") }
+            }
+        }
+    }
+
+    @Test
+    fun typingTest() {
+        prepareHttpMocks()
+        openChatFromDemoLoginPage()
+        sendHelloMessageFromUser()
+
+        ChatMainScreen {
+            chatItemsRecyclerView {
+                sendMessageToSocket(TestMessages.typingMessage)
+                hasDescendant { withText(context.getString(im.threads.R.string.ecc_typing)) }
             }
         }
     }
