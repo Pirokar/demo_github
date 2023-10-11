@@ -310,6 +310,21 @@ class TextMessagesTest : BaseTestCase() {
     }
 
     @Test
+    fun testForEmptyMessageSend() {
+        prepareHttpMocks()
+        openChatFromDemoLoginPage()
+        ChatMainScreen {
+            inputEditView { isVisible() }
+            sendMessageBtn.click()
+            inputEditView.typeText("       ")
+            sendMessageBtn.click()
+            chatItemsRecyclerView {
+                assert(getSize() == 0) { "Список элементов после попыток отправить пустое сообщение должен быть пуст" }
+            }
+        }
+    }
+
+    @Test
     fun progressbarOnStart() {
         prepareHttpMocks(9000)
         openChatFromDemoLoginPage()
