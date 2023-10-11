@@ -107,4 +107,26 @@ object TestMessages {
         "\"externalClientId\":\"12345\",\"aps/sound\":\"default\",\"origin\":\"threads\"}," +
         "\"attributes\":\"{\\\"clientId\\\":\\\"12345\\\",\\\"isPreRegister\\\":\\\"false\\\",\\\"aps/sound\\\":\\\"default\\\"," +
         "\\\"origin\\\":\\\"threads\\\"}\",\"important\":true,\"messageType\":\"NORMAL\"}]}}"
+
+    const val operatorTransfer = "{\"action\":\"getMessages\",\"data\":{\"messages\":[{\"messageId\":\"3eb7fe31-b1fe-4e09-b6f9-20594510166e\"," +
+        "\"sentAt\":\"2023-10-11T08:28:24.998Z\",\"notification\":\"Для решения вопроса диалог переводится другому оператору\"," +
+        "\"content\":{\"type\":\"THREAD_WILL_BE_REASSIGNED\",\"clientId\":\"12345\",\"threadId\":0,\"isPreRegister\":false,\"providerIds\":[]," +
+        "\"uuid\":\"3eb7fe31-b1fe-4e09-b6f9-20594510166e\",\"operator\":{\"id\":4,\"name\":\"Оператор1 Петровна\"," +
+        "\"photoUrl\":\"20230703-e8c30f10-aa04-417f-bd97-99544fab26f2.jpg\",\"gender\":\"FEMALE\",\"organizationUnit\":\"Skill Credit\"," +
+        "\"role\":\"OPERATOR\"},\"text\":\"Для решения вопроса диалог переводится другому оператору\",\"receivedDate\":\"2023-10-11T08:28:24.967Z\"," +
+        "\"display\":true,\"authorized\":true,\"massPushMessage\":false,\"externalClientId\":\"12345\",\"aps/sound\":\"default\",\"origin\":\"threads\"}," +
+        "\"attributes\":\"{\\\"organizationUnit\\\":\\\"Skill Credit\\\",\\\"clientId\\\":\\\"12345\\\"," +
+        "\\\"operatorPhotoUrl\\\":\\\"20230703-e8c30f10-aa04-417f-bd97-99544fab26f2.jpg\\\",\\\"operatorName\\\":\\\"Оператор1 Петровна\\\"," +
+        "\\\"isPreRegister\\\":\\\"false\\\",\\\"aps/sound\\\":\\\"default\\\",\\\"origin\\\":\\\"threads\\\"}\",\"important\":true," +
+        "\"messageType\":\"NORMAL\"}]}}"
+
+    const val operatorAssigned = "{\"action\":\"getMessages\",\"data\":{\"messages\":[{\"messageId\":\"a5976ab7-42a2-49f7-880f-0e380d00f1c6\"," +
+        "\"sentAt\":\"2023-10-11T08:28:25.008Z\",\"notification\":\"Вам ответит Оператор0 Иванович\",\"content\":{\"type\":\"OPERATOR_JOINED\"," +
+        "\"clientId\":\"12345\",\"threadId\":0,\"isPreRegister\":false,\"providerIds\":[],\"uuid\":\"a5976ab7-42a2-49f7-880f-0e380d00f1c6\"," +
+        "\"operator\":{\"id\":3,\"name\":\"Оператор0 Иванович\",\"gender\":\"MALE\",\"organizationUnit\":\"Skill Credit\",\"role\":\"OPERATOR\"}," +
+        "\"text\":\"Вам ответит Оператор0 Иванович\",\"receivedDate\":\"2023-10-11T08:28:24.975Z\",\"display\":true,\"authorized\":true," +
+        "\"massPushMessage\":false,\"externalClientId\":\"12345\",\"aps/sound\":\"default\",\"origin\":\"threads\"}," +
+        "\"attributes\":\"{\\\"organizationUnit\\\":\\\"Skill Credit\\\",\\\"clientId\\\":\\\"12345\\\"," +
+        "\\\"operatorName\\\":\\\"Оператор0 Иванович\\\",\\\"isPreRegister\\\":\\\"false\\\",\\\"aps/sound\\\":\\\"default\\\"," +
+        "\\\"origin\\\":\\\"threads\\\"}\",\"important\":true,\"messageType\":\"NORMAL\"}]}}"
 }

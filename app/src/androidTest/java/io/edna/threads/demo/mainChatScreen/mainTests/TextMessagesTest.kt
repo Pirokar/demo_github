@@ -277,6 +277,21 @@ class TextMessagesTest : BaseTestCase() {
     }
 
     @Test
+    fun testClientTransfer() {
+        prepareHttpMocks()
+        openChatFromDemoLoginPage()
+        sendMessageFromUser()
+        sendMessageToSocket(TestMessages.operatorTransfer)
+        sendMessageToSocket(TestMessages.operatorAssigned)
+
+        ChatMainScreen.chatItemsRecyclerView {
+            isVisible()
+            hasDescendant { containsText("Для решения вопроса диалог переводится другому оператору") }
+            hasDescendant { containsText("Вам ответит Оператор0 Иванович") }
+        }
+    }
+
+    @Test
     fun progressbarOnStart() {
         prepareHttpMocks(9000)
         openChatFromDemoLoginPage()
