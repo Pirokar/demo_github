@@ -41,6 +41,7 @@ object ChatMainScreen : KScreen<ChatMainScreen>() {
     val searchInput = KEditText { withId(R.id.searchInput) }
     val searchClearButton = KImageView { withId(R.id.searchClearButton) }
     val searchProgressBar = KImageView { withId(R.id.searchProgressBar) }
+    val toolbarOperatorName = KTextView { withId(R.id.consult_name) }
 
     val chatItemsRecyclerView = KRecyclerView(
         builder = { withId(R.id.chatItemsRecycler) },

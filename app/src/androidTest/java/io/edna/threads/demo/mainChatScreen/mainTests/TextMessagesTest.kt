@@ -284,10 +284,28 @@ class TextMessagesTest : BaseTestCase() {
         sendMessageToSocket(TestMessages.operatorTransfer)
         sendMessageToSocket(TestMessages.operatorAssigned)
 
-        ChatMainScreen.chatItemsRecyclerView {
-            isVisible()
-            hasDescendant { containsText("Для решения вопроса диалог переводится другому оператору") }
-            hasDescendant { containsText("Вам ответит Оператор0 Иванович") }
+        ChatMainScreen {
+            chatItemsRecyclerView {
+                isVisible()
+                hasDescendant { containsText("Для решения вопроса диалог переводится другому оператору") }
+                hasDescendant { containsText("Вам ответит Оператор0 Иванович") }
+            }
+            toolbarOperatorName.hasText("Оператор0 Иванович")
+        }
+    }
+
+    @Test
+    fun testOperatorWaiting() {
+        prepareHttpMocks()
+        openChatFromDemoLoginPage()
+        sendMessageFromUser()
+        sendMessageToSocket(TestMessages.operatorWaiting)
+
+        ChatMainScreen {
+            toolbarOperatorName.hasText(context.getString(im.threads.R.string.ecc_searching_operator))
+            chatItemsRecyclerView {
+                hasDescendant { containsText("Среднее время ожидания ответа составляет 2 минуты") }
+            }
         }
     }
 

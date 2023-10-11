@@ -129,4 +129,13 @@ object TestMessages {
         "\"attributes\":\"{\\\"organizationUnit\\\":\\\"Skill Credit\\\",\\\"clientId\\\":\\\"12345\\\"," +
         "\\\"operatorName\\\":\\\"Оператор0 Иванович\\\",\\\"isPreRegister\\\":\\\"false\\\",\\\"aps/sound\\\":\\\"default\\\"," +
         "\\\"origin\\\":\\\"threads\\\"}\",\"important\":true,\"messageType\":\"NORMAL\"}]}}"
+
+    const val operatorWaiting = "{\"action\":\"getMessages\",\"data\":{\"messages\":[{\"messageId\":\"76f563a8-f4de-4437-a5fc-6090d35b0b62\"," +
+        "\"sentAt\":\"2023-10-11T09:20:11.326Z\",\"notification\":\"Среднее время ожидания ответа составляет 2 минуты\"," +
+        "\"content\":{\"type\":\"AVERAGE_WAIT_TIME\",\"clientId\":\"12345\",\"threadId\":0,\"isPreRegister\":false,\"providerIds\":[]," +
+        "\"uuid\":\"76f563a8-f4de-4437-a5fc-6090d35b0b62\",\"text\":\"Среднее время ожидания ответа составляет 2 минуты\"," +
+        "\"receivedDate\":\"2023-10-11T09:20:11.304Z\",\"display\":true,\"authorized\":true,\"massPushMessage\":false," +
+        "\"externalClientId\":\"5522\",\"aps/sound\":\"default\",\"origin\":\"threads\"},\"attributes\":\"{\\\"clientId\\\":\\\"12345\\\"," +
+        "\\\"isPreRegister\\\":\\\"false\\\",\\\"aps/sound\\\":\\\"default\\\",\\\"origin\\\":\\\"threads\\\"}\",\"important\":true," +
+        "\"messageType\":\"NORMAL\"}]}}"
 }
