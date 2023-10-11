@@ -318,6 +318,9 @@ class TextMessagesTest : BaseTestCase() {
             sendMessageBtn.click()
             inputEditView.typeText("       ")
             sendMessageBtn.click()
+            inputEditView.typeText("Test")
+            inputEditView.clearText()
+            sendMessageBtn.click()
             chatItemsRecyclerView {
                 assert(getSize() == 0) { "Список элементов после попыток отправить пустое сообщение должен быть пуст" }
             }
