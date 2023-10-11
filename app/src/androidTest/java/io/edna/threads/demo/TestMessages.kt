@@ -99,4 +99,12 @@ object TestMessages {
         "\"externalClientId\":\"12345\",\"aps/sound\":\"default\",\"origin\":\"threads\"}," +
         "\"attributes\":\"{\\\"clientId\\\":\\\"12345\\\",\\\"isPreRegister\\\":\\\"false\\\",\\\"aps/sound\\\":\\\"default\\\"," +
         "\\\"origin\\\":\\\"threads\\\"}\",\"important\":false,\"messageType\":\"NORMAL\"}]}}"
+
+    const val clientIsBlocked = "{\"action\":\"getMessages\",\"data\":{\"messages\":[{\"messageId\":\"ea97c79c-cfb6-49d8-93ee-66b264178313\"," +
+        "\"sentAt\":\"2023-10-11T07:36:38.459Z\",\"notification\":\"Вы заблокированы, дальнейшее общение с оператором ограничено\"," +
+        "\"content\":{\"type\":\"CLIENT_BLOCKED\",\"clientId\":\"0\",\"isPreRegister\":false,\"providerIds\":[]," +
+        "\"text\":\"Вы заблокированы, дальнейшее общение с оператором ограничено\",\"display\":true,\"authorized\":true,\"massPushMessage\":false," +
+        "\"externalClientId\":\"12345\",\"aps/sound\":\"default\",\"origin\":\"threads\"}," +
+        "\"attributes\":\"{\\\"clientId\\\":\\\"12345\\\",\\\"isPreRegister\\\":\\\"false\\\",\\\"aps/sound\\\":\\\"default\\\"," +
+        "\\\"origin\\\":\\\"threads\\\"}\",\"important\":true,\"messageType\":\"NORMAL\"}]}}"
 }

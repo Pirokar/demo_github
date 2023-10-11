@@ -264,6 +264,19 @@ class TextMessagesTest : BaseTestCase() {
     }
 
     @Test
+    fun testClientIsBlocked() {
+        prepareHttpMocks()
+        openChatFromDemoLoginPage()
+        sendMessageFromUser()
+        sendMessageToSocket(TestMessages.clientIsBlocked)
+
+        ChatMainScreen.chatItemsRecyclerView {
+            isVisible()
+            hasDescendant { containsText("Вы заблокированы, дальнейшее общение с оператором ограничено") }
+        }
+    }
+
+    @Test
     fun progressbarOnStart() {
         prepareHttpMocks(9000)
         openChatFromDemoLoginPage()
