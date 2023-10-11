@@ -206,6 +206,18 @@ abstract class BaseTestCase : TestCase() {
         }
     }
 
+    protected fun sendCustomMessageFromUser(message: String) {
+        ChatMainScreen {
+            inputEditView { isVisible() }
+
+            inputEditView.typeText(message)
+            sendMessageBtn {
+                isVisible()
+                click()
+            }
+        }
+    }
+
     @Suppress("DEPRECATION")
     private fun copyToDownloadsApiBelow29(filePathRelativeToAssets: String): String? {
         Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)?.absolutePath?.let {

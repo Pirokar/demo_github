@@ -190,6 +190,7 @@ class TextMessagesTest : BaseTestCase() {
                 hasAction(Intent.ACTION_VIEW),
                 hasData("mailto:info@edna.ru"),
                 toPackage("com.google.android.gm")
+
             )
         )
     }
@@ -197,21 +198,34 @@ class TextMessagesTest : BaseTestCase() {
     @Test
     fun testIsPhoneClickable() {
         openMessagesHistory()
+        clickForTelSpanAndCheck(13, "+7 (495) 609-60-80")
 
-        ChatMainScreen {
-            chatItemsRecyclerView {
-                childAt<ChatMainScreen.ChatRecyclerItem>(13) {
-                    itemText.clickSpanWithText("+7 (495) 609-60-80")
-                }
-            }
-        }
-        intended(
-            allOf(
-                hasAction(Intent.ACTION_VIEW),
-                hasData("tel:+74956096080"),
-                toPackage("com.google.android.dialer")
-            )
-        )
+        sendCustomMessageFromUser("9261363821")
+        clickForTelSpanAndCheck(textToClick = "9261363821")
+
+        sendCustomMessageFromUser("+79855687102")
+        clickForTelSpanAndCheck(textToClick = "+79855687102")
+
+        sendCustomMessageFromUser("+7 977 409 27 19")
+        clickForTelSpanAndCheck(textToClick = "+7 977 409 27 19")
+
+        sendCustomMessageFromUser("+7-843-552-83-17")
+        clickForTelSpanAndCheck(textToClick = "+7-843-552-83-17")
+
+        sendCustomMessageFromUser("+7-811-687-0002")
+        clickForTelSpanAndCheck(textToClick = "+7-811-687-0002")
+
+        sendCustomMessageFromUser("+7 971 971-48-21")
+        clickForTelSpanAndCheck(textToClick = "+7 971 971-48-21")
+
+        sendCustomMessageFromUser("+7 (999) 999-99-99")
+        clickForTelSpanAndCheck(textToClick = "+7 (999) 999-99-99")
+
+        sendCustomMessageFromUser("+7 (421) 123.45.65")
+        clickForTelSpanAndCheck(textToClick = "+7 (421) 123.45.65")
+
+        sendCustomMessageFromUser("+7.927.555.55.55")
+        clickForTelSpanAndCheck(textToClick = "+7.927.555.55.55")
     }
 
     @Test
@@ -360,5 +374,34 @@ class TextMessagesTest : BaseTestCase() {
             .replace("13:07:29", currentTime)
 
         sendMessageToSocket(operatorMessage)
+    }
+
+    private fun clickForTelSpanAndCheck(positionInList: Int? = null, textToClick: String) {
+        ChatMainScreen {
+            chatItemsRecyclerView {
+                positionInList?.let {
+                    childAt<ChatMainScreen.ChatRecyclerItem>(positionInList) {
+                        itemText.clickSpanWithText(textToClick)
+                    }
+                } ?: run {
+                    lastChild<ChatMainScreen.ChatRecyclerItem>() {
+                        itemText.clickSpanWithText(textToClick)
+                    }
+                }
+            }
+        }
+        val phoneToCheck = textToClick
+            .replace(" ", "")
+            .replace("(", "")
+            .replace(")", "")
+            .replace("-", "")
+            .replace(".", "")
+        intended(
+            allOf(
+                hasAction(Intent.ACTION_VIEW),
+                hasData("tel:$phoneToCheck"),
+                toPackage("com.google.android.dialer")
+            )
+        )
     }
 }
