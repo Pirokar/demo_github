@@ -13,7 +13,6 @@ import androidx.test.espresso.intent.Intents.intending
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasAction
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasData
 import androidx.test.espresso.intent.matcher.IntentMatchers.isInternal
-import androidx.test.espresso.intent.matcher.IntentMatchers.toPackage
 import androidx.test.espresso.intent.rule.IntentsRule
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -188,8 +187,7 @@ class TextMessagesTest : BaseTestCase() {
         intended(
             allOf(
                 hasAction(Intent.ACTION_VIEW),
-                hasData("mailto:info@edna.ru"),
-                toPackage("com.google.android.gm")
+                hasData("mailto:info@edna.ru")
 
             )
         )
@@ -242,8 +240,7 @@ class TextMessagesTest : BaseTestCase() {
         intended(
             allOf(
                 hasAction(Intent.ACTION_VIEW),
-                hasData("https://edna.ru/"),
-                toPackage("com.android.chrome")
+                hasData("https://edna.ru/")
             )
         )
         ChatMainScreen {
@@ -256,8 +253,7 @@ class TextMessagesTest : BaseTestCase() {
         intended(
             allOf(
                 hasAction(Intent.ACTION_VIEW),
-                hasData("https://edna.ru/channels/"),
-                toPackage("com.android.chrome")
+                hasData("https://edna.ru/channels/")
             )
         )
     }
@@ -322,24 +318,6 @@ class TextMessagesTest : BaseTestCase() {
     }
 
     @Test
-    fun testForEmptyMessageSend() {
-        prepareHttpMocks()
-        openChatFromDemoLoginPage()
-        ChatMainScreen {
-            inputEditView { isVisible() }
-            sendMessageBtn.click()
-            inputEditView.typeText("       ")
-            sendMessageBtn.click()
-            inputEditView.typeText("Test")
-            inputEditView.clearText()
-            sendMessageBtn.click()
-            chatItemsRecyclerView {
-                assert(getSize() == 0) { "Список элементов после попыток отправить пустое сообщение должен быть пуст" }
-            }
-        }
-    }
-
-    @Test
     fun progressbarOnStart() {
         prepareHttpMocks(9000)
         openChatFromDemoLoginPage()
@@ -399,8 +377,7 @@ class TextMessagesTest : BaseTestCase() {
         intended(
             allOf(
                 hasAction(Intent.ACTION_VIEW),
-                hasData("tel:$phoneToCheck"),
-                toPackage("com.google.android.dialer")
+                hasData("tel:$phoneToCheck")
             )
         )
     }

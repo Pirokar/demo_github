@@ -1,11 +1,11 @@
 package io.edna.threads.demo.mainChatScreen.errors
 
-import im.threads.business.rest.queries.ednaMockUrl
 import im.threads.ui.config.ConfigBuilder
 import im.threads.ui.core.ThreadsLib
 import io.edna.threads.demo.BaseTestCase
 import io.edna.threads.demo.appCode.ednaMockThreadsGateProviderUid
 import io.edna.threads.demo.appCode.ednaMockThreadsGateUrl
+import io.edna.threads.demo.appCode.ednaMockUrl
 import org.junit.Before
 import org.junit.Test
 

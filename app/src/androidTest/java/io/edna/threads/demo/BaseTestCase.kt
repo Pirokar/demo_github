@@ -16,12 +16,12 @@ import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import im.threads.R
 import im.threads.business.UserInfoBuilder
 import im.threads.business.config.BaseConfig
-import im.threads.business.rest.queries.ednaMockPort
-import im.threads.business.rest.queries.ednaMockUrl
 import im.threads.business.transport.threadsGate.ThreadsGateTransport
 import im.threads.ui.core.ThreadsLib
+import io.edna.threads.demo.appCode.ednaMockPort
 import io.edna.threads.demo.appCode.ednaMockThreadsGateProviderUid
 import io.edna.threads.demo.appCode.ednaMockThreadsGateUrl
+import io.edna.threads.demo.appCode.ednaMockUrl
 import io.edna.threads.demo.appCode.models.ServerConfig
 import io.edna.threads.demo.appCode.models.TestData
 import io.edna.threads.demo.appCode.models.UserInfo
