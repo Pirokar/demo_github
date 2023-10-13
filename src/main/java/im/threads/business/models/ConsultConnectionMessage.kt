@@ -14,6 +14,7 @@ class ConsultConnectionMessage : ConsultChatPhrase, ChatItem, SystemMessage {
     val role: String?
     private val text: String?
     override val threadId: Long
+    override val modified = null
     override val timeStamp: Long
 
     @SerializedName("display")

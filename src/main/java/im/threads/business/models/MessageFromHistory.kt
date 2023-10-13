@@ -1,12 +1,14 @@
 package im.threads.business.models
 
 import androidx.core.util.ObjectsCompat
+import im.threads.business.models.enums.ModificationStateEnum
 import im.threads.business.utils.DateHelper
 
 class MessageFromHistory : ChatItem {
     var uuid: String? = null
     var clientId: String? = null
     override var threadId: Long? = null
+    override val modified: ModificationStateEnum = ModificationStateEnum.ANY
     var operator: Operator? = null
     var client: Client? = null
     var receivedDate: String? = null

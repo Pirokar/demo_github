@@ -120,6 +120,7 @@ object HistoryParser {
                                 ConsultPhrase(
                                     uuid,
                                     fileDescription,
+                                    message.modified,
                                     quote,
                                     name,
                                     phraseText,
@@ -157,6 +158,7 @@ object HistoryParser {
                                     quote,
                                     timeStamp,
                                     fileDescription,
+                                    message.modified,
                                     sentState,
                                     message.threadId
                                 ).apply {

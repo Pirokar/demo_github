@@ -9,6 +9,7 @@ class RequestResolveThread(
     override val threadId: Long,
     val isRead: Boolean
 ) : ChatItem {
+    override val modified = null
 
     override fun isTheSameItem(otherItem: ChatItem?): Boolean {
         return if (otherItem is RequestResolveThread) {

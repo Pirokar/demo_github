@@ -49,6 +49,7 @@
     <string name="ecc_in">in</string>
     <string name="ecc_search_more">Search more</string>
     <string name="ecc_message_were_unsent">Message not sent</string>
+    <string name="ecc_message_deleted">Message deleted</string>
     <string name="ecc_failed_to_open_file">Failed to open selected file</string>
     <string name="ecc_saved_to_downloads">Saved to Downloads</string>
     <string name="ecc_unable_to_save">Unable to save file</string>

@@ -8,6 +8,7 @@ class Space(val height: Int, override val timeStamp: Long) : ChatItem {
         return otherItem is Space
     }
 
+    override val modified = null
     override val threadId: Long?
         get() = null
 

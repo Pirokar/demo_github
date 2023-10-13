@@ -14,6 +14,7 @@ class UnreadMessages(override val timeStamp: Long, var count: Int) : ChatItem {
         return otherItem is UnreadMessages
     }
 
+    override val modified = null
     override val threadId: Long?
         get() = null
 

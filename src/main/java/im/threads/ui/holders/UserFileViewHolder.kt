@@ -10,11 +10,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.annotation.ColorRes
-import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import im.threads.R
@@ -188,15 +185,6 @@ class UserFileViewHolder(
             hideErrorLayout()
             updateFileView(fileDescription, onClickListener)
         }
-    }
-
-    private fun getColoredDrawable(@DrawableRes res: Int, @ColorRes color: Int): Drawable? {
-        val drawable = AppCompatResources.getDrawable(itemView.context, res)
-        drawable?.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
-            ContextCompat.getColor(itemView.context, color),
-            BlendModeCompat.SRC_ATOP
-        )
-        return drawable
     }
 
     private fun updateFileView(

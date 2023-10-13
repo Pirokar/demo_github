@@ -62,6 +62,7 @@
     <string name="ecc_answer">ОТВЕТИТЬ</string>
     <string name="ecc_check_connection">Проблемы с доступом в интрнет, проверьте соединение</string>
     <string name="ecc_message_not_sent">Сообщение не отправлено, проверьте настройки подключения</string>
+    <string name="ecc_message_deleted">Сообщение удалено</string>
     <string name="ecc_typing">печатает…</string>
     <string name="ecc_ask_to_rate">Пожалуйста, оцените качество нашего сервиса</string>
     <string name="ecc_thanks_for_rate">Спасибо за вашу оценку</string>

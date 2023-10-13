@@ -13,6 +13,7 @@ import im.threads.business.models.RequestResolveThread
 import im.threads.business.models.SimpleSystemMessage
 import im.threads.business.models.Survey
 import im.threads.business.models.UserPhrase
+import im.threads.business.models.enums.ModificationStateEnum
 import java.util.Locale
 
 class MessagesTable(
@@ -48,6 +49,7 @@ class MessagesTable(
                     ", " + COLUMN_THREAD_ID + " integer" +
                     ", " + COLUMN_BLOCK_INPUT + " integer" +
                     ", " + COLUMN_SPEECH_STATUS + " text" +
+                    ", " + COLUMN_MODIFICATION_STATE + " text" +
                     ")",
                 TABLE_MESSAGES,
                 COLUMN_TABLE_ID,
@@ -157,6 +159,7 @@ class MessagesTable(
         return ConsultPhrase(
             cGetString(c, COLUMN_MESSAGE_UUID),
             fileDescriptionTable.getFileDescription(sqlHelper, cGetString(c, COLUMN_MESSAGE_UUID)),
+            ModificationStateEnum.fromString(cGetString(c, COLUMN_MODIFICATION_STATE)),
             quotesTable.getQuote(sqlHelper, cGetString(c, COLUMN_MESSAGE_UUID)),
             cGetString(c, COLUMN_NAME),
             cGetString(c, COLUMN_PHRASE),
@@ -182,6 +185,7 @@ class MessagesTable(
             quotesTable.getQuote(sqlHelper, cGetString(c, COLUMN_MESSAGE_UUID)),
             cGetLong(c, COLUMN_TIMESTAMP),
             fileDescriptionTable.getFileDescription(sqlHelper, cGetString(c, COLUMN_MESSAGE_UUID)),
+            ModificationStateEnum.fromString(cGetString(c, COLUMN_MODIFICATION_STATE)),
             fromOrdinal(cGetInt(c, COLUMN_MESSAGE_SEND_STATE)),
             cGetLong(c, COLUMN_THREAD_ID)
         )
@@ -229,6 +233,7 @@ class MessagesTable(
         private const val TABLE_MESSAGES = "TABLE_MESSAGES"
         private const val COLUMN_TABLE_ID = "TABLE_ID"
         private const val COLUMN_MESSAGE_UUID = "COLUMN_MESSAGE_UUID"
+        private const val COLUMN_MODIFICATION_STATE = "COLUMN_MODIFICATION_STATE"
         private const val COLUMN_TIMESTAMP = "COLUMN_TIMESTAMP"
         private const val COLUMN_PHRASE = "COLUMN_PHRASE"
         private const val COLUMN_FORMATTED_PHRASE = "COLUMN_FORMATTED_PHRASE"

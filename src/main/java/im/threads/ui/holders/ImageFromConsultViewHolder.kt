@@ -27,9 +27,6 @@ import im.threads.ui.utils.invisible
 import im.threads.ui.utils.visible
 import im.threads.ui.widget.textView.BubbleTimeTextView
 import io.reactivex.subjects.PublishSubject
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 class ImageFromConsultViewHolder(
     parent: ViewGroup,
@@ -46,9 +43,6 @@ class ImageFromConsultViewHolder(
     openGraphParser,
     true
 ) {
-
-    private val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
-
     private val errorTextView: TextView = itemView.findViewById(R.id.errorText)
     private val loaderLayout: LinearLayout = itemView.findViewById(R.id.loaderLayout)
     private val fileNameTextView: TextView = itemView.findViewById(R.id.fileName)
@@ -91,10 +85,9 @@ class ImageFromConsultViewHolder(
         ColorsHelper.setTextColor(errorTextView, style.errorMessageTextColor)
         timeStampTextView.setOnClickListener(buttonClickListener)
         timeStampTextView.setOnLongClickListener(onLongClickListener)
-        timeStampTextView.text = sdf.format(Date(consultPhrase.timeStamp))
         timeStampLoader.setOnClickListener(buttonClickListener)
         timeStampLoader.setOnLongClickListener(onLongClickListener)
-        timeStampLoader.text = sdf.format(Date(consultPhrase.timeStamp))
+        showConsultTimeStamp(consultPhrase, listOf(timeStampTextView, timeStampLoader))
         rootLayout.setOnClickListener(buttonClickListener)
         rootLayout.setOnLongClickListener(onLongClickListener)
         image.setOnClickListener(buttonClickListener)

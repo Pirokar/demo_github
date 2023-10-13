@@ -26,9 +26,6 @@ import im.threads.ui.utils.gone
 import im.threads.ui.utils.visible
 import im.threads.ui.views.CircularProgressButton
 import io.reactivex.subjects.PublishSubject
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 class ConsultFileViewHolder(
     parent: ViewGroup,
@@ -39,8 +36,6 @@ class ConsultFileViewHolder(
     highlightingStream,
     openGraphParser
 ) {
-    private val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
-
     private val quoteLayout: LinearLayout = itemView.findViewById(R.id.quoteLayout)
     private val quoteTextHeader: TextView = itemView.findViewById(R.id.quoteTo)
     private val quoteTextDescription: TextView = itemView.findViewById(R.id.quoteFileSpecs)
@@ -54,7 +49,7 @@ class ConsultFileViewHolder(
     private val mSizeTextView: TextView = itemView.findViewById(R.id.file_size)
     private val rootLayout: RelativeLayout = itemView.findViewById(R.id.rootLayout)
     private val bubbleLayout: ConstraintLayout = itemView.findViewById(R.id.bubble)
-    private val mTimeStampTextView = itemView.findViewById<TextView>(R.id.timestamp).apply {
+    private val timeStampTextView = itemView.findViewById<TextView>(R.id.timestamp).apply {
         setTextColor(getColorInt(style.incomingMessageTimeColor))
         if (style.incomingMessageTimeTextSize > 0) {
             setTextSize(TypedValue.COMPLEX_UNIT_PX, itemView.context.resources.getDimension(style.incomingMessageTimeTextSize))
@@ -104,7 +99,7 @@ class ConsultFileViewHolder(
             quoteLayout.isVisible = false
         }
         showFile(consultPhrase.fileDescription)
-        mTimeStampTextView.text = sdf.format(Date(consultPhrase.timeStamp))
+        showConsultTimeStamp(consultPhrase, listOf(timeStampTextView))
         val vg = itemView as ViewGroup
         for (i in 0 until vg.childCount) {
             vg.getChildAt(i).setOnLongClickListener(onLongClickListener)

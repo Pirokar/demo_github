@@ -178,7 +178,7 @@ class ThreadsDbHelper private constructor(val context: Context, password: String
 
     companion object {
         private const val DATABASE_NAME = "messages_secure.db"
-        private const val VERSION = 4
+        private const val VERSION = 5
         private var isLibraryLoaded = false
 
         @SuppressLint("StaticFieldLeak")

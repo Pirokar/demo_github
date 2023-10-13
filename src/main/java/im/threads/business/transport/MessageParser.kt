@@ -21,6 +21,7 @@ import im.threads.business.models.SimpleSystemMessage
 import im.threads.business.models.SpeechMessageUpdate
 import im.threads.business.models.Survey
 import im.threads.business.models.UserPhrase
+import im.threads.business.models.enums.ModificationStateEnum
 import im.threads.business.transport.models.Attachment
 import im.threads.business.transport.models.MessageContent
 import im.threads.business.transport.models.OperatorJoinedContent
@@ -205,7 +206,8 @@ class MessageParser {
             quickReplies,
             settings,
             speechStatus,
-            read
+            read,
+            modified
         ) = BaseConfig.getInstance().gson.fromJson(
             fullMessage,
             MessageContent::class.java
@@ -236,6 +238,7 @@ class MessageParser {
             ConsultPhrase(
                 uuid,
                 fileDescription,
+                ModificationStateEnum.fromString(modified),
                 quote,
                 name,
                 phrase,
@@ -257,7 +260,15 @@ class MessageParser {
             if (attachments != null) {
                 fileDescription = getFileDescription(attachments, null, sentAt)
             }
-            val userPhrase = UserPhrase(uuid, phrase, quote, sentAt, fileDescription, threadId)
+            val userPhrase = UserPhrase(
+                uuid,
+                phrase,
+                quote,
+                sentAt,
+                fileDescription,
+                ModificationStateEnum.fromString(modified),
+                threadId
+            )
             userPhrase.sentState = MessageStatus.SENT
             userPhrase.isRead = isMessageRead!!
             userPhrase

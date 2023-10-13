@@ -18,6 +18,7 @@ import im.threads.business.models.SimpleSystemMessage
 import im.threads.business.models.SpeechMessageUpdate
 import im.threads.business.models.Survey
 import im.threads.business.models.UserPhrase
+import im.threads.business.models.enums.ModificationStateEnum
 import im.threads.business.utils.FileDownloader.Companion.getDownloadDir
 import im.threads.business.utils.FileProvider
 import im.threads.business.utils.FileUtils.generateFileName
@@ -62,6 +63,7 @@ class MessagesTable(
                     ", " + COLUMN_THREAD_ID + " integer" +
                     ", " + COLUMN_BLOCK_INPUT + " integer" +
                     ", " + COLUMN_SPEECH_STATUS + " text" +
+                    ", " + COLUMN_MODIFICATION_STATE + " text" +
                     ")",
                 TABLE_MESSAGES,
                 COLUMN_TABLE_ID,
@@ -609,6 +611,12 @@ class MessagesTable(
                 sqlHelper,
                 cursorGetString(c, COLUMN_MESSAGE_CORRELATION_ID)
             ),
+            ModificationStateEnum.fromString(
+                im.threads.business.database.table.Table.cGetString(
+                    c,
+                    COLUMN_MODIFICATION_STATE
+                )
+            ),
             quotesTable.getQuote(sqlHelper, cursorGetString(c, COLUMN_MESSAGE_CORRELATION_ID)),
             cursorGetString(c, COLUMN_NAME),
             cursorGetString(c, COLUMN_PHRASE),
@@ -638,6 +646,12 @@ class MessagesTable(
             fileDescriptionTable.getFileDescription(
                 sqlHelper,
                 cursorGetString(c, COLUMN_MESSAGE_CORRELATION_ID)
+            ),
+            ModificationStateEnum.fromString(
+                im.threads.business.database.table.Table.cGetString(
+                    c,
+                    COLUMN_MODIFICATION_STATE
+                )
             ),
             MessageStatus.fromOrdinal(cursorGetInt(c, COLUMN_MESSAGE_SEND_STATE)),
             cursorGetLong(c, COLUMN_THREAD_ID)
@@ -692,6 +706,7 @@ class MessagesTable(
         cv.put(COLUMN_BLOCK_INPUT, phrase.isBlockInput)
         cv.put(COLUMN_SPEECH_STATUS, phrase.speechStatus.toString())
         cv.put(COLUMN_CONSULT_ROLE, phrase.role.name)
+        cv.put(COLUMN_MODIFICATION_STATE, phrase.modified.state)
         return cv
     }
 
@@ -703,6 +718,7 @@ class MessagesTable(
         cv.put(COLUMN_MESSAGE_TYPE, MessageType.USER_PHRASE.ordinal)
         cv.put(COLUMN_MESSAGE_SEND_STATE, phrase.sentState.value)
         cv.put(COLUMN_THREAD_ID, phrase.threadId)
+        cv.put(COLUMN_MODIFICATION_STATE, phrase.modified.state)
         return cv
     }
 
@@ -917,6 +933,7 @@ private const val TABLE_MESSAGES = "TABLE_MESSAGES"
 private const val COLUMN_TABLE_ID = "TABLE_ID"
 private const val COLUMN_MESSAGE_CORRELATION_ID = "COLUMN_MESSAGE_CORRELATION_ID"
 private const val COLUMN_MESSAGE_ID = "COLUMN_MESSAGE_ID"
+private const val COLUMN_MODIFICATION_STATE = "COLUMN_MODIFICATION_STATE"
 private const val COLUMN_TIMESTAMP = "COLUMN_TIMESTAMP"
 private const val COLUMN_PHRASE = "COLUMN_PHRASE"
 private const val COLUMN_FORMATTED_PHRASE = "COLUMN_FORMATTED_PHRASE"

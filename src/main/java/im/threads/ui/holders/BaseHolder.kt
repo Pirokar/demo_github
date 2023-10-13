@@ -39,6 +39,7 @@ import im.threads.business.models.FileDescription
 import im.threads.business.models.MessageStatus
 import im.threads.business.models.Quote
 import im.threads.business.models.enums.ErrorStateEnum
+import im.threads.business.models.enums.ModificationStateEnum
 import im.threads.business.ogParser.OGData
 import im.threads.business.ogParser.OGDataContent
 import im.threads.business.ogParser.OpenGraphParser
@@ -84,6 +85,7 @@ abstract class BaseHolder internal constructor(
     private var compositeDisposable: CompositeDisposable = CompositeDisposable()
     private val linksHighlighter: LinksHighlighter = LinkifyLinksHighlighter()
     protected val coroutineScope = CoroutineScope(Dispatchers.IO)
+    private val timeStampSdf = SimpleDateFormat("HH:mm", Locale.getDefault())
     protected val rotateAnim = RotateAnimation(
         0f,
         360f,
@@ -778,6 +780,32 @@ abstract class BaseHolder internal constructor(
             }
         }
         return null
+    }
+
+    protected fun getColoredDrawable(@DrawableRes res: Int, @ColorRes color: Int): Drawable? {
+        val drawable = AppCompatResources.getDrawable(itemView.context, res)
+        drawable?.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
+            ContextCompat.getColor(itemView.context, color),
+            BlendModeCompat.SRC_ATOP
+        )
+        return drawable
+    }
+
+    protected fun showConsultTimeStamp(consultPhrase: ConsultPhrase, views: List<TextView>) {
+        val timeText = timeStampSdf.format(Date(consultPhrase.timeStamp))
+        views.forEach {
+            it.text = timeText
+        }
+        if (consultPhrase.modified == ModificationStateEnum.EDITED) {
+            val rightDrawable: Drawable? =
+                getColoredDrawable(
+                    style.messageEditedIconResId,
+                    style.messageEditedIconColorResId
+                )
+            views.forEach {
+                it.setCompoundDrawablesWithIntrinsicBounds(null, null, rightDrawable, null)
+            }
+        }
     }
 
     companion object {

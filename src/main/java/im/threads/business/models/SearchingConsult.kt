@@ -22,6 +22,7 @@ class SearchingConsult : ChatItem {
         return otherItem is SearchingConsult
     }
 
+    override val modified = null
     override val threadId: Long?
         get() = null
 

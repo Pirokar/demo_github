@@ -7,10 +7,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
-import androidx.annotation.ColorRes
-import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.core.view.isVisible
@@ -174,15 +171,6 @@ class ImageFromUserViewHolder(
         timeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, rightDrawable, null)
         timeStampLoading.setCompoundDrawablesWithIntrinsicBounds(null, null, rightDrawable, null)
         statuses[timeStamp] = messageStatus
-    }
-
-    private fun getColoredDrawable(@DrawableRes res: Int, @ColorRes color: Int): Drawable? {
-        val drawable = AppCompatResources.getDrawable(itemView.context, res)
-        drawable?.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
-            ContextCompat.getColor(itemView.context, color),
-            BlendModeCompat.SRC_ATOP
-        )
-        return drawable
     }
 
     private fun applyBubbleLayoutStyle(layout: ViewGroup) {

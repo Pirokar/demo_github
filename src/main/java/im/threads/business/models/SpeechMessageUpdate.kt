@@ -8,6 +8,7 @@ data class SpeechMessageUpdate constructor(
     val fileDescription: FileDescription
 ) : ChatItem {
 
+    override val modified = null
     override val timeStamp: Long
         get() = 0
 

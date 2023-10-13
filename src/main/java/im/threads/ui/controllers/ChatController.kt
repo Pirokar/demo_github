@@ -50,6 +50,7 @@ import im.threads.business.models.UpcomingUserMessage
 import im.threads.business.models.UserPhrase
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.models.enums.CurrentUiTheme
+import im.threads.business.models.enums.ModificationStateEnum
 import im.threads.business.preferences.Preferences
 import im.threads.business.preferences.PreferencesCoreKeys
 import im.threads.business.rest.models.SettingsResponse
@@ -1341,6 +1342,7 @@ class ChatController private constructor() {
             message.quote,
             System.currentTimeMillis(),
             message.fileDescription,
+            ModificationStateEnum.ANY,
             null
         )
         up.isCopy = message.copied
