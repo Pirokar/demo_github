@@ -219,6 +219,52 @@
       "authorized": true,
       "massPushMessage": false,
       "origin": "threads"
+    },
+    {
+      "type": "MESSAGE",
+      "threadId": 147,
+      "providerIds": [],
+      "uuid": "297ad109-4d01-4d01-bfbf-a18ad0114103",
+      "operator": {
+        "id": 4,
+        "name": "Оператор Елена",
+        "alias": null,
+        "status": null,
+        "photoUrl": null,
+        "gender": "FEMALE",
+        "organizationUnit": "Skill Credit",
+        "role": "OPERATOR"
+      },
+      "text": "",
+      "receivedDate": "2023-03-29T11:45:10.914Z",
+      "attachments": [
+        {
+          "id": 57,
+          "result": "file:///android_asset/test_files/test_pdf2.pdf",
+          "optional": {
+            "size": 62707,
+            "name": "test_pdf2.pdf",
+            "type": "application/pdf"
+          },
+          "state": "READY",
+          "name": "test_pdf2.pdf",
+          "type": "application/pdf",
+          "size": 62707,
+          "wellDefined": true,
+          "url": "file:///android_asset/test_files/test_pdf2.pdf"
+        }
+      ],
+      "quotes": [],
+      "quickReplies": [],
+      "read": true,
+      "settings": {
+        "blockInput": false,
+        "masked": false
+      },
+      "authorized": true,
+      "massPushMessage": false,
+      "modified": "EDITED",
+      "origin": "threads"
     }
   ],
   "agentInfo": null,

@@ -309,6 +309,53 @@
       "authorized": true,
       "massPushMessage": false,
       "origin": "threads"
+    },
+    {
+      "type": "MESSAGE",
+      "threadId": 304,
+      "providerIds": [],
+      "uuid": "20f8f1a3-6edb-4aa9-8d98-27e2dde324f1",
+      "operator": {
+        "id": 9,
+        "name": "Оператор Елена",
+        "alias": null,
+        "status": null,
+        "photoUrl": null,
+        "gender": "FEMALE",
+        "organizationUnit": "Skill Debet",
+        "role": "OPERATOR"
+      },
+      "text": "",
+      "formattedText": "Отредактированное сообщение.",
+      "receivedDate": "2023-03-22T08:48:18.047Z",
+      "attachments": [],
+      "quotes": [],
+      "quickReplies": [],
+      "read": true,
+      "settings": {
+        "blockInput": false,
+        "masked": false
+      },
+      "authorized": true,
+      "modified": "EDITED",
+      "massPushMessage": false,
+      "origin": "threads"
+    },
+    {
+      "type": "MESSAGE",
+      "receivedDate": "2023-03-22T08:51:18.047Z",
+      "uuid": "20f8f1a3-6edb-4aa9-8d98-27e2dde324f2",
+      "operator": {
+        "id": 9,
+        "name": "Оператор Елена",
+        "alias": null,
+        "status": null,
+        "photoUrl": null,
+        "gender": "FEMALE",
+        "organizationUnit": "Skill Debet",
+        "role": "OPERATOR"
+      },
+      "modified": "DELETED"
     }
   ],
   "agentInfo": {
