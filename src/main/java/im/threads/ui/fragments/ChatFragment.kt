@@ -378,6 +378,10 @@ class ChatFragment :
         }
     }
 
+    internal fun isErrorViewNotVisible(): Boolean {
+        return binding?.chatErrorLayout?.errorLayout.isNotVisible()
+    }
+
     private fun initErrorViewStyles() = binding?.chatErrorLayout?.apply {
         errorImage.setImageResource(style.chatErrorScreenImageResId)
         context?.let {
