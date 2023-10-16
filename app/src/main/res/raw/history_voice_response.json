@@ -344,52 +344,6 @@
       "origin": "threads"
     },
     {
-      "type": "MESSAGE",
-      "threadId": 182,
-      "providerIds": [],
-      "uuid": "bd50a2a0-f3cf-48ec-a601-5b2318e75f54",
-      "operator": {
-        "id": 4,
-        "name": "Оператор Елена",
-        "alias": null,
-        "status": null,
-        "photoUrl": null,
-        "gender": "FEMALE",
-        "organizationUnit": "Skill Credit",
-        "role": "OPERATOR"
-      },
-      "text": "",
-      "receivedDate": "2023-04-05T10:39:38.903Z",
-      "attachments": [
-        {
-          "id": 73,
-          "result": "file:///android_asset/test_files/operator_text2.ogg",
-          "optional": {
-            "size": 33080,
-            "name": "operator_text2.ogg",
-            "type": "audio/ogg"
-          },
-          "state": "READY",
-          "name": "operator_text2.ogg",
-          "type": "audio/ogg",
-          "size": 33080,
-          "wellDefined": true,
-          "url": "file:///android_asset/test_files/operator_text2.ogg"
-        }
-      ],
-      "quotes": [],
-      "quickReplies": [],
-      "read": false,
-      "settings": {
-        "blockInput": false,
-        "masked": false
-      },
-      "authorized": true,
-      "massPushMessage": false,
-      "modified": "EDITED",
-      "origin": "threads"
-    },
-    {
       "type": "REQUEST_CLOSE_THREAD",
       "threadId": 182,
       "hideAfter": 13,
