@@ -1622,7 +1622,15 @@ class ChatController private constructor() {
                     chatState.changeState(ChatStateEnum.ATTACHMENT_SETTINGS_LOADED)
                 } else {
                     info("ChatState name: ${stateEvent.state.name}, isTimeout: ${stateEvent.isTimeout}")
-                    if (!stateEvent.isTimeout && stateEvent.state < ChatStateEnum.HISTORY_LOADED) {
+                    val notInitializedError = TransportException(fragment?.getString(R.string.ecc_attachments_not_loaded) ?: "ChatCenter SDK не инициализирован")
+                    try {
+                        val config = BaseConfig.getInstance()
+                        if (config.datastoreUrl.isNullOrBlank() || config.serverBaseUrl.isNullOrBlank) throw Exception()
+                    } catch (e: Exception) {
+                        chatUpdateProcessor.postError(notInitializedError)
+                        return@collect
+                    }
+                    if (!stateEvent.isTimeout && stateEvent.state < ChatStateEnum.HISTORY_LOADED && fragment?.isErrorViewNotVisible() == true) {
                         withContext(Dispatchers.Main) { fragment?.showProgressBar() }
                     }
                     if (stateEvent.isTimeout && chatState.getCurrentState() < ChatStateEnum.ATTACHMENT_SETTINGS_LOADED) {
