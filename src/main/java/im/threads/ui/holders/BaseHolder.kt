@@ -805,6 +805,10 @@ abstract class BaseHolder internal constructor(
             views.forEach {
                 it.setCompoundDrawablesWithIntrinsicBounds(null, null, rightDrawable, null)
             }
+        } else {
+            views.forEach {
+                it.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null)
+            }
         }
     }
 

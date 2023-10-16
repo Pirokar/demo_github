@@ -22,6 +22,7 @@ import im.threads.business.models.RequestResolveThread
 import im.threads.business.models.SimpleSystemMessage
 import im.threads.business.models.Survey
 import im.threads.business.models.UserPhrase
+import im.threads.business.models.enums.ModificationStateEnum
 import im.threads.business.rest.models.HistoryResponse
 import im.threads.business.serviceLocator.core.inject
 import im.threads.business.utils.DateHelper
@@ -115,7 +116,10 @@ object HistoryParser {
                         }
                         val quote = message.quotes?.let { quoteFromList(it) }
                         quote?.fileDescription?.timeStamp = timeStamp
-                        if (message.operator != null) {
+                        if (message.operator != null ||
+                            message.modified == ModificationStateEnum.DELETED ||
+                            message.modified == ModificationStateEnum.EDITED
+                        ) {
                             out.add(
                                 ConsultPhrase(
                                     uuid,

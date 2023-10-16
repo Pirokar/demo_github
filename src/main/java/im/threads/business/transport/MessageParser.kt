@@ -224,13 +224,16 @@ class MessageParser {
         if (quotes != null) {
             quote = getQuote(quotes)
         }
-        return if (operator != null) {
-            val operatorId = operator.id.toString()
-            val name = operator.aliasOrName
-            val photoUrl = operator.photoUrl
-            val status = operator.status
+        return if (operator != null ||
+            ModificationStateEnum.fromString(modified) == ModificationStateEnum.EDITED ||
+            ModificationStateEnum.fromString(modified) == ModificationStateEnum.DELETED
+        ) {
+            val operatorId = operator?.id.toString()
+            val name = operator?.aliasOrName
+            val photoUrl = operator?.photoUrl
+            val status = operator?.status
             val gender =
-                operator.gender == null || "male".equals(operator.gender, ignoreCase = true)
+                operator?.gender == null || "male".equals(operator.gender, ignoreCase = true)
             var fileDescription: FileDescription? = null
             if (attachments != null) {
                 fileDescription = getFileDescription(attachments, name, sentAt)
@@ -253,7 +256,7 @@ class MessageParser {
                 quickReplies,
                 settings?.isBlockInput,
                 fromString(speechStatus),
-                ConsultRole.consultRoleFromString(operator.role)
+                ConsultRole.consultRoleFromString(operator?.role)
             )
         } else {
             var fileDescription: FileDescription? = null
