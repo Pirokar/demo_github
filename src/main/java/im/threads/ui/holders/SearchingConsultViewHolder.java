@@ -9,6 +9,7 @@ import android.widget.ProgressBar;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import im.threads.BuildConfig;
 import im.threads.ui.ChatStyle;
 import im.threads.R;
 import im.threads.ui.config.Config;
@@ -20,7 +21,8 @@ public final class SearchingConsultViewHolder extends RecyclerView.ViewHolder {
         ProgressBar progressBar = itemView.findViewById(R.id.progress);
         ChatStyle style = Config.getInstance().getChatStyle();
         progressBar.getIndeterminateDrawable().setColorFilter(ContextCompat.getColor(itemView.getContext(), style.consultSearchingProgressColor), PorterDuff.Mode.SRC_ATOP);
-        itemView.setVisibility(style.showConsultSearching ? View.VISIBLE : View.GONE);
-        progressBar.setVisibility(style.showConsultSearching ? View.VISIBLE : View.GONE);
+        boolean isAnimationsDisabledByGradle = BuildConfig.IS_ANIMATIONS_DISABLED.get();
+        itemView.setVisibility(style.showConsultSearching && !isAnimationsDisabledByGradle ? View.VISIBLE : View.GONE);
+        progressBar.setVisibility(style.showConsultSearching && !isAnimationsDisabledByGradle ? View.VISIBLE : View.GONE);
     }
 }

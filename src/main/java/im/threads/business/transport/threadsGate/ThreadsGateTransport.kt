@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Build
 import android.provider.Settings
 import android.text.TextUtils
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
@@ -59,6 +60,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -87,15 +89,21 @@ class ThreadsGateTransport(
     private val networkInterceptor: Interceptor?,
     private val context: Context
 ) : Transport(), DefaultLifecycleObserver {
-    private lateinit var client: OkHttpClient
+    @VisibleForTesting
+    lateinit var client: OkHttpClient
+
+    @VisibleForTesting
+    lateinit var listener: WebSocketListener
+
+    @VisibleForTesting
+    var webSocket: WebSocket? = null
+
     private lateinit var request: Request
-    private lateinit var listener: WebSocketListener
     private var location: LatLng? = null
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
     private val messageInProcessIds: MutableList<String> = ArrayList()
     private val surveysInProcess: MutableMap<Long, Survey> = HashMap()
     private val campaignsInProcess: MutableMap<String?, CampaignMessage> = HashMap()
-    private var webSocket: WebSocket? = null
     private var lifecycle: Lifecycle? = null
     private val outgoingMessageCreator: OutgoingMessageCreator by inject()
     private val preferences: Preferences by inject()
@@ -111,7 +119,12 @@ class ThreadsGateTransport(
     private var logoutCorrelationId = MutableStateFlow<String?>(null)
     private var logoutScope: CoroutineScope? = null
 
-    init { buildTransport() }
+    init {
+        buildTransport()
+        coroutineScope.launch(Dispatchers.Unconfined) {
+            transportUpdatedChannel.emit(this@ThreadsGateTransport)
+        }
+    }
 
     override fun buildTransport() {
         val httpClientBuilder = OkHttpClient.Builder()
@@ -496,7 +509,8 @@ class ThreadsGateTransport(
         }
     }
 
-    private inner class WebSocketListener : okhttp3.WebSocketListener() {
+    @VisibleForTesting
+    open inner class WebSocketListener : okhttp3.WebSocketListener() {
         override fun onOpen(webSocket: WebSocket, response: Response) {
             val socketResponseMap = mutableMapOf<String, Any>().apply {
                 put(KEY_PROTOCOL, response.protocol)
@@ -780,6 +794,9 @@ class ThreadsGateTransport(
 
     companion object {
         const val NORMAL_CLOSURE_STATUS = 1000
+        val transportUpdatedChannel = MutableSharedFlow<ThreadsGateTransport>(
+            replay = 2
+        )
         private const val CORRELATION_ID_DIVIDER = ":"
 
         private const val KEY_TEXT = "text"

@@ -166,7 +166,7 @@ open class ThreadsLibBase protected constructor(context: Context) {
 
         @JvmStatic
         @SuppressLint("StaticFieldLeak")
-        protected var libInstance: ThreadsLibBase? = null
+        internal var libInstance: ThreadsLibBase? = null
 
         private val clientInteractor: ClientUseCase by inject()
 
