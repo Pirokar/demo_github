@@ -53,7 +53,8 @@ import im.threads.business.models.enums.CurrentUiTheme
 import im.threads.business.preferences.Preferences
 import im.threads.business.preferences.PreferencesCoreKeys
 import im.threads.business.rest.models.SettingsResponse
-import im.threads.business.rest.queries.BackendApi.Companion.get
+import im.threads.business.rest.queries.BackendApi
+import im.threads.business.rest.queries.DatastoreApi
 import im.threads.business.rest.queries.ThreadsApi
 import im.threads.business.secureDatabase.DatabaseHolder
 import im.threads.business.serviceLocator.core.inject
@@ -699,7 +700,7 @@ class ChatController private constructor() {
     private fun loadSettings() {
         subscribe(
             Single.fromCallable {
-                get().settings()?.execute()
+                BackendApi.get().settings()?.execute()
             }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -1622,11 +1623,13 @@ class ChatController private constructor() {
                     chatState.changeState(ChatStateEnum.ATTACHMENT_SETTINGS_LOADED)
                 } else {
                     info("ChatState name: ${stateEvent.state.name}, isTimeout: ${stateEvent.isTimeout}")
-                    val notInitializedError = TransportException(fragment?.getString(R.string.ecc_attachments_not_loaded) ?: "ChatCenter SDK не инициализирован")
                     try {
-                        val config = BaseConfig.getInstance()
-                        if (config.datastoreUrl.isNullOrBlank() || config.serverBaseUrl.isNullOrBlank) throw Exception()
+                        // Check if main component are initialized
+                        BaseConfig.getInstance()
+                        BackendApi.get()
+                        DatastoreApi.get()
                     } catch (e: Exception) {
+                        val notInitializedError = TransportException(fragment?.getString(R.string.ecc_attachments_not_loaded) ?: "ChatCenter SDK не инициализирован")
                         chatUpdateProcessor.postError(notInitializedError)
                         return@collect
                     }
