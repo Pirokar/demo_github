@@ -160,8 +160,10 @@ abstract class BaseTestCase : TestCase() {
                 .willReturn(
                     WireMock.aResponse()
                         .withStatus(200)
-                        .withBody("{\"result\":\"20231013-8054e1c4-ccd4-44da-ac96-d5dc2c4c1601.jpg\"," +
-                                "\"optional\":{\"name\":\"test_image2.jpg\",\"type\":\"image/jpeg\",\"size\":617636},\"state\":\"READY\"}")
+                        .withBody(
+                            "{\"result\":\"20231013-8054e1c4-ccd4-44da-ac96-d5dc2c4c1601.jpg\"," +
+                                "\"optional\":{\"name\":\"test_image2.jpg\",\"type\":\"image/jpeg\",\"size\":617636},\"state\":\"READY\"}"
+                        )
                         .withHeader("Content-Type", "application/json")
                         .withFixedDelay(withAnswerDelayInMs)
                 )
