@@ -146,6 +146,10 @@ open class Preferences(private val context: Context) {
             ramPreferences[key] = value ?: ""
         }
 
-        fun getPreferenceFromRam(key: String) = ramPreferences[key] ?: ""
+        fun getPreferenceFromRam(key: String) = try {
+            ramPreferences[key]
+        } catch (e: Exception) {
+            ""
+        } ?: ""
     }
 }

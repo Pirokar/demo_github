@@ -11,8 +11,8 @@ class ClientUseCase(private val preferences: Preferences) {
      * Инициирует clientId, проверяя наличие нового значение в настройках
      */
     fun initClientId() {
-        val userInfo = ramUserInfo ?: preferences.get(USER_INFO_PREFS_KEY)
-        val newClientId = tagNewClientId ?: preferences.get<String>(TAG_NEW_CLIENT_ID_PREFS_KEY)
+        val userInfo = getUserInfo()
+        val newClientId = getTagNewClientId()
         val oldClientId = userInfo?.clientId
 
         val isClientHasNotChanged = newClientId == oldClientId
@@ -34,7 +34,11 @@ class ClientUseCase(private val preferences: Preferences) {
      * Проверяет значение clientId на пустоту (null)
      */
     fun isClientIdNotEmpty(): Boolean {
-        val userInfo = ramUserInfo ?: preferences.get(USER_INFO_PREFS_KEY)
+        val userInfo = ramUserInfo ?: try {
+            preferences.get(USER_INFO_PREFS_KEY)
+        } catch (e: Exception) {
+            null
+        }
         return userInfo?.clientId != null
     }
 
@@ -60,12 +64,20 @@ class ClientUseCase(private val preferences: Preferences) {
     /**
      * Возвращает данные о клиенте
      */
-    fun getUserInfo() = ramUserInfo ?: preferences.get(USER_INFO_PREFS_KEY)
+    fun getUserInfo() = ramUserInfo ?: try {
+        preferences.get(USER_INFO_PREFS_KEY)
+    } catch (e: Exception) {
+        null
+    }
 
     /**
      * Возвращает данные о новом clientId
      */
-    fun getTagNewClientId() = tagNewClientId ?: preferences.get(TAG_NEW_CLIENT_ID_PREFS_KEY)
+    fun getTagNewClientId() = tagNewClientId ?: try {
+        preferences.get(TAG_NEW_CLIENT_ID_PREFS_KEY)
+    } catch (e: Exception) {
+        null
+    }
 
     /**
      * Сохраняет данные о новом clientId
