@@ -47,6 +47,7 @@ import com.annimon.stream.Optional
 import com.annimon.stream.Stream
 import com.devlomi.record_view.OnRecordListener
 import com.google.android.material.slider.Slider
+import im.threads.BuildConfig
 import im.threads.R
 import im.threads.business.annotation.OpenWay
 import im.threads.business.audio.audioRecorder.AudioRecorder
@@ -342,7 +343,7 @@ class ChatFragment :
 
     fun scrollToElementByIndex(index: Int) {
         if (isAdded) {
-            mLayoutManager?.smoothScrollToPosition(binding?.recycler, RecyclerView.State(), index)
+            mLayoutManager?.smoothScrollToPosition(binding?.chatItemsRecycler, RecyclerView.State(), index)
         }
     }
 
@@ -358,7 +359,7 @@ class ChatFragment :
         if (chatErrorLayout.errorLayout.isNotVisible()) {
             showWelcomeScreen(false)
             hideProgressBar()
-            recycler.invisible()
+            chatItemsRecycler.invisible()
             bottomLayout.invisible()
             chatErrorLayout.errorLayout.visible()
             initErrorViewStyles()
@@ -373,7 +374,7 @@ class ChatFragment :
             if (it && showList) {
                 showWelcomeScreen(chatController.isChatReady())
             } else if (showList) {
-                recycler.visible()
+                chatItemsRecycler.visible()
             }
         }
     }
@@ -445,18 +446,18 @@ class ChatFragment :
         initInputLayout(activity)
         quoteLayoutHolder = QuoteLayoutHolder()
         mLayoutManager = LinearLayoutManager(activity)
-        recycler.layoutManager = mLayoutManager
+        chatItemsRecycler.layoutManager = mLayoutManager
         chatAdapter = ChatAdapter(
             chatAdapterCallback!!,
             fdMediaPlayer!!,
             mediaMetadataRetriever,
             ChatController.getInstance().messageErrorProcessor
         )
-        val itemAnimator = recycler.itemAnimator
+        val itemAnimator = chatItemsRecycler.itemAnimator
         if (itemAnimator != null) {
             itemAnimator.changeDuration = 0
         }
-        recycler.adapter = chatAdapter
+        chatItemsRecycler.adapter = chatAdapter
     }
 
     private fun initInputLayout(activity: Activity) = binding?.apply {
@@ -726,15 +727,15 @@ class ChatFragment :
         }
         configureUserTypingSubscription()
         configureRecordButtonVisibility()
-        recycler.addOnLayoutChangeListener { v: View?, left: Int, top: Int, right: Int, bottom: Int, oldLeft: Int, oldTop: Int, oldRight: Int, oldBottom: Int ->
+        chatItemsRecycler.addOnLayoutChangeListener { v: View?, left: Int, top: Int, right: Int, bottom: Int, oldLeft: Int, oldTop: Int, oldRight: Int, oldBottom: Int ->
             if (bottom < oldBottom) {
-                recycler.postDelayed({
+                chatItemsRecycler.postDelayed({
                     try {
                         if (style.scrollChatToEndIfUserTyping) {
                             chatAdapter?.itemCount?.let { scrollToPosition(it - 1, false) }
                         } else {
                             if (isAdded) {
-                                recycler.smoothScrollBy(0, oldBottom - bottom)
+                                chatItemsRecycler.smoothScrollBy(0, oldBottom - bottom)
                             }
                         }
                     } catch (exc: NullPointerException) {
@@ -744,10 +745,10 @@ class ChatFragment :
             }
         }
 
-        recycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        chatItemsRecycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                val layoutManager = recycler.layoutManager as LinearLayoutManager?
+                val layoutManager = chatItemsRecycler.layoutManager as LinearLayoutManager?
                 if (layoutManager != null) {
                     checkScrollDownButtonVisibility()
                     val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
@@ -1002,10 +1003,18 @@ class ChatFragment :
             }
         }
         flEmpty.setBackgroundColor(ContextCompat.getColor(activity, style.emptyStateBackgroundColorResId))
-        val progressDrawable = progressBar.indeterminateDrawable.mutate()
-        ColorsHelper.setDrawableColor(activity, progressDrawable, style.emptyStateProgressBarColorResId)
-        progressBar.indeterminateDrawable = progressDrawable
-        ColorsHelper.setTextColor(activity, tvEmptyStateHint, style.emptyStateHintColorResId)
+        if (!BuildConfig.IS_ANIMATIONS_DISABLED.get()) {
+            val progressDrawable = progressBar.indeterminateDrawable.mutate()
+            ColorsHelper.setDrawableColor(
+                activity,
+                progressDrawable,
+                style.emptyStateProgressBarColorResId
+            )
+            progressBar.indeterminateDrawable = progressDrawable
+            ColorsHelper.setTextColor(activity, tvEmptyStateHint, style.emptyStateHintColorResId)
+        } else {
+            progressBar.invisible()
+        }
     }
 
     override fun onAllowClick(type: PermissionDescriptionType, requestCode: Int) {
@@ -1560,7 +1569,7 @@ class ChatFragment :
     }
 
     fun addChatItem(item: ChatItem?) = binding?.apply {
-        val layoutManager = recycler.layoutManager as LinearLayoutManager? ?: return@apply
+        val layoutManager = chatItemsRecycler.layoutManager as LinearLayoutManager? ?: return@apply
         if (item == null) {
             return@apply
         }
@@ -1633,9 +1642,9 @@ class ChatFragment :
     internal fun scrollToPosition(itemPosition: Int, smooth: Boolean) = binding?.apply {
         if (itemPosition >= 0 && isAdded) {
             if (smooth) {
-                recycler.smoothScrollToPosition(itemPosition)
+                chatItemsRecycler.smoothScrollToPosition(itemPosition)
             } else {
-                recycler.scrollToPosition(itemPosition)
+                chatItemsRecycler.scrollToPosition(itemPosition)
             }
         }
     }
@@ -1691,7 +1700,7 @@ class ChatFragment :
         chatAdapter?.let { chatAdapter ->
             val oldAdapterSize = chatAdapter.list.size
             val isBottomItemsVisible = chatAdapter.itemCount - 1 - lastVisibleItemPosition < INVISIBLE_MESSAGES_COUNT
-            val layoutManager = binding?.recycler?.layoutManager as LinearLayoutManager?
+            val layoutManager = binding?.chatItemsRecycler?.layoutManager as LinearLayoutManager?
             if (layoutManager == null || list.size == 1 && list[0] is ConsultTyping || isInMessageSearchMode) {
                 return
             }
@@ -1861,7 +1870,7 @@ class ChatFragment :
                 mediaMetadataRetriever,
                 ChatController.getInstance().messageErrorProcessor
             )
-            binding?.recycler?.adapter = chatAdapter
+            binding?.chatItemsRecycler?.adapter = chatAdapter
             setTitleStateDefault()
             showWelcomeScreen(false)
             binding?.inputEditView?.clearFocus()
@@ -2039,7 +2048,7 @@ class ChatFragment :
     }
 
     private fun scrollToNewMessages() {
-        val layoutManager = binding?.recycler?.layoutManager as LinearLayoutManager? ?: return
+        val layoutManager = binding?.chatItemsRecycler?.layoutManager as LinearLayoutManager? ?: return
         val list: List<ChatItem> = chatAdapter!!.list
         for (i in 1 until list.size) {
             val currentItem = list[i]
@@ -2053,7 +2062,7 @@ class ChatFragment :
     }
 
     private fun scrollToFirstUnreadMessage() = binding?.apply {
-        val layoutManager = recycler.layoutManager as LinearLayoutManager? ?: return@apply
+        val layoutManager = chatItemsRecycler.layoutManager as LinearLayoutManager? ?: return@apply
         val list: List<ChatItem> = chatAdapter?.list ?: listOf()
         val firstUnreadUuid = chatController.firstUnreadUuidId
         if (list.isNotEmpty() && firstUnreadUuid != null) {
@@ -2063,7 +2072,7 @@ class ChatFragment :
                     if (firstUnreadUuid.equals(cp.id, ignoreCase = true)) {
                         handler.post {
                             if (isAdded && !isInMessageSearchMode) {
-                                recycler.post {
+                                chatItemsRecycler.post {
                                     layoutManager.scrollToPositionWithOffset(i - 1, 0)
                                 }
                             }

@@ -215,5 +215,13 @@ class ThreadsLib(context: Context) : ThreadsLibBase(context) {
         fun isInitialized(): Boolean {
             return libInstance != null
         }
+
+        /**
+         * Очищает текущий инстанс
+         */
+        @JvmStatic
+        fun cleanLibInstance() {
+            libInstance = null
+        }
     }
 }
