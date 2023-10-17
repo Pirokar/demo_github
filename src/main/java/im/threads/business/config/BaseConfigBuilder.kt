@@ -29,7 +29,11 @@ open class BaseConfigBuilder(var context: Context) {
     @RequiresApi(api = Build.VERSION_CODES.N)
     protected var notificationImportance = NotificationManager.IMPORTANCE_DEFAULT
     open fun serverBaseUrl(serverBaseUrl: String?): BaseConfigBuilder? {
-        this.serverBaseUrl = serverBaseUrl
+        if (!serverBaseUrl.isNullOrBlank() && !serverBaseUrl.endsWith("/")) {
+            this.serverBaseUrl = "$serverBaseUrl/"
+        } else {
+            this.serverBaseUrl = serverBaseUrl
+        }
         return this
     }
 
@@ -39,12 +43,20 @@ open class BaseConfigBuilder(var context: Context) {
     }
 
     open fun datastoreUrl(datastoreUrl: String?): BaseConfigBuilder? {
-        this.datastoreUrl = datastoreUrl
+        if (!datastoreUrl.isNullOrBlank() && !datastoreUrl.endsWith("/")) {
+            this.datastoreUrl = "$datastoreUrl/"
+        } else {
+            this.datastoreUrl = datastoreUrl
+        }
         return this
     }
 
     open fun threadsGateUrl(threadsGateUrl: String?): BaseConfigBuilder? {
-        this.threadsGateUrl = threadsGateUrl
+        if (!threadsGateUrl.isNullOrBlank() && threadsGateUrl.endsWith("/")) {
+            this.threadsGateUrl = threadsGateUrl.dropLast(1)
+        } else {
+            this.threadsGateUrl = threadsGateUrl
+        }
         return this
     }
 
