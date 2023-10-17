@@ -1,7 +1,7 @@
 package im.threads.business.models.enums
 
 enum class ModificationStateEnum(val state: String) {
-    ANY("ANY"),
+    NONE("NONE"),
     EDITED("EDITED"),
     DELETED("DELETED");
 
@@ -11,7 +11,7 @@ enum class ModificationStateEnum(val state: String) {
             return try {
                 values().first() { it.state == value }
             } catch (e: NoSuchElementException) {
-                ANY
+                NONE
             }
         }
     }

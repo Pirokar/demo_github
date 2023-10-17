@@ -9,7 +9,6 @@ class SimpleSystemMessage(
     private val text: String?,
     override val threadId: Long
 ) : ChatItem, SystemMessage {
-    override val modified = null
 
     override fun getType(): String {
         return type ?: ""

@@ -2,7 +2,6 @@ package im.threads.business.models
 
 import android.text.TextUtils
 import androidx.core.util.ObjectsCompat
-import im.threads.business.models.enums.ModificationStateEnum
 import im.threads.business.utils.FileUtils.isImage
 import im.threads.business.utils.FileUtils.isVoiceMessage
 import java.util.UUID
@@ -14,7 +13,6 @@ class UserPhrase constructor(
     override val quote: Quote?,
     override var timeStamp: Long,
     override var fileDescription: FileDescription?,
-    override val modified: ModificationStateEnum,
     var sentState: MessageStatus,
     override val threadId: Long?
 ) : ChatPhrase {
@@ -35,7 +33,6 @@ class UserPhrase constructor(
         mQuote: Quote?,
         phraseTimeStamp: Long,
         fileDescription: FileDescription?,
-        modified: ModificationStateEnum,
         threadId: Long?
     ) : this(
         uuid,
@@ -43,7 +40,6 @@ class UserPhrase constructor(
         mQuote,
         phraseTimeStamp,
         fileDescription,
-        modified,
         MessageStatus.SENDING,
         threadId
     )
@@ -53,7 +49,6 @@ class UserPhrase constructor(
         mQuote: Quote?,
         phraseTimeStamp: Long,
         fileDescription: FileDescription?,
-        modified: ModificationStateEnum,
         threadId: Long?
     ) : this(
         UUID.randomUUID().toString(),
@@ -61,7 +56,6 @@ class UserPhrase constructor(
         mQuote,
         phraseTimeStamp,
         fileDescription,
-        modified,
         MessageStatus.SENDING,
         threadId
     )

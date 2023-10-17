@@ -117,8 +117,7 @@ object HistoryParser {
                         val quote = message.quotes?.let { quoteFromList(it) }
                         quote?.fileDescription?.timeStamp = timeStamp
                         if (message.operator != null ||
-                            message.modified == ModificationStateEnum.DELETED ||
-                            message.modified == ModificationStateEnum.EDITED
+                            message.modified != ModificationStateEnum.NONE
                         ) {
                             out.add(
                                 ConsultPhrase(
@@ -162,7 +161,6 @@ object HistoryParser {
                                     quote,
                                     timeStamp,
                                     fileDescription,
-                                    message.modified,
                                     sentState,
                                     message.threadId
                                 ).apply {

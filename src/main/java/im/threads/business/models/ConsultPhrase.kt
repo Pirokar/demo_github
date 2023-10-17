@@ -10,7 +10,7 @@ import im.threads.business.utils.FileUtils.isVoiceMessage
 class ConsultPhrase constructor(
     override var id: String?, // This this a mfms messageId required for read status updates
     override var fileDescription: FileDescription?,
-    override val modified: ModificationStateEnum,
+    val modified: ModificationStateEnum,
     override val quote: Quote?,
     val consultName: String?,
     override val phraseText: String?,

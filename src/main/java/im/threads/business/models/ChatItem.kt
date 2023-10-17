@@ -6,5 +6,7 @@ interface ChatItem {
     val timeStamp: Long
     fun isTheSameItem(otherItem: ChatItem?): Boolean
     val threadId: Long?
-    val modified: ModificationStateEnum?
+    fun modified(): ModificationStateEnum {
+        return ModificationStateEnum.NONE
+    }
 }

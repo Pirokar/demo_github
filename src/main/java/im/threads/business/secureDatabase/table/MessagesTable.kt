@@ -647,12 +647,6 @@ class MessagesTable(
                 sqlHelper,
                 cursorGetString(c, COLUMN_MESSAGE_CORRELATION_ID)
             ),
-            ModificationStateEnum.fromString(
-                im.threads.business.database.table.Table.cGetString(
-                    c,
-                    COLUMN_MODIFICATION_STATE
-                )
-            ),
             MessageStatus.fromOrdinal(cursorGetInt(c, COLUMN_MESSAGE_SEND_STATE)),
             cursorGetLong(c, COLUMN_THREAD_ID)
         )
@@ -718,7 +712,6 @@ class MessagesTable(
         cv.put(COLUMN_MESSAGE_TYPE, MessageType.USER_PHRASE.ordinal)
         cv.put(COLUMN_MESSAGE_SEND_STATE, phrase.sentState.value)
         cv.put(COLUMN_THREAD_ID, phrase.threadId)
-        cv.put(COLUMN_MODIFICATION_STATE, phrase.modified.state)
         return cv
     }
 

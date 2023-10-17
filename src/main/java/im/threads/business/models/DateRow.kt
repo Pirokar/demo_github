@@ -1,7 +1,6 @@
 package im.threads.business.models
 
 import androidx.core.util.ObjectsCompat
-import im.threads.business.models.enums.ModificationStateEnum
 
 class DateRow(override val timeStamp: Long) : ChatItem, MediaAndFileItem {
     override fun toString(): String {
@@ -14,7 +13,6 @@ class DateRow(override val timeStamp: Long) : ChatItem, MediaAndFileItem {
         return otherItem is DateRow
     }
 
-    override val modified = ModificationStateEnum.ANY
     override val threadId: Long?
         get() = null
 

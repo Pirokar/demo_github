@@ -4,7 +4,6 @@ import androidx.core.util.ObjectsCompat
 
 class Survey : ChatItem, Hidable {
     var uuid: String?
-    override val modified = null
     var sendingId: Long
         private set
     var questions: ArrayList<QuestionDTO>? = null

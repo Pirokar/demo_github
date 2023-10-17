@@ -185,7 +185,6 @@ class MessagesTable(
             quotesTable.getQuote(sqlHelper, cGetString(c, COLUMN_MESSAGE_UUID)),
             cGetLong(c, COLUMN_TIMESTAMP),
             fileDescriptionTable.getFileDescription(sqlHelper, cGetString(c, COLUMN_MESSAGE_UUID)),
-            ModificationStateEnum.fromString(cGetString(c, COLUMN_MODIFICATION_STATE)),
             fromOrdinal(cGetInt(c, COLUMN_MESSAGE_SEND_STATE)),
             cGetLong(c, COLUMN_THREAD_ID)
         )

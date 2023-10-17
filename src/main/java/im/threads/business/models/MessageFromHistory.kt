@@ -8,7 +8,7 @@ class MessageFromHistory : ChatItem {
     var uuid: String? = null
     var clientId: String? = null
     override var threadId: Long? = null
-    override val modified: ModificationStateEnum = ModificationStateEnum.ANY
+    val modified: ModificationStateEnum = ModificationStateEnum.NONE
     var operator: Operator? = null
     var client: Client? = null
     var receivedDate: String? = null

@@ -91,6 +91,8 @@ class MessageParser {
                 }
 
                 ChatItemType.MESSAGE,
+                ChatItemType.MESSAGE_EDITED,
+                ChatItemType.MESSAGE_DELETED,
                 ChatItemType.ON_HOLD -> getPhrase(
                     sentAt,
                     shortMessage,
@@ -225,8 +227,7 @@ class MessageParser {
             quote = getQuote(quotes)
         }
         return if (operator != null ||
-            ModificationStateEnum.fromString(modified) == ModificationStateEnum.EDITED ||
-            ModificationStateEnum.fromString(modified) == ModificationStateEnum.DELETED
+            ModificationStateEnum.fromString(modified) != ModificationStateEnum.NONE
         ) {
             val operatorId = operator?.id.toString()
             val name = operator?.aliasOrName
@@ -269,7 +270,6 @@ class MessageParser {
                 quote,
                 sentAt,
                 fileDescription,
-                ModificationStateEnum.fromString(modified),
                 threadId
             )
             userPhrase.sentState = MessageStatus.SENT

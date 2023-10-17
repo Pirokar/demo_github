@@ -10,7 +10,6 @@ import java.util.TimeZone
  */
 class ScheduleInfo : ChatItem {
     var id: Long? = null
-    override val modified = null
     var date: Long? = null
     var notification: String? = null
     val sendDuringInactive = false

@@ -1,12 +1,10 @@
 package im.threads.business.models
 
 import androidx.core.util.ObjectsCompat
-import im.threads.business.models.enums.ModificationStateEnum
 
 open class GetStatusesAction(val messageId: List<String>) : ChatItem {
 
     override var timeStamp: Long = 0
-    override val modified = ModificationStateEnum.ANY
     override var threadId: Long? = null
 
     override fun isTheSameItem(otherItem: ChatItem?): Boolean {

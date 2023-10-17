@@ -28,6 +28,10 @@ class FileDescription(var from: String?, var fileUri: Uri?, var size: Long, var 
     private var smallFileDescription: FileDescription? = null
 
     fun getPreviewFileDescription(): FileDescription? {
+        if (isFromAssets()) {
+            return this
+        }
+
         if (smallFileDescription == null && FileUtils.isImage(this)) {
             smallFileDescription = FileDescription(from, null, size, timeStamp)
             smallFileDescription?.downloadPath = "$downloadPath?size=small"
@@ -36,6 +40,15 @@ class FileDescription(var from: String?, var fileUri: Uri?, var size: Long, var 
             smallFileDescription?.state = state
         }
         return smallFileDescription
+    }
+
+    internal fun isFromAssets(): Boolean {
+        downloadPath?.let {
+            if (it.startsWith("file:") && it.contains("android_asset")) {
+                return true
+            }
+        }
+        return false
     }
 
     override fun equals(other: Any?): Boolean {

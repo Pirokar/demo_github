@@ -8,7 +8,6 @@ class ConsultTyping(consultId: String?, override var timeStamp: Long, avatarPath
         return otherItem is ConsultTyping
     }
 
-    override val modified = null
     override val threadId: Long?
         get() = null
 
