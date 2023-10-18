@@ -21,7 +21,7 @@ import java.lang.ref.WeakReference
 abstract class BaseAppFragment<T : ViewBinding>(
     private val bindingInflater: (layoutInflater: LayoutInflater) -> T
 ) : Fragment() {
-    protected var fragment: ChatFragment? = null
+    protected var fragment: WeakReference<ChatFragment>? = null
     private var binding: WeakReference<T>? = null
 
     override fun onCreateView(
@@ -39,21 +39,24 @@ abstract class BaseAppFragment<T : ViewBinding>(
     }
 
     protected fun subscribeToGlobalBackClick() {
-        activity?.onBackPressedDispatcher?.addCallback(object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                navigateUp()
+        activity?.onBackPressedDispatcher?.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    navigateUp()
+                }
             }
-        })
+        )
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
         binding = null
+        super.onDestroyView()
     }
 
     protected open fun navigateUp() {
         val isDemoListFragment = this is DemoSamplesListFragment
-        val chatBackPressed = fragment?.onBackPressed() == true
+        val chatBackPressed = fragment?.get()?.onBackPressed() == true
         if ((chatBackPressed || isDemoListFragment) && isAdded) {
             if (this@BaseAppFragment is ChatAppFragment || this@BaseAppFragment is DemoSamplesListFragment) {
                 ThreadsLib.getInstance().logoutClient()

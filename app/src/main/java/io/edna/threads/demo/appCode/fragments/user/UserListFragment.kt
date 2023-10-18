@@ -28,7 +28,7 @@ class UserListFragment :
 
     private val uiThemeProvider: UiThemeProvider by inject()
     private val viewModel: UserListViewModel by viewModel()
-    private var adapter: UserListAdapter? = null
+    private var adapter: WeakReference<UserListAdapter>? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -53,7 +53,7 @@ class UserListFragment :
     }
 
     override fun onClick(position: Int) {
-        val item = adapter?.getItem(position)
+        val item = adapter?.get()?.getItem(position)
         val args = Bundle()
         args.putParcelable(SELECTED_USER_KEY, Parcels.wrap(item))
         setFragmentResult(SELECTED_USER_KEY, args)
@@ -61,7 +61,7 @@ class UserListFragment :
     }
 
     override fun onEditItem(position: Int) {
-        val item = adapter?.getItem(position)
+        val item = adapter?.get()?.getItem(position)
         val navigationController = activity?.findNavController(R.id.nav_host_fragment_content_main)
         val args = Bundle()
         args.putParcelable(USER_KEY, Parcels.wrap(item))
@@ -69,7 +69,7 @@ class UserListFragment :
     }
 
     override fun onRemoveItem(position: Int) {
-        adapter?.getItem(position)?.let { viewModel.removeUser(it) }
+        adapter?.get()?.getItem(position)?.let { viewModel.removeUser(it) }
     }
 
     private fun initView() = getBinding()?.apply {
@@ -111,14 +111,15 @@ class UserListFragment :
     }
 
     private fun createAdapter() = getBinding()?.apply {
-        adapter = UserListAdapter(WeakReference(this@UserListFragment))
-        recyclerView.adapter = adapter
+        val newAdapter = UserListAdapter(WeakReference(this@UserListFragment))
+        adapter = WeakReference(newAdapter)
+        recyclerView.adapter = newAdapter
     }
 
     private fun subscribeForData() = getBinding()?.apply {
         viewModel.userListLiveData.observe(viewLifecycleOwner) {
-            adapter?.addItems(it)
-            if (adapter?.itemCount == 0) {
+            adapter?.get()?.addItems(it)
+            if (adapter?.get()?.itemCount == 0) {
                 emptyView.isVisible = true
                 recyclerView.isVisible = false
             } else {
