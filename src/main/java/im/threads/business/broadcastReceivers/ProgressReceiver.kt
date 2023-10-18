@@ -13,7 +13,7 @@ import java.lang.ref.SoftReference
  * Он скачивается через сервис.
  * Для приема сообщений из сервиса используется данный BroadcastReceiver
  */
-class ProgressReceiver(callback: Callback) : BroadcastReceiver() {
+class ProgressReceiver(callback: Callback?) : BroadcastReceiver() {
     private val callback = SoftReference(callback)
 
     override fun onReceive(context: Context, intent: Intent) {

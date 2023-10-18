@@ -11,6 +11,7 @@ import android.view.animation.RotateAnimation
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import im.threads.BuildConfig
 import im.threads.R
 import im.threads.business.formatters.RussianFormatSymbols
 import im.threads.business.imageLoading.ImageLoader
@@ -173,12 +174,18 @@ class ImageFragment : BaseFragment() {
     }
 
     private fun initAnimation() {
-        binding.loader.setImageResource(R.drawable.ecc_im_loading_themed)
-        ColorsHelper.setTint(requireActivity(), binding.loader, style.incomingMessageLoaderColor)
-        rotateAnim.duration = 3000
-        rotateAnim.repeatCount = Animation.INFINITE
-        binding.loader.animation = rotateAnim
-        rotateAnim.start()
+        if (!BuildConfig.IS_ANIMATIONS_DISABLED.get()) {
+            binding.loader.setImageResource(R.drawable.ecc_im_loading_themed)
+            ColorsHelper.setTint(
+                requireActivity(),
+                binding.loader,
+                style.incomingMessageLoaderColor
+            )
+            rotateAnim.duration = 3000
+            rotateAnim.repeatCount = Animation.INFINITE
+            binding.loader.animation = rotateAnim
+            rotateAnim.start()
+        }
     }
 
     private fun stopAnimation() {

@@ -50,20 +50,17 @@ android {
     buildTypes {
         release {
             buildConfigField "String", "VERSION_NAME", "\"${version}\""
+            buildConfigField "java.util.concurrent.atomic.AtomicBoolean", "IS_ANIMATIONS_DISABLED", "new java.util.concurrent.atomic.AtomicBoolean(false)"
             consumerProguardFiles 'proguard-rules.pro'
         }
         debug {
             buildConfigField "String", "VERSION_NAME", "\"${version}\""
+            buildConfigField "java.util.concurrent.atomic.AtomicBoolean", "IS_ANIMATIONS_DISABLED", "new java.util.concurrent.atomic.AtomicBoolean(false)"
             consumerProguardFiles 'proguard-rules.pro'
         }
     }
 
     packagingOptions {
-        pickFirst 'lib/arm64-v8a/libsqlcipher.so'
-        pickFirst 'lib/armeabi/libsqlcipher.so'
-        pickFirst 'lib/armeabi-v7a/libsqlcipher.so'
-        pickFirst 'lib/x86/libsqlcipher.so'
-        pickFirst 'lib/x86_64/libsqlcipher.so'
         jniLibs {
             useLegacyPackaging = true
         }
@@ -73,6 +70,7 @@ android {
         unitTests {
             includeAndroidResources = true
         }
+        animationsDisabled = true
     }
 
     buildFeatures {
@@ -169,7 +167,6 @@ dependencies {
 
     implementation "androidx.work:work-runtime-ktx:$work_version"
 
-    implementation "net.zetetic:sqlcipher-android:$sqlcipher_version"
     implementation "androidx.sqlite:sqlite:$sqlite_version"
 
     //For encrypted preferences
@@ -189,13 +186,6 @@ dependencies {
     testImplementation "org.mockito:mockito-core:$rootProject.mockitoVersion"
     testImplementation group: 'org.mockito', name: 'mockito-inline', version: rootProject.mockitoInlineVersion
     testImplementation "com.github.tomakehurst:wiremock-jre8:$webserver_version"
-    androidTestImplementation "com.squareup.okhttp3:mockwebserver:$okhttp_webserver_version"
-    androidTestImplementation "androidx.test.ext:junit-ktx:$test_ext"
-    androidTestImplementation "com.kaspersky.android-components:kaspresso:$kaspresso_version"
-    androidTestImplementation "androidx.test:runner:$rootProject.androidXTestVersion"
-    androidTestImplementation "androidx.test:rules:$rootProject.androidXTestVersion"
-    androidTestImplementation "org.mockito:mockito-core:$rootProject.mockitoVersion"
-    androidTestImplementation "org.mockito:mockito-android:$rootProject.mockitoVersion"
 }
 
 allOpen {

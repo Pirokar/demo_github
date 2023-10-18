@@ -2,8 +2,8 @@ package im.threads.business.secureDatabase.table
 
 import android.annotation.SuppressLint
 import android.database.Cursor
-import net.zetetic.database.sqlcipher.SQLiteDatabase
-import net.zetetic.database.sqlcipher.SQLiteOpenHelper
+import android.database.sqlite.SQLiteDatabase
+import android.database.sqlite.SQLiteOpenHelper
 
 abstract class Table {
 

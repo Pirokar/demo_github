@@ -2,6 +2,8 @@ package im.threads.business.secureDatabase
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.database.sqlite.SQLiteDatabase
+import android.database.sqlite.SQLiteOpenHelper
 import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.ChatItem
 import im.threads.business.models.ConsultInfo
@@ -11,41 +13,22 @@ import im.threads.business.models.MessageStatus
 import im.threads.business.models.SpeechMessageUpdate
 import im.threads.business.models.Survey
 import im.threads.business.models.UserPhrase
-import im.threads.business.preferences.Preferences
-import im.threads.business.preferences.PreferencesCoreKeys
 import im.threads.business.secureDatabase.table.FileDescriptionsTable
 import im.threads.business.secureDatabase.table.MessagesTable
 import im.threads.business.secureDatabase.table.QuestionsTable
 import im.threads.business.secureDatabase.table.QuickRepliesTable
 import im.threads.business.secureDatabase.table.QuotesTable
-import net.zetetic.database.sqlcipher.SQLiteDatabase
-import net.zetetic.database.sqlcipher.SQLiteOpenHelper
-import java.util.UUID
 
-class ThreadsDbHelper private constructor(val context: Context, password: String) :
-    SQLiteOpenHelper(
-        context,
-        DATABASE_NAME,
-        password,
-        null,
-        VERSION,
-        0,
-        null,
-        null,
-        true
-    ),
-    DBHelper {
+class ThreadsDbHelper private constructor(val context: Context) :
+    SQLiteOpenHelper(context, null, null, VERSION), DBHelper {
 
     private var quotesTable: QuotesTable
     private var quickRepliesTable: QuickRepliesTable
-    private var fileDescriptionTable: FileDescriptionsTable
-    private var questionsTable: QuestionsTable
+    private var fileDescriptionTable: FileDescriptionsTable = FileDescriptionsTable()
+    private var questionsTable: QuestionsTable = QuestionsTable()
     private var messagesTable: MessagesTable
 
     init {
-        loadLibrary()
-        fileDescriptionTable = FileDescriptionsTable()
-        questionsTable = QuestionsTable()
         quotesTable = QuotesTable(fileDescriptionTable)
         quickRepliesTable = QuickRepliesTable()
         messagesTable = MessagesTable(
@@ -177,63 +160,32 @@ class ThreadsDbHelper private constructor(val context: Context, password: String
     }
 
     companion object {
-        private const val DATABASE_NAME = "messages_secure.db"
-        private const val VERSION = 5
-        private var isLibraryLoaded = false
+        private const val VERSION = 10
 
         @SuppressLint("StaticFieldLeak")
         private var dbInstance: ThreadsDbHelper? = null
 
         @Synchronized
         fun getInstance(context: Context): ThreadsDbHelper {
-            val password = getDbPassword(context)
             if (dbInstance == null) {
-                dbInstance = ThreadsDbHelper(context, password)
+                dbInstance = ThreadsDbHelper(context)
                 if (!isDatabaseAlive(context)) {
-                    dbInstance = ThreadsDbHelper(context, password)
+                    dbInstance = ThreadsDbHelper(context)
                 }
             }
             return dbInstance!!
         }
 
-        @Synchronized
-        internal fun recreateInstance(context: Context): ThreadsDbHelper {
-            return if (dbInstance == null) {
-                getInstance(context)
-            } else {
-                dbInstance?.close()
-                dbInstance = null
-                getInstance(context)
-            }
-        }
-
-        private fun getDbPassword(context: Context): String {
-            val preferences = Preferences(context)
-            var securedPassword = preferences.get<String>(PreferencesCoreKeys.DATABASE_PASSWORD)
-            if (securedPassword.isNullOrEmpty()) {
-                securedPassword = UUID.randomUUID().toString()
-                preferences.save(PreferencesCoreKeys.DATABASE_PASSWORD, securedPassword)
-                context.deleteDatabase(DATABASE_NAME)
-            }
-
-            return securedPassword
-        }
-
         private fun isDatabaseAlive(context: Context): Boolean {
             return try {
-                val cursor = dbInstance?.readableDatabase?.rawQuery("SELECT * FROM ${QuotesTable.TABLE_QUOTE}")
-                cursor != null
+                val cursor = dbInstance?.readableDatabase?.rawQuery("SELECT * FROM ${QuotesTable.TABLE_QUOTE}", null)
+                val result = cursor != null
+                cursor?.close()
+                result
             } catch (exc: Exception) {
                 LoggerEdna.error("Cannot read database. Database will be deleted", exc)
-                context.deleteDatabase(DATABASE_NAME)
+                context.deleteDatabase(null)
                 false
-            }
-        }
-
-        private fun loadLibrary() {
-            if (!isLibraryLoaded) {
-                System.loadLibrary("sqlcipher")
-                isLibraryLoaded = true
             }
         }
     }

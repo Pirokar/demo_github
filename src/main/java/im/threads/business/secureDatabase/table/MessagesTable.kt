@@ -2,6 +2,8 @@ package im.threads.business.secureDatabase.table
 
 import android.content.ContentValues
 import android.database.Cursor
+import android.database.sqlite.SQLiteDatabase
+import android.database.sqlite.SQLiteOpenHelper
 import android.net.Uri
 import im.threads.business.config.BaseConfig
 import im.threads.business.formatters.SpeechStatus.Companion.fromString
@@ -22,8 +24,6 @@ import im.threads.business.models.enums.ModificationStateEnum
 import im.threads.business.utils.FileDownloader.Companion.getDownloadDir
 import im.threads.business.utils.FileProvider
 import im.threads.business.utils.FileUtils.generateFileName
-import net.zetetic.database.sqlcipher.SQLiteDatabase
-import net.zetetic.database.sqlcipher.SQLiteOpenHelper
 import java.io.File
 import java.util.Locale
 
