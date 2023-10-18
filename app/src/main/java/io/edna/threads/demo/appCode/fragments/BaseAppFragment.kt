@@ -16,21 +16,21 @@ import im.threads.ui.fragments.ChatFragment
 import io.edna.threads.demo.R
 import io.edna.threads.demo.appCode.fragments.demoSamplesList.DemoSamplesListFragment
 import io.edna.threads.demo.integrationCode.fragments.chatFragment.ChatAppFragment
+import java.lang.ref.WeakReference
 
 abstract class BaseAppFragment<T : ViewBinding>(
     private val bindingInflater: (layoutInflater: LayoutInflater) -> T
 ) : Fragment() {
     protected var fragment: ChatFragment? = null
-    private var _binding: T? = null
-    protected val binding by lazy { _binding!! }
+    private var binding: WeakReference<T>? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = bindingInflater.invoke(inflater)
-        return binding.root
+        binding = WeakReference(bindingInflater.invoke(inflater))
+        return getBinding()?.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -48,7 +48,7 @@ abstract class BaseAppFragment<T : ViewBinding>(
 
     override fun onDestroy() {
         super.onDestroy()
-        _binding = null
+        binding = null
     }
 
     protected open fun navigateUp() {
@@ -62,7 +62,7 @@ abstract class BaseAppFragment<T : ViewBinding>(
         }
     }
 
-    protected fun setToolbarColor() = with(binding) {
+    protected fun setToolbarColor() = getBinding()?.apply {
         if (ThreadsLib.isInitialized()) {
             context?.let { context ->
                 val toolbar = try {
@@ -79,4 +79,6 @@ abstract class BaseAppFragment<T : ViewBinding>(
             }
         }
     }
+
+    protected fun getBinding() = binding?.get()
 }

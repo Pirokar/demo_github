@@ -30,12 +30,12 @@ class DemoSamplesListFragment : BaseAppFragment<FragmentSamplesListBinding>(Frag
         viewModel.onItemClick(item)
     }
 
-    private fun createAdapter() = with(binding) {
+    private fun createAdapter() = getBinding()?.apply {
         adapter = DemoSamplesAdapter(this@DemoSamplesListFragment)
         recyclerView.adapter = adapter
     }
 
-    private fun setNavigationIcon() = with(binding) {
+    private fun setNavigationIcon() = getBinding()?.apply {
         toolbar.navigationIcon?.setTint(ContextCompat.getColor(requireContext(), R.color.white_color_ec))
         toolbar.setNavigationOnClickListener {
             ThreadsLib.getInstance().logoutClient()

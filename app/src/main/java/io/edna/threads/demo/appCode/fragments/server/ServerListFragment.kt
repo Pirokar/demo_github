@@ -79,10 +79,10 @@ class ServerListFragment :
             ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
         )
         val touchHelper = ItemTouchHelper(simpleCallback)
-        touchHelper.attachToRecyclerView(binding.recyclerView)
+        touchHelper.attachToRecyclerView(getBinding()?.recyclerView)
     }
 
-    private fun setOnClickListeners() = with(binding) {
+    private fun setOnClickListeners() = getBinding()?.apply {
         backButton.setOnClickListener { viewModel.click(backButton) }
         addServer.setOnClickListener { viewModel.click(addServer) }
     }
@@ -97,19 +97,19 @@ class ServerListFragment :
         }
     }
 
-    private fun initView() {
-        binding.addServer.background = null
-        binding.addServer.setImageResource(R.drawable.ic_plus)
+    private fun initView() = getBinding()?.apply {
+        addServer.background = null
+        addServer.setImageResource(R.drawable.ic_plus)
         if (uiThemeProvider.isDarkThemeOn()) {
-            ColorsHelper.setTint(activity, binding.addServer, R.color.black_color)
-            binding.addServer.setBackgroundResource(R.drawable.buttons_bg_selector_dark)
+            ColorsHelper.setTint(activity, addServer, R.color.black_color)
+            addServer.setBackgroundResource(R.drawable.buttons_bg_selector_dark)
         } else {
-            ColorsHelper.setTint(activity, binding.addServer, R.color.white_color_fa)
-            binding.addServer.setBackgroundResource(R.drawable.buttons_bg_selector)
+            ColorsHelper.setTint(activity, addServer, R.color.white_color_fa)
+            addServer.setBackgroundResource(R.drawable.buttons_bg_selector)
         }
     }
 
-    private fun createAdapter() = with(binding) {
+    private fun createAdapter() = getBinding()?.apply {
         adapter = ServerListAdapter(this@ServerListFragment)
         recyclerView.adapter = adapter
     }
