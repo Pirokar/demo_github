@@ -113,6 +113,8 @@ dependencies {
     releaseImplementation "com.edna.android:push-lite-release:$pushVersion"
     releaseImplementation "com.edna.android:push-lite-huawei-release:$pushVersion"
 
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.12'
+
     testImplementation "junit:junit:$rootProject.testJunitVersion"
     androidTestUtil 'androidx.test:orchestrator:1.4.2'
     androidTestImplementation 'androidx.test:runner:1.5.2'
