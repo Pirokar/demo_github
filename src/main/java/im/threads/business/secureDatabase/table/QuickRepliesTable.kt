@@ -1,10 +1,10 @@
 package im.threads.business.secureDatabase.table
 
 import android.content.ContentValues
+import android.database.sqlite.SQLiteDatabase
+import android.database.sqlite.SQLiteOpenHelper
 import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.QuickReply
-import net.zetetic.database.sqlcipher.SQLiteDatabase
-import net.zetetic.database.sqlcipher.SQLiteOpenHelper
 
 class QuickRepliesTable : Table() {
     override fun createTable(db: SQLiteDatabase) {
