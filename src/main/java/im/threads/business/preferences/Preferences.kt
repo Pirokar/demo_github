@@ -126,10 +126,18 @@ open class Preferences(private val context: Context) {
     }
 
     internal fun loadPreferencesInRam() {
-        sharedPreferences.all.keys.forEach {
-            savePreferenceToRam(it, getFromPreferencesFile(it) ?: "")
+        try {
+            sharedPreferences.all.keys.forEach {
+                try {
+                    savePreferenceToRam(it, getFromPreferencesFile(it) ?: "")
+                } catch (exc: Exception) {
+                    LoggerEdna.error("Error when saving $it to RAM preferences")
+                }
+            }
+            isRamPreferencesLoaded = true
+        } catch (exc: Exception) {
+            LoggerEdna.error("Error when saving all shared preferences keys to RAM preferences")
         }
-        isRamPreferencesLoaded = true
     }
 
     private fun onGetEncryptedPreferencesException(context: Context, exc: Exception): SharedPreferences {
