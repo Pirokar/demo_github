@@ -20,7 +20,6 @@ object PreferencesCoreKeys {
     val UNREAD_PUSH_COUNT = "UNREAD_PUSH_COUNT"
     val STORE_NAME = "im.threads.internal.utils.PrefStore"
     val ENCRYPTED_STORE_NAME = "im.threads.internal.utils.EncryptedPrefStore"
-    val DATABASE_PASSWORD = "DATABASE_PASSWORD"
     val USER_SELECTED_UI_THEME_KEY = "USER_SELECTED_UI_THEME_KEY"
     val INIT_SENT_LAST_USER_ID = "INIT_SENT_LAST_USER_ID"
     val CHAT_STATE = "CHAT_STATE"
@@ -39,7 +38,6 @@ object PreferencesCoreKeys {
         UNREAD_PUSH_COUNT,
         STORE_NAME,
         ENCRYPTED_STORE_NAME,
-        DATABASE_PASSWORD,
         USER_SELECTED_UI_THEME_KEY,
         INIT_SENT_LAST_USER_ID,
         CHAT_STATE

@@ -1,9 +1,9 @@
 package im.threads.business.secureDatabase.table
 
 import android.content.ContentValues
+import android.database.sqlite.SQLiteDatabase
+import android.database.sqlite.SQLiteOpenHelper
 import im.threads.business.models.Quote
-import net.zetetic.database.sqlcipher.SQLiteDatabase
-import net.zetetic.database.sqlcipher.SQLiteOpenHelper
 import java.util.Locale
 
 class QuotesTable(private val fileDescriptionsTable: FileDescriptionsTable) : Table() {
