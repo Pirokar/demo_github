@@ -2,6 +2,7 @@ package im.threads.business.models
 
 import androidx.core.util.ObjectsCompat
 import im.threads.business.formatters.SpeechStatus
+import im.threads.business.models.enums.ModificationStateEnum
 import im.threads.business.ogParser.OGData
 import im.threads.business.utils.FileUtils.isImage
 import im.threads.business.utils.FileUtils.isVoiceMessage
@@ -9,6 +10,7 @@ import im.threads.business.utils.FileUtils.isVoiceMessage
 class ConsultPhrase constructor(
     override var id: String?, // This this a mfms messageId required for read status updates
     override var fileDescription: FileDescription?,
+    val modified: ModificationStateEnum,
     override val quote: Quote?,
     val consultName: String?,
     override val phraseText: String?,
@@ -101,8 +103,8 @@ class ConsultPhrase constructor(
     }
 
     fun copy() = ConsultPhrase(
-        id, fileDescription, quote, consultName, phraseText, formattedPhrase, date, consultId, avatarPath,
-        read, status, sex, threadId, quickReplies, isBlockInput, speechStatus, role
+        id, fileDescription, modified, quote, consultName, phraseText, formattedPhrase, date, consultId,
+        avatarPath, read, status, sex, threadId, quickReplies, isBlockInput, speechStatus, role
     ).also {
         it.ogData = ogData
         it.ogUrl = ogUrl

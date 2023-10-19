@@ -154,6 +154,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/ecc_margin_half"
+            android:drawablePadding="@dimen/ecc_margin_half"
             android:textColor="@color/ecc_operator_message_timestamp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

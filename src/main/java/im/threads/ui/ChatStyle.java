@@ -622,6 +622,8 @@ public final class ChatStyle implements Serializable {
     public int toastBackgroundColor = 0;
     // Конфигурации markdown в сообщениях
     @DrawableRes
+    public int messageEditedIconResId = R.drawable.ecc_message_image_edited;
+    @DrawableRes
     public int messageSendingIconResId = R.drawable.ecc_message_image_sending;
     @DrawableRes
     public int messageSentIconResId = R.drawable.ecc_message_image_sending;
@@ -631,6 +633,8 @@ public final class ChatStyle implements Serializable {
     public int messageReadIconResId = R.drawable.ecc_image_message_read;
     @DrawableRes
     public int messageFailedIconResId = R.drawable.ecc_message_image_failed;
+    @ColorRes
+    public int messageEditedIconColorResId = R.color.ecc_user_message_timestamp;
     @ColorRes
     public int messageSendingIconColorResId = R.color.ecc_white;
     @ColorRes
@@ -2105,6 +2109,21 @@ public final class ChatStyle implements Serializable {
      */
     public boolean isToastStylable() {
         return  toastTextSize != 0 || toastTextColor != 0 || toastBackgroundColor != 0;
+    }
+
+    /**
+     * Устанавливает иконку и цвет для исходящего сообщения со статусом "edited". Можно передать null для значения,
+     * таким образом изменив одно из значений
+     * @param messageEditedIconResId - ресурс id иконки. По умолчанию - R.drawable.ecc_message_image_edited
+     * @param messageEditedIconColorResId - ресурс id цвета для иконки. По умолчанию - R.color.ecc_user_message_timestamp
+     */
+    public ChatStyle setMessageEditedResources(
+            @DrawableRes Integer messageEditedIconResId,
+            @ColorRes Integer messageEditedIconColorResId
+    ) {
+        if (messageEditedIconResId != null) this.messageEditedIconResId = messageEditedIconResId;
+        if (messageEditedIconColorResId != null) this.messageEditedIconColorResId = messageEditedIconColorResId;
+        return this;
     }
 
     /**

@@ -64,6 +64,7 @@ import im.threads.business.models.Survey;
 import im.threads.business.models.SystemMessage;
 import im.threads.business.models.UnreadMessages;
 import im.threads.business.models.UserPhrase;
+import im.threads.business.models.enums.ModificationStateEnum;
 import im.threads.business.ogParser.OpenGraphParser;
 import im.threads.business.ogParser.OpenGraphParserJsoupImpl;
 import im.threads.business.utils.ChatItemListFinder;
@@ -352,13 +353,13 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             return TYPE_REQ_RESOLVE_THREAD;
         } else if (o instanceof ConsultPhrase) {
             final ConsultPhrase cp = (ConsultPhrase) o;
-            if (cp.isVoiceMessage()) {
+            if (cp.isVoiceMessage() && cp.getModified() != ModificationStateEnum.DELETED) {
                 return TYPE_VOICE_MESSAGE_FROM_CONSULT;
             }
-            if (cp.isOnlyImage()) {
+            if (cp.isOnlyImage() && cp.getModified() != ModificationStateEnum.DELETED) {
                 return TYPE_IMAGE_FROM_CONSULT;
             }
-            if (cp.isOnlyDoc()) {
+            if (cp.isOnlyDoc() && cp.getModified() != ModificationStateEnum.DELETED) {
                 return TYPE_FILE_FROM_CONSULT;
             }
             return TYPE_CONSULT_PHRASE;

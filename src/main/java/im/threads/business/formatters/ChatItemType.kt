@@ -17,6 +17,8 @@ enum class ChatItemType {
     CLIENT_BLOCKED,
     SCENARIO,
     CHAT_PUSH,
+    MESSAGE_EDITED,
+    MESSAGE_DELETED,
 
     // system
     THREAD_ENQUEUED,

@@ -14,6 +14,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.core.view.isVisible
@@ -24,6 +25,7 @@ import im.threads.business.models.ChatItem
 import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.FileDescription
 import im.threads.business.models.enums.AttachmentStateEnum
+import im.threads.business.models.enums.ModificationStateEnum
 import im.threads.business.ogParser.OGDataContent
 import im.threads.business.ogParser.OpenGraphParser
 import im.threads.business.utils.FileUtils.isImage
@@ -37,13 +39,11 @@ import im.threads.ui.widget.textView.BubbleMessageTextView
 import im.threads.ui.widget.textView.BubbleTimeTextView
 import io.reactivex.subjects.PublishSubject
 import java.lang.ref.WeakReference
-import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.Locale
 
 /** layout/item_consultant_text_with_file.xml */
 class ConsultPhraseHolder(
-    parent: ViewGroup,
+    private val parent: ViewGroup,
     private val maskedTransformation: ImageModifications.MaskedModification?,
     highlightingStream: PublishSubject<ChatItem>,
     openGraphParser: OpenGraphParser
@@ -53,7 +53,6 @@ class ConsultPhraseHolder(
     highlightingStream,
     openGraphParser
 ) {
-    private val timeStampSdf = SimpleDateFormat("HH:mm", Locale.getDefault())
     private val fileRow: View = itemView.findViewById(R.id.rightTextRow)
     private val quoteLayout: LinearLayout = itemView.findViewById(R.id.quoteLayout)
     private val quoteTextHeader: TextView = itemView.findViewById(R.id.quoteTo)
@@ -151,63 +150,68 @@ class ConsultPhraseHolder(
             )
         )
         viewUtils.setClickListener(itemView as ViewGroup, onRowLongClickListener)
-        val timeText = timeStampSdf.format(Date(consultPhrase.timeStamp))
-        timeStampTextView.text = timeText
-        ogTimestamp.text = timeText
+        showConsultTimeStamp(consultPhrase, listOf(ogTimestamp, timeStampTextView))
         imageLayout.isVisible = false
         fileRow.isVisible = false
-
-        phraseTextView.text = ""
-        consultPhrase.phraseText?.let {
-            showPhrase(consultPhrase, it.trim())
-        } ?: run {
-            phraseTextView.isVisible = false
-        }
-
-        consultPhrase.quote?.let {
-            showQuote(
-                it,
-                onQuoteClickListener,
-                quoteLayout,
-                quoteTextHeader,
-                quoteTextDescription,
-                quoteTextTimeStamp,
-                quoteFileImage,
-                quoteProgressButton
-            )
-        } ?: run {
-            quoteLayout.isVisible = false
-        }
-
+        quoteLayout.isVisible = false
+        imageRoot.isVisible = false
         setLayoutMargins(true, bubbleLayout)
-        consultPhrase.fileDescription?.let {
-            when (it.state) {
-                AttachmentStateEnum.PENDING -> {
-                    showLoaderLayout(it)
-                }
-                AttachmentStateEnum.ERROR -> {
-                    showErrorLayout(it)
-                }
-                else -> {
-                    showCommonLayout(it, fileClickListener, imageClickListener)
-                }
-            }
-        } ?: run {
-            consultPhrase.formattedPhrase?.let {
-                UrlUtils.extractImageMarkdownLink(it)?.let { imageUrl ->
-                    loadImage(imageUrl, imageClickListener, true)
-                }
-            }
-        }
         showAvatar(consultAvatar, consultPhrase, onAvatarClickListener)
         changeHighlighting(highlighted)
-        if (consultPhrase.fileDescription != null || consultPhrase.quote != null) {
-            phraseFrame.layoutParams.width = FrameLayout.LayoutParams.MATCH_PARENT
+
+        if (consultPhrase.modified == ModificationStateEnum.DELETED) {
+            phraseTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, itemView.getContext().resources.getDimension(style.systemMessageTextSize))
+            phraseTextView.setTextColor(ContextCompat.getColor(itemView.getContext(), style.systemMessageTextColorResId))
+            phraseTextView.bindTimestampView(timeStampTextView)
+            phraseTextView.visible()
+            phraseTextView.text = this.parent.context.getString(R.string.ecc_message_deleted)
         } else {
-            phraseFrame.layoutParams.width = FrameLayout.LayoutParams.WRAP_CONTENT
-        }
-        if (consultPhrase.fileDescription == null) {
-            fileRow.isVisible = false
+            phraseTextView.text = ""
+            consultPhrase.phraseText?.let {
+                showPhrase(consultPhrase, it.trim())
+            } ?: run {
+                phraseTextView.isVisible = false
+            }
+
+            consultPhrase.quote?.let {
+                showQuote(
+                    it,
+                    onQuoteClickListener,
+                    quoteLayout,
+                    quoteTextHeader,
+                    quoteTextDescription,
+                    quoteTextTimeStamp,
+                    quoteFileImage,
+                    quoteProgressButton
+                )
+            } ?: run {
+                quoteLayout.isVisible = false
+            }
+
+            consultPhrase.fileDescription?.let {
+                when (it.state) {
+                    AttachmentStateEnum.PENDING -> {
+                        showLoaderLayout(it)
+                    }
+                    AttachmentStateEnum.ERROR -> {
+                        showErrorLayout(it)
+                    }
+                    else -> {
+                        showCommonLayout(it, fileClickListener, imageClickListener)
+                    }
+                }
+            } ?: run {
+                consultPhrase.formattedPhrase?.let {
+                    UrlUtils.extractImageMarkdownLink(it)?.let { imageUrl ->
+                        loadImage(imageUrl, imageClickListener, true)
+                    }
+                }
+            }
+            if (consultPhrase.fileDescription != null || consultPhrase.quote != null) {
+                phraseFrame.layoutParams.width = FrameLayout.LayoutParams.MATCH_PARENT
+            } else {
+                phraseFrame.layoutParams.width = FrameLayout.LayoutParams.WRAP_CONTENT
+            }
         }
     }
 

@@ -5,7 +5,6 @@ import androidx.core.util.ObjectsCompat
 open class GetStatusesAction(val messageId: List<String>) : ChatItem {
 
     override var timeStamp: Long = 0
-
     override var threadId: Long? = null
 
     override fun isTheSameItem(otherItem: ChatItem?): Boolean {

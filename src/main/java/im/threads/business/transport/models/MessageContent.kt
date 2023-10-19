@@ -17,5 +17,6 @@ data class MessageContent(
     val quickReplies: List<QuickReply>? = null,
     val settings: Settings? = null,
     val speechStatus: String? = null,
-    val read: Boolean? = null
+    val read: Boolean? = null,
+    val modified: String? = null
 )

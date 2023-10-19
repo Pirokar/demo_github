@@ -92,7 +92,9 @@ class ImageFragment : BaseFragment() {
     }
 
     private fun loadImage(fileDescription: FileDescription) {
-        if (fileDescription.fileUri != null) {
+        if (fileDescription.isFromAssets()) {
+            loadPreviewToFullImage(fileDescription)
+        } else if (fileDescription.fileUri != null) {
             loadImageFromUri(fileDescription.fileUri)
         } else if (fileDescription.getPreviewFileDescription() != null) {
             loadPreview(fileDescription)
@@ -115,6 +117,21 @@ class ImageFragment : BaseFragment() {
             .scales(ImageView.ScaleType.FIT_CENTER, ImageView.ScaleType.CENTER_INSIDE)
             .errorDrawableResourceId(style.imagePlaceholder)
             .into(binding.preview)
+    }
+
+    private fun loadPreviewToFullImage(fileDescription: FileDescription) {
+        binding.preview.isVisible = false
+        val fileUri = if (getPreviewUri(fileDescription.getPreviewFileDescription())?.toString().isNullOrBlank()) {
+            fileDescription.getPreviewFileDescription()?.downloadPath
+        } else {
+            getPreviewUri(fileDescription.getPreviewFileDescription())?.toString()
+        }
+        get()
+            .load(fileUri)
+            .autoRotateWithExif(true)
+            .scales(ImageView.ScaleType.FIT_CENTER, ImageView.ScaleType.CENTER_INSIDE)
+            .errorDrawableResourceId(style.imagePlaceholder)
+            .into(binding.image)
     }
 
     private fun loadFullImage(fileDescription: FileDescription) {

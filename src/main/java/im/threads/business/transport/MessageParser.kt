@@ -21,6 +21,7 @@ import im.threads.business.models.SimpleSystemMessage
 import im.threads.business.models.SpeechMessageUpdate
 import im.threads.business.models.Survey
 import im.threads.business.models.UserPhrase
+import im.threads.business.models.enums.ModificationStateEnum
 import im.threads.business.transport.models.Attachment
 import im.threads.business.transport.models.MessageContent
 import im.threads.business.transport.models.OperatorJoinedContent
@@ -90,6 +91,8 @@ class MessageParser {
                 }
 
                 ChatItemType.MESSAGE,
+                ChatItemType.MESSAGE_EDITED,
+                ChatItemType.MESSAGE_DELETED,
                 ChatItemType.ON_HOLD -> getPhrase(
                     sentAt,
                     shortMessage,
@@ -205,7 +208,8 @@ class MessageParser {
             quickReplies,
             settings,
             speechStatus,
-            read
+            read,
+            modified
         ) = BaseConfig.getInstance().gson.fromJson(
             fullMessage,
             MessageContent::class.java
@@ -222,13 +226,15 @@ class MessageParser {
         if (quotes != null) {
             quote = getQuote(quotes)
         }
-        return if (operator != null) {
-            val operatorId = operator.id.toString()
-            val name = operator.aliasOrName
-            val photoUrl = operator.photoUrl
-            val status = operator.status
+        return if (operator != null ||
+            ModificationStateEnum.fromString(modified) != ModificationStateEnum.NONE
+        ) {
+            val operatorId = operator?.id.toString()
+            val name = operator?.aliasOrName
+            val photoUrl = operator?.photoUrl
+            val status = operator?.status
             val gender =
-                operator.gender == null || "male".equals(operator.gender, ignoreCase = true)
+                operator?.gender == null || "male".equals(operator.gender, ignoreCase = true)
             var fileDescription: FileDescription? = null
             if (attachments != null) {
                 fileDescription = getFileDescription(attachments, name, sentAt)
@@ -236,6 +242,7 @@ class MessageParser {
             ConsultPhrase(
                 uuid,
                 fileDescription,
+                ModificationStateEnum.fromString(modified),
                 quote,
                 name,
                 phrase,
@@ -250,14 +257,21 @@ class MessageParser {
                 quickReplies,
                 settings?.isBlockInput,
                 fromString(speechStatus),
-                ConsultRole.consultRoleFromString(operator.role)
+                ConsultRole.consultRoleFromString(operator?.role)
             )
         } else {
             var fileDescription: FileDescription? = null
             if (attachments != null) {
                 fileDescription = getFileDescription(attachments, null, sentAt)
             }
-            val userPhrase = UserPhrase(uuid, phrase, quote, sentAt, fileDescription, threadId)
+            val userPhrase = UserPhrase(
+                uuid,
+                phrase,
+                quote,
+                sentAt,
+                fileDescription,
+                threadId
+            )
             userPhrase.sentState = MessageStatus.SENT
             userPhrase.isRead = isMessageRead!!
             userPhrase

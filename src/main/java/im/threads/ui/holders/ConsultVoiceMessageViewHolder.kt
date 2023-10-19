@@ -34,9 +34,6 @@ import im.threads.ui.views.VoiceTimeLabelFormatter
 import im.threads.ui.views.formatAsDuration
 import im.threads.ui.widget.textView.QuoteMessageTextView
 import io.reactivex.subjects.PublishSubject
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 class ConsultVoiceMessageViewHolder(
     parent: ViewGroup,
@@ -50,8 +47,6 @@ class ConsultVoiceMessageViewHolder(
     fdMediaPlayer,
     true
 ) {
-    private val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
-
     override var fileDescription: FileDescription? = null
     private var formattedDuration = ""
 
@@ -157,7 +152,7 @@ class ConsultVoiceMessageViewHolder(
                 else -> showCommonLayout(consultPhrase)
             }
             fileSizeTextView.text = formattedDuration
-            timeStampTextView.text = sdf.format(Date(consultPhrase.timeStamp))
+            showConsultTimeStamp(consultPhrase, listOf(timeStampTextView))
             showAvatar(consultAvatar, consultPhrase, onAvatarClickListener)
             changeHighlighting(highlighted)
         }

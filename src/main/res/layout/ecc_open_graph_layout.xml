@@ -75,6 +75,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/ecc_margin_three_fourth_minus"
+        android:drawablePadding="@dimen/ecc_margin_half"
         app:layout_constraintTop_toBottomOf="@id/ogContent"
         app:layout_constraintEnd_toEndOf="parent"
         android:padding="4dp"
