@@ -13,6 +13,11 @@ cache:
     - .gradle/wrapper
     - .gradle/caches
 
+default:
+  before_script:
+    - echo $GRADLE_DISTRIBUTION_URL
+    - sed -i -r "s|http.*|$GRADLE_DISTRIBUTION_URL|g" ./gradle/wrapper/gradle-wrapper.properties
+
 # Выполняется до скриптов 
 # - делаем градл выполняемым 
 # - задаем путь для GRADLE_USER_HOME
