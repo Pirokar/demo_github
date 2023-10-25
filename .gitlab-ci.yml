@@ -30,13 +30,13 @@ stages:
 linting:
   stage: lint
   script:
-    - bundle exec fastlane sdkLint
+    - bundle exec fastlane demoLint
   only:
     - merge_requests
 
 unitTests:
   stage: test
   script:
-    - bundle exec fastlane sdkUnitTests
+    - bundle exec fastlane demoUnitTests
   only:
     - merge_requests
