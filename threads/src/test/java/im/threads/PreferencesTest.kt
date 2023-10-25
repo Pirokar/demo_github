@@ -117,16 +117,16 @@ class PreferencesTest {
     }
 
     @Test
-    fun whenOldBooleanExist_thenGetMigratedValue() {
+    fun whenSavingBooleanToPreference_thenValueExistsInRam() {
         val value = true
-        preferences.sharedPreferences.edit().putBoolean(keys[6], value).commit()
-        assert(preferences.get<Boolean>(keys[6]) == value)
+        preferences.save(keys[6], value)
+        assert(Preferences.getPreferenceFromRam(keys[6]).toBoolean() == value)
     }
 
     @Test
-    fun whenOldIntExist_thenGetMigratedValue() {
+    fun whenSavingIntToPreference_thenValueExistsInRam() {
         val value = 1456
-        preferences.sharedPreferences.edit().putInt(keys[7], value).commit()
-        assert(preferences.get<Int>(keys[7]) == value)
+        preferences.save(keys[7], value)
+        assert(Preferences.getPreferenceFromRam(keys[7]).toInt() == value)
     }
 }
