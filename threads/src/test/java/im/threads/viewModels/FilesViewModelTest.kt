@@ -41,7 +41,7 @@ class FilesViewModelTest {
     @Before
     fun before() {
         MockitoAnnotations.openMocks(this)
-        `when`(database.allFileDescriptions).thenReturn(Single.just(ArrayList()))
+        `when`(database.getAllFileDescriptions()).thenReturn(Single.just(ArrayList()))
 
         viewModel = FilesViewModel(context, database)
         viewModelSpy = spy(viewModel)
@@ -66,7 +66,7 @@ class FilesViewModelTest {
     @Test
     fun whenGetFilesAsync_thenDatabaseAllFileDescriptionsCalled() {
         viewModel.getFilesAsync()
-        verify(database, times(1)).allFileDescriptions
+        verify(database, times(1)).getAllFileDescriptions()
     }
 
     @Test

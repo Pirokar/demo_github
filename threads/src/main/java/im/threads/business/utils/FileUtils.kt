@@ -56,35 +56,45 @@ object FileUtils {
     @JvmStatic
     fun getFileName(uri: Uri?): String {
         uri?.let {
-            BaseConfig.getInstance().context.contentResolver.query(uri, null, null, null, null)
-                .use { cursor ->
-                    if (cursor != null && cursor.moveToFirst()) {
-                        val index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-                        return if (index >= 0) {
-                            cursor.getString(index)
+            try {
+                BaseConfig.getInstance().context.contentResolver.query(uri, null, null, null, null)
+                    .use { cursor ->
+                        return if (cursor != null && cursor.moveToFirst()) {
+                            val index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                            if (index >= 0) {
+                                cursor.getString(index)
+                            } else {
+                                ""
+                            }
                         } else {
-                            ""
+                            getNameByString(uri)
                         }
                     }
-                }
+            } catch (e: Exception) {
+                getNameByString(uri)
+            }
         }
-        return "threads" + UUID.randomUUID()
+        return "threads${UUID.randomUUID()}"
     }
 
     @JvmStatic
     fun getFileSize(uri: Uri): Long {
-        BaseConfig.getInstance().context.contentResolver.query(uri, null, null, null, null)
-            .use { cursor ->
-                if (cursor != null && cursor.moveToFirst()) {
-                    val index = cursor.getColumnIndex(OpenableColumns.SIZE)
-                    return if (index >= 0) {
-                        cursor.getLong(index)
-                    } else {
-                        0L
+        try {
+            BaseConfig.getInstance().context.contentResolver.query(uri, null, null, null, null)
+                .use { cursor ->
+                    if (cursor != null && cursor.moveToFirst()) {
+                        val index = cursor.getColumnIndex(OpenableColumns.SIZE)
+                        return if (index >= 0) {
+                            cursor.getLong(index)
+                        } else {
+                            0L
+                        }
                     }
                 }
-            }
-        return 0
+        } catch (e: Exception) {
+            return 0L
+        }
+        return 0L
     }
 
     /**
@@ -302,6 +312,20 @@ object FileUtils {
             getExtensionFromPath(
                 fileDescription.downloadPath
             )
+        }
+    }
+
+    private fun getNameByString(uri: Uri): String {
+        return try {
+            val path = uri.toString()
+            val filename: String = path.substring(path.lastIndexOf("/") + 1)
+            if (filename.indexOf(".") > 0) {
+                filename.substring(0, filename.lastIndexOf("."))
+            } else {
+                filename
+            }
+        } catch (exc: Exception) {
+            "threads${UUID.randomUUID()}"
         }
     }
 
