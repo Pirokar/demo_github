@@ -426,6 +426,7 @@ class ChatFragment :
         }
     }
 
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     private fun initController() {
         val activity = activity ?: return
 
@@ -435,7 +436,12 @@ class ChatFragment :
         val intentFilter = IntentFilter(ACTION_SEARCH_CHAT_FILES)
         intentFilter.addAction(ACTION_SEARCH)
         intentFilter.addAction(ACTION_SEND_QUICK_MESSAGE)
-        activity.registerReceiver(mChatReceiver, intentFilter)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            activity.registerReceiver(mChatReceiver, intentFilter, Context.RECEIVER_NOT_EXPORTED)
+        } else {
+            activity.registerReceiver(mChatReceiver, intentFilter)
+        }
     }
 
     private fun initViews() = binding?.apply {
@@ -2786,8 +2792,6 @@ class ChatFragment :
         const val ACTION_SEND_QUICK_MESSAGE = "ACTION_SEND_QUICK_MESSAGE"
         private const val REQUEST_PERMISSION_RECORD_AUDIO = 204
         private const val ARG_OPEN_WAY = "arg_open_way"
-        private const val DISABLED_ALPHA = 0.5f
-        private const val ENABLED_ALPHA = 1.0f
         private const val INVISIBLE_MESSAGES_COUNT = 3
         private const val INPUT_DELAY: Long = 3000
         private const val INPUT_EDIT_VIEW_MIN_LINES_COUNT = 1

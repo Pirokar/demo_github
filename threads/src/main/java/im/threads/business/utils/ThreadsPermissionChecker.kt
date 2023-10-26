@@ -2,6 +2,7 @@ package im.threads.business.utils
 
 import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.content.PermissionChecker
 
@@ -33,15 +34,37 @@ object ThreadsPermissionChecker {
     @JvmStatic
     fun isReadExternalPermissionGranted(context: Context?): Boolean {
         return if (context != null) {
-            val permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val isApi34OrMore = Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+            val permissions = if (isApi34OrMore) {
+                arrayOf(
+                    Manifest.permission.READ_MEDIA_IMAGES,
+                    Manifest.permission.READ_MEDIA_VIDEO,
+                    Manifest.permission.READ_MEDIA_AUDIO,
+                    Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
+                )
+            } else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.TIRAMISU) {
                 arrayOf(
                     Manifest.permission.READ_MEDIA_IMAGES,
                     Manifest.permission.READ_MEDIA_VIDEO,
                     Manifest.permission.READ_MEDIA_AUDIO
                 )
             } else { arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE) }
-            for (permission in permissions) {
-                if (PermissionChecker.checkSelfPermission(context, permission) != PermissionChecker.PERMISSION_GRANTED) {
+
+            val indexOfVisualUserPermission = if (isApi34OrMore) {
+                permissions.indexOf(Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED)
+            } else {
+                -1
+            }
+            if (indexOfVisualUserPermission > 0 &&
+                PermissionChecker.checkSelfPermission(context, permissions[indexOfVisualUserPermission]) == PermissionChecker.PERMISSION_GRANTED
+            ) {
+                return true
+            }
+
+            for (i in permissions.indices) {
+                val grantResult = PermissionChecker.checkSelfPermission(context, permissions[i])
+
+                if (grantResult == PackageManager.PERMISSION_DENIED && i != indexOfVisualUserPermission) {
                     return false
                 }
             }

@@ -79,7 +79,7 @@ class PermissionsActivity : AppCompatActivity() {
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        if (requestCode == PERMISSION_REQUEST_CODE && hasAllPermissionsGranted(grantResults)) {
+        if (requestCode == PERMISSION_REQUEST_CODE && hasAllPermissionsGranted(permissions, grantResults)) {
             requiresCheck = true
             allPermissionsGranted()
         } else {
@@ -88,9 +88,21 @@ class PermissionsActivity : AppCompatActivity() {
         }
     }
 
-    private fun hasAllPermissionsGranted(grantResults: IntArray): Boolean {
-        for (grantResult in grantResults) {
-            if (grantResult == PackageManager.PERMISSION_DENIED) {
+    private fun hasAllPermissionsGranted(permissions: Array<String>, grantResults: IntArray): Boolean {
+        val isApi34OrMore = Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+        val indexOfVisualUserPermission = if (isApi34OrMore) {
+            permissions.indexOf(Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED)
+        } else {
+            -1
+        }
+        if (indexOfVisualUserPermission > 0 && grantResults[indexOfVisualUserPermission] == PackageManager.PERMISSION_GRANTED) {
+            return true
+        }
+
+        for (i in grantResults.indices) {
+            val grantResult = grantResults[i]
+
+            if (grantResult == PackageManager.PERMISSION_DENIED && i != indexOfVisualUserPermission) {
                 return false
             }
         }
@@ -181,13 +193,24 @@ class PermissionsActivity : AppCompatActivity() {
             ) {
                 val list = permissions.toMutableList()
                 list.remove(Manifest.permission.READ_EXTERNAL_STORAGE)
-                list.addAll(
-                    listOf(
-                        Manifest.permission.READ_MEDIA_IMAGES,
-                        Manifest.permission.READ_MEDIA_VIDEO,
-                        Manifest.permission.READ_MEDIA_AUDIO
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                    list.addAll(
+                        listOf(
+                            Manifest.permission.READ_MEDIA_IMAGES,
+                            Manifest.permission.READ_MEDIA_VIDEO,
+                            Manifest.permission.READ_MEDIA_AUDIO,
+                            Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
+                        )
                     )
-                )
+                } else {
+                    list.addAll(
+                        listOf(
+                            Manifest.permission.READ_MEDIA_IMAGES,
+                            Manifest.permission.READ_MEDIA_VIDEO,
+                            Manifest.permission.READ_MEDIA_AUDIO
+                        )
+                    )
+                }
 
                 return list.toTypedArray()
             } else {
