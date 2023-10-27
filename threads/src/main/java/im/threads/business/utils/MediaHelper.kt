@@ -3,9 +3,7 @@ package im.threads.business.utils
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.database.Cursor
 import android.net.Uri
-import android.provider.MediaStore
 
 object MediaHelper {
     @JvmStatic
@@ -20,21 +18,5 @@ object MediaHelper {
                 }
             }
         }
-    }
-
-    @JvmStatic
-    fun getAllPhotos(context: Context): Cursor? {
-        val projection = arrayOf(
-            MediaStore.Images.Media.DISPLAY_NAME,
-            MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
-            MediaStore.Images.Media._ID
-        )
-        val sortOrder = MediaStore.Images.Media.DATE_TAKEN + " desc"
-        val selection = MediaStore.Images.Media.MIME_TYPE + " = ? OR " + MediaStore.Images.Media.MIME_TYPE + " = ?"
-        val selectionArgs = arrayOf(
-            "image/png",
-            "image/jpeg"
-        )
-        return context.contentResolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, selection, selectionArgs, sortOrder)
     }
 }

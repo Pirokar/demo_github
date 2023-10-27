@@ -35,6 +35,8 @@ import android.view.ViewGroup.MarginLayoutParams
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
@@ -57,7 +59,6 @@ import im.threads.business.config.BaseConfig
 import im.threads.business.extensions.withMainContext
 import im.threads.business.imageLoading.ImageLoader.Companion.get
 import im.threads.business.logger.LogZipSender
-import im.threads.business.logger.LoggerEdna
 import im.threads.business.logger.LoggerEdna.debug
 import im.threads.business.logger.LoggerEdna.error
 import im.threads.business.logger.LoggerEdna.info
@@ -108,8 +109,6 @@ import im.threads.business.utils.isLastCopyText
 import im.threads.databinding.EccFragmentChatBinding
 import im.threads.ui.ChatStyle
 import im.threads.ui.activities.ChatActivity
-import im.threads.ui.activities.GalleryActivity
-import im.threads.ui.activities.GalleryActivity.Companion.getStartIntent
 import im.threads.ui.activities.ImagesActivity.Companion.getStartIntent
 import im.threads.ui.activities.filesActivity.FilesActivity.Companion.startActivity
 import im.threads.ui.adapters.ChatAdapter
@@ -121,7 +120,6 @@ import im.threads.ui.fragments.PermissionDescriptionAlertFragment.OnAllowPermiss
 import im.threads.ui.holders.BaseHolder.Companion.statuses
 import im.threads.ui.permissions.PermissionsActivity
 import im.threads.ui.styles.permissions.PermissionDescriptionType
-import im.threads.ui.utils.CameraConstants
 import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.utils.FileHelper.isAllowedFileExtension
 import im.threads.ui.utils.FileHelper.isAllowedFileSize
@@ -201,6 +199,15 @@ class ChatFragment :
     private var previousChatItemsCount = 0
     private val config = Config.getInstance()
     private val coroutineScope = lifecycle.coroutineScope
+
+    private val pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        if (uri != null) {
+            onPhotoResult(uri)
+        } else {
+            error("Cannot get file from file picker, uri is null")
+        }
+    }
+
     var style: ChatStyle = config.chatStyle
         private set
 
@@ -745,7 +752,7 @@ class ChatFragment :
                             }
                         }
                     } catch (exc: NullPointerException) {
-                        LoggerEdna.error("Handling exception when scrolling after delay", exc)
+                        error("Handling exception when scrolling after delay", exc)
                     }
                 }, 100)
             }
@@ -1124,7 +1131,7 @@ class ChatFragment :
     }
 
     override fun onGalleryClick() {
-        startActivityForResult(getStartIntent(activity, REQUEST_CODE_PHOTOS), REQUEST_CODE_PHOTOS)
+        pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo))
     }
 
     override fun onImageSelectionChanged(imageList: List<Uri>?) {
@@ -1326,78 +1333,6 @@ class ChatFragment :
         }
     }
 
-    private fun onPhotosResult(data: Intent) {
-        val photos = data.getParcelableArrayListExtra<Uri>(GalleryActivity.PHOTOS_TAG)
-        hideBottomSheet()
-        showWelcomeScreen(false)
-        val inputText = inputTextObservable.value
-        if (photos == null || photos.size == 0 || inputText == null) {
-            return
-        }
-        subscribe(
-            Single.fromCallable {
-                Stream.of(photos)
-                    .filter { value: Uri? -> canBeSent(requireContext(), value!!) }
-                    .toList()
-            }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ filteredPhotos: List<Uri> ->
-                    if (filteredPhotos.isEmpty()) {
-                        show(requireContext(), getString(R.string.ecc_failed_to_open_file))
-                        return@subscribe
-                    }
-                    unChooseItem()
-                    coroutineScope.launch(Dispatchers.IO) {
-                        val fileSizes = ArrayList<Long>(filteredPhotos.size)
-                        for (i in filteredPhotos.indices) {
-                            fileSizes.add(getFileSize(filteredPhotos[i]))
-                        }
-                        withMainContext {
-                            var fileUri = filteredPhotos[0]
-                            var fileSize = fileSizes[0]
-                            var uum = UpcomingUserMessage(
-                                FileDescription(
-                                    requireContext().getString(R.string.ecc_I),
-                                    fileUri,
-                                    fileSize,
-                                    System.currentTimeMillis()
-                                ),
-                                campaignMessage,
-                                mQuote,
-                                inputText.trim { it <= ' ' },
-                                inputText.isLastCopyText()
-                            )
-                            if (isSendBlocked) {
-                                show(requireContext(), getString(R.string.ecc_message_were_unsent))
-                            } else {
-                                chatController.onUserInput(uum)
-                            }
-                            inputTextObservable.onNext("")
-                            quoteLayoutHolder?.clear()
-                            for (i in 1 until filteredPhotos.size) {
-                                fileUri = filteredPhotos[i]
-                                fileSize = fileSizes[i]
-                                uum = UpcomingUserMessage(
-                                    FileDescription(
-                                        requireContext().getString(R.string.ecc_I),
-                                        fileUri,
-                                        fileSize,
-                                        System.currentTimeMillis()
-                                    ),
-                                    null,
-                                    null,
-                                    null,
-                                    false
-                                )
-                                chatController.onUserInput(uum)
-                            }
-                        }
-                    }
-                }) { onError: Throwable? -> error("onPhotosResult ", onError) }
-        )
-    }
-
     private fun onExternalCameraPhotoResult() {
         externalCameraPhotoFile?.let { file ->
             coroutineScope.launch {
@@ -1491,29 +1426,29 @@ class ChatFragment :
         }
     }
 
-    private fun onPhotoResult(data: Intent) {
-        val imageExtra = data.getStringExtra(CameraConstants.IMAGE_EXTRA)
-        if (imageExtra != null) {
-            val file = File(imageExtra)
-            val fileDescription = FileDescription(
-                requireContext().getString(R.string.ecc_image),
-                fileProvider.getUriForFile(requireContext(), file),
-                file.length(),
-                System.currentTimeMillis()
-            )
-            setFileDescription(
-                fileDescription
-            )
-            val inputText = inputTextObservable.value
-            val uum = UpcomingUserMessage(
-                fileDescription,
-                campaignMessage,
-                mQuote,
-                inputText?.trim { it <= ' ' },
-                false
-            )
-            sendMessage(listOf(uum))
-        }
+    private fun onPhotoResult(uri: Uri) {
+        val fileDescriptor = context?.contentResolver?.openAssetFileDescriptor(uri, "r")
+        val fileSize = fileDescriptor?.length ?: 0L
+        fileDescriptor?.close()
+
+        val fileDescription = FileDescription(
+            requireContext().getString(R.string.ecc_image),
+            uri,
+            fileSize,
+            System.currentTimeMillis()
+        )
+        setFileDescription(
+            fileDescription
+        )
+        val inputText = inputTextObservable.value
+        val uum = UpcomingUserMessage(
+            fileDescription,
+            campaignMessage,
+            mQuote,
+            inputText?.trim { it <= ' ' },
+            false
+        )
+        sendMessage(listOf(uum))
     }
 
     private fun openBottomSheetAndGallery() {
@@ -2003,9 +1938,6 @@ class ChatFragment :
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
-            REQUEST_CODE_PHOTOS -> if (resultCode == Activity.RESULT_OK && data != null) {
-                onPhotosResult(data)
-            }
             REQUEST_EXTERNAL_CAMERA_PHOTO -> {
                 if (resultCode == Activity.RESULT_OK && externalCameraPhotoFile != null) {
                     onExternalCameraPhotoResult()
@@ -2014,9 +1946,6 @@ class ChatFragment :
             }
             REQUEST_CODE_FILE -> if (resultCode == Activity.RESULT_OK && data != null) {
                 onFileResult(data)
-            }
-            REQUEST_CODE_PHOTO -> if (resultCode == Activity.RESULT_OK && data != null) {
-                onPhotoResult(data)
             }
             REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY -> if (resultCode == PermissionsActivity.RESPONSE_GRANTED) {
                 openBottomSheetAndGallery()
@@ -2761,8 +2690,6 @@ class ChatFragment :
     }
 
     companion object {
-        const val REQUEST_CODE_PHOTOS = 100
-        const val REQUEST_CODE_PHOTO = 101
         const val REQUEST_EXTERNAL_CAMERA_PHOTO = 102
         const val REQUEST_CODE_FILE = 103
         const val REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY = 200
