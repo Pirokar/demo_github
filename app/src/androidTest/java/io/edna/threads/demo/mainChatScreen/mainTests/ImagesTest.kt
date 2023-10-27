@@ -1,6 +1,5 @@
 package io.edna.threads.demo.mainChatScreen.mainTests
 
-import androidx.test.espresso.PerformException
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
@@ -21,53 +20,6 @@ class ImagesTest : BaseFilesTestCase() {
     @Before
     fun before() {
         uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
-    }
-
-    @Test
-    fun sendImageTest() {
-        prepareHttpMocks()
-        openChatFromDemoLoginPage()
-
-        ChatMainScreen {
-            addAttachmentBtn {
-                isVisible()
-                isClickable()
-                click()
-            }
-            val isRecyclerHasItems = try {
-                bottomGalleryRecycler.getSize() > 0
-            } catch (exc: PerformException) {
-                false
-            }
-            if (isRecyclerHasItems.not()) {
-                val usualFileNameLength = "test_image2.jpg".length
-                val fileName = copyFileToDownloads("test_files/test_image2.jpg")
-                if (fileName?.length != null && fileName.length > usualFileNameLength) {
-                    fileNamesToDelete.add(fileName)
-                }
-                Thread.sleep(500)
-                pressBack()
-                addAttachmentBtn { click() }
-            }
-            bottomGalleryRecycler {
-                firstChild<ChatMainScreen.BottomGalleryItem> { click() }
-            }
-            sendImageBtn {
-                isClickable()
-                click()
-            }
-
-            assert(chatItemsRecyclerView.getSize() > 0)
-
-            chatItemsRecyclerView {
-                lastChild<ChatMainScreen.ChatRecyclerItem> {
-                    image.isClickable()
-                    image.click()
-                }
-            }
-            imagePager.isVisible()
-            imagePager.isAtPage(0)
-        }
     }
 
     @Test

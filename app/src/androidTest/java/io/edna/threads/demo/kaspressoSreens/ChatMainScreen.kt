@@ -1,7 +1,6 @@
 package io.edna.threads.demo.kaspressoSreens
 
 import android.view.View
-import androidx.test.espresso.matcher.ViewMatchers.withId
 import com.kaspersky.kaspresso.screens.KScreen
 import im.threads.R
 import im.threads.ui.fragments.ChatFragment
@@ -47,11 +46,6 @@ object ChatMainScreen : KScreen<ChatMainScreen>() {
         itemTypeBuilder = { itemType(::ChatRecyclerItem) }
     )
 
-    val bottomGalleryRecycler = KRecyclerView(
-        builder = { withId(R.id.bottom_gallery_recycler) },
-        itemTypeBuilder = { itemType(::BottomGalleryItem) }
-    )
-
     val searchRecycler = KRecyclerView(
         builder = { withId(R.id.searchResultsListView) },
         itemTypeBuilder = { itemType(::SearchRecyclerItem) }
@@ -71,8 +65,6 @@ object ChatMainScreen : KScreen<ChatMainScreen>() {
         val thumbDown = KImageView(matcher) { withId(R.id.thumb_down) }
         val ratingStars = KView(matcher) { withId(R.id.mark) }
     }
-
-    class BottomGalleryItem(matcher: Matcher<View>) : KRecyclerItem<BottomGalleryItem>(matcher)
 
     class SearchRecyclerItem(matcher: Matcher<View>) : KRecyclerItem<SearchRecyclerItem>(matcher) {
         val avatarImage = KImageView(matcher) { withId(R.id.avatarImage) }

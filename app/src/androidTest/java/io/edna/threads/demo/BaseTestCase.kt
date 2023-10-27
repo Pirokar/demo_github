@@ -1,19 +1,12 @@
 package io.edna.threads.demo
 
-import android.app.DownloadManager
-import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
-import android.os.Build
-import android.os.Environment
-import android.provider.MediaStore
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import com.github.tomakehurst.wiremock.junit.WireMockRule
-import com.kaspersky.kaspresso.internal.extensions.other.createFileIfNeeded
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
-import im.threads.R
 import im.threads.business.UserInfoBuilder
 import im.threads.business.config.BaseConfig
 import im.threads.business.transport.threadsGate.ThreadsGateTransport
@@ -198,14 +191,6 @@ abstract class BaseTestCase : TestCase() {
         return stringBuilder.toString()
     }
 
-    protected fun copyFileToDownloads(assetsPath: String): String? {
-        return if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
-            copyToDownloadsApiBelow29(assetsPath)
-        } else {
-            copyToDownloadsApi29(assetsPath)
-        }
-    }
-
     protected fun sendHelloMessageFromUser() {
         ChatMainScreen {
             inputEditView { isVisible() }
@@ -228,75 +213,6 @@ abstract class BaseTestCase : TestCase() {
                 isVisible()
                 click()
             }
-        }
-    }
-
-    @Suppress("DEPRECATION")
-    private fun copyToDownloadsApiBelow29(filePathRelativeToAssets: String): String? {
-        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)?.absolutePath?.let {
-            val fileName = filePathRelativeToAssets.split("/").last()
-            val toFile = File("$it/$fileName")
-            if (toFile.exists() && toFile.length() > 0) {
-                return fileName
-            } else if (toFile.exists()) {
-                toFile.delete()
-            }
-            context.assets.open(filePathRelativeToAssets).toFile(toFile.createFileIfNeeded())
-            val dm = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-
-            dm.addCompletedDownload(
-                fileName,
-                BaseConfig.getInstance().context.getString(R.string.ecc_media_description),
-                true,
-                getMimeType(fileName),
-                toFile.path,
-                toFile.length(),
-                false
-            )
-            return fileName
-        }
-
-        return null
-    }
-
-    /**
-     * Возвращает newFileName, если в процессе копирования файла
-     * случилась ошибка UNIQUE constraint failed
-     */
-    private fun copyToDownloadsApi29(filePathRelativeToAssets: String, nameOfFile: String? = null): String? {
-        try {
-            val fileName = nameOfFile ?: getNameOfFile(filePathRelativeToAssets)
-            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)?.absolutePath?.let {
-                val toFile = File("$it/$fileName")
-                if (toFile.exists() && toFile.length() > 0) {
-                    return null
-                } else if (toFile.exists()) {
-                    toFile.delete()
-                }
-            }
-            val values = ContentValues()
-            values.put(
-                MediaStore.MediaColumns.DISPLAY_NAME,
-                fileName
-            )
-            values.put(
-                MediaStore.MediaColumns.MIME_TYPE,
-                getMimeType(fileName)
-            )
-            values.put(
-                MediaStore.MediaColumns.RELATIVE_PATH,
-                Environment.DIRECTORY_DOWNLOADS
-            )
-            val uri: Uri? = context.contentResolver.insert(
-                MediaStore.Files.getContentUri(MediaStore.VOLUME_EXTERNAL),
-                values
-            )
-            context.assets.open(filePathRelativeToAssets).copyToUri(uri!!, context)
-            return fileName
-        } catch (exc: android.database.sqlite.SQLiteConstraintException) {
-            val name = getNameOfFile(filePathRelativeToAssets, true)
-            copyToDownloadsApi29(filePathRelativeToAssets, name)
-            return name
         }
     }
 
