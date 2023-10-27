@@ -602,13 +602,17 @@ abstract class BaseHolder internal constructor(
         val resources = itemView.context.resources
         val layoutParams = layout.layoutParams as ViewGroup.MarginLayoutParams
         if (isIncomingMessage) {
+            layoutParams.leftMargin = resources.getDimensionPixelSize(style.bubbleIncomingMarginLeft)
             layoutParams.marginStart = resources.getDimensionPixelSize(style.bubbleIncomingMarginLeft)
             layoutParams.marginEnd = resources.getDimensionPixelSize(style.bubbleIncomingMarginRight)
+            layoutParams.rightMargin = resources.getDimensionPixelSize(style.bubbleIncomingMarginRight)
             layoutParams.topMargin = resources.getDimensionPixelSize(style.bubbleIncomingMarginTop)
             layoutParams.bottomMargin = resources.getDimensionPixelSize(style.bubbleIncomingMarginBottom)
         } else {
+            layoutParams.leftMargin = resources.getDimensionPixelSize(style.bubbleOutgoingMarginLeft)
             layoutParams.marginStart = resources.getDimensionPixelSize(style.bubbleOutgoingMarginLeft)
             layoutParams.marginEnd = resources.getDimensionPixelSize(style.bubbleOutgoingMarginRight)
+            layoutParams.rightMargin = resources.getDimensionPixelSize(style.bubbleOutgoingMarginRight)
             layoutParams.topMargin = resources.getDimensionPixelSize(style.bubbleOutgoingMarginTop)
             layoutParams.bottomMargin = resources.getDimensionPixelSize(style.bubbleOutgoingMarginBottom)
         }
