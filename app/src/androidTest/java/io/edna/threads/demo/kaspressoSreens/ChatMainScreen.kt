@@ -33,7 +33,6 @@ object ChatMainScreen : KScreen<ChatMainScreen>() {
     val copyBtn = KImageView { withId(R.id.content_copy) }
     val quoteText = KTextView { withId(R.id.quote_text) }
     val quoteHeader = KTextView { withId(R.id.quote_header) }
-    val quoteImage = KImageView { withId(R.id.quote_image) }
     val quoteClear = KImageView { withId(R.id.quote_clear) }
     val addAttachmentBtn = KImageView { withId(R.id.add_attachment) }
     val imagePager = KViewPager { withId(R.id.pager) }
