@@ -668,6 +668,7 @@ abstract class BaseHolder internal constructor(
         val chatStyle = Config.getInstance().chatStyle
         val resources = itemView.context.resources
         val screenWidth = ScreenSizeGetter().getScreenSize(itemView.context).width
+        val maxImageSize = resources.getDimensionPixelSize(R.dimen.ecc_message_image_size)
         val incomingBorderLeft = resources.getDimensionPixelSize(chatStyle.incomingImageLeftBorderSize)
         val incomingBorderRight = resources.getDimensionPixelSize(chatStyle.incomingImageRightBorderSize)
         val isIncomingBordersNotSet = incomingBorderLeft == 0 && incomingBorderRight == 0
@@ -695,10 +696,15 @@ abstract class BaseHolder internal constructor(
             outgoingBorderLeft + outgoingBorderRight + outgoingMarginRight + outgoingMarginLeft
         }
 
-        imageViewSize = if (incomingBordersAndMargins > outgoingBordersAndMargins) {
+        val imageSize = if (incomingBordersAndMargins > outgoingBordersAndMargins) {
             screenWidth - incomingBordersAndMargins
         } else {
             screenWidth - outgoingBordersAndMargins
+        }
+        imageViewSize = if (imageSize > maxImageSize) {
+            maxImageSize
+        } else {
+            imageSize
         }
     }
 
