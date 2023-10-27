@@ -1265,18 +1265,8 @@ class ChatFragment :
     }
 
     override fun onFilePickerClick() {
-        val activity = activity ?: return
         setBottomStateDefault()
-        if (ThreadsPermissionChecker.isReadExternalPermissionGranted(activity)) {
-            openFile()
-        } else if (style.arePermissionDescriptionDialogsEnabled) {
-            showSafelyPermissionDescriptionDialog(
-                PermissionDescriptionType.STORAGE,
-                REQUEST_PERMISSION_READ_EXTERNAL
-            )
-        } else {
-            startStoragePermissionActivity(REQUEST_PERMISSION_READ_EXTERNAL)
-        }
+        openFile()
     }
 
     override fun onSendClick() {
@@ -1532,21 +1522,12 @@ class ChatFragment :
             return
         }
         val activity = activity ?: return
-        if (ThreadsPermissionChecker.isReadExternalPermissionGranted(activity)) {
-            setTitleStateCurrentOperatorConnected()
-            if (bottomSheetDialogFragment == null) {
-                showBottomSheet()
-                chatAdapter?.itemCount?.let { scrollToPosition(it - 1, false) }
-            } else {
-                hideBottomSheet()
-            }
-        } else if (style.arePermissionDescriptionDialogsEnabled) {
-            showSafelyPermissionDescriptionDialog(
-                PermissionDescriptionType.STORAGE,
-                REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY
-            )
+        setTitleStateCurrentOperatorConnected()
+        if (bottomSheetDialogFragment == null) {
+            showBottomSheet()
+            chatAdapter?.itemCount?.let { scrollToPosition(it - 1, false) }
         } else {
-            startStoragePermissionActivity(REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY)
+            hideBottomSheet()
         }
     }
 

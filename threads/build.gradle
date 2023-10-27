@@ -180,6 +180,9 @@ dependencies {
     //Html parsing
     implementation 'org.jsoup:jsoup:1.15.2'
 
+    // Photo picker
+    implementation 'androidx.activity:activity-ktx:1.8.0'
+
     //Tests
     testImplementation "org.robolectric:robolectric:$rootProject.robolectricVersion"
     testImplementation "androidx.test.ext:junit:$rootProject.androidXJunitVersion"
