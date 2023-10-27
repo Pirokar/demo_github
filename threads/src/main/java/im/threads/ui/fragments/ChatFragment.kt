@@ -1048,14 +1048,14 @@ class ChatFragment :
     private fun startStoragePermissionActivity(requestCode: Int) {
         if (requestCode == REQUEST_PERMISSION_READ_EXTERNAL) {
             PermissionsActivity.startActivityForResult(
-                this,
+                activity,
                 REQUEST_PERMISSION_READ_EXTERNAL,
                 R.string.ecc_permissions_read_external_storage_help_text,
                 Manifest.permission.READ_EXTERNAL_STORAGE
             )
         } else if (requestCode == REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY) {
             PermissionsActivity.startActivityForResult(
-                this,
+                activity,
                 REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY,
                 R.string.ecc_permissions_read_external_storage_help_text,
                 Manifest.permission.READ_EXTERNAL_STORAGE
@@ -1066,7 +1066,7 @@ class ChatFragment :
     private fun startRecordAudioPermissionActivity(requestCode: Int) {
         if (requestCode == REQUEST_PERMISSION_RECORD_AUDIO) {
             PermissionsActivity.startActivityForResult(
-                this,
+                activity,
                 REQUEST_PERMISSION_RECORD_AUDIO,
                 R.string.ecc_permissions_record_audio_help_text,
                 Manifest.permission.RECORD_AUDIO
@@ -1078,7 +1078,7 @@ class ChatFragment :
         val permissions = ArrayList(cameraPermissions ?: listOf()).toTypedArray()
         if (requestCode == REQUEST_PERMISSION_CAMERA && permissions.isNotEmpty()) {
             PermissionsActivity.startActivityForResult(
-                this,
+                activity,
                 REQUEST_PERMISSION_CAMERA,
                 R.string.ecc_permissions_camera_and_write_external_storage_help_text,
                 *permissions

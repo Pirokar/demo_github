@@ -2,7 +2,6 @@ package im.threads.ui.permissions
 
 import android.Manifest
 import android.app.Activity
-import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -14,7 +13,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 import im.threads.R
 import im.threads.business.logger.LoggerEdna.error
 
@@ -165,56 +163,6 @@ class PermissionsActivity : AppCompatActivity() {
                 ActivityCompat.startActivityForResult(activity!!, intent, requestCode, null)
             } else {
                 showPermissionsIsNullLog()
-            }
-        }
-
-        @JvmStatic
-        fun startActivityForResult(fragment: Fragment, requestCode: Int, text: Int, vararg permissions: String) {
-            if (permissions.isNotEmpty() && fragment.context != null) {
-                val checkedPermissions = checkForMediaPermissions(fragment.requireContext(), *permissions)
-                val intent = Intent(fragment.activity, PermissionsActivity::class.java)
-                intent.putExtra(EXTRA_PERMISSIONS, checkedPermissions)
-                intent.putExtra(EXTRA_PERMISSION_TEXT, text)
-                fragment.startActivityForResult(intent, requestCode, null)
-            } else {
-                showPermissionsIsNullLog()
-            }
-        }
-
-        @JvmStatic
-        fun startActivityForResult(activity: Activity?, requestCode: Int, vararg permissions: String) {
-            startActivityForResult(activity, requestCode, TEXT_DEFAULT, *permissions)
-        }
-
-        private fun checkForMediaPermissions(context: Context, vararg permissions: String): Array<String> {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-                permissions.contains(Manifest.permission.READ_EXTERNAL_STORAGE) &&
-                context.applicationContext.applicationInfo.targetSdkVersion >= Build.VERSION_CODES.TIRAMISU
-            ) {
-                val list = permissions.toMutableList()
-                list.remove(Manifest.permission.READ_EXTERNAL_STORAGE)
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                    list.addAll(
-                        listOf(
-                            Manifest.permission.READ_MEDIA_IMAGES,
-                            Manifest.permission.READ_MEDIA_VIDEO,
-                            Manifest.permission.READ_MEDIA_AUDIO,
-                            Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
-                        )
-                    )
-                } else {
-                    list.addAll(
-                        listOf(
-                            Manifest.permission.READ_MEDIA_IMAGES,
-                            Manifest.permission.READ_MEDIA_VIDEO,
-                            Manifest.permission.READ_MEDIA_AUDIO
-                        )
-                    )
-                }
-
-                return list.toTypedArray()
-            } else {
-                return permissions.toList().toTypedArray()
             }
         }
 
