@@ -17,12 +17,9 @@ import im.threads.ui.config.Config.Companion.getInstance
 import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.views.BottomSheetView
 import im.threads.ui.views.BottomSheetView.ButtonsListener
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 
 class AttachmentBottomSheetDialogFragment : BottomSheetDialogFragment(), ButtonsListener {
     private var callback: Callback? = null
-    private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
     override fun onAttach(context: Context) {
         super.onAttach(context)

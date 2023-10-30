@@ -562,10 +562,6 @@ public final class ChatStyle implements Serializable {
     public int quickReplyButtonBackground = R.drawable.ecc_quick_reply_button_background;
     @ColorRes
     public int quickReplyTextColor = R.color.ecc_quick_reply_text_color;
-    @IntegerRes
-    public int maxGalleryImagesCount = R.integer.ecc_max_count_attached_images;
-    @IntegerRes
-    public int maxGalleryImagesCountFixedBySystem = R.integer.ecc_max_count_attached_images_final;
     @ColorRes
     public int consultSearchingProgressColor = R.color.ecc_consult_searching_progress_color;
     // set can show specialist info
@@ -1881,17 +1877,6 @@ public final class ChatStyle implements Serializable {
         return this;
     }
 
-    /**
-     * Default values:
-     *
-     * @param maxGalleryImagesCount - R.integer.ecc_max_count_attached_images
-     * @return Builder
-     */
-    public ChatStyle setMaxGalleryImagesCount(@IntegerRes final int maxGalleryImagesCount) {
-        this.maxGalleryImagesCount = maxGalleryImagesCount;
-        return this;
-    }
-
     public ChatStyle setOutgoingPadding(
             @DimenRes int left,
             @DimenRes int top,
@@ -2068,20 +2053,6 @@ public final class ChatStyle implements Serializable {
     public ChatStyle setIncomingTimeTextSize(@DimenRes int textSize) {
         this.incomingMessageTimeTextSize = textSize;
         return this;
-    }
-
-    /**
-     * Определяет максимальное количество приложенных к сообщению файлов
-     *
-     * @param context
-     * @return Максимальное количество приложенных к сообщению файлов
-     */
-    public int getMaxGalleryImagesCount(@NonNull Context context) {
-        int count = context.getResources().getInteger(maxGalleryImagesCount);
-        int maxCount = context.getResources().getInteger(maxGalleryImagesCountFixedBySystem);
-        if (count <= maxCount && count > 0)
-            return count;
-        return maxCount;
     }
 
     /**

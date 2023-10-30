@@ -1132,6 +1132,7 @@ class ChatFragment :
 
     override fun onGalleryClick() {
         pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo))
+        bottomSheetDialogFragment?.dismiss()
     }
 
     override fun onImageSelectionChanged(imageList: List<Uri>?) {
