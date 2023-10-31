@@ -109,6 +109,7 @@ import im.threads.business.utils.isLastCopyText
 import im.threads.databinding.EccFragmentChatBinding
 import im.threads.ui.ChatStyle
 import im.threads.ui.activities.ChatActivity
+import im.threads.ui.activities.GalleryActivity
 import im.threads.ui.activities.ImagesActivity.Companion.getStartIntent
 import im.threads.ui.activities.filesActivity.FilesActivity.Companion.startActivity
 import im.threads.ui.adapters.ChatAdapter
@@ -120,6 +121,7 @@ import im.threads.ui.fragments.PermissionDescriptionAlertFragment.OnAllowPermiss
 import im.threads.ui.holders.BaseHolder.Companion.statuses
 import im.threads.ui.permissions.PermissionsActivity
 import im.threads.ui.styles.permissions.PermissionDescriptionType
+import im.threads.ui.utils.CameraConstants
 import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.utils.FileHelper.isAllowedFileExtension
 import im.threads.ui.utils.FileHelper.isAllowedFileSize
@@ -1051,6 +1053,7 @@ class ChatFragment :
                 activity,
                 REQUEST_PERMISSION_READ_EXTERNAL,
                 R.string.ecc_permissions_read_external_storage_help_text,
+                !style.useSystemFilePicker,
                 Manifest.permission.READ_EXTERNAL_STORAGE
             )
         } else if (requestCode == REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY) {
@@ -1058,6 +1061,7 @@ class ChatFragment :
                 activity,
                 REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY,
                 R.string.ecc_permissions_read_external_storage_help_text,
+                !style.useSystemFilePicker,
                 Manifest.permission.READ_EXTERNAL_STORAGE
             )
         }
@@ -1069,6 +1073,7 @@ class ChatFragment :
                 activity,
                 REQUEST_PERMISSION_RECORD_AUDIO,
                 R.string.ecc_permissions_record_audio_help_text,
+                false,
                 Manifest.permission.RECORD_AUDIO
             )
         }
@@ -1081,6 +1086,7 @@ class ChatFragment :
                 activity,
                 REQUEST_PERMISSION_CAMERA,
                 R.string.ecc_permissions_camera_and_write_external_storage_help_text,
+                false,
                 *permissions
             )
         }
@@ -1131,8 +1137,20 @@ class ChatFragment :
     }
 
     override fun onGalleryClick() {
-        pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo))
-        bottomSheetDialogFragment?.dismiss()
+        if (style.useSystemFilePicker) {
+            pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo))
+            bottomSheetDialogFragment?.dismiss()
+        } else {
+            val activity = activity ?: return
+            if (ThreadsPermissionChecker.isReadExternalPermissionGranted(activity)) {
+                startActivityForResult(GalleryActivity.getStartIntent(activity, REQUEST_CODE_PHOTOS), REQUEST_CODE_PHOTOS)
+            } else if (style.arePermissionDescriptionDialogsEnabled) {
+                showSafelyPermissionDescriptionDialog(
+                    PermissionDescriptionType.STORAGE,
+                    REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY
+                )
+            }
+        }
     }
 
     override fun onImageSelectionChanged(imageList: List<Uri>?) {
@@ -1427,6 +1445,14 @@ class ChatFragment :
         }
     }
 
+    private fun onPhotoResult(data: Intent) {
+        val imageExtra = data.getStringExtra(CameraConstants.IMAGE_EXTRA)
+        if (imageExtra != null) {
+            val file = File(imageExtra)
+            onPhotoResult(fileProvider.getUriForFile(requireContext(), file))
+        }
+    }
+
     private fun onPhotoResult(uri: Uri) {
         val fileDescriptor = context?.contentResolver?.openAssetFileDescriptor(uri, "r")
         val fileSize = fileDescriptor?.length ?: 0L
@@ -1452,13 +1478,102 @@ class ChatFragment :
         sendMessage(listOf(uum))
     }
 
-    private fun openBottomSheetAndGallery() {
-        if (isFileExtensionsEmpty()) {
-            activity?.let { show(it, getString(R.string.ecc_sending_files_not_allowed)) }
+    private fun onPhotosResult(data: Intent) {
+        val photos = data.getParcelableArrayListExtra<Uri>(GalleryActivity.PHOTOS_TAG)
+        hideBottomSheet()
+        showWelcomeScreen(false)
+        val inputText = inputTextObservable.value
+        if (photos == null || photos.size == 0 || inputText == null) {
             return
         }
+        subscribe(
+            Single.fromCallable {
+                Stream.of(photos)
+                    .filter { value: Uri? -> canBeSent(requireContext(), value!!) }
+                    .toList()
+            }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ filteredPhotos: List<Uri> ->
+                    if (filteredPhotos.isEmpty()) {
+                        show(requireContext(), getString(R.string.ecc_failed_to_open_file))
+                        return@subscribe
+                    }
+                    unChooseItem()
+                    coroutineScope.launch(Dispatchers.IO) {
+                        val fileSizes = ArrayList<Long>(filteredPhotos.size)
+                        for (i in filteredPhotos.indices) {
+                            fileSizes.add(getFileSize(filteredPhotos[i]))
+                        }
+                        withMainContext {
+                            var fileUri = filteredPhotos[0]
+                            var fileSize = fileSizes[0]
+                            var uum = UpcomingUserMessage(
+                                FileDescription(
+                                    requireContext().getString(R.string.ecc_I),
+                                    fileUri,
+                                    fileSize,
+                                    System.currentTimeMillis()
+                                ),
+                                campaignMessage,
+                                mQuote,
+                                inputText.trim { it <= ' ' },
+                                inputText.isLastCopyText()
+                            )
+                            if (isSendBlocked) {
+                                show(requireContext(), getString(R.string.ecc_message_were_unsent))
+                            } else {
+                                chatController.onUserInput(uum)
+                            }
+                            inputTextObservable.onNext("")
+                            quoteLayoutHolder?.clear()
+                            for (i in 1 until filteredPhotos.size) {
+                                fileUri = filteredPhotos[i]
+                                fileSize = fileSizes[i]
+                                uum = UpcomingUserMessage(
+                                    FileDescription(
+                                        requireContext().getString(R.string.ecc_I),
+                                        fileUri,
+                                        fileSize,
+                                        System.currentTimeMillis()
+                                    ),
+                                    null,
+                                    null,
+                                    null,
+                                    false
+                                )
+                                chatController.onUserInput(uum)
+                            }
+                        }
+                    }
+                }) { onError: Throwable? -> error("onPhotosResult ", onError) }
+        )
+    }
+
+    private fun openBottomSheetAndGallery() {
         val activity = activity ?: return
+        if (isFileExtensionsEmpty()) {
+            show(activity, getString(R.string.ecc_sending_files_not_allowed))
+            return
+        }
         setTitleStateCurrentOperatorConnected()
+        if (style.useSystemFilePicker) {
+            handleBottomSheet()
+        } else {
+            if (ThreadsPermissionChecker.isReadExternalPermissionGranted(activity)) {
+                handleBottomSheet()
+            } else if (style.arePermissionDescriptionDialogsEnabled) {
+                showSafelyPermissionDescriptionDialog(
+                    PermissionDescriptionType.STORAGE,
+                    REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY
+                )
+            } else {
+                startStoragePermissionActivity(REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY)
+            }
+        }
+    }
+
+    private fun handleBottomSheet() {
         if (bottomSheetDialogFragment == null) {
             showBottomSheet()
             chatAdapter?.itemCount?.let { scrollToPosition(it - 1, false) }
@@ -1939,6 +2054,12 @@ class ChatFragment :
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
+            REQUEST_CODE_PHOTOS -> if (resultCode == Activity.RESULT_OK && data != null) {
+                onPhotosResult(data)
+            }
+            REQUEST_CODE_PHOTO -> if (resultCode == Activity.RESULT_OK && data != null) {
+                onPhotoResult(data)
+            }
             REQUEST_EXTERNAL_CAMERA_PHOTO -> {
                 if (resultCode == Activity.RESULT_OK && externalCameraPhotoFile != null) {
                     onExternalCameraPhotoResult()
@@ -2691,6 +2812,8 @@ class ChatFragment :
     }
 
     companion object {
+        const val REQUEST_CODE_PHOTOS = 100
+        const val REQUEST_CODE_PHOTO = 101
         const val REQUEST_EXTERNAL_CAMERA_PHOTO = 102
         const val REQUEST_CODE_FILE = 103
         const val REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY = 200

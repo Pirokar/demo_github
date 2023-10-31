@@ -2,6 +2,7 @@ package im.threads.ui.permissions
 
 import android.Manifest
 import android.app.Activity
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -87,7 +88,7 @@ class PermissionsActivity : AppCompatActivity() {
     }
 
     private fun hasAllPermissionsGranted(permissions: Array<String>, grantResults: IntArray): Boolean {
-        val isApi34OrMore = Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+        val isApi34OrMore = Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE && applicationContext.applicationInfo.targetSdkVersion >= 34
         val indexOfVisualUserPermission = if (isApi34OrMore) {
             permissions.indexOf(Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED)
         } else {
@@ -155,14 +156,58 @@ class PermissionsActivity : AppCompatActivity() {
         private const val TEXT_DEFAULT = -1
 
         @JvmStatic
-        fun startActivityForResult(activity: Activity?, requestCode: Int, text: Int, vararg permissions: String) {
+        fun startActivityForResult(
+            activity: Activity?,
+            requestCode: Int,
+            text: Int,
+            checkForMediaPermissions: Boolean = false,
+            vararg permissions: String
+        ) {
             if (permissions.isNotEmpty()) {
+                val checkedPermissions = if (checkForMediaPermissions) {
+                    checkForMediaPermissions(activity?.applicationContext, *permissions)
+                } else {
+                    permissions
+                }
                 val intent = Intent(activity, PermissionsActivity::class.java)
-                intent.putExtra(EXTRA_PERMISSIONS, permissions)
+                intent.putExtra(EXTRA_PERMISSIONS, checkedPermissions)
                 intent.putExtra(EXTRA_PERMISSION_TEXT, text)
                 ActivityCompat.startActivityForResult(activity!!, intent, requestCode, null)
             } else {
                 showPermissionsIsNullLog()
+            }
+        }
+
+        private fun checkForMediaPermissions(context: Context?, vararg permissions: String): Array<String> {
+            if (context == null) return arrayOf(*permissions)
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                permissions.contains(Manifest.permission.READ_EXTERNAL_STORAGE)
+            ) {
+                val list = permissions.toMutableList()
+                list.remove(Manifest.permission.READ_EXTERNAL_STORAGE)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                    list.addAll(
+                        listOf(
+                            Manifest.permission.READ_MEDIA_IMAGES,
+                            Manifest.permission.READ_MEDIA_VIDEO,
+                            Manifest.permission.READ_MEDIA_AUDIO,
+                            Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
+                        )
+                    )
+                } else {
+                    list.addAll(
+                        listOf(
+                            Manifest.permission.READ_MEDIA_IMAGES,
+                            Manifest.permission.READ_MEDIA_VIDEO,
+                            Manifest.permission.READ_MEDIA_AUDIO
+                        )
+                    )
+                }
+
+                return list.toTypedArray()
+            } else {
+                return permissions.toList().toTypedArray()
             }
         }
 

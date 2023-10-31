@@ -3,6 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="im.threads">
 
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28"/>
     <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED"/>
     <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION"/>
@@ -51,6 +55,9 @@
             android:label="@string/ecc_permissions_help"
             android:screenOrientation="unspecified"
             android:theme="@style/Transparent"/>
+        <activity
+            android:name=".ui.activities.GalleryActivity"
+            android:theme="@style/ThreadsGalleryStyle"/>
 
         <provider
             android:name=".business.utils.ThreadsFileProvider"
