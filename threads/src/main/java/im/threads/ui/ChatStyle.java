@@ -40,7 +40,7 @@ public final class ChatStyle implements Serializable {
     /**
      * Определяет доступность системного пикера
      */
-    public boolean useSystemFilePicker = false;
+    public boolean useSystemFilePicker = true;
 
     @DrawableRes
     public Integer searchLoaderDrawable = null;
