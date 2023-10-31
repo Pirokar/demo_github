@@ -19,9 +19,6 @@ plugins {
     id 'com.android.application' version '7.2.1' apply false
     id 'com.android.library' version '7.2.1' apply false
     id 'org.jetbrains.kotlin.android' version '1.6.21' apply false
-}
-
-plugins {
     id 'org.jlleitschuh.gradle.ktlint' version "10.3.0"
 }
 
@@ -44,9 +41,9 @@ task clean(type: Delete) {
 }
 
 ext {
-    compileSdkVersion = 33
+    compileSdkVersion = 34
     minSdkVersion = 21
-    targetSdkVersion = 33
+    targetSdkVersion = 31
 
     androidXCoreVersion = '1.9.0'
     androidXPreferenceVersion = '1.1.1'
@@ -82,7 +79,6 @@ ext {
     fcmVersion = '23.0.6'
     flexboxVersion = '3.0.0'
     work_version = "2.7.1"
-    sqlcipher_version = "4.5.4@aar"
     sqlite_version = "2.0.1"
     crypto_tink = '1.7.0'
     markwonVersion = '4.6.2'

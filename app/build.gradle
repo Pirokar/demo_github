@@ -75,13 +75,22 @@ android {
     buildFeatures {
         viewBinding = true
     }
+
+    splits {
+        abi {
+            enable true
+            reset()
+            include 'x86', 'x86_64', 'armeabi', 'armeabi-v7a', 'mips', 'mips64', 'arm64-v8a'
+            universalApk true
+        }
+    }
 }
 
 dependencies {
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.9'
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation project(':threads')
+    implementation project(path: ':threads')
 
     implementation "androidx.core:core-ktx:$rootProject.androidXCoreVersion"
     implementation "org.jetbrains.kotlin:kotlin-reflect:$rootProject.kotlinReflect"
@@ -111,6 +120,8 @@ dependencies {
     debugImplementation "com.edna.android:push-lite-huawei-debug:$pushVersion"
     releaseImplementation "com.edna.android:push-lite-release:$pushVersion"
     releaseImplementation "com.edna.android:push-lite-huawei-release:$pushVersion"
+
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.12'
 
     testImplementation "junit:junit:$rootProject.testJunitVersion"
     androidTestUtil 'androidx.test:orchestrator:1.4.2'

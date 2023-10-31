@@ -11,13 +11,21 @@ import io.edna.threads.demo.R
 import io.edna.threads.demo.TestMessages
 import io.edna.threads.demo.kaspressoSreens.ChatMainScreen
 import io.edna.threads.demo.waitListForNotEmpty
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class ImagesTest : BaseFilesTestCase() {
+    private var uiDevice: UiDevice? = null
+
+    @Before
+    fun before() {
+        uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+    }
+
     @Test
-    fun sendReceiveImage() {
+    fun sendImageTest() {
         prepareHttpMocks()
         openChatFromDemoLoginPage()
 

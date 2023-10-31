@@ -22,3 +22,4 @@ dependencyResolutionManagement {
 }
 rootProject.name = "Edna ChatCenter"
 include ':app', ':threads'
+project(':threads').projectDir = new File('threads/threads')

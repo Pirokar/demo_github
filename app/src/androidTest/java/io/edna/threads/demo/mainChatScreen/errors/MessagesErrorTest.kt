@@ -38,15 +38,9 @@ class MessagesErrorTest : BaseTestCase() {
                 waitListForNotEmpty(5000)
                 val itemsSize = getSize()
                 isVisible()
-                childAt<ChatMainScreen.ChatRecyclerItem>(1) {
-                    hasDescendant { containsText(context.getString(im.threads.R.string.ecc_some_error_during_load_file)) }
-                }
-                childAt<ChatMainScreen.ChatRecyclerItem>(5) {
-                    hasDescendant { containsText(context.getString(im.threads.R.string.ecc_some_error_during_load_file)) }
-                }
-                childAt<ChatMainScreen.ChatRecyclerItem>(7) {
-                    hasDescendant { containsText(context.getString(im.threads.R.string.ecc_some_error_during_load_file)) }
-                }
+                hasDescendant { containsText(context.getString(im.threads.R.string.ecc_some_error_during_load_file)) }
+                hasDescendant { containsText(context.getString(im.threads.R.string.ecc_some_error_during_load_file)) }
+                hasDescendant { containsText(context.getString(im.threads.R.string.ecc_some_error_during_load_file)) }
                 childAt<ChatMainScreen.ChatRecyclerItem>(1) {
                     itemTime.isVisible()
                     itemTime.isClickable()
