@@ -12,6 +12,7 @@ import io.edna.threads.demo.TestMessages
 import io.edna.threads.demo.kaspressoSreens.ChatMainScreen
 import io.edna.threads.demo.waitListForNotEmpty
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -24,6 +25,7 @@ class ImagesTest : BaseFilesTestCase() {
         uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
     }
 
+    @Ignore("Не будет работать, если таргет демки меньше compileSdk. Не будет работать с File Picker")
     @Test
     fun sendImageTest() {
         prepareHttpMocks()
