@@ -340,7 +340,7 @@ abstract class BaseTestCase : TestCase() {
         }
     }
 
-    private fun getAnswersForWebSocket(
+    internal fun getAnswersForWebSocket(
         websocketMessage: String
     ): Pair<String?, Boolean> {
         wsMocksMap.keys.forEach { key ->
