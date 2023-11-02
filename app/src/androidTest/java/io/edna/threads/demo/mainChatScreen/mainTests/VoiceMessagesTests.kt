@@ -31,6 +31,7 @@ class VoiceMessagesTests : BaseFilesTestCase() {
     @Before
     fun before() {
         uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+        uiDevice.executeShellCommand("settings put secure long_press_timeout 3000")
     }
 
     @Test
