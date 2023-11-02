@@ -179,7 +179,7 @@ class TextMessagesTest : BaseTestCase() {
 
         ChatMainScreen {
             chatItemsRecyclerView {
-                childAt<ChatMainScreen.ChatRecyclerItem>(13) {
+                childAt<ChatMainScreen.ChatRecyclerItem>(11) {
                     itemText.clickSpanWithText("info@edna.ru")
                 }
             }
@@ -196,7 +196,7 @@ class TextMessagesTest : BaseTestCase() {
     @Test
     fun testIsPhoneClickable() {
         openMessagesHistory()
-        clickForTelSpanAndCheck(13, "+7 (495) 609-60-80")
+        clickForTelSpanAndCheck(11, "+7 (495) 609-60-80")
 
         sendCustomMessageFromUser("9261363821")
         clickForTelSpanAndCheck(textToClick = "9261363821")
@@ -245,7 +245,7 @@ class TextMessagesTest : BaseTestCase() {
         )
         ChatMainScreen {
             chatItemsRecyclerView {
-                childAt<ChatMainScreen.ChatRecyclerItem>(11) {
+                childAt<ChatMainScreen.ChatRecyclerItem>(10) {
                     itemText.clickSpanWithText("https://edna.ru/channels/")
                 }
             }
@@ -334,7 +334,7 @@ class TextMessagesTest : BaseTestCase() {
                 waitListForNotEmpty(5000)
                 isVisible()
 
-                assert(getSize() == 18)
+                assert(getSize() == 14)
             }
         }
     }

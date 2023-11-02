@@ -23,7 +23,7 @@ class FilesTest : BaseFilesTestCase() {
                 lastChild<ChatMainScreen.ChatRecyclerItem> {
                     itemText.containsText("Ваш тоже")
                 }
-                assert(getSize() == 8)
+                assert(getSize() == 7)
             }
         }
     }
