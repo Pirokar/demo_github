@@ -364,6 +364,7 @@ class ChatFragment :
             chatErrorLayout.errorLayout.visible()
             initErrorViewStyles()
             chatErrorLayout.errorMessage.text = message
+            popupMenuButton.visibility = View.GONE
         }
     }
 
@@ -377,6 +378,7 @@ class ChatFragment :
                 chatItemsRecycler.visible()
             }
         }
+        popupMenuButton.visibility = if (isPopupMenuEnabled) View.VISIBLE else View.GONE
     }
 
     internal fun isErrorViewNotVisible(): Boolean {
