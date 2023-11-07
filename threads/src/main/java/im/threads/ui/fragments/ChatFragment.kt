@@ -306,6 +306,7 @@ class ChatFragment :
         isResumed = true
         isShown = true
         afterResume = true
+        updateToolBar()
     }
 
     override fun onDestroyView() {
@@ -2116,6 +2117,11 @@ class ChatFragment :
         initToolbarTextPosition()
     }
 
+    private fun updateToolBar() {
+        binding?.popupMenuButton?.visibility = if (isPopupMenuEnabled) View.VISIBLE else View.GONE
+        checkBackButtonVisibility()
+    }
+
     private fun initSearch() = binding?.apply {
         val searchQueryChannel: MutableStateFlow<String?> = MutableStateFlow("")
         val loadingChannel: MutableStateFlow<Boolean> = MutableStateFlow(false)
@@ -2190,7 +2196,7 @@ class ChatFragment :
 
     private fun onActivityBackPressed() {
         if (isAdded) {
-            if (isInMessageSearchMode) {
+            if (isInMessageSearchMode && binding?.copyControls?.visibility != View.VISIBLE) {
                 hideSearchMode()
             } else {
                 val activity: Activity? = activity
