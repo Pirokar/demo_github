@@ -1,32 +1,20 @@
-package im.threads.business
+package im.threads.business.config
 
 import androidx.test.core.app.ApplicationProvider
-import im.threads.business.config.BaseConfig
-import im.threads.business.core.ContextHolder
 import im.threads.business.rest.config.RequestConfig
-import im.threads.business.serviceLocator.core.startEdnaLocator
-import im.threads.business.serviceLocator.coreSLModule
 import im.threads.business.transport.threadsGate.ThreadsGateTransport
-import im.threads.ui.serviceLocator.uiSLModule
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
-class BaseConfigTest {
-    private val ednaMockScheme = "http"
-    private val ednaMockHost = "localhost"
-    private val ednaMockPort = 8080
-    private val ednaMockUrl = "$ednaMockScheme://$ednaMockHost:$ednaMockPort/"
-    private val ednaMockThreadsGateUrl = "ws://$ednaMockHost:$ednaMockPort/gate/socket"
-    private val ednaMockThreadsGateProviderUid = "TEST_93jLrtnipZsfbTddRfEfbyfEe5LKKhTl"
+class BaseConfigTest : ConfigTestBaseClass() {
     private lateinit var config: BaseConfig
 
     @Before
-    fun before() {
-        ContextHolder.context = ApplicationProvider.getApplicationContext()
-        startEdnaLocator { modules(coreSLModule, uiSLModule) }
+    override fun before() {
+        super.before()
         config = getEmptyBaseConfig()
     }
 
