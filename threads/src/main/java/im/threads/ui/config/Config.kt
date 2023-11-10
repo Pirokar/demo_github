@@ -85,16 +85,12 @@ class Config(
 
     private val styleUseCase: StyleUseCase by inject()
 
-    var filesAndMediaMenuItemEnabled = false
-
     /**
      * Представляет ширину и высоту экрана в пикселях
      */
     internal var screenSize = Size(0, 0)
 
     init {
-        filesAndMediaMenuItemEnabled = MetadataUi.getFilesAndMediaMenuItemEnabled(this.context)
-            ?: context.resources.getBoolean(chatStyle.filesAndMediaItemEnabled)
         lightTheme?.let { styleUseCase.setIncomingLightStyle(it) }
         darkTheme?.let { styleUseCase.setIncomingDarkStyle(it) }
     }
