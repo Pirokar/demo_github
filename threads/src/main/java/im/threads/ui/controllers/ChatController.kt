@@ -18,6 +18,7 @@ import im.threads.business.config.BaseConfig
 import im.threads.business.controllers.UnreadMessagesController
 import im.threads.business.core.ContextHolder
 import im.threads.business.core.ThreadsLibBase
+import im.threads.business.extensions.isUnitTest
 import im.threads.business.extensions.withMainContext
 import im.threads.business.formatters.ChatItemType
 import im.threads.business.logger.LoggerEdna.error
@@ -1322,7 +1323,9 @@ class ChatController private constructor() {
     }
 
     private fun removePushNotification() {
-        removeNotification(appContext)
+        if (!isUnitTest()) {
+            removeNotification(appContext)
+        }
     }
 
     private fun setSurveyStateSent(survey: Survey) {

@@ -1,5 +1,6 @@
 package im.threads.business.extensions
 
+import android.os.Build
 import im.threads.business.models.MessageFromHistory
 import im.threads.business.rest.models.SearchResponse
 import kotlinx.coroutines.CoroutineScope
@@ -33,3 +34,5 @@ infix fun SearchResponse?.plus(newResponse: SearchResponse?): SearchResponse {
 
     return resultResponse
 }
+
+fun isUnitTest() = Build.DEVICE == "robolectric" && Build.PRODUCT == "robolectric"
