@@ -9,6 +9,8 @@ import im.threads.business.models.CampaignMessage
 import im.threads.business.models.enums.CurrentUiTheme
 import im.threads.business.preferences.Preferences
 import im.threads.business.preferences.PreferencesCoreKeys
+import im.threads.business.rest.queries.BackendApi
+import im.threads.business.rest.queries.DatastoreApi
 import im.threads.business.serviceLocator.core.inject
 import im.threads.business.state.ChatState
 import im.threads.business.state.ChatStateEnum
@@ -134,6 +136,21 @@ class ThreadsLibBaseTest : ConfigTestBaseClass() {
                     this.authMethod == authMethod
             )
         }
+    }
+
+    @Test
+    fun whenChangeServerSettings_thenApiIsCreated() {
+        initThreadsLib()
+        ThreadsLibBase.changeServerSettings(
+            ednaMockUrl,
+            ednaMockUrl,
+            ednaMockThreadsGateUrl,
+            ednaMockThreadsGateProviderUid,
+            null,
+            false
+        )
+        BackendApi.get()
+        DatastoreApi.get()
     }
 
     private fun initThreadsLib() {
