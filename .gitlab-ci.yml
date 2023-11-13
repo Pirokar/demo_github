@@ -5,6 +5,11 @@ image: images.mfms.ru/gitlab/builder/android:31_02r
 variables:
   LC_ALL: "en_US.UTF-8"
   LANG: "en_US.UTF-8"
+  GIT_SUBMODULE_STRATEGY: recursive
+  GIT_STRATEGY: fetch
+  GIT_SUBMODULE_FORCE_HTTPS: "true"
+  GIT_DEPTH: 0
+  GIT_SUBMODULE_DEPTH: 1
 
 # Кэш для ускорения шагов для текущего пайплайна
 cache:
