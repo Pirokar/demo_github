@@ -5,7 +5,6 @@ import im.threads.business.models.FileUploadResponse
 import im.threads.business.rest.models.ConfigResponse
 import im.threads.business.rest.models.HistoryResponse
 import im.threads.business.rest.models.SearchResponse
-import im.threads.business.rest.models.SettingsResponse
 import im.threads.business.rest.models.VersionsModel
 import im.threads.business.serviceLocator.core.inject
 import im.threads.business.utils.ClientUseCase
@@ -26,14 +25,6 @@ class ThreadsApi(
             newThreadsApi?.versions()
         } else {
             oldThreadsApi?.versions()
-        }
-    }
-
-    fun settings(): Call<SettingsResponse?>? {
-        return if (BaseConfig.getInstance().isNewChatCenterApi) {
-            newThreadsApi?.settings()
-        } else {
-            oldThreadsApi?.settings()
         }
     }
 
@@ -107,7 +98,7 @@ class ThreadsApi(
     }
 
     companion object {
-        const val API_VERSION = "14"
+        const val API_VERSION = "18"
         const val REST_TAG = "RestQuery"
         private const val SIGNATURE_STRING = "edna_79e621ac_a76a_4d36_b490_6758c43fa3d1:"
     }

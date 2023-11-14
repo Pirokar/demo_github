@@ -32,6 +32,7 @@ class ChatState(private val preferences: Preferences) {
     }
 
     var initChatCorrelationId: String = ""
+    var clientInfoCorrelationId: String = ""
 
     fun changeState(state: ChatStateEnum) {
         if (state >= getCurrentState() || state < ChatStateEnum.DEVICE_REGISTERED) {
@@ -50,7 +51,7 @@ class ChatState(private val preferences: Preferences) {
     }
 
     private fun observeState(state: ChatStateEnum, timeout: Long) {
-        if (state < ChatStateEnum.ATTACHMENT_SETTINGS_LOADED) {
+        if (state < ChatStateEnum.THREAD_OPENED) {
             startTimeoutObserver(state, timeout)
         } else {
             stopTimeoutObserver()
@@ -66,7 +67,7 @@ class ChatState(private val preferences: Preferences) {
     }
 
     fun isChatReady(): Boolean {
-        return getCurrentState() >= ChatStateEnum.ATTACHMENT_SETTINGS_LOADED
+        return getCurrentState() >= ChatStateEnum.THREAD_OPENED
     }
 
     private fun startTimeoutObserver(state: ChatStateEnum, timeout: Long) {

@@ -146,6 +146,10 @@
     <string name="ecc_file_restricted_size_error_during_load_file">The file is bigger than the maximum attachment size</string>
     <string name="ecc_file_not_found_error_during_load_file">File not found</string>
 
+    <string name="ecc_settings_not_loaded">Settings don\'t loaded</string>
+    <string name="ecc_attachment_settings_not_loaded">Attachments settings don\'t loaded</string>
+    <string name="ecc_schedule_not_loaded">Schedule info don\'t loaded</string>
+
     <string name="ecc_loading"></string>
 
     <string name="ecc_not_enough_space">Insufficient storage available</string>

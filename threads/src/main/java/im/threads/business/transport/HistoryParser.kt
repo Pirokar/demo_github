@@ -68,10 +68,11 @@ object HistoryParser {
                 when (fromString(message.type ?: "")) {
                     ChatItemType.THREAD_ENQUEUED, ChatItemType.AVERAGE_WAIT_TIME, ChatItemType.PARTING_AFTER_SURVEY,
                     ChatItemType.THREAD_CLOSED, ChatItemType.THREAD_WILL_BE_REASSIGNED, ChatItemType.CLIENT_BLOCKED,
-                    ChatItemType.THREAD_IN_PROGRESS -> out.add(
+                    ChatItemType.CLIENT_PERSONAL_DATA_PROCESSING, ChatItemType.THREAD_IN_PROGRESS -> out.add(
                         getSystemMessageFromHistory(message)
                     )
-                    ChatItemType.OPERATOR_JOINED, ChatItemType.OPERATOR_LEFT -> out.add(
+                    ChatItemType.OPERATOR_JOINED,
+                    ChatItemType.OPERATOR_LEFT -> out.add(
                         ConsultConnectionMessage(
                             uuid, operatorId,
                             message.type, name, sex, timeStamp, photoUrl,

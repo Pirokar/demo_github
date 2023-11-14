@@ -14,11 +14,16 @@ class ScheduleInfo : ChatItem {
     var notification: String? = null
     val sendDuringInactive = false
     override var timeStamp: Long = 0
-    var startTime: Date? = null
-    var endTime: Date? = null
     var serverTime: Date? = null
     var active = false
     private var serverTimeDiff: Long = 0
+    val intervals: List<WeekDaySchedule>? = null
+
+    val startTime: Date?
+        get() = getCurrDayOfWeek()?.let { Date(it.startTime * 1000) }
+
+    val endTime: Date?
+        get() = getCurrDayOfWeek()?.let { Date(it.endTime * 1000) }
 
     fun calculateServerTimeDiff() {
         serverTime?.let {
@@ -105,4 +110,30 @@ class ScheduleInfo : ChatItem {
 
     private val currentUtcTime: Long
         get() = Calendar.getInstance(TimeZone.getTimeZone("UTC")).timeInMillis
+
+    private fun getCurrDayOfWeek(): WeekDaySchedule? {
+        val day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK)
+        intervals?.forEach {
+            if (day == it.weekDay) {
+                return it
+            }
+        }
+        return null
+    }
+
+    class WeekDaySchedule(
+        val id: Int,
+        val weekDay: Int,
+        val startTime: Long,
+        val endTime: Long
+    ) {
+        override fun toString(): String {
+            return "WeekDaySchedule{" +
+                "id=" + id +
+                ", weekDay=" + weekDay +
+                ", startTime=" + startTime +
+                ", endTime='" + endTime + '\'' +
+                '}'
+        }
+    }
 }

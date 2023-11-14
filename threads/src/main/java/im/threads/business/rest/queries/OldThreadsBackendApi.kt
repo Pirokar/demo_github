@@ -3,7 +3,6 @@ package im.threads.business.rest.queries
 import im.threads.business.rest.models.ConfigResponse
 import im.threads.business.rest.models.HistoryResponse
 import im.threads.business.rest.models.SearchResponse
-import im.threads.business.rest.models.SettingsResponse
 import im.threads.business.rest.models.VersionsModel
 import retrofit2.Call
 import retrofit2.http.Body
@@ -39,9 +38,6 @@ interface OldThreadsBackendApi {
 
     @POST("messages/read")
     fun markMessageAsRead(@Body ids: List<String?>?): Call<Void?>?
-
-    @GET("v${ThreadsApi.API_VERSION}/chat/settings?channelType=MOBILE&auth=false")
-    fun settings(): Call<SettingsResponse?>?
 
     @GET("/api/chat/config?channelType=MOBILE&auth=true")
     fun config(@Query("chatApiVersion") chatApiVersion: String?): Call<ConfigResponse?>?
