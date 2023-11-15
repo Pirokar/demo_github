@@ -1579,13 +1579,10 @@ class ChatFragment :
     }
 
     fun addChatItem(item: ChatItem?) = binding?.apply {
-        val layoutManager = chatItemsRecycler.layoutManager as LinearLayoutManager? ?: return@apply
+        val isLastMessageVisible = isLastMessageVisible()
         if (item == null) {
             return@apply
         }
-        val isLastMessageVisible = (
-            chatAdapter!!.itemCount - 1 - layoutManager.findLastVisibleItemPosition() < INVISIBLE_MESSAGES_COUNT
-            )
         if (item is ConsultPhrase) {
             val previouslyRead = item.read
             item.read = (isLastMessageVisible && isResumed && !isInMessageSearchMode)
@@ -1600,13 +1597,22 @@ class ChatFragment :
         if (needsAddMessage(item)) {
             showWelcomeScreen(false)
             addItemsToChat(listOf(item))
-            if (!isLastMessageVisible) {
+            if (!isLastMessageVisible()) {
                 scrollDownButtonContainer.visibility = View.VISIBLE
                 showUnreadMessagesCount(chatController.getUnreadMessagesCount())
             }
             scrollDelayedOnNewMessageReceived(item is UserPhrase, isLastMessageVisible)
         } else if (needsModifyImage(item)) {
             chatAdapter?.modifyImageInItem((item as ChatPhrase).fileDescription)
+        }
+    }
+
+    private fun isLastMessageVisible(): Boolean {
+        val layoutManager = (binding?.chatItemsRecycler?.layoutManager as LinearLayoutManager?) ?: return false
+        return try {
+            chatAdapter!!.itemCount - 1 - layoutManager.findLastVisibleItemPosition() < INVISIBLE_MESSAGES_COUNT
+        } catch (exc: Exception) {
+            false
         }
     }
 
@@ -1761,9 +1767,11 @@ class ChatFragment :
 
         var needScrollDown = false
         if (list.isNotEmpty()) {
-            needScrollDown = oldAdapterSize < newAdapterSize ||
-                (list.last()?.timeStamp ?: 0) > chatAdapter.list.last().timeStamp &&
-                !isStartSecondLevelScreen()
+            needScrollDown = (
+                oldAdapterSize < newAdapterSize ||
+                    (list.last()?.timeStamp ?: 0) > chatAdapter.list.last().timeStamp &&
+                    !isStartSecondLevelScreen()
+                ) && isLastMessageVisible()
         }
         if (afterResume) {
             if ((!isStartSecondLevelScreen() && isBottomItemsVisible && newAdapterSize != oldAdapterSize) || needScrollDown) {
