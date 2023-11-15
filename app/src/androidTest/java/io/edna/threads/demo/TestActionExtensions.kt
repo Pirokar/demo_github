@@ -43,9 +43,14 @@ fun assert(messageIfFails: String?, function: () -> Unit) {
 }
 
 fun assert(messageIfFails: String?, vararg function: () -> Unit) {
+    var message = messageIfFails
     try {
+        if (function.asList().isEmpty()) {
+            message = "Отсутствует assertion для проверки"
+            throw AssertionFailedError()
+        }
         function.forEach { it.invoke() }
     } catch (exc: AssertionFailedError) {
-        throw AssertionError(messageIfFails)
+        throw AssertionError(message)
     }
 }
