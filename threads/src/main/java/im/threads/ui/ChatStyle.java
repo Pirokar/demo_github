@@ -76,6 +76,15 @@ public final class ChatStyle implements Serializable {
     @StringRes
     public int searchMessageHintText = R.string.ecc_search_messages;
 
+    @StringRes
+    public int loadedSettingsErrorText = R.string.ecc_settings_not_loaded;
+
+    @StringRes
+    public int loadedAttachmentSettingsErrorText = R.string.ecc_attachment_settings_not_loaded;
+
+    @StringRes
+    public int loadedScheduleErrorText = R.string.ecc_schedule_not_loaded;
+
     @ColorRes
     public int chatToolbarHintTextColor = R.color.ecc_chat_toolbar_hint;
 
@@ -2379,6 +2388,29 @@ public final class ChatStyle implements Serializable {
         if (hintTextRes != null) this.searchMessageHintText = hintTextRes;
         if (searchTextColorRes != null) this.searchBarTextColor = searchTextColorRes;
 
+        return this;
+    }
+
+    /**
+     * Устанавливает тексты ошибок получения настроек, настроек вложений и расписания чата
+     * @param loadedSettingsErrorTextRes ресурс текста ошибки полуения настроек. Передайте null, если хотите оставить значение по умолчанию
+     * @param loadedAttachmentSettingsErrorTextRes ресурс текста ошибки полуения настроек вложений. Передайте null, если хотите оставить значение по умолчанию
+     * @param loadedScheduleErrorTextRes ресурс текста ошибки полуения расписания. Передайте null, если хотите оставить значение по умолчанию
+     */
+    public ChatStyle setStartLoadErrorTexts(
+            @StringRes Integer loadedSettingsErrorTextRes,
+            @StringRes Integer loadedAttachmentSettingsErrorTextRes,
+            @StringRes Integer loadedScheduleErrorTextRes
+    ) {
+        if (loadedSettingsErrorTextRes != null) {
+            this.loadedSettingsErrorText = loadedSettingsErrorTextRes;
+        }
+        if (loadedAttachmentSettingsErrorTextRes != null) {
+            this.loadedAttachmentSettingsErrorText = loadedAttachmentSettingsErrorTextRes;
+        }
+        if (loadedScheduleErrorTextRes != null) {
+            this.loadedScheduleErrorText = loadedScheduleErrorTextRes;
+        }
         return this;
     }
 

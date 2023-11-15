@@ -738,13 +738,13 @@ class ChatController private constructor() {
         scheduleLoaded: Boolean
     ): String {
         return if (!settingsLoaded) {
-            appContext.getString(R.string.ecc_settings_not_loaded)
+            appContext.getString(chatStyle.loadedSettingsErrorText)
         } else if (!attachmentSettingsLoaded) {
-            appContext.getString(R.string.ecc_attachment_settings_not_loaded)
+            appContext.getString(chatStyle.loadedAttachmentSettingsErrorText)
         } else if (!scheduleLoaded) {
-            appContext.getString(R.string.ecc_schedule_not_loaded)
+            appContext.getString(chatStyle.loadedScheduleErrorText)
         } else {
-            appContext.getString(R.string.ecc_settings_not_loaded)
+            appContext.getString(chatStyle.loadedSettingsErrorText)
         }
     }
 
@@ -1699,7 +1699,7 @@ class ChatController private constructor() {
                     BackendApi.get()
                     DatastoreApi.get()
                 } catch (e: Exception) {
-                    val notInitializedError = TransportException(fragment?.get()?.getString(R.string.ecc_attachments_not_loaded) ?: "ChatCenter SDK не инициализирован")
+                    val notInitializedError = TransportException(fragment?.get()?.getString(chatStyle.loadedSettingsErrorText) ?: "ChatCenter SDK не инициализирован")
                     chatUpdateProcessor.postError(notInitializedError)
                     return@collect
                 }
@@ -1708,7 +1708,7 @@ class ChatController private constructor() {
                 }
                 if (stateEvent.isTimeout && chatState.getCurrentState() < ChatStateEnum.THREAD_OPENED) {
                     val timeoutMessage = if (stateEvent.state >= ChatStateEnum.INIT_USER_SENT && fragment != null) {
-                        fragment?.get()?.getString(R.string.ecc_attachments_not_loaded)
+                        fragment?.get()?.getString(chatStyle.loadedSettingsErrorText)
                     } else {
                         "${fragment?.get()?.getString(R.string.ecc_timeout_message) ?: "Превышен интервал ожидания для запроса"} (${chatState.getCurrentState()})"
                     }
