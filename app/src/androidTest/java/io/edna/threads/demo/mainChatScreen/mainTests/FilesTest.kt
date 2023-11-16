@@ -1,16 +1,72 @@
 package io.edna.threads.demo.mainChatScreen.mainTests
 
+import android.app.Activity
+import android.app.Instrumentation
+import android.content.Intent
+import android.net.Uri
+import androidx.test.espresso.intent.Intents.intending
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasAction
+import androidx.test.espresso.intent.rule.IntentsRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.kaspersky.kaspresso.internal.extensions.other.createFileIfNeeded
 import io.edna.threads.demo.BaseFilesTestCase
 import io.edna.threads.demo.R
 import io.edna.threads.demo.assert
 import io.edna.threads.demo.kaspressoSreens.ChatMainScreen
+import io.edna.threads.demo.toFile
 import io.edna.threads.demo.waitListForNotEmpty
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.io.File
 
 @RunWith(AndroidJUnit4::class)
 class FilesTest : BaseFilesTestCase() {
+    @get:Rule
+    val intentsTestRule = IntentsRule()
+
+    @Test
+    fun sendFile() {
+        intending(hasAction(Intent.ACTION_OPEN_DOCUMENT)).respondWith(getFileResult())
+        openChatFromDemoLoginPage()
+        ChatMainScreen {
+            val sizeBeforeSend = chatItemsRecyclerView.getSize()
+            assert("Кнопка добавления файла (скрепка) должна быть кликабельной") { addAttachmentBtn.isClickable() }
+            addAttachmentBtn.click()
+            assert("Кнопка добавления файла в нижнем меню должна быть кликабельной") { fileBottomSheenBtn.isClickable() }
+            fileBottomSheenBtn.click()
+            assert("Кнопка отправки файла должна быть кликабельной") { sendMessageBtn.isClickable() }
+            sendMessageBtn.click()
+            assert(chatItemsRecyclerView.getSize() > sizeBeforeSend) { "Размер списка после отправки файла должен быть больше" }
+        }
+    }
+
+    @Test
+    fun sendFileWithText() {
+        intending(hasAction(Intent.ACTION_OPEN_DOCUMENT)).respondWith(getFileResult())
+        openChatFromDemoLoginPage()
+        ChatMainScreen {
+            inputEditView { isVisible() }
+            welcomeScreen { isVisible() }
+
+            inputEditView.typeText(helloTextToSend)
+            val sizeBeforeSend = chatItemsRecyclerView.getSize()
+            assert("Кнопка добавления файла (скрепка) должна быть кликабельной") { addAttachmentBtn.isClickable() }
+            addAttachmentBtn.click()
+            assert("Кнопка добавления файла в нижнем меню должна быть кликабельной") { fileBottomSheenBtn.isClickable() }
+            fileBottomSheenBtn.click()
+            assert("Кнопка отправки файла должна быть кликабельной") { sendMessageBtn.isClickable() }
+            sendMessageBtn.click()
+            assert(chatItemsRecyclerView.getSize() > sizeBeforeSend) { "Размер списка после отправки файла должен быть больше" }
+
+            chatItemsRecyclerView {
+                assert("Список сообщений должен содержать текст: \"${helloTextToSend}\"") {
+                    hasDescendant { containsText(helloTextToSend) }
+                }
+            }
+        }
+    }
+
     @Test
     fun filesHistoryTest() {
         prepareHttpMocks(historyAnswer = readTextFileFromRawResourceId(R.raw.history_files_response))
@@ -89,5 +145,16 @@ class FilesTest : BaseFilesTestCase() {
                 }
             }
         }
+    }
+
+    private fun getFileResult(): Instrumentation.ActivityResult {
+        val resultData = Intent()
+        val file = File(context.filesDir, "test_image2.jpg")
+        if (!file.exists()) {
+            file.deleteOnExit()
+            context.assets.open("test_files/test_image2.jpg").toFile(file.createFileIfNeeded())
+        }
+        resultData.data = Uri.fromFile(file)
+        return Instrumentation.ActivityResult(Activity.RESULT_OK, resultData)
     }
 }

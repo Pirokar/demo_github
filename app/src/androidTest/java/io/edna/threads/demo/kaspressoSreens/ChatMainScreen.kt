@@ -46,6 +46,7 @@ object ChatMainScreen : KScreen<ChatMainScreen>() {
     val recordButton = KImageView { withId(R.id.record_button) }
     val playPauseButton = KImageView { withId(R.id.quote_button_play_pause) }
     val quoteSlider = KSlider { withId(R.id.quote_slider) }
+    val fileBottomSheenBtn = KButton { withId(R.id.file) }
 
     val chatItemsRecyclerView = KRecyclerView(
         builder = { withId(R.id.chatItemsRecycler) },
