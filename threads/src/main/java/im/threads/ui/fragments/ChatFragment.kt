@@ -115,7 +115,6 @@ import im.threads.ui.activities.filesActivity.FilesActivity.Companion.startActiv
 import im.threads.ui.adapters.ChatAdapter
 import im.threads.ui.config.Config
 import im.threads.ui.controllers.ChatController
-import im.threads.ui.files.FileSelectedListener
 import im.threads.ui.fragments.PermissionDescriptionAlertFragment.Companion.newInstance
 import im.threads.ui.fragments.PermissionDescriptionAlertFragment.OnAllowPermissionClickListener
 import im.threads.ui.holders.BaseHolder.Companion.statuses
@@ -165,7 +164,6 @@ class ChatFragment :
     AttachmentBottomSheetDialogFragment.Callback,
     ProgressReceiver.Callback,
     PopupMenu.OnMenuItemClickListener,
-    FileSelectedListener,
     ChatCenterAudioConverterCallback,
     OnAllowPermissionClickListener {
 
@@ -2369,15 +2367,6 @@ class ChatFragment :
                 .setType("*/*"),
             REQUEST_CODE_FILE
         )
-    }
-
-    override fun onFileSelected(file: File?) {
-        val uri = if (file != null) fileProvider.getUriForFile(requireContext(), file) else null
-        if (uri != null && canBeSent(requireContext(), uri)) {
-            onFileResult(uri)
-        } else {
-            show(requireContext(), getString(R.string.ecc_failed_to_open_file))
-        }
     }
 
     fun setClientNotificationDisplayType(type: ClientNotificationDisplayType?) {
