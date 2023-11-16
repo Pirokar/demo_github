@@ -73,7 +73,6 @@ class FilesTest : BaseFilesTestCase() {
         openChatFromDemoLoginPage()
         ChatMainScreen {
             chatItemsRecyclerView {
-                waitListForNotEmpty(5000)
                 childAt<ChatMainScreen.ChatRecyclerItem>(5) {
                     val textToCheck = "Интересный файл"
                     assert("Элемент с индексом 5 должен содержать текст: \"$textToCheck\"") {

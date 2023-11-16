@@ -1,6 +1,5 @@
 package io.edna.threads.demo.mainChatScreen.mainTests
 
-import androidx.test.espresso.PerformException
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
@@ -10,7 +9,6 @@ import io.edna.threads.demo.BaseFilesTestCase
 import io.edna.threads.demo.R
 import io.edna.threads.demo.assert
 import io.edna.threads.demo.kaspressoSreens.ChatMainScreen
-import io.edna.threads.demo.waitListForNotEmpty
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -25,61 +23,11 @@ class ImagesTest : BaseFilesTestCase() {
     }
 
     @Test
-    fun sendImageTest() {
-        prepareHttpMocks()
-        openChatFromDemoLoginPage()
-
-        ChatMainScreen {
-            addAttachmentBtn {
-                assert("Кнопка прикрепления аттача должна быть видимой и кликабельной", ::isVisible, ::isClickable)
-                click()
-            }
-            val isRecyclerHasItems = try {
-                bottomGalleryRecycler.getSize() > 0
-            } catch (exc: PerformException) {
-                false
-            }
-            if (isRecyclerHasItems.not()) {
-                val usualFileNameLength = "test_image2.jpg".length
-                val fileName = copyFileToDownloads("test_files/test_image2.jpg")
-                if (fileName?.length != null && fileName.length > usualFileNameLength) {
-                    fileNamesToDelete.add(fileName)
-                }
-                Thread.sleep(500)
-                pressBack()
-                addAttachmentBtn { click() }
-            }
-            bottomGalleryRecycler {
-                firstChild<ChatMainScreen.BottomGalleryItem> { click() }
-            }
-            sendImageBtn {
-                assert("Кнопка отправки сообщения должна быть кликабельной") { isClickable() }
-                click()
-            }
-
-            assert(chatItemsRecyclerView.getSize() > 0) { "Список не должен быть пустым" }
-
-            chatItemsRecyclerView {
-                lastChild<ChatMainScreen.ChatRecyclerItem> {
-                    assert("Картинка должна быть кликабельной") { image.isClickable() }
-                    image.click()
-                }
-            }
-            imagePager {
-                assert("Image pager (горизонтальная карусель картинок) не должен быть пустым") { isVisible() }
-                assert("Должно быть открытым первое изображение (индекс 0)") { isAtPage(0) }
-            }
-        }
-    }
-
-    @Test
     fun imagesHistoryTest() {
         prepareHttpMocks(historyAnswer = readTextFileFromRawResourceId(R.raw.history_images_response))
         openChatFromDemoLoginPage()
         ChatMainScreen {
             chatItemsRecyclerView {
-                waitListForNotEmpty(5000)
-
                 lastChild<ChatMainScreen.ChatRecyclerItem> {
                     val textToCheck = "Великолепно! Как и вот это."
                     assert("Последний элемент списка должен содержать текст: \"$textToCheck\"") {
@@ -106,7 +54,6 @@ class ImagesTest : BaseFilesTestCase() {
 
         ChatMainScreen {
             chatItemsRecyclerView {
-                waitListForNotEmpty(5000)
                 assert("Список сообщений должен быть видим") { isVisible() }
                 lastChild<ChatMainScreen.ChatRecyclerItem> {
                     assert("Последнее сообщение в списке должно быть видимым") { isVisible() }

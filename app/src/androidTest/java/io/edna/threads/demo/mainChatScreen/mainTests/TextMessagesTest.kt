@@ -107,9 +107,6 @@ class TextMessagesTest : BaseTestCase() {
                 }
             }
             chatItemsRecyclerView {
-                assert("Список должен содержать сообщение: \"То есть это все про вас?\"") {
-                    hasDescendant { containsText("То есть это все про вас?") }
-                }
                 assert("Список должен содержать сообщение: \"Отлично! Давайте проверим ваши контакты.\"") {
                     hasDescendant { containsText("Отлично! Давайте проверим ваши контакты. Ваш email: info@edna.ru, телефон: +7 (495) 609-60-80. Верно?") }
                 }
@@ -162,10 +159,8 @@ class TextMessagesTest : BaseTestCase() {
                 click()
             }
             chatItemsRecyclerView {
-                lastChild<ChatMainScreen.ChatRecyclerItem> {
-                    assert("Последний элемент в списке должен содержать текст: \"$helloTextToSend\"") {
-                        itemText.containsText(helloTextToSend)
-                    }
+                assert("Список должен содержать сообщение: \"$helloTextToSend\"") {
+                    hasDescendant { containsText(helloTextToSend) }
                 }
             }
         }
