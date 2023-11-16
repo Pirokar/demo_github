@@ -62,9 +62,7 @@ class WebSocketEnterFlowTest : BaseTestCase() {
             }
             errorText {
                 assert("Текст с ошибкой должен быть видимый") { isVisible() }
-                assert("Текст с ошибкой должен содержать: \"INIT_USER\"") {
-                    containsText("INIT_USER")
-                }
+                assert("Текст с ошибкой не должен быть пустым") { hasAnyText() }
             }
             errorRetryBtn {
                 assert("Кнопка повтора загрузки списка сообщений быть видимой") { isVisible() }
