@@ -50,7 +50,7 @@ open class BaseFilesTestCase : BaseTestCase() {
     }
 
     @After
-    fun after() {
+    open fun after() {
         if (fileNamesToDelete.isNotEmpty()) {
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)?.absolutePath?.let { downloadsPath ->
                 fileNamesToDelete.forEach {

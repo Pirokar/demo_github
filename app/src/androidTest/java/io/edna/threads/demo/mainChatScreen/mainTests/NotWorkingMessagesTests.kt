@@ -125,109 +125,125 @@ class NotWorkingMessagesTests : BaseTestCase() {
         }
     }
 
-    private fun checkSendMessageFromClient() {
-        ChatMainScreen {
-            welcomeScreen { isVisible() }
-            inputEditView { isVisible() }
-            inputEditView.typeText(textToSend)
-            sendMessageBtn {
-                isVisible()
-                click()
-            }
-            chatItemsRecyclerView {
-                isVisible()
-                hasDescendant { containsText(textToSend) }
-            }
-        }
-    }
-
     private fun checkInputFieldsEnabledHasNotificationMessage() {
         ChatMainScreen {
-            welcomeScreen { isNotDisplayed() }
-            inputEditView { isVisible() }
-            chatItemsRecyclerView {
-                isVisible()
-                hasDescendant { containsText(scheduleNotificationMessage) }
+            io.edna.threads.demo.assert("Приветственное сообщение не должно отображаться") {
+                welcomeScreen.isNotDisplayed()
+            }
+            io.edna.threads.demo.assert("Поле ввода должно отображаться") {
+                inputEditView.isVisible()
+            }
+            io.edna.threads.demo.assert("В списке сообщений должно отображатся сообщение с текстом: \"$scheduleNotificationMessage\"") {
+                chatItemsRecyclerView.isVisible()
+                chatItemsRecyclerView.hasDescendant { containsText(scheduleNotificationMessage) }
             }
             inputEditView.typeText(textToSend)
-            sendMessageBtn {
-                isVisible()
-                click()
+            io.edna.threads.demo.assert("Кнопка \"Отправить\" должны отображаться") {
+                sendMessageBtn.isVisible()
+                sendMessageBtn.click()
             }
-            chatItemsRecyclerView {
-                isVisible()
-                hasDescendant { containsText(textToSend) }
+            io.edna.threads.demo.assert("В списке сообщений должно отображатся сообщение с текстом: \"$textToSend\"") {
+                chatItemsRecyclerView.isVisible()
+                chatItemsRecyclerView.hasDescendant { containsText(textToSend) }
             }
         }
     }
 
     private fun checkInputFieldsDisabledHasNotificationMessage() {
         ChatMainScreen {
-            welcomeScreen { isNotDisplayed() }
-            inputEditView {
-                isVisible()
-                isDisabled()
+            io.edna.threads.demo.assert("Приветственное сообщение не должно отображаться") {
+                welcomeScreen.isNotDisplayed()
             }
-            chatItemsRecyclerView {
-                isVisible()
-                hasDescendant { containsText(scheduleNotificationMessage) }
+            io.edna.threads.demo.assert("Поле ввода должно отображаться") {
+                inputEditView.isVisible()
             }
-            sendMessageBtn { isDisabled() }
+            io.edna.threads.demo.assert("В списке сообщений должно отображатся сообщение с текстом: \"$scheduleNotificationMessage\"") {
+                chatItemsRecyclerView.isVisible()
+                chatItemsRecyclerView.hasDescendant { containsText(scheduleNotificationMessage) }
+            }
+            io.edna.threads.demo.assert("Кнопка \"Отправить\" должны быть неактивной") {
+                sendMessageBtn.isDisabled()
+            }
         }
     }
 
     private fun checkInputFieldsDisabledHasNotificationMessageWithMessageFromConsultant() {
         ChatMainScreen {
-            welcomeScreen { isNotDisplayed() }
-            inputEditView {
-                isVisible()
-                isDisabled()
+            io.edna.threads.demo.assert("Приветственное сообщение не должно отображаться") {
+                welcomeScreen.isNotDisplayed()
             }
-            chatItemsRecyclerView {
-                isVisible()
-                hasDescendant { containsText(scheduleNotificationMessage) }
+            io.edna.threads.demo.assert("Поле ввода должно отображаться") {
+                inputEditView.isVisible()
             }
-            sendMessageBtn { isDisabled() }
+            io.edna.threads.demo.assert("В списке сообщений должно отображатся сообщение с текстом: \"$scheduleNotificationMessage\"") {
+                chatItemsRecyclerView.isVisible()
+                chatItemsRecyclerView.hasDescendant { containsText(scheduleNotificationMessage) }
+            }
+            io.edna.threads.demo.assert("Кнопка \"Отправить\" должны быть неактивной") {
+                sendMessageBtn.isDisabled()
+            }
             sendMessageToSocket(operatorHelloMessage)
-            chatItemsRecyclerView {
-                isVisible()
-                hasDescendant { containsText(operatorHelloMessageText) }
+            io.edna.threads.demo.assert("В списке сообщений должно отображатся сообщение с текстом: \"$operatorHelloMessageText\"") {
+                chatItemsRecyclerView.isVisible()
+                chatItemsRecyclerView.hasDescendant { containsText(operatorHelloMessageText) }
             }
         }
     }
 
     private fun checkInputFieldsEnabledHasNotificationMessageWithMessageFromConsultant() {
         ChatMainScreen {
-            welcomeScreen { isNotDisplayed() }
-            inputEditView { isVisible() }
-            chatItemsRecyclerView {
-                isVisible()
-                hasDescendant { containsText(scheduleNotificationMessage) }
+            io.edna.threads.demo.assert("Приветственное сообщение не должно отображаться") {
+                welcomeScreen.isNotDisplayed()
+            }
+            io.edna.threads.demo.assert("Поле ввода должно отображаться") {
+                inputEditView.isVisible()
+            }
+            io.edna.threads.demo.assert("В списке сообщений должно отображатся сообщение с текстом: \"$scheduleNotificationMessage\"") {
+                chatItemsRecyclerView.isVisible()
+                chatItemsRecyclerView.hasDescendant { containsText(scheduleNotificationMessage) }
             }
             inputEditView.typeText(textToSend)
-            sendMessageBtn {
-                isVisible()
-                click()
+            io.edna.threads.demo.assert("Кнопка \"Отправить\" должны отображаться") {
+                sendMessageBtn.isVisible()
+                sendMessageBtn.click()
             }
-            chatItemsRecyclerView {
-                isVisible()
-                hasDescendant { containsText(textToSend) }
+            io.edna.threads.demo.assert("В списке сообщений должно отображатся сообщение с текстом: \"$textToSend\"") {
+                chatItemsRecyclerView.isVisible()
+                chatItemsRecyclerView.hasDescendant { containsText(textToSend) }
             }
             sendMessageToSocket(operatorHelloMessage)
-            chatItemsRecyclerView {
-                isVisible()
-                hasDescendant { containsText(operatorHelloMessageText) }
+            io.edna.threads.demo.assert("В списке сообщений должно отображатся сообщение с текстом: \"$operatorHelloMessageText\"") {
+                chatItemsRecyclerView.isVisible()
+                chatItemsRecyclerView.hasDescendant { containsText(operatorHelloMessageText) }
+            }
+        }
+    }
+
+    private fun checkSendMessageFromClient() {
+        ChatMainScreen {
+            io.edna.threads.demo.assert("Поле ввода и приветственное сообщение должны отображаться") {
+                welcomeScreen.isVisible()
+                inputEditView.isVisible()
+            }
+            inputEditView.typeText(textToSend)
+            io.edna.threads.demo.assert("Кнопка \"Отправить\" должна отображаться") {
+                sendMessageBtn.isVisible()
+                sendMessageBtn.click()
+            }
+            io.edna.threads.demo.assert("В списке сообщений должно отображатся сообщение с текстом: \"$textToSend\"") {
+                chatItemsRecyclerView.isVisible()
+                chatItemsRecyclerView.hasDescendant { containsText(textToSend) }
             }
         }
     }
 
     private fun checkInputFieldsNoClientInfoResponse() {
         ChatMainScreen {
-            welcomeScreen { isNotDisplayed() }
-            inputEditView {
-                isNotDisplayed()
+            io.edna.threads.demo.assert("Поле ввода, кнопка отправить и приветственное сообщение не должны отображаться") {
+                welcomeScreen.isNotDisplayed()
+                inputEditView.isNotDisplayed()
+                sendMessageBtn.isNotDisplayed()
             }
-            sendMessageBtn { isNotDisplayed() }
         }
     }
 }
