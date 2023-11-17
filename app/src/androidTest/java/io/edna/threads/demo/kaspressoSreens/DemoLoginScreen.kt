@@ -10,4 +10,5 @@ object DemoLoginScreen : KScreen<DemoLoginScreen>() {
     override val viewClass: Class<*> = LaunchFragment::class.java
 
     val loginButton = KButton { withId(R.id.login) }
+    val demoButton = KButton { withId(R.id.demonstrations) }
 }
