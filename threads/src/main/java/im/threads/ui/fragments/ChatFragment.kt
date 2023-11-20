@@ -39,6 +39,7 @@ import androidx.core.util.ObjectsCompat
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.coroutineScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.ListUpdateCallback
 import androidx.recyclerview.widget.RecyclerView
 import com.annimon.stream.Optional
 import com.annimon.stream.Stream
@@ -1526,13 +1527,10 @@ class ChatFragment :
     }
 
     fun addChatItem(item: ChatItem?) = binding?.apply {
-        val layoutManager = chatItemsRecycler.layoutManager as LinearLayoutManager? ?: return@apply
+        val isLastMessageVisible = isLastMessageVisible()
         if (item == null) {
             return@apply
         }
-        val isLastMessageVisible = (
-            chatAdapter!!.itemCount - 1 - layoutManager.findLastVisibleItemPosition() < INVISIBLE_MESSAGES_COUNT
-            )
         if (item is ConsultPhrase) {
             val previouslyRead = item.read
             item.read = (isLastMessageVisible && isResumed && !isInMessageSearchMode)
@@ -1547,13 +1545,22 @@ class ChatFragment :
         if (needsAddMessage(item)) {
             showWelcomeScreen(false)
             addItemsToChat(listOf(item))
-            if (!isLastMessageVisible) {
+            if (!isLastMessageVisible()) {
                 scrollDownButtonContainer.visibility = View.VISIBLE
                 showUnreadMessagesCount(chatController.getUnreadMessagesCount())
             }
             scrollDelayedOnNewMessageReceived(item is UserPhrase, isLastMessageVisible)
         } else if (needsModifyImage(item)) {
             chatAdapter?.modifyImageInItem((item as ChatPhrase).fileDescription)
+        }
+    }
+
+    private fun isLastMessageVisible(): Boolean {
+        val layoutManager = (binding?.chatItemsRecycler?.layoutManager as LinearLayoutManager?) ?: return false
+        return try {
+            chatAdapter!!.itemCount - 1 - layoutManager.findLastVisibleItemPosition() < INVISIBLE_MESSAGES_COUNT
+        } catch (exc: Exception) {
+            false
         }
     }
 
@@ -1656,8 +1663,8 @@ class ChatFragment :
         }
         chatAdapter?.let { chatAdapter ->
             val oldAdapterSize = chatAdapter.list.size
-            val isBottomItemsVisible = chatAdapter.itemCount - 1 - lastVisibleItemPosition < INVISIBLE_MESSAGES_COUNT
             val layoutManager = binding?.chatItemsRecycler?.layoutManager as LinearLayoutManager?
+            val isBottomItemsVisible = chatAdapter.itemCount - 1 - lastVisibleItemPosition < INVISIBLE_MESSAGES_COUNT
             if (layoutManager == null || list.size == 1 && list[0] is ConsultTyping || isInMessageSearchMode) {
                 return
             }
@@ -1668,35 +1675,65 @@ class ChatFragment :
             } else {
                 null
             }
-            addItemsToChat(list, isBottomItemsVisible)
-            val newAdapterSize = chatAdapter.list.size
-            if (oldAdapterSize == 0 || (forceScrollToTheEnd && !isStartSecondLevelScreen())) {
-                handler.postDelayed({ scrollToPosition(chatAdapter.itemCount - 1, false) }, 100)
-                afterResume = false
-                resumeAfterSecondLevelScreen = false
-                return
-            }
-
-            var needScrollDown = false
-            if (list.isNotEmpty()) {
-                val currMinTimeStamp = chatAdapter.list[0].timeStamp
-                val newMinTimeStamp = list[0]?.timeStamp ?: 0
-                needScrollDown = newMinTimeStamp > currMinTimeStamp && !isStartSecondLevelScreen()
-            }
-            if (afterResume) {
-                if ((!isStartSecondLevelScreen() && isBottomItemsVisible && newAdapterSize != oldAdapterSize) || needScrollDown) {
-                    scrollToPosition(chatAdapter.itemCount - 1, false)
-                } else if (lastVisibleItemTimestamp != null) {
-                    layoutManager.scrollToPosition(chatAdapter.getPositionByTimeStamp(lastVisibleItemTimestamp))
+            val listUpdatedCallback = object : ListUpdateCallback {
+                override fun onInserted(position: Int, count: Int) {
+                    updateChatAdapter(
+                        chatAdapter,
+                        layoutManager,
+                        list,
+                        oldAdapterSize,
+                        forceScrollToTheEnd,
+                        isBottomItemsVisible,
+                        lastVisibleItemTimestamp
+                    )
                 }
-            } else if ((isBottomItemsVisible && newAdapterSize > oldAdapterSize) || needScrollDown) {
-                handler.postDelayed({ scrollToPosition(chatAdapter.itemCount - 1, false) }, 100)
+
+                override fun onRemoved(position: Int, count: Int) {}
+                override fun onMoved(fromPosition: Int, toPosition: Int) {}
+                override fun onChanged(position: Int, count: Int, payload: Any?) {}
+            }
+            addItemsToChat(list, listUpdatedCallback, isBottomItemsVisible)
+        }
+    }
+
+    private fun updateChatAdapter(
+        chatAdapter: ChatAdapter,
+        layoutManager: LinearLayoutManager,
+        list: List<ChatItem?>,
+        oldAdapterSize: Int,
+        forceScrollToTheEnd: Boolean,
+        isBottomItemsVisible: Boolean,
+        lastVisibleItemTimestamp: Long?
+    ) {
+        val newAdapterSize = chatAdapter.list.size
+        if (oldAdapterSize == 0 || (forceScrollToTheEnd && !isStartSecondLevelScreen())) {
+            scrollToPosition(chatAdapter.itemCount - 1, false)
+            afterResume = false
+            resumeAfterSecondLevelScreen = false
+            return
+        }
+
+        var needScrollDown = false
+        if (list.isNotEmpty()) {
+            needScrollDown = (
+                oldAdapterSize < newAdapterSize ||
+                    (list.last()?.timeStamp ?: 0) > chatAdapter.list.last().timeStamp &&
+                    !isStartSecondLevelScreen()
+                ) && isLastMessageVisible()
+        }
+        if (afterResume) {
+            if ((!isStartSecondLevelScreen() && isBottomItemsVisible && newAdapterSize != oldAdapterSize) || needScrollDown) {
+                scrollToPosition(chatAdapter.itemCount - 1, false)
             } else if (lastVisibleItemTimestamp != null) {
                 layoutManager.scrollToPosition(chatAdapter.getPositionByTimeStamp(lastVisibleItemTimestamp))
             }
-            afterResume = false
-            resumeAfterSecondLevelScreen = false
+        } else if ((isBottomItemsVisible && newAdapterSize > oldAdapterSize) || needScrollDown) {
+            scrollToPosition(chatAdapter.itemCount - 1, false)
+        } else if (lastVisibleItemTimestamp != null) {
+            layoutManager.scrollToPosition(chatAdapter.getPositionByTimeStamp(lastVisibleItemTimestamp))
         }
+        afterResume = false
+        resumeAfterSecondLevelScreen = false
     }
 
     fun setStateConsultConnected(info: ConsultInfo?) = binding?.apply {
@@ -2714,14 +2751,18 @@ class ChatFragment :
         }
     }
 
-    private fun addItemsToChat(list: List<ChatItem?>?, withAnimation: Boolean = true) {
+    private fun addItemsToChat(
+        list: List<ChatItem?>?,
+        listUpdatedCallback: ListUpdateCallback? = null,
+        withAnimation: Boolean = true
+    ) {
         list?.filterNotNull()?.let {
             if (it.isNotEmpty()) {
                 val isChatReady = chatController.isChatReady()
                 val isAnimationEnabled = withAnimation && isChatReady
                 chatController.removeCorruptedFiles(it) {
                     chatController.setFormattedDurations(it, mediaMetadataRetriever) {
-                        chatAdapter?.addItems(it, isAnimationEnabled)
+                        chatAdapter?.addItems(it, listUpdatedCallback, isAnimationEnabled)
                         if (isChatReady) {
                             hideErrorView()
                             hideProgressBar()

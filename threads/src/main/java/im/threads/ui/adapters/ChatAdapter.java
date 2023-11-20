@@ -19,6 +19,7 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.util.ObjectsCompat;
 import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListUpdateCallback;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.slider.Slider;
@@ -577,7 +578,11 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
     }
 
-    public void addItems(@NonNull List<ChatItem> items, boolean withAnimation) {
+    public void addItems(
+            @NonNull List<ChatItem> items,
+            ListUpdateCallback listUpdateCallback,
+            boolean withAnimation
+    ) {
         boolean withTyping = false;
         boolean withRequestResolveThread = false;
         checkIdsForReplacingToNull(items);
@@ -606,11 +611,18 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         ArrayList<ChatItem> newList = new ArrayList<>(getList());
         chatMessagesOrderer.addAndOrder(newList, items, clientNotificationDisplayType, currentThreadId);
         if (withAnimation) {
-            notifyDatasetChangedWithDiffUtil(newList);
+            notifyDatasetChangedWithDiffUtil(newList, listUpdateCallback);
         } else {
+            int oldSize = getItemCount();
+            int oldPosition = oldSize - 1;
+            if (oldPosition < 0) oldPosition = 0;
             getList().clear();
             getList().addAll(newList);
             notifyDataSetChanged();
+            int newSize = newList.size();
+            if (oldSize != newSize && listUpdateCallback != null) {
+                listUpdateCallback.onInserted(oldPosition, newSize);
+            }
         }
     }
 
@@ -630,12 +642,16 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
     }
 
-    public void notifyDatasetChangedWithDiffUtil(ArrayList<ChatItem> newList) {
+    public void notifyDatasetChangedWithDiffUtil(ArrayList<ChatItem> newList, ListUpdateCallback listUpdateCallback) {
         removeSurveyIfNotLatest(newList);
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new ChatDiffCallback(getList(), newList));
         getList().clear();
         getList().addAll(newList);
-        diffResult.dispatchUpdatesTo(this);
+        if (listUpdateCallback != null) {
+            diffResult.dispatchUpdatesTo(listUpdateCallback);
+        } else {
+            diffResult.dispatchUpdatesTo(this);
+        }
     }
 
     public void modifyImageInItem(FileDescription newFileDescription) {
@@ -1076,12 +1092,12 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     public void setClientNotificationDisplayType(ClientNotificationDisplayType type) {
         this.clientNotificationDisplayType = type;
-        addItems(new ArrayList<>(), true);
+        addItems(new ArrayList<>(), null, true);
     }
 
     public void setCurrentThreadId(long threadId) {
         this.currentThreadId = threadId;
-        addItems(new ArrayList<>(), true);
+        addItems(new ArrayList<>(), null, true);
     }
 
     public void playerUpdate() {
