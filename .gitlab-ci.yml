@@ -15,8 +15,7 @@ cache:
 
 default:
   before_script:
-    - echo $GRADLE_DISTRIBUTION_URL
-    - sed -i -r "s|http.*|$GRADLE_DISTRIBUTION_URL|g" ./gradle/wrapper/gradle-wrapper.properties
+    - export GRADLE_USER_HOME=`pwd`/.gradle
 
 # Выполняется до скриптов 
 # - делаем градл выполняемым 
