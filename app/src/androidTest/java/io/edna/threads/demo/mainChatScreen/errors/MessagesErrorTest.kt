@@ -10,6 +10,7 @@ import androidx.test.uiautomator.UiDevice
 import io.edna.threads.demo.BaseTestCase
 import io.edna.threads.demo.R
 import io.edna.threads.demo.appCode.activity.MainActivity
+import io.edna.threads.demo.assert
 import io.edna.threads.demo.kaspressoSreens.ChatMainScreen
 import io.edna.threads.demo.waitListForNotEmpty
 import org.junit.Rule
@@ -37,14 +38,15 @@ class MessagesErrorTest : BaseTestCase() {
             chatItemsRecyclerView {
                 waitListForNotEmpty(5000)
                 val itemsSize = getSize()
-                isVisible()
-                hasDescendant { containsText(context.getString(im.threads.R.string.ecc_some_error_during_load_file)) }
-                hasDescendant { containsText(context.getString(im.threads.R.string.ecc_some_error_during_load_file)) }
-                hasDescendant { containsText(context.getString(im.threads.R.string.ecc_some_error_during_load_file)) }
+                assert("Список сообщений должен быть видимый") { isVisible() }
+                assert("Список должен содержать сообщение об ошибке при загрузке файла") {
+                    hasDescendant { containsText(context.getString(im.threads.R.string.ecc_some_error_during_load_file)) }
+                }
                 childAt<ChatMainScreen.ChatRecyclerItem>(1) {
-                    itemTime.isVisible()
-                    itemTime.isClickable()
-                    itemTime.click()
+                    itemTime {
+                        assert("Элемент с индексом 1 должен быть видимый и кликабельный", ::isVisible, ::isClickable)
+                        click()
+                    }
                 }
                 val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
                 val menuList = device.findObject(By.clazz("android.widget.ListView")).children
