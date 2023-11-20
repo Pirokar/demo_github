@@ -19,15 +19,12 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
 import android.text.Editable
-import android.text.SpannableString
 import android.text.TextUtils
 import android.text.TextWatcher
-import android.text.style.ForegroundColorSpan
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.HapticFeedbackConstants
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
@@ -111,7 +108,6 @@ import im.threads.ui.activities.ChatActivity
 import im.threads.ui.activities.GalleryActivity
 import im.threads.ui.activities.GalleryActivity.Companion.getStartIntent
 import im.threads.ui.activities.ImagesActivity.Companion.getStartIntent
-import im.threads.ui.activities.filesActivity.FilesActivity.Companion.startActivity
 import im.threads.ui.adapters.ChatAdapter
 import im.threads.ui.config.Config
 import im.threads.ui.controllers.ChatController
@@ -1140,53 +1136,6 @@ class ChatFragment :
         bottomSheetDialogFragment = null
     }
 
-    private fun showPopup() = binding?.apply {
-        val activity = activity ?: return@apply
-        val popup = PopupMenu(activity, popupMenuButton)
-        popup.setOnMenuItemClickListener(this@ChatFragment)
-        val inflater = popup.menuInflater
-        inflater.inflate(R.menu.ecc_menu_main, popup.menu)
-        val menu = popup.menu
-        val searchMenuItem = menu.findItem(R.id.ecc_search)
-        if (searchMenuItem != null) {
-            val s = SpannableString(searchMenuItem.title)
-            s.setSpan(ForegroundColorSpan(ContextCompat.getColor(activity, style.menuItemTextColorResId)), 0, s.length, 0)
-            searchMenuItem.title = s
-            val searchEnabled = resources.getBoolean(config.chatStyle.searchEnabled)
-            searchMenuItem.isVisible = searchEnabled
-        }
-        val filesAndMedia = menu.findItem(R.id.ecc_files_and_media)
-        if (filesAndMedia != null) {
-            val s2 = SpannableString(filesAndMedia.title)
-            s2.setSpan(ForegroundColorSpan(ContextCompat.getColor(activity, style.menuItemTextColorResId)), 0, s2.length, 0)
-            filesAndMedia.title = s2
-        }
-        filesAndMedia?.isVisible = config.filesAndMediaMenuItemEnabled
-        if (isPopupMenuEnabled) {
-            popup.show()
-        }
-    }
-
-    override fun onMenuItemClick(item: MenuItem): Boolean {
-        val activity = activity ?: return false
-        if (item.itemId == R.id.ecc_files_and_media) {
-            if (isInMessageSearchMode) {
-                onActivityBackPressed()
-            }
-            startActivity(activity)
-            return true
-        }
-        if (item.itemId == R.id.ecc_search) {
-            if (!isInMessageSearchMode) {
-                search()
-                binding?.chatBackButton.visible()
-            } else {
-                return true
-            }
-        }
-        return false
-    }
-
     private fun onReplyClick(cp: ChatPhrase, position: Int) {
         hideCopyControls()
         scrollToPosition(position, true)
@@ -2092,7 +2041,7 @@ class ChatFragment :
     }
 
     private val isPopupMenuEnabled: Boolean
-        get() = (resources.getBoolean(config.chatStyle.searchEnabled) || config.filesAndMediaMenuItemEnabled)
+        get() = (resources.getBoolean(config.chatStyle.searchEnabled))
 
     private fun initToolbar() = binding?.apply {
         val activity = activity ?: return@apply
@@ -2103,9 +2052,14 @@ class ChatFragment :
         chatBackButton.setOnClickListener { onActivityBackPressed() }
         chatBackButton.setImageResource(style.chatToolbarBackIconResId)
         ColorsHelper.setTint(activity, chatBackButton, style.chatToolbarTextColorResId)
-        popupMenuButton.setImageResource(style.chatToolbarPopUpMenuIconResId)
+        popupMenuButton.setImageResource(style.searchIconResId)
         ColorsHelper.setTint(activity, popupMenuButton, style.chatToolbarTextColorResId)
-        popupMenuButton.setOnClickListener { showPopup() }
+        popupMenuButton.setOnClickListener {
+            if (!isInMessageSearchMode) {
+                search()
+                binding?.chatBackButton.visible()
+            }
+        }
         popupMenuButton.visibility = if (isPopupMenuEnabled) View.VISIBLE else View.GONE
         showOverflowMenu()
         contentCopy.setImageResource(style.chatToolbarContentCopyIconResId)
