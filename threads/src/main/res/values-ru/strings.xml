@@ -16,7 +16,6 @@
     <string name="ecc_repeat_sending">Повторить отправку</string>
     <string name="ecc_delete">Удалить</string>
     <string name="ecc_search_messages">Поиск сообщений</string>
-    <string name="ecc_files_and_media">Медиа и файлы</string>
     <string name="ecc_recently">Недавно</string>
     <string name="ecc_yesterday">Вчера</string>
     <string name="ecc_photos">Фотографии</string>
@@ -33,7 +32,6 @@
     <string name="ecc_operator">Оператор</string>
 
     <string name="ecc_error_no_file">Файл удалён на сервере</string>
-    <string name="ecc_no_media_and_files_header">Медиа-файлы отсутствуют</string>
     <string name="ecc_no_media_and_files_description">Добавьте новые с помощью кнопки\n«Прикрепить» на экране чата</string>
     <string name="ecc_I">Я</string>
     <string name="ecc_choose_file">Выберите файл</string>
