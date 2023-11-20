@@ -159,7 +159,6 @@ class ChatFragment :
     BaseFragment(),
     AttachmentBottomSheetDialogFragment.Callback,
     ProgressReceiver.Callback,
-    PopupMenu.OnMenuItemClickListener,
     ChatCenterAudioConverterCallback,
     OnAllowPermissionClickListener {
 
