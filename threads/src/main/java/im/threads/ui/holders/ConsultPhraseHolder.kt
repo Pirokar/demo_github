@@ -159,15 +159,14 @@ class ConsultPhraseHolder(
         changeHighlighting(highlighted)
 
         if (consultPhrase.modified == ModificationStateEnum.DELETED) {
-            phraseTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, itemView.getContext().resources.getDimension(style.systemMessageTextSize))
-            phraseTextView.setTextColor(ContextCompat.getColor(itemView.getContext(), style.systemMessageTextColorResId))
+            phraseTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, itemView.context.resources.getDimension(style.systemMessageTextSize))
+            phraseTextView.setTextColor(ContextCompat.getColor(itemView.context, style.systemMessageTextColorResId))
             phraseTextView.bindTimestampView(timeStampTextView)
             phraseTextView.visible()
-            phraseTextView.text = this.parent.context.getString(R.string.ecc_message_deleted)
+            phraseTextView.text = itemView.context.getString(R.string.ecc_message_deleted)
         } else {
             viewUtils.setClickListener(itemView as ViewGroup, onRowLongClickListener)
             setTextColorToViews(arrayOf(phraseTextView), style.incomingMessageTextColor)
-            phraseTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, itemView.getContext().resources.getDimension(R.dimen.ecc_text_medium))
             phraseTextView.text = ""
             consultPhrase.phraseText?.let {
                 showPhrase(consultPhrase, it.trim())

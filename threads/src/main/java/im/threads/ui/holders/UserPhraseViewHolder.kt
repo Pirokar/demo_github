@@ -35,6 +35,7 @@ import im.threads.business.models.MessageStatus
 import im.threads.business.models.Quote
 import im.threads.business.models.UserPhrase
 import im.threads.business.models.enums.AttachmentStateEnum
+import im.threads.business.models.enums.ModificationStateEnum
 import im.threads.business.ogParser.OGDataContent
 import im.threads.business.ogParser.OpenGraphParser
 import im.threads.business.utils.FileUtils.isImage
@@ -437,40 +438,47 @@ class UserPhraseViewHolder(
 
     private fun showQuote(quote: Quote, onQuoteClickListener: View.OnClickListener?) {
         quoteTextRow.visible()
-        viewUtils.setClickListener(quoteTextRow, onQuoteClickListener)
-        quoteTextDescription.text = quote.text
-        quoteTextHeader.text = quote.phraseOwnerTitle
-        val timeStampText = parentView.context.resources.getString(
-            R.string.ecc_sent_at,
-            fileSdf.format(Date(quote.timeStamp))
-        )
-        quoteTextTimeStamp.text = timeStampText
-        quote.fileDescription?.let {
-            if (isImage(it)) {
-                quoteImage.visible()
-                var downloadPath: String? = ""
-                if (it.fileUri != null) {
-                    downloadPath = it.fileUri.toString()
-                } else if (it.downloadPath != null) {
-                    downloadPath = it.downloadPath
-                }
-                if (!downloadPath.isNullOrEmpty()) {
-                    get()
-                        .autoRotateWithExif(true)
-                        .load(downloadPath)
-                        .scales(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP)
-                        .errorDrawableResourceId(style.imagePlaceholder)
-                        .into(quoteImage)
+        if (quote.modified == ModificationStateEnum.DELETED) {
+            quoteTextDescription.setTextColor(ContextCompat.getColor(itemView.context, style.systemMessageTextColorResId))
+            quoteTextDescription.visible()
+            quoteTextDescription.text = itemView.context.getString(R.string.ecc_message_deleted)
+        } else {
+            quoteTextDescription.setTextColor(ContextCompat.getColor(itemView.context, style.outgoingMessageTextColor))
+            viewUtils.setClickListener(quoteTextRow, onQuoteClickListener)
+            quoteTextDescription.text = quote.text
+            quoteTextHeader.text = quote.phraseOwnerTitle
+            val timeStampText = parentView.context.resources.getString(
+                R.string.ecc_sent_at,
+                fileSdf.format(Date(quote.timeStamp))
+            )
+            quoteTextTimeStamp.text = timeStampText
+            quote.fileDescription?.let {
+                if (isImage(it)) {
+                    quoteImage.visible()
+                    var downloadPath: String? = ""
+                    if (it.fileUri != null) {
+                        downloadPath = it.fileUri.toString()
+                    } else if (it.downloadPath != null) {
+                        downloadPath = it.downloadPath
+                    }
+                    if (!downloadPath.isNullOrEmpty()) {
+                        get()
+                            .autoRotateWithExif(true)
+                            .load(downloadPath)
+                            .scales(ImageView.ScaleType.FIT_XY, ImageView.ScaleType.CENTER_CROP)
+                            .errorDrawableResourceId(style.imagePlaceholder)
+                            .into(quoteImage)
+                    } else {
+                        quoteImage.setImageResource(style.imagePlaceholder)
+                    }
+                    if (onQuoteClickListener != null) {
+                        quoteImage.setOnClickListener(onQuoteClickListener)
+                    }
+                } else if (isVoiceMessage(it)) {
+                    quoteTextDescription.setText(R.string.ecc_voice_message)
                 } else {
-                    quoteImage.setImageResource(style.imagePlaceholder)
+                    quoteTextDescription.setText(R.string.ecc_file)
                 }
-                if (onQuoteClickListener != null) {
-                    quoteImage.setOnClickListener(onQuoteClickListener)
-                }
-            } else if (isVoiceMessage(it)) {
-                quoteTextDescription.setText(R.string.ecc_voice_message)
-            } else {
-                quoteTextDescription.setText(R.string.ecc_file)
             }
         }
     }

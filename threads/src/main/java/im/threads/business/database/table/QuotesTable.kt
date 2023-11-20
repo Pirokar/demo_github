@@ -4,6 +4,7 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.text.TextUtils
 import im.threads.business.models.Quote
+import im.threads.business.models.enums.ModificationStateEnum
 import java.util.Locale
 
 class QuotesTable(private val fileDescriptionsTable: FileDescriptionsTable) : Table() {
@@ -46,7 +47,13 @@ class QuotesTable(private val fileDescriptionsTable: FileDescriptionsTable) : Ta
                         sqlHelper,
                         cGetString(c, COLUMN_QUOTE_UUID)
                     ),
-                    cGetLong(c, COLUMN_QUOTE_TIMESTAMP)
+                    cGetLong(c, COLUMN_QUOTE_TIMESTAMP),
+                    ModificationStateEnum.fromString(
+                        cGetString(
+                            c,
+                            COLUMN_MODIFICATION_STATE
+                        )
+                    )
                 )
             }
         }
@@ -60,5 +67,6 @@ class QuotesTable(private val fileDescriptionsTable: FileDescriptionsTable) : Ta
         private const val COLUMN_QUOTE_BODY = "COLUMN_QUOTE_BODY"
         private const val COLUMN_QUOTE_TIMESTAMP = "COLUMN_QUOTE_TIMESTAMP"
         private const val COLUMN_QUOTED_BY_MESSAGE_UUID_EXT = "COLUMN_QUOTED_BY_MESSAGE_UUID_EXT"
+        private const val COLUMN_MODIFICATION_STATE = "COLUMN_MODIFICATION_STATE"
     }
 }

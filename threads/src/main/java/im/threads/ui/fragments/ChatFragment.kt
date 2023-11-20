@@ -83,6 +83,7 @@ import im.threads.business.models.SystemMessage
 import im.threads.business.models.UnreadMessages
 import im.threads.business.models.UpcomingUserMessage
 import im.threads.business.models.UserPhrase
+import im.threads.business.models.enums.ModificationStateEnum
 import im.threads.business.serviceLocator.core.inject
 import im.threads.business.useractivity.UserActivityTimeProvider.getLastUserActivityTimeCounter
 import im.threads.business.utils.Balloon.show
@@ -239,7 +240,14 @@ class ChatFragment :
                 return
             }
             val uid = UUID.randomUUID().toString()
-            mQuote = Quote(uid, campaignMessage.senderName, campaignMessage.text, null, campaignMessage.receivedDate.time)
+            mQuote = Quote(
+                uid,
+                campaignMessage.senderName,
+                campaignMessage.text,
+                null,
+                campaignMessage.receivedDate.time,
+                ModificationStateEnum.NONE
+            )
             this.campaignMessage = campaignMessage
             quoteLayoutHolder?.setContent(
                 campaignMessage.senderName,
@@ -1157,7 +1165,8 @@ class ChatFragment :
                 consultPhrase.consultName ?: requireContext().getString(R.string.ecc_consult),
                 consultPhrase.phraseText,
                 consultPhrase.fileDescription,
-                consultPhrase.timeStamp
+                consultPhrase.timeStamp,
+                consultPhrase.modified
             )
             mQuote?.isFromConsult = true
             mQuote?.quotedPhraseConsultId = consultPhrase.consultId
