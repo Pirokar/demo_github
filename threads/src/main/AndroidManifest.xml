@@ -38,9 +38,6 @@
             android:name=".ui.activities.ConsultActivity"
             android:theme="@style/ThreadsStyleConsultPage"/>
         <activity
-            android:name=".ui.activities.filesActivity.FilesActivity"
-            android:theme="@style/ThreadsStyle"/>
-        <activity
             android:name=".ui.activities.ImagesActivity"
             android:theme="@style/ThreadsGalleryStyle"/>
         <activity

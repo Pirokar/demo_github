@@ -85,7 +85,7 @@ class UserFileViewHolder(
         ColorsHelper.setTextColor(errorTextView, style.errorMessageTextColor)
         itemView.findViewById<View>(R.id.delimiter).setBackgroundColor(getColorInt(style.outgoingDelimitersColor))
         setUpProgressButton(circularProgressButton)
-        loader.invisible()
+        loader.gone()
         circularProgressButton.invisible()
     }
 
@@ -146,6 +146,7 @@ class UserFileViewHolder(
                 }
                 MessageStatus.SENT, MessageStatus.ENQUEUED -> {
                     showNormalBubble()
+                    loader.gone()
                     getColoredDrawable(
                         style.messageSentIconResId,
                         style.messageSentIconColorResId
@@ -153,6 +154,7 @@ class UserFileViewHolder(
                 }
                 MessageStatus.DELIVERED -> {
                     showNormalBubble()
+                    loader.gone()
                     getColoredDrawable(
                         style.messageDeliveredIconResId,
                         style.messageDeliveredIconColorResId
@@ -160,6 +162,7 @@ class UserFileViewHolder(
                 }
                 MessageStatus.READ -> {
                     showNormalBubble()
+                    loader.gone()
                     getColoredDrawable(
                         style.messageReadIconResId,
                         style.messageReadIconColorResId
@@ -168,6 +171,7 @@ class UserFileViewHolder(
                 MessageStatus.FAILED -> {
                     showErrorBubble()
                     scrollToErrorIfAppearsFirstTime()
+                    loader.gone()
                     getColoredDrawable(
                         style.messageFailedIconResId,
                         style.messageFailedIconColorResId
@@ -244,7 +248,7 @@ class UserFileViewHolder(
         val progress = if (fileDescription?.fileUri != null) 100 else fileDescription?.downloadProgress
         circularProgressButton.setProgress(progress ?: 100)
         circularProgressButton.visible()
-        loader.invisible()
+        loader.gone()
     }
 
     private fun showLoader() {

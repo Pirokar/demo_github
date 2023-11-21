@@ -48,6 +48,9 @@ public final class ChatStyle implements Serializable {
     @ColorRes
     public int searchLoaderColorTint = R.color.ecc_white;
 
+    @DrawableRes
+    public int searchIconResId = R.drawable.ecc_ic_search_white_24dp;
+
     @ColorRes
     public int searchResultsDividerColor = R.color.ecc_search_divider_color;
 
@@ -430,46 +433,6 @@ public final class ChatStyle implements Serializable {
     public int attachmentFileIconResId = R.drawable.ecc_ic_file_fill_42dp;
     @DrawableRes
     public int attachmentSendIconResId = R.drawable.ecc_ic_send_42dp;
-
-    // Media and files screen
-    @BoolRes
-    public int filesAndMediaItemEnabled = R.bool.ecc_files_and_media_enabled;
-    @BoolRes
-    public int mediaAndFilesWindowLightStatusBarResId = R.bool.ecc_chat_is_light_status_bar;
-    @ColorRes
-    public int mediaAndFilesStatusBarColorResId = R.color.ecc_chat_status_bar;
-    @ColorRes
-    public int mediaAndFilesToolbarColorResId = R.color.ecc_chat_toolbar;
-    @ColorRes
-    public int mediaAndFilesToolbarTextColorResId = R.color.ecc_chat_toolbar_text;
-    @ColorRes
-    public int mediaAndFilesToolbarHintTextColor = R.color.ecc_chat_toolbar_hint;
-    @ColorRes
-    public int mediaAndFilesScreenBackgroundColor = R.color.ecc_files_medias_screen_background;
-    @ColorRes
-    public int mediaAndFilesTextColor = R.color.ecc_files_list;
-    @ColorRes
-    public int mediaAndFilesFileIconTintResId = R.color.ecc_green_83b144;
-    @DrawableRes
-    public int mediaAndFilesFileIconResId = R.drawable.ecc_ic_file_fill_36dp;
-
-    // Empty Media and files screen header
-    @StringRes
-    public int emptyMediaAndFilesHeaderText = R.string.ecc_no_media_and_files_header;
-    public String emptyMediaAndFilesHeaderFontPath;
-    @DimenRes
-    public int emptyMediaAndFilesHeaderTextSize = R.dimen.ecc_text_medium;
-    @ColorRes
-    public int emptyMediaAndFilesHeaderTextColor = R.color.ecc_files_list;
-
-    // Empty Media and files screen description
-    @StringRes
-    public int emptyMediaAndFilesDescriptionText = R.string.ecc_no_media_and_files_description;
-    public String emptyMediaAndFilesDescriptionFontPath;
-    @DimenRes
-    public int emptyMediaAndFilesDescriptionTextSize = R.dimen.ecc_text_regular;
-    @ColorRes
-    public int emptyMediaAndFilesDescriptionTextColor = R.color.ecc_files_list;
 
     // push notification style
     @DrawableRes
@@ -957,107 +920,6 @@ public final class ChatStyle implements Serializable {
         return this;
     }
 
-    // <editor-fold defaultState="collapsed" desc="MediaAndFiles Screen">
-    public ChatStyle setFilesAndMediaItemEnabled(@BoolRes final int filesAndMediaItemEnabled) {
-        this.filesAndMediaItemEnabled = filesAndMediaItemEnabled;
-        return this;
-    }
-
-    public ChatStyle setMediaAndFilesWindowLightStatusBarResId(@BoolRes final int mediaAndFilesWindowLightStatusBarResId) {
-        this.mediaAndFilesWindowLightStatusBarResId = mediaAndFilesWindowLightStatusBarResId;
-        return this;
-    }
-
-    public ChatStyle setMediaAndFilesStatusBarColorResId(@ColorRes final int mediaAndFilesStatusBarColorResId) {
-        this.mediaAndFilesStatusBarColorResId = mediaAndFilesStatusBarColorResId;
-        return this;
-    }
-
-    public ChatStyle setMediaAndFilesToolbarColorResId(@ColorRes final int mediaAndFilesToolbarColorResId) {
-        this.mediaAndFilesToolbarColorResId = mediaAndFilesToolbarColorResId;
-        return this;
-    }
-
-    public ChatStyle setMediaAndFilesToolbarTextColorResId(@ColorRes final int mediaAndFilesToolbarTextColorResId) {
-        this.mediaAndFilesToolbarTextColorResId = mediaAndFilesToolbarTextColorResId;
-        return this;
-    }
-
-    public ChatStyle setMediaAndFilesToolbarHintTextColor(@ColorRes final int mediaAndFilesToolbarHintTextColor) {
-        this.mediaAndFilesToolbarHintTextColor = mediaAndFilesToolbarHintTextColor;
-        return this;
-    }
-
-    public ChatStyle setMediaAndFilesScreenBackgroundColor(@ColorRes final int mediaAndFilesScreenBackgroundColor) {
-        this.mediaAndFilesScreenBackgroundColor = mediaAndFilesScreenBackgroundColor;
-        return this;
-    }
-
-    public ChatStyle setMediaAndFilesTextColor(@ColorRes final int mediaAndFilesTextColor) {
-        this.mediaAndFilesTextColor = mediaAndFilesTextColor;
-        return this;
-    }
-
-    public ChatStyle setMediaAndFilesFileIconTintResId(@ColorRes final int mediaAndFilesFileIconTintResId) {
-        this.mediaAndFilesFileIconTintResId = mediaAndFilesFileIconTintResId;
-        return this;
-    }
-
-    public ChatStyle setMediaAndFilesFileIconResId(@DrawableRes final int mediaAndFilesFileIconResId) {
-        this.mediaAndFilesFileIconResId = mediaAndFilesFileIconResId;
-        return this;
-    }
-
-    public ChatStyle setEmptyMediaAndFilesHeaderTextResId(@StringRes final int headerTextResId) {
-        this.emptyMediaAndFilesHeaderText = headerTextResId;
-        return this;
-    }
-
-    /**
-     * @param headerFontPath path like "fonts/lato-regular.ttf"
-     * @return ChatStyle
-     */
-    public ChatStyle setEmptyMediaAndFilesHeaderFontPath(@NonNull final String headerFontPath) {
-        this.emptyMediaAndFilesHeaderFontPath = headerFontPath;
-        return this;
-    }
-
-    public ChatStyle setEmptyMediaAndFilesHeaderTextSize(@DimenRes final int headerTextSizeResId) {
-        this.emptyMediaAndFilesHeaderTextSize = headerTextSizeResId;
-        return this;
-    }
-
-    public ChatStyle setEmptyMediaAndFilesHeaderTextColor(@ColorRes final int headerTextColorResId) {
-        this.emptyMediaAndFilesHeaderTextColor = headerTextColorResId;
-        return this;
-    }
-
-    public ChatStyle setEmptyMediaAndFilesDescriptionTextResId(@StringRes final int descriptionTextResId) {
-        this.emptyMediaAndFilesDescriptionText = descriptionTextResId;
-        return this;
-    }
-
-    // </editor-fold>
-
-    /**
-     * @param descriptionFontPath path like "fonts/lato-regular.ttf"
-     * @return ChatStyle
-     */
-    public ChatStyle setEmptyMediaAndFilesDescriptionFontPath(@NonNull final String descriptionFontPath) {
-        this.emptyMediaAndFilesDescriptionFontPath = descriptionFontPath;
-        return this;
-    }
-
-    public ChatStyle setEmptyMediaAndFilesDescriptionTextSize(@DimenRes final int descriptionTextSizeResId) {
-        this.emptyMediaAndFilesDescriptionTextSize = descriptionTextSizeResId;
-        return this;
-    }
-
-    public ChatStyle setEmptyMediaAndFilesDescriptionTextColor(@ColorRes final int descriptionTextColorResId) {
-        this.emptyMediaAndFilesDescriptionTextColor = descriptionTextColorResId;
-        return this;
-    }
-
     public ChatStyle setChatBodyIconsTint(@ColorRes final int chatBodyIconsTint) {
         this.chatBodyIconsTint = chatBodyIconsTint;
         return this;
@@ -1422,9 +1284,6 @@ public final class ChatStyle implements Serializable {
         this.imagePlaceholder = imagePlaceholder;
         this.chatBodyIconsTint = chatBodyIconsTint;
         this.chatSystemMessageTextColor = chatSystemMessageTextColor;
-
-        this.mediaAndFilesScreenBackgroundColor = mediaAndFilesScreenBackgroundColor;
-        this.mediaAndFilesTextColor = mediaAndFilesTextColor;
 
         this.iconsAndSeparatorsColor = iconsAndSeparatorsColor;
         this.fileBrowserDialogStyleResId = fileBrowserDialogStyleResId;
@@ -2411,10 +2270,6 @@ public final class ChatStyle implements Serializable {
             stringBuilder.append("fixedChatSubtitle: ").append(context.getResources().getBoolean(fixedChatSubtitle)).append(" | ");
             stringBuilder.append("isChatSubtitleVisible: ").append(context.getResources().getBoolean(isChatSubtitleVisible)).append(" | ");
             stringBuilder.append("isChatTitleShadowVisible: ").append(context.getResources().getBoolean(isChatTitleShadowVisible)).append(" | ");
-            stringBuilder.append("filesAndMediaItemEnabled: ").append(context.getResources().getBoolean(filesAndMediaItemEnabled)).append(" | ");
-            stringBuilder.append("mediaAndFilesWindowLightStatusBarResId: ")
-                    .append(context.getResources().getBoolean(mediaAndFilesWindowLightStatusBarResId))
-                    .append(" | ");
             stringBuilder.append("searchEnabled: ").append(context.getResources().getBoolean(searchEnabled)).append(" | ");
         }
         stringBuilder.append("linkPreviewEnabled: ").append(linkPreviewEnabled).append(" | ");
