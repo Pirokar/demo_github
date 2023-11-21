@@ -2,7 +2,9 @@ package im.threads.ui.activities
 
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.view.WindowManager
 import android.widget.Toast
+import im.threads.BuildConfig
 import im.threads.R
 import im.threads.ui.fragments.ChatFragment
 
@@ -13,6 +15,10 @@ class ChatActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.ecc_activity_chat_activity)
+
+        if (BuildConfig.IS_ANIMATIONS_DISABLED.get()) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        }
     }
 
     override fun onBackPressed() {

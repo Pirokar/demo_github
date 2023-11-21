@@ -6,5 +6,4 @@
     <bool name="ecc_chat_subtitle_is_visible">true</bool>
     <bool name="ecc_chat_title_shadow_is_visible">true</bool>
     <bool name="ecc_chat_search_enabled">true</bool>
-    <bool name="ecc_files_and_media_enabled">true</bool>
 </resources>
