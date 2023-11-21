@@ -27,7 +27,9 @@ class InitUrlsTest : BaseTestCase() {
             .threadsGateProviderUid(ednaMockThreadsGateProviderUid)
             .setNewChatCenterApi()
 
-        assert(initWithoutUrlIsPassed(configBuilder))
+        assert(initWithoutUrlIsPassed(configBuilder)) {
+            "Отсутствует exception при попытке инициализировать SDK без server base url"
+        }
     }
 
     @Test
@@ -41,7 +43,9 @@ class InitUrlsTest : BaseTestCase() {
             .threadsGateProviderUid(ednaMockThreadsGateProviderUid)
             .setNewChatCenterApi()
 
-        assert(initWithoutUrlIsPassed(configBuilder))
+        assert(initWithoutUrlIsPassed(configBuilder)) {
+            "Отсутствует exception при попытке инициализировать SDK без datastore url"
+        }
     }
 
     @Test
@@ -55,7 +59,9 @@ class InitUrlsTest : BaseTestCase() {
             .threadsGateProviderUid(ednaMockThreadsGateProviderUid)
             .setNewChatCenterApi()
 
-        assert(initWithoutUrlIsPassed(configBuilder))
+        assert(initWithoutUrlIsPassed(configBuilder)) {
+            "Отсутствует exception при попытке инициализировать SDK без threads gate url"
+        }
     }
 
     @Test
@@ -69,7 +75,9 @@ class InitUrlsTest : BaseTestCase() {
             .threadsGateUrl(ednaMockThreadsGateUrl)
             .setNewChatCenterApi()
 
-        assert(initWithoutUrlIsPassed(configBuilder))
+        assert(initWithoutUrlIsPassed(configBuilder)) {
+            "Отсутствует exception при попытке инициализировать SDK без threads gate provider uid"
+        }
     }
 
     private fun initWithoutUrlIsPassed(config: ConfigBuilder): Boolean {

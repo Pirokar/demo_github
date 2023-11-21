@@ -20,6 +20,7 @@ import io.edna.threads.demo.BaseTestCase
 import io.edna.threads.demo.R
 import io.edna.threads.demo.TestMessages
 import io.edna.threads.demo.appCode.activity.MainActivity
+import io.edna.threads.demo.assert
 import io.edna.threads.demo.kaspressoSreens.ChatMainScreen
 import io.edna.threads.demo.waitListForNotEmpty
 import org.hamcrest.CoreMatchers.allOf
@@ -63,15 +64,20 @@ class TextMessagesTest : BaseTestCase() {
 
         sendHelloMessageFromUser()
         ChatMainScreen.chatItemsRecyclerView {
-            isVisible()
-            hasDescendant { containsText(helloTextToSend) }
+            assert("Список сообщений должен быть видим") { isVisible() }
+            assert("Список сообщений должен содержать текст: \"${helloTextToSend}\"") {
+                hasDescendant { containsText(helloTextToSend) }
+            }
         }
 
         sendMessageFromOperator()
         ChatMainScreen {
             chatItemsRecyclerView {
-                isVisible()
-                hasDescendant { containsText("привет!") }
+                assert("Список сообщений должен быть видим") { isVisible() }
+                val textToCheck = "привет!"
+                assert("Список сообщений должен содержать текст: \"${helloTextToSend}\"") {
+                    hasDescendant { containsText(textToCheck) }
+                }
             }
         }
     }
@@ -82,20 +88,34 @@ class TextMessagesTest : BaseTestCase() {
         ChatMainScreen {
             chatItemsRecyclerView {
                 childAt<ChatMainScreen.ChatRecyclerItem>(1) {
-                    itemText.containsText("Добрый день! Мы создаем экосистему бизнеса")
+                    val textToCheck = "Добрый день! Мы создаем экосистему бизнеса"
+                    assert("Сообщение с индексом 1 должно содержать текст: \"$textToCheck\"") {
+                        itemText.containsText(textToCheck)
+                    }
                 }
 
-                hasDescendant { containsText("Добро пожаловать в наш чат") }
+                val welcomeText = "Добро пожаловать в наш чат"
+                assert("Список должен содержать сообщение: \"$welcomeText\"") {
+                    hasDescendant { containsText(welcomeText) }
+                }
 
                 lastChild<ChatMainScreen.ChatRecyclerItem> {
-                    itemText.containsText("Тогда до связи!")
+                    val textToCheck = "Тогда до связи!"
+                    assert("Последний элемент списка должен содержать сообщение: \"$textToCheck\"") {
+                        itemText.containsText(textToCheck)
+                    }
                 }
             }
             chatItemsRecyclerView {
-                hasDescendant { containsText("То есть это все про вас?") }
-                hasDescendant { containsText("Именно! А еще у нас есть различные каналы коммуникации с клиентами! Подробнее: https://edna.ru/channels/") }
-                hasDescendant { containsText("Отлично! Давайте проверим ваши контакты. Ваш email: info@edna.ru, телефон: +7 (495) 609-60-80. Верно?") }
-                hasDescendant { containsText("Да, все верно") }
+                assert("Список должен содержать сообщение: \"Отлично! Давайте проверим ваши контакты.\"") {
+                    hasDescendant { containsText("Отлично! Давайте проверим ваши контакты. Ваш email: info@edna.ru, телефон: +7 (495) 609-60-80. Верно?") }
+                }
+                assert("Список должен содержать сообщение: \"Именно! А еще у нас есть различные...\"") {
+                    hasDescendant { containsText("Именно! А еще у нас есть различные каналы коммуникации с клиентами! Подробнее: https://edna.ru/channels/") }
+                }
+                assert("Список должен содержать сообщение: \"Да, все верно\"") {
+                    hasDescendant { containsText("Да, все верно") }
+                }
             }
         }
     }
@@ -108,36 +128,39 @@ class TextMessagesTest : BaseTestCase() {
 
         ChatMainScreen {
             chatItemsRecyclerView {
-                isVisible()
+                assert("Список сообщений должен быть видим") { isVisible() }
                 lastChild<ChatMainScreen.ChatRecyclerItem> {
-                    isVisible()
+                    assert("Последнее сообщение должно быть видимо") { isVisible() }
                     perform { longClick() }
                 }
             }
             replyBtn {
-                isVisible()
+                assert("Кнопка повтора должна быть видимой") { isVisible() }
                 click()
             }
             quoteText {
-                isVisible()
-                hasText("привет!")
+                val textToCheck = "привет!"
+                assert("Процитированный текст должен быть видим") { isVisible() }
+                assert("Процитированный текст должен содержать строку: \"$textToCheck\"") { hasText(textToCheck) }
             }
             quoteHeader {
-                isVisible()
-                hasAnyText()
+                assert("Заголовок цитаты должен быть видим") { isVisible() }
+                assert("Заголовок цитаты не должен быть пустым") { hasAnyText() }
             }
-            quoteClear { isVisible() }
+            quoteClear {
+                assert("Кнопка очистка цитирования должна быть видимой") { isVisible() }
+            }
             inputEditView {
-                isVisible()
+                assert("Поле для ввода должно быть видимым") { isVisible() }
                 typeText(helloTextToSend)
             }
             sendMessageBtn {
-                isVisible()
+                assert("Кнопка отправки сообщения должна быть видимой") { isVisible() }
                 click()
             }
             chatItemsRecyclerView {
-                lastChild<ChatMainScreen.ChatRecyclerItem> {
-                    itemText.containsText(helloTextToSend)
+                assert("Список должен содержать сообщение: \"$helloTextToSend\"") {
+                    hasDescendant { containsText(helloTextToSend) }
                 }
             }
         }
@@ -151,24 +174,29 @@ class TextMessagesTest : BaseTestCase() {
 
         ChatMainScreen {
             chatItemsRecyclerView {
-                isVisible()
+                assert("Список сообщений должен быть видим") { isVisible() }
                 lastChild<ChatMainScreen.ChatRecyclerItem> {
-                    isVisible()
+                    assert("Последний элемент списка должен быть видим") { isVisible() }
                     perform { longClick() }
                 }
             }
             copyBtn {
-                isVisible()
+                assert("Кнопка копирования должна быть видимой и кликабельной", ::isVisible, ::isClickable)
                 click()
             }
         }
 
         Handler(Looper.getMainLooper()).post {
             val clipboard = context.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager?
+            val textToCheck = "привет!"
             if (clipboard?.hasPrimaryClip() == true) {
-                assert(clipboard.primaryClip?.getItemAt(0)?.text == "привет!")
+                assert(clipboard.primaryClip?.getItemAt(0)?.text == textToCheck) {
+                    "Буфер обмена должен содержать текст: \"$textToCheck\""
+                }
             } else {
-                assert(false)
+                assert(false) {
+                    "Буфер обмена должен содержать текст: \"$textToCheck\""
+                }
             }
         }
     }
@@ -188,7 +216,6 @@ class TextMessagesTest : BaseTestCase() {
             allOf(
                 hasAction(Intent.ACTION_VIEW),
                 hasData("mailto:info@edna.ru")
-
             )
         )
     }
@@ -229,33 +256,40 @@ class TextMessagesTest : BaseTestCase() {
     @Test
     fun testIsUrlClickable() {
         openMessagesHistory()
+        val idx1TextToClick = "https://edna.ru/"
 
         ChatMainScreen {
             chatItemsRecyclerView {
                 childAt<ChatMainScreen.ChatRecyclerItem>(1) {
-                    itemText.clickSpanWithText("https://edna.ru/")
+                    itemText.clickSpanWithText(idx1TextToClick)
                 }
             }
         }
-        intended(
-            allOf(
-                hasAction(Intent.ACTION_VIEW),
-                hasData("https://edna.ru/")
+        assert("Сообщение с индексом 1 должно быть кликабельно и содержать текст: \"$idx1TextToClick\"") {
+            intended(
+                allOf(
+                    hasAction(Intent.ACTION_VIEW),
+                    hasData(idx1TextToClick)
+                )
             )
-        )
+        }
+
+        val idx11TextToClick = "https://edna.ru/channels/"
         ChatMainScreen {
             chatItemsRecyclerView {
                 childAt<ChatMainScreen.ChatRecyclerItem>(11) {
-                    itemText.clickSpanWithText("https://edna.ru/channels/")
+                    itemText.clickSpanWithText(idx11TextToClick)
                 }
             }
         }
-        intended(
-            allOf(
-                hasAction(Intent.ACTION_VIEW),
-                hasData("https://edna.ru/channels/")
+        assert("Сообщение с индексом 1 должно быть кликабельно и содержать текст: \"$idx11TextToClick\"") {
+            intended(
+                allOf(
+                    hasAction(Intent.ACTION_VIEW),
+                    hasData(idx11TextToClick)
+                )
             )
-        )
+        }
     }
 
     @Test
@@ -266,8 +300,11 @@ class TextMessagesTest : BaseTestCase() {
         sendMessageToSocket(TestMessages.threadIsClosed)
 
         ChatMainScreen.chatItemsRecyclerView {
-            isVisible()
-            hasDescendant { containsText("Диалог завершен. Будем рады проконсультировать вас снова!") }
+            val textToCheck = "Диалог завершен. Будем рады проконсультировать вас снова!"
+            assert("Список сообщений должен быть видим") { isVisible() }
+            assert("Список должен содержать сообщение: \"$textToCheck\"") {
+                hasDescendant { containsText(textToCheck) }
+            }
         }
     }
 
@@ -279,8 +316,11 @@ class TextMessagesTest : BaseTestCase() {
         sendMessageToSocket(TestMessages.clientIsBlocked)
 
         ChatMainScreen.chatItemsRecyclerView {
-            isVisible()
-            hasDescendant { containsText("Вы заблокированы, дальнейшее общение с оператором ограничено") }
+            val textToCheck = "Вы заблокированы, дальнейшее общение с оператором ограничено"
+            assert("Список сообщений должен быть видим") { isVisible() }
+            assert("Список должен содержать сообщение: \"$textToCheck\"") {
+                hasDescendant { containsText(textToCheck) }
+            }
         }
     }
 
@@ -294,11 +334,17 @@ class TextMessagesTest : BaseTestCase() {
 
         ChatMainScreen {
             chatItemsRecyclerView {
-                isVisible()
-                hasDescendant { containsText("Для решения вопроса диалог переводится другому оператору") }
-                hasDescendant { containsText("Вам ответит Оператор0 Иванович") }
+                assert("Список сообщений должен быть видим") { isVisible() }
+                assert("Список должен содержать сообщение: \"Для решения вопроса диалог переводится другому оператору\"") {
+                    hasDescendant { containsText("Для решения вопроса диалог переводится другому оператору") }
+                }
+                assert("Список должен содержать сообщение: \"Вам ответит Оператор0 Иванович\"") {
+                    hasDescendant { containsText("Вам ответит Оператор0 Иванович") }
+                }
             }
-            toolbarOperatorName.hasText("Оператор0 Иванович")
+            assert("Имя оператора в тулбаре должно быть: \"Оператор0 Иванович\"") {
+                toolbarOperatorName.hasText("Оператор0 Иванович")
+            }
         }
     }
 
@@ -310,9 +356,15 @@ class TextMessagesTest : BaseTestCase() {
         sendMessageToSocket(TestMessages.operatorWaiting)
 
         ChatMainScreen {
-            toolbarOperatorName.hasText(context.getString(im.threads.R.string.ecc_searching_operator))
+            val operatorName = context.getString(im.threads.R.string.ecc_searching_operator)
+            assert("Имя оператора в тулбаре должно быть: \"$operatorName\"") {
+                toolbarOperatorName.hasText(operatorName)
+            }
+            val textToCheck = "Среднее время ожидания ответа составляет 2 минуты"
             chatItemsRecyclerView {
-                hasDescendant { containsText("Среднее время ожидания ответа составляет 2 минуты") }
+                assert("Список сообщений должен содержать текст: \"$textToCheck\"") {
+                    hasDescendant { containsText(textToCheck) }
+                }
             }
         }
     }
@@ -323,9 +375,8 @@ class TextMessagesTest : BaseTestCase() {
         ChatMainScreen {
             chatItemsRecyclerView {
                 waitListForNotEmpty(5000)
-                isVisible()
-
-                assert(getSize() == 18)
+                assert("Список сообщений должен быть видим") { isVisible() }
+                assert(getSize() == 18) { "Список содержит неверное количество сообщений" }
             }
         }
     }
@@ -365,11 +416,14 @@ class TextMessagesTest : BaseTestCase() {
             .replace(")", "")
             .replace("-", "")
             .replace(".", "")
-        intended(
-            allOf(
-                hasAction(Intent.ACTION_VIEW),
-                hasData("tel:$phoneToCheck")
+
+        assert("Ссылка должна содержать текст: \"$phoneToCheck\" и быть кликабельной") {
+            intended(
+                allOf(
+                    hasAction(Intent.ACTION_VIEW),
+                    hasData("tel:$phoneToCheck")
+                )
             )
-        )
+        }
     }
 }

@@ -38,11 +38,11 @@ import java.io.InputStream
 import java.io.InputStreamReader
 
 abstract class BaseTestCase : TestCase() {
-    private val userId = (10000..99999).random().toString()
+    protected val userId = (10000..99999).random().toString()
 
     private val coroutineScope = CoroutineScope(Dispatchers.Unconfined)
 
-    protected val context = InstrumentationRegistry.getInstrumentation().targetContext
+    protected val context: Context = InstrumentationRegistry.getInstrumentation().targetContext
     protected var wsMocksMap = getDefaultWsMocksMap()
     protected var clientInfoWsMessages = getDefaultClientInfoWsMessages()
 
@@ -193,12 +193,16 @@ abstract class BaseTestCase : TestCase() {
 
     protected fun sendHelloMessageFromUser() {
         ChatMainScreen {
-            inputEditView { isVisible() }
-            welcomeScreen { isVisible() }
+            inputEditView {
+                assert("Поле ввода должно быть видимым") { isVisible() }
+            }
+            welcomeScreen {
+                assert("Экран приветствия должен быть видим") { isVisible() }
+            }
 
             inputEditView.typeText(helloTextToSend)
             sendMessageBtn {
-                isVisible()
+                assert("Кнопка отправки сообщений должна быть видимой") { isVisible() }
                 click()
             }
         }
@@ -206,57 +210,19 @@ abstract class BaseTestCase : TestCase() {
 
     protected fun sendCustomMessageFromUser(message: String) {
         ChatMainScreen {
-            inputEditView { isVisible() }
+            inputEditView {
+                assert("Поле ввода должно быть видимым") { isVisible() }
+            }
 
             inputEditView.typeText(message)
             sendMessageBtn {
-                isVisible()
+                assert("Кнопка отправки сообщений должна быть видимой") { isVisible() }
                 click()
             }
         }
     }
 
-    private fun getNameOfFile(filePathRelativeToAssets: String, plusRandom: Boolean = false): String {
-        val usualName = filePathRelativeToAssets.split("/").last()
-        return if (plusRandom) {
-            val nameParts = usualName.split(".")
-            "${nameParts[0]}$userId.${nameParts[1]}"
-        } else {
-            usualName
-        }
-    }
-
-    private fun getMimeType(fileName: String): String {
-        return if (fileName.endsWith(".jpg")) {
-            "image/jpeg"
-        } else if (fileName.endsWith(".jpeg")) {
-            "image/pjpeg"
-        } else if (fileName.endsWith(".png")) {
-            "image/png"
-        } else if (fileName.endsWith(".gif")) {
-            "image/gif"
-        } else if (fileName.endsWith(".tiff")) {
-            "image/tiff"
-        } else if (fileName.endsWith(".ogg")) {
-            "audio/ogg"
-        } else if (fileName.endsWith(".aac")) {
-            "image/aac"
-        } else if (fileName.endsWith(".pdf")) {
-            "application/pdf"
-        } else if (fileName.endsWith(".doc") || fileName.endsWith(".docx")) {
-            "application/msword"
-        } else if (fileName.endsWith(".zip")) {
-            "application/zip"
-        } else if (fileName.endsWith(".gzip")) {
-            "application/gzip"
-        } else if (fileName.endsWith(".xml")) {
-            "application/xml"
-        } else {
-            "*/*"
-        }
-    }
-
-    private fun getAnswersForWebSocket(
+    internal fun getAnswersForWebSocket(
         websocketMessage: String
     ): Pair<String?, Boolean> {
         wsMocksMap.keys.forEach { key ->

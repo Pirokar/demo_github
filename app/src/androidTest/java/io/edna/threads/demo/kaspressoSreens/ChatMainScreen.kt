@@ -10,6 +10,7 @@ import io.github.kakaocup.kakao.image.KImageView
 import io.github.kakaocup.kakao.pager.KViewPager
 import io.github.kakaocup.kakao.recycler.KRecyclerItem
 import io.github.kakaocup.kakao.recycler.KRecyclerView
+import io.github.kakaocup.kakao.slider.KSlider
 import io.github.kakaocup.kakao.text.KButton
 import io.github.kakaocup.kakao.text.KTextView
 import org.hamcrest.Matcher
@@ -40,6 +41,10 @@ object ChatMainScreen : KScreen<ChatMainScreen>() {
     val searchClearButton = KImageView { withId(R.id.searchClearButton) }
     val searchProgressBar = KImageView { withId(R.id.searchProgressBar) }
     val toolbarOperatorName = KTextView { withId(R.id.consult_name) }
+    val recordButton = KImageView { withId(R.id.record_button) }
+    val playPauseButton = KImageView { withId(R.id.quote_button_play_pause) }
+    val quoteSlider = KSlider { withId(R.id.quote_slider) }
+    val fileBottomSheenBtn = KButton { withId(R.id.file) }
 
     val chatItemsRecyclerView = KRecyclerView(
         builder = { withId(R.id.chatItemsRecycler) },
