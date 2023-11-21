@@ -56,7 +56,6 @@ import im.threads.business.utils.DeviceInfo
 import im.threads.business.utils.SSLCertificateInterceptor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -721,25 +720,21 @@ class ThreadsGateTransport(
 
         override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
             LoggerEdna.info("[WS] ☚\u274C On Websocket error : ${t.message}")
+
             val message = if (t.localizedMessage.isNullOrBlank()) t.message else t.localizedMessage
             chatUpdateProcessor.postError(TransportException(message))
+
             synchronized(messageInProcessIds) {
-                coroutineScope.launch {
-                    for (i in 0 until messageInProcessIds.size) {
-                        val messageId = messageInProcessIds[i]
-                        val result = coroutineScope.async(Dispatchers.IO) {
-                            database.getChatItemByCorrelationId(messageId)
-                        }
-                        val dbItem = result.await()
-                        val messageStatus = getMessageStatus(dbItem, Status(messageId, null, MessageStatus.FAILED))
-                        if (messageStatus.status == MessageStatus.FAILED) {
-                            LoggerEdna.info("Starting process error for messageId: $messageId")
-                            processMessageSendError(messageId)
-                        }
+                for (messageId in messageInProcessIds) {
+                    val dbItem = database.getChatItemByCorrelationId(messageId)
+                    val messageStatus = getMessageStatus(dbItem, Status(messageId, null, MessageStatus.FAILED))
+                    if (messageStatus.status == MessageStatus.FAILED) {
+                        LoggerEdna.info("Starting process error for messageId: $messageId")
+                        processMessageSendError(messageId)
                     }
-                    messageInProcessIds.clear()
-                    closeWebSocket()
                 }
+                messageInProcessIds.clear()
+                closeWebSocket()
             }
         }
 

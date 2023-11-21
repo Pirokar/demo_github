@@ -377,7 +377,7 @@ class UserPhraseViewHolder(
                         val uri = it.fileUri
                         val previewUri = getPreviewUri(it.getPreviewFileDescription())
                         val path = it.getPreviewFileDescription()?.downloadPath
-                        val fileUri = uri?.toString() ?: previewUri?.toString() ?: path
+                        val fileUri = path ?: uri?.toString() ?: previewUri?.toString()
                         if (!fileUri.isNullOrEmpty()) {
                             get()
                                 .load(fileUri)

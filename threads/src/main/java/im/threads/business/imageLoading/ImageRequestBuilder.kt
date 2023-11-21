@@ -19,6 +19,7 @@ class ImageRequestBuilder {
         config: ImageLoader.Config
     ): RequestCreator? {
         var builder: RequestCreator? = null
+
         config.url?.let {
             val url = it.ifEmpty { "https://noednaurl.com" }
             builder = getLoader(config).load(url)

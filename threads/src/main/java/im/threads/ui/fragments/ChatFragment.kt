@@ -19,15 +19,12 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
 import android.text.Editable
-import android.text.SpannableString
 import android.text.TextUtils
 import android.text.TextWatcher
-import android.text.style.ForegroundColorSpan
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.HapticFeedbackConstants
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
@@ -42,6 +39,7 @@ import androidx.core.util.ObjectsCompat
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.coroutineScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.ListUpdateCallback
 import androidx.recyclerview.widget.RecyclerView
 import com.annimon.stream.Optional
 import com.annimon.stream.Stream
@@ -111,11 +109,9 @@ import im.threads.ui.activities.ChatActivity
 import im.threads.ui.activities.GalleryActivity
 import im.threads.ui.activities.GalleryActivity.Companion.getStartIntent
 import im.threads.ui.activities.ImagesActivity.Companion.getStartIntent
-import im.threads.ui.activities.filesActivity.FilesActivity.Companion.startActivity
 import im.threads.ui.adapters.ChatAdapter
 import im.threads.ui.config.Config
 import im.threads.ui.controllers.ChatController
-import im.threads.ui.files.FileSelectedListener
 import im.threads.ui.fragments.PermissionDescriptionAlertFragment.Companion.newInstance
 import im.threads.ui.fragments.PermissionDescriptionAlertFragment.OnAllowPermissionClickListener
 import im.threads.ui.holders.BaseHolder.Companion.statuses
@@ -164,8 +160,6 @@ class ChatFragment :
     BaseFragment(),
     AttachmentBottomSheetDialogFragment.Callback,
     ProgressReceiver.Callback,
-    PopupMenu.OnMenuItemClickListener,
-    FileSelectedListener,
     ChatCenterAudioConverterCallback,
     OnAllowPermissionClickListener {
 
@@ -306,6 +300,7 @@ class ChatFragment :
         isResumed = true
         isShown = true
         afterResume = true
+        updateToolBar()
     }
 
     override fun onDestroyView() {
@@ -364,6 +359,7 @@ class ChatFragment :
             chatErrorLayout.errorLayout.visible()
             initErrorViewStyles()
             chatErrorLayout.errorMessage.text = message
+            popupMenuButton.visibility = View.GONE
         }
     }
 
@@ -377,6 +373,7 @@ class ChatFragment :
                 chatItemsRecycler.visible()
             }
         }
+        popupMenuButton.visibility = if (isPopupMenuEnabled) View.VISIBLE else View.GONE
     }
 
     internal fun isErrorViewNotVisible(): Boolean {
@@ -1139,53 +1136,6 @@ class ChatFragment :
         bottomSheetDialogFragment = null
     }
 
-    private fun showPopup() = binding?.apply {
-        val activity = activity ?: return@apply
-        val popup = PopupMenu(activity, popupMenuButton)
-        popup.setOnMenuItemClickListener(this@ChatFragment)
-        val inflater = popup.menuInflater
-        inflater.inflate(R.menu.ecc_menu_main, popup.menu)
-        val menu = popup.menu
-        val searchMenuItem = menu.findItem(R.id.ecc_search)
-        if (searchMenuItem != null) {
-            val s = SpannableString(searchMenuItem.title)
-            s.setSpan(ForegroundColorSpan(ContextCompat.getColor(activity, style.menuItemTextColorResId)), 0, s.length, 0)
-            searchMenuItem.title = s
-            val searchEnabled = resources.getBoolean(config.chatStyle.searchEnabled)
-            searchMenuItem.isVisible = searchEnabled
-        }
-        val filesAndMedia = menu.findItem(R.id.ecc_files_and_media)
-        if (filesAndMedia != null) {
-            val s2 = SpannableString(filesAndMedia.title)
-            s2.setSpan(ForegroundColorSpan(ContextCompat.getColor(activity, style.menuItemTextColorResId)), 0, s2.length, 0)
-            filesAndMedia.title = s2
-        }
-        filesAndMedia?.isVisible = config.filesAndMediaMenuItemEnabled
-        if (isPopupMenuEnabled) {
-            popup.show()
-        }
-    }
-
-    override fun onMenuItemClick(item: MenuItem): Boolean {
-        val activity = activity ?: return false
-        if (item.itemId == R.id.ecc_files_and_media) {
-            if (isInMessageSearchMode) {
-                onActivityBackPressed()
-            }
-            startActivity(activity)
-            return true
-        }
-        if (item.itemId == R.id.ecc_search) {
-            if (!isInMessageSearchMode) {
-                search()
-                binding?.chatBackButton.visible()
-            } else {
-                return true
-            }
-        }
-        return false
-    }
-
     private fun onReplyClick(cp: ChatPhrase, position: Int) {
         hideCopyControls()
         scrollToPosition(position, true)
@@ -1575,13 +1525,10 @@ class ChatFragment :
     }
 
     fun addChatItem(item: ChatItem?) = binding?.apply {
-        val layoutManager = chatItemsRecycler.layoutManager as LinearLayoutManager? ?: return@apply
+        val isLastMessageVisible = isLastMessageVisible()
         if (item == null) {
             return@apply
         }
-        val isLastMessageVisible = (
-            chatAdapter!!.itemCount - 1 - layoutManager.findLastVisibleItemPosition() < INVISIBLE_MESSAGES_COUNT
-            )
         if (item is ConsultPhrase) {
             val previouslyRead = item.read
             item.read = (isLastMessageVisible && isResumed && !isInMessageSearchMode)
@@ -1596,13 +1543,22 @@ class ChatFragment :
         if (needsAddMessage(item)) {
             showWelcomeScreen(false)
             addItemsToChat(listOf(item))
-            if (!isLastMessageVisible) {
+            if (!isLastMessageVisible()) {
                 scrollDownButtonContainer.visibility = View.VISIBLE
                 showUnreadMessagesCount(chatController.getUnreadMessagesCount())
             }
             scrollDelayedOnNewMessageReceived(item is UserPhrase, isLastMessageVisible)
         } else if (needsModifyImage(item)) {
             chatAdapter?.modifyImageInItem((item as ChatPhrase).fileDescription)
+        }
+    }
+
+    private fun isLastMessageVisible(): Boolean {
+        val layoutManager = (binding?.chatItemsRecycler?.layoutManager as LinearLayoutManager?) ?: return false
+        return try {
+            chatAdapter!!.itemCount - 1 - layoutManager.findLastVisibleItemPosition() < INVISIBLE_MESSAGES_COUNT
+        } catch (exc: Exception) {
+            false
         }
     }
 
@@ -1705,8 +1661,8 @@ class ChatFragment :
         }
         chatAdapter?.let { chatAdapter ->
             val oldAdapterSize = chatAdapter.list.size
-            val isBottomItemsVisible = chatAdapter.itemCount - 1 - lastVisibleItemPosition < INVISIBLE_MESSAGES_COUNT
             val layoutManager = binding?.chatItemsRecycler?.layoutManager as LinearLayoutManager?
+            val isBottomItemsVisible = chatAdapter.itemCount - 1 - lastVisibleItemPosition < INVISIBLE_MESSAGES_COUNT
             if (layoutManager == null || list.size == 1 && list[0] is ConsultTyping || isInMessageSearchMode) {
                 return
             }
@@ -1717,35 +1673,65 @@ class ChatFragment :
             } else {
                 null
             }
-            addItemsToChat(list, isBottomItemsVisible)
-            val newAdapterSize = chatAdapter.list.size
-            if (oldAdapterSize == 0 || (forceScrollToTheEnd && !isStartSecondLevelScreen())) {
-                handler.postDelayed({ scrollToPosition(chatAdapter.itemCount - 1, false) }, 100)
-                afterResume = false
-                resumeAfterSecondLevelScreen = false
-                return
-            }
-
-            var needScrollDown = false
-            if (list.isNotEmpty()) {
-                val currMinTimeStamp = chatAdapter.list[0].timeStamp
-                val newMinTimeStamp = list[0]?.timeStamp ?: 0
-                needScrollDown = newMinTimeStamp > currMinTimeStamp && !isStartSecondLevelScreen()
-            }
-            if (afterResume) {
-                if ((!isStartSecondLevelScreen() && isBottomItemsVisible && newAdapterSize != oldAdapterSize) || needScrollDown) {
-                    scrollToPosition(chatAdapter.itemCount - 1, false)
-                } else if (lastVisibleItemTimestamp != null) {
-                    layoutManager.scrollToPosition(chatAdapter.getPositionByTimeStamp(lastVisibleItemTimestamp))
+            val listUpdatedCallback = object : ListUpdateCallback {
+                override fun onInserted(position: Int, count: Int) {
+                    updateChatAdapter(
+                        chatAdapter,
+                        layoutManager,
+                        list,
+                        oldAdapterSize,
+                        forceScrollToTheEnd,
+                        isBottomItemsVisible,
+                        lastVisibleItemTimestamp
+                    )
                 }
-            } else if ((isBottomItemsVisible && newAdapterSize > oldAdapterSize) || needScrollDown) {
-                handler.postDelayed({ scrollToPosition(chatAdapter.itemCount - 1, false) }, 100)
+
+                override fun onRemoved(position: Int, count: Int) {}
+                override fun onMoved(fromPosition: Int, toPosition: Int) {}
+                override fun onChanged(position: Int, count: Int, payload: Any?) {}
+            }
+            addItemsToChat(list, listUpdatedCallback, isBottomItemsVisible)
+        }
+    }
+
+    private fun updateChatAdapter(
+        chatAdapter: ChatAdapter,
+        layoutManager: LinearLayoutManager,
+        list: List<ChatItem?>,
+        oldAdapterSize: Int,
+        forceScrollToTheEnd: Boolean,
+        isBottomItemsVisible: Boolean,
+        lastVisibleItemTimestamp: Long?
+    ) {
+        val newAdapterSize = chatAdapter.list.size
+        if (oldAdapterSize == 0 || (forceScrollToTheEnd && !isStartSecondLevelScreen())) {
+            scrollToPosition(chatAdapter.itemCount - 1, false)
+            afterResume = false
+            resumeAfterSecondLevelScreen = false
+            return
+        }
+
+        var needScrollDown = false
+        if (list.isNotEmpty()) {
+            needScrollDown = (
+                oldAdapterSize < newAdapterSize ||
+                    (list.last()?.timeStamp ?: 0) > chatAdapter.list.last().timeStamp &&
+                    !isStartSecondLevelScreen()
+                ) && isLastMessageVisible()
+        }
+        if (afterResume) {
+            if ((!isStartSecondLevelScreen() && isBottomItemsVisible && newAdapterSize != oldAdapterSize) || needScrollDown) {
+                scrollToPosition(chatAdapter.itemCount - 1, false)
             } else if (lastVisibleItemTimestamp != null) {
                 layoutManager.scrollToPosition(chatAdapter.getPositionByTimeStamp(lastVisibleItemTimestamp))
             }
-            afterResume = false
-            resumeAfterSecondLevelScreen = false
+        } else if ((isBottomItemsVisible && newAdapterSize > oldAdapterSize) || needScrollDown) {
+            scrollToPosition(chatAdapter.itemCount - 1, false)
+        } else if (lastVisibleItemTimestamp != null) {
+            layoutManager.scrollToPosition(chatAdapter.getPositionByTimeStamp(lastVisibleItemTimestamp))
         }
+        afterResume = false
+        resumeAfterSecondLevelScreen = false
     }
 
     fun setStateConsultConnected(info: ConsultInfo?) = binding?.apply {
@@ -2091,7 +2077,7 @@ class ChatFragment :
     }
 
     private val isPopupMenuEnabled: Boolean
-        get() = (resources.getBoolean(config.chatStyle.searchEnabled) || config.filesAndMediaMenuItemEnabled)
+        get() = (resources.getBoolean(config.chatStyle.searchEnabled))
 
     private fun initToolbar() = binding?.apply {
         val activity = activity ?: return@apply
@@ -2102,9 +2088,14 @@ class ChatFragment :
         chatBackButton.setOnClickListener { onActivityBackPressed() }
         chatBackButton.setImageResource(style.chatToolbarBackIconResId)
         ColorsHelper.setTint(activity, chatBackButton, style.chatToolbarTextColorResId)
-        popupMenuButton.setImageResource(style.chatToolbarPopUpMenuIconResId)
+        popupMenuButton.setImageResource(style.searchIconResId)
         ColorsHelper.setTint(activity, popupMenuButton, style.chatToolbarTextColorResId)
-        popupMenuButton.setOnClickListener { showPopup() }
+        popupMenuButton.setOnClickListener {
+            if (!isInMessageSearchMode) {
+                search()
+                binding?.chatBackButton.visible()
+            }
+        }
         popupMenuButton.visibility = if (isPopupMenuEnabled) View.VISIBLE else View.GONE
         showOverflowMenu()
         contentCopy.setImageResource(style.chatToolbarContentCopyIconResId)
@@ -2114,6 +2105,11 @@ class ChatFragment :
             setTitleStateDefault()
         }
         initToolbarTextPosition()
+    }
+
+    private fun updateToolBar() {
+        binding?.popupMenuButton?.visibility = if (isPopupMenuEnabled) View.VISIBLE else View.GONE
+        checkBackButtonVisibility()
     }
 
     private fun initSearch() = binding?.apply {
@@ -2190,7 +2186,7 @@ class ChatFragment :
 
     private fun onActivityBackPressed() {
         if (isAdded) {
-            if (isInMessageSearchMode) {
+            if (isInMessageSearchMode && binding?.copyControls?.visibility != View.VISIBLE) {
                 hideSearchMode()
             } else {
                 val activity: Activity? = activity
@@ -2361,15 +2357,6 @@ class ChatFragment :
                 .setType("*/*"),
             REQUEST_CODE_FILE
         )
-    }
-
-    override fun onFileSelected(file: File?) {
-        val uri = if (file != null) fileProvider.getUriForFile(requireContext(), file) else null
-        if (uri != null && canBeSent(requireContext(), uri)) {
-            onFileResult(uri)
-        } else {
-            show(requireContext(), getString(R.string.ecc_failed_to_open_file))
-        }
     }
 
     fun setClientNotificationDisplayType(type: ClientNotificationDisplayType?) {
@@ -2753,14 +2740,18 @@ class ChatFragment :
         }
     }
 
-    private fun addItemsToChat(list: List<ChatItem?>?, withAnimation: Boolean = true) {
+    private fun addItemsToChat(
+        list: List<ChatItem?>?,
+        listUpdatedCallback: ListUpdateCallback? = null,
+        withAnimation: Boolean = true
+    ) {
         list?.filterNotNull()?.let {
             if (it.isNotEmpty()) {
                 val isChatReady = chatController.isChatReady()
                 val isAnimationEnabled = withAnimation && isChatReady
                 chatController.removeCorruptedFiles(it) {
                     chatController.setFormattedDurations(it, mediaMetadataRetriever) {
-                        chatAdapter?.addItems(it, isAnimationEnabled)
+                        chatAdapter?.addItems(it, listUpdatedCallback, isAnimationEnabled)
                         if (isChatReady) {
                             hideErrorView()
                             hideProgressBar()

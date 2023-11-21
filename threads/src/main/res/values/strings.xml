@@ -22,7 +22,6 @@
     <string name="ecc_search_files">Search files</string>
     <string name="ecc_talkback_search_icon">Search icon</string>
     <string name="ecc_search_photos">Search photos…</string>
-    <string name="ecc_files_and_media">Files and media</string>
     <string name="ecc_recently">Recently</string>
     <string name="ecc_yesterday">Yesterday</string>
     <string name="ecc_photos">Photographies</string>
@@ -37,7 +36,6 @@
     <string name="ecc_operator">Operator</string>
 
     <string name="ecc_error_no_file">Unfortunately, file was deleted from server</string>
-    <string name="ecc_no_media_and_files_header">Media files are missing</string>
     <string name="ecc_no_media_and_files_description">Add new ones using\n"Attach" button on the chat screen</string>
     <string name="ecc_I">I</string>
     <string name="ecc_download">Download</string>

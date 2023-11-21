@@ -431,10 +431,21 @@ object FileUtils {
             return null
         }
         val path = getFileNameFromMediaStore(context, contentUri)
-        return if (path == null || !path.contains(".")) {
+        val mediaStoreResult = if (path == null || !path.contains(".")) {
             null
         } else {
             path.substring(path.lastIndexOf(".") + 1)
+        }
+
+        return if (mediaStoreResult != null) {
+            mediaStoreResult
+        } else {
+            val contentUriPath = contentUri.path ?: ""
+            if (contentUriPath.length > 1 && contentUriPath.contains(".")) {
+                contentUriPath.substring(contentUriPath.lastIndexOf(".") + 1)
+            } else {
+                null
+            }
         }
     }
 
