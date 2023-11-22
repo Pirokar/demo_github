@@ -1312,7 +1312,11 @@ class ChatController private constructor() {
         val hcmToken = preferences.get<String>(PreferencesCoreKeys.HCM_TOKEN)
         val currentUiThemeValue = preferences.get(PreferencesCoreKeys.USER_SELECTED_UI_THEME_KEY, CurrentUiTheme.SYSTEM.value)
         val clientInfo = if (keepClientId) clientUseCase.getUserInfo() else null
-        preferences.sharedPreferences.edit().clear().commit()
+        try {
+            preferences.sharedPreferences.edit().clear().commit()
+        } catch (exc: SecurityException) {
+            preferences.removeSharedPreferencesFiles()
+        }
         preferences.save(PreferencesCoreKeys.FCM_TOKEN, fcmToken)
         preferences.save(PreferencesCoreKeys.HCM_TOKEN, hcmToken)
         preferences.save(PreferencesCoreKeys.USER_SELECTED_UI_THEME_KEY, currentUiThemeValue)
