@@ -46,6 +46,9 @@ class LaunchViewModel(
     private var _selectedUserLiveData = MutableLiveData(getSelectedUser())
     var selectedUserLiveData: LiveData<UserInfo?> = _selectedUserLiveData
 
+    val _preregisterLiveData: MutableLiveData<Boolean> = MutableLiveData()
+    val preregisterLiveData: LiveData<Boolean> = _preregisterLiveData
+
     private var _selectedServerLiveData = MutableLiveData(getSelectedServer())
     var selectedServerConfigLiveData: LiveData<ServerConfig?> = _selectedServerLiveData
 
@@ -64,6 +67,7 @@ class LaunchViewModel(
 
     override fun onStart(owner: LifecycleOwner) {
         super.onStart(owner)
+        initPreregisterCheckBox()
         checkUiTheme()
     }
 
@@ -87,6 +91,17 @@ class LaunchViewModel(
         }
     }
 
+    fun callInitUser(user: UserInfo) {
+        ThreadsLib.getInstance().initUser(
+            UserInfoBuilder(user.userId!!)
+                .setAuthData(user.authorizationHeader, user.xAuthSchemaHeader)
+                .setClientData(user.userData)
+                .setClientIdSignature(user.signature)
+                .setAppMarker(user.appMarker),
+            preferences.isPreregisterEnabled()
+        )
+    }
+
     private fun login(navigationController: NavController) {
         if (!ThreadsLib.isInitialized()) {
             return
@@ -105,14 +120,7 @@ class LaunchViewModel(
                 serverConfig.trustedSSLCertificates,
                 serverConfig.allowUntrustedSSLCertificate
             )
-            ThreadsLib.getInstance().initUser(
-                UserInfoBuilder(user?.userId!!)
-                    .setAuthData(user.authorizationHeader, user.xAuthSchemaHeader)
-                    .setClientData(user.userData)
-                    .setClientIdSignature(user.signature)
-                    .setAppMarker(user.appMarker),
-                false
-            )
+            if (user != null && !preferences.isPreregisterEnabled()) callInitUser(user)
             navigationController.navigate(R.id.action_LaunchFragment_to_ChatAppFragment)
         }
     }
@@ -181,6 +189,14 @@ class LaunchViewModel(
         selectedUserLiveData.observe(lifecycleOwner) {
             _enabledLoginButtonLiveData.postValue(it?.isAllFieldsFilled())
         }
+    }
+
+    fun onPreregisterCheckedChange(isChecked: Boolean) {
+        preferences.saveIsPreregisterEnabled(isChecked)
+    }
+
+    private fun initPreregisterCheckBox() {
+        _preregisterLiveData.value = preferences.isPreregisterEnabled()
     }
 
     private fun getSelectedUser(): UserInfo? {

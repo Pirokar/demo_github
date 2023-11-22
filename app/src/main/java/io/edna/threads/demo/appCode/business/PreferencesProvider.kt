@@ -91,6 +91,18 @@ class PreferencesProvider(private val context: Context) {
         return list
     }
 
+    fun saveIsPreregisterEnabled(isEnabled: Boolean) {
+        val prefsEditor = context.getSharedPreferences(PREF_DEMO, Context.MODE_PRIVATE).edit()
+        prefsEditor.putBoolean(PREF_PREREGISTER, isEnabled)
+        prefsEditor.apply()
+    }
+
+    fun isPreregisterEnabled(): Boolean {
+        return context
+            .getSharedPreferences(PREF_DEMO, Context.MODE_PRIVATE)
+            .getBoolean(PREF_PREREGISTER, false)
+    }
+
     companion object {
         private const val preferenceName = "ecc_demo_json_preference"
         private const val jsonPreferenceKey = "ecc_demo_json_preference_key"
@@ -101,5 +113,6 @@ class PreferencesProvider(private val context: Context) {
         private const val PREF_APP_VERSION = "APP_VERSION"
         private const val PREF_SELECTED_USER = "SELECTED_USER_PREFS"
         private const val PREF_SELECTED_SERVER = "SELECTED_SERVER_PREFS"
+        private const val PREF_PREREGISTER = "PREF_PREREGISTER"
     }
 }
