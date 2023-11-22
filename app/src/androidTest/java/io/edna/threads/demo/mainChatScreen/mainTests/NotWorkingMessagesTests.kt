@@ -134,7 +134,7 @@ class NotWorkingMessagesTests : BaseTestCase() {
             assert("Поле ввода должно отображаться") {
                 inputEditView.isVisible()
             }
-            assert("В списке сообщений должно отображатся сообщение с текстом: \"$scheduleNotificationMessage\"") {
+            assert("В списке сообщений должно отображаться сообщение с текстом: \"$scheduleNotificationMessage\"") {
                 chatItemsRecyclerView.isVisible()
                 chatItemsRecyclerView.hasDescendant { containsText(scheduleNotificationMessage) }
             }
@@ -143,7 +143,7 @@ class NotWorkingMessagesTests : BaseTestCase() {
                 sendMessageBtn.isVisible()
                 sendMessageBtn.click()
             }
-            assert("В списке сообщений должно отображатся сообщение с текстом: \"$textToSend\"") {
+            assert("В списке сообщений должно отображаться сообщение с текстом: \"$textToSend\"") {
                 chatItemsRecyclerView.isVisible()
                 chatItemsRecyclerView.hasDescendant { containsText(textToSend) }
             }
@@ -158,7 +158,7 @@ class NotWorkingMessagesTests : BaseTestCase() {
             assert("Поле ввода должно отображаться") {
                 inputEditView.isVisible()
             }
-            assert("В списке сообщений должно отображатся сообщение с текстом: \"$scheduleNotificationMessage\"") {
+            assert("В списке сообщений должно отображаться сообщение с текстом: \"$scheduleNotificationMessage\"") {
                 chatItemsRecyclerView.isVisible()
                 chatItemsRecyclerView.hasDescendant { containsText(scheduleNotificationMessage) }
             }
@@ -176,7 +176,7 @@ class NotWorkingMessagesTests : BaseTestCase() {
             assert("Поле ввода должно отображаться") {
                 inputEditView.isVisible()
             }
-            assert("В списке сообщений должно отображатся сообщение с текстом: \"$scheduleNotificationMessage\"") {
+            assert("В списке сообщений должно отображаться сообщение с текстом: \"$scheduleNotificationMessage\"") {
                 chatItemsRecyclerView.isVisible()
                 chatItemsRecyclerView.hasDescendant { containsText(scheduleNotificationMessage) }
             }
@@ -184,7 +184,7 @@ class NotWorkingMessagesTests : BaseTestCase() {
                 sendMessageBtn.isDisabled()
             }
             sendMessageToSocket(operatorHelloMessage)
-            assert("В списке сообщений должно отображатся сообщение с текстом: \"$operatorHelloMessageText\"") {
+            assert("В списке сообщений должно отображаться сообщение с текстом: \"$operatorHelloMessageText\"") {
                 chatItemsRecyclerView.isVisible()
                 chatItemsRecyclerView.hasDescendant { containsText(operatorHelloMessageText) }
             }
@@ -199,7 +199,7 @@ class NotWorkingMessagesTests : BaseTestCase() {
             assert("Поле ввода должно отображаться") {
                 inputEditView.isVisible()
             }
-            assert("В списке сообщений должно отображатся сообщение с текстом: \"$scheduleNotificationMessage\"") {
+            assert("В списке сообщений должно отображаться сообщение с текстом: \"$scheduleNotificationMessage\"") {
                 chatItemsRecyclerView.isVisible()
                 chatItemsRecyclerView.hasDescendant { containsText(scheduleNotificationMessage) }
             }
@@ -208,12 +208,12 @@ class NotWorkingMessagesTests : BaseTestCase() {
                 sendMessageBtn.isVisible()
                 sendMessageBtn.click()
             }
-            assert("В списке сообщений должно отображатся сообщение с текстом: \"$textToSend\"") {
+            assert("В списке сообщений должно отображаться сообщение с текстом: \"$textToSend\"") {
                 chatItemsRecyclerView.isVisible()
                 chatItemsRecyclerView.hasDescendant { containsText(textToSend) }
             }
             sendMessageToSocket(operatorHelloMessage)
-            assert("В списке сообщений должно отображатся сообщение с текстом: \"$operatorHelloMessageText\"") {
+            assert("В списке сообщений должно отображаться сообщение с текстом: \"$operatorHelloMessageText\"") {
                 chatItemsRecyclerView.isVisible()
                 chatItemsRecyclerView.hasDescendant { containsText(operatorHelloMessageText) }
             }
@@ -231,7 +231,7 @@ class NotWorkingMessagesTests : BaseTestCase() {
                 sendMessageBtn.isVisible()
                 sendMessageBtn.click()
             }
-            assert("В списке сообщений должно отображатся сообщение с текстом: \"$textToSend\"") {
+            assert("В списке сообщений должно отображаться сообщение с текстом: \"$textToSend\"") {
                 chatItemsRecyclerView.isVisible()
                 chatItemsRecyclerView.hasDescendant { containsText(textToSend) }
             }

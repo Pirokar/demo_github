@@ -184,7 +184,7 @@ class VoiceMessagesTests : BaseFilesTestCase() {
                     }
                 }
             }
-            assert("Должно отображатся меню \"Удалить/Попробовать снова\"") {
+            assert("Должно отображаться меню \"Удалить/Попробовать снова\"") {
                 onView(withText("Delete")).perform(click())
             }
             assert("В списке должно отображаться ${sizeBeforeSend + 1} сообщений") {
