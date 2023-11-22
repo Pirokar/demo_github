@@ -10,6 +10,7 @@ import io.edna.threads.demo.BuildConfig
 import io.edna.threads.demo.TestMessages
 import io.edna.threads.demo.TestMessages.operatorHelloMessage
 import io.edna.threads.demo.appCode.activity.MainActivity
+import io.edna.threads.demo.assert
 import io.edna.threads.demo.kaspressoSreens.ChatMainScreen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -32,7 +33,7 @@ class NotWorkingMessagesTests : BaseTestCase() {
     internal val activityRule = ActivityScenarioRule<MainActivity>(intent)
 
     private val textToSend = "Hello, Edna! This is test message for test schedule."
-    private val scheduleNotificationMessage = "Война войной, а обед по рассписанию."
+    private val scheduleNotificationMessage = "Война войной, а обед по расписанию."
     private val operatorHelloMessageText = "привет!"
 
     private val onlySettingsAnswer = listOf(
@@ -125,109 +126,129 @@ class NotWorkingMessagesTests : BaseTestCase() {
         }
     }
 
-    private fun checkSendMessageFromClient() {
-        ChatMainScreen {
-            welcomeScreen { isVisible() }
-            inputEditView { isVisible() }
-            inputEditView.typeText(textToSend)
-            sendMessageBtn {
-                isVisible()
-                click()
-            }
-            chatItemsRecyclerView {
-                isVisible()
-                hasDescendant { containsText(textToSend) }
-            }
-        }
-    }
-
     private fun checkInputFieldsEnabledHasNotificationMessage() {
         ChatMainScreen {
-            welcomeScreen { isNotDisplayed() }
-            inputEditView { isVisible() }
-            chatItemsRecyclerView {
-                isVisible()
-                hasDescendant { containsText(scheduleNotificationMessage) }
+            assert("Приветственное сообщение не должно отображаться") {
+                welcomeScreen.isNotDisplayed()
+            }
+            assert("Поле ввода должно отображаться") {
+                inputEditView.isVisible()
+            }
+            assert("В списке сообщений должно отображаться сообщение с текстом: \"$scheduleNotificationMessage\"") {
+                chatItemsRecyclerView.isVisible()
+                chatItemsRecyclerView.hasDescendant { containsText(scheduleNotificationMessage) }
             }
             inputEditView.typeText(textToSend)
-            sendMessageBtn {
-                isVisible()
-                click()
+            assert("Кнопка \"Отправить\" должны отображаться") {
+                sendMessageBtn.isVisible()
+                sendMessageBtn.click()
             }
-            chatItemsRecyclerView {
-                isVisible()
-                hasDescendant { containsText(textToSend) }
+            assert("В списке сообщений должно отображаться сообщение с текстом: \"$textToSend\"") {
+                chatItemsRecyclerView.isVisible()
+                chatItemsRecyclerView.hasDescendant { containsText(textToSend) }
             }
         }
     }
 
     private fun checkInputFieldsDisabledHasNotificationMessage() {
         ChatMainScreen {
-            welcomeScreen { isNotDisplayed() }
-            inputEditView {
-                isVisible()
-                isDisabled()
+            assert("Приветственное сообщение не должно отображаться") {
+                welcomeScreen.isNotDisplayed()
             }
-            chatItemsRecyclerView {
-                isVisible()
-                hasDescendant { containsText(scheduleNotificationMessage) }
+            assert("Поле ввода должно отображаться") {
+                inputEditView.isVisible()
             }
-            sendMessageBtn { isDisabled() }
+            assert("В списке сообщений должно отображаться сообщение с текстом: \"$scheduleNotificationMessage\"") {
+                chatItemsRecyclerView.isVisible()
+                chatItemsRecyclerView.hasDescendant { containsText(scheduleNotificationMessage) }
+            }
+            assert("Кнопка \"Отправить\" должны быть неактивной") {
+                sendMessageBtn.isDisabled()
+            }
         }
     }
 
     private fun checkInputFieldsDisabledHasNotificationMessageWithMessageFromConsultant() {
         ChatMainScreen {
-            welcomeScreen { isNotDisplayed() }
-            inputEditView {
-                isVisible()
-                isDisabled()
+            assert("Приветственное сообщение не должно отображаться") {
+                welcomeScreen.isNotDisplayed()
             }
-            chatItemsRecyclerView {
-                isVisible()
-                hasDescendant { containsText(scheduleNotificationMessage) }
+            assert("Поле ввода должно отображаться") {
+                inputEditView.isVisible()
             }
-            sendMessageBtn { isDisabled() }
+            assert("В списке сообщений должно отображаться сообщение с текстом: \"$scheduleNotificationMessage\"") {
+                chatItemsRecyclerView.isVisible()
+                chatItemsRecyclerView.hasDescendant { containsText(scheduleNotificationMessage) }
+            }
+            assert("Кнопка \"Отправить\" должны быть неактивной") {
+                sendMessageBtn.isDisabled()
+            }
             sendMessageToSocket(operatorHelloMessage)
-            chatItemsRecyclerView {
-                isVisible()
-                hasDescendant { containsText(operatorHelloMessageText) }
+            assert("В списке сообщений должно отображаться сообщение с текстом: \"$operatorHelloMessageText\"") {
+                chatItemsRecyclerView.isVisible()
+                chatItemsRecyclerView.hasDescendant { containsText(operatorHelloMessageText) }
             }
         }
     }
 
     private fun checkInputFieldsEnabledHasNotificationMessageWithMessageFromConsultant() {
         ChatMainScreen {
-            welcomeScreen { isNotDisplayed() }
-            inputEditView { isVisible() }
-            chatItemsRecyclerView {
-                isVisible()
-                hasDescendant { containsText(scheduleNotificationMessage) }
+            assert("Приветственное сообщение не должно отображаться") {
+                welcomeScreen.isNotDisplayed()
+            }
+            assert("Поле ввода должно отображаться") {
+                inputEditView.isVisible()
+            }
+            assert("В списке сообщений должно отображаться сообщение с текстом: \"$scheduleNotificationMessage\"") {
+                chatItemsRecyclerView.isVisible()
+                chatItemsRecyclerView.hasDescendant { containsText(scheduleNotificationMessage) }
             }
             inputEditView.typeText(textToSend)
-            sendMessageBtn {
-                isVisible()
-                click()
+            assert("Кнопка \"Отправить\" должна отображаться") {
+                sendMessageBtn.isVisible()
+                sendMessageBtn.click()
             }
-            chatItemsRecyclerView {
-                isVisible()
-                hasDescendant { containsText(textToSend) }
+            assert("В списке сообщений должно отображаться сообщение с текстом: \"$textToSend\"") {
+                chatItemsRecyclerView.isVisible()
+                chatItemsRecyclerView.hasDescendant { containsText(textToSend) }
             }
             sendMessageToSocket(operatorHelloMessage)
-            chatItemsRecyclerView {
-                isVisible()
-                hasDescendant { containsText(operatorHelloMessageText) }
+            assert("В списке сообщений должно отображаться сообщение с текстом: \"$operatorHelloMessageText\"") {
+                chatItemsRecyclerView.isVisible()
+                chatItemsRecyclerView.hasDescendant { containsText(operatorHelloMessageText) }
+            }
+        }
+    }
+
+    private fun checkSendMessageFromClient() {
+        ChatMainScreen {
+            assert("Поле ввода и приветственное сообщение должны отображаться") {
+                welcomeScreen.isVisible()
+                inputEditView.isVisible()
+            }
+            inputEditView.typeText(textToSend)
+            assert("Кнопка \"Отправить\" должна отображаться") {
+                sendMessageBtn.isVisible()
+                sendMessageBtn.click()
+            }
+            assert("В списке сообщений должно отображаться сообщение с текстом: \"$textToSend\"") {
+                chatItemsRecyclerView.isVisible()
+                chatItemsRecyclerView.hasDescendant { containsText(textToSend) }
             }
         }
     }
 
     private fun checkInputFieldsNoClientInfoResponse() {
         ChatMainScreen {
-            welcomeScreen { isNotDisplayed() }
-            inputEditView {
-                isNotDisplayed()
+            assert("Приветственное сообщение не должны отображаться") {
+                welcomeScreen.isNotDisplayed()
             }
-            sendMessageBtn { isNotDisplayed() }
+            assert("Поле ввода не должно отображаться") {
+                inputEditView.isNotDisplayed()
+            }
+            assert("Кнопка отправить не должна отображаться") {
+                sendMessageBtn.isNotDisplayed()
+            }
         }
     }
 }
