@@ -66,6 +66,7 @@ class OutgoingMessageCreator(
             addProperty(MessageAttributes.DEVICE_ADDRESS, deviceAddress)
             if (ThreadsLibBase.isForceRegistration) {
                 addProperty("preRegister", true)
+                ThreadsLibBase.isForceRegistration = false
             }
         }
         return jsonObject
