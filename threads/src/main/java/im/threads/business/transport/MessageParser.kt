@@ -209,7 +209,8 @@ class MessageParser {
             settings,
             speechStatus,
             read,
-            modified
+            modified,
+            isPersonalOffer
         ) = BaseConfig.getInstance().gson.fromJson(
             fullMessage,
             MessageContent::class.java
@@ -257,7 +258,8 @@ class MessageParser {
                 quickReplies,
                 settings?.isBlockInput,
                 fromString(speechStatus),
-                ConsultRole.consultRoleFromString(operator?.role)
+                ConsultRole.consultRoleFromString(operator?.role),
+                isPersonalOffer
             )
         } else {
             var fileDescription: FileDescription? = null
@@ -297,6 +299,7 @@ class MessageParser {
             fileDescription.incomingName = attachment.name
             fileDescription.mimeType = attachment.type
             fileDescription.state = attachment.state
+            fileDescription.offerLink = attachment.link
             if (attachment.errorCode != null) {
                 fileDescription.errorCode = attachment.getErrorCodeState()
                 fileDescription.errorMessage = attachment.errorMessage

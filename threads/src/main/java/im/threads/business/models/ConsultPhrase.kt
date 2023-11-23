@@ -25,7 +25,8 @@ class ConsultPhrase constructor(
     val quickReplies: List<QuickReply>?,
     val isBlockInput: Boolean?,
     val speechStatus: SpeechStatus,
-    val role: ConsultRole
+    val role: ConsultRole,
+    val isPersonalOffer: Boolean = false
 ) : ConsultChatPhrase(avatarPath, consultId), ChatPhrase {
     var ogData: OGData? = null
     var ogUrl: String? = null

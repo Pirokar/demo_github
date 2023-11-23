@@ -2687,8 +2687,21 @@ class ChatFragment :
                     setupStartSecondLevelScreen()
                 }
             } else if (chatPhrase is ConsultPhrase) {
-                val activity: Activity? = activity
-                activity?.startActivity(getStartIntent(activity, chatPhrase.fileDescription))
+                openConsultPhraseImage(chatPhrase)
+            }
+        }
+
+        private fun openConsultPhraseImage(message: ConsultPhrase) {
+            if (message.isPersonalOffer && !message.fileDescription?.offerLink.isNullOrBlank()) {
+                val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(message.fileDescription?.offerLink))
+                startActivity(browserIntent)
+            } else {
+                activity?.startActivity(
+                    getStartIntent(
+                        activity,
+                        message.fileDescription
+                    )
+                )
                 setupStartSecondLevelScreen()
             }
         }
