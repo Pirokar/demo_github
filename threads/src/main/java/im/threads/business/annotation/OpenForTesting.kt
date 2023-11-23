@@ -4,5 +4,5 @@ package im.threads.business.annotation
 annotation class OpenClass
 
 @OpenClass
-@Target(AnnotationTarget.CLASS)
+@Target(AnnotationTarget.CLASS, AnnotationTarget.PROPERTY)
 annotation class OpenForTesting

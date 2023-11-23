@@ -11,6 +11,7 @@ import im.threads.business.models.UserPhrase
 interface DBHelper {
 
     fun cleanDatabase()
+    fun closeInstance()
     fun getChatItems(offset: Int, limit: Int): List<ChatItem?>
     fun getChatItemByCorrelationId(messageUuid: String?): ChatItem?
     fun getChatItemByBackendMessageId(messageId: String?): ChatItem?

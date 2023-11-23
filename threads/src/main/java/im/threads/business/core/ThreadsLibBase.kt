@@ -147,7 +147,6 @@ open class ThreadsLibBase protected constructor(context: Context) {
 
     /**
      * Запускает обновление подключений в соответствии с текущими данными и способами авторизации
-     *
      */
     fun updateAuthData(
         authToken: String?,

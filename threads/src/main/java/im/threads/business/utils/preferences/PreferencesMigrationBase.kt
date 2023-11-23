@@ -110,7 +110,7 @@ open class PreferencesMigrationBase(
                 clientUseCase.saveUserInfo(userInfo)
             }
         } catch (e: SecurityException) {
-            clearSharedPreferences()
+            removeSharedPreferencesFiles()
         }
     }
 
@@ -174,24 +174,6 @@ open class PreferencesMigrationBase(
             }
         } catch (exception: Exception) {
             LoggerEdna.error("Error when deleting preference file", exception)
-        }
-    }
-
-    fun clearSharedPreferences() {
-        val dir = try {
-            File(context.filesDir.parent?.plus("/shared_prefs/")!!)
-        } catch (e: Exception) {
-            return
-        }
-        val children = dir.list()
-        if (children != null) {
-            for (i in children.indices) {
-                try {
-                    context.getSharedPreferences(children[i].replace(".xml", ""), Context.MODE_PRIVATE).edit()
-                        .clear().commit()
-                } catch (ignored: Exception) {}
-                File(dir, children[i]).delete()
-            }
         }
     }
 }

@@ -66,6 +66,10 @@ class ThreadsDbHelper private constructor(val context: Context) :
         questionsTable.cleanTable(this)
     }
 
+    override fun closeInstance() {
+        close()
+    }
+
     override fun getChatItems(offset: Int, limit: Int): List<ChatItem> =
         messagesTable.getChatItems(this, offset, limit)
 

@@ -79,9 +79,9 @@ import java.util.UUID
 import java.util.concurrent.TimeUnit
 import javax.net.ssl.SSLSession
 
-class ThreadsGateTransport(
-    private val threadsGateUrl: String,
-    private val threadsGateProviderUid: String,
+internal class ThreadsGateTransport(
+    internal val threadsGateUrl: String,
+    internal val threadsGateProviderUid: String,
     private val isDebugLoggingEnabled: Boolean,
     private val socketSettings: SocketClientSettings,
     private val sslSocketFactoryConfig: SslSocketFactoryConfig? = null,
