@@ -1525,13 +1525,13 @@ class ChatFragment :
     }
 
     fun addChatItem(item: ChatItem?) = binding?.apply {
-        val isLastMessageVisible = isLastMessageVisible()
+        val lastMessageVisible = isLastMessageVisible()
         if (item == null) {
             return@apply
         }
         if (item is ConsultPhrase) {
             val previouslyRead = item.read
-            item.read = (isLastMessageVisible && isResumed && !isInMessageSearchMode)
+            item.read = (lastMessageVisible && isResumed && !isInMessageSearchMode)
             if (item.read) {
                 if (!previouslyRead && !item.id.isNullOrBlank()) {
                     BaseConfig.getInstance().transport.markMessagesAsRead(listOf(item.id))
@@ -1547,7 +1547,7 @@ class ChatFragment :
                 scrollDownButtonContainer.visibility = View.VISIBLE
                 showUnreadMessagesCount(chatController.getUnreadMessagesCount())
             }
-            scrollDelayedOnNewMessageReceived(item is UserPhrase, isLastMessageVisible)
+            scrollDelayedOnNewMessageReceived(item is UserPhrase, lastMessageVisible)
         } else if (needsModifyImage(item)) {
             chatAdapter?.modifyImageInItem((item as ChatPhrase).fileDescription)
         }

@@ -149,7 +149,6 @@ class ConsultPhraseHolder(
                 consultPhrase.phraseText
             )
         )
-        viewUtils.setClickListener(itemView as ViewGroup, onRowLongClickListener)
         showConsultTimeStamp(consultPhrase, listOf(ogTimestamp, timeStampTextView))
         imageLayout.isVisible = false
         fileRow.isVisible = false
@@ -166,6 +165,7 @@ class ConsultPhraseHolder(
             phraseTextView.visible()
             phraseTextView.text = this.parent.context.getString(R.string.ecc_message_deleted)
         } else {
+            viewUtils.setClickListener(itemView as ViewGroup, onRowLongClickListener)
             setTextColorToViews(arrayOf(phraseTextView), style.incomingMessageTextColor)
             phraseTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, itemView.getContext().resources.getDimension(R.dimen.ecc_text_medium))
             phraseTextView.text = ""

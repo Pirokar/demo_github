@@ -12,20 +12,16 @@ class ScheduleInfo : ChatItem {
     var notification: String? = null
     val sendDuringInactive = false
     override var timeStamp: Long = 0
-    var serverTime: Date? = null
-    var active = false
+    private var serverTime: Date? = null
+    private var active = false
     private var serverTimeDiff: Long = 0
-    val intervals: List<WeekDaySchedule>? = null
-
-    val startTime: Date?
-        get() = getCurrDayOfWeek()?.let { Date(it.startTime * 1000) }
-
-    val endTime: Date?
-        get() = getCurrDayOfWeek()?.let { Date(it.endTime * 1000) }
+    private val intervals: List<WeekDaySchedule>? = null
+    private val startTime: Date? = null
+    private val endTime: Date? = null
 
     fun calculateServerTimeDiff() {
         serverTime?.let {
-            serverTimeDiff = currentUtcTime() - it.time
+            serverTimeDiff = currentUtcTime - it.time
         }
     }
 
@@ -37,37 +33,37 @@ class ScheduleInfo : ChatItem {
             if (startTime == null || endTime == null || serverTime == null) {
                 return active
             }
-            val currentServerTime = currentUtcTime() - serverTimeDiff
+            val currentServerTime = currentUtcTime - serverTimeDiff
 
             if (active) {
                 // Next unavailability not started yet
                 // всегда true т.к. startTime - это дата и время старта ближайшего интервала неактивности чата
-                if (currentServerTime < startTime!!.time) {
+                if (currentServerTime < startTime.time) {
                     return true
                 }
 
                 // Next unavailability started
-                if (currentServerTime > startTime!!.time && currentServerTime < endTime!!.time) {
+                if (currentServerTime > startTime.time && currentServerTime < endTime.time) {
                     return false
                 }
 
                 // Next unavailability ended
-                if (currentServerTime > endTime!!.time) {
+                if (currentServerTime > endTime.time) {
                     return true
                 }
             } else {
                 // всегда true т.к. endTime - это дата и время окончания ближайшего(или текущего) интервала неактивности чата
-                if (currentServerTime < endTime!!.time) {
+                if (currentServerTime < endTime.time) {
                     return false
                 }
 
                 // Unavailability ended, next unavailability not started yet
-                if (currentServerTime > endTime!!.time && currentServerTime < startTime!!.time) {
+                if (currentServerTime > endTime.time && currentServerTime < startTime.time) {
                     return true
                 }
 
                 // Next unavailability started
-                if (currentServerTime > startTime!!.time) {
+                if (currentServerTime > startTime.time) {
                     return true
                 }
             }
@@ -107,34 +103,22 @@ class ScheduleInfo : ChatItem {
         )
     }
 
-    private fun currentUtcTime(): Long {
-        val c = Calendar.getInstance()
-        c[Calendar.HOUR_OF_DAY] = 0
-        c[Calendar.MINUTE] = 0
-        c[Calendar.SECOND] = 0
-        c[Calendar.MILLISECOND] = 0
-        return System.currentTimeMillis() - c.timeInMillis
-    }
-//        get() = Calendar.getInstance(TimeZone.getTimeZone("UTC")).timeInMillis
-
-    private fun getCurrDayOfWeek(): WeekDaySchedule? {
-        val day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK)
-        return intervals?.firstOrNull { day == it.weekDay }
-    }
+    private val currentUtcTime: Long
+        get() = Calendar.getInstance(TimeZone.getTimeZone("UTC")).timeInMillis
 
     class WeekDaySchedule(
         val id: Int,
-        val weekDay: Int,
-        val startTime: Long,
-        val endTime: Long
+        private val weekDay: Int,
+        private val startTime: Long,
+        private val endTime: Long
     ) {
         override fun toString(): String {
             return "WeekDaySchedule{" +
-                    "id=" + id +
-                    ", weekDay=" + weekDay +
-                    ", startTime=" + startTime +
-                    ", endTime='" + endTime + '\'' +
-                    '}'
+                "id=" + id +
+                ", weekDay=" + weekDay +
+                ", startTime=" + startTime +
+                ", endTime='" + endTime + '\'' +
+                '}'
         }
     }
 }

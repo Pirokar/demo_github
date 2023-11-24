@@ -204,7 +204,10 @@ class MessageParser {
             fullMessage,
             MessageContent::class.java
         )
-        if (text == null && attachments == null && quotes == null) {
+
+        if (text == null && attachments == null && quotes == null
+            && ModificationStateEnum.fromString(modified) != ModificationStateEnum.DELETED
+        ) {
             return null
         }
         var isMessageRead: Boolean? = false
