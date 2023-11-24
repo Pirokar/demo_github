@@ -205,8 +205,8 @@ class MessageParser {
             MessageContent::class.java
         )
 
-        if (text == null && attachments == null && quotes == null
-            && ModificationStateEnum.fromString(modified) != ModificationStateEnum.DELETED
+        if (text == null && attachments == null && quotes == null &&
+            ModificationStateEnum.fromString(modified) != ModificationStateEnum.DELETED
         ) {
             return null
         }

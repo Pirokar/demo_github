@@ -82,11 +82,11 @@ class ScheduleInfo : ChatItem {
         if (other == null || javaClass != other.javaClass) return false
         val that = other as ScheduleInfo
         return sendDuringInactive == that.sendDuringInactive && timeStamp == that.timeStamp && active == that.active && serverTimeDiff == that.serverTimeDiff &&
-                ObjectsCompat.equals(id, that.id) &&
-                ObjectsCompat.equals(notification, that.notification) &&
-                ObjectsCompat.equals(startTime, that.startTime) &&
-                ObjectsCompat.equals(endTime, that.endTime) &&
-                ObjectsCompat.equals(serverTime, that.serverTime)
+            ObjectsCompat.equals(id, that.id) &&
+            ObjectsCompat.equals(notification, that.notification) &&
+            ObjectsCompat.equals(startTime, that.startTime) &&
+            ObjectsCompat.equals(endTime, that.endTime) &&
+            ObjectsCompat.equals(serverTime, that.serverTime)
     }
 
     override fun hashCode(): Int {
