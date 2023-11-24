@@ -662,12 +662,12 @@ class ThreadsGateTransport(
                                 if (chatItem is SpeechMessageUpdate) {
                                     chatUpdateProcessor.postSpeechMessageUpdate(chatItem)
                                 }
+                            } else if (ChatItemType.SCHEDULE == type) {
+                                //Иногда в сокет все же прилетает сообщение с типом SCHEDULE. Поэтому его игнорируем
                             } else {
-                                if (ChatItemType.SCHEDULE != type) {
-                                    val chatItem = messageParser.format(message)
-                                    if (chatItem != null) {
-                                        chatUpdateProcessor.postNewMessage(chatItem)
-                                    }
+                                val chatItem = messageParser.format(message)
+                                if (chatItem != null) {
+                                    chatUpdateProcessor.postNewMessage(chatItem)
                                 }
                             }
                         }

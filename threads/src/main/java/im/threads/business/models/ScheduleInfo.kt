@@ -113,12 +113,7 @@ class ScheduleInfo : ChatItem {
         private val endTime: Long
     ) {
         override fun toString(): String {
-            return "WeekDaySchedule{" +
-                "id=" + id +
-                ", weekDay=" + weekDay +
-                ", startTime=" + startTime +
-                ", endTime='" + endTime + '\'' +
-                '}'
+            return "WeekDaySchedule{ id=$id, weekDay=$weekDay, startTime=$startTime, endTime=$endTime }"
         }
     }
 }
