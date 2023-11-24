@@ -62,6 +62,7 @@ class MessagesTable(
                 ", $COLUMN_BLOCK_INPUT integer" +
                 ", $COLUMN_SPEECH_STATUS text" +
                 ", $COLUMN_MODIFICATION_STATE text" +
+                ", $COLUMN_IS_PERSONAL_OFFER integer" +
                 ")"
         )
     }
@@ -294,7 +295,7 @@ class MessagesTable(
         return null
     }
 
-    fun getUnsendUserPhrase(sqlHelper: SQLiteOpenHelper, count: Int): List<UserPhrase> {
+    fun getUnsentUserPhrase(sqlHelper: SQLiteOpenHelper, count: Int): List<UserPhrase> {
         val userPhrases: MutableList<UserPhrase> = ArrayList()
         val chatItems = getChatItems(sqlHelper, 0, count)
         for (chatItem: ChatItem? in chatItems) {
@@ -608,7 +609,8 @@ class MessagesTable(
             },
             cursorGetBool(c, COLUMN_BLOCK_INPUT),
             fromString(cursorGetString(c, COLUMN_SPEECH_STATUS)),
-            ConsultRole.consultRoleFromString(cursorGetString(c, COLUMN_CONSULT_ROLE))
+            ConsultRole.consultRoleFromString(cursorGetString(c, COLUMN_CONSULT_ROLE)),
+            cursorGetBool(c, COLUMN_IS_PERSONAL_OFFER)
         )
     }
 
@@ -676,6 +678,7 @@ class MessagesTable(
         cv.put(COLUMN_SPEECH_STATUS, phrase.speechStatus.toString())
         cv.put(COLUMN_CONSULT_ROLE, phrase.role.name)
         cv.put(COLUMN_MODIFICATION_STATE, phrase.modified.state)
+        cv.put(COLUMN_IS_PERSONAL_OFFER, phrase.isPersonalOffer)
         return cv
     }
 
@@ -911,6 +914,7 @@ private const val COLUMN_NAME = "COLUMN_NAME"
 private const val COLUMN_AVATAR_PATH = "COLUMN_AVATAR_PATH"
 private const val COLUMN_MESSAGE_SEND_STATE = "COLUMN_MESSAGE_SEND_STATE"
 private const val COLUMN_SEX = "COLUMN_SEX"
+private const val COLUMN_IS_PERSONAL_OFFER = "COLUMN_IS_PERSONAL_OFFER"
 private const val COLUMN_CONSULT_ID = "COLUMN_CONSULT_ID"
 private const val COLUMN_CONSULT_STATUS = "COLUMN_CONSULT_STATUS"
 private const val COLUMN_CONSULT_TITLE = "COLUMN_CONSULT_TITLE"

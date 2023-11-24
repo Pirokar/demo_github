@@ -2671,9 +2671,7 @@ class ChatFragment :
         }
 
         override fun onImageClick(chatPhrase: ChatPhrase) {
-            if (!isPreviewFileExist(chatPhrase.fileDescription?.getPreviewFileDescription()) &&
-                chatPhrase.fileDescription?.fileUri == null
-            ) {
+            if (!isOffer(chatPhrase) && isPreviewFileNotExist(chatPhrase)) {
                 return
             }
 
@@ -2692,7 +2690,7 @@ class ChatFragment :
         }
 
         private fun openConsultPhraseImage(message: ConsultPhrase) {
-            if (message.isPersonalOffer && !message.fileDescription?.offerLink.isNullOrBlank()) {
+            if (isOffer(message)) {
                 val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(message.fileDescription?.offerLink))
                 startActivity(browserIntent)
             } else {
@@ -2706,7 +2704,16 @@ class ChatFragment :
             }
         }
 
-        fun isPreviewFileExist(fileDescription: FileDescription?): Boolean {
+        private fun isOffer(message: ChatItem): Boolean {
+            return message is ConsultPhrase && message.isPersonalOffer && !message.fileDescription?.offerLink.isNullOrBlank()
+        }
+
+        private fun isPreviewFileNotExist(message: ChatPhrase): Boolean {
+            return !isPreviewFileNotExist(message.fileDescription?.getPreviewFileDescription()) &&
+                message.fileDescription?.fileUri == null
+        }
+
+        fun isPreviewFileNotExist(fileDescription: FileDescription?): Boolean {
             fileDescription?.let {
                 return FileUtils.isPreviewFileExist(requireContext(), it)
             }
