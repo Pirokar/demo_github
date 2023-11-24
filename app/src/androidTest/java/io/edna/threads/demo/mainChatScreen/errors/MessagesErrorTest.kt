@@ -31,9 +31,8 @@ class MessagesErrorTest : BaseTestCase() {
 
     @Test
     fun testErrorsInHistory() {
-        prepareHttpMocks()
-        openChatFromDemoLoginPage()
         prepareHttpMocks(historyAnswer = readTextFileFromRawResourceId(R.raw.history_errors_response))
+        openChatFromDemoLoginPage()
 
         ChatMainScreen {
             chatItemsRecyclerView {

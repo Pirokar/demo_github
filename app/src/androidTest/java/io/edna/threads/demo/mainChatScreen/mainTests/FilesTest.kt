@@ -71,9 +71,8 @@ class FilesTest : BaseFilesTestCase() {
 
     @Test
     fun filesHistoryTest() {
-        prepareHttpMocks()
-        openChatFromDemoLoginPage()
         prepareHttpMocks(historyAnswer = readTextFileFromRawResourceId(R.raw.history_files_response))
+        openChatFromDemoLoginPage()
         ChatMainScreen {
             chatItemsRecyclerView {
                 childAt<ChatMainScreen.ChatRecyclerItem>(5) {
@@ -96,9 +95,8 @@ class FilesTest : BaseFilesTestCase() {
     @Test
     fun operatorFileQuoteTest() {
         val textToType = "Such a beautiful file!"
-        prepareHttpMocks()
-        openChatFromDemoLoginPage()
         prepareHttpMocks(historyAnswer = readTextFileFromRawResourceId(R.raw.history_files_response))
+        openChatFromDemoLoginPage()
 
         ChatMainScreen {
             chatItemsRecyclerView {

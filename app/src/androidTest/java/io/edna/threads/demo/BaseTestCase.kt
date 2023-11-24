@@ -38,7 +38,7 @@ import java.io.InputStream
 import java.io.InputStreamReader
 
 abstract class BaseTestCase : TestCase() {
-    protected val userId = (10000..99999).random().toString()
+    private val userId = (10000..99999).random().toString()
 
     private val coroutineScope = CoroutineScope(Dispatchers.Unconfined)
 
@@ -106,7 +106,7 @@ abstract class BaseTestCase : TestCase() {
         Mockito.`when`(okHttpClient.newWebSocket(anyOrNull(), anyOrNull())).thenReturn(socket)
         Mockito.doAnswer { mock: InvocationOnMock ->
             val stringArg = mock.arguments[0] as String
-            val (answer, isClientInfo) = getAnswersForWebSocket(stringArg)
+            val answer = getAnswersForWebSocket(stringArg)
             answer?.let { wsAnswer ->
                 sendMessageToSocket(wsAnswer)
             }
@@ -223,9 +223,9 @@ abstract class BaseTestCase : TestCase() {
         }
     }
 
-    internal fun getAnswersForWebSocket(
+    private fun getAnswersForWebSocket(
         websocketMessage: String
-    ): Pair<String?, Boolean> {
+    ): String? {
         wsMocksMap.keys.forEach { key ->
             if (websocketMessage.contains(key)) {
                 val draftAnswer = wsMocksMap[key]
@@ -236,16 +236,16 @@ abstract class BaseTestCase : TestCase() {
                         val endOfCorrelationValueIndex = split[1].indexOf("\"")
                         val correlationId = split[1].subSequence(0, endOfCorrelationValueIndex).toString()
                         val answer = draftAnswer.replace(TestMessages.correlationId, correlationId)
-                        Pair(answer, key == "CLIENT_INFO")
+                        answer
                     } else {
-                        Pair(wsMocksMap[key], key == "CLIENT_INFO")
+                        wsMocksMap[key]
                     }
                 } else {
-                    Pair(wsMocksMap[key], key == "CLIENT_INFO")
+                    wsMocksMap[key]
                 }
             }
         }
-        return Pair(null, false)
+        return null
     }
 
     private fun getDefaultServerConfig() = ServerConfig(

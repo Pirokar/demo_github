@@ -31,9 +31,8 @@ class SearchTests : BaseTestCase() {
 
     @Test
     fun testSearchInHistory() {
-        prepareHttpMocks()
-        openChatFromDemoLoginPage()
         prepareHttpMocks(historyAnswer = readTextFileFromRawResourceId(R.raw.history_text_response))
+        openChatFromDemoLoginPage()
 
         val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
 
@@ -82,9 +81,8 @@ class SearchTests : BaseTestCase() {
 
     @Test
     fun testSearchClear() {
-        prepareHttpMocks()
-        openChatFromDemoLoginPage()
         prepareHttpMocks(historyAnswer = readTextFileFromRawResourceId(R.raw.history_text_response))
+        openChatFromDemoLoginPage()
 
         val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
 

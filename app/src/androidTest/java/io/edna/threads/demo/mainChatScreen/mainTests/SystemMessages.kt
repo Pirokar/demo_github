@@ -31,10 +31,8 @@ class SystemMessages : BaseTestCase() {
 
     @Test
     fun systemMessagesTest() {
-        prepareHttpMocks()
-        openChatFromDemoLoginPage()
         prepareHttpMocks(historyAnswer = readTextFileFromRawResourceId(R.raw.history_system_response))
-
+        openChatFromDemoLoginPage()
         ChatMainScreen {
             chatItemsRecyclerView {
                 waitListForNotEmpty(5000)
@@ -136,9 +134,8 @@ class SystemMessages : BaseTestCase() {
 
     @Test
     fun waitingTimeTest() {
-        prepareHttpMocks()
-        openChatFromDemoLoginPage()
         prepareHttpMocks(historyAnswer = readTextFileFromRawResourceId(R.raw.history_errors_response))
+        openChatFromDemoLoginPage()
 
         ChatMainScreen {
             chatItemsRecyclerView {
