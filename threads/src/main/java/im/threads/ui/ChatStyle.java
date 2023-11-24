@@ -85,9 +85,6 @@ public final class ChatStyle implements Serializable {
     @StringRes
     public int loadedAttachmentSettingsErrorText = R.string.ecc_attachment_settings_not_loaded;
 
-    @StringRes
-    public int loadedScheduleErrorText = R.string.ecc_schedule_not_loaded;
-
     @ColorRes
     public int chatToolbarHintTextColor = R.color.ecc_chat_toolbar_hint;
 
@@ -2254,21 +2251,16 @@ public final class ChatStyle implements Serializable {
      * Устанавливает тексты ошибок получения настроек, настроек вложений и расписания чата
      * @param loadedSettingsErrorTextRes ресурс текста ошибки полуения настроек. Передайте null, если хотите оставить значение по умолчанию
      * @param loadedAttachmentSettingsErrorTextRes ресурс текста ошибки полуения настроек вложений. Передайте null, если хотите оставить значение по умолчанию
-     * @param loadedScheduleErrorTextRes ресурс текста ошибки полуения расписания. Передайте null, если хотите оставить значение по умолчанию
      */
     public ChatStyle setStartLoadErrorTexts(
             @StringRes Integer loadedSettingsErrorTextRes,
-            @StringRes Integer loadedAttachmentSettingsErrorTextRes,
-            @StringRes Integer loadedScheduleErrorTextRes
+            @StringRes Integer loadedAttachmentSettingsErrorTextRes
     ) {
         if (loadedSettingsErrorTextRes != null) {
             this.loadedSettingsErrorText = loadedSettingsErrorTextRes;
         }
         if (loadedAttachmentSettingsErrorTextRes != null) {
             this.loadedAttachmentSettingsErrorText = loadedAttachmentSettingsErrorTextRes;
-        }
-        if (loadedScheduleErrorTextRes != null) {
-            this.loadedScheduleErrorText = loadedScheduleErrorTextRes;
         }
         return this;
     }

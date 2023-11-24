@@ -166,6 +166,5 @@
     <string name="ecc_no_results_found">No results found</string>
     <string name="ecc_settings_not_loaded">Failed to load chat settings</string>
     <string name="ecc_attachment_settings_not_loaded">Failed to load attachments settings</string>
-    <string name="ecc_schedule_not_loaded">Failed to load chat schedule</string>
     <string name="ecc_library_not_init">ChatCenter SDK is not initialized</string>
 </resources>

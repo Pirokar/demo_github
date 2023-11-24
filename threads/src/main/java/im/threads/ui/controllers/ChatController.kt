@@ -710,14 +710,13 @@ class ChatController private constructor() {
                         if (responseBody != null) {
                             val settingsLoaded = updateSettings(responseBody.settings)
                             val attachmentSettingsLoaded = updateAttachmentSettings(responseBody.attachmentSettings)
-                            val scheduleLoaded = updateSchedule(responseBody.schedule)
-                            if (settingsLoaded && attachmentSettingsLoaded && scheduleLoaded) {
+                            updateSchedule(responseBody.schedule)
+                            if (settingsLoaded && attachmentSettingsLoaded) {
                                 chatState.changeState(ChatStateEnum.SETTINGS_LOADED)
                             } else {
                                 val message = getErrorMessage(
                                     settingsLoaded,
-                                    attachmentSettingsLoaded,
-                                    scheduleLoaded
+                                    attachmentSettingsLoaded
                                 )
                                 info("error on getting settings: $message")
                                 chatUpdateProcessor.postError(TransportException(message))
@@ -734,15 +733,12 @@ class ChatController private constructor() {
 
     private fun getErrorMessage(
         settingsLoaded: Boolean,
-        attachmentSettingsLoaded: Boolean,
-        scheduleLoaded: Boolean
+        attachmentSettingsLoaded: Boolean
     ): String {
         return if (!settingsLoaded) {
             appContext.getString(chatStyle.loadedSettingsErrorText)
         } else if (!attachmentSettingsLoaded) {
             appContext.getString(chatStyle.loadedAttachmentSettingsErrorText)
-        } else if (!scheduleLoaded) {
-            appContext.getString(chatStyle.loadedScheduleErrorText)
         } else {
             appContext.getString(chatStyle.loadedSettingsErrorText)
         }
@@ -778,7 +774,7 @@ class ChatController private constructor() {
         return false
     }
 
-    private fun updateSchedule(contentScheduleInfo: ContentScheduleInfoContent?): Boolean {
+    private fun updateSchedule(contentScheduleInfo: ContentScheduleInfoContent?) {
         if (contentScheduleInfo != null) {
             val scheduleInfo = contentScheduleInfo.content?.content
             if (scheduleInfo != null) {
@@ -796,10 +792,8 @@ class ChatController private constructor() {
                     }
                 }
                 fragment?.get()?.addChatItem(currentScheduleInfo)
-                return true
             }
         }
-        return false
     }
 
     internal fun downloadMessagesTillEnd(): Single<List<ChatItem>> {

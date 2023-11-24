@@ -198,7 +198,8 @@ class MessageParser {
             settings,
             speechStatus,
             read,
-            modified
+            modified,
+            messageUuid
         ) = BaseConfig.getInstance().gson.fromJson(
             fullMessage,
             MessageContent::class.java
@@ -229,7 +230,7 @@ class MessageParser {
                 fileDescription = getFileDescription(attachments, name, sentAt)
             }
             ConsultPhrase(
-                uuid,
+                messageUuid ?: uuid,
                 fileDescription,
                 ModificationStateEnum.fromString(modified),
                 quote,
@@ -254,7 +255,7 @@ class MessageParser {
                 fileDescription = getFileDescription(attachments, null, sentAt)
             }
             val userPhrase = UserPhrase(
-                uuid,
+                messageUuid ?: uuid,
                 phrase,
                 quote,
                 sentAt,

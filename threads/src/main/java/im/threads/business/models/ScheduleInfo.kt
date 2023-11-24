@@ -1,9 +1,7 @@
 package im.threads.business.models
 
 import androidx.core.util.ObjectsCompat
-import java.util.Calendar
-import java.util.Date
-import java.util.TimeZone
+import java.util.*
 
 /**
  * Информация о расписании
@@ -27,7 +25,7 @@ class ScheduleInfo : ChatItem {
 
     fun calculateServerTimeDiff() {
         serverTime?.let {
-            serverTimeDiff = currentUtcTime - it.time
+            serverTimeDiff = currentUtcTime() - it.time
         }
     }
 
@@ -39,7 +37,8 @@ class ScheduleInfo : ChatItem {
             if (startTime == null || endTime == null || serverTime == null) {
                 return active
             }
-            val currentServerTime = currentUtcTime - serverTimeDiff
+            val currentServerTime = currentUtcTime() - serverTimeDiff
+
             if (active) {
                 // Next unavailability not started yet
                 // всегда true т.к. startTime - это дата и время старта ближайшего интервала неактивности чата
@@ -87,11 +86,11 @@ class ScheduleInfo : ChatItem {
         if (other == null || javaClass != other.javaClass) return false
         val that = other as ScheduleInfo
         return sendDuringInactive == that.sendDuringInactive && timeStamp == that.timeStamp && active == that.active && serverTimeDiff == that.serverTimeDiff &&
-            ObjectsCompat.equals(id, that.id) &&
-            ObjectsCompat.equals(notification, that.notification) &&
-            ObjectsCompat.equals(startTime, that.startTime) &&
-            ObjectsCompat.equals(endTime, that.endTime) &&
-            ObjectsCompat.equals(serverTime, that.serverTime)
+                ObjectsCompat.equals(id, that.id) &&
+                ObjectsCompat.equals(notification, that.notification) &&
+                ObjectsCompat.equals(startTime, that.startTime) &&
+                ObjectsCompat.equals(endTime, that.endTime) &&
+                ObjectsCompat.equals(serverTime, that.serverTime)
     }
 
     override fun hashCode(): Int {
@@ -108,17 +107,19 @@ class ScheduleInfo : ChatItem {
         )
     }
 
-    private val currentUtcTime: Long
-        get() = Calendar.getInstance(TimeZone.getTimeZone("UTC")).timeInMillis
+    private fun currentUtcTime(): Long {
+        val c = Calendar.getInstance()
+        c[Calendar.HOUR_OF_DAY] = 0
+        c[Calendar.MINUTE] = 0
+        c[Calendar.SECOND] = 0
+        c[Calendar.MILLISECOND] = 0
+        return System.currentTimeMillis() - c.timeInMillis
+    }
+//        get() = Calendar.getInstance(TimeZone.getTimeZone("UTC")).timeInMillis
 
     private fun getCurrDayOfWeek(): WeekDaySchedule? {
         val day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK)
-        intervals?.forEach {
-            if (day == it.weekDay) {
-                return it
-            }
-        }
-        return null
+        return intervals?.firstOrNull { day == it.weekDay }
     }
 
     class WeekDaySchedule(
@@ -129,11 +130,11 @@ class ScheduleInfo : ChatItem {
     ) {
         override fun toString(): String {
             return "WeekDaySchedule{" +
-                "id=" + id +
-                ", weekDay=" + weekDay +
-                ", startTime=" + startTime +
-                ", endTime='" + endTime + '\'' +
-                '}'
+                    "id=" + id +
+                    ", weekDay=" + weekDay +
+                    ", startTime=" + startTime +
+                    ", endTime='" + endTime + '\'' +
+                    '}'
         }
     }
 }

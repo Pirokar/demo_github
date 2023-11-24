@@ -223,7 +223,7 @@
                 android:lineSpacingMultiplier="1.25"
                 android:paddingTop="5dp"
                 android:textColor="@color/ecc_incoming_message_text"
-                android:textSize="16sp"
+                android:textSize="@dimen/ecc_text_medium"
                 app:last_line_extra_padding_symbols="@dimen/ecc_last_line_extra_padding_symbols"
                 tools:text="text text text text google.com" />
 

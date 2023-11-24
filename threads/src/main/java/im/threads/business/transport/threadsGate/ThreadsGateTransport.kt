@@ -663,9 +663,11 @@ class ThreadsGateTransport(
                                     chatUpdateProcessor.postSpeechMessageUpdate(chatItem)
                                 }
                             } else {
-                                val chatItem = messageParser.format(message)
-                                if (chatItem != null) {
-                                    chatUpdateProcessor.postNewMessage(chatItem)
+                                if (ChatItemType.SCHEDULE != type) {
+                                    val chatItem = messageParser.format(message)
+                                    if (chatItem != null) {
+                                        chatUpdateProcessor.postNewMessage(chatItem)
+                                    }
                                 }
                             }
                         }
