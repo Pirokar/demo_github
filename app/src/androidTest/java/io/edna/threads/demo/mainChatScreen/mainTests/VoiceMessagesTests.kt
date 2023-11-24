@@ -44,8 +44,9 @@ class VoiceMessagesTests : BaseFilesTestCase() {
 
     @Test
     fun prepareAndRemoveVoiceMessageTest() {
-        prepareHttpMocks(historyAnswer = readTextFileFromRawResourceId(R.raw.history_files_response))
+        prepareHttpMocks()
         openChatFromDemoLoginPage()
+        prepareHttpMocks(historyAnswer = readTextFileFromRawResourceId(R.raw.history_files_response))
         val uiRecordButton = uiDevice.findObject(uiSelector)
         ChatMainScreen {
             assert("Кнопка записи должна отображаться и быть активной") {
@@ -76,6 +77,7 @@ class VoiceMessagesTests : BaseFilesTestCase() {
 
     @Test
     fun prepareAndRemoveVoiceMessageNoHistoryTest() {
+        prepareHttpMocks()
         openChatFromDemoLoginPage()
         val uiRecordButton = uiDevice.findObject(uiSelector)
         ChatMainScreen {
@@ -107,8 +109,9 @@ class VoiceMessagesTests : BaseFilesTestCase() {
 
     @Test
     fun prepareAndSendVoiceMessageWithPlayPreviewTest() {
-        prepareHttpMocks(historyAnswer = readTextFileFromRawResourceId(R.raw.history_files_response))
+        prepareHttpMocks()
         openChatFromDemoLoginPage()
+        prepareHttpMocks(historyAnswer = readTextFileFromRawResourceId(R.raw.history_files_response))
         val recordButton = uiDevice.findObject(uiSelector)
         ChatMainScreen {
             assert("Кнопка записи должна отображаться и быть активной") {
@@ -149,6 +152,7 @@ class VoiceMessagesTests : BaseFilesTestCase() {
 
     @Test
     fun prepareAndSendVoiceMessageNoHistoryWithDeleteMessageTest() {
+        prepareHttpMocks()
         openChatFromDemoLoginPage()
         val recordButton = uiDevice.findObject(uiSelector)
         ChatMainScreen {

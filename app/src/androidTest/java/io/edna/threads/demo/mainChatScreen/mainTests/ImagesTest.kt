@@ -24,8 +24,9 @@ class ImagesTest : BaseFilesTestCase() {
 
     @Test
     fun imagesHistoryTest() {
-        prepareHttpMocks(historyAnswer = readTextFileFromRawResourceId(R.raw.history_images_response))
+        prepareHttpMocks()
         openChatFromDemoLoginPage()
+        prepareHttpMocks(historyAnswer = readTextFileFromRawResourceId(R.raw.history_images_response))
         ChatMainScreen {
             chatItemsRecyclerView {
                 lastChild<ChatMainScreen.ChatRecyclerItem> {
@@ -49,8 +50,9 @@ class ImagesTest : BaseFilesTestCase() {
     @Test
     fun operatorImageQuoteTest() {
         val textToType = "Such a beautiful image!"
-        prepareHttpMocks(historyAnswer = readTextFileFromRawResourceId(R.raw.history_images_response))
+        prepareHttpMocks()
         openChatFromDemoLoginPage()
+        prepareHttpMocks(historyAnswer = readTextFileFromRawResourceId(R.raw.history_images_response))
 
         ChatMainScreen {
             chatItemsRecyclerView {

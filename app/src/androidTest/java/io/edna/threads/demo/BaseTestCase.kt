@@ -44,7 +44,6 @@ abstract class BaseTestCase : TestCase() {
 
     protected val context: Context = InstrumentationRegistry.getInstrumentation().targetContext
     protected var wsMocksMap = getDefaultWsMocksMap()
-    protected var clientInfoWsMessages = getDefaultClientInfoWsMessages()
 
     protected val helloTextToSend = "Hello, Edna! This is a test message"
 
@@ -110,9 +109,6 @@ abstract class BaseTestCase : TestCase() {
             val (answer, isClientInfo) = getAnswersForWebSocket(stringArg)
             answer?.let { wsAnswer ->
                 sendMessageToSocket(wsAnswer)
-                if (isClientInfo) {
-                    clientInfoWsMessages.forEach { sendMessageToSocket(it) }
-                }
             }
             null
         }.`when`(socket).send(Mockito.anyString())
@@ -127,7 +123,8 @@ abstract class BaseTestCase : TestCase() {
 
     protected fun prepareHttpMocks(
         withAnswerDelayInMs: Int = 0,
-        historyAnswer: String? = null
+        historyAnswer: String? = null,
+        configAnswer: String? = null
     ) {
         BuildConfig.IS_MOCK_WEB_SERVER.set(true)
         wireMockRule.stubFor(
@@ -161,6 +158,15 @@ abstract class BaseTestCase : TestCase() {
                         .withFixedDelay(withAnswerDelayInMs)
                 )
         )
+        wireMockRule.stubFor(
+            WireMock.get(WireMock.urlPathMatching(".*/config.*"))
+                .willReturn(
+                    WireMock.aResponse()
+                        .withStatus(200)
+                        .withBody(configAnswer ?: TestMessages.defaultConfigMock)
+                        .withHeader("Content-Type", "application/json")
+                )
+        )
     }
 
     protected fun getDefaultWsMocksMap() = HashMap<String, String>().apply {
@@ -168,11 +174,6 @@ abstract class BaseTestCase : TestCase() {
         put("INIT_CHAT", TestMessages.initChatWsAnswer)
         put("CLIENT_INFO", TestMessages.clientInfoWsAnswer)
     }
-
-    protected fun getDefaultClientInfoWsMessages() = listOf(
-        TestMessages.scheduleWsMessage,
-        TestMessages.attachmentSettingsWsMessage
-    )
 
     protected fun readTextFileFromRawResourceId(resourceId: Int): String {
         var string: String? = ""

@@ -28,6 +28,7 @@ class FilesTest : BaseFilesTestCase() {
     @Test
     fun sendFile() {
         intending(hasAction(Intent.ACTION_OPEN_DOCUMENT)).respondWith(getFileResult())
+        prepareHttpMocks()
         openChatFromDemoLoginPage()
         ChatMainScreen {
             val sizeBeforeSend = chatItemsRecyclerView.getSize()
@@ -44,6 +45,7 @@ class FilesTest : BaseFilesTestCase() {
     @Test
     fun sendFileWithText() {
         intending(hasAction(Intent.ACTION_OPEN_DOCUMENT)).respondWith(getFileResult())
+        prepareHttpMocks()
         openChatFromDemoLoginPage()
         ChatMainScreen {
             inputEditView { isVisible() }
@@ -69,8 +71,9 @@ class FilesTest : BaseFilesTestCase() {
 
     @Test
     fun filesHistoryTest() {
-        prepareHttpMocks(historyAnswer = readTextFileFromRawResourceId(R.raw.history_files_response))
+        prepareHttpMocks()
         openChatFromDemoLoginPage()
+        prepareHttpMocks(historyAnswer = readTextFileFromRawResourceId(R.raw.history_files_response))
         ChatMainScreen {
             chatItemsRecyclerView {
                 childAt<ChatMainScreen.ChatRecyclerItem>(5) {
@@ -93,8 +96,9 @@ class FilesTest : BaseFilesTestCase() {
     @Test
     fun operatorFileQuoteTest() {
         val textToType = "Such a beautiful file!"
-        prepareHttpMocks(historyAnswer = readTextFileFromRawResourceId(R.raw.history_files_response))
+        prepareHttpMocks()
         openChatFromDemoLoginPage()
+        prepareHttpMocks(historyAnswer = readTextFileFromRawResourceId(R.raw.history_files_response))
 
         ChatMainScreen {
             chatItemsRecyclerView {
