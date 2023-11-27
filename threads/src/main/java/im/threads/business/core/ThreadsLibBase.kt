@@ -104,10 +104,15 @@ open class ThreadsLibBase protected constructor(context: Context) {
             chatState.changeState(ChatStateEnum.LOGGING_IN)
             isForceRegistration = forceRegistration
             clientUseCase.saveUserInfo(userInfoBuilder)
+
             if (forceRegistration && preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS).isNullOrBlank()) {
-                BaseConfig.getInstance().transport.sendRegisterDevice(true)
-                if (!ChatFragment.isShown && !BaseConfig.getInstance().keepSocketActive) {
-                    BaseConfig.getInstance().transport.closeWebSocket()
+                BaseConfig.getInstance().transport.apply {
+                    sendRegisterDevice(true)
+                    sendInitMessages()
+
+                    if (!ChatFragment.isShown && !BaseConfig.getInstance().keepSocketActive) {
+                        closeWebSocket()
+                    }
                 }
             }
         }
