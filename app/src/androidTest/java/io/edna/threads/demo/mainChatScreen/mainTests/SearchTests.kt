@@ -5,7 +5,6 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
 import io.edna.threads.demo.BaseTestCase
 import io.edna.threads.demo.R
@@ -39,11 +38,6 @@ class SearchTests : BaseTestCase() {
         ChatMainScreen {
             assert("Кнопка открытия верхнего должна быть кликабельной") { popupMenuButton.isClickable() }
             popupMenuButton.click()
-
-            val menuList = device.findObject(By.clazz("android.widget.ListView")).children
-            val searchAction = menuList[0]
-            searchAction.click()
-            searchAction.recycle()
 
             assert("Поле поиска должно быть видимо") { searchInput.isVisible() }
 
@@ -89,11 +83,6 @@ class SearchTests : BaseTestCase() {
         ChatMainScreen {
             assert("Кнопка открытия верхнего должна быть кликабельной") { popupMenuButton.isClickable() }
             popupMenuButton.click()
-
-            val menuList = device.findObject(By.clazz("android.widget.ListView")).children
-            val searchAction = menuList[0]
-            searchAction.click()
-            searchAction.recycle()
 
             assert("Поле поиска должно быть видимо") { searchInput.isVisible() }
             searchInput.typeText("Edn")
