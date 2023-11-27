@@ -234,6 +234,7 @@ class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionCl
                 this,
                 CODE_REQUEST_DOWNLOAD,
                 R.string.ecc_permissions_write_external_storage_help_text,
+                false,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
             )
         }

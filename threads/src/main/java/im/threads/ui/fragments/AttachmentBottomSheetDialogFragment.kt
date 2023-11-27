@@ -11,6 +11,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import androidx.lifecycle.coroutineScope
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import im.threads.R
@@ -91,46 +92,45 @@ class AttachmentBottomSheetDialogFragment : BottomSheetDialogFragment(), Buttons
                 fileInputSheet,
                 chatStyle.chatMessageInputColor
             )
-            ColorsHelper.setBackgroundColor(
-                context,
-                bottomGallery,
-                chatStyle.chatMessageInputColor
-            )
+        }
+        ColorsHelper.setBackgroundColor(
+            context,
+            bottomGallery,
+            chatStyle.chatMessageInputColor
+        )
 
-            coroutineScope.launch {
-                MediaHelper.getAllPhotos(context).use { c ->
-                    if (c != null) {
-                        val id = c.getColumnIndex(MediaStore.Images.Media._ID)
-                        c.moveToFirst()
-                        while (!c.isAfterLast) {
-                            allItems.add(
-                                ContentUris.withAppendedId(
-                                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                                    c.getLong(id)
-                                )
+        coroutineScope.launch {
+            MediaHelper.getAllPhotos(context).use { c ->
+                if (c != null) {
+                    val id = c.getColumnIndex(MediaStore.Images.Media._ID)
+                    c.moveToFirst()
+                    while (!c.isAfterLast) {
+                        allItems.add(
+                            ContentUris.withAppendedId(
+                                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                                c.getLong(id)
                             )
-                            c.moveToNext()
-                        }
+                        )
+                        c.moveToNext()
                     }
                 }
-                withContext(Dispatchers.Main) {
-                    bottomGallery.setImages(
-                        allItems,
-                        object : BottomGalleryAdapter.OnChooseItemsListener {
-                            override fun onChosenItems(items: List<Uri>?) {
-                                callback?.onImageSelectionChanged(items)
-                                if (items?.isNotEmpty() == true) {
-                                    fileInputSheet.showSend()
-                                } else {
-                                    fileInputSheet.showMainItemList()
-                                }
+            }
+            withContext(Dispatchers.Main) {
+                bottomGallery.setImages(
+                    allItems,
+                    object : BottomGalleryAdapter.OnChooseItemsListener {
+                        override fun onChosenItems(items: List<Uri>?) {
+                            callback?.onImageSelectionChanged(items)
+                            if (items?.isNotEmpty() == true) {
+                                fileInputSheet.showSend()
+                            } else {
+                                fileInputSheet.showMainItemList()
                             }
                         }
-                    )
-                }
+                    }
+                )
             }
         }
-
         return view
     }
 

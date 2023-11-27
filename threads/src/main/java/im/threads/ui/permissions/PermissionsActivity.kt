@@ -14,7 +14,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 import im.threads.R
 import im.threads.business.logger.LoggerEdna.error
 
@@ -89,7 +88,7 @@ class PermissionsActivity : AppCompatActivity() {
     }
 
     private fun hasAllPermissionsGranted(permissions: Array<String>, grantResults: IntArray): Boolean {
-        val isApi34OrMore = Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+        val isApi34OrMore = Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE && applicationContext.applicationInfo.targetSdkVersion >= 34
         val indexOfVisualUserPermission = if (isApi34OrMore) {
             permissions.indexOf(Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED)
         } else {
@@ -157,10 +156,21 @@ class PermissionsActivity : AppCompatActivity() {
         private const val TEXT_DEFAULT = -1
 
         @JvmStatic
-        fun startActivityForResult(activity: Activity?, requestCode: Int, text: Int, vararg permissions: String) {
+        fun startActivityForResult(
+            activity: Activity?,
+            requestCode: Int,
+            text: Int,
+            checkForMediaPermissions: Boolean = false,
+            vararg permissions: String
+        ) {
             if (permissions.isNotEmpty()) {
+                val checkedPermissions = if (checkForMediaPermissions) {
+                    checkForMediaPermissions(activity?.applicationContext, *permissions)
+                } else {
+                    permissions
+                }
                 val intent = Intent(activity, PermissionsActivity::class.java)
-                intent.putExtra(EXTRA_PERMISSIONS, permissions)
+                intent.putExtra(EXTRA_PERMISSIONS, checkedPermissions)
                 intent.putExtra(EXTRA_PERMISSION_TEXT, text)
                 ActivityCompat.startActivityForResult(activity!!, intent, requestCode, null)
             } else {
@@ -168,28 +178,11 @@ class PermissionsActivity : AppCompatActivity() {
             }
         }
 
-        @JvmStatic
-        fun startActivityForResult(fragment: Fragment, requestCode: Int, text: Int, vararg permissions: String) {
-            if (permissions.isNotEmpty() && fragment.context != null) {
-                val checkedPermissions = checkForMediaPermissions(fragment.requireContext(), *permissions)
-                val intent = Intent(fragment.activity, PermissionsActivity::class.java)
-                intent.putExtra(EXTRA_PERMISSIONS, checkedPermissions)
-                intent.putExtra(EXTRA_PERMISSION_TEXT, text)
-                fragment.startActivityForResult(intent, requestCode, null)
-            } else {
-                showPermissionsIsNullLog()
-            }
-        }
+        private fun checkForMediaPermissions(context: Context?, vararg permissions: String): Array<String> {
+            if (context == null) return arrayOf(*permissions)
 
-        @JvmStatic
-        fun startActivityForResult(activity: Activity?, requestCode: Int, vararg permissions: String) {
-            startActivityForResult(activity, requestCode, TEXT_DEFAULT, *permissions)
-        }
-
-        private fun checkForMediaPermissions(context: Context, vararg permissions: String): Array<String> {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-                permissions.contains(Manifest.permission.READ_EXTERNAL_STORAGE) &&
-                context.applicationContext.applicationInfo.targetSdkVersion >= Build.VERSION_CODES.TIRAMISU
+                permissions.contains(Manifest.permission.READ_EXTERNAL_STORAGE)
             ) {
                 val list = permissions.toMutableList()
                 list.remove(Manifest.permission.READ_EXTERNAL_STORAGE)

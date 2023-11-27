@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.res.Configuration
 import android.view.View
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.ViewTreeLifecycleOwner
+import androidx.lifecycle.findViewTreeLifecycleOwner
 import im.threads.business.models.enums.CurrentUiTheme
 import im.threads.ui.core.ThreadsLib
 
@@ -17,4 +17,4 @@ fun Context.isDarkThemeOn(): Boolean {
         (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES)
 }
 
-fun View.lifecycle(): Lifecycle? = ViewTreeLifecycleOwner.get(this)?.lifecycle
+fun View.lifecycle(): Lifecycle? = this.findViewTreeLifecycleOwner()?.lifecycle
