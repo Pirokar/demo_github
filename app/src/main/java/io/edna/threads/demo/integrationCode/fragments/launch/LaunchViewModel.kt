@@ -67,8 +67,8 @@ class LaunchViewModel(
 
     override fun onStart(owner: LifecycleOwner) {
         super.onStart(owner)
-        initPreregisterCheckBox()
         checkUiTheme()
+        initPreregisterCheckbox()
     }
 
     fun click(view: View) {
@@ -98,7 +98,7 @@ class LaunchViewModel(
                 .setClientData(user.userData)
                 .setClientIdSignature(user.signature)
                 .setAppMarker(user.appMarker),
-            preferences.isPreregisterEnabled()
+            isPreregisterEnabled
         )
     }
 
@@ -120,7 +120,7 @@ class LaunchViewModel(
                 serverConfig.trustedSSLCertificates,
                 serverConfig.allowUntrustedSSLCertificate
             )
-            if (user != null && !preferences.isPreregisterEnabled()) callInitUser(user)
+            if (user != null && !isPreregisterEnabled) callInitUser(user)
             navigationController.navigate(R.id.action_LaunchFragment_to_ChatAppFragment)
         }
     }
@@ -141,6 +141,10 @@ class LaunchViewModel(
             currentUiThemeLiveData.postValue(getCurrentUiTheme(uiTheme))
             applyCurrentUiTheme(uiTheme)
         }
+    }
+
+    private fun initPreregisterCheckbox() {
+        _preregisterLiveData.postValue(isPreregisterEnabled)
     }
 
     private fun getCurrentUiTheme(currentUiTheme: CurrentUiTheme): UiTheme {
@@ -192,11 +196,7 @@ class LaunchViewModel(
     }
 
     fun onPreregisterCheckedChange(isChecked: Boolean) {
-        preferences.saveIsPreregisterEnabled(isChecked)
-    }
-
-    private fun initPreregisterCheckBox() {
-        _preregisterLiveData.value = preferences.isPreregisterEnabled()
+        isPreregisterEnabled = isChecked
     }
 
     private fun getSelectedUser(): UserInfo? {
@@ -247,5 +247,9 @@ class LaunchViewModel(
         } else {
             null
         }
+    }
+
+    companion object {
+        var isPreregisterEnabled = false
     }
 }
