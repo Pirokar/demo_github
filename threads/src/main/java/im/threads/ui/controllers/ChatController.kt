@@ -444,7 +444,7 @@ class ChatController private constructor() {
         subscribe(
             Single.fromCallable {
                 val historyLoadingCount = BaseConfig.getInstance().historyLoadingCount
-                val unsentUserPhrase = database.getUnsendUserPhrase(historyLoadingCount)
+                val unsentUserPhrase = database.getUnsentUserPhrase(historyLoadingCount)
                 if (unsentUserPhrase.isNotEmpty()) {
                     messenger.recreateUnsentMessagesWith(unsentUserPhrase)
                 }

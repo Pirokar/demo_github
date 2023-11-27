@@ -265,26 +265,7 @@ class DatabaseHolderTest {
             state = AttachmentStateEnum.READY
             timeStamp = 1700640835225
         }
-        val item = ConsultPhrase(
-            "ede57de8-832f-49e5-9ae4-886e37a2c895",
-            fileDescription = fileDescription,
-            modified = ModificationStateEnum.NONE,
-            quote = null,
-            consultName = "Оператор1 Петровна",
-            phraseText = "",
-            formattedPhrase = null,
-            date = 1700640835225L,
-            consultId = "4",
-            avatarPath = "20230703-e8c30f10-aa04-417f-bd97-99544fab26f2.jpg",
-            read = false,
-            status = null,
-            sex = false,
-            threadId = 455,
-            quickReplies = arrayListOf(),
-            isBlockInput = false,
-            speechStatus = SpeechStatus.NO_SPEECH_STATUS,
-            role = ConsultRole.OPERATOR
-        )
+        val item = getConsultPhrase(fileDescription)
         database.putChatItems(listOf(item))
         fileDescription.timeStamp = Date().time
         database.updateFileDescription(fileDescription)
@@ -313,6 +294,115 @@ class DatabaseHolderTest {
         assert(containsItems(arrayOf(message), itemsInDb.toTypedArray()))
     }
 
+    @Test
+    fun whenPutConsultInfo_thenItReturnsWhenGet() {
+        val item = getConsultPhrase()
+        database.putChatItem(item)
+        val dbConsult = database.getConsultInfo(item.consultId!!)
+        assert(item.consultId == dbConsult!!.id && item.consultName == dbConsult.name)
+    }
+
+    @Test
+    fun whenPutUnsentPhrase_thenItReturnsWhenGet() {
+        val correctItems = arrayOf(
+            UserPhrase(
+                "2332fvd7023",
+                "failed_item",
+                null,
+                Date().time,
+                null,
+                MessageStatus.FAILED,
+                2323
+            ),
+            UserPhrase(
+                "2332fvd7024",
+                "failed_item2",
+                null,
+                Date().time + 100,
+                null,
+                MessageStatus.FAILED,
+                2324
+            )
+        )
+        val deliveredItem = UserPhrase(
+            "2332fvd7788",
+            "delivered_item",
+            null,
+            Date().time + 300,
+            null,
+            MessageStatus.DELIVERED,
+            2326
+        )
+
+        database.putChatItems(
+            listOf(
+                *correctItems,
+                deliveredItem
+            )
+        )
+        val unsentItems = database.getUnsentUserPhrase(20)
+        assert(containsItems(correctItems, unsentItems.toTypedArray()) && !containsItems(arrayOf(deliveredItem), unsentItems.toTypedArray()))
+    }
+
+    @Test
+    fun whenSetStateOfUserPhraseByCorrelationId__thenItIsUpdatedWhenGet() {
+        val item = UserPhrase(
+            "2332fvd8024",
+            "failed_item2",
+            null,
+            Date().time,
+            null,
+            MessageStatus.FAILED,
+            2324
+        )
+        database.putChatItem(item)
+        val newState = MessageStatus.DELIVERED
+        database.setStateOfUserPhraseByCorrelationId(item.id, newState)
+        val updatedItem = database.getChatItemByCorrelationId(item.id) as UserPhrase
+        assert(updatedItem.sentState == newState)
+    }
+
+    @Test
+    fun whenSetStateOfUserPhraseByBackendMessageId__thenItIsUpdatedWhenGet() {
+        val item = UserPhrase(
+            "2332fvd8024",
+            "failed_item2",
+            null,
+            Date().time,
+            null,
+            MessageStatus.FAILED,
+            2324
+        ).apply {
+            backendMessageId = "555what223552"
+        }
+        database.putChatItem(item)
+        val newState = MessageStatus.DELIVERED
+        database.setStateOfUserPhraseByBackendMessageId(item.backendMessageId, newState)
+        val updatedItem = database.getChatItemByBackendMessageId(item.backendMessageId) as UserPhrase
+        assert(updatedItem.sentState == newState)
+    }
+
+    @Test
+    fun whenSetAllConsultMessagesWereRead_thenAllOfThemAreReadWhenGet() {
+        database.putChatItem(getConsultPhrase())
+        database.setAllConsultMessagesWereRead().blockingGet()
+        val notReadItems = database.getChatItems(0, 400)
+            .filterIsInstance<ConsultPhrase>()
+            .filter { !it.read }
+        assert(notReadItems.isEmpty())
+    }
+
+    @Test
+    fun whenSetAllConsultMessagesWereReadInThread_thenAllOfThemAreReadWhenGet() {
+        val threadId = 800L
+        database.putChatItem(getConsultPhrase(threadId = threadId))
+        database.setAllConsultMessagesWereReadInThread(threadId).blockingGet()
+        val notReadItems = database.getChatItems(0, 400)
+            .filterIsInstance<ConsultPhrase>()
+            .filter { it.threadId == threadId && !it.read }
+        assert(notReadItems.isEmpty())
+    }
+
     private fun containsItems(
         itemsToCheck: Array<UserPhrase>,
         itemsFromDatabase: Array<ChatItem>
@@ -330,4 +420,28 @@ class DatabaseHolderTest {
 
         return true
     }
+
+    private fun getConsultPhrase(
+        fileDescription: FileDescription? = null,
+        threadId: Long = 455
+    ) = ConsultPhrase(
+        "ede57de8-832f-49e5-9ae4-886e37a2c895",
+        fileDescription = fileDescription,
+        modified = ModificationStateEnum.NONE,
+        quote = null,
+        consultName = "Оператор1 Петровна",
+        phraseText = "",
+        formattedPhrase = null,
+        date = 1700640835225L,
+        consultId = "4",
+        avatarPath = "20230703-e8c30f10-aa04-417f-bd97-99544fab26f2.jpg",
+        read = false,
+        status = null,
+        sex = false,
+        threadId = threadId,
+        quickReplies = arrayListOf(),
+        isBlockInput = false,
+        speechStatus = SpeechStatus.NO_SPEECH_STATUS,
+        role = ConsultRole.OPERATOR
+    )
 }
