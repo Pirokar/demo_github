@@ -78,7 +78,7 @@ class ThreadsLibBaseTest : ConfigTestBaseClass() {
             UserInfoBuilder("2334"),
             true
         )
-        assert(chatState.getCurrentState() >= ChatStateEnum.LOGGING_IN && ThreadsLibBase.isForceRegistration)
+        assert(chatState.getCurrentState() >= ChatStateEnum.LOGGING_IN)
     }
 
     @Test

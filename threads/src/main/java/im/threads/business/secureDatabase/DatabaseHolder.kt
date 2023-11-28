@@ -80,7 +80,7 @@ class DatabaseHolder(private val context: Context) {
 
     fun getConsultInfo(id: String): ConsultInfo? = tryExecute { myOpenHelper.value.getLastConsultInfo(id) }
 
-    fun getUnsendUserPhrase(count: Int): List<UserPhrase> = tryExecute { myOpenHelper.value.getUnsendUserPhrase(count) } ?: arrayListOf()
+    fun getUnsentUserPhrase(count: Int): List<UserPhrase> = tryExecute { myOpenHelper.value.getUnsendUserPhrase(count) } ?: arrayListOf()
 
     fun setStateOfUserPhraseByCorrelationId(uuid: String?, messageStatus: MessageStatus?) {
         tryExecute { myOpenHelper.value.setUserPhraseStateByCorrelationId(uuid, messageStatus) }
