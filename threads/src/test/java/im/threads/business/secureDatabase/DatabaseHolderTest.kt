@@ -9,11 +9,13 @@ import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.ConsultRole
 import im.threads.business.models.FileDescription
 import im.threads.business.models.MessageStatus
+import im.threads.business.models.RequestResolveThread
+import im.threads.business.models.SpeechMessageUpdate
+import im.threads.business.models.Survey
 import im.threads.business.models.UserPhrase
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.models.enums.ModificationStateEnum
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -248,33 +250,6 @@ class DatabaseHolderTest {
         )
     }
 
-    @Ignore("Not working")
-    @Test
-    fun whenUpdateFileDescription_thenItUpdatedWhenGetIt() {
-        val fileDescription = FileDescription(
-            "Оператор1 Петровна",
-            null,
-            2677504,
-            Date().time
-        ).apply {
-            incomingName = "Прихожая_мебель.png"
-            downloadPath = "https://mobile4.dev.flex.mfms.ru/files/20231122-f265b137-71ca-4ac1-b01b-aeab884b6d07.png"
-            originalPath = "https://mobile4.dev.flex.mfms.ru/files/20231122-f265b137-71ca-4ac1-b01b-aeab884b6d07.png"
-            isDownloadError = false
-            mimeType = "image/png"
-            state = AttachmentStateEnum.READY
-            timeStamp = 1700640835225
-        }
-        val item = getConsultPhrase(fileDescription)
-        database.putChatItems(listOf(item))
-        fileDescription.timeStamp = Date().time
-        database.updateFileDescription(fileDescription)
-        val fileDescriptions = database.getAllFileDescriptions().blockingGet()
-        assert(
-            fileDescriptions?.firstOrNull { it?.equals(fileDescription) == true } != null
-        )
-    }
-
     @Test
     fun whenUpdatingChatItemByTimestamp_thenItUpdatedWhenGet() {
         val time = Date().time
@@ -403,6 +378,162 @@ class DatabaseHolderTest {
         assert(notReadItems.isEmpty())
     }
 
+    @Test
+    fun whenSetMessageWasRead_thenItIsReadWhenGetIt() {
+        val message = getConsultPhrase(id = "edn57de8-832f-49e5-9ae4-886e37a2c895")
+        database.putChatItem(message)
+        database.setMessageWasRead(message.id)
+        val messageFromDb = database.getChatItemByCorrelationId(message.id) as ConsultPhrase
+        assert(messageFromDb.read)
+    }
+
+    @Test
+    fun whenSaveSpeechMessageUpdate_thenItIsUpdatedWhenGet() {
+        val fileDescription = FileDescription(
+            "Оператор1 Петровна",
+            null,
+            2677505,
+            Date().time
+        ).apply {
+            incomingName = "Прихожая_мебель.ogg"
+            downloadPath = "https://mobile4.dev.flex.mfms.ru/files/20231122-f265b137-71ca-4ac1-b01b-aeab884b6d07.ogg"
+            originalPath = "https://mobile4.dev.flex.mfms.ru/files/20231122-f265b137-71ca-4ac1-b01b-aeab884b6d07.ogg"
+            isDownloadError = false
+            mimeType = "audio/ogg"
+            state = AttachmentStateEnum.READY
+            timeStamp = 1700640835333
+        }
+        val item = getConsultPhrase(
+            id = "edna7de8-832f-49e5-9ae4-886e37a2c895",
+            speechStatus = SpeechStatus.MAXSPEECH
+        )
+        database.putChatItem(item)
+
+        val speechMessageUpdate = SpeechMessageUpdate(
+            item.id!!,
+            SpeechStatus.SUCCESS,
+            fileDescription
+        )
+
+        database.saveSpeechMessageUpdate(speechMessageUpdate)
+        val messageFromDb = database.getChatItemByCorrelationId(item.id) as ConsultPhrase
+        assert(messageFromDb.speechStatus == speechMessageUpdate.speechStatus)
+    }
+
+    @Test
+    fun whenSetNotSentSurveyDisplayMessageToFalse_thenItIsFalseWhenReturns() {
+        val survey = Survey(
+            "surv7de8-832f-49e5-9ae4-886e37a2c895",
+            63636L,
+            null,
+            Date().time,
+            MessageStatus.FAILED,
+            read = false,
+            displayMessage = true
+        )
+        database.putChatItem(survey)
+        database.setNotSentSurveyDisplayMessageToFalse().blockingGet()
+        val dbMessage = database.getChatItemByCorrelationId(survey.uuid) as Survey
+        assert(!dbMessage.isDisplayMessage)
+    }
+
+    @Test
+    fun whenSetOldRequestResolveThreadDisplayMessageToFalse_thenItIsFalseWhenReturns() {
+        val requestResolveThread = RequestResolveThread(
+            "rero7de8-832f-49e5-9ae4-886e37a2c895",
+            60000L,
+            Date().time,
+            334345600L,
+            false
+        )
+        database.putChatItem(requestResolveThread)
+        database.setOldRequestResolveThreadDisplayMessageToFalse().blockingGet()
+        val dbMessage = database.getChatItemByCorrelationId(requestResolveThread.uuid)
+        assert(dbMessage == null)
+    }
+
+    @Test
+    fun whenGetMessagesCount_thenItIsCorrect() {
+        database.cleanDatabase()
+        val messages = listOf(getConsultPhrase(), getConsultPhrase(id = "tes57de8-832f-49e5-9ae4-886e37a2c895"))
+        database.putChatItems(messages)
+        val itemsCount = database.getMessagesCount()
+        assert(itemsCount == messages.size)
+    }
+
+    @Test
+    fun whenGetUnreadMessagesCount_thenItIsCorrect() {
+        database.cleanDatabase()
+        val messages = listOf(
+            getConsultPhrase(read = true),
+            getConsultPhrase(id = "tes57de8-832f-49e5-9ae4-886e37a2c895"),
+            getConsultPhrase(id = "ees57de8-832f-49e5-9ae4-886e37a2c895", read = true)
+        )
+        database.putChatItems(messages)
+        val itemsCount = database.getUnreadMessagesCount()
+        assert(itemsCount == 1)
+    }
+
+    @Test
+    fun whenGetUnreadMessagesUuid_thenItIsCorrect() {
+        database.cleanDatabase()
+        val messages = listOf(
+            getConsultPhrase(),
+            getConsultPhrase(id = "tes57de8-832f-49e5-9ae4-886e37a2c895", read = true),
+            getConsultPhrase(id = "ees57de8-832f-49e5-9ae4-886e37a2c895")
+        )
+        val unreadUuids = messages.map { it.id }
+        database.putChatItems(messages)
+        val unreadUuidsInDb = database.getUnreadMessagesUuid()
+        assert(unreadUuidsInDb.size == 2 && unreadUuidsInDb.any { it in unreadUuids })
+    }
+
+    @Test
+    fun whenSetOrUpdateMessageId_thenItIsUpdatedWhenGet() {
+        val message = UserPhrase(
+            "2332fvd5656",
+            "sent_item",
+            null,
+            Date().time,
+            null,
+            MessageStatus.SENT,
+            2323
+        )
+        database.putChatItem(message)
+        message.backendMessageId = "555where223552"
+        database.setOrUpdateMessageId(message.id, message.backendMessageId)
+        val messageInDb = database.getChatItemByBackendMessageId(message.backendMessageId)
+        assert(messageInDb != null)
+    }
+
+    @Test
+    fun whenRemovingItemWithCorrelationId_thenWhenGetReturnsNull() {
+        val message = getConsultPhrase(id = "rmv57de8-832f-49e5-9ae4-886e37a2c895")
+        database.putChatItem(message)
+        database.removeItem(message.id, null)
+        val messageInDb = database.getChatItemByCorrelationId(message.id)
+        assert(messageInDb == null)
+    }
+
+    @Test
+    fun whenRemovingItemWithBackendId_thenWhenGetReturnsNull() {
+        val message = UserPhrase(
+            "2332fvd5659",
+            "delivered_item",
+            null,
+            Date().time,
+            null,
+            MessageStatus.DELIVERED,
+            2329
+        ).apply {
+            backendMessageId = "555remove223552"
+        }
+        database.putChatItem(message)
+        database.removeItem(null, message.backendMessageId)
+        val messageInDb = database.getChatItemByBackendMessageId(message.backendMessageId)
+        assert(messageInDb == null)
+    }
+
     private fun containsItems(
         itemsToCheck: Array<UserPhrase>,
         itemsFromDatabase: Array<ChatItem>
@@ -423,9 +554,12 @@ class DatabaseHolderTest {
 
     private fun getConsultPhrase(
         fileDescription: FileDescription? = null,
-        threadId: Long = 455
+        id: String = "ede57de8-832f-49e5-9ae4-886e37a2c895",
+        threadId: Long = 455,
+        speechStatus: SpeechStatus = SpeechStatus.NO_SPEECH_STATUS,
+        read: Boolean = false
     ) = ConsultPhrase(
-        "ede57de8-832f-49e5-9ae4-886e37a2c895",
+        id = id,
         fileDescription = fileDescription,
         modified = ModificationStateEnum.NONE,
         quote = null,
@@ -435,13 +569,13 @@ class DatabaseHolderTest {
         date = 1700640835225L,
         consultId = "4",
         avatarPath = "20230703-e8c30f10-aa04-417f-bd97-99544fab26f2.jpg",
-        read = false,
+        read = read,
         status = null,
         sex = false,
         threadId = threadId,
         quickReplies = arrayListOf(),
         isBlockInput = false,
-        speechStatus = SpeechStatus.NO_SPEECH_STATUS,
+        speechStatus = speechStatus,
         role = ConsultRole.OPERATOR
     )
 }

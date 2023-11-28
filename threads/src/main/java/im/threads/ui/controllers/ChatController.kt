@@ -1632,7 +1632,7 @@ class ChatController private constructor() {
                         BackendApi.get()
                         DatastoreApi.get()
                     } catch (e: Exception) {
-                        val notInitializedError = TransportException(fragment?.get()?.getString(R.string.ecc_attachments_not_loaded) ?: "ChatCenter SDK не инициализирован")
+                        val notInitializedError = TransportException(fragment?.get()?.getString(R.string.ecc_library_not_init) ?: "ChatCenter SDK не инициализирован")
                         chatUpdateProcessor.postError(notInitializedError)
                         return@collect
                     }
