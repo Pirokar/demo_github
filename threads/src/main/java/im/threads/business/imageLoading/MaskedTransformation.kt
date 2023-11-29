@@ -18,7 +18,7 @@ import kotlin.random.Random
 class MaskedTransformation(private val maskDrawable: Drawable) : Transformation {
     override fun key(): String = Random(999999999).nextLong().toString()
 
-    override fun transform(source: Bitmap): Bitmap? {
+    override fun transform(source: Bitmap): Bitmap {
         val result = Bitmap.createBitmap(source.width, source.height, Bitmap.Config.ARGB_8888)
         val mCanvas = Canvas(result)
         val o = BitmapFactory.Options()

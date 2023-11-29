@@ -11,7 +11,7 @@ import java.io.File
  *  и config, который определяет параметры загрузки.
  */
 class ImageLoader private constructor() {
-    private val config = Config()
+    internal val config = Config()
 
     /**
      * Указывает url для загрузки
@@ -226,7 +226,7 @@ class ImageLoader private constructor() {
     }
 
     companion object {
-        private var currentImageLoader = CurrentImageLoader.getImageLoader()
+        internal var currentImageLoader = CurrentImageLoader.getImageLoader()
 
         /**
          * Возвращает объект ImageLoader
