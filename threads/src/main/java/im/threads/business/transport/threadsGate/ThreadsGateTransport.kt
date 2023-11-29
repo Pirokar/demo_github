@@ -458,9 +458,7 @@ class ThreadsGateTransport(
 
     @Synchronized
     override fun closeWebSocket() {
-        webSocket?.apply {
-            close(NORMAL_CLOSURE_STATUS, null)
-        }
+        webSocket?.close(NORMAL_CLOSURE_STATUS, null)
         webSocket = null
     }
 
