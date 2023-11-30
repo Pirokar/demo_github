@@ -16,7 +16,6 @@ import im.threads.business.config.BaseConfig
 import im.threads.business.formatters.ChatItemType
 import im.threads.business.formatters.JsonFormatter
 import im.threads.business.logger.LoggerEdna
-import im.threads.business.logger.NetworkLoggerInterceptor
 import im.threads.business.models.CampaignMessage
 import im.threads.business.models.ChatItem
 import im.threads.business.models.ChatItemSendErrorModel
@@ -150,7 +149,6 @@ class ThreadsGateTransport(
             )
             httpClientBuilder.hostnameVerifier { _: String, _: SSLSession -> true }
         }
-        httpClientBuilder.addInterceptor(NetworkLoggerInterceptor())
         client = httpClientBuilder.build()
         request = Request.Builder()
             .url(threadsGateUrl)

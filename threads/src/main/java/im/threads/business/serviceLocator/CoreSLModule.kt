@@ -34,7 +34,7 @@ val coreSLModule = module {
     factory { ImageLoaderOkHttpProvider(get(), get()) }
     factory { OutgoingMessageCreator(get(), get(), get(), get()) }
     factory { ClientUseCase(get()) }
-    factory { AuthInterceptor(get(), get(), get()) }
+    factory { AuthInterceptor(get(), get()) }
     factory { ConsultWriter(get()) }
     factory { ChatUpdateProcessor() }
     factory<NetworkInteractor> { NetworkInteractorImpl() }
