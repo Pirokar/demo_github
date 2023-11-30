@@ -46,6 +46,9 @@ class LaunchViewModel(
     private var _selectedUserLiveData = MutableLiveData(getSelectedUser())
     var selectedUserLiveData: LiveData<UserInfo?> = _selectedUserLiveData
 
+    val _preregisterLiveData: MutableLiveData<Boolean> = MutableLiveData()
+    val preregisterLiveData: LiveData<Boolean> = _preregisterLiveData
+
     private var _selectedServerLiveData = MutableLiveData(getSelectedServer())
     var selectedServerConfigLiveData: LiveData<ServerConfig?> = _selectedServerLiveData
 
@@ -65,6 +68,7 @@ class LaunchViewModel(
     override fun onStart(owner: LifecycleOwner) {
         super.onStart(owner)
         checkUiTheme()
+        initPreregisterCheckbox()
     }
 
     fun click(view: View) {
@@ -87,6 +91,17 @@ class LaunchViewModel(
         }
     }
 
+    fun callInitUser(user: UserInfo) {
+        ThreadsLib.getInstance().initUser(
+            UserInfoBuilder(user.userId!!)
+                .setAuthData(user.authorizationHeader, user.xAuthSchemaHeader)
+                .setClientData(user.userData)
+                .setClientIdSignature(user.signature)
+                .setAppMarker(user.appMarker),
+            isPreregisterEnabled
+        )
+    }
+
     private fun login(navigationController: NavController) {
         if (!ThreadsLib.isInitialized()) {
             return
@@ -105,14 +120,7 @@ class LaunchViewModel(
                 serverConfig.trustedSSLCertificates,
                 serverConfig.allowUntrustedSSLCertificate
             )
-            ThreadsLib.getInstance().initUser(
-                UserInfoBuilder(user?.userId!!)
-                    .setAuthData(user.authorizationHeader, user.xAuthSchemaHeader)
-                    .setClientData(user.userData)
-                    .setClientIdSignature(user.signature)
-                    .setAppMarker(user.appMarker),
-                false
-            )
+            if (user != null && !isPreregisterEnabled) callInitUser(user)
             navigationController.navigate(R.id.action_LaunchFragment_to_ChatAppFragment)
         }
     }
@@ -133,6 +141,10 @@ class LaunchViewModel(
             currentUiThemeLiveData.postValue(getCurrentUiTheme(uiTheme))
             applyCurrentUiTheme(uiTheme)
         }
+    }
+
+    private fun initPreregisterCheckbox() {
+        _preregisterLiveData.postValue(isPreregisterEnabled)
     }
 
     private fun getCurrentUiTheme(currentUiTheme: CurrentUiTheme): UiTheme {
@@ -183,6 +195,10 @@ class LaunchViewModel(
         }
     }
 
+    fun onPreregisterCheckedChange(isChecked: Boolean) {
+        isPreregisterEnabled = isChecked
+    }
+
     private fun getSelectedUser(): UserInfo? {
         val testData = BuildConfig.TEST_DATA.get() as? String
         return if (testData.isNullOrEmpty()) {
@@ -231,5 +247,9 @@ class LaunchViewModel(
         } else {
             null
         }
+    }
+
+    companion object {
+        var isPreregisterEnabled = false
     }
 }
