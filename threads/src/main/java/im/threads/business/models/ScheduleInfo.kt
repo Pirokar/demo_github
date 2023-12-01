@@ -18,7 +18,7 @@ class ScheduleInfo : ChatItem {
     var endTime: Date? = null
     var serverTime: Date? = null
     var active = false
-    private var serverTimeDiff: Long = 0
+    internal var serverTimeDiff: Long = 0
 
     fun calculateServerTimeDiff() {
         serverTime?.let {
