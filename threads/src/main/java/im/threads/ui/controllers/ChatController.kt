@@ -1715,7 +1715,7 @@ class ChatController private constructor() {
                         return@collect
                     }
                     if (!stateEvent.isTimeout && stateEvent.state < ChatStateEnum.HISTORY_LOADED && fragment?.get()
-                            ?.isErrorViewNotVisible() == true
+                        ?.isErrorViewNotVisible() == true
                     ) {
                         withContext(Dispatchers.Main) { fragment?.get()?.showProgressBar() }
                     }
@@ -1725,19 +1725,19 @@ class ChatController private constructor() {
                                 fragment?.get()?.getString(chatStyle.loadedSettingsErrorText)
                             } else {
                                 "${
-                                    fragment?.get()
-                                        ?.getString(R.string.ecc_timeout_message) ?: "Превышен интервал ожидания для запроса"
+                                fragment?.get()
+                                    ?.getString(R.string.ecc_timeout_message) ?: "Превышен интервал ожидания для запроса"
                                 } (${chatState.getCurrentState()})"
                             }
-                        withContext(Dispatchers.Main) { fragment?.get()?.showErrorView(timeoutMessage)}
+                        withContext(Dispatchers.Main) { fragment?.get()?.showErrorView(timeoutMessage) }
                     } else if (stateEvent.state == ChatStateEnum.SETTINGS_LOADED) {
                         BaseConfig.getInstance().transport.sendInitMessages(false)
                     } else if (stateEvent.state == ChatStateEnum.DEVICE_REGISTERED) {
                         loadConfig()
                     } else if (isChatReady()) {
                         loadItemsFromDB(false)
-                    if (fragment?.get()?.isResumed == true) loadHistoryAfterWithLastMessageCheck()
-                         messenger.resendMessages()
+                        if (fragment?.get()?.isResumed == true) loadHistoryAfterWithLastMessageCheck()
+                        messenger.resendMessages()
                     }
                 }
             }
