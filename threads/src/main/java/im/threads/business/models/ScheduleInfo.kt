@@ -12,12 +12,12 @@ class ScheduleInfo : ChatItem {
     var notification: String? = null
     val sendDuringInactive = false
     override var timeStamp: Long = 0
-    private var serverTime: Date? = null
-    private var active = false
-    private var serverTimeDiff: Long = 0
-    private val intervals: List<WeekDaySchedule>? = null
-    private val startTime: Date? = null
-    private val endTime: Date? = null
+    var serverTime: Date? = null
+    var active = false
+    var serverTimeDiff: Long = 0
+    internal val intervals: List<WeekDaySchedule>? = null
+    val startTime: Date? = null
+    val endTime: Date? = null
 
     fun calculateServerTimeDiff() {
         serverTime?.let {
