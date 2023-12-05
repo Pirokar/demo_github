@@ -1697,8 +1697,8 @@ class ChatController private constructor() {
     private fun subscribeOnChatState() {
         coroutineScope.launch(Dispatchers.IO) {
             chatState.getStateFlow().collect { stateEvent ->
-                if (demoModeProvider.isDemoModeEnabled() && stateEvent.state < ChatStateEnum.ATTACHMENT_SETTINGS_LOADED) {
-                    chatState.changeState(ChatStateEnum.ATTACHMENT_SETTINGS_LOADED)
+                if (demoModeProvider.isDemoModeEnabled() && stateEvent.state < ChatStateEnum.SETTINGS_LOADED) {
+                    chatState.changeState(ChatStateEnum.SETTINGS_LOADED)
                 } else {
                     info("ChatState name: ${stateEvent.state.name}, isTimeout: ${stateEvent.isTimeout}")
                     try {
@@ -1728,30 +1728,16 @@ class ChatController private constructor() {
                                     fragment?.get()
                                         ?.getString(R.string.ecc_timeout_message) ?: "Превышен интервал ожидания для запроса"
                                 } (${chatState.getCurrentState()})"
-                                if (stateEvent.isTimeout && chatState.getCurrentState() < ChatStateEnum.ATTACHMENT_SETTINGS_LOADED) {
-                                    val timeoutMessage =
-                                        if (stateEvent.state >= ChatStateEnum.INIT_USER_SENT && fragment != null) {
-                                            fragment?.get()
-                                                ?.getString(R.string.ecc_attachments_not_loaded)
-                                        } else {
-                                            "${
-                                                fragment?.get()
-                                                    ?.getString(R.string.ecc_timeout_message) ?: "Превышен интервал ожидания для запроса"
-                                            } (${chatState.getCurrentState()})"
-                                        }
-                                    withContext(Dispatchers.Main) {
-                                        fragment?.get()?.showErrorView(timeoutMessage)
-                                    }
-                                } else if (stateEvent.state == ChatStateEnum.SETTINGS_LOADED) {
-                                    BaseConfig.getInstance().transport.sendInitMessages(false)
-                                } else if (stateEvent.state == ChatStateEnum.DEVICE_REGISTERED) {
-                                    loadConfig()
-                                } else if (isChatReady()) {
-                                    loadItemsFromDB(false)
-                                    if (fragment?.get()?.isResumed == true) loadHistoryAfterWithLastMessageCheck()
-                                    messenger.resendMessages()
-                                }
                             }
+                        withContext(Dispatchers.Main) { fragment?.get()?.showErrorView(timeoutMessage)}
+                    } else if (stateEvent.state == ChatStateEnum.SETTINGS_LOADED) {
+                        BaseConfig.getInstance().transport.sendInitMessages(false)
+                    } else if (stateEvent.state == ChatStateEnum.DEVICE_REGISTERED) {
+                        loadConfig()
+                    } else if (isChatReady()) {
+                        loadItemsFromDB(false)
+                    if (fragment?.get()?.isResumed == true) loadHistoryAfterWithLastMessageCheck()
+                         messenger.resendMessages()
                     }
                 }
             }
