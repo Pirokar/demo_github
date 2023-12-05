@@ -3,7 +3,6 @@ package im.threads.business.transport
 import android.net.Uri
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
-import im.threads.business.core.ThreadsLibBase
 import im.threads.business.formatters.ChatItemType
 import im.threads.business.models.CAMPAIGN_DATE_FORMAT
 import im.threads.business.models.ConsultInfo
@@ -43,7 +42,7 @@ class OutgoingMessageCreator(
         return jsonObject
     }
 
-    fun createClientInfoMessage(locale: String): JsonObject {
+    fun createClientInfoMessage(locale: String, isPreregister: Boolean): JsonObject {
         val userInfo = clientUseCase.getUserInfo()
         val deviceAddress = preferences.get(PreferencesCoreKeys.DEVICE_ADDRESS, "")
         val jsonObject = JsonObject().apply {
@@ -64,9 +63,8 @@ class OutgoingMessageCreator(
             addProperty("chatApiVersion", ThreadsApi.API_VERSION)
             addProperty(MessageAttributes.TYPE, ChatItemType.CLIENT_INFO.name)
             addProperty(MessageAttributes.DEVICE_ADDRESS, deviceAddress)
-            if (ThreadsLibBase.isForceRegistration) {
+            if (isPreregister) {
                 addProperty("preRegister", true)
-                ThreadsLibBase.isForceRegistration = false
             }
         }
         return jsonObject
