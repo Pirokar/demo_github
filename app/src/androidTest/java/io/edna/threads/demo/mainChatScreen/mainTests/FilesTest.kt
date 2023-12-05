@@ -28,6 +28,7 @@ class FilesTest : BaseFilesTestCase() {
     @Test
     fun sendFile() {
         intending(hasAction(Intent.ACTION_OPEN_DOCUMENT)).respondWith(getFileResult())
+        prepareHttpMocks()
         openChatFromDemoLoginPage()
         ChatMainScreen {
             val sizeBeforeSend = chatItemsRecyclerView.getSize()
@@ -44,6 +45,7 @@ class FilesTest : BaseFilesTestCase() {
     @Test
     fun sendFileWithText() {
         intending(hasAction(Intent.ACTION_OPEN_DOCUMENT)).respondWith(getFileResult())
+        prepareHttpMocks()
         openChatFromDemoLoginPage()
         ChatMainScreen {
             inputEditView { isVisible() }

@@ -38,13 +38,12 @@ import java.io.InputStream
 import java.io.InputStreamReader
 
 abstract class BaseTestCase : TestCase() {
-    protected val userId = (10000..99999).random().toString()
+    private val userId = (10000..99999).random().toString()
 
     private val coroutineScope = CoroutineScope(Dispatchers.Unconfined)
 
     protected val context: Context = InstrumentationRegistry.getInstrumentation().targetContext
     protected var wsMocksMap = getDefaultWsMocksMap()
-    protected var clientInfoWsMessages = getDefaultClientInfoWsMessages()
 
     protected val helloTextToSend = "Hello, Edna! This is a test message"
 
@@ -107,12 +106,9 @@ abstract class BaseTestCase : TestCase() {
         Mockito.`when`(okHttpClient.newWebSocket(anyOrNull(), anyOrNull())).thenReturn(socket)
         Mockito.doAnswer { mock: InvocationOnMock ->
             val stringArg = mock.arguments[0] as String
-            val (answer, isClientInfo) = getAnswersForWebSocket(stringArg)
+            val answer = getAnswersForWebSocket(stringArg)
             answer?.let { wsAnswer ->
                 sendMessageToSocket(wsAnswer)
-                if (isClientInfo) {
-                    clientInfoWsMessages.forEach { sendMessageToSocket(it) }
-                }
             }
             null
         }.`when`(socket).send(Mockito.anyString())
@@ -127,7 +123,8 @@ abstract class BaseTestCase : TestCase() {
 
     protected fun prepareHttpMocks(
         withAnswerDelayInMs: Int = 0,
-        historyAnswer: String? = null
+        historyAnswer: String? = null,
+        configAnswer: String? = null
     ) {
         BuildConfig.IS_MOCK_WEB_SERVER.set(true)
         wireMockRule.stubFor(
@@ -161,6 +158,15 @@ abstract class BaseTestCase : TestCase() {
                         .withFixedDelay(withAnswerDelayInMs)
                 )
         )
+        wireMockRule.stubFor(
+            WireMock.get(WireMock.urlPathMatching(".*/config.*"))
+                .willReturn(
+                    WireMock.aResponse()
+                        .withStatus(200)
+                        .withBody(configAnswer ?: TestMessages.defaultConfigMock)
+                        .withHeader("Content-Type", "application/json")
+                )
+        )
     }
 
     protected fun getDefaultWsMocksMap() = HashMap<String, String>().apply {
@@ -168,11 +174,6 @@ abstract class BaseTestCase : TestCase() {
         put("INIT_CHAT", TestMessages.initChatWsAnswer)
         put("CLIENT_INFO", TestMessages.clientInfoWsAnswer)
     }
-
-    protected fun getDefaultClientInfoWsMessages() = listOf(
-        TestMessages.scheduleWsMessage,
-        TestMessages.attachmentSettingsWsMessage
-    )
 
     protected fun readTextFileFromRawResourceId(resourceId: Int): String {
         var string: String? = ""
@@ -222,9 +223,9 @@ abstract class BaseTestCase : TestCase() {
         }
     }
 
-    internal fun getAnswersForWebSocket(
+    private fun getAnswersForWebSocket(
         websocketMessage: String
-    ): Pair<String?, Boolean> {
+    ): String? {
         wsMocksMap.keys.forEach { key ->
             if (websocketMessage.contains(key)) {
                 val draftAnswer = wsMocksMap[key]
@@ -235,16 +236,16 @@ abstract class BaseTestCase : TestCase() {
                         val endOfCorrelationValueIndex = split[1].indexOf("\"")
                         val correlationId = split[1].subSequence(0, endOfCorrelationValueIndex).toString()
                         val answer = draftAnswer.replace(TestMessages.correlationId, correlationId)
-                        Pair(answer, key == "CLIENT_INFO")
+                        answer
                     } else {
-                        Pair(wsMocksMap[key], key == "CLIENT_INFO")
+                        wsMocksMap[key]
                     }
                 } else {
-                    Pair(wsMocksMap[key], key == "CLIENT_INFO")
+                    wsMocksMap[key]
                 }
             }
         }
-        return Pair(null, false)
+        return null
     }
 
     private fun getDefaultServerConfig() = ServerConfig(
