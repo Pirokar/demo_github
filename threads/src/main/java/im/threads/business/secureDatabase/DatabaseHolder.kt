@@ -22,11 +22,18 @@ import io.reactivex.schedulers.Schedulers
 class DatabaseHolder(private val context: Context) {
     private var myOpenHelper = mutableLazy { ThreadsDbHelper.getInstance(context) }
 
-    fun cleanDatabase() = tryExecute { myOpenHelper.value.cleanDatabase() }
+    fun cleanDatabase() = tryExecute {
+        myOpenHelper.value.cleanDatabase()
+    }
+
+    fun closeInstance() = tryExecute {
+        myOpenHelper.value.closeInstance()
+    }
 
     fun getChatItems(offset: Int, limit: Int): List<ChatItem> {
         return tryExecute {
             val items = myOpenHelper.value.getChatItems(offset, limit).toMutableList()
+            myOpenHelper.reset()
             val surveysWithQuestions = mutableListOf<Survey>()
             items.filterIsInstance<Survey>().forEach { survey ->
                 (myOpenHelper.value.getChatItemByCorrelationId(survey.uuid) as? Survey)?.let { surveyWithQuestions ->
@@ -73,7 +80,7 @@ class DatabaseHolder(private val context: Context) {
 
     fun getConsultInfo(id: String): ConsultInfo? = tryExecute { myOpenHelper.value.getLastConsultInfo(id) }
 
-    fun getUnsendUserPhrase(count: Int): List<UserPhrase> = tryExecute { myOpenHelper.value.getUnsendUserPhrase(count) } ?: arrayListOf()
+    fun getUnsentUserPhrase(count: Int): List<UserPhrase> = tryExecute { myOpenHelper.value.getUnsendUserPhrase(count) } ?: arrayListOf()
 
     fun setStateOfUserPhraseByCorrelationId(uuid: String?, messageStatus: MessageStatus?) {
         tryExecute { myOpenHelper.value.setUserPhraseStateByCorrelationId(uuid, messageStatus) }

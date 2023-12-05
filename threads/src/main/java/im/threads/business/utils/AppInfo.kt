@@ -18,7 +18,11 @@ class AppInfo {
             } catch (e: PackageManager.NameNotFoundException) {
                 error("getAppVersion", e)
             }
-            return if (pInfo != null) pInfo.versionName else ""
+            return try {
+                if (pInfo != null) pInfo.versionName else ""
+            } catch (e: Exception) {
+                ""
+            }
         }
 
     val libVersion: String

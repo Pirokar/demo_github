@@ -4,16 +4,22 @@ import android.content.Context
 import com.github.hiteshsondhi88.libffmpeg.FFmpeg
 import com.github.hiteshsondhi88.libffmpeg.FFmpegExecuteResponseHandler
 import com.github.hiteshsondhi88.libffmpeg.FFmpegLoadBinaryResponseHandler
+import im.threads.business.annotation.OpenForTesting
 import im.threads.business.audio.audioConverter.callback.IConvertCallback
 import im.threads.business.audio.audioConverter.callback.ILoadCallback
 import im.threads.business.audio.audioConverter.model.AudioFormat
 import java.io.File
 import java.io.IOException
 
-class AudioConverter private constructor(private val context: Context) {
-    private var audioFile: File? = null
-    private var format: AudioFormat? = null
-    private var callback: IConvertCallback? = null
+internal class AudioConverter private constructor(private val context: Context) {
+    @OpenForTesting
+    var audioFile: File? = null
+
+    @OpenForTesting
+    var format: AudioFormat? = null
+
+    @OpenForTesting
+    var callback: IConvertCallback? = null
 
     fun setFile(originalFile: File?): AudioConverter {
         audioFile = originalFile
@@ -70,11 +76,11 @@ class AudioConverter private constructor(private val context: Context) {
     }
 
     companion object {
-        var isLoaded = false
+        internal var isLoaded = false
             private set
 
         @JvmStatic
-        fun load(context: Context?, callback: ILoadCallback) {
+        internal fun load(context: Context?, callback: ILoadCallback) {
             try {
                 FFmpeg.getInstance(context).loadBinary(object : FFmpegLoadBinaryResponseHandler {
                     override fun onStart() {}
@@ -97,7 +103,7 @@ class AudioConverter private constructor(private val context: Context) {
         }
 
         @JvmStatic
-        fun with(context: Context): AudioConverter {
+        internal fun with(context: Context): AudioConverter {
             return AudioConverter(context)
         }
 

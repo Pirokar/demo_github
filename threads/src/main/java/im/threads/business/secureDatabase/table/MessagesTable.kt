@@ -36,53 +36,33 @@ class MessagesTable(
 
     override fun createTable(db: SQLiteDatabase) {
         db.execSQL(
-            String.format(
-                Locale.US,
-                "create table %s " + // messages table
-                    "( %s integer primary key autoincrement," + // id column
-                    " %s integer, " + // timestamp
-                    " %s text, " + // phrase
-                    " %s text, " + // COLUMN_FORMATTED_PHRASE
-                    " %s integer, " + // item type
-                    " %s text, " + // name
-                    " %s text, " + // avatar path
-                    " %s text, " + // correlation message id
-                    " %s text, " + // message id (received from backend)
-                    " %s integer, " + // sex
-                    " %s integer," + // message sent state
-                    "%s text," + // consultid
-                    "%s text," + // COLUMN_CONSULT_STATUS
-                    "%s text" + // COLUMN_CONSULT_TITLE
-                    ", " + COLUMN_CONSULT_ORG_UNIT + " text" + // COLUMN_CONSULT_ORG_UNIT
-                    ", " + COLUMN_CONSULT_ROLE + " text" + // COLUMN_CONSULT_ROLE
-                    ", " + "%s text," + // connection type
-                    "%s integer" + // isRead
-                    ", " + COLUMN_DISPLAY_MESSAGE + " integer" +
-                    ", " + COLUMN_SURVEY_SENDING_ID + " integer" +
-                    ", " + COLUMN_SURVEY_HIDE_AFTER + " integer" +
-                    ", " + COLUMN_THREAD_ID + " integer" +
-                    ", " + COLUMN_BLOCK_INPUT + " integer" +
-                    ", " + COLUMN_SPEECH_STATUS + " text" +
-                    ", " + COLUMN_MODIFICATION_STATE + " text" +
-                    ")",
-                TABLE_MESSAGES,
-                COLUMN_TABLE_ID,
-                COLUMN_TIMESTAMP,
-                COLUMN_PHRASE,
-                COLUMN_FORMATTED_PHRASE,
-                COLUMN_MESSAGE_TYPE,
-                COLUMN_NAME,
-                COLUMN_AVATAR_PATH,
-                COLUMN_MESSAGE_CORRELATION_ID,
-                COLUMN_MESSAGE_ID,
-                COLUMN_SEX,
-                COLUMN_MESSAGE_SEND_STATE,
-                COLUMN_CONSULT_ID,
-                COLUMN_CONSULT_STATUS,
-                COLUMN_CONSULT_TITLE,
-                COLUMN_CONNECTION_TYPE,
-                COLUMN_IS_READ
-            )
+            "create table $TABLE_MESSAGES " +
+                "( $COLUMN_TABLE_ID integer primary key autoincrement," +
+                " $COLUMN_TIMESTAMP integer, " +
+                " $COLUMN_PHRASE text, " +
+                " $COLUMN_FORMATTED_PHRASE text, " +
+                " $COLUMN_MESSAGE_TYPE integer, " +
+                " $COLUMN_NAME text, " +
+                " $COLUMN_AVATAR_PATH text, " +
+                " $COLUMN_MESSAGE_CORRELATION_ID text, " +
+                " $COLUMN_MESSAGE_ID text, " +
+                " $COLUMN_SEX integer, " +
+                " $COLUMN_MESSAGE_SEND_STATE integer," +
+                " $COLUMN_CONSULT_ID text," +
+                " $COLUMN_CONSULT_STATUS text," +
+                " $COLUMN_CONSULT_TITLE text" +
+                ", $COLUMN_CONSULT_ORG_UNIT text" +
+                ", $COLUMN_CONSULT_ROLE text" +
+                ", $COLUMN_CONNECTION_TYPE text," +
+                " $COLUMN_IS_READ integer" +
+                ", $COLUMN_DISPLAY_MESSAGE integer" +
+                ", $COLUMN_SURVEY_SENDING_ID integer" +
+                ", $COLUMN_SURVEY_HIDE_AFTER integer" +
+                ", $COLUMN_THREAD_ID integer" +
+                ", $COLUMN_BLOCK_INPUT integer" +
+                ", $COLUMN_SPEECH_STATUS text" +
+                ", $COLUMN_MODIFICATION_STATE text" +
+                ")"
         )
     }
 
@@ -148,15 +128,10 @@ class MessagesTable(
 
     fun getNotDeliveredChatItems(sqlHelper: SQLiteOpenHelper): List<UserPhrase> {
         val items: MutableList<UserPhrase> = ArrayList()
-        val query = String.format(
-            Locale.US,
-            "select * from (select * from %s " +
-                " where " + COLUMN_MESSAGE_SEND_STATE + " < " + MessageStatus.DELIVERED.value +
-                " order by %s desc) order by %s asc",
-            TABLE_MESSAGES,
-            COLUMN_TIMESTAMP,
-            COLUMN_TIMESTAMP
-        )
+        val query = "select * from (select * from $TABLE_MESSAGES " +
+            " where $COLUMN_MESSAGE_SEND_STATE < ${MessageStatus.DELIVERED.value}" +
+            " order by $COLUMN_TIMESTAMP desc) order by $COLUMN_TIMESTAMP asc"
+
         sqlHelper.readableDatabase.rawQuery(query, arrayOf()).use { c ->
             if (c.moveToFirst()) {
                 while (!c.isAfterLast) {
@@ -723,6 +698,7 @@ class MessagesTable(
         cv.put(COLUMN_MESSAGE_TYPE, MessageType.USER_PHRASE.ordinal)
         cv.put(COLUMN_MESSAGE_SEND_STATE, phrase.sentState.value)
         cv.put(COLUMN_THREAD_ID, phrase.threadId)
+        cv.put(COLUMN_MESSAGE_ID, phrase.backendMessageId)
         return cv
     }
 

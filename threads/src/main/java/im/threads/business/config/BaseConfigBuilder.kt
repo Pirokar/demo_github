@@ -10,24 +10,25 @@ import im.threads.business.rest.config.RequestConfig
 import okhttp3.Interceptor
 
 open class BaseConfigBuilder(var context: Context) {
-    protected var unreadMessagesCountListener: UnreadMessagesCountListener? = null
-    protected var isDebugLoggingEnabled = false
-    protected var historyLoadingCount = 50
-    protected var surveyCompletionDelay = 2000
+    internal var unreadMessagesCountListener: UnreadMessagesCountListener? = null
+    internal var isDebugLoggingEnabled = false
+    internal var historyLoadingCount = 50
+    internal var surveyCompletionDelay = 2000
     internal var serverBaseUrl: String? = null
     internal var datastoreUrl: String? = null
     internal var threadsGateUrl: String? = null
     internal var threadsGateProviderUid: String? = null
-    protected var networkInterceptor: Interceptor? = null
+    internal var networkInterceptor: Interceptor? = null
     internal var isNewChatCenterApi: Boolean = false
-    protected var loggerConfig: LoggerConfig? = null
-    protected var requestConfig = RequestConfig()
-    protected var trustedSSLCertificates = emptyList<Int>()
-    protected var allowUntrustedSSLCertificate = false
-    protected var keepSocketActive = false
+    internal var loggerConfig: LoggerConfig? = null
+    internal var requestConfig = RequestConfig()
+    internal var trustedSSLCertificates = emptyList<Int>()
+    internal var allowUntrustedSSLCertificate = false
+    internal var keepSocketActive = false
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    protected var notificationImportance = NotificationManager.IMPORTANCE_DEFAULT
+    internal var notificationImportance = NotificationManager.IMPORTANCE_DEFAULT
+
     open fun serverBaseUrl(serverBaseUrl: String?): BaseConfigBuilder? {
         if (!serverBaseUrl.isNullOrBlank() && !serverBaseUrl.endsWith("/")) {
             this.serverBaseUrl = "$serverBaseUrl/"

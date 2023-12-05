@@ -18,6 +18,7 @@ import im.threads.business.config.BaseConfig
 import im.threads.business.controllers.UnreadMessagesController
 import im.threads.business.core.ContextHolder
 import im.threads.business.core.ThreadsLibBase
+import im.threads.business.extensions.isUnitTest
 import im.threads.business.extensions.withMainContext
 import im.threads.business.formatters.ChatItemType
 import im.threads.business.logger.LoggerEdna.error
@@ -303,7 +304,7 @@ class ChatController private constructor() {
         if (state < ChatStateEnum.DEVICE_REGISTERED) {
             transport.sendRegisterDevice(false)
         } else if (state < ChatStateEnum.INIT_USER_SENT) {
-            transport.sendInitMessages()
+            transport.sendInitMessages(false)
         } else if (state < ChatStateEnum.SETTINGS_LOADED) {
             loadConfig()
         }
@@ -448,7 +449,7 @@ class ChatController private constructor() {
         subscribe(
             Single.fromCallable {
                 val historyLoadingCount = BaseConfig.getInstance().historyLoadingCount
-                val unsentUserPhrase = database.getUnsendUserPhrase(historyLoadingCount)
+                val unsentUserPhrase = database.getUnsentUserPhrase(historyLoadingCount)
                 if (unsentUserPhrase.isNotEmpty()) {
                     messenger.recreateUnsentMessagesWith(unsentUserPhrase)
                 }
@@ -1386,7 +1387,11 @@ class ChatController private constructor() {
         val hcmToken = preferences.get<String>(PreferencesCoreKeys.HCM_TOKEN)
         val currentUiThemeValue = preferences.get(PreferencesCoreKeys.USER_SELECTED_UI_THEME_KEY, CurrentUiTheme.SYSTEM.value)
         val clientInfo = if (keepClientId) clientUseCase.getUserInfo() else null
-        preferences.sharedPreferences.edit().clear().commit()
+        try {
+            preferences.sharedPreferences.edit().clear().commit()
+        } catch (exc: SecurityException) {
+            preferences.removeSharedPreferencesFiles()
+        }
         preferences.save(PreferencesCoreKeys.FCM_TOKEN, fcmToken)
         preferences.save(PreferencesCoreKeys.HCM_TOKEN, hcmToken)
         preferences.save(PreferencesCoreKeys.USER_SELECTED_UI_THEME_KEY, currentUiThemeValue)
@@ -1397,7 +1402,9 @@ class ChatController private constructor() {
     }
 
     private fun removePushNotification() {
-        removeNotification(appContext)
+        if (!isUnitTest()) {
+            removeNotification(appContext)
+        }
     }
 
     private fun setSurveyStateSent(survey: Survey) {
@@ -1690,35 +1697,62 @@ class ChatController private constructor() {
     private fun subscribeOnChatState() {
         coroutineScope.launch(Dispatchers.IO) {
             chatState.getStateFlow().collect { stateEvent ->
-                info("ChatState name: ${stateEvent.state.name}, isTimeout: ${stateEvent.isTimeout}")
-                try {
-                    // Check if main component are initialized
-                    BaseConfig.getInstance()
-                    BackendApi.get()
-                    DatastoreApi.get()
-                } catch (e: Exception) {
-                    val notInitializedError = TransportException(fragment?.get()?.getString(chatStyle.loadedSettingsErrorText) ?: "ChatCenter SDK не инициализирован")
-                    chatUpdateProcessor.postError(notInitializedError)
-                    return@collect
-                }
-                if (!stateEvent.isTimeout && stateEvent.state < ChatStateEnum.HISTORY_LOADED && fragment?.get()?.isErrorViewNotVisible() == true) {
-                    withContext(Dispatchers.Main) { fragment?.get()?.showProgressBar() }
-                }
-                if (stateEvent.isTimeout && chatState.getCurrentState() < ChatStateEnum.THREAD_OPENED) {
-                    val timeoutMessage = if (stateEvent.state >= ChatStateEnum.INIT_USER_SENT && fragment != null) {
-                        fragment?.get()?.getString(chatStyle.loadedSettingsErrorText)
-                    } else {
-                        "${fragment?.get()?.getString(R.string.ecc_timeout_message) ?: "Превышен интервал ожидания для запроса"} (${chatState.getCurrentState()})"
+                if (demoModeProvider.isDemoModeEnabled() && stateEvent.state < ChatStateEnum.ATTACHMENT_SETTINGS_LOADED) {
+                    chatState.changeState(ChatStateEnum.ATTACHMENT_SETTINGS_LOADED)
+                } else {
+                    info("ChatState name: ${stateEvent.state.name}, isTimeout: ${stateEvent.isTimeout}")
+                    try {
+                        // Check if main component are initialized
+                        BaseConfig.getInstance()
+                        BackendApi.get()
+                        DatastoreApi.get()
+                    } catch (e: Exception) {
+                        val notInitializedError = TransportException(
+                            fragment?.get()?.getString(chatStyle.loadedSettingsErrorText)
+                                ?: "ChatCenter SDK не инициализирован"
+                        )
+                        chatUpdateProcessor.postError(notInitializedError)
+                        return@collect
                     }
-                    withContext(Dispatchers.Main) { fragment?.get()?.showErrorView(timeoutMessage) }
-                } else if (stateEvent.state == ChatStateEnum.SETTINGS_LOADED) {
-                    BaseConfig.getInstance().transport.sendInitMessages()
-                } else if (stateEvent.state == ChatStateEnum.DEVICE_REGISTERED) {
-                    loadConfig()
-                } else if (isChatReady()) {
-                    loadItemsFromDB(false)
-                    if (fragment?.get()?.isResumed == true) loadHistoryAfterWithLastMessageCheck()
-                    messenger.resendMessages()
+                    if (!stateEvent.isTimeout && stateEvent.state < ChatStateEnum.HISTORY_LOADED && fragment?.get()
+                            ?.isErrorViewNotVisible() == true
+                    ) {
+                        withContext(Dispatchers.Main) { fragment?.get()?.showProgressBar() }
+                    }
+                    if (stateEvent.isTimeout && chatState.getCurrentState() < ChatStateEnum.THREAD_OPENED) {
+                        val timeoutMessage =
+                            if (stateEvent.state >= ChatStateEnum.INIT_USER_SENT && fragment != null) {
+                                fragment?.get()?.getString(chatStyle.loadedSettingsErrorText)
+                            } else {
+                                "${
+                                    fragment?.get()
+                                        ?.getString(R.string.ecc_timeout_message) ?: "Превышен интервал ожидания для запроса"
+                                } (${chatState.getCurrentState()})"
+                                if (stateEvent.isTimeout && chatState.getCurrentState() < ChatStateEnum.ATTACHMENT_SETTINGS_LOADED) {
+                                    val timeoutMessage =
+                                        if (stateEvent.state >= ChatStateEnum.INIT_USER_SENT && fragment != null) {
+                                            fragment?.get()
+                                                ?.getString(R.string.ecc_attachments_not_loaded)
+                                        } else {
+                                            "${
+                                                fragment?.get()
+                                                    ?.getString(R.string.ecc_timeout_message) ?: "Превышен интервал ожидания для запроса"
+                                            } (${chatState.getCurrentState()})"
+                                        }
+                                    withContext(Dispatchers.Main) {
+                                        fragment?.get()?.showErrorView(timeoutMessage)
+                                    }
+                                } else if (stateEvent.state == ChatStateEnum.SETTINGS_LOADED) {
+                                    BaseConfig.getInstance().transport.sendInitMessages(false)
+                                } else if (stateEvent.state == ChatStateEnum.DEVICE_REGISTERED) {
+                                    loadConfig()
+                                } else if (isChatReady()) {
+                                    loadItemsFromDB(false)
+                                    if (fragment?.get()?.isResumed == true) loadHistoryAfterWithLastMessageCheck()
+                                    messenger.resendMessages()
+                                }
+                            }
+                    }
                 }
             }
         }

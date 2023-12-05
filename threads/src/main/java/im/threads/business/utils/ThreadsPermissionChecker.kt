@@ -32,6 +32,15 @@ object ThreadsPermissionChecker {
     }
 
     @JvmStatic
+    fun isRecordAudioPermissionGranted(context: Context?): Boolean {
+        return if (context != null) {
+            PermissionChecker.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PermissionChecker.PERMISSION_GRANTED
+        } else {
+            false
+        }
+    }
+
+    @JvmStatic
     fun isReadExternalPermissionGranted(context: Context?): Boolean {
         return if (context != null) {
             val isApi34OrMore = Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
@@ -69,15 +78,6 @@ object ThreadsPermissionChecker {
                 }
             }
             return true
-        } else {
-            false
-        }
-    }
-
-    @JvmStatic
-    fun isRecordAudioPermissionGranted(context: Context?): Boolean {
-        return if (context != null) {
-            PermissionChecker.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PermissionChecker.PERMISSION_GRANTED
         } else {
             false
         }

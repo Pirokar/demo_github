@@ -16,22 +16,38 @@ abstract class Table {
         fun isCursorNull(c: Cursor, columnName: String) = c.isNull(c.getColumnIndex(columnName))
 
         fun cursorGetBool(c: Cursor, columnName: String): Boolean {
-            return cursorGetInt(c, columnName) == 1
+            return try {
+                cursorGetInt(c, columnName) == 1
+            } catch (e: Exception) {
+                false
+            }
         }
 
         @SuppressLint("Range")
         fun cursorGetString(c: Cursor, columnName: String): String? {
-            return if (isCursorNull(c, columnName)) null else c.getString(c.getColumnIndex(columnName))
+            return try {
+                if (isCursorNull(c, columnName)) null else c.getString(c.getColumnIndex(columnName))
+            } catch (e: Exception) {
+                null
+            }
         }
 
         @SuppressLint("Range")
         fun cursorGetLong(c: Cursor, columnName: String): Long {
-            return c.getLong(c.getColumnIndex(columnName))
+            return try {
+                c.getLong(c.getColumnIndex(columnName))
+            } catch (e: Exception) {
+                -1
+            }
         }
 
         @SuppressLint("Range")
         fun cursorGetInt(c: Cursor, columnName: String): Int {
-            return if (isCursorNull(c, columnName)) 0 else c.getInt(c.getColumnIndex(columnName))
+            return try {
+                if (isCursorNull(c, columnName)) 0 else c.getInt(c.getColumnIndex(columnName))
+            } catch (e: Exception) {
+                -1
+            }
         }
     }
 }

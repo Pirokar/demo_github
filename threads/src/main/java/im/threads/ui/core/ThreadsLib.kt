@@ -73,6 +73,16 @@ class ThreadsLib(context: Context) : ThreadsLibBase(context) {
      *
      * @return true, if message was successfully added to messaging queue, otherwise false
      */
+    fun sendMessage(message: String?): Boolean {
+        val uri: Uri? = null
+        return sendMessage(message, uri)
+    }
+
+    /**
+     * Used to post messages to chat as if written by client
+     *
+     * @return true, if message was successfully added to messaging queue, otherwise false
+     */
     fun sendMessage(message: String?, file: File?): Boolean {
         val fileUri = if (file != null) {
             fileProvider.getUriForFile(

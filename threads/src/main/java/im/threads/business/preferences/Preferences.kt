@@ -10,6 +10,7 @@ import im.threads.business.preferences.encrypted.MasterKey
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.io.File
 import java.io.IOException
 import java.lang.reflect.Type
 import java.security.GeneralSecurityException
@@ -137,6 +138,24 @@ open class Preferences(private val context: Context) {
             isRamPreferencesLoaded = true
         } catch (exc: Exception) {
             LoggerEdna.error("Error when saving all shared preferences keys to RAM preferences")
+        }
+    }
+
+    internal fun removeSharedPreferencesFiles() {
+        val dir = try {
+            File(context.filesDir.parent?.plus("/shared_prefs/")!!)
+        } catch (e: Exception) {
+            return
+        }
+        val children = dir.list()
+        if (children != null) {
+            for (i in children.indices) {
+                try {
+                    context.getSharedPreferences(children[i].replace(".xml", ""), Context.MODE_PRIVATE).edit()
+                        .clear().commit()
+                } catch (ignored: Exception) {}
+                File(dir, children[i]).delete()
+            }
         }
     }
 

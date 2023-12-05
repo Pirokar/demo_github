@@ -16,7 +16,6 @@ import im.threads.business.config.BaseConfig
 import im.threads.business.formatters.ChatItemType
 import im.threads.business.formatters.JsonFormatter
 import im.threads.business.logger.LoggerEdna
-import im.threads.business.logger.NetworkLoggerInterceptor
 import im.threads.business.models.CampaignMessage
 import im.threads.business.models.ChatItem
 import im.threads.business.models.ChatItemSendErrorModel
@@ -78,8 +77,8 @@ import java.util.concurrent.TimeUnit
 import javax.net.ssl.SSLSession
 
 class ThreadsGateTransport(
-    private val threadsGateUrl: String,
-    private val threadsGateProviderUid: String,
+    internal val threadsGateUrl: String,
+    internal val threadsGateProviderUid: String,
     private val isDebugLoggingEnabled: Boolean,
     private val socketSettings: SocketClientSettings,
     private val sslSocketFactoryConfig: SslSocketFactoryConfig? = null,
@@ -148,7 +147,6 @@ class ThreadsGateTransport(
             )
             httpClientBuilder.hostnameVerifier { _: String, _: SSLSession -> true }
         }
-        httpClientBuilder.addInterceptor(NetworkLoggerInterceptor())
         client = httpClientBuilder.build()
         request = Request.Builder()
             .url(threadsGateUrl)
@@ -194,9 +192,9 @@ class ThreadsGateTransport(
         }
     }
 
-    override fun sendInitMessages() {
+    override fun sendInitMessages(isPreregister: Boolean) {
         sendInitChatMessage(true)
-        sendEnvironmentMessage(true)
+        sendEnvironmentMessage(true, isPreregister)
     }
 
     /**
@@ -309,7 +307,7 @@ class ThreadsGateTransport(
         val deviceAddress = preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS)
         if (sendInit && !clientId.isNullOrBlank() && !deviceAddress.isNullOrBlank()) {
             sendInitChatMessage(false)
-            sendEnvironmentMessage(false)
+            sendEnvironmentMessage(tryOpeningWebSocket = false, isPreregister = false)
         }
         val text = BaseConfig.getInstance().gson.toJson(
             SendMessageRequest(
@@ -433,10 +431,14 @@ class ThreadsGateTransport(
         )
     }
 
-    private fun sendEnvironmentMessage(tryOpeningWebSocket: Boolean): Boolean {
+    private fun sendEnvironmentMessage(
+        tryOpeningWebSocket: Boolean,
+        isPreregister: Boolean
+    ): Boolean {
         return sendMessage(
             outgoingMessageCreator.createClientInfoMessage(
-                deviceInfo.getLocale(BaseConfig.getInstance().context)
+                deviceInfo.getLocale(BaseConfig.getInstance().context),
+                isPreregister
             ),
             tryOpeningWebSocket = tryOpeningWebSocket,
             sendInit = false
@@ -459,9 +461,7 @@ class ThreadsGateTransport(
 
     @Synchronized
     override fun closeWebSocket() {
-        webSocket?.apply {
-            close(NORMAL_CLOSURE_STATUS, null)
-        }
+        webSocket?.close(NORMAL_CLOSURE_STATUS, null)
         webSocket = null
     }
 
