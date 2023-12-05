@@ -5,6 +5,7 @@ import android.util.Size
 import im.threads.business.config.BaseConfig
 import im.threads.business.core.UnreadMessagesCountListener
 import im.threads.business.logger.LoggerConfig
+import im.threads.business.models.enums.ApiVersionEnum
 import im.threads.business.models.enums.CurrentUiTheme
 import im.threads.business.rest.config.RequestConfig
 import im.threads.business.serviceLocator.core.inject
@@ -26,6 +27,7 @@ class Config(
     threadsGateUrl: String?,
     threadsGateProviderUid: String?,
     isNewChatCenterApi: Boolean,
+    apiVersion: ApiVersionEnum,
     loggerConfig: LoggerConfig?,
     val pendingIntentCreator: PendingIntentCreator,
     unreadMessagesCountListener: UnreadMessagesCountListener?,
@@ -45,7 +47,7 @@ class Config(
     context, serverBaseUrl, datastoreUrl, threadsGateUrl, threadsGateProviderUid,
     isNewChatCenterApi, loggerConfig, unreadMessagesCountListener, networkInterceptor, isDebugLoggingEnabled,
     historyLoadingCount, surveyCompletionDelay, requestConfig, notificationImportance, trustedSSLCertificate,
-    allowUntrustedSSLCertificate, keepSocketActive
+    allowUntrustedSSLCertificate, keepSocketActive, apiVersion
 ) {
     val chatStyle: ChatStyle
         get() {

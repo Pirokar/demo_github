@@ -6,6 +6,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import im.threads.business.core.UnreadMessagesCountListener
 import im.threads.business.logger.LoggerConfig
+import im.threads.business.models.enums.ApiVersionEnum
 import im.threads.business.rest.config.RequestConfig
 import okhttp3.Interceptor
 
@@ -25,6 +26,7 @@ open class BaseConfigBuilder(var context: Context) {
     internal var trustedSSLCertificates = emptyList<Int>()
     internal var allowUntrustedSSLCertificate = false
     internal var keepSocketActive = false
+    internal var apiVersion = ApiVersionEnum.V15
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     internal var notificationImportance = NotificationManager.IMPORTANCE_DEFAULT
@@ -91,6 +93,9 @@ open class BaseConfigBuilder(var context: Context) {
         return this
     }
 
+    /**
+     * Устанавливает сертификаты для SSL пиннинга
+     */
     open fun trustedSSLCertificates(trustedSSLCertificates: List<Int>?): BaseConfigBuilder? {
         if (trustedSSLCertificates.isNullOrEmpty()) {
             this.trustedSSLCertificates = emptyList()
@@ -100,30 +105,53 @@ open class BaseConfigBuilder(var context: Context) {
         return this
     }
 
+    /**
+     * Разрешает использовать недоверенные, в т.ч. самоподписанные сертификаты
+     */
     open fun allowUntrustedSSLCertificates(allowUntrustedSSLCertificate: Boolean): BaseConfigBuilder? {
         this.allowUntrustedSSLCertificate = allowUntrustedSSLCertificate
         return this
     }
 
+    /**
+     * Добавляет интерсептор для OKHTTP в сетевых запросах
+     */
     open fun networkInterceptor(interceptor: Interceptor?): BaseConfigBuilder? {
         networkInterceptor = interceptor
         return this
     }
 
+    /**
+     * Меняет роутинг запросов
+     */
     open fun setNewChatCenterApi(): BaseConfigBuilder? {
         isNewChatCenterApi = true
         return this
     }
 
+    /**
+     * Включает внутреннее логирование
+     */
     open fun enableLogging(config: LoggerConfig?): BaseConfigBuilder? {
         loggerConfig = config
         return this
     }
 
+    /**
+     * Устанавливает важность пуш-уведомлений. Принимает константы NotificationManager.
+     * По умолчанию IMPORTANCE_DEFAULT
+     */
     @RequiresApi(api = Build.VERSION_CODES.N)
     open fun setNotificationImportance(importance: Int): BaseConfigBuilder? {
         notificationImportance = importance
         return this
+    }
+
+    /**
+     * Устанавливает версию апи для запросов. По умолчанию v15
+     */
+    open fun setApiVersion(apiVersion: ApiVersionEnum) {
+        this.apiVersion = apiVersion
     }
 
     protected val notificationLevel: Int
@@ -153,7 +181,8 @@ open class BaseConfigBuilder(var context: Context) {
             notificationLevel,
             trustedSSLCertificates,
             allowUntrustedSSLCertificate,
-            keepSocketActive
+            keepSocketActive,
+            apiVersion
         )
     }
 }

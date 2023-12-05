@@ -9,6 +9,7 @@ import im.threads.business.exceptions.MetaConfigurationException
 import im.threads.business.imageLoading.ImageLoaderOkHttpProvider
 import im.threads.business.logger.LoggerConfig
 import im.threads.business.models.SslSocketFactoryConfig
+import im.threads.business.models.enums.ApiVersionEnum
 import im.threads.business.rest.config.RequestConfig
 import im.threads.business.rest.config.SocketClientSettings
 import im.threads.business.serviceLocator.core.inject
@@ -41,7 +42,8 @@ open class BaseConfig(
     val notificationImportance: Int,
     var trustedSSLCertificates: List<Int>?,
     var allowUntrustedSSLCertificate: Boolean,
-    var keepSocketActive: Boolean
+    var keepSocketActive: Boolean,
+    var apiVersion: ApiVersionEnum
 ) {
     @JvmField val context: Context
     var sslSocketFactoryConfig: SslSocketFactoryConfig?

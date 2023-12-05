@@ -98,7 +98,7 @@ class ThreadsApi(
     }
 
     companion object {
-        const val API_VERSION = "18"
+        val API_VERSION: String by lazy { BaseConfig.getInstance().apiVersion.toString() }
         const val REST_TAG = "RestQuery"
         private const val SIGNATURE_STRING = "edna_79e621ac_a76a_4d36_b490_6758c43fa3d1:"
     }

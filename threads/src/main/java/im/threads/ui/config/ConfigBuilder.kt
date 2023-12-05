@@ -149,6 +149,7 @@ class ConfigBuilder(context: Context) : BaseConfigBuilder(context) {
             threadsGateUrl,
             threadsGateProviderUid,
             isNewChatCenterApi,
+            apiVersion,
             loggerConfig,
             pendingIntentCreator,
             unreadMessagesCountListener,
@@ -176,6 +177,7 @@ class ConfigBuilder(context: Context) : BaseConfigBuilder(context) {
             "threadsGateUrl: $threadsGateUrl | " +
             "threadsGateProviderUid: $threadsGateProviderUid | " +
             "isNewChatCenterApi: $isNewChatCenterApi\n" +
+            "apiVersion: ${apiVersion.name}\n" +
             "$loggerConfig\n" +
             "unreadMessagesCountListener is installed: ${unreadMessagesCountListener != null} | " +
             "networkInterceptor is installed: ${networkInterceptor != null} | " +
