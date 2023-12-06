@@ -87,7 +87,7 @@ class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionCl
                         if (fd != null) {
                             val page = files.indexOf(fd)
                             files[page] = fd
-                            if (page >= -1) {
+                            if (page != -1) {
                                 mViewPager.currentItem = page
                                 onPageSelected(page)
                             }
