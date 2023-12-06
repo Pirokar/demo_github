@@ -102,13 +102,12 @@ open class ThreadsLibBase protected constructor(context: Context) {
             initUser(userInfoBuilder, forceRegistration)
         } else {
             chatState.changeState(ChatStateEnum.LOGGING_IN)
-            isForceRegistration = forceRegistration
             clientUseCase.saveUserInfo(userInfoBuilder)
 
             if (forceRegistration && preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS).isNullOrBlank()) {
                 BaseConfig.getInstance().transport.apply {
                     sendRegisterDevice(true)
-                    sendInitMessages()
+                    sendInitMessages(true)
 
                     if (!ChatFragment.isShown && !BaseConfig.getInstance().keepSocketActive) {
                         closeWebSocket()
@@ -166,8 +165,6 @@ open class ThreadsLibBase protected constructor(context: Context) {
     }
 
     companion object {
-        internal var isForceRegistration = false
-
         @JvmStatic
         @SuppressLint("StaticFieldLeak")
         internal var libInstance: ThreadsLibBase? = null

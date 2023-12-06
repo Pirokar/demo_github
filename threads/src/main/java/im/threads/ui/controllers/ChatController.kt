@@ -299,7 +299,7 @@ class ChatController private constructor() {
         if (state < ChatStateEnum.DEVICE_REGISTERED) {
             transport.sendRegisterDevice(false)
         } else if (state < ChatStateEnum.INIT_USER_SENT) {
-            transport.sendInitMessages()
+            transport.sendInitMessages(false)
         } else if (state < ChatStateEnum.ATTACHMENT_SETTINGS_LOADED) {
             loadSettings()
         }
@@ -1647,7 +1647,7 @@ class ChatController private constructor() {
                         }
                         withContext(Dispatchers.Main) { fragment?.get()?.showErrorView(timeoutMessage) }
                     } else if (stateEvent.state == ChatStateEnum.DEVICE_REGISTERED) {
-                        BaseConfig.getInstance().transport.sendInitMessages()
+                        BaseConfig.getInstance().transport.sendInitMessages(false)
                     } else if (stateEvent.state == ChatStateEnum.ATTACHMENT_SETTINGS_LOADED) {
                         loadItemsFromDB(false)
                         if (fragment?.get()?.isResumed == true) loadHistoryAfterWithLastMessageCheck()
