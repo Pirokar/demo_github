@@ -86,6 +86,7 @@ class ImagesActivity : BaseActivity(), OnPageChangeListener, OnAllowPermissionCl
                         val fd = intent.getParcelableExtra<FileDescription>("FileDescription")
                         if (fd != null) {
                             val page = files.indexOf(fd)
+                            files[page] = fd
                             if (page != -1) {
                                 mViewPager.currentItem = page
                                 onPageSelected(page)
