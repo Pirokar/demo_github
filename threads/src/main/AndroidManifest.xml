@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="im.threads">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
@@ -37,9 +38,6 @@
             android:name=".ui.activities.ConsultActivity"
             android:theme="@style/ThreadsStyleConsultPage"/>
         <activity
-            android:name=".ui.activities.GalleryActivity"
-            android:theme="@style/ThreadsGalleryStyle"/>
-        <activity
             android:name=".ui.activities.ImagesActivity"
             android:theme="@style/ThreadsGalleryStyle"/>
         <activity
@@ -54,6 +52,9 @@
             android:label="@string/ecc_permissions_help"
             android:screenOrientation="unspecified"
             android:theme="@style/Transparent"/>
+        <activity
+            android:name=".ui.activities.GalleryActivity"
+            android:theme="@style/ThreadsGalleryStyle"/>
 
         <provider
             android:name=".business.utils.ThreadsFileProvider"
@@ -64,6 +65,16 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/ecc_provider_paths"/>
         </provider>
+
+        <service android:name="com.google.android.gms.metadata.ModuleDependencies"
+            android:enabled="false"
+            android:exported="false"
+            tools:ignore="MissingClass">
+            <intent-filter>
+                <action android:name="com.google.android.gms.metadata.MODULE_DEPENDENCIES" />
+            </intent-filter>
+            <meta-data android:name="photopicker_activity:0:required" android:value="" />
+        </service>
 
     </application>
 

@@ -1,4 +1,4 @@
-package im.threads.serviceLocatorTest
+package im.threads.business.serviceLocatorTest
 
 import im.threads.business.serviceLocator.core.inject
 import im.threads.business.serviceLocator.core.startEdnaLocator

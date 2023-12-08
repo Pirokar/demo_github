@@ -1,4 +1,4 @@
-package im.threads.model;
+package im.threads.business.models;
 
 import org.junit.Assert;
 import org.junit.Test;

@@ -37,6 +37,11 @@ public final class ChatStyle implements Serializable {
 
     public boolean isSearchLoaderVisible = true;
 
+    /**
+     * Определяет доступность системного пикера
+     */
+    public boolean useSystemFilePicker = true;
+
     @DrawableRes
     public Integer searchLoaderDrawable = null;
 
@@ -1751,6 +1756,20 @@ public final class ChatStyle implements Serializable {
         return this;
     }
 
+    /**
+     * Определяет максимальное количество приложенных к сообщению файлов
+     *
+     * @param context
+     * @return Максимальное количество приложенных к сообщению файлов
+     */
+    public int getMaxGalleryImagesCount(@NonNull Context context) {
+        int count = context.getResources().getInteger(maxGalleryImagesCount);
+        int maxCount = context.getResources().getInteger(maxGalleryImagesCountFixedBySystem);
+        if (count <= maxCount && count > 0)
+            return count;
+        return maxCount;
+    }
+
     public ChatStyle setOutgoingPadding(
             @DimenRes int left,
             @DimenRes int top,
@@ -1930,20 +1949,6 @@ public final class ChatStyle implements Serializable {
     }
 
     /**
-     * Определяет максимальное количество приложенных к сообщению файлов
-     *
-     * @param context
-     * @return Максимальное количество приложенных к сообщению файлов
-     */
-    public int getMaxGalleryImagesCount(@NonNull Context context) {
-        int count = context.getResources().getInteger(maxGalleryImagesCount);
-        int maxCount = context.getResources().getInteger(maxGalleryImagesCountFixedBySystem);
-        if (count <= maxCount && count > 0)
-            return count;
-        return maxCount;
-    }
-
-    /**
      * Устанавливает стиль(цвет текста, размер текста и цвет фона Toast уведомлений)
      *
      * @param toastTextSize
@@ -2118,6 +2123,14 @@ public final class ChatStyle implements Serializable {
     ) {
         this.isClearSearchBtnVisible = isClearSearchBtnVisible;
         this.isSearchLoaderVisible = isSearchLoaderVisible;
+        return this;
+    }
+
+    /**
+     * Отключает системный файл пикер и включает кастомный
+     */
+    public ChatStyle disableSystemFilePicker() {
+        this.useSystemFilePicker = false;
         return this;
     }
 

@@ -23,7 +23,9 @@ object MediaHelper {
     }
 
     @JvmStatic
-    fun getAllPhotos(context: Context): Cursor? {
+    fun getAllPhotos(context: Context?): Cursor? {
+        if (context == null) return null
+
         val projection = arrayOf(
             MediaStore.Images.Media.DISPLAY_NAME,
             MediaStore.Images.Media.BUCKET_DISPLAY_NAME,

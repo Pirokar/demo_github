@@ -76,8 +76,8 @@ class BubbleMessageTextView : CustomFontTextView {
         lastLinePadding = paddingBuilder.toString().replace("_", SPACE.toString())
     }
 
-    override fun setText(text: CharSequence, type: BufferType) {
-        var textLocal = text
+    override fun setText(text: CharSequence?, type: BufferType) {
+        var textLocal = if (text.isNullOrBlank()) { "" } else { text }
         textLocal = addPadding(textLocal)
         if (mHasImageInText) {
             mHasImageInText = false
@@ -86,11 +86,11 @@ class BubbleMessageTextView : CustomFontTextView {
     }
 
     fun setFormattedText(
-        text: CharSequence,
+        text: CharSequence?,
         isOperatorMessage: Boolean,
         links: List<Pair<String?, OnClickListener>> = arrayListOf()
     ) {
-        var textLocal = text
+        var textLocal = if (text.isNullOrBlank()) { "" } else { text }
         textLocal = addPadding(textLocal)
         val spannedText = getSpanned(textLocal, isOperatorMessage)
         if (mHasImageInText) {

@@ -74,7 +74,7 @@ public final class MySwipeRefreshLayout extends SwipeRefreshLayout {
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         if (nestedRecyclerView == null)
-            nestedRecyclerView = findViewById(R.id.recycler);
+            nestedRecyclerView = findViewById(R.id.chatItemsRecycler);
         boolean superb = super.onInterceptTouchEvent(ev);
         final int action = ev.getAction();
         switch (action) {

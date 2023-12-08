@@ -1,10 +1,8 @@
-package im.threads
+package im.threads.business.preferences
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import im.threads.business.UserInfoBuilder
-import im.threads.business.preferences.PrefKeysForMigration
-import im.threads.business.preferences.Preferences
 import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.preferences.PreferencesMigrationBase
 import org.junit.After

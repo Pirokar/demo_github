@@ -1,4 +1,4 @@
-package im.threads.serviceLocatorTest
+package im.threads.business.serviceLocatorTest
 
 class SLTestClass1()
 

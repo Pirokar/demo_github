@@ -180,12 +180,16 @@ dependencies {
     //Html parsing
     implementation 'org.jsoup:jsoup:1.15.2'
 
+    // Photo picker
+    implementation 'androidx.activity:activity-ktx:1.8.0'
+
     //Tests
     testImplementation "org.robolectric:robolectric:$rootProject.robolectricVersion"
     testImplementation "androidx.test.ext:junit:$rootProject.androidXJunitVersion"
     testImplementation "org.mockito:mockito-core:$rootProject.mockitoVersion"
     testImplementation group: 'org.mockito', name: 'mockito-inline', version: rootProject.mockitoInlineVersion
     testImplementation "com.github.tomakehurst:wiremock-jre8:$webserver_version"
+    testImplementation "org.mockito.kotlin:mockito-kotlin:5.1.0"
 }
 
 allOpen {

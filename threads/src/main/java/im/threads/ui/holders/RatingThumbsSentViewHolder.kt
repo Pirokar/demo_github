@@ -55,7 +55,7 @@ class RatingThumbsSentViewHolder(parent: ViewGroup) : BaseHolder(
         header.text = firstQuestion?.text
         timeStampTextView.text = sdf.format(Date(survey.timeStamp))
         val drawable: Drawable?
-        when (survey.sentState ?: MessageStatus.FAILED) {
+        when (survey.sentState) {
             MessageStatus.SENDING -> {
                 drawable = AppCompatResources.getDrawable(itemView.context, style.messageSendingIconResId)
                 drawable?.applyColorFilter(ContextCompat.getColor(itemView.context, style.messageSendingIconColorResId))
@@ -81,6 +81,8 @@ class RatingThumbsSentViewHolder(parent: ViewGroup) : BaseHolder(
                 drawable?.applyColorFilter(ContextCompat.getColor(itemView.context, style.messageFailedIconColorResId))
                 timeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null)
             }
+
+            else -> {}
         }
     }
 }

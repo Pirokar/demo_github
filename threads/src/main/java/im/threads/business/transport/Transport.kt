@@ -61,7 +61,7 @@ abstract class Transport {
     abstract fun sendResolveThread(approveResolve: Boolean)
     abstract fun sendUserTying(input: String)
     abstract fun sendRegisterDevice(forceRegistration: Boolean)
-    abstract fun sendInitMessages()
+    abstract fun sendInitMessages(isPreregister: Boolean)
     abstract fun closeWebSocket()
     internal abstract fun updatePushToken()
 
