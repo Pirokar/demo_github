@@ -2737,7 +2737,19 @@ class ChatFragment :
         }
 
         private fun isOffer(message: ChatItem): Boolean {
-            return message is ConsultPhrase && message.isPersonalOffer && !message.fileDescription?.offerLink.isNullOrBlank()
+            (message as? ConsultPhrase)?.let { operatorMessage ->
+                val link = operatorMessage.fileDescription?.offerLink
+                var isPersonalOffer = operatorMessage.isPersonalOffer
+
+                if (!link.isNullOrBlank() && !isPersonalOffer && operatorMessage.id != null) {
+                    val messageFromDb = chatController.getChatItemByCorrelationIdFromDb(operatorMessage.id!!)
+                    isPersonalOffer = (messageFromDb as? ConsultPhrase)?.isPersonalOffer ?: false
+                }
+
+                return isPersonalOffer && !link.isNullOrBlank()
+            }
+
+            return false
         }
 
         private fun isPreviewFileNotExist(message: ChatPhrase): Boolean {

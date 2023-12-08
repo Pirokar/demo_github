@@ -486,6 +486,8 @@ class ChatController private constructor() {
         fragment = null
     }
 
+    internal fun getChatItemByCorrelationIdFromDb(id: String) = database.getChatItemByCorrelationId(id)
+
     private fun checkEmptyStateVisibility() {
         if (!ThreadsLibBase.getInstance().isUserInitialized) {
             fragment?.get()?.showEmptyState()
