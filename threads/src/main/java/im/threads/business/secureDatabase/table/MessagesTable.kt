@@ -203,6 +203,17 @@ class MessagesTable(
         if (chatItem is ConsultPhrase) {
             val item = getChatItemByCorrelationId(sqlHelper, chatItem.id) as? ConsultPhrase
             chatItem.read = if (item?.read == true) true else chatItem.read
+            if (chatItem.modified != ModificationStateEnum.NONE) {
+                val existedItem = getChatItemByCorrelationId(sqlHelper, chatItem.id) as? ConsultPhrase
+                if (existedItem != null) {
+                    chatItem.date = existedItem.timeStamp
+                }
+                val quoteItem = quotesTable.getQuoteByUuid(sqlHelper, chatItem.id)
+                if (quoteItem != null) {
+                    quoteItem.modified = chatItem.modified
+                    quotesTable.updateQuoteByUuid(sqlHelper, chatItem.id, quoteItem)
+                }
+            }
             insertOrUpdateMessage(sqlHelper, getConsultPhraseCV(chatItem))
             chatItem.fileDescription?.let {
                 isFileDownloaded(it)?.let { uri ->
@@ -587,7 +598,7 @@ class MessagesTable(
                 cursorGetString(c, COLUMN_MESSAGE_CORRELATION_ID)
             ),
             ModificationStateEnum.fromString(
-                im.threads.business.database.table.Table.cGetString(
+                cursorGetString(
                     c,
                     COLUMN_MODIFICATION_STATE
                 )

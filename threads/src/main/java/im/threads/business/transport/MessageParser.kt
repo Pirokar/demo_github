@@ -15,7 +15,6 @@ import im.threads.business.models.MessageRead
 import im.threads.business.models.MessageStatus
 import im.threads.business.models.Quote
 import im.threads.business.models.RequestResolveThread
-import im.threads.business.models.ScheduleInfo
 import im.threads.business.models.SearchingConsult
 import im.threads.business.models.SimpleSystemMessage
 import im.threads.business.models.SpeechMessageUpdate
@@ -29,8 +28,6 @@ import im.threads.business.transport.models.RequestResolveThreadContent
 import im.threads.business.transport.models.SpeechMessageUpdatedContent
 import im.threads.business.transport.models.SurveyContent
 import im.threads.business.transport.models.SystemMessageContent
-import im.threads.business.transport.models.TextContent
-import java.util.Date
 
 class MessageParser {
     /**
@@ -49,6 +46,7 @@ class MessageParser {
                 ChatItemType.PARTING_AFTER_SURVEY,
                 ChatItemType.THREAD_CLOSED,
                 ChatItemType.THREAD_WILL_BE_REASSIGNED,
+                ChatItemType.CLIENT_PERSONAL_DATA_PROCESSING,
                 ChatItemType.THREAD_IN_PROGRESS -> getSystemMessage(
                     sentAt,
                     fullMessage
@@ -61,7 +59,6 @@ class MessageParser {
                     fullMessage
                 )
 
-                ChatItemType.SCHEDULE -> getScheduleInfo(fullMessage)
                 ChatItemType.SURVEY -> getSurvey(sentAt, fullMessage)
                 ChatItemType.REQUEST_CLOSE_THREAD -> getRequestResolveThread(
                     sentAt,
@@ -157,14 +154,6 @@ class MessageParser {
         )
     }
 
-    private fun getScheduleInfo(fullMessage: JsonObject): ScheduleInfo {
-        val content = BaseConfig.getInstance().gson.fromJson(fullMessage, TextContent::class.java)
-        val scheduleInfo = BaseConfig.getInstance().gson.fromJson(content.text, ScheduleInfo::class.java)
-        scheduleInfo.date = Date().time
-        scheduleInfo.timeStamp = Date().time
-        return scheduleInfo
-    }
-
     private fun getSurvey(sentAt: Long, fullMessage: JsonObject): Survey {
         val content = BaseConfig.getInstance().gson.fromJson(fullMessage, SurveyContent::class.java)
         val survey = BaseConfig.getInstance().gson.fromJson(content.content.toString(), Survey::class.java)
@@ -209,12 +198,16 @@ class MessageParser {
             settings,
             speechStatus,
             read,
-            modified
+            modified,
+            messageUuid
         ) = BaseConfig.getInstance().gson.fromJson(
             fullMessage,
             MessageContent::class.java
         )
-        if (text == null && attachments == null && quotes == null) {
+
+        if (text == null && attachments == null && quotes == null &&
+            ModificationStateEnum.fromString(modified) != ModificationStateEnum.DELETED
+        ) {
             return null
         }
         var isMessageRead: Boolean? = false
@@ -240,7 +233,7 @@ class MessageParser {
                 fileDescription = getFileDescription(attachments, name, sentAt)
             }
             ConsultPhrase(
-                uuid,
+                messageUuid ?: uuid,
                 fileDescription,
                 ModificationStateEnum.fromString(modified),
                 quote,
@@ -265,7 +258,7 @@ class MessageParser {
                 fileDescription = getFileDescription(attachments, null, sentAt)
             }
             val userPhrase = UserPhrase(
-                uuid,
+                messageUuid ?: uuid,
                 phrase,
                 quote,
                 sentAt,
@@ -315,7 +308,7 @@ class MessageParser {
                 fileDescription = getFileDescription(quote.attachments, authorName, timestamp)
             }
             if (quote?.uuid != null && (quote.text != null || fileDescription != null)) {
-                return Quote(quote.uuid, authorName, quote.text, fileDescription, timestamp)
+                return Quote(quote.uuid, authorName, quote.text, fileDescription, timestamp, quote.modified)
             }
         }
         return null

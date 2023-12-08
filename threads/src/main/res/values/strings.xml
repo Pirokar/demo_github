@@ -164,6 +164,7 @@
     <string name="ecc_no_user_id">User not set, please login first</string>
     <string name="ecc_request_failed">Request failed, please try again</string>
     <string name="ecc_no_results_found">No results found</string>
-    <string name="ecc_attachments_not_loaded">Failed to load chat settings</string>
+    <string name="ecc_settings_not_loaded">Failed to load chat settings</string>
+    <string name="ecc_attachment_settings_not_loaded">Failed to load attachments settings</string>
     <string name="ecc_library_not_init">ChatCenter SDK is not initialized</string>
 </resources>
