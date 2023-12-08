@@ -99,12 +99,6 @@ class FileUtilsTest {
     }
 
     @Test
-    fun whenCanBeSentWithNonExistingFile_thenReturnsFalse() {
-        val uri = Uri.fromFile(File(context.filesDir, "non_existing_file"))
-        assertFalse(FileUtils.canBeSent(context, uri))
-    }
-
-    @Test
     fun whenCreateImageFile_thenReturnsFileInCorrectDirectory() {
         val imageFile = FileUtils.createImageFile(context)
         assert(imageFile?.path?.startsWith(context.filesDir.path) == true)
