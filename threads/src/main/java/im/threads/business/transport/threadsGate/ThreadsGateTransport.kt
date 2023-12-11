@@ -41,7 +41,6 @@ import im.threads.business.transport.OutgoingMessageCreator
 import im.threads.business.transport.Transport
 import im.threads.business.transport.TransportException
 import im.threads.business.transport.models.Attachment
-import im.threads.business.transport.models.AttachmentSettings
 import im.threads.business.transport.threadsGate.requests.RegisterDeviceRequest
 import im.threads.business.transport.threadsGate.requests.SendMessageRequest
 import im.threads.business.transport.threadsGate.responses.BaseResponse
@@ -54,7 +53,6 @@ import im.threads.business.utils.AppInfo
 import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.DeviceInfo
 import im.threads.business.utils.SSLCertificateInterceptor
-import im.threads.ui.utils.FileHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -321,6 +319,9 @@ class ThreadsGateTransport(
         try {
             if (content["type"].toString().contains(ChatItemType.INIT_CHAT.name)) {
                 chatState.initChatCorrelationId = correlationId
+            }
+            if (content["type"].toString().contains(ChatItemType.CLIENT_INFO.name)) {
+                chatState.clientInfoCorrelationId = correlationId
             }
             if (content["type"].toString().contains(ChatItemType.CLIENT_OFFLINE.name)) {
                 coroutineScope.launch {
@@ -611,6 +612,9 @@ class ThreadsGateTransport(
                             chatState.changeState(ChatStateEnum.INIT_USER_SENT)
                         }
                     }
+                    if (correlationId == chatState.clientInfoCorrelationId) {
+                        chatState.changeState(ChatStateEnum.THREAD_OPENED)
+                    }
                     chatUpdateProcessor.postOutgoingMessageStatusChanged(
                         listOf(
                             Status(
@@ -645,14 +649,6 @@ class ThreadsGateTransport(
                             val type = ChatItemType.fromString(messageParser.getType(message))
                             if (ChatItemType.TYPING == type) {
                                 chatUpdateProcessor.postTyping()
-                            } else if (ChatItemType.ATTACHMENT_SETTINGS == type) {
-                                val attachmentSettings = gson.fromJson(
-                                    message.content,
-                                    AttachmentSettings::class.java
-                                )
-                                FileHelper.subscribeToAttachments()
-                                chatUpdateProcessor.postAttachmentSettings(attachmentSettings)
-                                chatState.changeState(ChatStateEnum.ATTACHMENT_SETTINGS_LOADED)
                             } else if (ChatItemType.ATTACHMENT_UPDATED == type) {
                                 val attachments: ArrayList<Attachment> = ArrayList()
                                 (message.content.get(ATTACHMENTS) as JsonArray).forEach {
@@ -661,13 +657,12 @@ class ThreadsGateTransport(
                                 if (attachments.isNotEmpty()) {
                                     chatUpdateProcessor.updateAttachments(attachments)
                                 }
-                                chatState.changeState(ChatStateEnum.ATTACHMENT_SETTINGS_LOADED)
                             } else if (ChatItemType.SPEECH_MESSAGE_UPDATED == type) {
                                 val chatItem = messageParser.format(message)
                                 if (chatItem is SpeechMessageUpdate) {
                                     chatUpdateProcessor.postSpeechMessageUpdate(chatItem)
                                 }
-                            } else {
+                            } else if (ChatItemType.SCHEDULE != type) {
                                 val chatItem = messageParser.format(message)
                                 if (chatItem != null) {
                                     chatUpdateProcessor.postNewMessage(chatItem)

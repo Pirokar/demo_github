@@ -1,9 +1,7 @@
 package im.threads.business.models
 
 import androidx.core.util.ObjectsCompat
-import java.util.Calendar
-import java.util.Date
-import java.util.TimeZone
+import java.util.*
 
 /**
  * Информация о расписании
@@ -14,11 +12,12 @@ class ScheduleInfo : ChatItem {
     var notification: String? = null
     val sendDuringInactive = false
     override var timeStamp: Long = 0
-    var startTime: Date? = null
-    var endTime: Date? = null
     var serverTime: Date? = null
     var active = false
-    internal var serverTimeDiff: Long = 0
+    var serverTimeDiff: Long = 0
+    internal val intervals: List<WeekDaySchedule>? = null
+    val startTime: Date? = null
+    val endTime: Date? = null
 
     fun calculateServerTimeDiff() {
         serverTime?.let {
@@ -35,35 +34,36 @@ class ScheduleInfo : ChatItem {
                 return active
             }
             val currentServerTime = currentUtcTime - serverTimeDiff
+
             if (active) {
                 // Next unavailability not started yet
                 // всегда true т.к. startTime - это дата и время старта ближайшего интервала неактивности чата
-                if (currentServerTime < startTime!!.time) {
+                if (currentServerTime < startTime.time) {
                     return true
                 }
 
                 // Next unavailability started
-                if (currentServerTime > startTime!!.time && currentServerTime < endTime!!.time) {
+                if (currentServerTime > startTime.time && currentServerTime < endTime.time) {
                     return false
                 }
 
                 // Next unavailability ended
-                if (currentServerTime > endTime!!.time) {
+                if (currentServerTime > endTime.time) {
                     return true
                 }
             } else {
                 // всегда true т.к. endTime - это дата и время окончания ближайшего(или текущего) интервала неактивности чата
-                if (currentServerTime < endTime!!.time) {
+                if (currentServerTime < endTime.time) {
                     return false
                 }
 
                 // Unavailability ended, next unavailability not started yet
-                if (currentServerTime > endTime!!.time && currentServerTime < startTime!!.time) {
+                if (currentServerTime > endTime.time && currentServerTime < startTime.time) {
                     return true
                 }
 
                 // Next unavailability started
-                if (currentServerTime > startTime!!.time) {
+                if (currentServerTime > startTime.time) {
                     return true
                 }
             }
@@ -105,4 +105,15 @@ class ScheduleInfo : ChatItem {
 
     private val currentUtcTime: Long
         get() = Calendar.getInstance(TimeZone.getTimeZone("UTC")).timeInMillis
+
+    class WeekDaySchedule(
+        val id: Int,
+        private val weekDay: Int,
+        private val startTime: Long,
+        private val endTime: Long
+    ) {
+        override fun toString(): String {
+            return "WeekDaySchedule{ id=$id, weekDay=$weekDay, startTime=$startTime, endTime=$endTime }"
+        }
+    }
 }

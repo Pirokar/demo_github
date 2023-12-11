@@ -51,8 +51,10 @@ import im.threads.business.models.UpcomingUserMessage
 import im.threads.business.models.UserPhrase
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.models.enums.CurrentUiTheme
+import im.threads.business.models.enums.ModificationStateEnum
 import im.threads.business.preferences.Preferences
 import im.threads.business.preferences.PreferencesCoreKeys
+import im.threads.business.rest.models.ConfigResponse
 import im.threads.business.rest.models.SettingsResponse
 import im.threads.business.rest.queries.BackendApi
 import im.threads.business.rest.queries.DatastoreApi
@@ -66,6 +68,8 @@ import im.threads.business.transport.HistoryLoader
 import im.threads.business.transport.HistoryParser
 import im.threads.business.transport.TransportException
 import im.threads.business.transport.models.Attachment
+import im.threads.business.transport.models.ContentAttachmentSettings
+import im.threads.business.transport.models.ContentScheduleInfoContent
 import im.threads.business.transport.threadsGate.responses.Status
 import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.ConsultWriter
@@ -84,6 +88,7 @@ import im.threads.ui.activities.ImagesActivity.Companion.getStartIntent
 import im.threads.ui.config.Config
 import im.threads.ui.fragments.ChatFragment
 import im.threads.ui.preferences.PreferencesUiKeys
+import im.threads.ui.utils.FileHelper
 import im.threads.ui.utils.runOnUiThread
 import im.threads.ui.views.formatAsDuration
 import im.threads.ui.workers.NotificationWorker.Companion.removeNotification
@@ -300,8 +305,8 @@ class ChatController private constructor() {
             transport.sendRegisterDevice(false)
         } else if (state < ChatStateEnum.INIT_USER_SENT) {
             transport.sendInitMessages(false)
-        } else if (state < ChatStateEnum.ATTACHMENT_SETTINGS_LOADED) {
-            loadSettings()
+        } else if (state < ChatStateEnum.SETTINGS_LOADED) {
+            loadConfig()
         }
     }
 
@@ -696,27 +701,29 @@ class ChatController private constructor() {
         }
     }
 
-    private fun loadSettings() {
+    private fun loadConfig() {
         subscribe(
             Single.fromCallable {
-                BackendApi.get().settings()?.execute()
+                BackendApi.get().config()?.execute()
             }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                    { response: Response<SettingsResponse?>? ->
+                    { response: Response<ConfigResponse?>? ->
                         val responseBody = response?.body()
                         if (responseBody != null) {
-                            val clientNotificationType = responseBody.clientNotificationDisplayType
-                            if (!clientNotificationType.isNullOrEmpty()) {
-                                val type = ClientNotificationDisplayType.fromString(
-                                    clientNotificationType
+                            val settingsLoaded = updateSettings(responseBody.settings)
+                            val attachmentSettingsLoaded = updateAttachmentSettings(responseBody.attachmentSettings)
+                            updateSchedule(responseBody.schedule)
+                            if (settingsLoaded && attachmentSettingsLoaded) {
+                                chatState.changeState(ChatStateEnum.SETTINGS_LOADED)
+                            } else {
+                                val message = getErrorMessage(
+                                    settingsLoaded,
+                                    attachmentSettingsLoaded
                                 )
-                                preferences.save(
-                                    PreferencesUiKeys.CLIENT_NOTIFICATION_DISPLAY_TYPE,
-                                    type.name
-                                )
-                                chatUpdateProcessor.postClientNotificationDisplayType(type)
+                                info("error on getting settings: $message")
+                                chatUpdateProcessor.postError(TransportException(message))
                             }
                         }
                     }
@@ -726,6 +733,71 @@ class ChatController private constructor() {
                     chatUpdateProcessor.postError(TransportException(message))
                 }
         )
+    }
+
+    private fun getErrorMessage(
+        settingsLoaded: Boolean,
+        attachmentSettingsLoaded: Boolean
+    ): String {
+        return if (!settingsLoaded) {
+            appContext.getString(chatStyle.loadedSettingsErrorText)
+        } else if (!attachmentSettingsLoaded) {
+            appContext.getString(chatStyle.loadedAttachmentSettingsErrorText)
+        } else {
+            appContext.getString(chatStyle.loadedSettingsErrorText)
+        }
+    }
+
+    private fun updateSettings(settings: SettingsResponse?): Boolean {
+        if (settings != null) {
+            val clientNotificationType = settings.clientNotificationDisplayType
+            if (!clientNotificationType.isNullOrEmpty()) {
+                val type = ClientNotificationDisplayType.fromString(
+                    clientNotificationType
+                )
+                preferences.save(
+                    PreferencesUiKeys.CLIENT_NOTIFICATION_DISPLAY_TYPE,
+                    type.name
+                )
+                chatUpdateProcessor.postClientNotificationDisplayType(type)
+                return true
+            }
+        }
+        return false
+    }
+
+    private fun updateAttachmentSettings(contentAttachmentSettings: ContentAttachmentSettings?): Boolean {
+        if (contentAttachmentSettings != null) {
+            val attachmentSettings = contentAttachmentSettings.content
+            if (attachmentSettings != null) {
+                FileHelper.subscribeToAttachments()
+                chatUpdateProcessor.postAttachmentSettings(attachmentSettings)
+                return true
+            }
+        }
+        return false
+    }
+
+    private fun updateSchedule(contentScheduleInfo: ContentScheduleInfoContent?) {
+        if (contentScheduleInfo != null) {
+            val scheduleInfo = contentScheduleInfo.content?.content
+            if (scheduleInfo != null) {
+                currentScheduleInfo = scheduleInfo
+                currentScheduleInfo?.calculateServerTimeDiff()
+                refreshUserInputState()
+                if (!isChatWorking()) {
+                    consultWriter.isSearchingConsult = false
+                    fragment?.get()?.removeSearching()
+                    fragment?.get()?.setTitleStateDefault()
+                    hideQuickReplies()
+                } else {
+                    if (fragment?.get()?.quickReplyItem != null) {
+                        fragment?.get()?.showQuickReplies(fragment?.get()?.quickReplyItem)
+                    }
+                }
+                fragment?.get()?.addChatItem(currentScheduleInfo)
+            }
+        }
     }
 
     internal fun downloadMessagesTillEnd(): Single<List<ChatItem>> {
@@ -1042,6 +1114,9 @@ class ChatController private constructor() {
                         }
 
                         is ConsultPhrase -> {
+                            var message = chatItem as ConsultPhrase
+                            if (message.modified == ModificationStateEnum.DELETED) {
+                            }
                             refreshUserInputState(chatItem.isBlockInput)
                         }
                     }
@@ -1624,8 +1699,8 @@ class ChatController private constructor() {
     private fun subscribeOnChatState() {
         coroutineScope.launch(Dispatchers.IO) {
             chatState.getStateFlow().collect { stateEvent ->
-                if (demoModeProvider.isDemoModeEnabled() && stateEvent.state < ChatStateEnum.ATTACHMENT_SETTINGS_LOADED) {
-                    chatState.changeState(ChatStateEnum.ATTACHMENT_SETTINGS_LOADED)
+                if (demoModeProvider.isDemoModeEnabled() && stateEvent.state < ChatStateEnum.SETTINGS_LOADED) {
+                    chatState.changeState(ChatStateEnum.SETTINGS_LOADED)
                 } else {
                     info("ChatState name: ${stateEvent.state.name}, isTimeout: ${stateEvent.isTimeout}")
                     try {
@@ -1634,27 +1709,36 @@ class ChatController private constructor() {
                         BackendApi.get()
                         DatastoreApi.get()
                     } catch (e: Exception) {
-                        val notInitializedError = TransportException(fragment?.get()?.getString(R.string.ecc_library_not_init) ?: "ChatCenter SDK не инициализирован")
+                        val notInitializedError = TransportException(
+                            fragment?.get()?.getString(chatStyle.loadedSettingsErrorText)
+                                ?: "ChatCenter SDK не инициализирован"
+                        )
                         chatUpdateProcessor.postError(notInitializedError)
                         return@collect
                     }
-                    if (!stateEvent.isTimeout && stateEvent.state < ChatStateEnum.HISTORY_LOADED && fragment?.get()?.isErrorViewNotVisible() == true) {
+                    if (!stateEvent.isTimeout && stateEvent.state < ChatStateEnum.HISTORY_LOADED && fragment?.get()
+                        ?.isErrorViewNotVisible() == true
+                    ) {
                         withContext(Dispatchers.Main) { fragment?.get()?.showProgressBar() }
                     }
-                    if (stateEvent.isTimeout && chatState.getCurrentState() < ChatStateEnum.ATTACHMENT_SETTINGS_LOADED) {
-                        val timeoutMessage = if (stateEvent.state >= ChatStateEnum.INIT_USER_SENT && fragment != null) {
-                            fragment?.get()?.getString(R.string.ecc_attachments_not_loaded)
-                        } else {
-                            "${fragment?.get()?.getString(R.string.ecc_timeout_message) ?: "Превышен интервал ожидания для запроса"} (${chatState.getCurrentState()})"
-                        }
+                    if (stateEvent.isTimeout && chatState.getCurrentState() < ChatStateEnum.THREAD_OPENED) {
+                        val timeoutMessage =
+                            if (stateEvent.state >= ChatStateEnum.INIT_USER_SENT && fragment != null) {
+                                fragment?.get()?.getString(chatStyle.loadedSettingsErrorText)
+                            } else {
+                                "${
+                                fragment?.get()
+                                    ?.getString(R.string.ecc_timeout_message) ?: "Превышен интервал ожидания для запроса"
+                                } (${chatState.getCurrentState()})"
+                            }
                         withContext(Dispatchers.Main) { fragment?.get()?.showErrorView(timeoutMessage) }
-                    } else if (stateEvent.state == ChatStateEnum.DEVICE_REGISTERED) {
+                    } else if (stateEvent.state == ChatStateEnum.SETTINGS_LOADED) {
                         BaseConfig.getInstance().transport.sendInitMessages(false)
-                    } else if (stateEvent.state == ChatStateEnum.ATTACHMENT_SETTINGS_LOADED) {
+                    } else if (stateEvent.state == ChatStateEnum.DEVICE_REGISTERED) {
+                        loadConfig()
+                    } else if (isChatReady()) {
                         loadItemsFromDB(false)
                         if (fragment?.get()?.isResumed == true) loadHistoryAfterWithLastMessageCheck()
-                        loadSettings()
-                    } else if (isChatReady()) {
                         messenger.resendMessages()
                     }
                 }

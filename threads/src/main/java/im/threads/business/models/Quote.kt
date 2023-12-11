@@ -1,13 +1,15 @@
 package im.threads.business.models
 
 import androidx.core.util.ObjectsCompat
+import im.threads.business.models.enums.ModificationStateEnum
 
 class Quote(
     var uuid: String?,
     var phraseOwnerTitle: String?,
     val text: String?,
     var fileDescription: FileDescription?,
-    val timeStamp: Long
+    val timeStamp: Long,
+    var modified: ModificationStateEnum = ModificationStateEnum.NONE
 ) {
     var isFromConsult = false
     var quotedPhraseConsultId: String? = null
@@ -38,6 +40,7 @@ class Quote(
             ", fileDescription=" + fileDescription +
             ", timeStamp=" + timeStamp +
             ", isFromConsult=" + isFromConsult +
+            ", modified=" + modified +
             ", quotedPhraseConsultId='" + quotedPhraseConsultId + '\'' +
             '}'
     }
@@ -50,6 +53,7 @@ class Quote(
             ObjectsCompat.equals(uuid, quote.uuid) &&
                 ObjectsCompat.equals(phraseOwnerTitle, quote.phraseOwnerTitle) &&
                 ObjectsCompat.equals(text, quote.text) &&
+                ObjectsCompat.equals(modified, quote.modified) &&
                 ObjectsCompat.equals(timeStamp, quote.timeStamp)
             )
         if (fileDescription != null) {

@@ -34,12 +34,12 @@ import java.text.DecimalFormat
 import java.util.UUID
 
 object FileUtils {
-    private const val JPEG = 0
+    internal const val JPEG = 0
     private const val PNG = 1
     private const val PDF = 2
     private const val AUDIO = 3
     private const val OTHER_DOC_FORMATS = 4
-    private const val UNKNOWN = -1
+    internal const val UNKNOWN = -1
     private const val UNKNOWN_MIME_TYPE = "*/*"
 
     @JvmStatic
@@ -125,17 +125,6 @@ object FileUtils {
         return (
             fileDescription != null &&
                 getExtensionFromFileDescription(fileDescription) == AUDIO
-            )
-    }
-
-    @JvmStatic
-    fun isDoc(fileDescription: FileDescription?): Boolean {
-        return (
-            fileDescription != null &&
-                (
-                    getExtensionFromFileDescription(fileDescription) == PDF ||
-                        getExtensionFromFileDescription(fileDescription) == OTHER_DOC_FORMATS
-                    )
             )
     }
 
@@ -329,7 +318,7 @@ object FileUtils {
         }
     }
 
-    private fun getExtensionFromPath(path: String?): Int {
+    internal fun getExtensionFromPath(path: String?): Int {
         if (path == null || !path.contains(".")) {
             return UNKNOWN
         }
@@ -533,8 +522,8 @@ fun MediaMetadataRetriever.getDuration(uri: Uri): Long {
     return extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLong() ?: 0
 }
 
-fun Long.toFileSize(): String {
-    val context = BaseConfig.getInstance().context
+fun Long.toFileSize(appContext: Context? = null): String {
+    val context = appContext ?: BaseConfig.getInstance().context
     val kb = 1024L
     val mb = kb * kb
     val gb = mb * kb

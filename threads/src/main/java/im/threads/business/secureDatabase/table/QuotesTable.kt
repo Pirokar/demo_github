@@ -4,6 +4,7 @@ import android.content.ContentValues
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import im.threads.business.models.Quote
+import im.threads.business.models.enums.ModificationStateEnum
 import java.util.Locale
 
 class QuotesTable(private val fileDescriptionsTable: FileDescriptionsTable) : Table() {
@@ -15,7 +16,8 @@ class QuotesTable(private val fileDescriptionsTable: FileDescriptionsTable) : Ta
                 COLUMN_QUOTE_FROM + " text, " +
                 COLUMN_QUOTE_BODY + " text, " +
                 COLUMN_QUOTE_TIMESTAMP + " integer, " +
-                COLUMN_QUOTED_BY_MESSAGE_UUID_EXT + " integer)" // message id
+                COLUMN_QUOTED_BY_MESSAGE_UUID_EXT + " integer, " + // message id
+                COLUMN_MODIFICATION_STATE + " text)"
         )
     }
 
@@ -27,7 +29,7 @@ class QuotesTable(private val fileDescriptionsTable: FileDescriptionsTable) : Ta
         sqlHelper.writableDatabase.execSQL("delete from $TABLE_QUOTE")
     }
 
-    fun putQuote(sqlHelper: SQLiteOpenHelper, quotedByMessageUuid: String, quote: Quote?) {
+    fun putQuote(sqlHelper: SQLiteOpenHelper, quotedByMessageUuid: String?, quote: Quote?) {
         quote?.let {
             val cv = ContentValues()
             cv.clear()
@@ -36,6 +38,7 @@ class QuotesTable(private val fileDescriptionsTable: FileDescriptionsTable) : Ta
             cv.put(COLUMN_QUOTE_FROM, quote.phraseOwnerTitle)
             cv.put(COLUMN_QUOTE_BODY, quote.text)
             cv.put(COLUMN_QUOTE_TIMESTAMP, quote.timeStamp)
+            cv.put(COLUMN_MODIFICATION_STATE, quote.modified.state)
             sqlHelper.readableDatabase.rawQuery(
                 (
                     "select " + COLUMN_QUOTED_BY_MESSAGE_UUID_EXT + " from " + TABLE_QUOTE +
@@ -55,6 +58,44 @@ class QuotesTable(private val fileDescriptionsTable: FileDescriptionsTable) : Ta
                 } else {
                     sqlHelper.writableDatabase
                         .insert(TABLE_QUOTE, null, cv)
+                }
+                it.fileDescription?.let {
+                    quote.uuid?.let { uuid ->
+                        fileDescriptionsTable.putFileDescription(sqlHelper, it, uuid, true)
+                    }
+                }
+            }
+        }
+    }
+
+    fun updateQuoteByUuid(sqlHelper: SQLiteOpenHelper, uuid: String?, quote: Quote?) {
+        quote?.let {
+            sqlHelper.readableDatabase.rawQuery(
+                (
+                    "select " + COLUMN_QUOTE_UUID + ", " + COLUMN_QUOTED_BY_MESSAGE_UUID_EXT + " from " + TABLE_QUOTE +
+                        " where " + COLUMN_QUOTE_UUID + " = ?"
+                    ),
+                arrayOf(uuid)
+            ).use { c ->
+                val existsInDb: Boolean = c.count > 0
+                if (existsInDb) {
+                    c.moveToFirst()
+                    val quotedByMessageUuid = cursorGetString(c, COLUMN_QUOTED_BY_MESSAGE_UUID_EXT)
+                    val cv = ContentValues()
+                    cv.clear()
+                    cv.put(COLUMN_QUOTE_UUID, quote.uuid)
+                    cv.put(COLUMN_QUOTE_FROM, quote.phraseOwnerTitle)
+                    cv.put(COLUMN_QUOTE_BODY, quote.text)
+                    cv.put(COLUMN_QUOTE_TIMESTAMP, quote.timeStamp)
+                    cv.put(COLUMN_MODIFICATION_STATE, quote.modified.state)
+                    cv.put(COLUMN_QUOTED_BY_MESSAGE_UUID_EXT, quotedByMessageUuid)
+                    sqlHelper.writableDatabase
+                        .update(
+                            TABLE_QUOTE,
+                            cv,
+                            "$COLUMN_QUOTED_BY_MESSAGE_UUID_EXT = ? ",
+                            arrayOf(quotedByMessageUuid)
+                        )
                 }
                 it.fileDescription?.let {
                     quote.uuid?.let { uuid ->
@@ -86,7 +127,47 @@ class QuotesTable(private val fileDescriptionsTable: FileDescriptionsTable) : Ta
                             sqlHelper,
                             cursorGetString(c, COLUMN_QUOTE_UUID)
                         ),
-                        cursorGetLong(c, COLUMN_QUOTE_TIMESTAMP)
+                        cursorGetLong(c, COLUMN_QUOTE_TIMESTAMP),
+                        ModificationStateEnum.fromString(
+                            cursorGetString(
+                                c,
+                                COLUMN_MODIFICATION_STATE
+                            )
+                        )
+                    )
+                }
+            }
+        return null
+    }
+
+    fun getQuoteByUuid(sqlHelper: SQLiteOpenHelper, uuid: String?): Quote? {
+        if (uuid.isNullOrEmpty()) {
+            return null
+        }
+        val query = String.format(
+            Locale.US,
+            "select * from %s where %s = ?",
+            TABLE_QUOTE,
+            COLUMN_QUOTE_UUID
+        )
+        sqlHelper.readableDatabase.rawQuery(query, arrayOf(uuid))
+            .use { c ->
+                if (c.moveToFirst()) {
+                    return Quote(
+                        cursorGetString(c, COLUMN_QUOTE_UUID),
+                        cursorGetString(c, COLUMN_QUOTE_FROM),
+                        cursorGetString(c, COLUMN_QUOTE_BODY),
+                        fileDescriptionsTable.getFileDescription(
+                            sqlHelper,
+                            cursorGetString(c, COLUMN_QUOTE_UUID)
+                        ),
+                        cursorGetLong(c, COLUMN_QUOTE_TIMESTAMP),
+                        ModificationStateEnum.fromString(
+                            cursorGetString(
+                                c,
+                                COLUMN_MODIFICATION_STATE
+                            )
+                        )
                     )
                 }
             }
@@ -116,7 +197,13 @@ class QuotesTable(private val fileDescriptionsTable: FileDescriptionsTable) : Ta
                             sqlHelper,
                             cursorGetString(c, COLUMN_QUOTE_UUID)
                         ),
-                        cursorGetLong(c, COLUMN_QUOTE_TIMESTAMP)
+                        cursorGetLong(c, COLUMN_QUOTE_TIMESTAMP),
+                        ModificationStateEnum.fromString(
+                            cursorGetString(
+                                c,
+                                COLUMN_MODIFICATION_STATE
+                            )
+                        )
                     )
                 )
                 c.moveToNext()
@@ -132,5 +219,6 @@ class QuotesTable(private val fileDescriptionsTable: FileDescriptionsTable) : Ta
         private const val COLUMN_QUOTE_BODY = "COLUMN_QUOTE_BODY"
         private const val COLUMN_QUOTE_TIMESTAMP = "COLUMN_QUOTE_TIMESTAMP"
         private const val COLUMN_QUOTED_BY_MESSAGE_UUID_EXT = "COLUMN_QUOTED_BY_MESSAGE_UUID_EXT"
+        private const val COLUMN_MODIFICATION_STATE = "COLUMN_MODIFICATION_STATE"
     }
 }

@@ -740,43 +740,55 @@ abstract class BaseHolder internal constructor(
         quoteProgressButton: CircularProgressButton
     ) {
         quoteLayout.isVisible = true
-        quoteTextHeader.text = if (quote.phraseOwnerTitle == null) {
-            itemView.context
-                .getString(R.string.ecc_I)
+        if (quote.modified == ModificationStateEnum.DELETED) {
+            quoteTextDescription.setTextColor(ContextCompat.getColor(itemView.context, style.systemMessageTextColorResId))
+            quoteTextDescription.visible()
+            quoteTextDescription.text = itemView.context.getString(R.string.ecc_message_deleted)
         } else {
-            quote.phraseOwnerTitle
-        }
-        quoteProgressButton.isVisible = false
-        quoteTextDescription.text = quote.text
-        quoteTextTimeStamp.text = itemView.context
-            .getString(R.string.ecc_sent_at, quoteSdf.format(Date(quote.timeStamp)))
-        viewUtils.setClickListener(quoteLayout, onQuoteClickListener)
-        val quoteFileDescription = quote.fileDescription
-        if (quoteFileDescription != null) {
-            if (FileUtils.isVoiceMessage(quoteFileDescription)) {
-                quoteTextDescription.setText(R.string.ecc_voice_message)
+            quoteTextHeader.text = if (quote.phraseOwnerTitle == null) {
+                itemView.context
+                    .getString(R.string.ecc_I)
             } else {
-                if (FileUtils.isImage(quote.fileDescription)) {
-                    quoteFileImage.visibility = View.VISIBLE
-                    val fileUri = quoteFileDescription.fileUri?.toString() ?: quoteFileDescription.downloadPath
-                    if (!fileUri.isNullOrEmpty()) {
-                        quoteFileImage.loadImage(
-                            quoteFileDescription.downloadPath,
-                            listOf(ImageView.ScaleType.FIT_CENTER, ImageView.ScaleType.CENTER_CROP),
-                            style.imagePlaceholder,
-                            autoRotateWithExif = true
-                        )
-                    } else {
-                        quoteFileImage.setImageResource(style.imagePlaceholder)
-                    }
-                    quoteFileImage.setOnClickListener(onQuoteClickListener)
+                quote.phraseOwnerTitle
+            }
+            quoteTextDescription.setTextColor(ContextCompat.getColor(itemView.context, style.incomingMessageTextColor))
+            quoteProgressButton.isVisible = false
+            quoteTextDescription.text = quote.text
+            quoteTextTimeStamp.text = itemView.context
+                .getString(R.string.ecc_sent_at, quoteSdf.format(Date(quote.timeStamp)))
+            viewUtils.setClickListener(quoteLayout, onQuoteClickListener)
+            val quoteFileDescription = quote.fileDescription
+            if (quoteFileDescription != null) {
+                if (FileUtils.isVoiceMessage(quoteFileDescription)) {
+                    quoteTextDescription.setText(R.string.ecc_voice_message)
                 } else {
-                    quoteProgressButton.isVisible = true
-                    fileNameFromDescription(quoteFileDescription) { fileName ->
-                        quoteTextDescription.text = getFileDescriptionText(fileName, quoteFileDescription)
+                    if (FileUtils.isImage(quote.fileDescription)) {
+                        quoteFileImage.visibility = View.VISIBLE
+                        val fileUri = quoteFileDescription.fileUri?.toString()
+                            ?: quoteFileDescription.downloadPath
+                        if (!fileUri.isNullOrEmpty()) {
+                            quoteFileImage.loadImage(
+                                quoteFileDescription.downloadPath,
+                                listOf(
+                                    ImageView.ScaleType.FIT_CENTER,
+                                    ImageView.ScaleType.CENTER_CROP
+                                ),
+                                style.imagePlaceholder,
+                                autoRotateWithExif = true
+                            )
+                        } else {
+                            quoteFileImage.setImageResource(style.imagePlaceholder)
+                        }
+                        quoteFileImage.setOnClickListener(onQuoteClickListener)
+                    } else {
+                        quoteProgressButton.isVisible = true
+                        fileNameFromDescription(quoteFileDescription) { fileName ->
+                            quoteTextDescription.text =
+                                getFileDescriptionText(fileName, quoteFileDescription)
+                        }
+                        quoteProgressButton.setOnClickListener(onQuoteClickListener)
+                        quoteProgressButton.setProgress(if (quoteFileDescription.fileUri != null) 100 else quoteFileDescription.downloadProgress)
                     }
-                    quoteProgressButton.setOnClickListener(onQuoteClickListener)
-                    quoteProgressButton.setProgress(if (quoteFileDescription.fileUri != null) 100 else quoteFileDescription.downloadProgress)
                 }
             }
         }

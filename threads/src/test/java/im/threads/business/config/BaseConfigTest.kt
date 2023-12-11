@@ -1,6 +1,7 @@
 package im.threads.business.config
 
 import androidx.test.core.app.ApplicationProvider
+import im.threads.business.models.enums.ApiVersionEnum
 import im.threads.business.rest.config.RequestConfig
 import im.threads.business.transport.threadsGate.ThreadsGateTransport
 import org.junit.Before
@@ -54,6 +55,7 @@ class BaseConfigTest : ConfigTestBaseClass() {
         notificationImportance = 0,
         trustedSSLCertificates = null,
         allowUntrustedSSLCertificate = false,
-        keepSocketActive = false
+        keepSocketActive = false,
+        apiVersion = ApiVersionEnum.V18
     )
 }

@@ -1,5 +1,6 @@
 package im.threads.business.transport.models
 
+import im.threads.business.models.enums.ModificationStateEnum
 import java.util.Date
 
 class Quote {
@@ -9,4 +10,5 @@ class Quote {
     val text: String? = null
     val attachments: List<Attachment>? = null
     val operator: Operator? = null
+    val modified = ModificationStateEnum.NONE
 }

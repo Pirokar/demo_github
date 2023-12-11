@@ -15,7 +15,7 @@ class ConsultPhrase constructor(
     val consultName: String?,
     override val phraseText: String?,
     val formattedPhrase: String?,
-    val date: Long,
+    var date: Long,
     consultId: String?,
     avatarPath: String?,
     var read: Boolean,
