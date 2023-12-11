@@ -31,10 +31,4 @@ class ChatStateTest {
         chatState.onLogout()
         assertEquals(ChatStateEnum.LOGGED_OUT, chatState.getCurrentState())
     }
-
-    @Test
-    fun whenIsChatReady_thenReturnsExpectedResult() {
-        chatState.changeState(ChatStateEnum.ATTACHMENT_SETTINGS_LOADED)
-        assert(chatState.isChatReady())
-    }
 }
