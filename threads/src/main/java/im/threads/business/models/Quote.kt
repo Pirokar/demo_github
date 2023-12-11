@@ -35,7 +35,6 @@ class Quote(
 
     override fun toString(): String {
         return "Quote{" +
-            "uuid='" + uuid + '\'' +
             "phraseOwnerTitle='" + phraseOwnerTitle + '\'' +
             ", text='" + text + '\'' +
             ", fileDescription=" + fileDescription +
