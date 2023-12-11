@@ -11,8 +11,8 @@ class ConsultPhrase constructor(
     override var id: String?, // This this a mfms messageId required for read status updates
     override var fileDescription: FileDescription?,
     val modified: ModificationStateEnum,
-    override val quote: Quote?,
-    val consultName: String?,
+    override var quote: Quote?,
+    var consultName: String?,
     override val phraseText: String?,
     val formattedPhrase: String?,
     var date: Long,

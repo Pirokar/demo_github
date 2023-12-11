@@ -1580,6 +1580,9 @@ class ChatFragment :
                 chatController.setMessageAsRead(item)
             }
             chatAdapter?.setAvatar(item.consultId, item.avatarPath)
+            if (item.modified != ModificationStateEnum.NONE) {
+                chatAdapter?.updateQuotesIfNeed(item)
+            }
         }
         if (needsAddMessage(item)) {
             showWelcomeScreen(false)

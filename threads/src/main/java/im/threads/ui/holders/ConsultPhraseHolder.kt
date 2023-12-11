@@ -21,6 +21,7 @@ import androidx.core.view.isVisible
 import im.threads.R
 import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.imageLoading.ImageModifications
+import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.ChatItem
 import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.FileDescription
@@ -33,6 +34,7 @@ import im.threads.business.utils.UrlUtils
 import im.threads.ui.config.Config
 import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.utils.gone
+import im.threads.ui.utils.invisible
 import im.threads.ui.utils.visible
 import im.threads.ui.views.CircularProgressButton
 import im.threads.ui.widget.textView.BubbleMessageTextView
@@ -139,6 +141,8 @@ class ConsultPhraseHolder(
         onRowLongClickListener: OnLongClickListener,
         onAvatarClickListener: View.OnClickListener
     ) {
+        phraseTextView.text = ""
+        consultAvatar.invisible()
         setupPaddingsAndBorders(consultPhrase.fileDescription)
         subscribeForHighlighting(consultPhrase, itemView)
         subscribeForOpenGraphData(
@@ -155,7 +159,6 @@ class ConsultPhraseHolder(
         quoteLayout.isVisible = false
         imageRoot.isVisible = false
         setLayoutMargins(true, bubbleLayout)
-        showAvatar(consultAvatar, consultPhrase, onAvatarClickListener)
         changeHighlighting(highlighted)
 
         if (consultPhrase.modified == ModificationStateEnum.DELETED) {
@@ -164,10 +167,11 @@ class ConsultPhraseHolder(
             phraseTextView.bindTimestampView(timeStampTextView)
             phraseTextView.visible()
             phraseTextView.text = itemView.context.getString(R.string.ecc_message_deleted)
+            viewUtils.removeClickListener(itemView as ViewGroup)
         } else {
+            showAvatar(consultAvatar, consultPhrase, onAvatarClickListener)
             viewUtils.setClickListener(itemView as ViewGroup, onRowLongClickListener)
             setTextColorToViews(arrayOf(phraseTextView), style.incomingMessageTextColor)
-            phraseTextView.text = ""
             consultPhrase.phraseText?.let {
                 showPhrase(consultPhrase, it.trim())
             } ?: run {
@@ -424,7 +428,7 @@ class ConsultPhraseHolder(
                 rightTextHeader.visibility = View.GONE
             }
             fileNameFromDescription(fileDescription) { fileName ->
-                getFileDescriptionText(fileName, fileDescription)
+                rightTextDescription.text = getFileDescriptionText(fileName, fileDescription)
             }
             rightTextFileStamp.text = itemView.context.getString(
                 R.string.ecc_sent_at,

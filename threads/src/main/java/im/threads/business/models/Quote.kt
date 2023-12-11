@@ -6,7 +6,7 @@ import im.threads.business.models.enums.ModificationStateEnum
 class Quote(
     var uuid: String?,
     var phraseOwnerTitle: String?,
-    val text: String?,
+    var text: String?,
     var fileDescription: FileDescription?,
     val timeStamp: Long,
     var modified: ModificationStateEnum = ModificationStateEnum.NONE
@@ -35,6 +35,7 @@ class Quote(
 
     override fun toString(): String {
         return "Quote{" +
+            "uuid='" + uuid + '\'' +
             "phraseOwnerTitle='" + phraseOwnerTitle + '\'' +
             ", text='" + text + '\'' +
             ", fileDescription=" + fileDescription +
