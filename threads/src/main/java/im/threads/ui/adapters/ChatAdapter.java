@@ -1407,10 +1407,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             if (itemToInsert instanceof Survey) {
                 final Survey survey = (Survey) itemToInsert;
                 if (!survey.isCompleted() && (!survey.isDisplayMessage() ||
-                        (survey.getHideAfter() != null &&
-                                survey.getHideAfter() * 1000 + survey.getTimeStamp() <= System.currentTimeMillis()
-                        )
-                )) {
+                        (survey.getHideAfter() != null && survey.getHideAfter() * 1000 + survey.getTimeStamp() <= System.currentTimeMillis()))) {
                     return;
                 }
             }

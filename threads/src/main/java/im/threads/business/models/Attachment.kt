@@ -8,6 +8,7 @@ class Attachment {
     var result: String? = null
     var optional: Optional? = null
     var state = AttachmentStateEnum.ANY
+    var link: String? = null
     var errorCode: String? = null
     var errorMessage = ""
 

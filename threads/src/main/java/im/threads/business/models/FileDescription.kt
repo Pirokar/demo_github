@@ -25,6 +25,7 @@ class FileDescription(var from: String?, var fileUri: Uri?, var size: Long, var 
     var errorCode = ErrorStateEnum.ANY
     var errorMessage: String? = ""
     var voiceFormattedDuration: String = ""
+    var offerLink: String? = null
     private var smallFileDescription: FileDescription? = null
 
     fun getPreviewFileDescription(): FileDescription? {

@@ -19,5 +19,6 @@ data class MessageContent(
     val speechStatus: String? = null,
     val read: Boolean? = null,
     val modified: String? = null,
-    val messageUuid: String? = null
+    val messageUuid: String? = null,
+    val isPersonalOffer: Boolean = false
 )
