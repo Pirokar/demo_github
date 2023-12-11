@@ -51,7 +51,6 @@ import im.threads.business.models.UpcomingUserMessage
 import im.threads.business.models.UserPhrase
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.models.enums.CurrentUiTheme
-import im.threads.business.models.enums.ModificationStateEnum
 import im.threads.business.preferences.Preferences
 import im.threads.business.preferences.PreferencesCoreKeys
 import im.threads.business.rest.models.ConfigResponse
@@ -1114,9 +1113,6 @@ class ChatController private constructor() {
                         }
 
                         is ConsultPhrase -> {
-                            var message = chatItem as ConsultPhrase
-                            if (message.modified == ModificationStateEnum.DELETED) {
-                            }
                             refreshUserInputState(chatItem.isBlockInput)
                         }
                     }

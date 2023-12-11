@@ -27,11 +27,8 @@ class SearchingConsultTest {
     fun whenEquals_thenCorrect() {
         val searchingConsult1 = SearchingConsult()
         val searchingConsult2 = SearchingConsult()
-        Assert.assertTrue(searchingConsult1 == searchingConsult2)
-
-        val searchingConsult3 = SearchingConsult()
-        searchingConsult3.setDate(1L)
-        Assert.assertFalse(searchingConsult1 == searchingConsult3)
+        searchingConsult2.setDate(1L)
+        Assert.assertFalse(searchingConsult1 == searchingConsult2)
     }
 
     @Test

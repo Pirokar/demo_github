@@ -39,6 +39,17 @@ public final class ViewUtils {
         }
     }
 
+    public void removeClickListener(ViewGroup viewGroup) {
+        viewGroup.setOnLongClickListener(null);
+        for (int i = 0; i < viewGroup.getChildCount(); i++) {
+            if (viewGroup.getChildAt(i) instanceof ViewGroup) {
+                removeClickListener((ViewGroup) viewGroup.getChildAt(i));
+            } else if (viewGroup.getChildAt(i) != null) {
+                viewGroup.getChildAt(i).setOnLongClickListener(null);
+            }
+        }
+    }
+
     public void setCompoundDrawablesWithIntrinsicBoundsCompat(TextView tv, @DrawableRes int drawableId, @DrawablePosition int drawablePosition) {
         Context context = tv.getContext();
         Drawable drawable;
