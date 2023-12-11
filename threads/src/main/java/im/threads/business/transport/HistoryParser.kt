@@ -139,7 +139,8 @@ object HistoryParser {
                                     message.quickReplies,
                                     message.settings?.isBlockInput,
                                     SpeechStatus.fromString(message.speechStatus),
-                                    ConsultRole.consultRoleFromString(role)
+                                    ConsultRole.consultRoleFromString(role),
+                                    message.isPersonalOffer
                                 ).apply {
                                     errorMock = message.errorMock
                                 }
@@ -262,6 +263,7 @@ object HistoryParser {
                 fileDescription.incomingName = incomingName
                 fileDescription.mimeType = mimeType
                 fileDescription.state = attachment.state
+                fileDescription.offerLink = attachment.link
                 if (attachment.errorCode != null) {
                     fileDescription.errorCode = attachment.getErrorCodeState()
                     fileDescription.errorMessage = attachment.errorMessage

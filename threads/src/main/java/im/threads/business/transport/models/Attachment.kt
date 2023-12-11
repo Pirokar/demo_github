@@ -12,7 +12,8 @@ class Attachment(
     val type: String? = null,
     var state: AttachmentStateEnum = AttachmentStateEnum.ANY,
     var errorCode: String? = null,
-    val errorMessage: String = ""
+    val errorMessage: String = "",
+    val link: String? = null
 ) {
     fun getErrorCodeState(): ErrorStateEnum {
         errorCode?.let {

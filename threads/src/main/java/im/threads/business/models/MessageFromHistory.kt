@@ -20,6 +20,7 @@ class MessageFromHistory : ChatItem {
     var attachments: List<Attachment>? = null
     var quickReplies: List<QuickReply>? = null
     val settings: Settings? = null
+    val isPersonalOffer: Boolean = false
     var quotes: List<MessageFromHistory>? = null
     var type: String? = null
     var isDisplay = false

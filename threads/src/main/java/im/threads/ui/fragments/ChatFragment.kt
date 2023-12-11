@@ -2712,9 +2712,7 @@ class ChatFragment :
         }
 
         override fun onImageClick(chatPhrase: ChatPhrase) {
-            if (!isPreviewFileExist(chatPhrase.fileDescription?.getPreviewFileDescription()) &&
-                chatPhrase.fileDescription?.fileUri == null
-            ) {
+            if (!isOffer(chatPhrase) && isPreviewFileNotExist(chatPhrase)) {
                 return
             }
 
@@ -2728,13 +2726,47 @@ class ChatFragment :
                     setupStartSecondLevelScreen()
                 }
             } else if (chatPhrase is ConsultPhrase) {
-                val activity: Activity? = activity
-                activity?.startActivity(getStartIntent(activity, chatPhrase.fileDescription))
+                openConsultPhraseImage(chatPhrase)
+            }
+        }
+
+        private fun openConsultPhraseImage(message: ConsultPhrase) {
+            if (isOffer(message)) {
+                val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(message.fileDescription?.offerLink))
+                startActivity(browserIntent)
+            } else {
+                activity?.startActivity(
+                    getStartIntent(
+                        activity,
+                        message.fileDescription
+                    )
+                )
                 setupStartSecondLevelScreen()
             }
         }
 
-        fun isPreviewFileExist(fileDescription: FileDescription?): Boolean {
+        private fun isOffer(message: ChatItem): Boolean {
+            (message as? ConsultPhrase)?.let { operatorMessage ->
+                val link = operatorMessage.fileDescription?.offerLink
+                var isPersonalOffer = operatorMessage.isPersonalOffer
+
+                if (!link.isNullOrBlank() && !isPersonalOffer && operatorMessage.id != null) {
+                    val messageFromDb = chatController.getChatItemByCorrelationIdFromDb(operatorMessage.id!!)
+                    isPersonalOffer = (messageFromDb as? ConsultPhrase)?.isPersonalOffer ?: false
+                }
+
+                return isPersonalOffer && !link.isNullOrBlank()
+            }
+
+            return false
+        }
+
+        private fun isPreviewFileNotExist(message: ChatPhrase): Boolean {
+            return !isPreviewFileNotExist(message.fileDescription?.getPreviewFileDescription()) &&
+                message.fileDescription?.fileUri == null
+        }
+
+        fun isPreviewFileNotExist(fileDescription: FileDescription?): Boolean {
             fileDescription?.let {
                 return FileUtils.isPreviewFileExist(requireContext(), it)
             }

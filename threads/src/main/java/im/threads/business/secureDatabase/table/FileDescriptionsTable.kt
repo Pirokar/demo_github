@@ -13,9 +13,10 @@ class FileDescriptionsTable : Table() {
 
     override fun createTable(db: SQLiteDatabase) {
         db.execSQL(
-            "CREATE TABLE " + TABLE_FILE_DESCRIPTION + " ( " +
+            "CREATE TABLE $TABLE_FILE_DESCRIPTION ( " +
                 COLUMN_FD_FROM + " text, " +
                 COLUMN_FD_PATH + " text, " +
+                COLUMN_LINK + " text, " +
                 COLUMN_FD_TIMESTAMP + " integer, " +
                 COLUMN_FD_MESSAGE_UUID_EXT + " integer, " +
                 COLUMN_FD_URL + " text, " +
@@ -72,6 +73,7 @@ class FileDescriptionsTable : Table() {
             }
             fd.errorMessage = cursorGetString(c, COLUMN_FD_ERROR_MESSAGE)
             fd.mimeType = cursorGetString(c, COLUMN_FD_MIME_TYPE)
+            fd.offerLink = cursorGetString(c, COLUMN_LINK)
             return fd
         }
     }
@@ -97,6 +99,7 @@ class FileDescriptionsTable : Table() {
         cv.put(COLUMN_FD_ATTACHMENT_STATE, fileDescription.state.state)
         cv.put(COLUMN_FD_ERROR_CODE, fileDescription.errorCode.state)
         cv.put(COLUMN_FD_ERROR_MESSAGE, fileDescription.errorMessage)
+        cv.put(COLUMN_LINK, fileDescription.offerLink)
         val sql = (
             "select " + COLUMN_FD_MESSAGE_UUID_EXT + " and " + COLUMN_FD_PATH +
                 " from " + TABLE_FILE_DESCRIPTION +
@@ -159,6 +162,7 @@ class FileDescriptionsTable : Table() {
                     fd.errorCode = ErrorStateEnum.errorStateEnumFromString(it)
                 }
                 fd.errorMessage = cursorGetString(c, COLUMN_FD_ERROR_MESSAGE)
+                fd.offerLink = cursorGetString(c, COLUMN_LINK)
                 if (fd.fileUri != null || fd.downloadPath != null) {
                     list.add(fd)
                 }
@@ -186,6 +190,7 @@ class FileDescriptionsTable : Table() {
                 cv.put(COLUMN_FD_ATTACHMENT_STATE, it.state.state)
                 cv.put(COLUMN_FD_ERROR_CODE, it.errorCode.state)
                 cv.put(COLUMN_FD_ERROR_MESSAGE, it.errorMessage)
+                cv.put(COLUMN_LINK, it.offerLink)
                 sqlHelper.writableDatabase.update(
                     TABLE_FILE_DESCRIPTION,
                     cv,
@@ -235,6 +240,7 @@ class FileDescriptionsTable : Table() {
             put(COLUMN_FD_ATTACHMENT_STATE, fileDescription.state.state)
             put(COLUMN_FD_ERROR_CODE, fileDescription.errorCode.state)
             put(COLUMN_FD_ERROR_MESSAGE, fileDescription.errorMessage)
+            put(COLUMN_LINK, fileDescription.offerLink)
         }
     }
 }
@@ -253,3 +259,4 @@ private const val COLUMN_FD_MESSAGE_UUID_EXT = "COLUMN_FD_MESSAGE_UUID_EXT"
 private const val COLUMN_FD_ATTACHMENT_STATE = "ATTACHMENT_STATE"
 private const val COLUMN_FD_ERROR_CODE = "ERROR_CODE"
 private const val COLUMN_FD_ERROR_MESSAGE = "ERROR_MESSAGE"
+private const val COLUMN_LINK = "COLUMN_LINK"
