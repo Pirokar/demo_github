@@ -85,7 +85,7 @@ class ConsultWriter(private val preferences: Preferences) {
         private const val OPERATOR_ORG_UNIT = "OPERATOR_ORG_UNIT"
         private const val OPERATOR_ROLE = "OPERATOR_ROLE"
         private const val OPERATOR_PHOTO = "OPERATOR_PHOTO"
-        private const val OPERATOR_ID = "OPERATOR_ID"
+        internal const val OPERATOR_ID = "OPERATOR_ID"
         private const val SEARCHING_CONSULT = "SEARCHING_CONSULT"
     }
 }

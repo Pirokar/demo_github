@@ -9,7 +9,7 @@ import im.threads.business.serviceLocator.core.inject
 fun ClipboardManager.copyToBuffer(what: String) {
     val preferences: Preferences by inject()
     setPrimaryClip(ClipData("", arrayOf("text/plain"), ClipData.Item(what)))
-    preferences.save<String>(PreferencesCoreKeys.LAST_COPY_TEXT, what)
+    preferences.save(PreferencesCoreKeys.LAST_COPY_TEXT, what)
 }
 
 fun String.isLastCopyText(): Boolean {
