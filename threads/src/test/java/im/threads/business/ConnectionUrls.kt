@@ -1,4 +1,4 @@
-package im.threads
+package im.threads.business
 
 const val ednaMockScheme = "http"
 const val ednaMockHost = "localhost"

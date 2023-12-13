@@ -12,7 +12,7 @@ import im.threads.ui.styles.permissions.PermissionDescriptionType
 internal class StyleUseCase(private val preferences: Preferences, private val context: Context) {
 
     /**
-     * Вовзаращает светлую и темную темы
+     * Возвращает светлую и темную темы
      */
     val incomingStyle: Pair<ChatStyle?, ChatStyle?>
         get() = Pair(incomingStyleLight, incomingStyleDark)

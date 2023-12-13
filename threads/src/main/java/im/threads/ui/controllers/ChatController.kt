@@ -51,7 +51,6 @@ import im.threads.business.models.UpcomingUserMessage
 import im.threads.business.models.UserPhrase
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.models.enums.CurrentUiTheme
-import im.threads.business.models.enums.ModificationStateEnum
 import im.threads.business.preferences.Preferences
 import im.threads.business.preferences.PreferencesCoreKeys
 import im.threads.business.rest.models.ConfigResponse
@@ -277,10 +276,6 @@ class ChatController private constructor() {
         }
     }
 
-    private fun updateDoubleItems(serverItems: ArrayList<ChatItem>) {
-        updateServerItemsBySendingItems(serverItems, getSendingItems())
-    }
-
     internal fun getUnreadMessagesCount() = database.getUnreadMessagesCount()
 
     internal fun setMessageAsRead(item: ChatItem?, async: Boolean = true) {
@@ -305,31 +300,7 @@ class ChatController private constructor() {
             transport.sendRegisterDevice(false)
         } else if (state < ChatStateEnum.INIT_USER_SENT) {
             transport.sendInitMessages(false)
-        } else if (state < ChatStateEnum.SETTINGS_LOADED) {
-            loadConfig()
         }
-    }
-
-    private fun getSendingItems(): ArrayList<UserPhrase> {
-        return database.getSendingChatItems() as ArrayList<UserPhrase>
-    }
-
-    private fun updateServerItemsBySendingItems(
-        serverItems: ArrayList<ChatItem>,
-        sendingItems: ArrayList<UserPhrase>
-    ) {
-        sendingItems.forEach { notSendedItem ->
-            serverItems.forEach { serverItem ->
-                if (serverItem is UserPhrase) {
-                    if (notSendedItem.timeStamp == serverItem.timeStamp) {
-                        serverItem.fileDescription?.fileUri = notSendedItem.fileDescription?.fileUri
-                        sendingItems.remove(notSendedItem)
-                        database.updateChatItemByTimeStamp(serverItem)
-                    }
-                }
-            }
-        }
-        serverItems.addAll(sendingItems)
     }
 
     internal fun removeCorruptedFiles(list: List<ChatItem>, callback: (() -> Unit)? = null) {
@@ -816,24 +787,6 @@ class ChatController private constructor() {
         }
     }
 
-    private fun addLocalUserMessages(serverItems: List<ChatItem>): List<ChatItem> {
-        val items = serverItems.toMutableList()
-        val localMessagesToDelete = ArrayList<UserPhrase>()
-        for (localUserMessage in localUserMessages) {
-            for (serverItem in items) {
-                if (serverItem.isTheSameItem(localUserMessage)) {
-                    localMessagesToDelete.add(localUserMessage)
-                    break
-                }
-            }
-        }
-        for (localMessageToDelete in localMessagesToDelete) {
-            localUserMessages.remove(localMessageToDelete)
-        }
-        items.addAll(localUserMessages)
-        return items
-    }
-
     private fun setLastAvatars(list: List<ChatItem>): List<ChatItem> {
         for (ci in list) {
             if (ci is ConsultPhrase) {
@@ -1114,9 +1067,6 @@ class ChatController private constructor() {
                         }
 
                         is ConsultPhrase -> {
-                            var message = chatItem as ConsultPhrase
-                            if (message.modified == ModificationStateEnum.DELETED) {
-                            }
                             refreshUserInputState(chatItem.isBlockInput)
                         }
                     }
