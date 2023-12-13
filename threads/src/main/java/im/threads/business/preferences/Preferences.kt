@@ -19,9 +19,6 @@ open class Preferences(private val context: Context) {
     private val storeName = "im.threads.internal.utils.PrefStore"
     private val encryptedStoreName = "im.threads.internal.utils.EncryptedPrefStore"
 
-    /**
-     * Шифрованный контейнер для хранения настроек
-     */
     val sharedPreferences: SharedPreferences by lazy {
         try {
             val masterKey =
@@ -46,13 +43,6 @@ open class Preferences(private val context: Context) {
 
     val coroutineScope = CoroutineScope(Dispatchers.IO)
 
-    /**
-     * Предоставляет настройку в соответствии с переданным ключом и типом.
-     * При необходимости производит миграцию, если такой ключ присутствует в списке,
-     * но его тип отличается от хранимого.
-     * @param key ключ для получения данных
-     * @param default значение по умолчанию, если не удалось получить значение
-     */
     private inline fun <reified T : Any> getFromPreferencesFile(key: String, default: T? = null): T? {
         val returnType: Type = object : TypeToken<T>() {}.type
 
@@ -77,11 +67,6 @@ open class Preferences(private val context: Context) {
         }
     }
 
-    /**
-     * Сохраняет настройку в map по ключу. Возможно синхронное и асинхронное сохранение.
-     * @param key ключ для сохранения данных
-     * @param obj сохраняемый объект
-     */
     inline fun <reified T : Any> save(key: String, obj: T?) {
         val json = when (obj) {
             null -> null
@@ -97,11 +82,6 @@ open class Preferences(private val context: Context) {
         }
     }
 
-    /**
-     * Предоставляет настройку в соответствии с переданным ключом и типом.
-     * @param key ключ для получения данных
-     * @param default значение по умолчанию, если не удалось получить значение
-     */
     inline fun <reified T : Any> get(key: String, default: T? = null): T? {
         val returnType: Type = object : TypeToken<T>() {}.type
         return try {

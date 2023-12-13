@@ -1,4 +1,4 @@
-package im.threads.opengraph
+package im.threads.business.opengraph
 
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.get

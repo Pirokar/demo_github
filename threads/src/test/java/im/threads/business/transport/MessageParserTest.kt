@@ -3,9 +3,9 @@ package im.threads.business.transport
 import androidx.test.core.app.ApplicationProvider
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
-import im.threads.ednaMockThreadsGateProviderUid
-import im.threads.ednaMockThreadsGateUrl
-import im.threads.ednaMockUrl
+import im.threads.business.ednaMockThreadsGateProviderUid
+import im.threads.business.ednaMockThreadsGateUrl
+import im.threads.business.ednaMockUrl
 import im.threads.ui.config.ConfigBuilder
 import im.threads.ui.core.ThreadsLib
 import org.junit.Assert

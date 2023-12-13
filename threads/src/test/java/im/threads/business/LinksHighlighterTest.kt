@@ -1,4 +1,4 @@
-package im.threads
+package im.threads.business
 
 import android.content.Context
 import android.text.Spanned
