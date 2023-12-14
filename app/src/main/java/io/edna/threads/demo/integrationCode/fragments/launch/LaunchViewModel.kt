@@ -62,7 +62,7 @@ class LaunchViewModel(
 
     override fun onCreate(owner: LifecycleOwner) {
         super.onCreate(owner)
-//        preferences.cleanJsonOnPreferences()
+        preferences.cleanJsonOnPreferences()
         getSelectedServer()?.let { server ->
             if (server.isAllFieldsFilled()) {
                 _selectedServerLiveData.postValue(server)
