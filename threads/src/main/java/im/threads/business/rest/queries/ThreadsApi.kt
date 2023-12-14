@@ -30,9 +30,9 @@ class ThreadsApi(
 
     fun config(): Call<ConfigResponse?>? {
         return if (BaseConfig.getInstance().isNewChatCenterApi) {
-            newThreadsApi?.config(API_VERSION)
+            newThreadsApi?.config(getApiVersion())
         } else {
-            oldThreadsApi?.config(API_VERSION)
+            oldThreadsApi?.config(getApiVersion())
         }
     }
 
@@ -52,7 +52,7 @@ class ThreadsApi(
                 afterDate,
                 count,
                 version,
-                API_VERSION
+                getApiVersion()
             )
         }
     }
@@ -98,7 +98,11 @@ class ThreadsApi(
     }
 
     companion object {
-        val API_VERSION: String by lazy { BaseConfig.getInstance().apiVersion.toString() }
+        @JvmStatic
+        fun getApiVersion(): String {
+            return BaseConfig.getInstance().apiVersion.toString()
+        }
+
         const val REST_TAG = "RestQuery"
         private const val SIGNATURE_STRING = "edna_79e621ac_a76a_4d36_b490_6758c43fa3d1:"
     }

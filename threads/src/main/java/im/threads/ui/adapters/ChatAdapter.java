@@ -1342,21 +1342,13 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             if (firstItem instanceof ConsultPhrase && lastItem instanceof ConsultPhrase) {
                 String lastItemOperatorId = ((ConsultPhrase) lastItem).getConsultId();
                 String firstItemOperatorId = ((ConsultPhrase) firstItem).getConsultId();
-                if (firstItemOperatorId != null &&
-                        firstItemOperatorId.equals(lastItemOperatorId) &&
-                        ((ConsultPhrase) lastItem).getModified() != ModificationStateEnum.DELETED
-                ) {
+                if (firstItemOperatorId != null && firstItemOperatorId.equals(lastItemOperatorId)) {
                     ConsultPhrase newFirstItem = ((ConsultPhrase) firstItem).copy();
                     ConsultPhrase newLastItem = ((ConsultPhrase) lastItem).copy();
                     newFirstItem.setAvatarVisible(false);
                     newLastItem.setAvatarVisible(true);
                     list.set(firstItemIdx, newFirstItem);
                     list.set(lastItemIdx, newLastItem);
-                } else {
-                    ConsultPhrase newFirstItem = ((ConsultPhrase) firstItem).copy();
-                    ConsultPhrase newLastItem = ((ConsultPhrase) lastItem).copy();
-                    newFirstItem.setAvatarVisible(true);
-                    newLastItem.setAvatarVisible(false);
                 }
             }
         }

@@ -8,4 +8,17 @@ enum class ApiVersionEnum(val version: String) {
     override fun toString(): String {
         return version
     }
+
+    companion object {
+        val defaultApiVersionEnum = V15
+
+        @JvmStatic
+        fun createApiVersionEnum(version: String): ApiVersionEnum {
+            return try {
+                ApiVersionEnum.values().first() { it.version == version }
+            } catch (ex: IllegalArgumentException) {
+                defaultApiVersionEnum
+            }
+        }
+    }
 }

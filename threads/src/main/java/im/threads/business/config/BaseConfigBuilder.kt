@@ -26,7 +26,7 @@ open class BaseConfigBuilder(var context: Context) {
     internal var trustedSSLCertificates = emptyList<Int>()
     internal var allowUntrustedSSLCertificate = false
     internal var keepSocketActive = false
-    internal var apiVersion = ApiVersionEnum.V18
+    internal var apiVersion = ApiVersionEnum.defaultApiVersionEnum
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     internal var notificationImportance = NotificationManager.IMPORTANCE_DEFAULT
