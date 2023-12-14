@@ -56,6 +56,6 @@ class BaseConfigTest : ConfigTestBaseClass() {
         trustedSSLCertificates = null,
         allowUntrustedSSLCertificate = false,
         keepSocketActive = false,
-        apiVersion = ApiVersionEnum.V15
+        apiVersion = ApiVersionEnum.V18
     )
 }
