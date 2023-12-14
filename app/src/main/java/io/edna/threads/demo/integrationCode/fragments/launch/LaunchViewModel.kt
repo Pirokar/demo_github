@@ -122,7 +122,7 @@ class LaunchViewModel(
                 ApiVersionEnum.createApiVersionEnum(it)
             }
             if (apiVersion == null) {
-                apiVersion = ApiVersionEnum.V15
+                apiVersion = ApiVersionEnum.defaultApiVersionEnum
             }
             BaseConfig.getInstance().apiVersion = apiVersion
 
