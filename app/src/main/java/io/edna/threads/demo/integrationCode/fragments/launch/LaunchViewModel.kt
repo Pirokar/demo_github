@@ -19,6 +19,7 @@ import androidx.navigation.findNavController
 import im.threads.business.UserInfoBuilder
 import im.threads.business.config.BaseConfig
 import im.threads.business.models.enums.ApiVersionEnum
+import im.threads.business.models.enums.ApiVersionEnum.Companion.defaultApiVersionEnum
 import im.threads.business.models.enums.CurrentUiTheme
 import im.threads.ui.core.ThreadsLib
 import io.edna.threads.demo.BuildConfig
@@ -222,7 +223,7 @@ class LaunchViewModel(
     private fun getSelectedApiVersion(): String {
         val apiVersion = preferences.getSelectedApiVersion()
         return if (apiVersion.isNullOrBlank()) {
-            "15"
+            defaultApiVersionEnum.toString()
         } else {
             apiVersion
         }
