@@ -21,7 +21,6 @@ import androidx.core.view.isVisible
 import im.threads.R
 import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.imageLoading.ImageModifications
-import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.ChatItem
 import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.FileDescription
@@ -160,6 +159,7 @@ class ConsultPhraseHolder(
         imageRoot.isVisible = false
         setLayoutMargins(true, bubbleLayout)
         changeHighlighting(highlighted)
+        showAvatar(consultAvatar, consultPhrase, onAvatarClickListener)
 
         if (consultPhrase.modified == ModificationStateEnum.DELETED) {
             phraseTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, itemView.context.resources.getDimension(style.systemMessageTextSize))
@@ -169,7 +169,6 @@ class ConsultPhraseHolder(
             phraseTextView.text = itemView.context.getString(R.string.ecc_message_deleted)
             viewUtils.removeClickListener(itemView as ViewGroup)
         } else {
-            showAvatar(consultAvatar, consultPhrase, onAvatarClickListener)
             viewUtils.setClickListener(itemView as ViewGroup, onRowLongClickListener)
             setTextColorToViews(arrayOf(phraseTextView), style.incomingMessageTextColor)
             consultPhrase.phraseText?.let {

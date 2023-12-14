@@ -33,7 +33,7 @@ interface OldThreadsBackendApi {
         @HeaderMap headerMap: Map<String, String?>,
         @Query("term") searchString: String,
         @Query("page") page: Int,
-        @Query("chatApiVersion") chatApiVersion: String = ThreadsApi.API_VERSION
+        @Query("chatApiVersion") chatApiVersion: String = ThreadsApi.getApiVersion()
     ): Call<SearchResponse?>
 
     @POST("messages/read")

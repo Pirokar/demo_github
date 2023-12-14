@@ -214,11 +214,6 @@ class MessagesTable(
                     if (chatItem.quote == null) {
                         chatItem.quote = existedItem.quote
                     }
-                    if (chatItem.fileDescription == null) {
-                        chatItem.fileDescription = existedItem.fileDescription
-                        chatItem.consultName = existedItem.consultName
-                        chatItem.fileDescription?.from = existedItem.consultName
-                    }
                 }
                 val quoteItem = quotesTable.getQuoteByUuid(sqlHelper, chatItem.id)
                 if (quoteItem != null) {
