@@ -6,12 +6,15 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
+import android.view.Menu
 import android.view.View
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.clearFragmentResultListener
 import androidx.fragment.app.setFragmentResultListener
+import im.threads.business.models.enums.ApiVersionEnum
 import im.threads.business.models.enums.CurrentUiTheme
 import im.threads.ui.core.ThreadsLib
 import io.edna.threads.demo.BuildConfig
@@ -34,13 +37,13 @@ class LaunchFragment : BaseAppFragment<FragmentLaunchBinding>(FragmentLaunchBind
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        subscribeForData()
         initReceivers()
         initObservers()
         initPreregisterCheckBox()
         setResultListeners()
         initView()
         setOnClickListeners()
-        subscribeForData()
     }
 
     override fun onDestroyView() {
@@ -74,6 +77,7 @@ class LaunchFragment : BaseAppFragment<FragmentLaunchBinding>(FragmentLaunchBind
         serverButton.setOnClickListener { viewModel.click(serverButton) }
         userButton.setOnClickListener { viewModel.click(userButton) }
         demonstrations.setOnClickListener { viewModel.click(demonstrations) }
+        apiSelector.setOnClickListener { showSelectApiVersionMenu() }
         uiTheme.setOnClickListener { viewModel.click(uiTheme) }
         login.setOnClickListener {
             viewModel.click(login)
@@ -82,6 +86,9 @@ class LaunchFragment : BaseAppFragment<FragmentLaunchBinding>(FragmentLaunchBind
     }
 
     private fun subscribeForData() = getBinding()?.apply {
+        viewModel.selectedApiVersionLiveData.observe(viewLifecycleOwner) {
+            apiSelector.text = "${getString(R.string.api_version)}: $it"
+        }
         viewModel.selectedServerConfigLiveData.observe(viewLifecycleOwner) {
             serverButton.text = it?.name
         }
@@ -152,6 +159,20 @@ class LaunchFragment : BaseAppFragment<FragmentLaunchBinding>(FragmentLaunchBind
                     )
                 }
             }
+        }
+    }
+
+    private fun showSelectApiVersionMenu() {
+        getBinding()?.apiSelector?.let { apiSelector ->
+            val menu = PopupMenu(requireActivity(), apiSelector)
+            ApiVersionEnum.values().forEach {
+                menu.menu.add(Menu.NONE, 0, 0, it.toString())
+            }
+            menu.setOnMenuItemClickListener {
+                viewModel.setSelectedApiVersion(it.title.toString())
+                true
+            }
+            menu.show()
         }
     }
 
