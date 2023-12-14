@@ -17,6 +17,9 @@ import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import im.threads.business.UserInfoBuilder
+import im.threads.business.config.BaseConfig
+import im.threads.business.models.enums.ApiVersionEnum
+import im.threads.business.models.enums.ApiVersionEnum.Companion.defaultApiVersionEnum
 import im.threads.business.models.enums.CurrentUiTheme
 import im.threads.ui.core.ThreadsLib
 import io.edna.threads.demo.BuildConfig
@@ -42,6 +45,9 @@ class LaunchViewModel(
     val currentUiThemeLiveData: MutableLiveData<UiTheme> = MutableLiveData()
     val themeSelectorLiveData: VolatileLiveData<CurrentUiTheme> = VolatileLiveData()
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
+
+    private var _selectedApiVersionLiveData = MutableLiveData(getSelectedApiVersion())
+    var selectedApiVersionLiveData: LiveData<String> = _selectedApiVersionLiveData
 
     private var _selectedUserLiveData = MutableLiveData(getSelectedUser())
     var selectedUserLiveData: LiveData<UserInfo?> = _selectedUserLiveData
@@ -112,6 +118,14 @@ class LaunchViewModel(
         val isUserHasRequiredFields = user?.userId != null
 
         if (serverConfig != null && isUserHasRequiredFields) {
+            var apiVersion: ApiVersionEnum? = _selectedApiVersionLiveData.value?.let {
+                ApiVersionEnum.createApiVersionEnum(it)
+            }
+            if (apiVersion == null) {
+                apiVersion = ApiVersionEnum.defaultApiVersionEnum
+            }
+            BaseConfig.getInstance().apiVersion = apiVersion
+
             ThreadsLib.changeServerSettings(
                 serverConfig.serverBaseUrl,
                 serverConfig.datastoreUrl,
@@ -197,6 +211,22 @@ class LaunchViewModel(
 
     fun onPreregisterCheckedChange(isChecked: Boolean) {
         isPreregisterEnabled = isChecked
+    }
+
+    internal fun setSelectedApiVersion(apiVersion: String?) {
+        if (!apiVersion.isNullOrBlank()) {
+            preferences.saveSelectedApiVersion(apiVersion)
+            _selectedApiVersionLiveData.postValue(apiVersion)
+        }
+    }
+
+    private fun getSelectedApiVersion(): String {
+        val apiVersion = preferences.getSelectedApiVersion()
+        return if (apiVersion.isNullOrBlank()) {
+            defaultApiVersionEnum.toString()
+        } else {
+            apiVersion
+        }
     }
 
     private fun getSelectedUser(): UserInfo? {
