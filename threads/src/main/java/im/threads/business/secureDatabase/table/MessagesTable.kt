@@ -208,6 +208,12 @@ class MessagesTable(
                 val existedItem = getChatItemByCorrelationId(sqlHelper, chatItem.id) as? ConsultPhrase
                 if (existedItem != null) {
                     chatItem.date = existedItem.timeStamp
+                    chatItem.avatarPath = existedItem.avatarPath
+                    chatItem.consultId = existedItem.consultId
+                    chatItem.consultName = existedItem.consultName
+                    if (chatItem.quote == null) {
+                        chatItem.quote = existedItem.quote
+                    }
                 }
                 val quoteItem = quotesTable.getQuoteByUuid(sqlHelper, chatItem.id)
                 if (quoteItem != null) {

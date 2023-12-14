@@ -60,9 +60,10 @@ class OutgoingMessageCreator(
             addProperty(MessageAttributes.APP_MARKER_KEY, userInfo?.appMarker)
             addProperty("libVersion", appInfo.libVersion)
             addProperty("clientLocale", locale)
-            addProperty("chatApiVersion", ThreadsApi.API_VERSION)
+            addProperty("chatApiVersion", ThreadsApi.getApiVersion())
             addProperty(MessageAttributes.TYPE, ChatItemType.CLIENT_INFO.name)
             addProperty(MessageAttributes.DEVICE_ADDRESS, deviceAddress)
+            addProperty(MessageAttributes.AUTHORIZED, true)
             if (isPreregister) {
                 addProperty("preRegister", true)
             }
@@ -152,7 +153,7 @@ class OutgoingMessageCreator(
             addProperty(MessageAttributes.APP_MARKER_KEY, userInfo?.appMarker)
             addProperty("libVersion", appInfo.libVersion)
             addProperty("clientLocale", locale)
-            addProperty("chatApiVersion", ThreadsApi.API_VERSION)
+            addProperty("chatApiVersion", ThreadsApi.getApiVersion())
             addProperty(MessageAttributes.TYPE, ChatItemType.UPDATE_LOCATION.name)
         }
         return jsonObject

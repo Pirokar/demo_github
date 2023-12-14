@@ -25,7 +25,7 @@ interface NewThreadsBackendApi {
         @Query("after") afterDate: String?,
         @Query("count") count: Int?,
         @Query("libVersion") version: String?,
-        @Query("chatApiVersion") chatApiVersion: String = ThreadsApi.API_VERSION
+        @Query("chatApiVersion") chatApiVersion: String = ThreadsApi.getApiVersion()
     ): Call<HistoryResponse?>?
 
     @GET("api/client/search")
@@ -33,7 +33,7 @@ interface NewThreadsBackendApi {
         @HeaderMap headerMap: Map<String, String?>,
         @Query("term") searchString: String,
         @Query("page") page: Int,
-        @Query("chatApiVersion") chatApiVersion: String = ThreadsApi.API_VERSION
+        @Query("chatApiVersion") chatApiVersion: String = ThreadsApi.getApiVersion()
     ): Call<SearchResponse?>
 
     @POST("api/messages/read")

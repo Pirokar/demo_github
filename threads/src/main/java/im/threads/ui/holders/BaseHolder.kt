@@ -744,7 +744,10 @@ abstract class BaseHolder internal constructor(
             quoteTextDescription.setTextColor(ContextCompat.getColor(itemView.context, style.systemMessageTextColorResId))
             quoteTextDescription.visible()
             quoteTextDescription.text = itemView.context.getString(R.string.ecc_message_deleted)
+            quoteProgressButton.isVisible = false
+            quoteFileImage.visibility = View.GONE
         } else {
+            quoteProgressButton.isVisible = false
             quoteTextHeader.text = if (quote.phraseOwnerTitle == null) {
                 itemView.context
                     .getString(R.string.ecc_I)
@@ -758,12 +761,13 @@ abstract class BaseHolder internal constructor(
                 .getString(R.string.ecc_sent_at, quoteSdf.format(Date(quote.timeStamp)))
             viewUtils.setClickListener(quoteLayout, onQuoteClickListener)
             val quoteFileDescription = quote.fileDescription
+            quoteFileImage.visibility = View.GONE
             if (quoteFileDescription != null) {
                 if (FileUtils.isVoiceMessage(quoteFileDescription)) {
                     quoteTextDescription.setText(R.string.ecc_voice_message)
                 } else {
+                    quoteFileImage.visibility = View.VISIBLE
                     if (FileUtils.isImage(quote.fileDescription)) {
-                        quoteFileImage.visibility = View.VISIBLE
                         val fileUri = quoteFileDescription.fileUri?.toString()
                             ?: quoteFileDescription.downloadPath
                         if (!fileUri.isNullOrEmpty()) {

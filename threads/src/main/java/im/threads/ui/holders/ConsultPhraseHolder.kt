@@ -33,6 +33,7 @@ import im.threads.business.utils.UrlUtils
 import im.threads.ui.config.Config
 import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.utils.gone
+import im.threads.ui.utils.invisible
 import im.threads.ui.utils.visible
 import im.threads.ui.views.CircularProgressButton
 import im.threads.ui.widget.textView.BubbleMessageTextView
@@ -139,6 +140,8 @@ class ConsultPhraseHolder(
         onRowLongClickListener: OnLongClickListener,
         onAvatarClickListener: View.OnClickListener
     ) {
+        phraseTextView.text = ""
+        consultAvatar.invisible()
         setupPaddingsAndBorders(consultPhrase.fileDescription)
         subscribeForHighlighting(consultPhrase, itemView)
         subscribeForOpenGraphData(
@@ -155,8 +158,8 @@ class ConsultPhraseHolder(
         quoteLayout.isVisible = false
         imageRoot.isVisible = false
         setLayoutMargins(true, bubbleLayout)
-        showAvatar(consultAvatar, consultPhrase, onAvatarClickListener)
         changeHighlighting(highlighted)
+        showAvatar(consultAvatar, consultPhrase, onAvatarClickListener)
 
         if (consultPhrase.modified == ModificationStateEnum.DELETED) {
             phraseTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, itemView.context.resources.getDimension(style.systemMessageTextSize))
@@ -164,10 +167,10 @@ class ConsultPhraseHolder(
             phraseTextView.bindTimestampView(timeStampTextView)
             phraseTextView.visible()
             phraseTextView.text = itemView.context.getString(R.string.ecc_message_deleted)
+            viewUtils.removeClickListener(itemView as ViewGroup)
         } else {
             viewUtils.setClickListener(itemView as ViewGroup, onRowLongClickListener)
             setTextColorToViews(arrayOf(phraseTextView), style.incomingMessageTextColor)
-            phraseTextView.text = ""
             consultPhrase.phraseText?.let {
                 showPhrase(consultPhrase, it.trim())
             } ?: run {
@@ -424,7 +427,7 @@ class ConsultPhraseHolder(
                 rightTextHeader.visibility = View.GONE
             }
             fileNameFromDescription(fileDescription) { fileName ->
-                getFileDescriptionText(fileName, fileDescription)
+                rightTextDescription.text = getFileDescriptionText(fileName, fileDescription)
             }
             rightTextFileStamp.text = itemView.context.getString(
                 R.string.ecc_sent_at,

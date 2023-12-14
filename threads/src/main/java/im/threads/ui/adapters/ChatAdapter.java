@@ -772,6 +772,33 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
     }
 
+    public void updateQuotesIfNeed(ConsultPhrase consultPhrase) {
+        String consultItemId = consultPhrase.getId();
+        for(int i = 0; i < getList().size(); i ++) {
+            ChatItem item = getList().get(i);
+            if (item instanceof ConsultPhrase) {
+                Quote quote = ((ConsultPhrase) item).getQuote();
+                if (quote != null && Objects.requireNonNull(quote.getUuid()).equals(consultItemId)) {
+                    quote.setFileDescription(consultPhrase.getFileDescription());
+                    quote.setModified(consultPhrase.getModified());
+                    quote.setText(consultPhrase.getPhraseText());
+                    notifyItemChanged(i);
+                    break;
+                }
+            }
+            if (item instanceof UserPhrase) {
+                Quote quote = ((UserPhrase) item).getQuote();
+                if (quote != null && Objects.requireNonNull(quote.getUuid()).equals(consultItemId)) {
+                    quote.setFileDescription(consultPhrase.getFileDescription());
+                    quote.setModified(consultPhrase.getModified());
+                    quote.setText(consultPhrase.getPhraseText());
+                    notifyItemChanged(i);
+                    break;
+                }
+            }
+        }
+    }
+
     public void updateProgress(final FileDescription fileDescription) {
         for (int i = 0; i < getList().size(); i++) {
             if (fileDescription.getFileUri() == null && fileDescription.getDownloadPath() == null
