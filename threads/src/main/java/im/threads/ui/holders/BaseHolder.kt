@@ -744,7 +744,7 @@ abstract class BaseHolder internal constructor(
             quoteTextDescription.setTextColor(ContextCompat.getColor(itemView.context, style.systemMessageTextColorResId))
             quoteTextDescription.visible()
             quoteTextDescription.text = itemView.context.getString(R.string.ecc_message_deleted)
-            quoteProgressButton.isVisible = false
+            quoteProgressButton.visibility = View.GONE
             quoteFileImage.visibility = View.GONE
         } else {
             quoteProgressButton.isVisible = false
@@ -755,7 +755,7 @@ abstract class BaseHolder internal constructor(
                 quote.phraseOwnerTitle
             }
             quoteTextDescription.setTextColor(ContextCompat.getColor(itemView.context, style.incomingMessageTextColor))
-            quoteProgressButton.isVisible = false
+            quoteProgressButton.visibility = View.GONE
             quoteTextDescription.text = quote.text
             quoteTextTimeStamp.text = itemView.context
                 .getString(R.string.ecc_sent_at, quoteSdf.format(Date(quote.timeStamp)))
@@ -766,8 +766,8 @@ abstract class BaseHolder internal constructor(
                 if (FileUtils.isVoiceMessage(quoteFileDescription)) {
                     quoteTextDescription.setText(R.string.ecc_voice_message)
                 } else {
-                    quoteFileImage.visibility = View.VISIBLE
                     if (FileUtils.isImage(quote.fileDescription)) {
+                        quoteFileImage.visibility = View.VISIBLE
                         val fileUri = quoteFileDescription.fileUri?.toString()
                             ?: quoteFileDescription.downloadPath
                         if (!fileUri.isNullOrEmpty()) {
@@ -785,7 +785,6 @@ abstract class BaseHolder internal constructor(
                         }
                         quoteFileImage.setOnClickListener(onQuoteClickListener)
                     } else {
-                        quoteProgressButton.isVisible = true
                         fileNameFromDescription(quoteFileDescription) { fileName ->
                             quoteTextDescription.text =
                                 getFileDescriptionText(fileName, quoteFileDescription)
