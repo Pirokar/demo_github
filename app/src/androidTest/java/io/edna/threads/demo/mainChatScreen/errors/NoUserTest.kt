@@ -13,6 +13,7 @@ import io.edna.threads.demo.BaseTestCase
 import io.edna.threads.demo.appCode.ednaMockThreadsGateProviderUid
 import io.edna.threads.demo.appCode.ednaMockThreadsGateUrl
 import io.edna.threads.demo.appCode.ednaMockUrl
+import io.edna.threads.demo.assert
 import io.edna.threads.demo.kaspressoSreens.ChatMainScreen
 import org.junit.Rule
 import org.junit.Test
@@ -44,10 +45,14 @@ class NoUserTest : BaseTestCase() {
     @Test
     fun testNoUser() {
         ChatMainScreen {
-            errorImage { isVisible() }
+            errorImage {
+                assert("Изображение с ошибкой должно быть видимо") { isVisible() }
+            }
             errorText {
-                isVisible()
-                hasText(context.getString(R.string.ecc_no_user_id))
+                assert("Текст с ошибкой должен быть видим") { isVisible() }
+                assert("Текст с ошибкой не содержит текст: \"${context.getString(R.string.ecc_no_user_id)}\"") {
+                    hasText(context.getString(R.string.ecc_no_user_id))
+                }
             }
             errorRetryBtn { isVisible() }
         }

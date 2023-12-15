@@ -8,7 +8,7 @@ object TestMessages {
         "\"sentAt\":\"2023-08-24T12:19:11.855Z\",\"content\":{\"type\":\"SCHEDULE\"," +
         "\"clientId\":\"5555555\",\"providerIds\":[]," +
         "\"text\":\"{\\\"id\\\":3,\\\"active\\\":true," +
-        "\\\"notification\\\":\\\"Война войной, а обед по рассписанию.\\\"," +
+        "\\\"notification\\\":\\\"Война войной, а обед по расписанию.\\\"," +
         "\\\"intervals\\\":[{\\\"id\\\":15,\\\"weekDay\\\":1,\\\"startTime\\\":0," +
         "\\\"endTime\\\":86399},{\\\"id\\\":16,\\\"weekDay\\\":2,\\\"startTime\\\":0," +
         "\\\"endTime\\\":86399},{\\\"id\\\":17,\\\"weekDay\\\":3,\\\"startTime\\\":0," +
@@ -18,7 +18,7 @@ object TestMessages {
         "\\\"endTime\\\":86399},{\\\"id\\\":21,\\\"weekDay\\\":7,\\\"startTime\\\":0," +
         "\\\"endTime\\\":86399}],\\\"sendDuringInactive\\\":true,\\\"isVisibleOutOfHours\\\":true," +
         "\\\"serverTime\\\":\\\"2023-08-24T12:19:11.756Z\\\"}\"," +
-        "\"content\":{\"id\":3,\"active\":true,\"notification\":\"Война войной, а обед по рассписанию.\"," +
+        "\"content\":{\"id\":3,\"active\":true,\"notification\":\"Война войной, а обед по расписанию.\"," +
         "\"intervals\":[{\"id\":15,\"weekDay\":1,\"startTime\":0,\"endTime\":86399},{\"id\":16,\"weekDay\":2," +
         "\"startTime\":0,\"endTime\":86399},{\"id\":17,\"weekDay\":3,\"startTime\":0,\"endTime\":86399}," +
         "{\"id\":18,\"weekDay\":4,\"startTime\":0,\"endTime\":86399},{\"id\":19,\"weekDay\":5,\"startTime\":0," +
@@ -34,7 +34,7 @@ object TestMessages {
         "\"sentAt\":\"2023-08-24T12:19:11.855Z\",\"content\":{\"type\":\"SCHEDULE\"," +
         "\"clientId\":\"5555555\",\"providerIds\":[]," +
         "\"text\":\"{\\\"id\\\":3,\\\"active\\\":false," +
-        "\\\"notification\\\":\\\"Война войной, а обед по рассписанию.\\\"," +
+        "\\\"notification\\\":\\\"Война войной, а обед по расписанию.\\\"," +
         "\\\"intervals\\\":[" +
         "{\\\"id\\\":15,\\\"weekDay\\\":1,\\\"startTime\\\":0, \\\"endTime\\\":86399}," +
         "{\\\"id\\\":16,\\\"weekDay\\\":2,\\\"startTime\\\":0, \\\"endTime\\\":86399}," +
@@ -45,7 +45,7 @@ object TestMessages {
         "{\\\"id\\\":21,\\\"weekDay\\\":7,\\\"startTime\\\":0, \\\"endTime\\\":86399}" +
         "],\\\"sendDuringInactive\\\":true,\\\"isVisibleOutOfHours\\\":true," +
         "\\\"serverTime\\\":\\\"2023-08-24T12:19:11.756Z\\\"}\"," +
-        "\"content\":{\"id\":3,\"active\":true,\"notification\":\"Война войной, а обед по рассписанию.\"," +
+        "\"content\":{\"id\":3,\"active\":true,\"notification\":\"Война войной, а обед по расписанию.\"," +
         "\"intervals\":[{\"id\":15,\"weekDay\":1,\"startTime\":0,\"endTime\":86399},{\"id\":16,\"weekDay\":2," +
         "\"startTime\":0,\"endTime\":86399},{\"id\":17,\"weekDay\":3,\"startTime\":0,\"endTime\":86399}," +
         "{\"id\":18,\"weekDay\":4,\"startTime\":0,\"endTime\":86399},{\"id\":19,\"weekDay\":5,\"startTime\":0," +
@@ -61,7 +61,7 @@ object TestMessages {
         "\"sentAt\":\"2023-08-24T12:19:11.855Z\",\"content\":{\"type\":\"SCHEDULE\"," +
         "\"clientId\":\"5555555\",\"providerIds\":[]," +
         "\"text\":\"{\\\"id\\\":3,\\\"active\\\":false," +
-        "\\\"notification\\\":\\\"Война войной, а обед по рассписанию.\\\"," +
+        "\\\"notification\\\":\\\"Война войной, а обед по расписанию.\\\"," +
         "\\\"intervals\\\":[" +
         "{\\\"id\\\":15,\\\"weekDay\\\":1,\\\"startTime\\\":0, \\\"endTime\\\":86399}," +
         "{\\\"id\\\":16,\\\"weekDay\\\":2,\\\"startTime\\\":0, \\\"endTime\\\":86399}," +
@@ -72,7 +72,7 @@ object TestMessages {
         "{\\\"id\\\":21,\\\"weekDay\\\":7,\\\"startTime\\\":0, \\\"endTime\\\":86399}" +
         "],\\\"sendDuringInactive\\\":false,\\\"isVisibleOutOfHours\\\":true," +
         "\\\"serverTime\\\":\\\"2023-08-24T12:19:11.756Z\\\"}\"," +
-        "\"content\":{\"id\":3,\"active\":true,\"notification\":\"Война войной, а обед по рассписанию.\"," +
+        "\"content\":{\"id\":3,\"active\":true,\"notification\":\"Война войной, а обед по расписанию.\"," +
         "\"intervals\":[{\"id\":15,\"weekDay\":1,\"startTime\":0,\"endTime\":86399},{\"id\":16,\"weekDay\":2," +
         "\"startTime\":0,\"endTime\":86399},{\"id\":17,\"weekDay\":3,\"startTime\":0,\"endTime\":86399}," +
         "{\"id\":18,\"weekDay\":4,\"startTime\":0,\"endTime\":86399},{\"id\":19,\"weekDay\":5,\"startTime\":0," +

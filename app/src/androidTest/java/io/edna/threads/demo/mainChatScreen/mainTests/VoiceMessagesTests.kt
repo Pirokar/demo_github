@@ -10,7 +10,9 @@ import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiSelector
 import io.edna.threads.demo.BaseFilesTestCase
 import io.edna.threads.demo.R
+import io.edna.threads.demo.assert
 import io.edna.threads.demo.kaspressoSreens.ChatMainScreen
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -31,125 +33,163 @@ class VoiceMessagesTests : BaseFilesTestCase() {
     @Before
     fun before() {
         uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
-        uiDevice.executeShellCommand("settings put secure long_press_timeout 3000")
+        uiDevice.executeShellCommand("settings put secure long_press_timeout 4000")
+    }
+
+    @After
+    override fun after() {
+        super.after()
+        uiDevice.executeShellCommand("settings put secure long_press_timeout 2000")
     }
 
     @Test
     fun prepareAndRemoveVoiceMessageTest() {
         prepareHttpMocks(historyAnswer = readTextFileFromRawResourceId(R.raw.history_files_response))
         openChatFromDemoLoginPage()
-        val recordButton = uiDevice.findObject(uiSelector)
-
-        ChatMainScreen.recordButton {
-            isVisible()
-            recordButton.longClick()
-            recordButton.waitForExists(100)
+        val uiRecordButton = uiDevice.findObject(uiSelector)
+        ChatMainScreen {
+            assert("Кнопка записи должна отображаться и быть активной") {
+                recordButton.isVisible()
+            }
+            uiRecordButton.longClick()
+            uiRecordButton.waitForExists(100)
+            assert("Кнопка \"Play/Stop\" должна отображаться") {
+                playPauseButton.isVisible()
+            }
+            assert("Прогресс бар для аудиофайла должен отображаться") {
+                quoteSlider.isVisible()
+            }
+            assert("Кнопка \"Удалить вложение\" должна  отображаться") {
+                quoteClear.isVisible()
+                quoteClear.click()
+            }
+            assert("Лейаут с вложением не должен отображаться") {
+                playPauseButton.isNotDisplayed()
+                quoteSlider.isNotDisplayed()
+                quoteClear.isNotDisplayed()
+            }
+            assert("Кнопка записи должна отображаться и быть активной") {
+                recordButton.isVisible()
+            }
         }
-
-        ChatMainScreen.playPauseButton { isVisible() }
-        ChatMainScreen.quoteSlider { isVisible() }
-        ChatMainScreen.quoteClear {
-            isVisible()
-            click()
-        }
-
-        ChatMainScreen.playPauseButton { isNotDisplayed() }
-        ChatMainScreen.quoteSlider { isNotDisplayed() }
-        ChatMainScreen.quoteClear { isNotDisplayed() }
-        ChatMainScreen.recordButton { isVisible() }
     }
 
     @Test
     fun prepareAndRemoveVoiceMessageNoHistoryTest() {
         openChatFromDemoLoginPage()
-        val recordButton = uiDevice.findObject(uiSelector)
-
-        ChatMainScreen.recordButton {
-            isVisible()
-            recordButton.longClick()
-            recordButton.waitForExists(100)
+        val uiRecordButton = uiDevice.findObject(uiSelector)
+        ChatMainScreen {
+            assert("Кнопка записи должна отображаться и быть активной") {
+                recordButton.isVisible()
+                uiRecordButton.longClick()
+                uiRecordButton.waitForExists(100)
+            }
+            assert("Кнопка \"Play/Stop\" должна отображаться") {
+                playPauseButton.isVisible()
+            }
+            assert("Прогресс бар для аудиофайла должен отображаться") {
+                quoteSlider.isVisible()
+            }
+            assert("Кнопка \"Удалить вложение\" должна  отображаться") {
+                quoteClear.isVisible()
+                quoteClear.click()
+            }
+            assert("Лейаут с вложением не должен отображаться") {
+                playPauseButton.isNotDisplayed()
+                quoteSlider.isNotDisplayed()
+                quoteClear.isNotDisplayed()
+            }
+            assert("Кнопка записи должна отображаться и быть активной") {
+                recordButton.isVisible()
+            }
         }
-
-        ChatMainScreen.playPauseButton { isVisible() }
-        ChatMainScreen.quoteSlider { isVisible() }
-        ChatMainScreen.quoteClear {
-            isVisible()
-            click()
-        }
-
-        ChatMainScreen.playPauseButton { isNotDisplayed() }
-        ChatMainScreen.quoteSlider { isNotDisplayed() }
-        ChatMainScreen.quoteClear { isNotDisplayed() }
-        ChatMainScreen.recordButton { isVisible() }
     }
 
     @Test
-    fun prepareAndSendVoiceMessageWithPlayTest() {
+    fun prepareAndSendVoiceMessageWithPlayPreviewTest() {
         prepareHttpMocks(historyAnswer = readTextFileFromRawResourceId(R.raw.history_files_response))
         openChatFromDemoLoginPage()
         val recordButton = uiDevice.findObject(uiSelector)
-
-        ChatMainScreen.recordButton {
-            isVisible()
-            recordButton.longClick()
-            recordButton.waitForExists(100)
-        }
-
-        ChatMainScreen.playPauseButton { isVisible() }
-        ChatMainScreen.quoteSlider { isVisible() }
-        ChatMainScreen.quoteClear { isVisible() }
-
-        val sizeBeforeSend = ChatMainScreen.chatItemsRecyclerView.getSize()
-        ChatMainScreen.sendMessageBtn {
-            isVisible()
-            click()
-            recordButton.waitForExists(1000)
-        }
-        assert(ChatMainScreen.chatItemsRecyclerView.getSize() == sizeBeforeSend + 2)
         ChatMainScreen {
-            chatItemsRecyclerView {
-                isVisible()
-                scrollTo(0)
-                lastChild<ChatMainScreen.ChatRecyclerItem> {
-                    click()
+            assert("Кнопка записи должна отображаться и быть активной") {
+                ChatMainScreen.recordButton.isVisible()
+                recordButton.longClick()
+                recordButton.waitForExists(100)
+            }
+            assert("Прогресс бар для аудиофайла должен отображаться") {
+                quoteSlider.isVisible()
+            }
+            assert("Кнопка \"Удалить вложение\" должна  отображаться") {
+                quoteClear.isVisible()
+            }
+            assert("Кнопка \"Play/Stop\" должна отображаться") {
+                playPauseButton.isVisible()
+                playPauseButton.click()
+                recordButton.waitForExists(4000)
+            }
+            val sizeBeforeSend = chatItemsRecyclerView.getSize()
+            assert("Кнопка \"Отправить сообщение\" должна  отображаться") {
+                sendMessageBtn.isVisible()
+                sendMessageBtn.click()
+            }
+            assert("В списке должно отображаться ${sizeBeforeSend + 2} сообщений") {
+                assert(chatItemsRecyclerView.getSize() == sizeBeforeSend + 2)
+            }
+            assert("В списке сообщений должно быть аудиосообщение от пользователя") {
+                chatItemsRecyclerView {
+                    isVisible()
+                    scrollTo(0)
                 }
-                recordButton.waitForExists(3000)
+            }
+            assert("В списке должно отображаться ${sizeBeforeSend + 2} сообщений") {
+                assert(chatItemsRecyclerView.getSize() == sizeBeforeSend + 2)
             }
         }
-        assert(ChatMainScreen.chatItemsRecyclerView.getSize() == sizeBeforeSend + 2)
     }
 
     @Test
     fun prepareAndSendVoiceMessageNoHistoryWithDeleteMessageTest() {
         openChatFromDemoLoginPage()
         val recordButton = uiDevice.findObject(uiSelector)
-
-        ChatMainScreen.recordButton {
-            isVisible()
-            recordButton.longClick()
-            recordButton.waitForExists(100)
-        }
-
-        ChatMainScreen.playPauseButton { isVisible() }
-        ChatMainScreen.quoteSlider { isVisible() }
-        ChatMainScreen.quoteClear { isVisible() }
-
-        val sizeBeforeSend = ChatMainScreen.chatItemsRecyclerView.getSize()
-        ChatMainScreen.sendMessageBtn {
-            isVisible()
-            click()
-        }
-        assert(ChatMainScreen.chatItemsRecyclerView.getSize() == sizeBeforeSend + 2)
         ChatMainScreen {
-            chatItemsRecyclerView {
-                isVisible()
-                scrollTo(0)
-                lastChild<ChatMainScreen.ChatRecyclerItem> {
-                    click()
+            assert("Кнопка записи должна отображаться и быть активной") {
+                ChatMainScreen.recordButton.isVisible()
+                recordButton.longClick()
+                recordButton.waitForExists(100)
+            }
+            assert("Кнопка \"Play/Stop\" должна отображаться") {
+                playPauseButton.isVisible()
+            }
+            assert("Прогресс бар для аудиофайла должен отображаться") {
+                quoteSlider.isVisible()
+            }
+            assert("Кнопка \"Удалить вложение\" должна  отображаться") {
+                quoteClear.isVisible()
+            }
+
+            val sizeBeforeSend = chatItemsRecyclerView.getSize()
+            assert("Кнопка \"Отправить сообщение\" должна  отображаться") {
+                sendMessageBtn.isVisible()
+                sendMessageBtn.click()
+            }
+            assert("В списке должно отображаться ${sizeBeforeSend + 2} сообщений") {
+                assert(chatItemsRecyclerView.getSize() == sizeBeforeSend + 2)
+            }
+            assert("В списке сообщений должно быть аудиосообщение от пользователя") {
+                chatItemsRecyclerView {
+                    isVisible()
+                    scrollTo(0)
+                    lastChild<ChatMainScreen.ChatRecyclerItem> {
+                        click()
+                    }
                 }
             }
-            onView(withText("Delete")).perform(click())
+            assert("Должно отображаться меню \"Удалить/Попробовать снова\"") {
+                onView(withText("Delete")).perform(click())
+            }
+            assert("В списке должно отображаться ${sizeBeforeSend + 1} сообщений") {
+                assert(chatItemsRecyclerView.getSize() == sizeBeforeSend + 1)
+            }
         }
-        assert(ChatMainScreen.chatItemsRecyclerView.getSize() == sizeBeforeSend + 1)
     }
 }
