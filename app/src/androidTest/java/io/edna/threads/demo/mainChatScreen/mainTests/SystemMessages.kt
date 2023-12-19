@@ -1,7 +1,6 @@
 package io.edna.threads.demo.mainChatScreen.mainTests
 
 import android.content.Intent
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import io.edna.threads.demo.BaseTestCase
@@ -17,7 +16,7 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class SystemMessages : BaseTestCase() {
-    private val intent = Intent(ApplicationProvider.getApplicationContext(), MainActivity::class.java)
+    private val intent = Intent(context, MainActivity::class.java)
 
     @get:Rule
     internal val activityRule = ActivityScenarioRule<MainActivity>(intent)
@@ -40,7 +39,7 @@ class SystemMessages : BaseTestCase() {
                 assert(getSize() == 11) { "Неверное количество сообщений в списке" }
 
                 childWith<ChatMainScreen.ChatRecyclerItem> {
-                    withDescendant { containsText("Оцените наше обслуживание") }
+                    withDescendant { containsText(context.getString(im.threads.R.string.ecc_ask_to_rate)) }
                 }.apply {
                     thumbUp {
                         assert("Иконка с пальцем вверх должна быть видимой и кликабельной", ::isVisible, ::isClickable)

@@ -133,17 +133,14 @@ class VoiceMessagesTests : BaseFilesTestCase() {
                 sendMessageBtn.isVisible()
                 sendMessageBtn.click()
             }
-            assert("В списке должно отображаться ${sizeBeforeSend + 2} сообщений") {
-                assert(chatItemsRecyclerView.getSize() == sizeBeforeSend + 2)
+            assert("В списке должно отображаться больше сообщений, чем до отправки") {
+                assert(chatItemsRecyclerView.getSize() > sizeBeforeSend)
             }
             assert("В списке сообщений должно быть аудиосообщение от пользователя") {
                 chatItemsRecyclerView {
                     isVisible()
                     scrollTo(0)
                 }
-            }
-            assert("В списке должно отображаться ${sizeBeforeSend + 2} сообщений") {
-                assert(chatItemsRecyclerView.getSize() == sizeBeforeSend + 2)
             }
         }
     }

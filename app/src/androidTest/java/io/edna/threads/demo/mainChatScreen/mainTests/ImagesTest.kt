@@ -26,12 +26,17 @@ class ImagesTest : BaseFilesTestCase() {
         openChatFromDemoLoginPage()
         ChatMainScreen {
             chatItemsRecyclerView {
+                scrollToStart()
+                scrollToEnd()
+
                 lastChild<ChatMainScreen.ChatRecyclerItem> {
                     val textToCheck = "Великолепно! Как и вот это."
                     assert("Последний элемент списка должен содержать текст: \"$textToCheck\"") {
                         itemText.containsText(textToCheck)
                     }
                 }
+
+                scrollToStart()
 
                 childAt<ChatMainScreen.ChatRecyclerItem>(1) {
                     image.click()
