@@ -24,6 +24,9 @@ class ImagesTest : BaseFilesTestCase() {
     fun imagesHistoryTest() {
         prepareHttpMocks(historyAnswer = readTextFileFromRawResourceId(R.raw.history_images_response))
         openChatFromDemoLoginPage()
+
+        Thread.sleep(2000)
+
         ChatMainScreen {
             chatItemsRecyclerView {
                 scrollToStart()
@@ -54,6 +57,8 @@ class ImagesTest : BaseFilesTestCase() {
         val textToType = "Such a beautiful image!"
         prepareHttpMocks(historyAnswer = readTextFileFromRawResourceId(R.raw.history_images_response))
         openChatFromDemoLoginPage()
+
+        Thread.sleep(2000)
 
         ChatMainScreen {
             chatItemsRecyclerView {
