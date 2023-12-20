@@ -39,6 +39,7 @@ class NoUserTest : BaseTestCase() {
         ThreadsLib.init(configBuilder)
 
         BuildConfig.IS_ANIMATIONS_DISABLED.set(true)
+        prepareHttpMocks()
         prepareWsMocks()
     }
 

@@ -76,6 +76,7 @@ class VoiceMessagesTests : BaseFilesTestCase() {
 
     @Test
     fun prepareAndRemoveVoiceMessageNoHistoryTest() {
+        prepareHttpMocks()
         openChatFromDemoLoginPage()
         val uiRecordButton = uiDevice.findObject(uiSelector)
         ChatMainScreen {
@@ -149,6 +150,7 @@ class VoiceMessagesTests : BaseFilesTestCase() {
 
     @Test
     fun prepareAndSendVoiceMessageNoHistoryWithDeleteMessageTest() {
+        prepareHttpMocks()
         openChatFromDemoLoginPage()
         val recordButton = uiDevice.findObject(uiSelector)
         ChatMainScreen {

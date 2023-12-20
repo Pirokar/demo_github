@@ -33,7 +33,6 @@ class SystemMessages : BaseTestCase() {
     fun systemMessagesTest() {
         prepareHttpMocks(historyAnswer = readTextFileFromRawResourceId(R.raw.history_system_response))
         openChatFromDemoLoginPage()
-
         ChatMainScreen {
             chatItemsRecyclerView {
                 waitListForNotEmpty(5000)
