@@ -1,5 +1,7 @@
 package io.edna.threads.demo.mainChatScreen.mainTests
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
@@ -16,6 +18,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
+@RequiresApi(api = Build.VERSION_CODES.Q)
 class VoiceMessagesTests : BaseFilesTestCase() {
 
     @Rule
@@ -40,6 +43,7 @@ class VoiceMessagesTests : BaseFilesTestCase() {
     }
 
     @Test
+    @RequiresApi(api = Build.VERSION_CODES.Q)
     fun prepareAndRemoveVoiceMessageTest() {
         prepareHttpMocks(historyAnswer = readTextFileFromRawResourceId(R.raw.history_files_response))
         openChatFromDemoLoginPage()
@@ -72,6 +76,7 @@ class VoiceMessagesTests : BaseFilesTestCase() {
     }
 
     @Test
+    @RequiresApi(api = Build.VERSION_CODES.Q)
     fun prepareAndRemoveVoiceMessageNoHistoryTest() {
         prepareHttpMocks()
         openChatFromDemoLoginPage()
@@ -104,6 +109,7 @@ class VoiceMessagesTests : BaseFilesTestCase() {
     }
 
     @Test
+    @RequiresApi(api = Build.VERSION_CODES.Q)
     fun prepareAndSendVoiceMessageWithPlayPreviewTest() {
         prepareHttpMocks(historyAnswer = readTextFileFromRawResourceId(R.raw.history_files_response))
         openChatFromDemoLoginPage()
@@ -143,6 +149,7 @@ class VoiceMessagesTests : BaseFilesTestCase() {
     }
 
     @Test
+    @RequiresApi(api = Build.VERSION_CODES.Q)
     fun prepareAndSendVoiceMessageNoHistoryWithPlayMessageTest() {
         prepareHttpMocks()
         openChatFromDemoLoginPage()
