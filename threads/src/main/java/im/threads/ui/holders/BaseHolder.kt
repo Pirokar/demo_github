@@ -723,7 +723,7 @@ abstract class BaseHolder internal constructor(
     protected fun getFileDescriptionText(fileName: String?, fileDescription: FileDescription): String {
         return (fileName ?: "file") +
             if (fileDescription.size > 0) {
-                fileDescription.size.toFileSize().trimIndent()
+                " "+fileDescription.size.toFileSize().trimIndent()
             } else {
                 ""
             }
@@ -731,23 +731,23 @@ abstract class BaseHolder internal constructor(
 
     protected fun showQuote(
         quote: Quote,
-        onQuoteClickListener: View.OnClickListener,
+        onQuoteClickListener: View.OnClickListener?,
         quoteLayout: LinearLayout,
         quoteTextHeader: TextView,
         quoteTextDescription: TextView,
         quoteTextTimeStamp: TextView,
         quoteFileImage: ImageView,
-        quoteProgressButton: CircularProgressButton
+        quoteProgressButton: CircularProgressButton?
     ) {
         quoteLayout.isVisible = true
         if (quote.modified == ModificationStateEnum.DELETED) {
             quoteTextDescription.setTextColor(ContextCompat.getColor(itemView.context, style.systemMessageTextColorResId))
             quoteTextDescription.visible()
             quoteTextDescription.text = itemView.context.getString(R.string.ecc_message_deleted)
-            quoteProgressButton.visibility = View.GONE
+            quoteProgressButton?.visibility = View.GONE
             quoteFileImage.visibility = View.GONE
         } else {
-            quoteProgressButton.isVisible = false
+            quoteProgressButton?.isVisible = false
             quoteTextHeader.text = if (quote.phraseOwnerTitle == null) {
                 itemView.context
                     .getString(R.string.ecc_I)
@@ -755,7 +755,7 @@ abstract class BaseHolder internal constructor(
                 quote.phraseOwnerTitle
             }
             quoteTextDescription.setTextColor(ContextCompat.getColor(itemView.context, style.incomingMessageTextColor))
-            quoteProgressButton.visibility = View.GONE
+            quoteProgressButton?.visibility = View.GONE
             quoteTextDescription.text = quote.text
             quoteTextTimeStamp.text = itemView.context
                 .getString(R.string.ecc_sent_at, quoteSdf.format(Date(quote.timeStamp)))
@@ -763,6 +763,10 @@ abstract class BaseHolder internal constructor(
             val quoteFileDescription = quote.fileDescription
             quoteFileImage.visibility = View.GONE
             if (quoteFileDescription != null) {
+                fileNameFromDescription(quoteFileDescription) { fileName ->
+                    quoteTextDescription.text =
+                        getFileDescriptionText(fileName, quoteFileDescription)
+                }
                 if (FileUtils.isVoiceMessage(quoteFileDescription)) {
                     quoteTextDescription.setText(R.string.ecc_voice_message)
                 } else {
@@ -785,12 +789,8 @@ abstract class BaseHolder internal constructor(
                         }
                         quoteFileImage.setOnClickListener(onQuoteClickListener)
                     } else {
-                        fileNameFromDescription(quoteFileDescription) { fileName ->
-                            quoteTextDescription.text =
-                                getFileDescriptionText(fileName, quoteFileDescription)
-                        }
-                        quoteProgressButton.setOnClickListener(onQuoteClickListener)
-                        quoteProgressButton.setProgress(if (quoteFileDescription.fileUri != null) 100 else quoteFileDescription.downloadProgress)
+                        quoteProgressButton?.setOnClickListener(onQuoteClickListener)
+                        quoteProgressButton?.setProgress(if (quoteFileDescription.fileUri != null) 100 else quoteFileDescription.downloadProgress)
                     }
                 }
             }
