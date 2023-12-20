@@ -1,8 +1,5 @@
 package io.edna.threads.demo.mainChatScreen.mainTests
 
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
@@ -146,7 +143,7 @@ class VoiceMessagesTests : BaseFilesTestCase() {
     }
 
     @Test
-    fun prepareAndSendVoiceMessageNoHistoryWithDeleteMessageTest() {
+    fun prepareAndSendVoiceMessageNoHistoryWithPlayMessageTest() {
         prepareHttpMocks()
         openChatFromDemoLoginPage()
         val recordButton = uiDevice.findObject(uiSelector)
@@ -183,11 +180,8 @@ class VoiceMessagesTests : BaseFilesTestCase() {
                     }
                 }
             }
-            assert("Должно отображаться меню \"Удалить/Попробовать снова\"") {
-                onView(withText("Delete")).perform(click())
-            }
-            assert("В списке должно отображаться ${sizeBeforeSend + 1} сообщений") {
-                assert(chatItemsRecyclerView.getSize() == sizeBeforeSend + 1)
+            assert("В списке должно отображаться ${sizeBeforeSend + 2} сообщений") {
+                assert(chatItemsRecyclerView.getSize() == sizeBeforeSend + 2)
             }
         }
     }
