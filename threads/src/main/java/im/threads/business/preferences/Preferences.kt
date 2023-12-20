@@ -16,8 +16,8 @@ import java.lang.reflect.Type
 import java.security.GeneralSecurityException
 
 open class Preferences(private val context: Context) {
-    private val storeName = "im.threads.internal.utils.PrefStore"
-    private val encryptedStoreName = "im.threads.internal.utils.EncryptedPrefStore"
+    private val storeName = "$preferencesNamePrefix.utils.PrefStore"
+    private val encryptedStoreName = "$preferencesNamePrefix.utils.EncryptedPrefStore"
 
     val sharedPreferences: SharedPreferences by lazy {
         try {
@@ -130,11 +130,16 @@ open class Preferences(private val context: Context) {
         val children = dir.list()
         if (children != null) {
             for (i in children.indices) {
-                try {
-                    context.getSharedPreferences(children[i].replace(".xml", ""), Context.MODE_PRIVATE).edit()
-                        .clear().commit()
-                } catch (ignored: Exception) {}
-                File(dir, children[i]).delete()
+                if (children[i].startsWith(Preferences.preferencesNamePrefix)) {
+                    try {
+                        context.getSharedPreferences(
+                            children[i].replace(".xml", ""),
+                            Context.MODE_PRIVATE
+                        ).edit()
+                            .clear().commit()
+                    } catch (ignored: Exception) {}
+                    File(dir, children[i]).delete()
+                }
             }
         }
     }
@@ -146,6 +151,7 @@ open class Preferences(private val context: Context) {
 
     companion object {
         private val ramPreferences = HashMap<String, String>()
+        const val preferencesNamePrefix = "im.threads.internal"
         var isRamPreferencesLoaded = false
 
         @Synchronized
