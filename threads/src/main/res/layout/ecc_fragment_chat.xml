@@ -318,7 +318,6 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <ImageButton
@@ -362,7 +361,6 @@
                     android:id="@+id/consult_title"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_gravity="center_vertical"
                     android:layout_marginStart="@dimen/ecc_margin_half"
                     android:layout_marginEnd="@dimen/ecc_margin_half"
                     android:layout_marginTop="@dimen/ecc_margin_quarter"
@@ -374,7 +372,7 @@
                     <im.threads.ui.widget.textView.ToolbarTitleTextView
                         android:id="@+id/consult_name"
                         android:layout_width="match_parent"
-                        android:layout_height="26dp"
+                        android:layout_height="wrap_content"
                         android:ellipsize="end"
                         android:gravity="center_vertical"
                         android:lines="1"
@@ -385,7 +383,7 @@
                     <im.threads.ui.widget.textView.ToolbarSubtitleTextView
                         android:id="@+id/subtitle"
                         android:layout_width="match_parent"
-                        android:layout_height="22dp"
+                        android:layout_height="wrap_content"
                         android:ellipsize="end"
                         android:gravity="center_vertical"
                         android:maxLines="1"
