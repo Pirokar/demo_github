@@ -723,7 +723,7 @@ abstract class BaseHolder internal constructor(
     protected fun getFileDescriptionText(fileName: String?, fileDescription: FileDescription): String {
         return (fileName ?: "file") +
             if (fileDescription.size > 0) {
-                " "+fileDescription.size.toFileSize().trimIndent()
+                " ${fileDescription.size.toFileSize().trimIndent()}"
             } else {
                 ""
             }
