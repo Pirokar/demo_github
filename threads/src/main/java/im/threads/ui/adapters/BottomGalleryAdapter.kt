@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import im.threads.R
 import im.threads.business.config.BaseConfig
-import im.threads.business.utils.Balloon
 import im.threads.business.utils.Balloon.show
 import im.threads.business.utils.FileUtils
 import im.threads.ui.config.Config
@@ -76,12 +75,12 @@ internal class BottomGalleryAdapter(
                     true
                 } else {
                     // Недопустимый размер файла
-                    Balloon.show(context, context.getString(R.string.ecc_not_allowed_file_size, FileHelper.maxAllowedFileSize))
+                    show(context, context.getString(R.string.ecc_not_allowed_file_size, FileHelper.maxAllowedFileSize))
                     false
                 }
             } else {
                 // Недопустимое расширение файла
-                Balloon.show(context, context.getString(R.string.ecc_not_allowed_file_extension))
+                show(context, context.getString(R.string.ecc_not_allowed_file_extension))
                 false
             }
         } else {
