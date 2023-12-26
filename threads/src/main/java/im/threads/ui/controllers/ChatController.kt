@@ -721,6 +721,11 @@ class ChatController private constructor() {
 
     private fun updateSettings(settings: SettingsResponse?): Boolean {
         if (settings != null) {
+            val typingInterval = settings.typingMessagesIntervalSeconds
+            if (typingInterval != null) {
+                preferences.save(PreferencesCoreKeys.TYPING_MESSAGES_INTERVAL_SECONDS, typingInterval)
+                fragment?.get()?.configureUserTypingSubscription()
+            }
             val clientNotificationType = settings.clientNotificationDisplayType
             if (!clientNotificationType.isNullOrEmpty()) {
                 val type = ClientNotificationDisplayType.fromString(
@@ -732,12 +737,8 @@ class ChatController private constructor() {
                     type.name
                 )
                 chatUpdateProcessor.postClientNotificationDisplayType(type)
-                return true
             }
-            if (settings.typingMessagesIntervalSeconds != null) {
-                preferences.save(PreferencesCoreKeys.TYPING_MESSAGES_INTERVAL_SECONDS, settings.typingMessagesIntervalSeconds)
-                fragment?.get()?.configureUserTypingSubscription()
-            }
+            return true
         }
         return false
     }
