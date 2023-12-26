@@ -726,12 +726,17 @@ class ChatController private constructor() {
                 val type = ClientNotificationDisplayType.fromString(
                     clientNotificationType
                 )
+
                 preferences.save(
                     PreferencesUiKeys.CLIENT_NOTIFICATION_DISPLAY_TYPE,
                     type.name
                 )
                 chatUpdateProcessor.postClientNotificationDisplayType(type)
                 return true
+            }
+            if (settings.typingMessagesIntervalSeconds != null) {
+                preferences.save(PreferencesCoreKeys.TYPING_MESSAGES_INTERVAL_SECONDS, settings.typingMessagesIntervalSeconds)
+                fragment?.get()?.configureUserTypingSubscription()
             }
         }
         return false
