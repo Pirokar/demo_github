@@ -55,7 +55,6 @@ class MessageParser {
                 ChatItemType.OPERATOR_JOINED,
                 ChatItemType.OPERATOR_LEFT -> getConsultConnection(
                     sentAt,
-                    shortMessage,
                     fullMessage
                 )
 
@@ -118,13 +117,11 @@ class MessageParser {
 
     private fun getConsultConnection(
         sentAt: Long,
-        shortMessage: String?,
         fullMessage: JsonObject
     ): ConsultConnectionMessage {
         val content =
             BaseConfig.getInstance().gson.fromJson(fullMessage, OperatorJoinedContent::class.java)
         val operator = content.operator
-        val titleArray = shortMessage?.split(" ".toRegex())?.dropLastWhile { it.isEmpty() }?.toTypedArray()
         return ConsultConnectionMessage(
             content.uuid, operator!!.id.toString(),
             content.type,
@@ -133,11 +130,7 @@ class MessageParser {
             sentAt,
             operator.photoUrl,
             operator.status,
-            if (titleArray.isNullOrEmpty()) {
-                null
-            } else {
-                titleArray[0]
-            },
+            null,
             operator.organizationUnit,
             operator.role,
             content.display,
