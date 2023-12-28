@@ -720,6 +720,7 @@ class ThreadsGateTransport(
 
         override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
             LoggerEdna.info("[WS] ☚\u274C On Websocket error : ${t.message}")
+            LoggerEdna.error("[WS] ☚\u274C On Websocket error : ", t)
 
             val message = if (t.localizedMessage.isNullOrBlank()) t.message else t.localizedMessage
             chatUpdateProcessor.postError(TransportException(message))

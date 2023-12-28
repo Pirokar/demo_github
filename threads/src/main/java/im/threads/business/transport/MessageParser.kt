@@ -124,6 +124,7 @@ class MessageParser {
         val content =
             BaseConfig.getInstance().gson.fromJson(fullMessage, OperatorJoinedContent::class.java)
         val operator = content.operator
+        val titleArray = shortMessage?.split(" ".toRegex())?.dropLastWhile { it.isEmpty() }?.toTypedArray()
         return ConsultConnectionMessage(
             content.uuid, operator!!.id.toString(),
             content.type,
@@ -132,8 +133,11 @@ class MessageParser {
             sentAt,
             operator.photoUrl,
             operator.status,
-            shortMessage?.split(" ".toRegex())?.dropLastWhile { it.isEmpty() }?.toTypedArray()
-                ?.get(0),
+            if (titleArray.isNullOrEmpty()) {
+                null
+            } else {
+                titleArray[0]
+            },
             operator.organizationUnit,
             operator.role,
             content.display,
