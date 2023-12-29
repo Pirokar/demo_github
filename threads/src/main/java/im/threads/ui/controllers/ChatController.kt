@@ -109,6 +109,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Response
 import java.lang.ref.WeakReference
+import java.net.HttpURLConnection
 import java.util.Collections
 import java.util.concurrent.TimeUnit
 
@@ -681,20 +682,30 @@ class ChatController private constructor() {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                     { response: Response<ConfigResponse?>? ->
-                        val responseBody = response?.body()
-                        if (responseBody != null) {
-                            val settingsLoaded = updateSettings(responseBody.settings)
-                            val attachmentSettingsLoaded = updateAttachmentSettings(responseBody.attachmentSettings)
-                            updateSchedule(responseBody.schedule)
-                            if (settingsLoaded && attachmentSettingsLoaded) {
-                                chatState.changeState(ChatStateEnum.SETTINGS_LOADED)
-                            } else {
-                                val message = getErrorMessage(
-                                    settingsLoaded,
-                                    attachmentSettingsLoaded
-                                )
-                                info("error on getting settings: $message")
-                                chatUpdateProcessor.postError(TransportException(message))
+                        if (response?.code() != HttpURLConnection.HTTP_OK) {
+                            val message = getErrorMessage(
+                                settingsLoaded = false,
+                                attachmentSettingsLoaded = false
+                            )
+                            info("error on getting settings: $message")
+                            chatUpdateProcessor.postError(TransportException(message))
+                        } else {
+                            val responseBody = response?.body()
+                            if (responseBody != null) {
+                                val settingsLoaded = updateSettings(responseBody.settings)
+                                val attachmentSettingsLoaded =
+                                    updateAttachmentSettings(responseBody.attachmentSettings)
+                                updateSchedule(responseBody.schedule)
+                                if (settingsLoaded && attachmentSettingsLoaded) {
+                                    chatState.changeState(ChatStateEnum.SETTINGS_LOADED)
+                                } else {
+                                    val message = getErrorMessage(
+                                        settingsLoaded,
+                                        attachmentSettingsLoaded
+                                    )
+                                    info("error on getting settings: $message")
+                                    chatUpdateProcessor.postError(TransportException(message))
+                                }
                             }
                         }
                     }
