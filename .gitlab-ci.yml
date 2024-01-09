@@ -20,11 +20,10 @@ before_script:
   - chmod +x ./gradlew
   - export GRADLE_USER_HOME=$PWD/.gradle
 
-include:
-  - local: pipelineBase/buildAAR.yml
-
 # Основные шаги
 stages:
+  # - environment
+  # - build
   - lint
   - test
 
