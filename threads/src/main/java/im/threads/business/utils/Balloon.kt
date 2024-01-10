@@ -2,7 +2,6 @@ package im.threads.business.utils
 
 import android.app.Activity
 import android.content.Context
-import android.os.Looper
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.widget.Toast
@@ -11,25 +10,11 @@ import im.threads.R
 import im.threads.databinding.EccSnackbarBinding
 import im.threads.ui.config.Config.Companion.getInstance
 import im.threads.ui.utils.ColorsHelper
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
-object Balloon {
+internal object Balloon {
 
     @JvmStatic
     fun show(context: Context, message: String) {
-        if (Looper.getMainLooper().thread == Thread.currentThread()) {
-            showOnUiThread(context, message)
-        } else {
-            CoroutineScope(Dispatchers.Main).launch {
-                showOnUiThread(context, message)
-            }
-        }
-    }
-
-    @JvmStatic
-    private fun showOnUiThread(context: Context, message: String) {
         if (getInstance().chatStyle.isToastStylable && context is Activity) {
             showSnackbar(context, message)
         } else {

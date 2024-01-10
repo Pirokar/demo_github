@@ -32,10 +32,8 @@ import im.threads.business.models.CampaignMessage
 import im.threads.business.models.ChatItem
 import im.threads.business.models.FileDescription
 import im.threads.business.models.MessageStatus
-import im.threads.business.models.Quote
 import im.threads.business.models.UserPhrase
 import im.threads.business.models.enums.AttachmentStateEnum
-import im.threads.business.models.enums.ModificationStateEnum
 import im.threads.business.ogParser.OGDataContent
 import im.threads.business.ogParser.OpenGraphParser
 import im.threads.business.utils.FileUtils.isImage
