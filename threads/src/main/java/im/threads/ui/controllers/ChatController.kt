@@ -766,6 +766,7 @@ class ChatController private constructor() {
                         fragment?.get()?.showQuickReplies(fragment?.get()?.quickReplyItem)
                     }
                 }
+                currentScheduleInfo?.timeStamp = System.currentTimeMillis()
                 fragment?.get()?.addChatItem(currentScheduleInfo)
             }
         }
