@@ -682,7 +682,7 @@ class ChatController private constructor() {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                     { response: Response<ConfigResponse?>? ->
-                        if (response?.code() != HttpURLConnection.HTTP_OK) {
+                        if (response?.isSuccessful != true) {
                             val message = getErrorMessage(
                                 settingsLoaded = false,
                                 attachmentSettingsLoaded = false
