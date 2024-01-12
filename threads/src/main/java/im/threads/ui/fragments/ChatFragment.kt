@@ -85,6 +85,8 @@ import im.threads.business.models.UnreadMessages
 import im.threads.business.models.UpcomingUserMessage
 import im.threads.business.models.UserPhrase
 import im.threads.business.models.enums.ModificationStateEnum
+import im.threads.business.preferences.Preferences
+import im.threads.business.preferences.PreferencesCoreKeys
 import im.threads.business.serviceLocator.core.inject
 import im.threads.business.useractivity.UserActivityTimeProvider.getLastUserActivityTimeCounter
 import im.threads.business.utils.Balloon.show
@@ -138,11 +140,12 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileNotFoundException
 import java.lang.ref.WeakReference
@@ -164,6 +167,7 @@ class ChatFragment :
     ChatCenterAudioConverterCallback,
     OnAllowPermissionClickListener {
 
+    private val preferences: Preferences by inject()
     private val handler = Handler(Looper.getMainLooper())
     private val fileNameDateFormat = SimpleDateFormat("dd.MM.yyyy.HH:mm:ss.S", Locale.getDefault())
     private val inputTextObservable = BehaviorSubject.createDefault("")
@@ -830,16 +834,25 @@ class ChatFragment :
         }
     }
 
-    private fun configureUserTypingSubscription() {
-        subscribe(
-            inputTextObservable
-                .throttleLatest(INPUT_DELAY, TimeUnit.MILLISECONDS)
-                .filter { charSequence: String -> charSequence.isNotEmpty() }
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ input: String? ->
-                    onInputChanged(input)
-                }) { error: Throwable? -> error("configureInputChangesSubscription ", error) }
-        )
+    fun configureUserTypingSubscription() {
+        coroutineScope.launch {
+            delay(500)
+            var typingIntervalSeconds = INPUT_DELAY
+            preferences.get<Int>(PreferencesCoreKeys.TYPING_MESSAGES_INTERVAL_SECONDS)?.let {
+                typingIntervalSeconds = it
+            }
+            withContext(Dispatchers.Main) {
+                subscribe(
+                    inputTextObservable
+                        .throttleLatest(typingIntervalSeconds.toLong(), TimeUnit.SECONDS)
+                        .filter { charSequence: String -> charSequence.isNotEmpty() }
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe({ input: String? ->
+                            onInputChanged(input)
+                        }) { error: Throwable? -> error("configureInputChangesSubscription ", error) }
+                )
+            }
+        }
     }
 
     private fun onInputChanged(input: String?) {
@@ -2347,7 +2360,7 @@ class ChatFragment :
             chatBackButton.visible()
         }
 
-        CoroutineScope(Dispatchers.IO).launch {
+        coroutineScope.launch {
             if (chatController.isMessageSent(chatPhrase.id)) {
                 withMainContext {
                     setContextIconDefaultTint(reply)
@@ -2860,7 +2873,7 @@ class ChatFragment :
         private const val REQUEST_PERMISSION_RECORD_AUDIO = 204
         private const val ARG_OPEN_WAY = "arg_open_way"
         private const val INVISIBLE_MESSAGES_COUNT = 3
-        private const val INPUT_DELAY: Long = 3000
+        private const val INPUT_DELAY: Int = 3
         private const val INPUT_EDIT_VIEW_MIN_LINES_COUNT = 1
         private const val INPUT_EDIT_VIEW_MAX_LINES_COUNT = 7
         var isShown = false
