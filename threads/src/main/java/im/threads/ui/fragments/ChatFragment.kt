@@ -377,6 +377,7 @@ class ChatFragment :
             hideProgressBar()
             chatItemsRecycler.invisible()
             bottomLayout.invisible()
+            info("Hiding bottom layout, recycler view, progress bar, welcome screen. Showing error layout.")
             chatErrorLayout.errorLayout.visible()
             initErrorViewStyles()
             chatErrorLayout.errorMessage.text = message
@@ -386,7 +387,9 @@ class ChatFragment :
 
     internal fun hideErrorView(showList: Boolean = true) = binding?.apply {
         chatErrorLayout.errorLayout.gone()
+        info("Hiding error layout")
         bottomLayout.visible()
+        info("Showing bottom layout")
         isNeedToShowWelcome {
             if (it && showList) {
                 showWelcomeScreen(chatController.isChatReady())
@@ -740,6 +743,7 @@ class ChatFragment :
         consultName.setOnLongClickListener {
             val context = context
             if (context != null) {
+                show(context, context.getString(R.string.ecc_saving_logs))
                 LogZipSender(context, fileProvider).shareLogs()
             }
             true
@@ -1940,6 +1944,7 @@ class ChatFragment :
     }
 
     internal fun showBottomBar() {
+        info("Showing bottom layout")
         binding?.bottomLayout.visible()
     }
 
