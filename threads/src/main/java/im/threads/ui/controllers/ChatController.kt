@@ -687,7 +687,7 @@ class ChatController private constructor() {
                                 settingsLoaded = false,
                                 attachmentSettingsLoaded = false
                             )
-                            info("error on getting settings: $message")
+                            error("error on getting settings: $message")
                             chatUpdateProcessor.postError(TransportException(message))
                         } else {
                             val responseBody = response?.body()
