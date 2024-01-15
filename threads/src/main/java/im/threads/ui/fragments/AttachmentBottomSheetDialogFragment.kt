@@ -15,15 +15,11 @@ import im.threads.R
 import im.threads.business.useractivity.UserActivityTimeProvider.getLastUserActivityTimeCounter
 import im.threads.ui.config.Config.Companion.getInstance
 import im.threads.ui.utils.ColorsHelper
-import im.threads.ui.views.BottomGallery
 import im.threads.ui.views.BottomSheetView
 import im.threads.ui.views.BottomSheetView.ButtonsListener
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 
 class AttachmentBottomSheetDialogFragment : BottomSheetDialogFragment(), ButtonsListener {
     private var callback: Callback? = null
-    private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -69,7 +65,6 @@ class AttachmentBottomSheetDialogFragment : BottomSheetDialogFragment(), Buttons
         val chatStyle = getInstance().chatStyle
         val view = inflater.inflate(R.layout.ecc_bottom_sheet_dialog_attachment, container, false)
         val fileInputSheet = view.findViewById<BottomSheetView>(R.id.file_input_sheet)
-        val bottomGallery = view.findViewById<BottomGallery>(R.id.bottom_gallery)
         val attachmentBottomSheetButtonTintResId = if (chatStyle.chatBodyIconsTint == 0) {
             chatStyle.attachmentBottomSheetButtonTintResId
         } else {
@@ -77,7 +72,6 @@ class AttachmentBottomSheetDialogFragment : BottomSheetDialogFragment(), Buttons
         }
         fileInputSheet.setButtonsTint(attachmentBottomSheetButtonTintResId)
         fileInputSheet.setButtonsListener(this)
-        val allItems = ArrayList<Uri>()
         val context = context
         if (context != null) {
             ColorsHelper.setBackgroundColor(
@@ -86,11 +80,6 @@ class AttachmentBottomSheetDialogFragment : BottomSheetDialogFragment(), Buttons
                 chatStyle.chatMessageInputColor
             )
         }
-        ColorsHelper.setBackgroundColor(
-            context,
-            bottomGallery,
-            chatStyle.chatMessageInputColor
-        )
         return view
     }
 
