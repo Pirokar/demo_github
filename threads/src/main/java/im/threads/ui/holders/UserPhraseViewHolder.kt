@@ -32,10 +32,8 @@ import im.threads.business.models.CampaignMessage
 import im.threads.business.models.ChatItem
 import im.threads.business.models.FileDescription
 import im.threads.business.models.MessageStatus
-import im.threads.business.models.Quote
 import im.threads.business.models.UserPhrase
 import im.threads.business.models.enums.AttachmentStateEnum
-import im.threads.business.models.enums.ModificationStateEnum
 import im.threads.business.ogParser.OGDataContent
 import im.threads.business.ogParser.OpenGraphParser
 import im.threads.business.utils.FileUtils.isImage
@@ -266,7 +264,6 @@ class UserPhraseViewHolder(
         val isImage = isImage(fileDescription)
 
         setImageSize(imageRoot)
-        rightTextRow.layoutParams.width = getImageViewSize()
         setLayoutMargins(false, bubbleLayout)
         if (isImage) {
             imageRoot.visible()
@@ -412,7 +409,6 @@ class UserPhraseViewHolder(
                         val paddingRight = resources.getDimensionPixelSize(chatStyle.bubbleOutgoingPaddingRight)
                         val paddingBottom = resources.getDimensionPixelSize(chatStyle.bubbleOutgoingPaddingBottom)
                         ogDataLayout.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom)
-                        ogDataLayout.layoutParams.width = getImageViewSize()
                     } else {
                         if (it.fileUri != null) {
                             it.downloadProgress = 100
