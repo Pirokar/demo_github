@@ -166,6 +166,7 @@ class ChatController private constructor() {
     private val attachmentsHistory = HashMap<String, AttachmentStateEnum>()
 
     private var enableModel: InputFieldEnableModel? = null
+    private var disabledInput: Boolean = false
 
     init {
         subscribeToChatEvents()
@@ -450,6 +451,7 @@ class ChatController private constructor() {
         progressReceiver?.let {
             LocalBroadcastManager.getInstance(activity).registerReceiver(it, intentFilter)
         }
+        subscribeToDisableInput()
     }
 
     internal fun unbindFragment() {
@@ -463,6 +465,18 @@ class ChatController private constructor() {
     }
 
     internal fun getChatItemByCorrelationIdFromDb(id: String) = database.getChatItemByCorrelationId(id)
+
+    private fun subscribeToDisableInput() {
+        CoroutineScope(Dispatchers.Unconfined).launch {
+            Config.getInstance().disabledUserInput.collect { disabledUserInput ->
+                disabledInput = disabledUserInput
+                withContext(Dispatchers.Main) {
+                    fragment?.get()?.updateInputEnable(enableModel, disabledInput)
+                    fragment?.get()?.updateChatAvailabilityMessage(enableModel)
+                }
+            }
+        }
+    }
 
     private fun checkEmptyStateVisibility() {
         if (!ThreadsLibBase.getInstance().isUserInitialized) {
@@ -1524,7 +1538,7 @@ class ChatController private constructor() {
             info("UserInputState_change. isInputBlockedFromMessage: $isInputBlockedFromMessage, $inputFieldEnableModel")
         }
         enableModel = inputFieldEnableModel
-        fragment?.get()?.updateInputEnable(inputFieldEnableModel)
+        fragment?.get()?.updateInputEnable(inputFieldEnableModel, disabledInput)
         fragment?.get()?.updateChatAvailabilityMessage(inputFieldEnableModel)
     }
 

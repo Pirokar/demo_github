@@ -2041,20 +2041,35 @@ class ChatFragment :
         }
     }
 
-    internal fun updateInputEnable(enableModel: InputFieldEnableModel) = binding?.apply {
-        isSendBlocked = !enableModel.isEnabledSendButton
-        val isChatWorking = chatController.isChatWorking() || chatController.isSendDuringInactive()
-        sendMessage.isEnabled = enableModel.isEnabledSendButton && isChatWorking &&
-            (!TextUtils.isEmpty(inputEditView.text) || hasAttachments())
-        inputEditView.isEnabled = enableModel.isEnabledInputField && isChatWorking
-        addAttachment.isEnabled = enableModel.isEnabledInputField && isChatWorking
-        if (!enableModel.isEnabledInputField) {
-            inputEditView.hideKeyboard(100)
+    internal fun updateInputEnable(
+        enableModel: InputFieldEnableModel?,
+        disableInputFields: Boolean
+    ) = binding?.apply {
+        if (disableInputFields) {
+            sendMessage.isEnabled = false
+            inputEditView.isEnabled = false
+            addAttachment.isEnabled = false
+            recordButton.isEnabled = false
+        } else {
+            if (enableModel != null) {
+                isSendBlocked = !enableModel.isEnabledSendButton
+                val isChatWorking = chatController.isChatWorking() || chatController.isSendDuringInactive()
+                sendMessage.isEnabled = enableModel.isEnabledSendButton && isChatWorking &&
+                    (!TextUtils.isEmpty(inputEditView.text) || hasAttachments())
+
+                inputEditView.isEnabled = enableModel.isEnabledInputField && isChatWorking
+                addAttachment.isEnabled = enableModel.isEnabledInputField && isChatWorking
+                recordButton.isEnabled = enableModel.isEnabledInputField && isChatWorking
+                if (!enableModel.isEnabledInputField) {
+                    inputEditView.hideKeyboard(100)
+                }
+            }
         }
     }
 
-    internal fun updateChatAvailabilityMessage(enableModel: InputFieldEnableModel) {
-        if (enableModel.isEnabledSendButton &&
+    internal fun updateChatAvailabilityMessage(enableModel: InputFieldEnableModel?) {
+        if (enableModel != null &&
+            enableModel.isEnabledSendButton &&
             enableModel.isEnabledInputField &&
             chatController.isChatWorking()
         ) {

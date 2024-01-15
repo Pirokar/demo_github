@@ -69,6 +69,15 @@ class ThreadsLib(context: Context) : ThreadsLibBase(context) {
     }
 
     /**
+     * Используется для безусловного отключения ввода(поле ввода, кнопки "отправить", "добавить вложение")
+     * @param disableUserInput true - для отключения пввода, false - для включения
+     */
+    fun disableUserInput(disableUserInput: Boolean) {
+        config.disabledUserInput.tryEmit(disableUserInput)
+        LoggerEdna.info("Called disableUserInput($disableUserInput).")
+    }
+
+    /**
      * Used to post messages to chat as if written by client
      *
      * @return true, if message was successfully added to messaging queue, otherwise false
