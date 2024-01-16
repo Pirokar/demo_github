@@ -167,4 +167,5 @@
     <string name="ecc_settings_not_loaded">Failed to load chat settings</string>
     <string name="ecc_attachment_settings_not_loaded">Failed to load attachments settings</string>
     <string name="ecc_library_not_init">ChatCenter SDK is not initialized</string>
+    <string name="ecc_disabled_input_message">This chat is viewable only</string>
 </resources>

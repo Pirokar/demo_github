@@ -2067,7 +2067,18 @@ class ChatFragment :
         }
     }
 
-    internal fun updateChatAvailabilityMessage(enableModel: InputFieldEnableModel?) {
+    internal fun updateChatAvailabilityMessage(
+        enableModel: InputFieldEnableModel?,
+        disableInputFields: Boolean
+    ) {
+        if (disableInputFields) {
+            val disabledInputMessage = ScheduleInfo()
+            disabledInputMessage.timeStamp = System.currentTimeMillis()
+            disabledInputMessage.notification = getString(R.string.ecc_disabled_input_message)
+            addChatItem(disabledInputMessage)
+        } else {
+            chatAdapter?.removeSchedule(false)
+        }
         if (enableModel != null &&
             enableModel.isEnabledSendButton &&
             enableModel.isEnabledInputField &&

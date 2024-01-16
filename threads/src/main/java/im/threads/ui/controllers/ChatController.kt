@@ -472,7 +472,7 @@ class ChatController private constructor() {
                 disabledInput = disabledUserInput
                 withContext(Dispatchers.Main) {
                     fragment?.get()?.updateInputEnable(enableModel, disabledInput)
-                    fragment?.get()?.updateChatAvailabilityMessage(enableModel)
+                    fragment?.get()?.updateChatAvailabilityMessage(enableModel, disabledInput)
                 }
             }
         }
@@ -1539,7 +1539,7 @@ class ChatController private constructor() {
         }
         enableModel = inputFieldEnableModel
         fragment?.get()?.updateInputEnable(inputFieldEnableModel, disabledInput)
-        fragment?.get()?.updateChatAvailabilityMessage(inputFieldEnableModel)
+        fragment?.get()?.updateChatAvailabilityMessage(inputFieldEnableModel, disabledInput)
     }
 
     private fun isInputFieldEnabled(): Boolean {
