@@ -80,19 +80,19 @@ class DisableInputTest : BaseTestCase() {
         openChatFromDemoLoginPage()
         ChatMainScreen {
             inputEditView {
-                io.edna.threads.demo.assert("Поле для ввода должно быть видимым и активным") {
+                assert("Поле для ввода должно быть видимым и активным") {
                     isVisible()
                     isEnabled()
                 }
             }
             recordButton {
-                io.edna.threads.demo.assert("Кнопка аудио сообщения должна быть видимой и активной") {
+                assert("Кнопка аудио сообщения должна быть видимой и активной") {
                     isVisible()
                     isEnabled()
                 }
             }
             addAttachmentBtn {
-                io.edna.threads.demo.assert("Кнопка добавить вложение должна быть видимой и активной") {
+                assert("Кнопка добавить вложение должна быть видимой и активной") {
                     isVisible()
                     isEnabled()
                 }
@@ -101,19 +101,19 @@ class DisableInputTest : BaseTestCase() {
         ThreadsLib.getInstance().disableUserInput(true)
         ChatMainScreen {
             inputEditView {
-                io.edna.threads.demo.assert("Поле для ввода должно быть видимым и неактивным") {
+                assert("Поле для ввода должно быть видимым и неактивным") {
                     isVisible()
                     isDisabled()
                 }
             }
             recordButton {
-                io.edna.threads.demo.assert("Кнопка аудио сообщения должна быть видимой и неактивной") {
+                assert("Кнопка аудио сообщения должна быть видимой и неактивной") {
                     isVisible()
                     isDisabled()
                 }
             }
             addAttachmentBtn {
-                io.edna.threads.demo.assert("Кнопка добавить вложение должна быть видимой и неактивной") {
+                assert("Кнопка добавить вложение должна быть видимой и неактивной") {
                     isVisible()
                     isDisabled()
                 }
