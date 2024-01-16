@@ -5,9 +5,9 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import im.threads.ui.core.ThreadsLib
-import io.edna.threads.demo.assert
 import io.edna.threads.demo.BaseTestCase
 import io.edna.threads.demo.appCode.activity.MainActivity
+import io.edna.threads.demo.assert
 import io.edna.threads.demo.kaspressoSreens.ChatMainScreen
 import org.junit.Rule
 import org.junit.Test
