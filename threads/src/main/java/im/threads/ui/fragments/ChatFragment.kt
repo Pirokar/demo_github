@@ -2054,12 +2054,11 @@ class ChatFragment :
             if (enableModel != null) {
                 isSendBlocked = !enableModel.isEnabledSendButton
                 val isChatWorking = chatController.isChatWorking() || chatController.isSendDuringInactive()
-                sendMessage.isEnabled = enableModel.isEnabledSendButton && isChatWorking &&
-                    (!TextUtils.isEmpty(inputEditView.text) || hasAttachments())
-
-                inputEditView.isEnabled = enableModel.isEnabledInputField && isChatWorking
-                addAttachment.isEnabled = enableModel.isEnabledInputField && isChatWorking
-                recordButton.isEnabled = enableModel.isEnabledInputField && isChatWorking
+                val enabled = enableModel.isEnabledInputField && isChatWorking
+                sendMessage.isEnabled = enabled && (!inputEditView.text.isNullOrEmpty() || hasAttachments())
+                inputEditView.isEnabled = enabled
+                addAttachment.isEnabled = enabled
+                recordButton.isEnabled = enabled
                 if (!enableModel.isEnabledInputField) {
                     inputEditView.hideKeyboard(100)
                 }
