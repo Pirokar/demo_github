@@ -5,6 +5,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import im.threads.ui.core.ThreadsLib
+import io.edna.threads.demo.assert
 import io.edna.threads.demo.BaseTestCase
 import io.edna.threads.demo.appCode.activity.MainActivity
 import io.edna.threads.demo.kaspressoSreens.ChatMainScreen
@@ -32,19 +33,19 @@ class DisableInputTest : BaseTestCase() {
         openChatFromDemoLoginPage()
         ChatMainScreen {
             inputEditView {
-                io.edna.threads.demo.assert("Поле для ввода должно быть видимым и неактивным") {
+                assert("Поле для ввода должно быть видимым и неактивным") {
                     isVisible()
                     isDisabled()
                 }
             }
             recordButton {
-                io.edna.threads.demo.assert("Кнопка аудио сообщения должна быть видимой и неактивной") {
+                assert("Кнопка аудио сообщения должна быть видимой и неактивной") {
                     isVisible()
                     isDisabled()
                 }
             }
             addAttachmentBtn {
-                io.edna.threads.demo.assert("Кнопка добавить вложение должна быть видимой и неактивной") {
+                assert("Кнопка добавить вложение должна быть видимой и неактивной") {
                     isVisible()
                     isDisabled()
                 }
@@ -53,19 +54,19 @@ class DisableInputTest : BaseTestCase() {
         ThreadsLib.getInstance().disableUserInput(false)
         ChatMainScreen {
             inputEditView {
-                io.edna.threads.demo.assert("Поле для ввода должно быть видимым и активным") {
+                assert("Поле для ввода должно быть видимым и активным") {
                     isVisible()
                     isEnabled()
                 }
             }
             recordButton {
-                io.edna.threads.demo.assert("Кнопка аудио сообщения должна быть видимой и активной") {
+                assert("Кнопка аудио сообщения должна быть видимой и активной") {
                     isVisible()
                     isEnabled()
                 }
             }
             addAttachmentBtn {
-                io.edna.threads.demo.assert("Кнопка добавить вложение должна быть видимой и активной") {
+                assert("Кнопка добавить вложение должна быть видимой и активной") {
                     isVisible()
                     isEnabled()
                 }
