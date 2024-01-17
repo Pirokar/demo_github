@@ -2076,7 +2076,6 @@ class ChatFragment :
             disabledInputMessage.notification = getString(R.string.ecc_disabled_input_message)
             addChatItem(disabledInputMessage)
         } else {
-            chatAdapter?.removeSchedule(false)
             if (enableModel != null &&
                 enableModel.isEnabledSendButton &&
                 enableModel.isEnabledInputField &&

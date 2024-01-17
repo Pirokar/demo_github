@@ -187,6 +187,8 @@ class ChatController private constructor() {
         messenger.onViewDestroy()
     }
 
+    fun isInputDisabled(): Boolean = disabledInput
+
     internal fun onRatingClick(survey: Survey) {
         if (!surveyCompletionInProgress) {
             surveyCompletionInProgress = true

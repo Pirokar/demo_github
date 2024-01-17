@@ -15,11 +15,14 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import im.threads.R;
+import im.threads.business.utils.Balloon;
 import im.threads.ui.ChatStyle;
 import im.threads.business.logger.LoggerEdna;
 import im.threads.business.models.ConsultPhrase;
 import im.threads.business.models.UpcomingUserMessage;
 import im.threads.ui.config.Config;
+import im.threads.ui.controllers.ChatController;
 import im.threads.ui.controllers.QuickAnswerController;
 import im.threads.ui.fragments.QuickAnswerFragment;
 
@@ -93,9 +96,13 @@ public final class QuickAnswerActivity extends BaseActivity {
             if (intent.getAction().equalsIgnoreCase(ACTION_CANCEL)) {
                 finish();
             } else if (intent.getAction().equalsIgnoreCase(ACTION_ANSWER)) {
-                LoggerEdna.info("onReceive: ACTION_ANSWER");
-                controller.onUserAnswer(new UpcomingUserMessage(null, null, null, intent.getStringExtra(ACTION_ANSWER), false));
-                finish();
+                if (ChatController.getInstance().isInputDisabled()) {
+                    Balloon.show(context, context.getString(R.string.ecc_disabled_input_message));
+                } else {
+                    LoggerEdna.info("onReceive: ACTION_ANSWER");
+                    controller.onUserAnswer(new UpcomingUserMessage(null, null, null, intent.getStringExtra(ACTION_ANSWER), false));
+                    finish();
+                }
             }
         }
     }
