@@ -2077,13 +2077,13 @@ class ChatFragment :
             addChatItem(disabledInputMessage)
         } else {
             chatAdapter?.removeSchedule(false)
-        }
-        if (enableModel != null &&
-            enableModel.isEnabledSendButton &&
-            enableModel.isEnabledInputField &&
-            chatController.isChatWorking()
-        ) {
-            chatAdapter?.removeSchedule(false)
+            if (enableModel != null &&
+                enableModel.isEnabledSendButton &&
+                enableModel.isEnabledInputField &&
+                chatController.isChatWorking()
+            ) {
+                chatAdapter?.removeSchedule(false)
+            }
         }
     }
 

@@ -1331,7 +1331,7 @@ class ChatController private constructor() {
             chatItem is ConsultConnectionMessage && ChatItemType.OPERATOR_JOINED.name == chatItem.getType() ||
             chatItem is ScheduleInfo && chatItem.isChatWorking
         ) {
-            if (fragment?.get()?.isAdded == true) {
+            if (fragment?.get()?.isAdded == true && !disabledInput) {
                 fragment?.get()?.removeSchedule(false)
             }
         }
