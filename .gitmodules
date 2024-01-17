@@ -1,3 +1,3 @@
 [submodule "threads"]
 	path = threads
-	url = http://gitlab.mfms/android/chat-center/chatcenter-sdk/
+	url = ../chatcenter-sdk.git
