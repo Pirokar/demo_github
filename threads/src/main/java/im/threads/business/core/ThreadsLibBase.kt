@@ -34,7 +34,6 @@ import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.MetadataBusiness
 import im.threads.business.utils.preferences.PreferencesMigrationBase
 import im.threads.ui.controllers.ChatController
-import im.threads.ui.fragments.ChatFragment
 import im.threads.ui.serviceLocator.uiSLModule
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.exceptions.UndeliverableException
@@ -106,12 +105,8 @@ open class ThreadsLibBase protected constructor(context: Context) {
 
             if (forceRegistration && preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS).isNullOrBlank()) {
                 BaseConfig.getInstance().transport.apply {
+                    ChatController.createInstance()
                     sendRegisterDevice(true)
-                    sendInitMessages(true)
-
-                    if (!ChatFragment.isShown && !BaseConfig.getInstance().keepSocketActive) {
-                        closeWebSocket()
-                    }
                 }
             }
         }
