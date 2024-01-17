@@ -167,7 +167,8 @@ class ChatController private constructor() {
     private val attachmentsHistory = HashMap<String, AttachmentStateEnum>()
 
     private var enableModel: InputFieldEnableModel? = null
-    private var disabledInput: Boolean = false
+    var disabledInput: Boolean = false
+        private set
 
     init {
         subscribeToChatEvents()
@@ -187,8 +188,6 @@ class ChatController private constructor() {
     fun onViewDestroy() {
         messenger.onViewDestroy()
     }
-
-    fun isInputDisabled(): Boolean = disabledInput
 
     internal fun onRatingClick(survey: Survey) {
         if (!surveyCompletionInProgress) {
