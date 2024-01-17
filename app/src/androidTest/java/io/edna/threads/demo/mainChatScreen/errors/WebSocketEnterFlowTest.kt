@@ -7,7 +7,10 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import im.threads.business.config.BaseConfig
 import io.edna.threads.demo.BaseTestCase
 import io.edna.threads.demo.TestMessages
+import io.edna.threads.demo.TestMessages.defaultConfigNoAttachmentSettingsMock
+import io.edna.threads.demo.TestMessages.defaultConfigNoSettingsMock
 import io.edna.threads.demo.appCode.activity.MainActivity
+import io.edna.threads.demo.assert
 import io.edna.threads.demo.kaspressoSreens.ChatMainScreen
 import org.junit.Rule
 import org.junit.Test
@@ -28,16 +31,21 @@ class WebSocketEnterFlowTest : BaseTestCase() {
     @Test
     fun testNoRegisterDevice() {
         wsMocksMap = HashMap()
-        clientInfoWsMessages = getDefaultClientInfoWsMessages()
         openChatFromDemoLoginPage()
         Thread.sleep(BaseConfig.getInstance().requestConfig.socketClientSettings.connectTimeoutMillis)
         ChatMainScreen {
-            errorImage { isVisible() }
-            errorText {
-                isVisible()
-                containsText("REGISTER")
+            errorImage {
+                assert("Изображение с ошибкой должно быть видимо") { isVisible() }
             }
-            errorRetryBtn { isVisible() }
+            errorText {
+                assert("Текст с ошибкой должен быть видимый") { isVisible() }
+                assert("Текст с ошибкой должен содержать: \"REGISTER\"") {
+                    containsText("REGISTER")
+                }
+            }
+            errorRetryBtn {
+                assert("Кнопка повтора загрузки списка сообщений быть видимой") { isVisible() }
+            }
         }
     }
 
@@ -46,16 +54,19 @@ class WebSocketEnterFlowTest : BaseTestCase() {
         wsMocksMap = HashMap<String, String>().apply {
             put("registerDevice", TestMessages.registerDeviceWsAnswer)
         }
-        clientInfoWsMessages = getDefaultClientInfoWsMessages()
         openChatFromDemoLoginPage()
         Thread.sleep(BaseConfig.getInstance().requestConfig.socketClientSettings.connectTimeoutMillis)
         ChatMainScreen {
-            errorImage { isVisible() }
-            errorText {
-                isVisible()
-                containsText("INIT_USER")
+            errorImage {
+                assert("Изображение с ошибкой должно быть видимо") { isVisible() }
             }
-            errorRetryBtn { isVisible() }
+            errorText {
+                assert("Текст с ошибкой должен быть видимый") { isVisible() }
+                assert("Текст с ошибкой не должен быть пустым") { hasAnyText() }
+            }
+            errorRetryBtn {
+                assert("Кнопка повтора загрузки списка сообщений быть видимой") { isVisible() }
+            }
         }
     }
 
@@ -65,32 +76,62 @@ class WebSocketEnterFlowTest : BaseTestCase() {
             put("registerDevice", TestMessages.registerDeviceWsAnswer)
             put("INIT_CHAT", TestMessages.initChatWsAnswer)
         }
-        clientInfoWsMessages = getDefaultClientInfoWsMessages()
         openChatFromDemoLoginPage()
         Thread.sleep(BaseConfig.getInstance().requestConfig.socketClientSettings.connectTimeoutMillis)
         ChatMainScreen {
-            errorImage { isVisible() }
-            errorText {
-                isVisible()
-                hasAnyText()
+            errorImage {
+                assert("Изображение с ошибкой должно быть видимо") { isVisible() }
             }
-            errorRetryBtn { isVisible() }
+            errorText {
+                assert("Текст с ошибкой должен быть видимый и не должен быть пустым", ::isVisible, ::hasAnyText)
+            }
+            errorRetryBtn {
+                assert("Кнопка повтора загрузки списка сообщений быть видимой") { isVisible() }
+            }
         }
     }
 
     @Test
-    fun testNoAttachments() {
+    fun testNoSettings() {
         wsMocksMap = getDefaultWsMocksMap()
-        clientInfoWsMessages = listOf(TestMessages.scheduleWsMessage)
+        prepareHttpMocks(configAnswer = defaultConfigNoSettingsMock)
         openChatFromDemoLoginPage()
         Thread.sleep(BaseConfig.getInstance().requestConfig.socketClientSettings.connectTimeoutMillis)
         ChatMainScreen {
-            errorImage { isVisible() }
-            errorText {
-                isVisible()
-                hasText(context.getString(im.threads.R.string.ecc_attachments_not_loaded))
+            errorImage {
+                assert("Изображение с ошибкой должно быть видимо") { isVisible() }
             }
-            errorRetryBtn { isVisible() }
+            errorText {
+                assert("Текст с ошибкой должен быть видимый") { isVisible() }
+                assert("Текст с ошибкой должен содержать: \"${context.getString(im.threads.R.string.ecc_settings_not_loaded)}\"") {
+                    hasText(context.getString(im.threads.R.string.ecc_settings_not_loaded))
+                }
+            }
+            errorRetryBtn {
+                assert("Кнопка повтора загрузки списка сообщений быть видимой") { isVisible() }
+            }
+        }
+    }
+
+    @Test
+    fun testNoAttachmentSettings() {
+        wsMocksMap = getDefaultWsMocksMap()
+        prepareHttpMocks(configAnswer = defaultConfigNoAttachmentSettingsMock)
+        openChatFromDemoLoginPage()
+        Thread.sleep(BaseConfig.getInstance().requestConfig.socketClientSettings.connectTimeoutMillis)
+        ChatMainScreen {
+            errorImage {
+                assert("Изображение с ошибкой должно быть видимо") { isVisible() }
+            }
+            errorText {
+                assert("Текст с ошибкой должен быть видимый") { isVisible() }
+                assert("Текст с ошибкой должен содержать: \"${context.getString(im.threads.R.string.ecc_attachment_settings_not_loaded)}\"") {
+                    hasText(context.getString(im.threads.R.string.ecc_attachment_settings_not_loaded))
+                }
+            }
+            errorRetryBtn {
+                assert("Кнопка повтора загрузки списка сообщений быть видимой") { isVisible() }
+            }
         }
     }
 }

@@ -10,6 +10,7 @@ import im.threads.ui.activities.ChatActivity
 import im.threads.ui.config.ConfigBuilder
 import im.threads.ui.core.ThreadsLib
 import io.edna.threads.demo.BaseTestCase
+import io.edna.threads.demo.assert
 import io.edna.threads.demo.integrationCode.ednaMockThreadsGateProviderUid
 import io.edna.threads.demo.integrationCode.ednaMockThreadsGateUrl
 import io.edna.threads.demo.integrationCode.ednaMockUrl
@@ -38,16 +39,21 @@ class NoUserTest : BaseTestCase() {
         ThreadsLib.init(configBuilder)
 
         BuildConfig.IS_ANIMATIONS_DISABLED.set(true)
+        prepareHttpMocks()
         prepareWsMocks()
     }
 
     @Test
     fun testNoUser() {
         ChatMainScreen {
-            errorImage { isVisible() }
+            errorImage {
+                assert("Изображение с ошибкой должно быть видимо") { isVisible() }
+            }
             errorText {
-                isVisible()
-                hasText(context.getString(R.string.ecc_no_user_id))
+                assert("Текст с ошибкой должен быть видим") { isVisible() }
+                assert("Текст с ошибкой не содержит текст: \"${context.getString(R.string.ecc_no_user_id)}\"") {
+                    hasText(context.getString(R.string.ecc_no_user_id))
+                }
             }
             errorRetryBtn { isVisible() }
         }

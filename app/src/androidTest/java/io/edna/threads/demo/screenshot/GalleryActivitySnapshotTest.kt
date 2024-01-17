@@ -1,4 +1,4 @@
-package io.edna.threads.demo.snapshot
+package io.edna.threads.demo.screenshot
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import dev.testify.ScreenshotRule
@@ -7,6 +7,8 @@ import im.threads.ui.activities.GalleryActivity
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+
+private const val PHOTOS_REQUEST_CODE_TAG = "PHOTOS_REQUEST_CODE_TAG"
 
 @RunWith(AndroidJUnit4::class)
 class GalleryActivitySnapshotTest {
@@ -23,5 +25,3 @@ class GalleryActivitySnapshotTest {
         rule.assertSame()
     }
 }
-
-private const val PHOTOS_REQUEST_CODE_TAG = "PHOTOS_REQUEST_CODE_TAG"

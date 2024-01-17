@@ -1,4 +1,4 @@
-package io.edna.threads.demo.snapshot
+package io.edna.threads.demo.screenshot
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import dev.testify.ScreenshotRule

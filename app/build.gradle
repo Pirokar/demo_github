@@ -17,7 +17,7 @@ android {
         applicationId "io.edna.threads.demo"
         minSdk rootProject.minSdkVersion
         targetSdk rootProject.targetSdkVersion
-        versionName "1.0.3"
+        versionName "1.0.4"
         versionCode 1
 
         testInstrumentationRunner "io.edna.threads.demo.TestNoAnimRunner"
@@ -75,6 +75,15 @@ android {
 
     buildFeatures {
         viewBinding = true
+    }
+
+    splits {
+        abi {
+            enable true
+            reset()
+            include 'x86', 'x86_64', 'armeabi', 'armeabi-v7a', 'mips', 'mips64', 'arm64-v8a'
+            universalApk true
+        }
     }
 }
 

@@ -2,6 +2,7 @@ package io.edna.threads.demo
 
 import androidx.test.espresso.PerformException
 import io.github.kakaocup.kakao.recycler.KRecyclerView
+import junit.framework.AssertionFailedError
 import java.util.concurrent.TimeoutException
 
 /**
@@ -31,4 +32,25 @@ fun KRecyclerView.waitListForNotEmpty(timeout: Long) {
         .withActionDescription("waitListForNotEmpty")
         .withCause(TimeoutException("Waited $timeout milliseconds"))
         .build()
+}
+
+fun assert(messageIfFails: String?, function: () -> Unit) {
+    try {
+        function.invoke()
+    } catch (exc: AssertionFailedError) {
+        throw AssertionError(messageIfFails)
+    }
+}
+
+fun assert(messageIfFails: String?, vararg function: () -> Unit) {
+    var message = messageIfFails
+    try {
+        if (function.asList().isEmpty()) {
+            message = "Отсутствует assertion для проверки"
+            throw AssertionFailedError()
+        }
+        function.forEach { it.invoke() }
+    } catch (exc: AssertionFailedError) {
+        throw AssertionError(message)
+    }
 }

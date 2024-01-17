@@ -8,6 +8,7 @@ import im.threads.BuildConfig
 import im.threads.business.config.BaseConfig
 import io.edna.threads.demo.BaseTestCase
 import io.edna.threads.demo.appCode.activity.MainActivity
+import io.edna.threads.demo.assert
 import io.edna.threads.demo.kaspressoSreens.ChatMainScreen
 import org.junit.Rule
 import org.junit.Test
@@ -30,12 +31,15 @@ class ServerNotFoundTest : BaseTestCase() {
         openChatFromDemoLoginPage()
         Thread.sleep(BaseConfig.getInstance().requestConfig.socketClientSettings.connectTimeoutMillis)
         ChatMainScreen {
-            errorImage { isVisible() }
-            errorText {
-                isVisible()
-                hasAnyText()
+            errorImage {
+                assert("Изображение с ошибкой должно быть видимо") { isVisible() }
             }
-            errorRetryBtn { isVisible() }
+            errorText {
+                assert("Текст с ошибкой должен быть видимый и не должен быть пустым", ::isVisible, ::hasAnyText)
+            }
+            errorRetryBtn {
+                assert("Кнопка повтора загрузки списка сообщений быть видимой") { isVisible() }
+            }
         }
     }
 }

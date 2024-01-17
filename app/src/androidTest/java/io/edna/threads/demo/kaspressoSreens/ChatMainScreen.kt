@@ -1,7 +1,6 @@
 package io.edna.threads.demo.kaspressoSreens
 
 import android.view.View
-import androidx.test.espresso.matcher.ViewMatchers.withId
 import com.kaspersky.kaspresso.screens.KScreen
 import im.threads.R
 import im.threads.ui.fragments.ChatFragment
@@ -11,6 +10,7 @@ import io.github.kakaocup.kakao.image.KImageView
 import io.github.kakaocup.kakao.pager.KViewPager
 import io.github.kakaocup.kakao.recycler.KRecyclerItem
 import io.github.kakaocup.kakao.recycler.KRecyclerView
+import io.github.kakaocup.kakao.slider.KSlider
 import io.github.kakaocup.kakao.text.KButton
 import io.github.kakaocup.kakao.text.KTextView
 import org.hamcrest.Matcher
@@ -33,7 +33,6 @@ object ChatMainScreen : KScreen<ChatMainScreen>() {
     val copyBtn = KImageView { withId(R.id.content_copy) }
     val quoteText = KTextView { withId(R.id.quote_text) }
     val quoteHeader = KTextView { withId(R.id.quote_header) }
-    val quoteImage = KImageView { withId(R.id.quote_image) }
     val quoteClear = KImageView { withId(R.id.quote_clear) }
     val addAttachmentBtn = KImageView { withId(R.id.add_attachment) }
     val imagePager = KViewPager { withId(R.id.pager) }
@@ -42,15 +41,14 @@ object ChatMainScreen : KScreen<ChatMainScreen>() {
     val searchClearButton = KImageView { withId(R.id.searchClearButton) }
     val searchProgressBar = KImageView { withId(R.id.searchProgressBar) }
     val toolbarOperatorName = KTextView { withId(R.id.consult_name) }
+    val recordButton = KImageView { withId(R.id.record_button) }
+    val playPauseButton = KImageView { withId(R.id.quote_button_play_pause) }
+    val quoteSlider = KSlider { withId(R.id.quote_slider) }
+    val fileBottomSheenBtn = KButton { withId(R.id.file) }
 
     val chatItemsRecyclerView = KRecyclerView(
         builder = { withId(R.id.chatItemsRecycler) },
         itemTypeBuilder = { itemType(::ChatRecyclerItem) }
-    )
-
-    val bottomGalleryRecycler = KRecyclerView(
-        builder = { withId(R.id.bottom_gallery_recycler) },
-        itemTypeBuilder = { itemType(::BottomGalleryItem) }
     )
 
     val searchRecycler = KRecyclerView(
@@ -72,8 +70,6 @@ object ChatMainScreen : KScreen<ChatMainScreen>() {
         val thumbDown = KImageView(matcher) { withId(R.id.thumb_down) }
         val ratingStars = KView(matcher) { withId(R.id.mark) }
     }
-
-    class BottomGalleryItem(matcher: Matcher<View>) : KRecyclerItem<BottomGalleryItem>(matcher)
 
     class SearchRecyclerItem(matcher: Matcher<View>) : KRecyclerItem<SearchRecyclerItem>(matcher) {
         val avatarImage = KImageView(matcher) { withId(R.id.avatarImage) }
