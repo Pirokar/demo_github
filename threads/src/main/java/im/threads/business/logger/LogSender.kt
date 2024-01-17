@@ -6,7 +6,12 @@ internal class LogSender(private val loggerConfig: LoggerConfig?) {
     private val currentPackageName = this.javaClass.`package`?.name
         ?: "im.threads.internal.domain.logger"
 
-    fun send(level: LoggerLevel, tag: String?, log: String?, throwable: Throwable? = null) {
+    fun send(
+        level: LoggerLevel,
+        tag: String?,
+        log: String?,
+        throwable: Throwable? = null
+    ) {
         if (level == LoggerLevel.ERROR) {
             log(
                 level,
@@ -18,7 +23,11 @@ internal class LogSender(private val loggerConfig: LoggerConfig?) {
         }
     }
 
-    private fun log(level: LoggerLevel, tag: String?, log: String) {
+    private fun log(
+        level: LoggerLevel,
+        tag: String?,
+        log: String
+    ) {
         loggerConfig?.let { config ->
             if (isMinLevelDoesNotMatch(config, level)) return
 
@@ -42,6 +51,7 @@ internal class LogSender(private val loggerConfig: LoggerConfig?) {
             LoggerLevel.INFO -> logger.i(currentTag, log)
             LoggerLevel.WARNING -> logger.w(currentTag, log)
             LoggerLevel.ERROR -> logger.e(currentTag, log)
+            else -> {}
         }
     }
 
@@ -61,7 +71,7 @@ internal class LogSender(private val loggerConfig: LoggerConfig?) {
                 currentTag,
                 log
             )
-            val isFlush = level === LoggerLevel.ERROR
+            val isFlush = level >= LoggerLevel.ERROR
             FileLogger.instance().logFile(
                 config.builder.context,
                 fileName,

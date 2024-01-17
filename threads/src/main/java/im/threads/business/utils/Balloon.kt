@@ -11,7 +11,7 @@ import im.threads.databinding.EccSnackbarBinding
 import im.threads.ui.config.Config.Companion.getInstance
 import im.threads.ui.utils.ColorsHelper
 
-object Balloon {
+internal object Balloon {
 
     @JvmStatic
     fun show(context: Context, message: String) {

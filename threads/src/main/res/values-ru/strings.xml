@@ -176,4 +176,5 @@
     <string name="ecc_attachment_settings_not_loaded">Не удалось загрузить настройки вложений</string>
     <string name="ecc_library_not_init">ChatCenter SDK не инициализирован</string>
     <string name="ecc_disabled_input_message">Данный чат доступен только для просмотра</string>
+    <string name="ecc_saving_logs">Сохраняем логи, пожалуйста, подождите</string>
 </resources>

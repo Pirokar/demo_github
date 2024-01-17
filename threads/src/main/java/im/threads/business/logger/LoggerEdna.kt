@@ -142,4 +142,9 @@ object LoggerEdna {
     fun error(tag: String?, log: String?, throwable: Throwable?) {
         logSender?.send(LoggerLevel.ERROR, tag, log, throwable)
     }
+
+    @JvmStatic
+    fun flushLogs() {
+        logSender?.send(LoggerLevel.FLUSH, null, "Flushing logs into file", null)
+    }
 }

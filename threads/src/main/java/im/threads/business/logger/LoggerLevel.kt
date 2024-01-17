@@ -10,7 +10,8 @@ enum class LoggerLevel(val value: Int) {
     DEBUG(1),
     INFO(2),
     WARNING(3),
-    ERROR(4);
+    ERROR(4),
+    FLUSH(5);
 
     companion object {
         private val levelNames = object : SparseArray<String>(5) {
@@ -20,6 +21,7 @@ enum class LoggerLevel(val value: Int) {
                 append(INFO.value, "info")
                 append(WARNING.value, "warning")
                 append(ERROR.value, "error")
+                append(FLUSH.value, "flush")
             }
         }
 
