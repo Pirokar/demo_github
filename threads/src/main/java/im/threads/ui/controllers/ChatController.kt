@@ -109,7 +109,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Response
 import java.lang.ref.WeakReference
-import java.net.HttpURLConnection
 import java.util.Collections
 import java.util.concurrent.TimeUnit
 
@@ -167,7 +166,7 @@ class ChatController private constructor() {
     private val attachmentsHistory = HashMap<String, AttachmentStateEnum>()
 
     private var enableModel: InputFieldEnableModel? = null
-    var disabledInput: Boolean = false
+    var isInputDdisabled: Boolean = false
         private set
 
     init {
@@ -471,10 +470,10 @@ class ChatController private constructor() {
     private fun subscribeToDisableInput() {
         CoroutineScope(Dispatchers.Unconfined).launch {
             Config.getInstance().disabledUserInput.collect { disabledUserInput ->
-                disabledInput = disabledUserInput
+                isInputDdisabled = disabledUserInput
                 withContext(Dispatchers.Main) {
-                    fragment?.get()?.updateInputEnable(enableModel, disabledInput)
-                    fragment?.get()?.updateChatAvailabilityMessage(enableModel, disabledInput)
+                    fragment?.get()?.updateInputEnable(enableModel, isInputDdisabled)
+                    fragment?.get()?.updateChatAvailabilityMessage(enableModel, isInputDdisabled)
                 }
             }
         }
@@ -1344,7 +1343,7 @@ class ChatController private constructor() {
             chatItem is ConsultConnectionMessage && ChatItemType.OPERATOR_JOINED.name == chatItem.getType() ||
             chatItem is ScheduleInfo && chatItem.isChatWorking
         ) {
-            if (fragment?.get()?.isAdded == true && !disabledInput) {
+            if (fragment?.get()?.isAdded == true && !isInputDdisabled) {
                 fragment?.get()?.removeSchedule(false)
             }
         }
@@ -1551,8 +1550,8 @@ class ChatController private constructor() {
             info("UserInputState_change. isInputBlockedFromMessage: $isInputBlockedFromMessage, $inputFieldEnableModel")
         }
         enableModel = inputFieldEnableModel
-        fragment?.get()?.updateInputEnable(inputFieldEnableModel, disabledInput)
-        fragment?.get()?.updateChatAvailabilityMessage(inputFieldEnableModel, disabledInput)
+        fragment?.get()?.updateInputEnable(inputFieldEnableModel, isInputDdisabled)
+        fragment?.get()?.updateChatAvailabilityMessage(inputFieldEnableModel, isInputDdisabled)
     }
 
     private fun isInputFieldEnabled(): Boolean {
