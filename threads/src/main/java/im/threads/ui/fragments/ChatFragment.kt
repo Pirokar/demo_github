@@ -2046,24 +2046,48 @@ class ChatFragment :
         }
     }
 
-    internal fun updateInputEnable(enableModel: InputFieldEnableModel) = binding?.apply {
-        isSendBlocked = !enableModel.isEnabledSendButton
-        val isChatWorking = chatController.isChatWorking() || chatController.isSendDuringInactive()
-        sendMessage.isEnabled = enableModel.isEnabledSendButton && isChatWorking &&
-            (!TextUtils.isEmpty(inputEditView.text) || hasAttachments())
-        inputEditView.isEnabled = enableModel.isEnabledInputField && isChatWorking
-        addAttachment.isEnabled = enableModel.isEnabledInputField && isChatWorking
-        if (!enableModel.isEnabledInputField) {
-            inputEditView.hideKeyboard(100)
+    internal fun updateInputEnable(
+        enableModel: InputFieldEnableModel?,
+        disableInputFields: Boolean
+    ) = binding?.apply {
+        if (disableInputFields) {
+            sendMessage.isEnabled = false
+            inputEditView.isEnabled = false
+            addAttachment.isEnabled = false
+            recordButton.isEnabled = false
+        } else {
+            if (enableModel != null) {
+                isSendBlocked = !enableModel.isEnabledSendButton
+                val isChatWorking = chatController.isChatWorking() || chatController.isSendDuringInactive()
+                val enabled = enableModel.isEnabledInputField && isChatWorking
+                sendMessage.isEnabled = enabled && (!inputEditView.text.isNullOrEmpty() || hasAttachments())
+                inputEditView.isEnabled = enabled
+                addAttachment.isEnabled = enabled
+                recordButton.isEnabled = enabled
+                if (!enableModel.isEnabledInputField) {
+                    inputEditView.hideKeyboard(100)
+                }
+            }
         }
     }
 
-    internal fun updateChatAvailabilityMessage(enableModel: InputFieldEnableModel) {
-        if (enableModel.isEnabledSendButton &&
-            enableModel.isEnabledInputField &&
-            chatController.isChatWorking()
-        ) {
-            chatAdapter?.removeSchedule(false)
+    internal fun updateChatAvailabilityMessage(
+        enableModel: InputFieldEnableModel?,
+        disableInputFields: Boolean
+    ) {
+        if (disableInputFields) {
+            val disabledInputMessage = ScheduleInfo()
+            disabledInputMessage.timeStamp = System.currentTimeMillis()
+            disabledInputMessage.notification = getString(R.string.ecc_disabled_input_message)
+            addChatItem(disabledInputMessage)
+        } else {
+            if (enableModel != null &&
+                enableModel.isEnabledSendButton &&
+                enableModel.isEnabledInputField &&
+                chatController.isChatWorking()
+            ) {
+                chatAdapter?.removeSchedule(false)
+            }
         }
     }
 

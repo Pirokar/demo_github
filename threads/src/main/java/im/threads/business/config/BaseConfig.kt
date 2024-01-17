@@ -20,6 +20,8 @@ import im.threads.business.utils.createTlsPinningKeyStore
 import im.threads.business.utils.getTrustManagers
 import im.threads.business.utils.gson.UriDeserializer
 import im.threads.business.utils.gson.UriSerializer
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import okhttp3.Interceptor
 import java.security.cert.X509Certificate
 import javax.net.ssl.TrustManager
@@ -50,6 +52,12 @@ open class BaseConfig(
 
     @JvmField
     var transport: Transport
+
+    @JvmField
+    internal var disabledUserInput = MutableSharedFlow<Boolean>(
+        replay = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
 
     @JvmField
     val gson = GsonBuilder()
