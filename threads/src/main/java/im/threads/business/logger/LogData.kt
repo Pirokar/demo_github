@@ -28,7 +28,7 @@ internal class LogData(builder: Builder) {
         var flush = false
 
         /**
-         * Устанвливает контекст для логгера
+         * Устанавливает контекст для логгера
          * @param context [android.content.Context]
          */
         fun context(context: Context?): Builder {
@@ -37,7 +37,7 @@ internal class LogData(builder: Builder) {
         }
 
         /**
-         * Устанвливает имя файла для логгера
+         * Устанавливает имя файла для логгера
          * @param fileName абсолютный путь к имени файла
          */
         fun fileName(fileName: String?): Builder {

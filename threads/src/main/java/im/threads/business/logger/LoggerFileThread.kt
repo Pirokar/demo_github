@@ -1,6 +1,10 @@
 package im.threads.business.logger
 
 import android.util.Log
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.launch
 import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
@@ -24,6 +28,7 @@ internal class LoggerFileThread(private val queue: BlockingQueue<LogData>) : Thr
     private val delayBetweenCheckMs = 3000L
     private val maxQueueListSize = 50
     private val tag = LoggerFileThread::class.simpleName
+    private val scope = CoroutineScope(Dispatchers.Unconfined)
 
     private val fileComparator = java.util.Comparator<File> { object1, object2 ->
         val lm1 = object1.lastModified()
@@ -66,6 +71,7 @@ internal class LoggerFileThread(private val queue: BlockingQueue<LogData>) : Thr
                 }
                 closeWriter()
                 startFilesStoring()
+                scope.launch { flushIsFinishedFlow.emit(true) }
             }
         } catch (e: InterruptedException) {
             LoggerEdna.error("file logger service thread is interrupted", e)
@@ -249,5 +255,6 @@ internal class LoggerFileThread(private val queue: BlockingQueue<LogData>) : Thr
 
     companion object {
         @Volatile var isRunning = false
+        val flushIsFinishedFlow = MutableSharedFlow<Boolean>()
     }
 }

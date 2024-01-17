@@ -17,6 +17,9 @@ import im.threads.business.utils.Balloon
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @OpenForTesting
 class DatabaseHolder(private val context: Context) {
@@ -145,7 +148,9 @@ class DatabaseHolder(private val context: Context) {
         return try {
             helper.getChatItems(0, -1).isNotEmpty() || helper.allFileDescriptions.isNotEmpty()
         } catch (exc: SQLiteDiskIOException) {
-            Balloon.show(context, context.getString(R.string.ecc_not_enough_space))
+            CoroutineScope(Dispatchers.Main).launch {
+                Balloon.show(context, context.getString(R.string.ecc_not_enough_space))
+            }
             false
         }
     }

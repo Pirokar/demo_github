@@ -21,11 +21,32 @@ import java.util.zip.ZipOutputStream
  */
 class LogZipSender(private val context: Context, private val fileProvider: FileProvider) {
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
+    private var isSharingWindowWaiting = false
+
+    init {
+        coroutineScope.launch {
+            LoggerFileThread.flushIsFinishedFlow.collect { _ ->
+                if (isSharingWindowWaiting) {
+                    onFileSavingFinished()
+                }
+            }
+        }
+    }
 
     /**
      * Архивирует папку с логами и шэрит в получатель
      */
     fun shareLogs() {
+        if (LoggerConfig.config?.builder?.dirPath == null) {
+            Balloon.show(context, "Cannot send logs. Logs directory is null")
+            return
+        }
+
+        isSharingWindowWaiting = true
+        LoggerEdna.flushLogs()
+    }
+
+    private fun onFileSavingFinished() {
         val dirPath = LoggerConfig.config?.builder?.dirPath
         if (dirPath != null) {
             coroutineScope.launch {
@@ -33,6 +54,7 @@ class LogZipSender(private val context: Context, private val fileProvider: FileP
                 zipFolder(dirPath, destinationFile.absolutePath)
 
                 withContext(Dispatchers.Main) {
+                    isSharingWindowWaiting = false
                     shareLogs(destinationFile)
                 }
             }

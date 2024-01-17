@@ -264,7 +264,6 @@ class UserPhraseViewHolder(
         val isImage = isImage(fileDescription)
 
         setImageSize(imageRoot)
-        rightTextRow.layoutParams.width = getImageViewSize()
         setLayoutMargins(false, bubbleLayout)
         if (isImage) {
             imageRoot.visible()
@@ -410,7 +409,6 @@ class UserPhraseViewHolder(
                         val paddingRight = resources.getDimensionPixelSize(chatStyle.bubbleOutgoingPaddingRight)
                         val paddingBottom = resources.getDimensionPixelSize(chatStyle.bubbleOutgoingPaddingBottom)
                         ogDataLayout.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom)
-                        ogDataLayout.layoutParams.width = getImageViewSize()
                     } else {
                         if (it.fileUri != null) {
                             it.downloadProgress = 100
