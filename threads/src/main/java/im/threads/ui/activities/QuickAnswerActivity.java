@@ -96,7 +96,7 @@ public final class QuickAnswerActivity extends BaseActivity {
             if (intent.getAction().equalsIgnoreCase(ACTION_CANCEL)) {
                 finish();
             } else if (intent.getAction().equalsIgnoreCase(ACTION_ANSWER)) {
-                if (ChatController.getInstance().isInputDdisabled()) {
+                if (ChatController.getInstance().isInputDisabled()) {
                     LoggerEdna.info("onReceive: ACTION_ANSWER. Input is disabled.");
                     Balloon.show(context, context.getString(R.string.ecc_disabled_input_message));
                 } else {
