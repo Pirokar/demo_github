@@ -89,6 +89,7 @@ class MessageParser {
                 ChatItemType.MESSAGE,
                 ChatItemType.MESSAGE_EDITED,
                 ChatItemType.MESSAGE_DELETED,
+                ChatItemType.MIRROR,
                 ChatItemType.ON_HOLD -> getPhrase(
                     sentAt,
                     shortMessage,
