@@ -1,5 +1,7 @@
 package im.threads.ui.utils
 
+import android.content.Context
+import android.util.TypedValue
 import android.view.View
 
 fun View?.visible() {
@@ -33,3 +35,14 @@ fun View?.isNotVisible(): Boolean {
 fun goneViews(vararg views: View) {
     views.forEach { it.gone() }
 }
+
+fun View.getWidthInDp(): Float {
+    val screenPixelDensity = this.context.resources.displayMetrics.density
+    return width / screenPixelDensity
+}
+
+fun Context.dpToPx(dp: Int): Float = TypedValue.applyDimension(
+    TypedValue.COMPLEX_UNIT_DIP,
+    dp.toFloat(),
+    resources.displayMetrics
+)
