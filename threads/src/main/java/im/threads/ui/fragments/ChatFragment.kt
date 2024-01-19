@@ -2060,7 +2060,8 @@ class ChatFragment :
                 isSendBlocked = !enableModel.isEnabledSendButton
                 val isChatWorking = chatController.isChatWorking() || chatController.isSendDuringInactive()
                 val enabled = enableModel.isEnabledInputField && isChatWorking
-                sendMessage.isEnabled = enabled && (!inputEditView.text.isNullOrEmpty() || hasAttachments())
+                sendMessage.isEnabled = enableModel.isEnabledSendButton && isChatWorking &&
+                    (!inputEditView.text.isNullOrEmpty() || hasAttachments())
                 inputEditView.isEnabled = enabled
                 addAttachment.isEnabled = enabled
                 recordButton.isEnabled = enabled
