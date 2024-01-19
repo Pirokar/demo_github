@@ -386,8 +386,11 @@ class UserPhraseViewHolder(
                         val uri = it.fileUri
                         val previewUri = getPreviewUri(it.getPreviewFileDescription())
                         val path = it.getPreviewFileDescription()?.downloadPath
-                        val fileUri = path ?: uri?.toString() ?: previewUri?.toString()
-                        if (!fileUri.isNullOrEmpty()) {
+                        var fileUri = path ?: uri?.toString() ?: previewUri?.toString()
+                        if (fileUri == null || fileUri.startsWith("null")) {
+                            fileUri = uri.toString()
+                        }
+                        if (fileUri.isNotEmpty()) {
                             get()
                                 .load(fileUri)
                                 .autoRotateWithExif(true)
@@ -401,6 +404,11 @@ class UserPhraseViewHolder(
                                 .into(image)
                         } else {
                             image.setImageResource(style.imagePlaceholder)
+                        }
+                        image.post {
+                            if (quoteTextRow.isVisible()) {
+                                quoteTextRow.layoutParams.width = image.width
+                            }
                         }
                         val chatStyle = Config.getInstance().chatStyle
                         val resources = context.resources
@@ -436,6 +444,8 @@ class UserPhraseViewHolder(
                         fileImageButton.setProgress(progress ?: 100)
                         if (progress != null) {
                             fileProgress[statusKey] = progress
+                        } else {
+                            null
                         }
                     }
                 }
