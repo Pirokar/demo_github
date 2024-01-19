@@ -55,6 +55,8 @@ import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.utils.NoLongClickMovementMethod
 import im.threads.ui.utils.ScreenSizeGetter
 import im.threads.ui.utils.ViewUtils
+import im.threads.ui.utils.dpToPx
+import im.threads.ui.utils.getWidthInDp
 import im.threads.ui.utils.gone
 import im.threads.ui.utils.invisible
 import im.threads.ui.utils.visible
@@ -381,6 +383,7 @@ abstract class BaseHolder internal constructor(
                     setOgDataDescription(ogData, ogDescription)
                     setOgDataUrl(ogUrl, ogData)
                     setOgDataImage(ogData, ogImage)
+                    checkOgWidth(ogDataLayout)
 
                     viewUtils.setClickListener(
                         ogDataLayout,
@@ -501,6 +504,17 @@ abstract class BaseHolder internal constructor(
             }
         } else {
             ogImage.gone()
+        }
+    }
+
+    private fun checkOgWidth(ogDataLayout: ViewGroup) {
+        ogDataLayout.post {
+            if (ogDataLayout.getWidthInDp() < 240) {
+                ogDataLayout.layoutParams.width = ogDataLayout.context.dpToPx(240).toInt()
+                ogDataLayout.requestLayout()
+            } else {
+                ogDataLayout.layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
+            }
         }
     }
 
