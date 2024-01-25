@@ -41,9 +41,11 @@ object HistoryParser {
         return list
     }
 
-    private fun getChatItems(messages: List<MessageFromHistory?>): List<ChatItem> {
+    @Suppress("NAME_SHADOWING")
+    private fun getChatItems(messages: List<MessageFromHistory?>?): List<ChatItem> {
         val out: MutableList<ChatItem> = ArrayList()
         try {
+            val messages = messages ?: arrayListOf()
             for (message in messages) {
                 if (message == null) {
                     continue

@@ -69,6 +69,7 @@ import im.threads.business.transport.TransportException
 import im.threads.business.transport.models.Attachment
 import im.threads.business.transport.models.ContentAttachmentSettings
 import im.threads.business.transport.models.ContentScheduleInfoContent
+import im.threads.business.transport.threadsGate.ThreadsGateTransport
 import im.threads.business.transport.threadsGate.responses.Status
 import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.ConsultWriter
@@ -704,7 +705,7 @@ class ChatController private constructor() {
                             error("error on getting settings: $message")
                             chatUpdateProcessor.postError(TransportException(message))
                         } else {
-                            val responseBody = response?.body()
+                            val responseBody = response.body()
                             if (responseBody != null) {
                                 val settingsLoaded = updateSettings(responseBody.settings)
                                 val attachmentSettingsLoaded =
@@ -1698,8 +1699,9 @@ class ChatController private constructor() {
                         chatUpdateProcessor.postError(notInitializedError)
                         return@collect
                     }
-                    if (!stateEvent.isTimeout && stateEvent.state < ChatStateEnum.HISTORY_LOADED && fragment?.get()
-                        ?.isErrorViewNotVisible() == true
+                    if (!stateEvent.isTimeout &&
+                        stateEvent.state < ChatStateEnum.HISTORY_LOADED &&
+                        fragment?.get()?.isErrorViewNotVisible() == true
                     ) {
                         withContext(Dispatchers.Main) { fragment?.get()?.showProgressBar() }
                     }
@@ -1714,11 +1716,19 @@ class ChatController private constructor() {
                                 } (${chatState.getCurrentState()})"
                             }
                         withContext(Dispatchers.Main) { fragment?.get()?.showErrorView(timeoutMessage) }
+                    } else if (stateEvent.state == ChatStateEnum.DEVICE_REGISTERED) {
+                        if (!ChatFragment.isShown || ThreadsGateTransport.isForceRegistration) {
+                            BaseConfig.getInstance().transport.apply {
+                                sendInitMessages(true)
+                                closeWebSocket()
+                                ThreadsGateTransport.isForceRegistration = false
+                            }
+                        } else {
+                            loadConfig()
+                        }
                     } else if (stateEvent.state == ChatStateEnum.SETTINGS_LOADED) {
                         BaseConfig.getInstance().transport.sendInitMessages(false)
-                    } else if (stateEvent.state == ChatStateEnum.DEVICE_REGISTERED) {
-                        loadConfig()
-                    } else if (isChatReady()) {
+                    } else if (isChatReady() && !ThreadsGateTransport.isForceRegistration) {
                         loadItemsFromDB(false)
                         if (fragment?.get()?.isResumed == true) loadHistoryAfterWithLastMessageCheck()
                         messenger.resendMessages()
@@ -1808,12 +1818,18 @@ class ChatController private constructor() {
         @JvmStatic
         @Synchronized
         fun getInstance(): ChatController {
+            createInstance()
+            return instance!!
+        }
+
+        @JvmStatic
+        @Synchronized
+        fun createInstance() {
             val clientUseCase = ClientUseCase(Preferences(ContextHolder.context))
             if (instance == null) {
                 instance = ChatController()
             }
             clientUseCase.initClientId()
-            return instance ?: ChatController()
         }
     }
 }

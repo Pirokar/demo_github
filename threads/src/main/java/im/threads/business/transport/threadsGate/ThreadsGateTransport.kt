@@ -185,9 +185,8 @@ class ThreadsGateTransport(
 
     override fun sendRegisterDevice(forceRegistration: Boolean) {
         val deviceAddress = preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS)
+        isForceRegistration = forceRegistration
         if (deviceAddress.isNullOrBlank() || forceRegistration) {
-            sendRegisterDevice()
-        } else {
             openWebSocket()
         }
     }
@@ -799,5 +798,7 @@ class ThreadsGateTransport(
         private const val KEY_PROTOCOL = "protocol"
         private const val KEY_MESSAGE = "message"
         private const val KEY_URL = "url"
+
+        internal var isForceRegistration = false
     }
 }
