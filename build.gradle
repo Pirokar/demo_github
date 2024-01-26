@@ -74,7 +74,6 @@ ext {
     streamVersion = '1.2.1'
     gsonVersion = '2.8.6'
     picasso_version = '2.8'
-    recordViewVersion = '3.1.3'
     ffmpeg = '0.3.2'
     fcmVersion = '23.0.6'
     flexboxVersion = '3.0.0'
