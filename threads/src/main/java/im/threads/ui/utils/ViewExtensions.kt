@@ -37,8 +37,7 @@ fun goneViews(vararg views: View) {
 }
 
 fun View.getWidthInDp(): Float {
-    val screenPixelDensity = this.context.resources.displayMetrics.density
-    return width / screenPixelDensity
+    return context.fromPxToDp(width.toFloat())
 }
 
 fun Context.dpToPx(dp: Int): Float = TypedValue.applyDimension(
@@ -46,3 +45,7 @@ fun Context.dpToPx(dp: Int): Float = TypedValue.applyDimension(
     dp.toFloat(),
     resources.displayMetrics
 )
+fun Context.fromPxToDp(px: Float): Float {
+    val screenPixelDensity = resources.displayMetrics.density
+    return px / screenPixelDensity
+}

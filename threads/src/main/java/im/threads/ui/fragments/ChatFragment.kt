@@ -45,7 +45,6 @@ import androidx.recyclerview.widget.ListUpdateCallback
 import androidx.recyclerview.widget.RecyclerView
 import com.annimon.stream.Optional
 import com.annimon.stream.Stream
-import com.devlomi.record_view.OnRecordListener
 import com.google.android.material.slider.Slider
 import im.threads.BuildConfig
 import im.threads.R
@@ -134,6 +133,7 @@ import im.threads.ui.utils.isVisible
 import im.threads.ui.utils.visible
 import im.threads.ui.views.VoiceTimeLabelFormatter
 import im.threads.ui.views.formatAsDuration
+import im.threads.ui.views.recordview.OnRecordListener
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -573,7 +573,6 @@ class ChatFragment :
         recordView?.setSmallMicColor(style.threadsRecordButtonSmallMicColor)
         recordView?.setLessThanSecondAllowed(false)
         recordView?.setSlideToCancelText(requireContext().getString(R.string.ecc_voice_message_slide_to_cancel))
-        recordView?.setSoundEnabled(false)
         recordView?.setOnRecordListener(object : OnRecordListener {
             override fun onStart() {
                 fdMediaPlayer?.reset()

@@ -158,7 +158,6 @@ dependencies {
     implementation "com.google.code.gson:gson:$rootProject.gsonVersion"
     implementation "com.squareup.picasso:picasso:$rootProject.picasso_version"
 
-    implementation "com.github.3llomi:RecordView:$rootProject.recordViewVersion"
     implementation "com.writingminds:FFmpegAndroid:$ffmpeg"
 
     implementation "com.google.firebase:firebase-messaging:$fcmVersion"
