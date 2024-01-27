@@ -115,11 +115,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-crashlytics:18.3.7'
     implementation 'com.google.firebase:firebase-analytics:21.3.0'
     implementation 'com.google.firebase:firebase-perf:20.3.2'
-
-    debugImplementation "com.edna.android:push-lite-debug:$pushVersion"
-    debugImplementation "com.edna.android:push-lite-huawei-debug:$pushVersion"
-    releaseImplementation "com.edna.android:push-lite-release:$pushVersion"
-    releaseImplementation "com.edna.android:push-lite-huawei-release:$pushVersion"
+    implementation "com.google.firebase:firebase-messaging-ktx:$rootProject.firebaseMessagingVersion"
+    implementation "com.huawei.hms:push:$rootProject.hmsMessagingVersion"
 
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.12'
 
