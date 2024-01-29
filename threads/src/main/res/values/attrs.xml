@@ -19,7 +19,7 @@
         <attr name="shimmer_center_width" format="dimension|reference"/>
     </declare-styleable>
 
-    <declare-styleable name="RecordView">
+    <declare-styleable name="VoiceRecordView">
         <attr name="slide_to_cancel_text" format="string" />
         <attr name="slide_to_cancel_arrow" format="reference" />
         <attr name="slide_to_cancel_margin_right" format="dimension" />
@@ -32,7 +32,7 @@
 
     </declare-styleable>
 
-    <declare-styleable name="RecordButton">
+    <declare-styleable name="VoiceRecordButton">
 
         <attr name="mic_icon" format="reference" />
         <attr name="send_icon" format="reference" />
@@ -40,7 +40,7 @@
 
     </declare-styleable>
 
-    <declare-styleable name="RecordLockView">
+    <declare-styleable name="VoiceRecordLockView">
 
         <attr name="circle_color" format="color" />
         <attr name="circle_locked_color" format="color" />

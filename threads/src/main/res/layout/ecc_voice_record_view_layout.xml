@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/parent_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -10,9 +11,8 @@
     android:paddingBottom="15dp"
     android:visibility="visible">
 
-
     <im.threads.ui.views.shimmerLayout.ShimmerLayout
-        android:id="@+id/shimmer_layout"
+        android:id="@+id/slideToCancelLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
@@ -41,42 +41,43 @@
     </im.threads.ui.views.shimmerLayout.ShimmerLayout>
 
     <TextView
-        android:id="@+id/recv_tv_cancel"
+        android:id="@+id/cancelTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:text="CANCEL"
+        android:layout_alignParentEnd="true"
+        android:text="@string/ecc_cancel"
         android:textColor="#ff0000" />
 
     <ImageView
-        android:id="@+id/glowing_mic"
+        android:id="@+id/smallBlinkingMic"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:layout_centerInParent="true"
-        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
         app:srcCompat="@drawable/recv_ic_mic" />
 
     <ImageView
         android:id="@+id/basket_img"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:layout_centerInParent="true"
-        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
 
         android:visibility="invisible" />
 
     <Chronometer
-        android:id="@+id/counter_tv"
+        android:id="@+id/counterTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:layout_marginLeft="8dp"
-        android:layout_toRightOf="@id/glowing_mic"
+        android:layout_marginStart="8dp"
+        android:layout_toEndOf="@id/smallBlinkingMic"
         android:gravity="center"
         android:text="00:00"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        tools:ignore="HardcodedText" />
 
 
 </RelativeLayout>

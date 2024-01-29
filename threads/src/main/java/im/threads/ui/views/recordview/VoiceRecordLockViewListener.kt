@@ -1,6 +1,5 @@
-package im.threads.ui.views.recordview;
+package im.threads.ui.views.recordview
 
-interface RecordLockViewListener {
-    void onFractionReached();
+internal interface VoiceRecordLockViewListener {
+    fun onFractionReached()
 }
-

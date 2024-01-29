@@ -1,699 +1,550 @@
-package im.threads.ui.views.recordview;
+package im.threads.ui.views.recordview
 
-import android.content.Context;
-import android.content.res.TypedArray;
-import android.graphics.drawable.Drawable;
-import android.media.MediaPlayer;
-import android.os.Handler;
-import android.os.SystemClock;
-import android.util.AttributeSet;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewParent;
-import android.widget.Chronometer;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-
-import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
-
-import im.threads.R;
-import im.threads.ui.views.shimmerLayout.ShimmerLayout;
-
+import android.content.Context
+import android.media.MediaPlayer
+import android.os.Handler
+import android.os.Looper
+import android.os.SystemClock
+import android.util.AttributeSet
+import android.view.LayoutInflater
+import android.view.MotionEvent
+import android.view.View
+import android.view.ViewGroup
+import android.widget.RelativeLayout
+import androidx.appcompat.content.res.AppCompatResources
+import im.threads.R
+import im.threads.business.utils.ThreadsPermissionChecker
+import im.threads.databinding.EccVoiceRecordViewLayoutBinding
+import im.threads.ui.utils.dpToPx
 
 /**
  * Created by Devlomi on 24/08/2017.
  */
+internal class VoiceRecordView : RelativeLayout, VoiceRecordLockViewListener {
+    private var initialRecordButtonX = 0f
+    private var initialRecordButtonY = 0f
+    private var recordButtonYInWindow = 0f
+    private var basketInitialY = 0f
+    private var difX = 0f
+    internal var cancelBounds = DEFAULT_CANCEL_BOUNDS.toFloat()
+    private var startTime: Long = 0
+    private var elapsedTime: Long = 0
+    private var context: Context
+    private var recordListener: VoiceOnRecordListener? = null
+    private var isSwiped = false
+    private var isLessThanSecondAllowed = false
+    private val player: MediaPlayer? = null
+    private var voiceRecordAnimationHelper: VoiceRecordAnimationHelper? = null
+    private var isRecordButtonGrowingAnimationEnabled = true
+    var isShimmerEffectEnabled = true
+    private var timeLimit: Long = -1
+    private var runnable: Runnable? = null
+    private var handler: Handler? = null
+    private var recordButton: VoiceRecordButton? = null
+    private var canRecord = true
+    private var recordLockView: VoiceRecordLockView? = null
+    private var isLockEnabled = false
+    var recordLockYInWindow = 0f
+    var recordLockXInWindow = 0f
+    private var fractionReached = false
+    private var currentYFraction = 0f
+    private var isLockInSameParent = false
 
-public class RecordView extends RelativeLayout implements RecordLockViewListener {
+    private var binding: EccVoiceRecordViewLayoutBinding? = null
 
-    public static final int DEFAULT_CANCEL_BOUNDS = 8; //8dp
-    private ImageView smallBlinkingMic, basketImg;
-    private Chronometer counterTime;
-    private TextView slideToCancel, cancelTextView;
-    private ShimmerLayout slideToCancelLayout;
-    private ImageView arrow;
-    private float initialRecordButtonX, initialRecordButtonY, recordButtonYInWindow, basketInitialY, difX = 0;
-    private float cancelBounds = DEFAULT_CANCEL_BOUNDS;
-    private long startTime, elapsedTime = 0;
-    private Context context;
-    private OnRecordListener recordListener;
-    private RecordPermissionHandler recordPermissionHandler;
-    private boolean isSwiped, isLessThanSecondAllowed = false;
-    private MediaPlayer player;
-    private AnimationHelper animationHelper;
-    private boolean isRecordButtonGrowingAnimationEnabled = true;
-    private boolean shimmerEffectEnabled = true;
-    private long timeLimit = -1;
-    private Runnable runnable;
-    private Handler handler;
-    private RecordButton recordButton;
-
-    private boolean canRecord = true;
-
-    private RecordLockView recordLockView;
-    private boolean isLockEnabled = false;
-    float recordLockYInWindow = 0f;
-    float recordLockXInWindow = 0f;
-    private boolean fractionReached = false;
-    private float currentYFraction = 0f;
-    private boolean isLockInSameParent = false;
-
-
-    public RecordView(Context context) {
-        super(context);
-        this.context = context;
-        init(context, null, 0, 0);
+    constructor(context: Context) : super(context) {
+        this.context = context
+        init(context, null, 0, 0)
     }
 
-
-    public RecordView(Context context, @Nullable AttributeSet attrs) {
-        super(context, attrs);
-        this.context = context;
-        init(context, attrs, 0, 0);
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
+        this.context = context
+        init(context, attrs, 0, 0)
     }
 
-    public RecordView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        this.context = context;
-        init(context, attrs, defStyleAttr, 0);
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    ) {
+        this.context = context
+        init(context, attrs, defStyleAttr, 0)
     }
 
-
-    private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        View view = View.inflate(context, R.layout.record_view_layout, null);
-        addView(view);
-
-
-        ViewGroup viewGroup = (ViewGroup) view.getParent();
-        viewGroup.setClipChildren(false);
-
-        arrow = view.findViewById(R.id.arrow);
-        slideToCancel = view.findViewById(R.id.slide_to_cancel);
-        smallBlinkingMic = view.findViewById(R.id.glowing_mic);
-        counterTime = view.findViewById(R.id.counter_tv);
-        basketImg = view.findViewById(R.id.basket_img);
-        slideToCancelLayout = view.findViewById(R.id.shimmer_layout);
-        cancelTextView = view.findViewById(R.id.recv_tv_cancel);
-
-
-        hideViews(true);
-
-
-        if (attrs != null && defStyleAttr == 0 && defStyleRes == 0) {
-            TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.RecordView,
-                    defStyleAttr, defStyleRes);
-
-
-            int slideArrowResource = typedArray.getResourceId(R.styleable.RecordView_slide_to_cancel_arrow, -1);
-            String slideToCancelText = typedArray.getString(R.styleable.RecordView_slide_to_cancel_text);
-            int slideMarginRight = (int) typedArray.getDimension(R.styleable.RecordView_slide_to_cancel_margin_right, 30);
-            int counterTimeColor = typedArray.getColor(R.styleable.RecordView_counter_time_color, -1);
-            int arrowColor = typedArray.getColor(R.styleable.RecordView_slide_to_cancel_arrow_color, -1);
-
-            String cancelText = typedArray.getString(R.styleable.RecordView_cancel_text);
-            int cancelMarginRight = (int) typedArray.getDimension(R.styleable.RecordView_cancel_text_margin_right, 30);
-            int cancelTextColor = typedArray.getColor(R.styleable.RecordView_cancel_text_color, -1);
-
-
-            int cancelBounds = typedArray.getDimensionPixelSize(R.styleable.RecordView_slide_to_cancel_bounds, -1);
-
-            if (cancelBounds != -1)
-                setCancelBounds(cancelBounds, false);//don't convert it to pixels since it's already in pixels
-
-
-            if (slideArrowResource != -1) {
-                Drawable slideArrow = AppCompatResources.getDrawable(getContext(), slideArrowResource);
-                arrow.setImageDrawable(slideArrow);
-            }
-
-            if (slideToCancelText != null)
-                slideToCancel.setText(slideToCancelText);
-
-            if (counterTimeColor != -1)
-                setCounterTimeColor(counterTimeColor);
-
-
-            if (arrowColor != -1)
-                setSlideToCancelArrowColor(arrowColor);
-
-            if (cancelText != null) {
-                cancelTextView.setText(cancelText);
-            }
-
-            if (cancelTextColor != -1) {
-                cancelTextView.setTextColor(cancelTextColor);
-            }
-
-            setMarginRight(slideMarginRight, true);
-            setCancelMarginRight(cancelMarginRight, true);
-
-            typedArray.recycle();
-        }
-
-
-        animationHelper = new AnimationHelper(context, basketImg, smallBlinkingMic, isRecordButtonGrowingAnimationEnabled);
-
-        cancelTextView.setOnClickListener(v -> {
-            animationHelper.animateBasket(basketInitialY);
-            cancelAndDeleteRecord();
-        });
-
-    }
-
-    private void cancelAndDeleteRecord() {
-        if (isTimeLimitValid()) {
-            removeTimeLimitCallbacks();
-        }
-
-
-        isSwiped = true;
-
-        animationHelper.setStartRecorded(false);
-
-        if (recordListener != null) {
-            recordListener.onCancel();
-        }
-
-        resetRecord(recordButton);
-    }
-
-    private boolean isTimeLimitValid() {
-        return timeLimit > 0;
-    }
-
-    private void initTimeLimitHandler() {
-        handler = new Handler();
-        runnable = new Runnable() {
-            @Override
-            public void run() {
-
-                if (recordListener != null && !isSwiped)
-                    recordListener.onFinish(elapsedTime, true);
-
-                removeTimeLimitCallbacks();
-
-                animationHelper.setStartRecorded(false);
-
-                if (recordButton != null) {
-                    resetRecord(recordButton);
+    private fun init(context: Context, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) {
+        binding = EccVoiceRecordViewLayoutBinding.inflate(LayoutInflater.from(context))
+        binding?.apply {
+            addView(root)
+            val viewGroup = root.parent as ViewGroup
+            viewGroup.clipChildren = false
+            hideViews(true)
+            if (attrs != null && defStyleAttr == 0 && defStyleRes == 0) {
+                val typedArray = context.obtainStyledAttributes(
+                    attrs,
+                    R.styleable.VoiceRecordView,
+                    defStyleAttr,
+                    defStyleRes
+                )
+                val slideArrowResource = typedArray.getResourceId(R.styleable.VoiceRecordView_slide_to_cancel_arrow, -1)
+                val slideToCancelText = typedArray.getString(R.styleable.VoiceRecordView_slide_to_cancel_text)
+                val slideMarginRight = typedArray.getDimension(R.styleable.VoiceRecordView_slide_to_cancel_margin_right, 30f).toInt()
+                val counterTimeColor = typedArray.getColor(R.styleable.VoiceRecordView_counter_time_color, -1)
+                val arrowColor = typedArray.getColor(R.styleable.VoiceRecordView_slide_to_cancel_arrow_color, -1)
+                val cancelText = typedArray.getString(R.styleable.VoiceRecordView_cancel_text)
+                val cancelMarginRight = typedArray.getDimension(R.styleable.VoiceRecordView_cancel_text_margin_right, 30f).toInt()
+                val cancelTextColor = typedArray.getColor(R.styleable.VoiceRecordView_cancel_text_color, -1)
+                val cancelBounds = typedArray.getDimensionPixelSize(R.styleable.VoiceRecordView_slide_to_cancel_bounds, -1)
+                if (cancelBounds != -1) {
+                    setCancelBounds(
+                        cancelBounds.toFloat(),
+                        false
+                    )
                 }
-                isSwiped = true;
-
+                if (slideArrowResource != -1) {
+                    val slideArrow = AppCompatResources.getDrawable(getContext(), slideArrowResource)
+                    arrow.setImageDrawable(slideArrow)
+                }
+                if (slideToCancelText != null) slideToCancel.text = slideToCancelText
+                if (counterTimeColor != -1) setChronometerCounterTimeColor(counterTimeColor)
+                if (arrowColor != -1) setSlideToCancelArrowColor(arrowColor)
+                if (cancelText != null) cancelTextView.text = cancelText
+                if (cancelTextColor != -1) cancelTextView.setTextColor(cancelTextColor)
+                setMarginRight(slideMarginRight, true)
+                setCancelMarginRight(cancelMarginRight, true)
+                typedArray.recycle()
             }
-
-        };
+            voiceRecordAnimationHelper = VoiceRecordAnimationHelper(
+                context,
+                basketImg,
+                smallBlinkingMic,
+                isRecordButtonGrowingAnimationEnabled
+            )
+            cancelTextView.setOnClickListener {
+                voiceRecordAnimationHelper?.animateBasket(basketInitialY)
+                cancelAndDeleteRecord()
+            }
+        }
     }
 
+    private fun cancelAndDeleteRecord() {
+        if (isTimeLimitValid) {
+            removeTimeLimitCallbacks()
+        }
+        isSwiped = true
+        voiceRecordAnimationHelper?.setStartRecorded(false)
+        recordListener?.onCancel()
+        resetRecord(recordButton)
+    }
 
-    private void hideViews(boolean hideSmallMic) {
-        slideToCancelLayout.setVisibility(GONE);
-        counterTime.setVisibility(GONE);
-        cancelTextView.setVisibility(GONE);
+    private val isTimeLimitValid: Boolean
+        get() = timeLimit > 0
+
+    private fun initTimeLimitHandler() {
+        handler = Handler(Looper.getMainLooper())
+        runnable = Runnable {
+            if (!isSwiped) recordListener?.onFinish(elapsedTime, true)
+            removeTimeLimitCallbacks()
+            voiceRecordAnimationHelper?.setStartRecorded(false)
+            if (recordButton != null) {
+                resetRecord(recordButton)
+            }
+            isSwiped = true
+        }
+    }
+
+    private fun hideViews(hideSmallMic: Boolean) = binding?.apply {
+        slideToCancelLayout.visibility = GONE
+        counterTime.visibility = GONE
+        cancelTextView.visibility = GONE
         if (isLockEnabled && recordLockView != null) {
-            recordLockView.setVisibility(GONE);
+            recordLockView?.visibility = GONE
         }
-        if (hideSmallMic)
-            smallBlinkingMic.setVisibility(GONE);
+        if (hideSmallMic) smallBlinkingMic.visibility = GONE
     }
 
-    private void showViews() {
-        slideToCancelLayout.setVisibility(VISIBLE);
-        smallBlinkingMic.setVisibility(VISIBLE);
-        counterTime.setVisibility(VISIBLE);
-        if (isLockEnabled && recordLockView != null) {
-            recordLockView.setVisibility(VISIBLE);
+    private fun showViews() = binding?.apply {
+        slideToCancelLayout.visibility = VISIBLE
+        smallBlinkingMic.visibility = VISIBLE
+        counterTime.visibility = VISIBLE
+        if (isLockEnabled) {
+            recordLockView?.visibility = VISIBLE
         }
-
     }
 
-    private boolean isLessThanOneSecond(long time) {
-        return time <= 1000;
+    private fun isLessThanOneSecond(time: Long): Boolean {
+        return time <= 1000
     }
 
-    protected void onActionDown(RecordButton recordBtn, MotionEvent motionEvent) {
-
-        if (!isRecordPermissionGranted()) {
-            return;
+    internal fun onActionDown(recordBtn: VoiceRecordButton) = binding?.apply {
+        if (!isRecordPermissionGranted) {
+            return@apply
         }
-
-
-        if (recordListener != null)
-            recordListener.onStart();
-
-        if (isTimeLimitValid()) {
-            removeTimeLimitCallbacks();
-            handler.postDelayed(runnable, timeLimit);
+        recordListener?.onStart()
+        if (isTimeLimitValid && runnable != null) {
+            removeTimeLimitCallbacks()
+            handler?.postDelayed(runnable!!, timeLimit)
         }
-
-        animationHelper.setStartRecorded(true);
-        animationHelper.resetBasketAnimation();
-        animationHelper.resetSmallMic();
-
-
+        voiceRecordAnimationHelper?.setStartRecorded(true)
+        voiceRecordAnimationHelper?.resetBasketAnimation()
+        voiceRecordAnimationHelper?.resetSmallMic()
         if (isRecordButtonGrowingAnimationEnabled) {
-            recordBtn.startScale();
+            recordBtn.startScale()
         }
-
-        if (shimmerEffectEnabled) {
-            slideToCancelLayout.ensureAnimationStarted();
+        if (isShimmerEffectEnabled) {
+            slideToCancelLayout.ensureAnimationStarted()
         }
-
-        initialRecordButtonX = recordBtn.getX();
-
-
-        int[] recordButtonLocation = new int[2];
-        recordBtn.getLocationInWindow(recordButtonLocation);
-
-        initialRecordButtonY = recordButton.getY();
-
+        initialRecordButtonX = recordBtn.x
+        val recordButtonLocation = IntArray(2)
+        recordBtn.getLocationInWindow(recordButtonLocation)
+        initialRecordButtonY = recordButton?.y ?: 0f
         if (isLockEnabled && recordLockView != null) {
-            isLockInSameParent = isLockAndRecordButtonHaveSameParent();
-            int[] recordLockLocation = new int[2];
-            recordLockView.getLocationInWindow(recordLockLocation);
-            recordLockXInWindow = recordLockLocation[0];
-            recordLockYInWindow = isLockInSameParent ? recordLockView.getY() : recordLockLocation[1];
-            recordButtonYInWindow = isLockInSameParent ? recordButton.getY() : recordButtonLocation[1];
+            isLockInSameParent = isLockAndRecordButtonHaveSameParent
+            val recordLockLocation = IntArray(2)
+            recordLockView?.getLocationInWindow(recordLockLocation)
+            recordLockXInWindow = recordLockLocation[0].toFloat()
+            recordLockYInWindow =
+                if (isLockInSameParent) (recordLockView?.y ?: 0f) else recordLockLocation[1].toFloat()
+            recordButtonYInWindow =
+                if (isLockInSameParent) (recordButton?.y ?: 0f) else recordButtonLocation[1].toFloat()
         }
-
-
-        basketInitialY = basketImg.getY() + 90;
-
-        showViews();
-
-        animationHelper.animateSmallMicAlpha();
-        counterTime.setBase(SystemClock.elapsedRealtime());
-        startTime = System.currentTimeMillis();
-        counterTime.start();
-        isSwiped = false;
-        currentYFraction = 0f;
-
+        basketInitialY = basketImg.y + 90
+        showViews()
+        voiceRecordAnimationHelper?.animateSmallMicAlpha()
+        counterTime.base = SystemClock.elapsedRealtime()
+        startTime = System.currentTimeMillis()
+        counterTime.start()
+        isSwiped = false
+        currentYFraction = 0f
     }
 
-
-    protected void onActionMove(final RecordButton recordBtn, MotionEvent motionEvent) {
-
+    internal fun onActionMove(recordBtn: VoiceRecordButton, motionEvent: MotionEvent) = binding?.apply {
         if (!canRecord || fractionReached) {
-            return;
+            return@apply
         }
-
-        long time = System.currentTimeMillis() - startTime;
-
+        val time = System.currentTimeMillis() - startTime
         if (!isSwiped) {
+            val slideToCancelLayoutX = slideToCancelLayout.x
+            val counterTimeRight = counterTime.right
 
-            //Swipe To Cancel
-            if (slideToCancelLayout.getX() != 0 && slideToCancelLayout.getX() <= counterTime.getRight() + cancelBounds) {
-
-                //if the time was less than one second then do not start basket animation
+            if (slideToCancelLayoutX != 0f && slideToCancelLayoutX <= counterTimeRight + cancelBounds) {
                 if (isLessThanOneSecond(time)) {
-                    hideViews(true);
-                    animationHelper.clearAlphaAnimation(false);
-
-
-                    animationHelper.onAnimationEnd();
-
+                    hideViews(true)
+                    voiceRecordAnimationHelper?.clearAlphaAnimation(false)
+                    voiceRecordAnimationHelper?.onAnimationEnd()
                 } else {
-                    hideViews(false);
-                    animationHelper.animateBasket(basketInitialY);
+                    hideViews(false)
+                    voiceRecordAnimationHelper?.animateBasket(basketInitialY)
                 }
-
-                animationHelper.moveRecordButtonAndSlideToCancelBack(recordBtn, slideToCancelLayout, initialRecordButtonX, initialRecordButtonY, difX, isLockEnabled);
-
-                counterTime.stop();
-                if (shimmerEffectEnabled) {
-                    slideToCancelLayout.stopShimmerAnimation();
+                voiceRecordAnimationHelper?.moveRecordButtonAndSlideToCancelBack(
+                    recordBtn,
+                    slideToCancelLayout,
+                    initialRecordButtonX,
+                    initialRecordButtonY,
+                    difX,
+                    isLockEnabled
+                )
+                counterTime.stop()
+                if (isShimmerEffectEnabled) {
+                    slideToCancelLayout.stopShimmerAnimation()
                 }
-
-                isSwiped = true;
-
-
-                animationHelper.setStartRecorded(false);
-
-                if (recordListener != null)
-                    recordListener.onCancel();
-
-                if (isTimeLimitValid()) {
-                    removeTimeLimitCallbacks();
+                isSwiped = true
+                voiceRecordAnimationHelper?.setStartRecorded(false)
+                recordListener?.onCancel()
+                if (isTimeLimitValid) {
+                    removeTimeLimitCallbacks()
                 }
-
-
             } else {
-
-
                 if (canMoveX(motionEvent)) {
                     recordBtn.animate()
-                            .x(motionEvent.getRawX())
-                            .setDuration(0)
-                            .start();
-
-
-                    if (difX == 0)
-                        difX = (initialRecordButtonX - slideToCancelLayout.getX());
-
-
+                        .x(motionEvent.rawX)
+                        .setDuration(0)
+                        .start()
+                    if (difX == 0f) difX = initialRecordButtonX - slideToCancelLayoutX
                     slideToCancelLayout.animate()
-                            .x(motionEvent.getRawX() - difX)
-                            .setDuration(0)
-                            .start();
-
-
+                        ?.x(motionEvent.rawX - difX)
+                        ?.setDuration(0)
+                        ?.start()
                 }
 
-                  /*
-                  if RecordLock was NOT inside the same parent as RecordButton
-                   animate.y() OR view.setY() will setY value INSIDE its parent
-                   we need a way to convert the inner value to outer value
-                   since motionEvent.getRawY() returns Y's location onScreen
-                   we had to get screen height and get the difference between motionEvent and screen height
-                 */
-                float newY = isLockInSameParent ? motionEvent.getRawY() : motionEvent.getRawY() - recordButtonYInWindow;
+                val newY = if (isLockInSameParent) motionEvent.rawY else motionEvent.rawY - recordButtonYInWindow
                 if (canMoveY(motionEvent, newY)) {
-
                     recordBtn.animate()
-                            .y(newY)
-                            .setDuration(0)
-                            .start();
-
-                    float currentY = motionEvent.getRawY();
-                    float minY = recordLockYInWindow;
-                    float maxY = recordButtonYInWindow;
-
-                    float fraction = (currentY - minY) / (maxY - minY);
-                    fraction = 1 - fraction;
-                    currentYFraction = fraction;
-
-                    recordLockView.animateLock(fraction);
-
+                        .y(newY)
+                        .setDuration(0)
+                        .start()
+                    val currentY = motionEvent.rawY
+                    val minY = recordLockYInWindow
+                    val maxY = recordButtonYInWindow
+                    var fraction = (currentY - minY) / (maxY - minY)
+                    fraction = 1 - fraction
+                    currentYFraction = fraction
+                    recordLockView?.animateLock(fraction)
                     if (isRecordButtonGrowingAnimationEnabled) {
-                        //convert fraction to scale
-                        //so instead of starting from 0 to 1, it will start from 1 to 0
-                        float scale = 1 - fraction + 1;
-                        recordBtn.animate().scaleX(scale).scaleY(scale).setDuration(0).start();
+                        val scale = 1 - fraction + 1
+                        recordBtn.animate().scaleX(scale).scaleY(scale).setDuration(0).start()
                     }
                 }
             }
-
         }
     }
 
-
-    private boolean canMoveX(MotionEvent motionEvent) {
-        //Prevent Swiping out of bounds
-        if (motionEvent.getRawX() < initialRecordButtonX) {
+    private fun canMoveX(motionEvent: MotionEvent): Boolean {
+        return if (motionEvent.rawX < initialRecordButtonX) {
             if (isLockEnabled) {
-                //prevent swiping X if record button goes up
-                return currentYFraction <= 0.3;
+                currentYFraction <= 0.3
+            } else {
+                true
             }
-            return true;
+        } else {
+            false
         }
-
-        return false;
     }
 
-    private boolean canMoveY(MotionEvent motionEvent, float dif) {
-
-        if (isLockEnabled) {
+    private fun canMoveY(motionEvent: MotionEvent, dif: Float): Boolean {
+        return if (isLockEnabled) {
             /*
              1. prevent swiping below record button
              2. prevent swiping up if record button is NOT near record Lock's X
              */
-            if(isLockInSameParent){
-                return motionEvent.getRawY() < initialRecordButtonY && motionEvent.getRawX() >= recordLockXInWindow;
-            }else {
-                return dif <= initialRecordButtonY && motionEvent.getRawX() >= recordLockXInWindow;
+            if (isLockInSameParent) {
+                motionEvent.rawY < initialRecordButtonY && motionEvent.rawX >= recordLockXInWindow
+            } else {
+                dif <= initialRecordButtonY && motionEvent.rawX >= recordLockXInWindow
+            }
+        } else {
+            false
+        }
+    }
+
+    internal fun onActionUp() {
+        if (!canRecord || fractionReached) {
+            return
+        }
+        finishAndSaveRecord()
+    }
+
+    private fun finishAndSaveRecord() {
+        elapsedTime = System.currentTimeMillis() - startTime
+        if (!isLessThanSecondAllowed && isLessThanOneSecond(elapsedTime) && !isSwiped) {
+            recordListener?.onLessThanSecond()
+            removeTimeLimitCallbacks()
+            voiceRecordAnimationHelper?.setStartRecorded(false)
+        } else {
+            if (recordListener != null && !isSwiped) recordListener!!.onFinish(elapsedTime, false)
+            removeTimeLimitCallbacks()
+            voiceRecordAnimationHelper?.setStartRecorded(false)
+        }
+        resetRecord(recordButton)
+    }
+
+    private fun switchToLockedMode() = binding?.apply {
+        cancelTextView.visibility = VISIBLE
+        slideToCancelLayout.visibility = GONE
+        recordButton?.animate()
+            ?.x(initialRecordButtonX)
+            ?.y(initialRecordButtonY)
+            ?.setDuration(100)
+            ?.start()
+        if (isRecordButtonGrowingAnimationEnabled) {
+            recordButton?.stopScale()
+        }
+        recordButton?.isListenForRecord = false
+        recordButton?.setInLockMode(true)
+        recordButton?.changeIconToSend()
+    }
+
+    private val isLockAndRecordButtonHaveSameParent: Boolean
+        get() {
+            if (recordLockView == null) {
+                return false
+            }
+            val lockParent = recordLockView?.parent
+            val recordButtonParent = recordButton?.parent
+            return if (lockParent == null || recordButtonParent == null) {
+                false
+            } else {
+                lockParent === recordButtonParent
             }
         }
 
-        return false;
-
-    }
-
-    protected void onActionUp(RecordButton recordBtn) {
-
-        if (!canRecord || fractionReached) {
-            return;
+    private fun resetRecord(recordBtn: VoiceRecordButton?) = binding?.apply {
+        hideViews(!isSwiped)
+        fractionReached = false
+        if (!isSwiped) voiceRecordAnimationHelper!!.clearAlphaAnimation(true)
+        voiceRecordAnimationHelper?.moveRecordButtonAndSlideToCancelBack(
+            recordBtn,
+            slideToCancelLayout,
+            initialRecordButtonX,
+            initialRecordButtonY,
+            difX,
+            isLockEnabled
+        )
+        counterTime.stop()
+        if (isShimmerEffectEnabled) {
+            slideToCancelLayout.stopShimmerAnimation()
         }
-
-        finishAndSaveRecord();
-
-    }
-
-    private void finishAndSaveRecord() {
-        elapsedTime = System.currentTimeMillis() - startTime;
-
-        if (!isLessThanSecondAllowed && isLessThanOneSecond(elapsedTime) && !isSwiped) {
-            if (recordListener != null)
-                recordListener.onLessThanSecond();
-
-            removeTimeLimitCallbacks();
-            animationHelper.setStartRecorded(false);
-
-
-        } else {
-            if (recordListener != null && !isSwiped)
-                recordListener.onFinish(elapsedTime, false);
-
-            removeTimeLimitCallbacks();
-
-            animationHelper.setStartRecorded(false);
-
-        }
-
-        resetRecord(recordButton);
-    }
-
-    private void switchToLockedMode() {
-        cancelTextView.setVisibility(VISIBLE);
-        slideToCancelLayout.setVisibility(GONE);
-
-        recordButton.animate()
-                .x(initialRecordButtonX)
-                .y(initialRecordButtonY)
-                .setDuration(100)
-                .start();
-
-        if (isRecordButtonGrowingAnimationEnabled) {
-            recordButton.stopScale();
-        }
-
-        recordButton.setListenForRecord(false);
-        recordButton.setInLockMode(true);
-        recordButton.changeIconToSend();
-
-    }
-
-    private boolean isLockAndRecordButtonHaveSameParent() {
-        if (recordLockView == null){
-            return false;
-        }
-
-        ViewParent lockParent = recordLockView.getParent();
-        ViewParent recordButtonParent = recordButton.getParent();
-        if (lockParent == null || recordButtonParent == null) {
-            return false;
-        }
-        return lockParent == recordButtonParent;
-    }
-
-    private void resetRecord(RecordButton recordBtn) {
-        //if user has swiped then do not hide SmallMic since it will be hidden after swipe Animation
-        hideViews(!isSwiped);
-        fractionReached = false;
-
-        if (!isSwiped)
-            animationHelper.clearAlphaAnimation(true);
-
-        animationHelper.moveRecordButtonAndSlideToCancelBack(recordBtn, slideToCancelLayout, initialRecordButtonX, initialRecordButtonY, difX, isLockEnabled);
-        counterTime.stop();
-        if (shimmerEffectEnabled) {
-            slideToCancelLayout.stopShimmerAnimation();
-        }
-
         if (isLockEnabled) {
-            recordLockView.reset();
-            recordBtn.changeIconToRecord();
+            recordLockView?.reset()
+            recordBtn?.changeIconToRecord()
         }
-
-        cancelTextView.setVisibility(GONE);
-        recordBtn.setListenForRecord(true);
-        recordBtn.setInLockMode(false);
+        cancelTextView.visibility = GONE
+        recordBtn?.isListenForRecord = true
+        recordBtn?.setInLockMode(false)
     }
 
-    private void removeTimeLimitCallbacks() {
-        if (isTimeLimitValid()) {
-            handler.removeCallbacks(runnable);
+    private fun removeTimeLimitCallbacks() {
+        if (isTimeLimitValid && runnable != null) {
+            handler?.removeCallbacks(runnable!!)
         }
     }
 
+    private val isRecordPermissionGranted: Boolean
+        get() {
+            return ThreadsPermissionChecker.isRecordAudioPermissionGranted(this.context)
+        }
 
-    private boolean isRecordPermissionGranted() {
-
-        if (recordPermissionHandler == null) {
-            canRecord = true;
+    private fun setMarginRight(marginRight: Int, convertToDp: Boolean) = binding?.apply {
+        val layoutParams = slideToCancelLayout.layoutParams as LayoutParams
+        if (convertToDp) {
+            layoutParams.rightMargin = context.dpToPx(marginRight).toInt()
         } else {
-            canRecord = recordPermissionHandler.isPermissionGranted();
+            layoutParams.rightMargin = marginRight
         }
-
-        return canRecord;
+        slideToCancelLayout.layoutParams = layoutParams
     }
 
-    private void setMarginRight(int marginRight, boolean convertToDp) {
-        LayoutParams layoutParams = (LayoutParams) slideToCancelLayout.getLayoutParams();
+    private fun setCancelMarginRight(marginRight: Int, convertToDp: Boolean) = binding?.apply {
+        val layoutParams = slideToCancelLayout.layoutParams as LayoutParams
         if (convertToDp) {
-            layoutParams.rightMargin = (int) DpUtil.toPixel(marginRight, context);
-        } else
-            layoutParams.rightMargin = marginRight;
-
-        slideToCancelLayout.setLayoutParams(layoutParams);
+            layoutParams.rightMargin = context.dpToPx(marginRight).toInt()
+        } else {
+            layoutParams.rightMargin = marginRight
+        }
+        cancelTextView.layoutParams = layoutParams
     }
 
-    private void setCancelMarginRight(int marginRight, boolean convertToDp) {
-        LayoutParams layoutParams = (LayoutParams) slideToCancelLayout.getLayoutParams();
-        if (convertToDp) {
-            layoutParams.rightMargin = (int) DpUtil.toPixel(marginRight, context);
-        } else
-            layoutParams.rightMargin = marginRight;
-
-        cancelTextView.setLayoutParams(layoutParams);
+    fun setOnRecordListener(recordListener: VoiceOnRecordListener?) {
+        this.recordListener = recordListener
     }
 
-
-    public void setOnRecordListener(OnRecordListener recrodListener) {
-        this.recordListener = recrodListener;
+    fun setOnBasketAnimationEndListener(onBasketAnimationEndListener: VoiceRecordOnBasketAnimationEnd?) {
+        voiceRecordAnimationHelper?.setOnBasketAnimationEndListener(onBasketAnimationEndListener)
     }
 
-    public void setRecordPermissionHandler(RecordPermissionHandler recordPermissionHandler) {
-        this.recordPermissionHandler = recordPermissionHandler;
+    fun setLessThanSecondAllowed(isAllowed: Boolean) {
+        isLessThanSecondAllowed = isAllowed
     }
 
-    public void setOnBasketAnimationEndListener(OnBasketAnimationEnd onBasketAnimationEndListener) {
-        animationHelper.setOnBasketAnimationEndListener(onBasketAnimationEndListener);
+    fun setSlideToCancelText(text: String?) = binding?.apply {
+        slideToCancel.text = text
     }
 
-    public void setLessThanSecondAllowed(boolean isAllowed) {
-        isLessThanSecondAllowed = isAllowed;
+    fun setSlideToCancelTextColor(color: Int) = binding?.apply {
+        slideToCancel.setTextColor(color)
     }
 
-    public void setSlideToCancelText(String text) {
-        slideToCancel.setText(text);
+    fun setSmallMicColor(color: Int) = binding?.apply {
+        smallBlinkingMic.setColorFilter(color)
     }
 
-    public void setSlideToCancelTextColor(int color) {
-        slideToCancel.setTextColor(color);
+    fun setSmallMicIcon(icon: Int) = binding?.apply {
+        smallBlinkingMic.setImageResource(icon)
     }
 
-    public void setSmallMicColor(int color) {
-        smallBlinkingMic.setColorFilter(color);
+    fun setSlideMarginRight(marginRight: Int) = binding?.apply {
+        setMarginRight(marginRight, true)
     }
 
-    public void setSmallMicIcon(int icon) {
-        smallBlinkingMic.setImageResource(icon);
+    fun getCancelBounds(): Float {
+        return cancelBounds
     }
 
-    public void setSlideMarginRight(int marginRight) {
-        setMarginRight(marginRight, true);
+    fun setCancelBounds(cancelBounds: Float) {
+        setCancelBounds(cancelBounds, true)
     }
 
-    public float getCancelBounds() {
-        return cancelBounds;
+    fun setChronometerCounterTimeColor(color: Int) = binding?.apply {
+        counterTime.setTextColor(color)
     }
 
-    public void setCancelBounds(float cancelBounds) {
-        setCancelBounds(cancelBounds, true);
+    fun setSlideToCancelArrowColor(color: Int) = binding?.apply {
+        arrow.setColorFilter(color)
     }
 
-    //set Chronometer color
-    public void setCounterTimeColor(int color) {
-        counterTime.setTextColor(color);
+    private fun setCancelBounds(cancelBounds: Float, convertDpToPixel: Boolean) {
+        val bounds = if (convertDpToPixel) context.dpToPx(cancelBounds.toInt()) else cancelBounds
+        this.cancelBounds = bounds
     }
 
-    public void setSlideToCancelArrowColor(int color) {
-        arrow.setColorFilter(color);
+    fun isRecordButtonGrowingAnimationEnabled(): Boolean {
+        return isRecordButtonGrowingAnimationEnabled
     }
 
-
-    private void setCancelBounds(float cancelBounds, boolean convertDpToPixel) {
-        float bounds = convertDpToPixel ? DpUtil.toPixel(cancelBounds, context) : cancelBounds;
-        this.cancelBounds = bounds;
+    fun setRecordButtonGrowingAnimationEnabled(recordButtonGrowingAnimationEnabled: Boolean) {
+        isRecordButtonGrowingAnimationEnabled = recordButtonGrowingAnimationEnabled
+        voiceRecordAnimationHelper!!.setRecordButtonGrowingAnimationEnabled(recordButtonGrowingAnimationEnabled)
     }
 
-    public boolean isRecordButtonGrowingAnimationEnabled() {
-        return isRecordButtonGrowingAnimationEnabled;
+    fun getTimeLimit(): Long {
+        return timeLimit
     }
 
-    public void setRecordButtonGrowingAnimationEnabled(boolean recordButtonGrowingAnimationEnabled) {
-        isRecordButtonGrowingAnimationEnabled = recordButtonGrowingAnimationEnabled;
-        animationHelper.setRecordButtonGrowingAnimationEnabled(recordButtonGrowingAnimationEnabled);
-    }
-
-    public boolean isShimmerEffectEnabled() {
-        return shimmerEffectEnabled;
-    }
-
-    public void setShimmerEffectEnabled(boolean shimmerEffectEnabled) {
-        this.shimmerEffectEnabled = shimmerEffectEnabled;
-    }
-
-    public long getTimeLimit() {
-        return timeLimit;
-    }
-
-    public void setTimeLimit(long timeLimit) {
-        this.timeLimit = timeLimit;
-
+    fun setTimeLimit(timeLimit: Long) {
+        this.timeLimit = timeLimit
         if (handler != null && runnable != null) {
-            removeTimeLimitCallbacks();
+            removeTimeLimitCallbacks()
         }
-        initTimeLimitHandler();
+        initTimeLimitHandler()
     }
 
-    public void setTrashIconColor(int color) {
-        animationHelper.setTrashIconColor(color);
+    fun setTrashIconColor(color: Int) {
+        voiceRecordAnimationHelper?.setTrashIconColor(color)
     }
 
-    public void setRecordLockImageView(RecordLockView recordLockView) {
-        this.recordLockView = recordLockView;
-        this.recordLockView.setRecordLockViewListener(this);
-        this.recordLockView.setVisibility(INVISIBLE);
+    fun setRecordLockImageView(recordLockView: VoiceRecordLockView?) {
+        this.recordLockView = recordLockView
+        this.recordLockView?.setRecordLockViewListener(this)
+        this.recordLockView?.visibility = INVISIBLE
     }
 
-    public void setLockEnabled(boolean lockEnabled) {
-        isLockEnabled = lockEnabled;
+    fun setLockEnabled(lockEnabled: Boolean) {
+        isLockEnabled = lockEnabled
     }
 
-    protected void setRecordButton(RecordButton recordButton) {
-        this.recordButton = recordButton;
-        this.recordButton.setSendClickListener(v -> {
-            finishAndSaveRecord();
-        });
+    internal fun setRecordButton(recordButton: VoiceRecordButton?) {
+        this.recordButton = recordButton
+        this.recordButton?.setSendClickListener(object : VoiceRecordOnRecordClickListener {
+            override fun onClick(v: View?) {
+                finishAndSaveRecord()
+            }
+        })
     }
 
     /*
     Use this if you want to Finish And save the Record if user closes the app for example in 'onPause()'
      */
-    public void finishRecord() {
-        finishAndSaveRecord();
+    fun finishRecord() {
+        finishAndSaveRecord()
     }
 
     /*
     Use this if you want to Cancel And delete the Record if user closes the app for example in 'onPause()'
      */
-    public void cancelRecord() {
-        hideViews(true);
-        animationHelper.clearAlphaAnimation(false);
-        cancelAndDeleteRecord();
+    fun cancelRecord() {
+        hideViews(true)
+        voiceRecordAnimationHelper!!.clearAlphaAnimation(false)
+        cancelAndDeleteRecord()
     }
 
-    @Override
-    public void onFractionReached() {
-        fractionReached = true;
-        switchToLockedMode();
+    override fun onFractionReached() {
+        fractionReached = true
+        switchToLockedMode()
         if (recordListener != null) {
-            recordListener.onLock();
+            recordListener!!.onLock()
         }
     }
+
+    companion object {
+        const val DEFAULT_CANCEL_BOUNDS = 8
+    }
 }
-
-

@@ -1,269 +1,226 @@
-package im.threads.ui.views.recordview;
+package im.threads.ui.views.recordview
 
-import android.animation.AnimatorSet;
-import android.animation.ValueAnimator;
-import android.content.Context;
-import android.content.res.TypedArray;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
-import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
-import android.util.AttributeSet;
-import android.view.View;
-import android.view.animation.AnticipateInterpolator;
-import android.view.animation.DecelerateInterpolator;
+import android.animation.AnimatorSet
+import android.animation.ValueAnimator
+import android.annotation.SuppressLint
+import android.content.Context
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
+import android.graphics.Rect
+import android.graphics.drawable.Drawable
+import android.util.AttributeSet
+import android.view.View
+import android.view.animation.AnticipateInterpolator
+import android.view.animation.DecelerateInterpolator
+import androidx.appcompat.content.res.AppCompatResources
+import im.threads.R
+import im.threads.ui.utils.dpToPx
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
+internal class VoiceRecordLockView : View {
+    private var bottomLockDrawable: Drawable? = null
+    private var topLockDrawable: Drawable? = null
+    private var context: Context? = null
+    private var recordLockViewListener: VoiceRecordLockViewListener? = null
+    private var defaultCircleColor = Color.parseColor("#0A81AB")
+    private var circleLockedColor = Color.parseColor("#314E52")
+    private var circleColor = defaultCircleColor
+    private var recordLockAlpha = 255
+    private var lockColor = Color.WHITE
+    private var topLockTop = 0f
+    private var topLockBottom = 0f
+    private var initialTopLockTop = 0f
+    private var initialTopLockBottom = 0f
+    private var bottomLockRect: Rect? = null
 
-import im.threads.R;
+    private var fiveDp = 0f
+    private var fourDp = 0f
+    private var twoDp = 0f
 
-public class RecordLockView extends View {
-    private Drawable bottomLockDrawable, topLockDrawable;
-    private Context context;
-    private RecordLockViewListener recordLockViewListener;
-
-    private int defaultCircleColor = Color.parseColor("#0A81AB");
-    private int circleLockedColor = Color.parseColor("#314E52");
-    private int circleColor = defaultCircleColor;
-    private int recordLockAlpha = 255;
-    private int lockColor = Color.WHITE;
-
-    private float topLockTop, topLockBottom, initialTopLockTop, initialTopLockBottom = 0f;
-
-    private Rect bottomLockRect;
-
-    //reduce calling DpUtil.toDp on onDraw
-    private float fiveDp, fourDp, twoDp;
-
-    public RecordLockView(@NonNull Context context) {
-        super(context);
-        init(context, null, 0, 0);
+    constructor(context: Context) : super(context) {
+        init(context, null, 0, 0)
     }
 
-    public RecordLockView(@NonNull Context context, @Nullable AttributeSet attrs) {
-        super(context, attrs);
-        init(context, attrs, 0, 0);
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
+        init(context, attrs, 0, 0)
     }
 
-    public RecordLockView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        init(context, attrs, defStyleAttr, 0);
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    ) {
+        init(context, attrs, defStyleAttr, 0)
     }
 
-
-    private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        this.context = context;
-        bottomLockDrawable = AppCompatResources.getDrawable(context, R.drawable.recv_lock_bottom);
-        topLockDrawable = AppCompatResources.getDrawable(context, R.drawable.recv_lock_top);
-
-        fiveDp = DpUtil.toPixel(5, context);
-        fourDp = DpUtil.toPixel(4, context);
-        twoDp = DpUtil.toPixel(2, context);
-
+    private fun init(context: Context, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) {
+        this.context = context
+        bottomLockDrawable = AppCompatResources.getDrawable(context, R.drawable.recv_lock_bottom)
+        topLockDrawable = AppCompatResources.getDrawable(context, R.drawable.recv_lock_top)
+        fiveDp = context.dpToPx(5)
+        fourDp = context.dpToPx(4)
+        twoDp = context.dpToPx(2)
         if (attrs != null && defStyleAttr == 0 && defStyleRes == 0) {
-            TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.RecordLockView,
-                    defStyleAttr, defStyleRes);
-
-
-            int circleColor = typedArray.getColor(R.styleable.RecordLockView_circle_color, -1);
-            int circleLockedColor = typedArray.getColor(R.styleable.RecordLockView_circle_locked_color, -1);
-            int lockColor = typedArray.getColor(R.styleable.RecordLockView_lock_color, -1);
-
+            val typedArray = context.obtainStyledAttributes(
+                attrs,
+                R.styleable.VoiceRecordLockView,
+                defStyleAttr,
+                defStyleRes
+            )
+            val circleColor = typedArray.getColor(R.styleable.VoiceRecordLockView_circle_color, -1)
+            val circleLockedColor =
+                typedArray.getColor(R.styleable.VoiceRecordLockView_circle_locked_color, -1)
+            val lockColor = typedArray.getColor(R.styleable.VoiceRecordLockView_lock_color, -1)
             if (circleColor != -1) {
-                this.circleColor = circleColor;
+                this.circleColor = circleColor
             }
             if (circleLockedColor != -1) {
-                this.circleLockedColor = circleLockedColor;
+                this.circleLockedColor = circleLockedColor
             }
-
             if (lockColor != -1) {
-                this.lockColor = lockColor;
-                bottomLockDrawable.setColorFilter(new PorterDuffColorFilter(lockColor, PorterDuff.Mode.SRC_IN));
-                topLockDrawable.setColorFilter(new PorterDuffColorFilter(lockColor, PorterDuff.Mode.SRC_IN));
+                this.lockColor = lockColor
+                bottomLockDrawable!!.colorFilter =
+                    PorterDuffColorFilter(lockColor, PorterDuff.Mode.SRC_IN)
+                topLockDrawable!!.colorFilter =
+                    PorterDuffColorFilter(lockColor, PorterDuff.Mode.SRC_IN)
             }
-
         }
     }
 
-
-    private void animateAlpha() {
-        ValueAnimator valueAnimator = ValueAnimator.ofInt(255, 0);
-        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                int animatedValue = (int) animation.getAnimatedValue();
-                recordLockAlpha = animatedValue;
-                invalidate();
-            }
-        });
-        valueAnimator.setDuration(700);
-        valueAnimator.setInterpolator(new AnticipateInterpolator());
-        valueAnimator.start();
+    private fun animateAlpha() {
+        val valueAnimator = ValueAnimator.ofInt(255, 0)
+        valueAnimator.addUpdateListener { animation ->
+            val animatedValue = animation.animatedValue as Int
+            recordLockAlpha = animatedValue
+            invalidate()
+        }
+        valueAnimator.setDuration(700)
+        valueAnimator.interpolator = AnticipateInterpolator()
+        valueAnimator.start()
     }
 
-    protected void reset() {
-        recordLockAlpha = 255;
-        circleColor = defaultCircleColor;
-        topLockTop = initialTopLockTop;
-        topLockBottom = initialTopLockBottom;
-        invalidate();
+    fun reset() {
+        recordLockAlpha = 255
+        circleColor = defaultCircleColor
+        topLockTop = initialTopLockTop
+        topLockBottom = initialTopLockBottom
+        invalidate()
     }
 
     /*
     this will animate ONLY the top part of the lock 'R.drawable.recv_lock_top'
     we will move its top and bottom so it goes inside the bottom lock 'R.drawable.recv_lock_bottom'
      */
-    protected void animateLock(float fraction) {
+    fun animateLock(fraction: Float) {
         if (bottomLockRect == null) {
-            return;
+            return
         }
+        val topLockFraction = (fraction + 0.25).toFloat()
 
-        float topLockFraction = (float) (fraction + 0.25);
-
-        //resize topLock
-        int topLockDrawableHeight = (int) (topLockDrawable.getIntrinsicHeight() / 2.0);
-
-        float startTop = initialTopLockTop;
-        float endTop = bottomLockRect.top - topLockDrawableHeight;
-
-        float startBottom = initialTopLockBottom;
-        float endBottom = bottomLockRect.top + topLockDrawableHeight;
-
-
-        float differenceTop = endTop - startTop;
-        float differenceBottom = endBottom - startBottom;
-
-        float newTop = differenceTop + (startTop * topLockFraction);
-        float newBottom = differenceBottom + (startBottom * topLockFraction);
-
-
-        if (fraction >= 0.85) {
-            recordLockViewListener.onFractionReached();
-            animateAlpha();
-            circleColor = circleLockedColor;
+        val topLockDrawableHeight = (topLockDrawable!!.intrinsicHeight / 2.0).toInt()
+        val startTop = initialTopLockTop
+        val endTop = (bottomLockRect!!.top - topLockDrawableHeight).toFloat()
+        val startBottom = initialTopLockBottom
+        val endBottom = (bottomLockRect!!.top + topLockDrawableHeight).toFloat()
+        val differenceTop = endTop - startTop
+        val differenceBottom = endBottom - startBottom
+        val newTop = differenceTop + startTop * topLockFraction
+        val newBottom = differenceBottom + startBottom * topLockFraction
+        circleColor = if (fraction >= 0.85) {
+            recordLockViewListener!!.onFractionReached()
+            animateAlpha()
+            circleLockedColor
         } else {
-            circleColor = defaultCircleColor;
+            defaultCircleColor
         }
 
-        //start animating lock (top and bottom) ONLY if gets above 0.2 and if it gets to 1.0
         if (topLockFraction <= 1.0f && fraction > 0.2) {
-            startValueAnimators(newTop, newBottom);
+            startValueAnimators(newTop, newBottom)
         }
-
-        invalidate();
-
+        invalidate()
     }
 
-
-    private void startValueAnimators(float newTop, float newBottom) {
-        ValueAnimator topLockTopAnimator = ValueAnimator.ofFloat(newTop);
-        topLockTopAnimator.addUpdateListener(animation -> {
-            float animatedValue = (float) animation.getAnimatedValue();
-            topLockTop = animatedValue;
-        });
-        topLockTopAnimator.setDuration(0);
-
-        ValueAnimator topLockBottomAnimator = ValueAnimator.ofFloat(newBottom);
-        topLockBottomAnimator.addUpdateListener(animation -> {
-            float animatedValue = (float) animation.getAnimatedValue();
-            topLockBottom = animatedValue;
-        });
-        topLockBottomAnimator.setDuration(0);
-
-        AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.setDuration(0).setInterpolator(new DecelerateInterpolator());
-        animatorSet.playTogether(topLockTopAnimator, topLockBottomAnimator);
-        animatorSet.start();
+    private fun startValueAnimators(newTop: Float, newBottom: Float) {
+        val topLockTopAnimator = ValueAnimator.ofFloat(newTop)
+        topLockTopAnimator.addUpdateListener { animation: ValueAnimator ->
+            val animatedValue = animation.animatedValue as Float
+            topLockTop = animatedValue
+        }
+        topLockTopAnimator.setDuration(0)
+        val topLockBottomAnimator = ValueAnimator.ofFloat(newBottom)
+        topLockBottomAnimator.addUpdateListener { animation: ValueAnimator ->
+            val animatedValue = animation.animatedValue as Float
+            topLockBottom = animatedValue
+        }
+        topLockBottomAnimator.setDuration(0)
+        val animatorSet = AnimatorSet()
+        animatorSet.setDuration(0).interpolator = DecelerateInterpolator()
+        animatorSet.playTogether(topLockTopAnimator, topLockBottomAnimator)
+        animatorSet.start()
     }
 
-
-    @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-
-
-        int cx = getWidth() / 2;
-        int cy = getHeight() / 2;
-
-        int height = getHeight();
-
-
-        Paint paint = new Paint();
-        paint.setColor(circleColor);
-        paint.setAlpha(recordLockAlpha);
-        paint.setAntiAlias(true);
-
-        canvas.drawCircle(cx, cy, getMeasuredWidth() / 2 + fourDp, paint);
-
-
-        int drawableWidth = (int) (bottomLockDrawable.getIntrinsicWidth() / 1.5);
-        int drawableHeight = (int) (bottomLockDrawable.getIntrinsicHeight() / 2.0);
-
-
-        Rect bottomLockRect = new Rect(cx - drawableWidth / 2,
-                (int) (cy + fiveDp - drawableHeight / 2),
-                cx + drawableWidth / 2,
-                (int) (height - fiveDp)
-        );
-
+    @SuppressLint("DrawAllocation")
+    override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
+        val cx = width / 2
+        val cy = height / 2
+        val height = height
+        val paint = Paint()
+        paint.color = circleColor
+        paint.alpha = recordLockAlpha
+        paint.isAntiAlias = true
+        canvas.drawCircle(cx.toFloat(), cy.toFloat(), measuredWidth / 2 + fourDp, paint)
+        val drawableWidth = (bottomLockDrawable!!.intrinsicWidth / 1.5).toInt()
+        val drawableHeight = (bottomLockDrawable!!.intrinsicHeight / 2.0).toInt()
+        val bottomLockRect = Rect(
+            cx - drawableWidth / 2,
+            (cy + fiveDp - drawableHeight / 2).toInt(),
+            cx + drawableWidth / 2,
+            (height - fiveDp).toInt()
+        )
         if (this.bottomLockRect == null) {
-            this.bottomLockRect = bottomLockRect;
+            this.bottomLockRect = bottomLockRect
         }
-
-        bottomLockDrawable.setBounds(bottomLockRect);
-
-
-        int topLockDrawableHeight = (int) (topLockDrawable.getIntrinsicHeight() / 1.3);
-
-
+        bottomLockDrawable!!.bounds = bottomLockRect
+        val topLockDrawableHeight = (topLockDrawable!!.intrinsicHeight / 1.3).toInt()
         if (topLockTop == 0f) {
-            topLockTop = -twoDp;
-            topLockBottom = topLockDrawableHeight;
-            initialTopLockTop = topLockTop;
-            initialTopLockBottom = topLockBottom;
+            topLockTop = -twoDp
+            topLockBottom = topLockDrawableHeight.toFloat()
+            initialTopLockTop = topLockTop
+            initialTopLockBottom = topLockBottom
         }
-
-        Rect topLockRect = new Rect(
-                bottomLockRect.left,
-                (int) topLockTop,
-                bottomLockRect.right,
-                (int) topLockBottom
-        );
-
-
-        topLockDrawable.setBounds(topLockRect);
-
-        topLockDrawable.setAlpha(recordLockAlpha);
-        bottomLockDrawable.setAlpha(recordLockAlpha);
-
-        topLockDrawable.draw(canvas);
-        bottomLockDrawable.draw(canvas);
+        topLockDrawable!!.bounds = Rect(
+            bottomLockRect.left,
+            topLockTop.toInt(),
+            bottomLockRect.right,
+            topLockBottom.toInt()
+        )
+        topLockDrawable!!.alpha = recordLockAlpha
+        bottomLockDrawable!!.alpha = recordLockAlpha
+        topLockDrawable!!.draw(canvas)
+        bottomLockDrawable!!.draw(canvas)
     }
 
-    public void setDefaultCircleColor(int defaultCircleColor) {
-        this.defaultCircleColor = defaultCircleColor;
-        invalidate();
+    fun setDefaultCircleColor(defaultCircleColor: Int) {
+        this.defaultCircleColor = defaultCircleColor
+        invalidate()
     }
 
-    public void setCircleLockedColor(int circleLockedColor) {
-        this.circleLockedColor = circleLockedColor;
-        invalidate();
+    fun setCircleLockedColor(circleLockedColor: Int) {
+        this.circleLockedColor = circleLockedColor
+        invalidate()
     }
 
-    public void setLockColor(int lockColor) {
-        this.lockColor = lockColor;
-        bottomLockDrawable.setColorFilter(new PorterDuffColorFilter(lockColor, PorterDuff.Mode.SRC_IN));
-        topLockDrawable.setColorFilter(new PorterDuffColorFilter(lockColor, PorterDuff.Mode.SRC_IN));
-        invalidate();
+    fun setLockColor(lockColor: Int) {
+        this.lockColor = lockColor
+        bottomLockDrawable!!.colorFilter = PorterDuffColorFilter(lockColor, PorterDuff.Mode.SRC_IN)
+        topLockDrawable!!.colorFilter = PorterDuffColorFilter(lockColor, PorterDuff.Mode.SRC_IN)
+        invalidate()
     }
 
-    protected void setRecordLockViewListener(RecordLockViewListener recordLockViewListener) {
-        this.recordLockViewListener = recordLockViewListener;
+    fun setRecordLockViewListener(recordLockViewListener: VoiceRecordLockViewListener?) {
+        this.recordLockViewListener = recordLockViewListener
     }
-
 }
