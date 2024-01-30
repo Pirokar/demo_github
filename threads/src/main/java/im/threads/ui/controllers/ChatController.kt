@@ -493,7 +493,10 @@ class ChatController private constructor() {
             coroutineScope.launch() {
                 val itemsDef = async(Dispatchers.IO) { database.getChatItems(0, -1) }
                 it.addChatItems(itemsDef.await(), true)
-                if (hideProgressBar) it.hideProgressBar()
+                if (hideProgressBar) {
+                    it.hideProgressBar()
+                    it.hideErrorView()
+                }
             }
         }
     }
