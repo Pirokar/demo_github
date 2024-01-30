@@ -322,6 +322,7 @@ class ChatFragment :
         isShown = true
         afterResume = true
         updateToolBar()
+        checkBottomLayout()
     }
 
     override fun onDestroyView() {
@@ -2197,6 +2198,12 @@ class ChatFragment :
     private fun updateToolBar() {
         binding?.popupMenuButton?.visibility = if (isPopupMenuEnabled) View.VISIBLE else View.GONE
         checkBackButtonVisibility()
+    }
+
+    private fun checkBottomLayout() = binding?.apply {
+        if (chatItemsRecycler.isVisible()) {
+            bottomLayout.visible()
+        }
     }
 
     private fun initSearch() = binding?.apply {
