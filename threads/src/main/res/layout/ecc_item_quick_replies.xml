@@ -1,21 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/quickRepliesRootLayout"
+    android:layout_marginStart="16dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="center_horizontal">
+    android:rotationY="180">
 
-    <com.google.android.flexbox.FlexboxLayout
+    <androidx.constraintlayout.helper.widget.Flow
         android:id="@+id/chipGroup"
-        android:layout_width="match_parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/ecc_margin_big"
         android:layout_marginTop="@dimen/ecc_margin_quarter"
         android:layout_marginRight="@dimen/ecc_margin_big"
         android:layout_marginBottom="@dimen/ecc_margin_quarter"
-        app:alignContent="flex_end"
-        app:flexDirection="row"
-        app:flexWrap="wrap"
-        app:justifyContent="flex_end" />
+        app:flow_lastHorizontalBias="0"
+        app:flow_firstHorizontalStyle="packed"
+        app:flow_firstVerticalStyle="packed"
+        app:flow_horizontalBias="0"
+        app:flow_firstHorizontalBias="0"
+        app:flow_wrapMode="chain" />
 
-</FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

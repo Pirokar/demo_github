@@ -162,8 +162,6 @@ dependencies {
 
     implementation "com.google.firebase:firebase-messaging:$fcmVersion"
 
-    implementation "com.google.android.flexbox:flexbox:$flexboxVersion"
-
     implementation "androidx.work:work-runtime-ktx:$work_version"
 
     implementation "androidx.sqlite:sqlite:$sqlite_version"
