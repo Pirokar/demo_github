@@ -36,7 +36,7 @@ internal class VoiceRecordView : RelativeLayout, VoiceRecordLockViewListener {
     private val player: MediaPlayer? = null
     private var voiceRecordAnimationHelper: VoiceRecordAnimationHelper? = null
     private var isRecordButtonGrowingAnimationEnabled = true
-    var isShimmerEffectEnabled = true
+    private var isShimmerEffectEnabled = true
     private var timeLimit: Long = -1
     private var runnable: Runnable? = null
     private var handler: Handler? = null
@@ -44,8 +44,8 @@ internal class VoiceRecordView : RelativeLayout, VoiceRecordLockViewListener {
     private var canRecord = true
     private var recordLockView: VoiceRecordLockView? = null
     private var isLockEnabled = false
-    var recordLockYInWindow = 0f
-    var recordLockXInWindow = 0f
+    private var recordLockYInWindow = 0f
+    private var recordLockXInWindow = 0f
     private var fractionReached = false
     private var currentYFraction = 0f
     private var isLockInSameParent = false
@@ -54,12 +54,12 @@ internal class VoiceRecordView : RelativeLayout, VoiceRecordLockViewListener {
 
     constructor(context: Context) : super(context) {
         this.context = context
-        init(context, null, 0, 0)
+        init(context, null, 0)
     }
 
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
         this.context = context
-        init(context, attrs, 0, 0)
+        init(context, attrs, 0)
     }
 
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
@@ -68,22 +68,22 @@ internal class VoiceRecordView : RelativeLayout, VoiceRecordLockViewListener {
         defStyleAttr
     ) {
         this.context = context
-        init(context, attrs, defStyleAttr, 0)
+        init(context, attrs, defStyleAttr)
     }
 
-    private fun init(context: Context, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) {
+    private fun init(context: Context, attrs: AttributeSet?, defStyleAttr: Int) {
         binding = EccVoiceRecordViewLayoutBinding.inflate(LayoutInflater.from(context))
         binding?.apply {
             addView(root)
             val viewGroup = root.parent as ViewGroup
             viewGroup.clipChildren = false
             hideViews(true)
-            if (attrs != null && defStyleAttr == 0 && defStyleRes == 0) {
+            if (attrs != null && defStyleAttr == 0) {
                 val typedArray = context.obtainStyledAttributes(
                     attrs,
                     R.styleable.VoiceRecordView,
                     defStyleAttr,
-                    defStyleRes
+                    0
                 )
                 val slideArrowResource = typedArray.getResourceId(R.styleable.VoiceRecordView_slide_to_cancel_arrow, -1)
                 val slideToCancelText = typedArray.getString(R.styleable.VoiceRecordView_slide_to_cancel_text)
@@ -109,8 +109,8 @@ internal class VoiceRecordView : RelativeLayout, VoiceRecordLockViewListener {
                 if (arrowColor != -1) setSlideToCancelArrowColor(arrowColor)
                 if (cancelText != null) cancelTextView.text = cancelText
                 if (cancelTextColor != -1) cancelTextView.setTextColor(cancelTextColor)
-                setMarginRight(slideMarginRight, true)
-                setCancelMarginRight(cancelMarginRight, true)
+                setMarginRight(slideMarginRight)
+                setCancelMarginRight(cancelMarginRight)
                 typedArray.recycle()
             }
             voiceRecordAnimationHelper = VoiceRecordAnimationHelper(
@@ -403,23 +403,15 @@ internal class VoiceRecordView : RelativeLayout, VoiceRecordLockViewListener {
             return ThreadsPermissionChecker.isRecordAudioPermissionGranted(this.context)
         }
 
-    private fun setMarginRight(marginRight: Int, convertToDp: Boolean) = binding?.apply {
+    private fun setMarginRight(marginRight: Int) = binding?.apply {
         val layoutParams = slideToCancelLayout.layoutParams as LayoutParams
-        if (convertToDp) {
-            layoutParams.rightMargin = context.dpToPx(marginRight).toInt()
-        } else {
-            layoutParams.rightMargin = marginRight
-        }
+        layoutParams.rightMargin = context.dpToPx(marginRight).toInt()
         slideToCancelLayout.layoutParams = layoutParams
     }
 
-    private fun setCancelMarginRight(marginRight: Int, convertToDp: Boolean) = binding?.apply {
+    private fun setCancelMarginRight(marginRight: Int) = binding?.apply {
         val layoutParams = slideToCancelLayout.layoutParams as LayoutParams
-        if (convertToDp) {
-            layoutParams.rightMargin = context.dpToPx(marginRight).toInt()
-        } else {
-            layoutParams.rightMargin = marginRight
-        }
+        layoutParams.rightMargin = context.dpToPx(marginRight).toInt()
         cancelTextView.layoutParams = layoutParams
     }
 
@@ -447,14 +439,6 @@ internal class VoiceRecordView : RelativeLayout, VoiceRecordLockViewListener {
         smallBlinkingMic.setColorFilter(color)
     }
 
-    fun setSmallMicIcon(icon: Int) = binding?.apply {
-        smallBlinkingMic.setImageResource(icon)
-    }
-
-    fun setSlideMarginRight(marginRight: Int) = binding?.apply {
-        setMarginRight(marginRight, true)
-    }
-
     fun getCancelBounds(): Float {
         return cancelBounds
     }
@@ -463,11 +447,11 @@ internal class VoiceRecordView : RelativeLayout, VoiceRecordLockViewListener {
         setCancelBounds(cancelBounds, true)
     }
 
-    fun setChronometerCounterTimeColor(color: Int) = binding?.apply {
+    private fun setChronometerCounterTimeColor(color: Int) = binding?.apply {
         counterTime.setTextColor(color)
     }
 
-    fun setSlideToCancelArrowColor(color: Int) = binding?.apply {
+    private fun setSlideToCancelArrowColor(color: Int) = binding?.apply {
         arrow.setColorFilter(color)
     }
 
@@ -497,20 +481,6 @@ internal class VoiceRecordView : RelativeLayout, VoiceRecordLockViewListener {
         initTimeLimitHandler()
     }
 
-    fun setTrashIconColor(color: Int) {
-        voiceRecordAnimationHelper?.setTrashIconColor(color)
-    }
-
-    fun setRecordLockImageView(recordLockView: VoiceRecordLockView?) {
-        this.recordLockView = recordLockView
-        this.recordLockView?.setRecordLockViewListener(this)
-        this.recordLockView?.visibility = INVISIBLE
-    }
-
-    fun setLockEnabled(lockEnabled: Boolean) {
-        isLockEnabled = lockEnabled
-    }
-
     internal fun setRecordButton(recordButton: VoiceRecordButton?) {
         this.recordButton = recordButton
         this.recordButton?.setSendClickListener(object : VoiceRecordOnRecordClickListener {
@@ -521,14 +491,14 @@ internal class VoiceRecordView : RelativeLayout, VoiceRecordLockViewListener {
     }
 
     /*
-    Use this if you want to Finish And save the Record if user closes the app for example in 'onPause()'
+      Use this if you want to Finish And save the Record if user closes the app for example in 'onPause()'
      */
     fun finishRecord() {
         finishAndSaveRecord()
     }
 
     /*
-    Use this if you want to Cancel And delete the Record if user closes the app for example in 'onPause()'
+      Use this if you want to Cancel And delete the Record if user closes the app for example in 'onPause()'
      */
     fun cancelRecord() {
         hideViews(true)
@@ -539,9 +509,7 @@ internal class VoiceRecordView : RelativeLayout, VoiceRecordLockViewListener {
     override fun onFractionReached() {
         fractionReached = true
         switchToLockedMode()
-        if (recordListener != null) {
-            recordListener!!.onLock()
-        }
+        recordListener?.onLock()
     }
 
     companion object {

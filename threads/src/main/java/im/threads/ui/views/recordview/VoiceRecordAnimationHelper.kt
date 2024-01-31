@@ -160,7 +160,7 @@ internal class VoiceRecordAnimationHelper(
             recordBtn?.stopScale()
         }
 
-        positionAnimator.setDuration(0)
+        positionAnimator.duration = 0
         positionAnimator.start()
 
         if (difX != 0f) {

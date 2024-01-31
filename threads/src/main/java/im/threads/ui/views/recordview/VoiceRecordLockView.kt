@@ -40,11 +40,11 @@ internal class VoiceRecordLockView : View {
     private var twoDp = 0f
 
     constructor(context: Context) : super(context) {
-        init(context, null, 0, 0)
+        init(context, null, 0)
     }
 
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
-        init(context, attrs, 0, 0)
+        init(context, attrs, 0)
     }
 
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
@@ -52,22 +52,22 @@ internal class VoiceRecordLockView : View {
         attrs,
         defStyleAttr
     ) {
-        init(context, attrs, defStyleAttr, 0)
+        init(context, attrs, defStyleAttr)
     }
 
-    private fun init(context: Context, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) {
+    private fun init(context: Context, attrs: AttributeSet?, defStyleAttr: Int) {
         this.context = context
         bottomLockDrawable = AppCompatResources.getDrawable(context, R.drawable.recv_lock_bottom)
         topLockDrawable = AppCompatResources.getDrawable(context, R.drawable.recv_lock_top)
         fiveDp = context.dpToPx(5)
         fourDp = context.dpToPx(4)
         twoDp = context.dpToPx(2)
-        if (attrs != null && defStyleAttr == 0 && defStyleRes == 0) {
+        if (attrs != null && defStyleAttr == 0) {
             val typedArray = context.obtainStyledAttributes(
                 attrs,
                 R.styleable.VoiceRecordLockView,
                 defStyleAttr,
-                defStyleRes
+                0
             )
             val circleColor = typedArray.getColor(R.styleable.VoiceRecordLockView_circle_color, -1)
             val circleLockedColor =
@@ -86,6 +86,7 @@ internal class VoiceRecordLockView : View {
                 topLockDrawable!!.colorFilter =
                     PorterDuffColorFilter(lockColor, PorterDuff.Mode.SRC_IN)
             }
+            typedArray.recycle()
         }
     }
 

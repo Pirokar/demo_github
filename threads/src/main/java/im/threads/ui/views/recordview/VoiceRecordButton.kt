@@ -16,7 +16,7 @@ import im.threads.R
  */
 internal class VoiceRecordButton : AppCompatImageView, OnTouchListener, View.OnClickListener {
     private var scaleAnim: VoiceRecordScaleAnim? = null
-    internal var recordView: VoiceRecordView? = null
+    private var recordView: VoiceRecordView? = null
     var isListenForRecord = true
     private var onRecordClickListener: VoiceRecordOnRecordClickListener? = null
     private var sendClickListener: VoiceRecordOnRecordClickListener? = null
@@ -77,7 +77,7 @@ internal class VoiceRecordButton : AppCompatImageView, OnTouchListener, View.OnC
         scaleAnim?.setScaleUpTo(scaleTo!!)
     }
 
-    fun setClip(v: View) {
+    private fun setClip(v: View) {
         if (v.parent == null) {
             return
         }

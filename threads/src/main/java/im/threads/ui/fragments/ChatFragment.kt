@@ -524,7 +524,7 @@ class ChatFragment :
         }
     }
 
-    private fun initRecordButtonState() {
+    internal fun initRecordButtonState() {
         val recordButton = binding?.recordButton
         if (!isRecordAudioPermissionGranted(requireContext())) {
             recordButton?.isListenForRecord = false
@@ -2904,7 +2904,7 @@ class ChatFragment :
         const val ACTION_SEARCH_CHAT_FILES = "ACTION_SEARCH_CHAT_FILES"
         const val ACTION_SEARCH = "ACTION_SEARCH"
         const val ACTION_SEND_QUICK_MESSAGE = "ACTION_SEND_QUICK_MESSAGE"
-        private const val REQUEST_PERMISSION_RECORD_AUDIO = 204
+        internal const val REQUEST_PERMISSION_RECORD_AUDIO = 204
         private const val ARG_OPEN_WAY = "arg_open_way"
         private const val INVISIBLE_MESSAGES_COUNT = 3
         private const val INPUT_DELAY: Int = 3
