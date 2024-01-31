@@ -91,4 +91,7 @@ ext {
     kaspresso_version = '1.5.3'
     retrofitVersion = '2.9.0'
     parcelerVersion = '1.1.12'
+    parcelerVersion = '1.1.12'
+    firebaseMessagingVersion = '23.4.0'
+    hmsMessagingVersion = '6.11.0.300'
 }
