@@ -86,6 +86,13 @@
       "serverBaseUrl": "https://beta-prod.edna.ru/",
       "datastoreUrl": "https://beta-prod.edna.ru/",
       "threadsGateUrl": "wss://beta-prod.edna.ru/socket"
+    },
+    {
+      "name": "SUPPORT-TEST-EDNA",
+      "threadsGateProviderUid": "android1",
+      "serverBaseUrl": "https://support-test.edna.ru/",
+      "datastoreUrl": "https://support-test.edna.ru/",
+      "threadsGateUrl": "wss://support-test.edna.ru/socket"
     }
   ]
 }
