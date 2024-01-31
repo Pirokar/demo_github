@@ -20,6 +20,8 @@ cache:
 before_script:
   - chmod +x ./gradlew
   - export GRADLE_USER_HOME=$PWD/.gradle
+  - export ANDROID_HOME="$HOME/Library/Android/sdk"
+  - bundle install
 
 # Основные шаги
 stages:
