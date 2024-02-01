@@ -54,7 +54,7 @@ buildLibraryAAR:
 publishToMavenProd:
   stage: publishToMaven
   script:
-    - ./gradlew publish
+    - 'if [ "$CI_PIPELINE_SOURCE" == "pipeline" ] && [ "$CI_PIPELINE_MANUAL" == "true" ]; then ./gradlew publish; else echo "Skipping publish because build was not manual"; fi'
   only:
     - merge_requests
   dependencies:
