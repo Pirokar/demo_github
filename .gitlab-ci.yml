@@ -22,8 +22,7 @@ default:
 stages:
   - lint
   - test
-  - buildLibraryAar
-  - publishToMaven
+  - buildAndPublishAar
 
 linting:
   stage: lint
@@ -39,10 +38,11 @@ unitTests:
   only:
     - merge_requests
 
-buildLibraryAAR:
-  stage: buildLibraryAar
+buildAndPublishAAR:
+  stage: buildAndPublishAar
   script:
     - ./gradlew assemble
+    - ./gradlew publish
   only:
     - merge_requests
   artifacts:
@@ -50,12 +50,3 @@ buildLibraryAAR:
       - "./**/build/outputs/aar/*.aar"
     expire_in: 2 hrs
   when: manual
-
-publishToMavenProd:
-  stage: publishToMaven
-  script:
-    - 'if [ "$CI_PIPELINE_SOURCE" == "pipeline" ] && [ "$CI_PIPELINE_MANUAL" == "true" ]; then ./gradlew publish; else echo "Skipping publish because build was not manual"; fi'
-  only:
-    - merge_requests
-  dependencies:
-    - buildLibraryAAR
