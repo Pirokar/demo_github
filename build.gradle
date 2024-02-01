@@ -79,7 +79,6 @@ ext {
     recordViewVersion = '3.1.3'
     ffmpeg = '0.3.2'
     fcmVersion = '23.0.6'
-    flexboxVersion = '3.0.0'
     work_version = "2.7.1"
     sqlite_version = "2.0.1"
     crypto_tink = '1.7.0'

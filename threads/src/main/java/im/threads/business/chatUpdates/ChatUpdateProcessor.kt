@@ -17,6 +17,10 @@ import im.threads.business.transport.models.AttachmentSettings
 import im.threads.business.transport.threadsGate.responses.Status
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.launch
 
 class ChatUpdateProcessor {
 
@@ -39,6 +43,7 @@ class ChatUpdateProcessor {
     val attachAudioFilesProcessor: FlowableProcessor<Boolean> = PublishProcessor.create()
     val errorProcessor: FlowableProcessor<TransportException> = PublishProcessor.create()
     val uploadResultProcessor: FlowableProcessor<FileDescription> = PublishProcessor.create()
+    val grantedPermissionsFlow: MutableSharedFlow<Int> = MutableSharedFlow()
 
     /**
      * Передаёт ответы от коллбэков сокетного соединения.
@@ -123,5 +128,11 @@ class ChatUpdateProcessor {
 
     fun postUploadResult(uploadResult: FileDescription?) {
         uploadResultProcessor.onNext(uploadResult)
+    }
+
+    fun postGrantedPermissions(permissionsRequestCode: Int) {
+        CoroutineScope(Dispatchers.Unconfined).launch {
+            grantedPermissionsFlow.emit(permissionsRequestCode)
+        }
     }
 }

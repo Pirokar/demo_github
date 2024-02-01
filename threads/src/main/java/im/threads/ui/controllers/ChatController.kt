@@ -861,6 +861,7 @@ class ChatController private constructor() {
         subscribeOnFileUploadResult()
         subscribeToTransportException()
         subscribeOnChatState()
+        subscribeForPermissionsGranted()
     }
 
     private fun subscribeToTransportException() {
@@ -1736,6 +1737,16 @@ class ChatController private constructor() {
                         if (fragment?.get()?.isResumed == true) loadHistoryAfterWithLastMessageCheck()
                         messenger.resendMessages()
                     }
+                }
+            }
+        }
+    }
+
+    private fun subscribeForPermissionsGranted() {
+        coroutineScope.launch(Dispatchers.Main) {
+            chatUpdateProcessor.grantedPermissionsFlow.collect { requestCode ->
+                if (ChatFragment.REQUEST_PERMISSION_RECORD_AUDIO == requestCode) {
+                    fragment?.get()?.initRecordButtonState()
                 }
             }
         }

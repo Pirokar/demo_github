@@ -145,4 +145,5 @@
     <color name="ecc_button_normal">@color/ecc_teal_009688</color>
     <color name="ecc_button_pressed">#03C6B4</color>
     <color name="ecc_search_results_message_color">#6F7378</color>
+    <color name="ecc_default_foreground_color">#C0C0C0</color>
 </resources>

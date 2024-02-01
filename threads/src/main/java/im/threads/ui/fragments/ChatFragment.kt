@@ -45,7 +45,6 @@ import androidx.recyclerview.widget.ListUpdateCallback
 import androidx.recyclerview.widget.RecyclerView
 import com.annimon.stream.Optional
 import com.annimon.stream.Stream
-import com.devlomi.record_view.OnRecordListener
 import com.google.android.material.slider.Slider
 import im.threads.BuildConfig
 import im.threads.R
@@ -134,6 +133,9 @@ import im.threads.ui.utils.isVisible
 import im.threads.ui.utils.visible
 import im.threads.ui.views.VoiceTimeLabelFormatter
 import im.threads.ui.views.formatAsDuration
+import im.threads.ui.views.recordview.VoiceOnRecordListener
+import im.threads.ui.views.recordview.VoiceRecordOnBasketAnimationEnd
+import im.threads.ui.views.recordview.VoiceRecordOnRecordClickListener
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -523,20 +525,22 @@ class ChatFragment :
         }
     }
 
-    private fun initRecordButtonState() {
+    internal fun initRecordButtonState() {
         val recordButton = binding?.recordButton
         if (!isRecordAudioPermissionGranted(requireContext())) {
             recordButton?.isListenForRecord = false
-            recordButton?.setOnRecordClickListener {
-                if (style.arePermissionDescriptionDialogsEnabled) {
-                    showSafelyPermissionDescriptionDialog(
-                        PermissionDescriptionType.RECORD_AUDIO,
-                        REQUEST_PERMISSION_RECORD_AUDIO
-                    )
-                } else {
-                    startRecordAudioPermissionActivity(REQUEST_PERMISSION_RECORD_AUDIO)
+            recordButton?.setOnRecordClickListener(object : VoiceRecordOnRecordClickListener {
+                override fun onClick(v: View?) {
+                    if (style.arePermissionDescriptionDialogsEnabled) {
+                        showSafelyPermissionDescriptionDialog(
+                            PermissionDescriptionType.RECORD_AUDIO,
+                            REQUEST_PERMISSION_RECORD_AUDIO
+                        )
+                    } else {
+                        startRecordAudioPermissionActivity(REQUEST_PERMISSION_RECORD_AUDIO)
+                    }
                 }
-            }
+            })
         } else {
             recordButton?.isListenForRecord = true
             recordButton?.setOnRecordClickListener(null)
@@ -550,7 +554,6 @@ class ChatFragment :
             return
         }
         val recordView = binding?.recordView
-        recordView?.setRecordPermissionHandler { isRecordAudioPermissionGranted(requireContext()) }
         recordButton?.setRecordView(recordView)
         var drawable = AppCompatResources.getDrawable(
             requireContext(),
@@ -574,8 +577,7 @@ class ChatFragment :
         recordView?.setSmallMicColor(style.threadsRecordButtonSmallMicColor)
         recordView?.setLessThanSecondAllowed(false)
         recordView?.setSlideToCancelText(requireContext().getString(R.string.ecc_voice_message_slide_to_cancel))
-        recordView?.setSoundEnabled(false)
-        recordView?.setOnRecordListener(object : OnRecordListener {
+        recordView?.setOnRecordListener(object : VoiceOnRecordListener {
             override fun onStart() {
                 fdMediaPlayer?.reset()
                 fdMediaPlayer?.requestAudioFocus()
@@ -668,10 +670,12 @@ class ChatFragment :
                 }
             }
         })
-        recordView?.setOnBasketAnimationEndListener {
-            recordView.visibility = View.INVISIBLE
-            debug("RecordView: Basket Animation Finished")
-        }
+        recordView?.setOnBasketAnimationEndListener(object : VoiceRecordOnBasketAnimationEnd {
+            override fun onAnimationEnd() {
+                recordView.visibility = View.INVISIBLE
+                debug("RecordView: Basket Animation Finished")
+            }
+        })
     }
 
     private fun stopRecording() = binding?.apply {
@@ -2907,7 +2911,7 @@ class ChatFragment :
         const val ACTION_SEARCH_CHAT_FILES = "ACTION_SEARCH_CHAT_FILES"
         const val ACTION_SEARCH = "ACTION_SEARCH"
         const val ACTION_SEND_QUICK_MESSAGE = "ACTION_SEND_QUICK_MESSAGE"
-        private const val REQUEST_PERMISSION_RECORD_AUDIO = 204
+        internal const val REQUEST_PERMISSION_RECORD_AUDIO = 204
         private const val ARG_OPEN_WAY = "arg_open_way"
         private const val INVISIBLE_MESSAGES_COUNT = 3
         private const val INPUT_DELAY: Int = 3

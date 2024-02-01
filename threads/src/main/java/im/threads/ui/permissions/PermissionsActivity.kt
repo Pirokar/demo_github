@@ -1,6 +1,7 @@
 package im.threads.ui.permissions
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface
@@ -15,7 +16,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import im.threads.R
+import im.threads.business.chatUpdates.ChatUpdateProcessor
 import im.threads.business.logger.LoggerEdna.error
+import im.threads.business.serviceLocator.core.inject
 
 /**
  * Активити для разрешений
@@ -24,12 +27,15 @@ class PermissionsActivity : AppCompatActivity() {
     private var requiresCheck = false
     private var permissions: Array<String> = arrayOf()
     private var textId = TEXT_DEFAULT
+    private var requestCode = 0
+    private val chatUpdateProcessor: ChatUpdateProcessor by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (intent != null) {
             permissions = intent.getStringArrayExtra(EXTRA_PERMISSIONS) ?: arrayOf()
             textId = intent.getIntExtra(EXTRA_PERMISSION_TEXT, TEXT_DEFAULT)
+            requestCode = intent.getIntExtra(EXTRA_REQUEST_CODE, 0)
         }
         if (permissions.isEmpty()) {
             permissions = savedInstanceState?.getStringArray(EXTRA_PERMISSIONS) ?: arrayOf()
@@ -74,12 +80,14 @@ class PermissionsActivity : AppCompatActivity() {
     }
 
     private fun requestPermissions(vararg permissions: String) {
-        ActivityCompat.requestPermissions(this, permissions, PERMISSION_REQUEST_CODE)
+        ActivityCompat.requestPermissions(this, permissions, requestCode)
     }
 
+    @SuppressLint("MissingSuperCall")
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        if (requestCode == PERMISSION_REQUEST_CODE && hasAllPermissionsGranted(permissions, grantResults)) {
+        if (this.requestCode == requestCode && hasAllPermissionsGranted(permissions, grantResults)) {
             requiresCheck = true
+            chatUpdateProcessor.postGrantedPermissions(requestCode)
             allPermissionsGranted()
         } else {
             requiresCheck = false
@@ -149,9 +157,9 @@ class PermissionsActivity : AppCompatActivity() {
         const val RESPONSE_GRANTED = 10
         const val RESPONSE_DENIED = 20
         const val RESPONSE_NEVER_AGAIN = 30
-        private const val PERMISSION_REQUEST_CODE = 0
         private const val EXTRA_PERMISSIONS = "EXTRA_PERMISSIONS"
         private const val EXTRA_PERMISSION_TEXT = "EXTRA_PERMISSION_TEXT"
+        private const val EXTRA_REQUEST_CODE = "EXTRA_REQUEST_CODE"
         private const val PACKAGE_URL_SCHEME = "package:" // Для открытия настроек
         private const val TEXT_DEFAULT = -1
 
@@ -172,6 +180,7 @@ class PermissionsActivity : AppCompatActivity() {
                 val intent = Intent(activity, PermissionsActivity::class.java)
                 intent.putExtra(EXTRA_PERMISSIONS, checkedPermissions)
                 intent.putExtra(EXTRA_PERMISSION_TEXT, text)
+                intent.putExtra(EXTRA_REQUEST_CODE, requestCode)
                 ActivityCompat.startActivityForResult(activity!!, intent, requestCode, null)
             } else {
                 showPermissionsIsNullLog()

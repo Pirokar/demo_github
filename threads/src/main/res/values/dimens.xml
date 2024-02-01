@@ -94,4 +94,7 @@
 
     <dimen name="ecc_search_bar_side_margins">16dp</dimen>
 
+    <dimen name="ecc_shimmer_width_default">48dp</dimen>
+    <dimen name="ecc_shimmer_width_center_default">4dp</dimen>
+
 </resources>
