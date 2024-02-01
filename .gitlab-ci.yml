@@ -15,21 +15,15 @@ cache:
 
 default:
   before_script:
-    - export GRADLE_USER_HOME=`pwd`/.gradle
-
-# Выполняется до скриптов 
-# - делаем градл выполняемым 
-# - задаем путь для GRADLE_USER_HOME
-# before_script:
-#   - chmod +x ./gradlew
-#   - export GRADLE_USER_HOME=$PWD/.gradle
+    - chmod +x ./gradlew
+    - export GRADLE_USER_HOME=$PWD/.gradle
 
 # Основные шаги
 stages:
-  # - environment
-  # - build
   - lint
   - test
+  - buildLibraryAar
+  - publishToMaven
 
 linting:
   stage: lint
@@ -44,3 +38,24 @@ unitTests:
     - bundle exec fastlane sdkUnitTests
   only:
     - merge_requests
+
+buildLibraryAAR:
+  stage: buildLibraryAar
+  script:
+    - ./gradlew assemble
+  only:
+    - merge_requests
+  artifacts:
+    paths:
+      - "./**/build/outputs/aar/*.aar"
+    expire_in: 2 hrs
+  when: manual
+
+publishToMavenProd:
+  stage: publishToMaven
+  script:
+    - 'if [ "$CI_PIPELINE_SOURCE" == "pipeline" ] && [ "$CI_PIPELINE_MANUAL" == "true" ]; then ./gradlew publish; else echo "Skipping publish because build was not manual"; fi'
+  only:
+    - merge_requests
+  dependencies:
+    - buildLibraryAAR
