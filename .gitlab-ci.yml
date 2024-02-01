@@ -59,4 +59,3 @@ publishToMavenProd:
     - merge_requests
   dependencies:
     - buildLibraryAAR
-  when: manual
