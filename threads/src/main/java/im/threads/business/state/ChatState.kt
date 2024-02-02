@@ -62,9 +62,7 @@ class ChatState(private val preferences: Preferences) {
 
     fun getLastSuccessfulState(): ChatStateEnum {
         val currentValue = stateChannel.value
-        return if (!currentValue.isTimeout) {
-            currentValue.state
-        } else if (currentValue.state != ChatStateEnum.LOGGED_OUT) {
+        return if (currentValue.state != ChatStateEnum.LOGGED_OUT) {
             ChatStateEnum.fromValue(currentValue.state.value - 1) ?: ChatStateEnum.LOGGED_OUT
         } else {
             ChatStateEnum.LOGGED_OUT

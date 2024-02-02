@@ -299,15 +299,9 @@ class ChatController private constructor() {
         fragment?.get()?.hideErrorView()
         fragment?.get()?.showProgressBar()
 
-        val state = chatState.getLastSuccessfulState()
-        val transport = BaseConfig.getInstance().transport
-
-        if (state < ChatStateEnum.DEVICE_REGISTERED) {
-            preferences.save(PreferencesCoreKeys.DEVICE_ADDRESS, null)
-            transport.sendRegisterDevice(false)
-        } else if (state < ChatStateEnum.INIT_USER_SENT) {
-            transport.sendInitMessages(false)
-        }
+        preferences.save(PreferencesCoreKeys.DEVICE_ADDRESS, null)
+        transport.closeWebSocket()
+        transport.sendRegisterDevice(false)
     }
 
     internal fun removeCorruptedFiles(list: List<ChatItem>, callback: (() -> Unit)? = null) {
