@@ -351,7 +351,7 @@ class ThreadsGateTransport(
 
     override fun onStop(owner: LifecycleOwner) {
         super.onStop(owner)
-        closeWebSocketIfNeeded()
+        closeWebSocket()
     }
 
     @Synchronized
@@ -449,17 +449,17 @@ class ThreadsGateTransport(
      * and user is not interacting with chat screen
      */
     private fun closeWebSocketIfNeeded() {
-        if (messageInProcessIds.isEmpty() &&
-            lifecycle?.currentState?.isAtLeast(Lifecycle.State.STARTED)?.not() != false &&
-            chatState.getCurrentState() >= ChatStateEnum.INIT_USER_SENT &&
-            !BaseConfig.getInstance().keepSocketActive
-        ) {
+        if (lifecycle?.currentState?.isAtLeast(Lifecycle.State.STARTED) == true) {
+            return
+        }
+        if (messageInProcessIds.isEmpty() && !BaseConfig.getInstance().keepSocketActive) {
             closeWebSocket()
         }
     }
 
     @Synchronized
     override fun closeWebSocket() {
+        messageInProcessIds.clear()
         webSocket?.close(NORMAL_CLOSURE_STATUS, null)
         webSocket = null
     }
@@ -734,7 +734,6 @@ class ThreadsGateTransport(
                         processMessageSendError(messageId)
                     }
                 }
-                messageInProcessIds.clear()
                 closeWebSocket()
             }
         }

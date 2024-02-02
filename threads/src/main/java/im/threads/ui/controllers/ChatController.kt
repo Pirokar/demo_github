@@ -130,6 +130,7 @@ class ChatController private constructor() {
     private val clientUseCase: ClientUseCase by inject()
     private val chatState: ChatState by inject()
     private val demoModeProvider: DemoModeProvider by inject()
+    private val transport = Config.getInstance().transport
 
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
@@ -275,7 +276,7 @@ class ChatController private constructor() {
 
     private fun checkStateOnViewStart() {
         if (chatState.getCurrentState() < ChatStateEnum.REGISTERING_DEVICE) {
-            BaseConfig.getInstance().transport.sendRegisterDevice(false)
+            transport.sendRegisterDevice(false)
         }
     }
 
@@ -294,12 +295,15 @@ class ChatController private constructor() {
     internal fun isChatReady() = chatState.isChatReady()
 
     internal fun onRetryInitChatClick() {
+        chatState.stopTimeoutObserver()
         fragment?.get()?.hideErrorView()
         fragment?.get()?.showProgressBar()
 
-        val state = chatState.getCurrentState()
+        val state = chatState.getLastSuccessfulState()
         val transport = BaseConfig.getInstance().transport
+
         if (state < ChatStateEnum.DEVICE_REGISTERED) {
+            preferences.save(PreferencesCoreKeys.DEVICE_ADDRESS, null)
             transport.sendRegisterDevice(false)
         } else if (state < ChatStateEnum.INIT_USER_SENT) {
             transport.sendInitMessages(false)
@@ -869,7 +873,7 @@ class ChatController private constructor() {
             Flowable.fromPublisher(chatUpdateProcessor.errorProcessor)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
-                    if (chatState.getCurrentState() < ChatStateEnum.INIT_USER_SENT) {
+                    if (fragment?.get()?.isResumed == true) {
                         fragment?.get()?.showErrorView(it.message)
                     }
                     error("subscribeToTransportException ", it)
@@ -1709,7 +1713,10 @@ class ChatController private constructor() {
                     ) {
                         withContext(Dispatchers.Main) { fragment?.get()?.showProgressBar() }
                     }
-                    if (stateEvent.isTimeout && chatState.getCurrentState() < ChatStateEnum.THREAD_OPENED) {
+                    if (stateEvent.isTimeout &&
+                        chatState.getCurrentState() < ChatStateEnum.THREAD_OPENED &&
+                        fragment?.get()?.isResumed == true
+                    ) {
                         val timeoutMessage =
                             if (stateEvent.state >= ChatStateEnum.INIT_USER_SENT && fragment != null) {
                                 fragment?.get()?.getString(chatStyle.loadedSettingsErrorText)
@@ -1732,7 +1739,7 @@ class ChatController private constructor() {
                         }
                     } else if (stateEvent.state == ChatStateEnum.SETTINGS_LOADED) {
                         BaseConfig.getInstance().transport.sendInitMessages(false)
-                    } else if (isChatReady() && !ThreadsGateTransport.isForceRegistration) {
+                    } else if (isChatReady() && !ThreadsGateTransport.isForceRegistration && fragment?.get()?.isResumed == true) {
                         loadItemsFromDB(false)
                         if (fragment?.get()?.isResumed == true) loadHistoryAfterWithLastMessageCheck()
                         messenger.resendMessages()
