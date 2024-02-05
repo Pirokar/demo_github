@@ -12,4 +12,8 @@ enum class ChatStateEnum(val value: Int) {
     THREAD_OPENED(8);
 
     fun isLastObservableState() = this == THREAD_OPENED
+
+    companion object {
+        fun fromValue(value: Int) = values().firstOrNull { it.value == value }
+    }
 }
