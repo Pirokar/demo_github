@@ -220,7 +220,7 @@ abstract class BaseHolder internal constructor(
         url: String? = null,
         emails: List<String> = arrayListOf()
     ) {
-        if (!formattedText.isNullOrBlank()) {
+        if (!formattedText.isNullOrBlank() && !isOnlyOneSymbol(formattedText, usualText)) {
             (textView as? BubbleMessageTextView)?.let {
                 val emailLinksPairs = ArrayList<Pair<String?, View.OnClickListener>>()
                 emails.forEach { email ->
@@ -253,6 +253,10 @@ abstract class BaseHolder internal constructor(
                 url
             )
         }
+    }
+
+    private fun isOnlyOneSymbol(formattedText: String?, usualText: String?): Boolean {
+        return formattedText?.trim()?.length == 1 && !usualText.isNullOrEmpty()
     }
 
     /**
