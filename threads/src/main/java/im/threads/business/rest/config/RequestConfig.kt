@@ -35,7 +35,7 @@ class RequestConfig {
 
 data class SocketClientSettings(
     var resendIntervalMillis: Long = 10_000,
-    var resendPingIntervalMillis: Long = 10_000,
+    var resendPingIntervalMillis: Long = 3_000,
     var connectTimeoutMillis: Long = 10_000,
     var readTimeoutMillis: Long = 10_000,
     var writeTimeoutMillis: Long = 10_000,

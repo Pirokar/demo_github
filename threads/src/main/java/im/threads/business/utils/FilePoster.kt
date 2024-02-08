@@ -1,6 +1,5 @@
 package im.threads.business.utils // ktlint-disable filename
 
-import android.accounts.NetworkErrorException
 import android.graphics.Bitmap
 import android.net.Uri
 import android.widget.ImageView
@@ -15,6 +14,7 @@ import im.threads.business.rest.queries.DatastoreApi
 import im.threads.business.rest.queries.ThreadsApi
 import im.threads.business.serviceLocator.core.inject
 import im.threads.business.transport.InputStreamRequestBody
+import im.threads.business.transport.TransportException
 import im.threads.business.utils.FileUtils.getFileName
 import im.threads.business.utils.FileUtils.getMimeType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -31,22 +31,29 @@ import java.io.InputStream
 private const val PHOTO_RESIZE_MAX_SIDE = 1600
 
 fun postFile(fileDescription: FileDescription, clientId: String?): String? {
+    val chatUpdateProcessor: ChatUpdateProcessor by inject()
     if (!clientId.isNullOrBlank()) {
-        fileDescription.fileUri?.let {
-            if (it.toString().isNotEmpty()) {
-                return sendFile(
-                    it,
-                    getMimeType(it),
-                    clientId,
-                    fileDescription
-                )
+        try {
+            fileDescription.fileUri?.let {
+                if (it.toString().isNotEmpty()) {
+                    return sendFile(
+                        it,
+                        getMimeType(it),
+                        clientId,
+                        fileDescription
+                    )
+                }
             }
-        }
-        if (!fileDescription.downloadPath.isNullOrBlank()) {
-            return fileDescription.downloadPath
+            if (!fileDescription.downloadPath.isNullOrBlank()) {
+                return fileDescription.downloadPath
+            }
+        } catch (exc: Exception) {
+            chatUpdateProcessor.postError(TransportException(exc.message))
         }
     }
-    throw NetworkErrorException()
+
+    chatUpdateProcessor.postError(TransportException("No client id"))
+    return null
 }
 
 private fun sendFile(uri: Uri, mimeType: String, token: String, fileDescription: FileDescription): String {
@@ -61,7 +68,13 @@ private fun sendFile(uri: Uri, mimeType: String, token: String, fileDescription:
     )
     val agent: RequestBody = token.toRequestBody("text/plain".toMediaTypeOrNull())
 
-    val response = DatastoreApi.get().upload(part, agent, token.encodeUrl())?.execute()
+    val response = try {
+        DatastoreApi.get().upload(part, agent, token.encodeUrl())?.execute()
+    } catch (exc: Exception) {
+        chatUpdateProcessor.postError(TransportException(exc.message))
+        null
+    }
+
     response?.let {
         if (it.isSuccessful) {
             response.body()?.let { fileUploadResponse ->

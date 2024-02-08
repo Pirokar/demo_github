@@ -11,13 +11,23 @@ import java.io.StringWriter
 
 suspend fun <T> withMainContext(block: CoroutineScope.() -> T) = withContext(Dispatchers.Main, block)
 
-fun Exception.fullLogString(): String {
+fun Throwable.fullLogString(): String {
     val stringWriter = StringWriter()
     this.printStackTrace(PrintWriter(stringWriter))
-    val stackTrace = stringWriter.toString()
+    val stackTrace = buildStackTraceString(this.stackTrace)
     val message = this.message
 
     return "Message: $message, stacktrace:\n$stackTrace"
+}
+
+private fun buildStackTraceString(elements: Array<StackTraceElement>?): String {
+    val sb = StringBuilder()
+    if (!elements.isNullOrEmpty()) {
+        for (element in elements) {
+            sb.append("$element\n")
+        }
+    }
+    return sb.toString()
 }
 
 infix fun SearchResponse?.plus(newResponse: SearchResponse?): SearchResponse {

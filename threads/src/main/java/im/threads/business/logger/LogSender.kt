@@ -1,6 +1,6 @@
 package im.threads.business.logger
 
-import android.util.Log
+import im.threads.business.extensions.fullLogString
 
 internal class LogSender(private val loggerConfig: LoggerConfig?) {
     private val currentPackageName = this.javaClass.`package`?.name
@@ -94,7 +94,7 @@ internal class LogSender(private val loggerConfig: LoggerConfig?) {
         }
 
         if (throwable != null) {
-            stringBuilder.append(Log.getStackTraceString(throwable))
+            stringBuilder.append(throwable.fullLogString())
         }
 
         return stringBuilder.toString()
