@@ -627,6 +627,8 @@ class ChatController private constructor() {
                         }
                         parseHistoryItemsForSentStatus(serverItems)
                         parseHistoryItemsForAttachmentStatus(serverItems)
+                        isAllMessagesDownloaded = serverItems.size < BaseConfig.getInstance().historyLoadingCount ||
+                            messenger.isEqualsToPreviousSaved(serverItems)
                         messenger.saveMessages(serverItems)
                         clearUnreadPush()
                         processSystemMessages(serverItems)
@@ -646,8 +648,7 @@ class ChatController private constructor() {
                                 isDownloadingMessages = false
                                 val (consultInfo, serverItems) = pair
                                 val moreWithUntilCondition = untilCondition?.invoke(serverItems) ?: false
-                                val isShouldBeLoadedMore = (loadToTheEnd || moreWithUntilCondition) &&
-                                    serverItems.size == BaseConfig.getInstance().historyLoadingCount
+                                val isShouldBeLoadedMore = (loadToTheEnd || moreWithUntilCondition) && !isAllMessagesDownloaded
                                 if (applyUiChanges) {
                                     val items = setLastAvatars(serverItems)
                                     if (fragment != null) {
@@ -670,7 +671,12 @@ class ChatController private constructor() {
                                 }
                                 if (!applyUiChanges) callback?.onLoaded(serverItems)
                                 if (isShouldBeLoadedMore) {
-                                    loadHistory(anchorTimestamp, isAfterAnchor, true, applyUiChanges = applyUiChanges)
+                                    loadHistory(
+                                        serverItems.last().timeStamp,
+                                        isAfterAnchor = true,
+                                        loadToTheEnd = true,
+                                        applyUiChanges = applyUiChanges
+                                    )
                                 }
                             }
                         ) { e: Throwable? ->
