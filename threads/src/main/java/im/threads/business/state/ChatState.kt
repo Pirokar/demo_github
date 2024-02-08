@@ -60,6 +60,15 @@ class ChatState(private val preferences: Preferences) {
 
     fun getCurrentState() = stateChannel.value.state
 
+    fun getLastSuccessfulState(): ChatStateEnum {
+        val currentValue = stateChannel.value
+        return if (currentValue.state != ChatStateEnum.LOGGED_OUT) {
+            ChatStateEnum.fromValue(currentValue.state.value - 1) ?: ChatStateEnum.LOGGED_OUT
+        } else {
+            ChatStateEnum.LOGGED_OUT
+        }
+    }
+
     fun getStateFlow(): StateFlow<ChatStateEvent> = stateChannel
 
     fun onLogout() {
@@ -80,7 +89,7 @@ class ChatState(private val preferences: Preferences) {
             if (!state.isLastObservableState()) {
                 while (getCurrentState().value <= (state.value + 1) && isActive) {
                     delay(delayTime)
-                    if (System.currentTimeMillis() - startTime > timeout) {
+                    if (System.currentTimeMillis() - startTime > timeout && isActive) {
                         changeState(ChatStateEvent(getCurrentState(), true), timeout)
                         break
                     }
@@ -89,7 +98,7 @@ class ChatState(private val preferences: Preferences) {
         }
     }
 
-    private fun stopTimeoutObserver() {
+    internal fun stopTimeoutObserver() {
         coroutineScope?.cancel()
     }
 }

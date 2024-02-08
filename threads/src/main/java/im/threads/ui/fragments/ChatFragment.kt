@@ -188,7 +188,6 @@ class ChatFragment :
     private var campaignMessage: CampaignMessage? = null
     private var mChatReceiver: ChatReceiver? = null
     private var isInMessageSearchMode = false
-    internal var isResumed = false
     private var isSendBlocked = false
     private var binding: EccFragmentChatBinding? = null
     private var externalCameraPhotoFile: File? = null
@@ -299,7 +298,6 @@ class ChatFragment :
     override fun onPause() {
         super.onPause()
         info(ChatFragment::class.java.simpleName + " onPause.")
-        isResumed = false
         stopRecording()
         val fileDescription = getFileDescription()
         if (fileDescription == null || isVoiceMessage(fileDescription)) {
@@ -320,7 +318,6 @@ class ChatFragment :
         chatController.setActivityIsForeground(true)
         scrollToFirstUnreadMessage()
         chatAdapter?.onResumeView()
-        isResumed = true
         isShown = true
         afterResume = true
         updateToolBar()
