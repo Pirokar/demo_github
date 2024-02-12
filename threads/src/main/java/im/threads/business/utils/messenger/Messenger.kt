@@ -11,6 +11,7 @@ interface Messenger {
     fun sendMessage(userPhrase: UserPhrase)
     fun downloadMessagesTillEnd(): Single<List<ChatItem>>
     fun saveMessages(chatItems: List<ChatItem>)
+    fun isEqualsToPreviousSaved(chatItems: List<ChatItem>): Boolean
     fun queueMessageSending(userPhrase: UserPhrase)
     fun proceedSendingQueue(chatItem: UserPhrase)
     fun addMsgToResendQueue(userPhrase: UserPhrase)

@@ -1,5 +1,6 @@
 package im.threads.business.logger
 
+import im.threads.business.config.BaseConfig
 import im.threads.business.formatters.JsonFormatter
 import im.threads.business.serviceLocator.core.inject
 import im.threads.business.utils.hasSubstrings
@@ -11,25 +12,34 @@ import okio.Buffer
 
 class NetworkLoggerInterceptor(private val isImage: Boolean = false) : Interceptor {
     private val jsonFormatter: JsonFormatter by inject()
+    private val isLoggerEnabled: Boolean
+        get() {
+            return try {
+                BaseConfig.getInstance().loggerConfig != null
+            } catch (exc: Exception) {
+                false
+            }
+        }
 
     override fun intercept(chain: Interceptor.Chain): Response {
-        LoggerEdna.info(getRequestLog(chain))
-
+        if (isLoggerEnabled) LoggerEdna.info(getRequestLog(chain))
         val response = chain.proceed(chain.request())
+        var newResponse: Response? = response
+        if (isLoggerEnabled) {
+            newResponse = if (!isImage) {
+                val responseBodyString = response.peekBody(Long.MAX_VALUE).string()
 
-        val newResponse = if (!isImage) {
-            val responseBodyString = response.peekBody(Long.MAX_VALUE).string()
+                val createdResponse = response.newBuilder()
+                    .body(responseBodyString.toResponseBody(response.body?.contentType()))
+                    .build()
 
-            val newResponse = response.newBuilder()
-                .body(responseBodyString.toResponseBody(response.body?.contentType()))
-                .build()
+                LoggerEdna.info(getResponseLog(response, responseBodyString))
 
-            LoggerEdna.info(getResponseLog(response, responseBodyString))
-
-            newResponse
-        } else {
-            LoggerEdna.info(getResponseLog(response, null))
-            null
+                createdResponse
+            } else {
+                LoggerEdna.info(getResponseLog(response, null))
+                null
+            }
         }
 
         return newResponse ?: response

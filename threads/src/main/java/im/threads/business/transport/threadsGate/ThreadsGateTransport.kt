@@ -67,6 +67,7 @@ import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.logging.HttpLoggingInterceptor
 import okio.ByteString
+import okio.IOException
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -130,6 +131,19 @@ class ThreadsGateTransport(
             .connectTimeout(socketSettings.connectTimeoutMillis, TimeUnit.MILLISECONDS)
             .readTimeout(socketSettings.readTimeoutMillis, TimeUnit.MILLISECONDS)
             .writeTimeout(socketSettings.writeTimeoutMillis, TimeUnit.MILLISECONDS)
+            .addInterceptor {
+                try {
+                    it.proceed(it.request())
+                } catch (e: IOException) {
+                    val message = "Socket request failed with: ${e.message}"
+                    chatUpdateProcessor.postError(TransportException(message))
+                    LoggerEdna.error("Socket request failed. ", e)
+                    Response.Builder()
+                        .code(500)
+                        .message(message)
+                        .build()
+                }
+            }
         if (isDebugLoggingEnabled) {
             httpClientBuilder.addInterceptor(
                 HttpLoggingInterceptor()

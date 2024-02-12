@@ -50,6 +50,7 @@ class MessengerImpl(
     private val preferences: Preferences by inject()
     private val database: DatabaseHolder by inject()
     private val historyLoader: HistoryLoader by inject()
+    private var lastMessages: List<ChatItem> = listOf()
 
     private var isViewActive = false
     var pageItemsCount = 100
@@ -119,6 +120,8 @@ class MessengerImpl(
     override fun saveMessages(chatItems: List<ChatItem>) {
         database.putChatItems(chatItems)
     }
+
+    override fun isEqualsToPreviousSaved(chatItems: List<ChatItem>) = chatItems == lastMessages
 
     override fun clearSendQueue() {
         sendQueue.clear()
