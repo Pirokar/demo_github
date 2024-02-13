@@ -16,7 +16,6 @@ import im.threads.business.broadcastReceivers.ProgressReceiver
 import im.threads.business.chatUpdates.ChatUpdateProcessor
 import im.threads.business.config.BaseConfig
 import im.threads.business.controllers.UnreadMessagesController
-import im.threads.business.core.ContextHolder
 import im.threads.business.core.ThreadsLibBase
 import im.threads.business.extensions.isUnitTest
 import im.threads.business.extensions.withMainContext
@@ -1846,7 +1845,7 @@ class ChatController private constructor() {
         @JvmStatic
         @Synchronized
         fun createInstance() {
-            val clientUseCase = ClientUseCase(Preferences(ContextHolder.context))
+            val clientUseCase = ClientUseCase()
             if (instance == null) {
                 instance = ChatController()
             }

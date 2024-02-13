@@ -113,9 +113,7 @@ open class ThreadsLibBase protected constructor(context: Context) {
     }
 
     internal fun updateUnreadCountMessagesIfNeed() {
-        if (BaseConfig.getInstance().unreadMessagesCountListener != null &&
-            clientUseCase.getUserInfo() != null
-        ) {
+        if (BaseConfig.getInstance().unreadMessagesCountListener != null && clientUseCase.getUserInfo() != null) {
             ChatController.getInstance().loadHistory(fromQuickAnswerController = true)
         }
     }
@@ -135,6 +133,10 @@ open class ThreadsLibBase protected constructor(context: Context) {
         BaseConfig.getInstance().transport.closeWebSocket()
         clientUseCase.saveUserInfo(null)
         ChatController.getInstance().cleanAll()
+    }
+
+    fun removeUser() {
+        clientUseCase.saveUserInfo(null)
     }
 
     /**

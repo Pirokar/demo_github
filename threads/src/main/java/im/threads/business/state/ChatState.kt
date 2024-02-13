@@ -3,6 +3,7 @@ package im.threads.business.state
 import im.threads.business.config.BaseConfig
 import im.threads.business.preferences.Preferences
 import im.threads.business.preferences.PreferencesCoreKeys
+import im.threads.business.utils.ClientUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -12,7 +13,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
-class ChatState(private val preferences: Preferences) {
+class ChatState(
+    private val preferences: Preferences,
+    private val clientUseCase: ClientUseCase
+) {
     private val socketTimeout: Long by lazy {
         try {
             BaseConfig.getInstance().requestConfig.socketClientSettings.connectTimeoutMillis
@@ -76,7 +80,7 @@ class ChatState(private val preferences: Preferences) {
     }
 
     fun isChatReady(): Boolean {
-        return getCurrentState() >= ChatStateEnum.THREAD_OPENED
+        return getCurrentState() >= ChatStateEnum.THREAD_OPENED && clientUseCase.isClientIdNotEmpty()
     }
 
     private fun startTimeoutObserver(state: ChatStateEnum, timeout: Long) {

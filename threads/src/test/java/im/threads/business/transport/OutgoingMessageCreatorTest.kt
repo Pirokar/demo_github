@@ -62,25 +62,12 @@ class OutgoingMessageCreatorTest {
         `when`(clientUseCase.getUserInfo()).thenReturn(userInfo)
         `when`(sharedPreferences.getString(PreferencesCoreKeys.DEVICE_ADDRESS, null)).thenReturn("testDeviceAddress")
 
-        val result = outgoingMessageCreator.createInitChatMessage()
+        val result = outgoingMessageCreator.createInitChatMessage(userInfo)
 
         assertEquals("testClientId", result.get(MessageAttributes.CLIENT_ID).asString)
         assertEquals("INIT_CHAT", result.get(MessageAttributes.TYPE).asString)
         assertEquals("testData", result.get(MessageAttributes.DATA).asString)
         assertEquals("testAppMarker", result.get(MessageAttributes.APP_MARKER_KEY).asString)
-    }
-
-    @Test
-    fun whenUserInfoIsNull_thenCreateInitChatMessage() {
-        `when`(clientUseCase.getUserInfo()).thenReturn(null)
-        `when`(sharedPreferences.getString(PreferencesCoreKeys.DEVICE_ADDRESS, null)).thenReturn("testDeviceAddress")
-
-        val result = outgoingMessageCreator.createInitChatMessage()
-
-        assert(result.get(MessageAttributes.CLIENT_ID).isJsonNull)
-        assertEquals("INIT_CHAT", result.get(MessageAttributes.TYPE).asString)
-        assert(result.get(MessageAttributes.DATA).isJsonNull)
-        assert(result.get(MessageAttributes.APP_MARKER_KEY).isJsonNull)
     }
 
     @Test
@@ -98,7 +85,7 @@ class OutgoingMessageCreatorTest {
         `when`(appInfo.appId).thenReturn("testAppId")
         `when`(appInfo.libVersion).thenReturn("testLibVersion")
 
-        val result = outgoingMessageCreator.createClientInfoMessage("testLocale", true)
+        val result = outgoingMessageCreator.createClientInfoMessage(userInfo, "testLocale", true)
 
         assertEquals("testClientId", result.get(MessageAttributes.CLIENT_ID).asString)
         assertEquals("testData", result.get(MessageAttributes.DATA).asString)
@@ -116,58 +103,17 @@ class OutgoingMessageCreatorTest {
     }
 
     @Test
-    fun whenUserInfoIsNull_thenCreateClientInfoMessage() {
-        `when`(clientUseCase.getUserInfo()).thenReturn(null)
-        `when`(sharedPreferences.getString(PreferencesCoreKeys.DEVICE_ADDRESS, null)).thenReturn("testDeviceAddress")
-        `when`(deviceInfo.osVersion).thenReturn("testOsVersion")
-        `when`(deviceInfo.deviceName).thenReturn("testDeviceName")
-        `when`(deviceInfo.ipAddress).thenReturn("testIpAddress")
-        `when`(appInfo.appVersion).thenReturn("testAppVersion")
-        `when`(appInfo.appName).thenReturn("testAppName")
-        `when`(appInfo.appId).thenReturn("testAppId")
-        `when`(appInfo.libVersion).thenReturn("testLibVersion")
-
-        val result = outgoingMessageCreator.createClientInfoMessage("testLocale", false)
-
-        assert(result.get(MessageAttributes.CLIENT_ID).isJsonNull)
-        assertEquals(null, result.get(MessageAttributes.DATA))
-        assert(result.get(MessageAttributes.CLIENT_ID).isJsonNull)
-        assertEquals("testOsVersion", result.get("osVersion").asString)
-        assertEquals("testDeviceName", result.get("device").asString)
-        assertEquals("testIpAddress", result.get("ip").asString)
-        assertEquals("testAppVersion", result.get("appVersion").asString)
-        assertEquals("testAppName", result.get("appName").asString)
-        assertEquals("testAppId", result.get(MessageAttributes.APP_BUNDLE_KEY).asString)
-        assertEquals("testLibVersion", result.get("libVersion").asString)
-        assertEquals("testLocale", result.get("clientLocale").asString)
-        assertEquals("CLIENT_INFO", result.get(MessageAttributes.TYPE).asString)
-        assertEquals(null, result.get("preRegister"))
-    }
-
-    @Test
     fun whenUserInfoExists_thenCreateMessageTyping() {
         val userInfo = UserInfoBuilder("testClientId")
         userInfo.setAppMarker("testAppMarker")
         `when`(clientUseCase.getUserInfo()).thenReturn(userInfo)
         `when`(sharedPreferences.getString(PreferencesCoreKeys.DEVICE_ADDRESS, null)).thenReturn("testDeviceAddress")
 
-        val result = outgoingMessageCreator.createMessageTyping("testInput")
+        val result = outgoingMessageCreator.createMessageTyping(userInfo, "testInput")
 
         assertEquals("TYPING", result.get(MessageAttributes.TYPE).asString)
         assertEquals("testInput", result.get(MessageAttributes.TYPING_DRAFT).asString)
         assertEquals("testAppMarker", result.get(MessageAttributes.APP_MARKER_KEY).asString)
-    }
-
-    @Test
-    fun whenUserInfoIsNull_thenCreateMessageTyping() {
-        `when`(clientUseCase.getUserInfo()).thenReturn(null)
-        `when`(sharedPreferences.getString(PreferencesCoreKeys.DEVICE_ADDRESS, null)).thenReturn("testDeviceAddress")
-
-        val result = outgoingMessageCreator.createMessageTyping("testInput")
-
-        assertEquals("TYPING", result.get(MessageAttributes.TYPE).asString)
-        assertEquals("testInput", result.get(MessageAttributes.TYPING_DRAFT).asString)
-        assert(result.get(MessageAttributes.APP_MARKER_KEY).isJsonNull)
     }
 
     @Test
@@ -182,7 +128,7 @@ class OutgoingMessageCreatorTest {
         questionDTO.text = "testText"
         val survey = Survey("testUuid", 555L, arrayListOf(questionDTO), null, 0L, false, MessageStatus.SENT, false)
 
-        val result = outgoingMessageCreator.createRatingDoneMessage(survey)
+        val result = outgoingMessageCreator.createRatingDoneMessage(userInfo, survey)
 
         assertEquals("testClientId", result.get(MessageAttributes.CLIENT_ID).asString)
         assertEquals(555L, result.get("sendingId").asLong)
@@ -200,7 +146,7 @@ class OutgoingMessageCreatorTest {
 
         val survey = Survey("testUuid", 555L, arrayListOf(), null, 0L, false, MessageStatus.SENT, false)
 
-        val result = outgoingMessageCreator.createRatingDoneMessage(survey)
+        val result = outgoingMessageCreator.createRatingDoneMessage(userInfo, survey)
 
         assertEquals("testClientId", result.get(MessageAttributes.CLIENT_ID).asString)
         assertEquals(555L, result.get("sendingId").asLong)
@@ -216,7 +162,7 @@ class OutgoingMessageCreatorTest {
         userInfo.setAppMarker("testAppMarker")
         `when`(clientUseCase.getUserInfo()).thenReturn(userInfo)
 
-        val result = outgoingMessageCreator.createResolveThreadMessage()
+        val result = outgoingMessageCreator.createResolveThreadMessage(userInfo)
 
         assertEquals("testClientId", result.get(MessageAttributes.CLIENT_ID).asString)
         assertEquals("CLOSE_THREAD", result.get(MessageAttributes.TYPE).asString)
@@ -229,7 +175,7 @@ class OutgoingMessageCreatorTest {
         userInfo.setAppMarker("testAppMarker")
         `when`(clientUseCase.getUserInfo()).thenReturn(userInfo)
 
-        val result = outgoingMessageCreator.createReopenThreadMessage()
+        val result = outgoingMessageCreator.createReopenThreadMessage(userInfo)
 
         assertEquals("testClientId", result.get(MessageAttributes.CLIENT_ID).asString)
         assertEquals("REOPEN_THREAD", result.get(MessageAttributes.TYPE).asString)
@@ -242,7 +188,7 @@ class OutgoingMessageCreatorTest {
         userInfo.setAppMarker("testAppMarker")
         `when`(clientUseCase.getUserInfo()).thenReturn(userInfo)
 
-        val result = outgoingMessageCreator.createMessageClientOffline("testClientId")
+        val result = outgoingMessageCreator.createMessageClientOffline(userInfo.clientId, "testAppMarker")
 
         assertEquals("testClientId", result.get(MessageAttributes.CLIENT_ID).asString)
         assertEquals("CLIENT_OFFLINE", result.get(MessageAttributes.TYPE).asString)
@@ -255,57 +201,12 @@ class OutgoingMessageCreatorTest {
         userInfo.setAppMarker("testAppMarker")
         `when`(clientUseCase.getUserInfo()).thenReturn(userInfo)
 
-        val result = outgoingMessageCreator.createMessageUpdateLocation(1.0, 1.0, "testLocale")
+        val result = outgoingMessageCreator.createMessageUpdateLocation(1.0, 1.0, "testLocale", userInfo)
 
         assertEquals("testClientId", result.get(MessageAttributes.CLIENT_ID).asString)
         assertEquals("UPDATE_LOCATION", result.get(MessageAttributes.TYPE).asString)
         assertEquals("{\"coordinates\":\"1.0, 1.0\"}", result.get(MessageAttributes.DATA).asString)
         assertEquals("testAppMarker", result.get(MessageAttributes.APP_MARKER_KEY).asString)
-    }
-
-    @Test
-    fun whenUserInfoIsNull_thenCreateResolveThreadMessage() {
-        `when`(clientUseCase.getUserInfo()).thenReturn(null)
-
-        val result = outgoingMessageCreator.createResolveThreadMessage()
-
-        assert(result.get(MessageAttributes.CLIENT_ID).isJsonNull)
-        assertEquals("CLOSE_THREAD", result.get(MessageAttributes.TYPE).asString)
-        assert(result.get(MessageAttributes.APP_MARKER_KEY).isJsonNull)
-    }
-
-    @Test
-    fun whenUserInfoIsNull_thenCreateReopenThreadMessage() {
-        `when`(clientUseCase.getUserInfo()).thenReturn(null)
-
-        val result = outgoingMessageCreator.createReopenThreadMessage()
-
-        assert(result.get(MessageAttributes.CLIENT_ID).isJsonNull)
-        assertEquals("REOPEN_THREAD", result.get(MessageAttributes.TYPE).asString)
-        assert(result.get(MessageAttributes.APP_MARKER_KEY).isJsonNull)
-    }
-
-    @Test
-    fun whenUserInfoIsNull_thenCreateMessageClientOffline() {
-        `when`(clientUseCase.getUserInfo()).thenReturn(null)
-
-        val result = outgoingMessageCreator.createMessageClientOffline("testClientId")
-
-        assertEquals("testClientId", result.get(MessageAttributes.CLIENT_ID).asString)
-        assertEquals("CLIENT_OFFLINE", result.get(MessageAttributes.TYPE).asString)
-        assert(result.get(MessageAttributes.APP_MARKER_KEY).isJsonNull)
-    }
-
-    @Test
-    fun whenUserInfoIsNull_thenCreateMessageUpdateLocation() {
-        `when`(clientUseCase.getUserInfo()).thenReturn(null)
-
-        val result = outgoingMessageCreator.createMessageUpdateLocation(1.0, 1.0, "testLocale")
-
-        assert(result.get(MessageAttributes.CLIENT_ID).isJsonNull)
-        assertEquals("UPDATE_LOCATION", result.get(MessageAttributes.TYPE).asString)
-        assertEquals("{\"coordinates\":\"1.0, 1.0\"}", result.get(MessageAttributes.DATA).asString)
-        assert(result.get(MessageAttributes.APP_MARKER_KEY).isJsonNull)
     }
 
     @Test
@@ -319,7 +220,7 @@ class OutgoingMessageCreatorTest {
         val quoteMfmsFilePath = "testQuoteMfmsFilePath"
         val mfmsFilePath = "testMfmsFilePath"
 
-        val result = outgoingMessageCreator.createUserPhraseMessage(userPhrase, consultInfo, quoteMfmsFilePath, mfmsFilePath)
+        val result = outgoingMessageCreator.createUserPhraseMessage(userPhrase, consultInfo, quoteMfmsFilePath, mfmsFilePath, userInfo)
 
         assertEquals("testClientId", result.get(MessageAttributes.CLIENT_ID).asString)
         assertEquals("MESSAGE", result.get(MessageAttributes.TYPE).asString)
@@ -338,45 +239,11 @@ class OutgoingMessageCreatorTest {
         val quoteMfmsFilePath = "testQuoteMfmsFilePath"
         val mfmsFilePath = "testMfmsFilePath"
 
-        val result = outgoingMessageCreator.createUserPhraseMessage(userPhrase, consultInfo, quoteMfmsFilePath, mfmsFilePath)
+        val result = outgoingMessageCreator.createUserPhraseMessage(userPhrase, consultInfo, quoteMfmsFilePath, mfmsFilePath, userInfo)
 
         assertEquals("testClientId", result.get(MessageAttributes.CLIENT_ID).asString)
         assertEquals("MESSAGE", result.get(MessageAttributes.TYPE).asString)
         assertEquals("", result.get(MessageAttributes.TEXT).asString)
         assertEquals("testAppMarker", result.get(MessageAttributes.APP_MARKER_KEY).asString)
-    }
-
-    @Test
-    fun whenUserInfoIsNullAndUserPhraseIsNotNull_thenCreateUserPhraseMessage() {
-        `when`(clientUseCase.getUserInfo()).thenReturn(null)
-
-        val userPhrase = UserPhrase("testUuid", "testInput", null, 0L, null, MessageStatus.SENT, null)
-        val consultInfo = ConsultInfo()
-        val quoteMfmsFilePath = "testQuoteMfmsFilePath"
-        val mfmsFilePath = "testMfmsFilePath"
-
-        val result = outgoingMessageCreator.createUserPhraseMessage(userPhrase, consultInfo, quoteMfmsFilePath, mfmsFilePath)
-
-        assert(result.get(MessageAttributes.CLIENT_ID).isJsonNull)
-        assertEquals("MESSAGE", result.get(MessageAttributes.TYPE).asString)
-        assertEquals("testInput", result.get(MessageAttributes.TEXT).asString)
-        assert(result.get(MessageAttributes.APP_MARKER_KEY).isJsonNull)
-    }
-
-    @Test
-    fun whenUserInfoIsNullAndUserPhraseIsNull_thenCreateUserPhraseMessage() {
-        `when`(clientUseCase.getUserInfo()).thenReturn(null)
-
-        val userPhrase = UserPhrase("testUuid", null, null, 0L, null, MessageStatus.SENT, null)
-        val consultInfo = ConsultInfo()
-        val quoteMfmsFilePath = "testQuoteMfmsFilePath"
-        val mfmsFilePath = "testMfmsFilePath"
-
-        val result = outgoingMessageCreator.createUserPhraseMessage(userPhrase, consultInfo, quoteMfmsFilePath, mfmsFilePath)
-
-        assert(result.get(MessageAttributes.CLIENT_ID).isJsonNull)
-        assertEquals("MESSAGE", result.get(MessageAttributes.TYPE).asString)
-        assertEquals("", result.get(MessageAttributes.TEXT).asString)
-        assert(result.get(MessageAttributes.APP_MARKER_KEY).isJsonNull)
     }
 }

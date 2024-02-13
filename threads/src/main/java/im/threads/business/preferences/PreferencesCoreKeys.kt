@@ -1,7 +1,5 @@
 package im.threads.business.preferences
 
-import im.threads.business.utils.ClientUseCase
-
 /**
  * Ключи для Preferences уровня Core
  */
@@ -35,7 +33,6 @@ object PreferencesCoreKeys {
         THREAD_ID,
         FILE_DESCRIPTION_DRAFT,
         CAMPAIGN_MESSAGE,
-        ClientUseCase.USER_INFO_PREFS_KEY,
         UNREAD_PUSH_COUNT,
         STORE_NAME,
         ENCRYPTED_STORE_NAME,
