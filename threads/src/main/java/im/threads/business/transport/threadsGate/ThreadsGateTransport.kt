@@ -60,6 +60,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import okhttp3.CacheControl
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -67,7 +68,6 @@ import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.logging.HttpLoggingInterceptor
 import okio.ByteString
-import okio.IOException
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -76,6 +76,7 @@ import java.util.TimeZone
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 import javax.net.ssl.SSLSession
+
 
 class ThreadsGateTransport(
     internal val threadsGateUrl: String,
@@ -132,17 +133,21 @@ class ThreadsGateTransport(
             .readTimeout(socketSettings.readTimeoutMillis, TimeUnit.MILLISECONDS)
             .writeTimeout(socketSettings.writeTimeoutMillis, TimeUnit.MILLISECONDS)
             .addInterceptor {
-                try {
-                    it.proceed(it.request())
-                } catch (e: IOException) {
-                    val message = "Socket request failed with: ${e.message}"
+                val response: Response = it.proceed(it.request())
+                if (response.code > 299) {
+                    val message = "Socket request failed with: ${response.message}"
+                    val cacheHeaderValue = "public, only-if-cached, max-stale=" + 60 * 60 * 24 * 1
                     chatUpdateProcessor.postError(TransportException(message))
-                    LoggerEdna.error("Socket request failed. ", e)
-                    Response.Builder()
-                        .code(500)
+                    LoggerEdna.error("Socket request failed. ", message)
+                    response.newBuilder()
+                        .removeHeader("Pragma")
+                        .removeHeader("Cache-Control")
                         .message(message)
+                        .code(response.code)
+                        .header("Cache-Control", cacheHeaderValue)
                         .build()
                 }
+                response
             }
         if (isDebugLoggingEnabled) {
             httpClientBuilder.addInterceptor(
