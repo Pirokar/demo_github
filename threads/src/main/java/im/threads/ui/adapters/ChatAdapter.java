@@ -810,6 +810,10 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             if (getList().get(i) instanceof ConsultPhrase) {
                 final ConsultPhrase cp = (ConsultPhrase) getList().get(i);
                 if (ObjectsCompat.equals(cp.getFileDescription(), fileDescription)) {
+                    if (cp.getFileDescription() != null &&
+                            cp.getFileDescription().getState().ordinal() > fileDescription.getState().ordinal()) {
+                        break;
+                    }
                     cp.setFileDescription(fileDescription);
                     if (!isImage(fileDescription)
                             || isImageChanged(cp.getFileDescription(), fileDescription)) {
@@ -822,6 +826,10 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             } else if (getList().get(i) instanceof UserPhrase) {
                 final UserPhrase up = (UserPhrase) getList().get(i);
                 if (ObjectsCompat.equals(up.getFileDescription(), fileDescription)) {
+                    if (up.getFileDescription() != null &&
+                            up.getFileDescription().getState().ordinal() > fileDescription.getState().ordinal()) {
+                        break;
+                    }
                     up.setFileDescription(fileDescription);
                     if (!isImage(fileDescription)
                             || isImageChanged(up.getFileDescription(), fileDescription)) {
