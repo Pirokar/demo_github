@@ -3,6 +3,7 @@ package im.threads.business.transport
 import android.net.Uri
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import im.threads.business.UserInfoBuilder
 import im.threads.business.formatters.ChatItemType
 import im.threads.business.models.CAMPAIGN_DATE_FORMAT
 import im.threads.business.models.ConsultInfo
@@ -28,28 +29,26 @@ class OutgoingMessageCreator(
     private val appInfo: AppInfo,
     private val deviceInfo: DeviceInfo
 ) {
-    fun createInitChatMessage(): JsonObject {
+    fun createInitChatMessage(userInfo: UserInfoBuilder): JsonObject {
         val jsonObject = JsonObject()
-        val userInfo = clientUseCase.getUserInfo()
         val deviceAddress = preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS)
         jsonObject.apply {
-            addProperty(MessageAttributes.CLIENT_ID, userInfo?.clientId)
+            addProperty(MessageAttributes.CLIENT_ID, userInfo.clientId)
             addProperty(MessageAttributes.TYPE, ChatItemType.INIT_CHAT.name)
-            addProperty(MessageAttributes.DATA, userInfo?.clientData)
-            addProperty(MessageAttributes.APP_MARKER_KEY, userInfo?.appMarker)
+            addProperty(MessageAttributes.DATA, userInfo.clientData)
+            addProperty(MessageAttributes.APP_MARKER_KEY, userInfo.appMarker)
             addProperty(MessageAttributes.DEVICE_ADDRESS, deviceAddress)
         }
         return jsonObject
     }
 
-    fun createClientInfoMessage(locale: String, isPreregister: Boolean): JsonObject {
-        val userInfo = clientUseCase.getUserInfo()
+    fun createClientInfoMessage(userInfo: UserInfoBuilder, locale: String, isPreregister: Boolean): JsonObject {
         val deviceAddress = preferences.get(PreferencesCoreKeys.DEVICE_ADDRESS, "")
         val jsonObject = JsonObject().apply {
-            addProperty("name", userInfo?.userName)
-            addProperty(MessageAttributes.CLIENT_ID, userInfo?.clientId)
-            addProperty(MessageAttributes.CLIENT_ID_ENCRYPTED, userInfo?.clientIdEncrypted)
-            userInfo?.clientData?.let { addProperty(MessageAttributes.DATA, it) }
+            addProperty("name", userInfo.userName)
+            addProperty(MessageAttributes.CLIENT_ID, userInfo.clientId)
+            addProperty(MessageAttributes.CLIENT_ID_ENCRYPTED, userInfo.clientIdEncrypted)
+            userInfo.clientData?.let { addProperty(MessageAttributes.DATA, it) }
             addProperty("platform", "Android")
             addProperty("osVersion", deviceInfo.osVersion)
             addProperty("device", deviceInfo.deviceName)
@@ -57,7 +56,7 @@ class OutgoingMessageCreator(
             addProperty("appVersion", appInfo.appVersion)
             addProperty("appName", appInfo.appName)
             addProperty(MessageAttributes.APP_BUNDLE_KEY, appInfo.appId)
-            addProperty(MessageAttributes.APP_MARKER_KEY, userInfo?.appMarker)
+            addProperty(MessageAttributes.APP_MARKER_KEY, userInfo.appMarker)
             addProperty("libVersion", appInfo.libVersion)
             addProperty("clientLocale", locale)
             addProperty("chatApiVersion", ThreadsApi.getApiVersion())
@@ -71,22 +70,20 @@ class OutgoingMessageCreator(
         return jsonObject
     }
 
-    fun createMessageTyping(input: String?): JsonObject {
-        val userInfo = clientUseCase.getUserInfo()
+    fun createMessageTyping(userInfo: UserInfoBuilder, input: String?): JsonObject {
         val deviceAddress = preferences.get(PreferencesCoreKeys.DEVICE_ADDRESS) ?: ""
         val jsonObject = JsonObject().apply {
             addProperty(MessageAttributes.TYPE, ChatItemType.TYPING.name)
             addProperty(MessageAttributes.TYPING_DRAFT, input)
-            addProperty(MessageAttributes.APP_MARKER_KEY, userInfo?.appMarker)
+            addProperty(MessageAttributes.APP_MARKER_KEY, userInfo.appMarker)
             addProperty(MessageAttributes.DEVICE_ADDRESS, deviceAddress)
         }
         return jsonObject
     }
 
-    fun createRatingDoneMessage(survey: Survey): JsonObject {
-        val userInfo = clientUseCase.getUserInfo()
+    fun createRatingDoneMessage(userInfo: UserInfoBuilder, survey: Survey): JsonObject {
         val jsonObject = JsonObject().apply {
-            addProperty(MessageAttributes.CLIENT_ID, userInfo?.clientId)
+            addProperty(MessageAttributes.CLIENT_ID, userInfo.clientId)
             addProperty(MessageAttributes.TYPE, ChatItemType.SURVEY_QUESTION_ANSWER.name)
             addProperty("sendingId", survey.sendingId)
             if (!survey.questions.isNullOrEmpty()) {
@@ -94,37 +91,34 @@ class OutgoingMessageCreator(
                 addProperty("rate", survey.questions!![0].rate)
                 addProperty("text", survey.questions!![0].text)
             }
-            addProperty(MessageAttributes.APP_MARKER_KEY, userInfo?.appMarker)
+            addProperty(MessageAttributes.APP_MARKER_KEY, userInfo.appMarker)
         }
         return jsonObject
     }
 
-    fun createResolveThreadMessage(): JsonObject {
-        val userInfo = clientUseCase.getUserInfo()
+    fun createResolveThreadMessage(userInfo: UserInfoBuilder): JsonObject {
         val jsonObject = JsonObject().apply {
-            addProperty(MessageAttributes.CLIENT_ID, userInfo?.clientId)
+            addProperty(MessageAttributes.CLIENT_ID, userInfo.clientId)
             addProperty(MessageAttributes.TYPE, ChatItemType.CLOSE_THREAD.name)
-            addProperty(MessageAttributes.APP_MARKER_KEY, userInfo?.appMarker)
+            addProperty(MessageAttributes.APP_MARKER_KEY, userInfo.appMarker)
         }
         return jsonObject
     }
 
-    fun createReopenThreadMessage(): JsonObject {
-        val userInfo = clientUseCase.getUserInfo()
+    fun createReopenThreadMessage(userInfo: UserInfoBuilder): JsonObject {
         val jsonObject = JsonObject().apply {
-            addProperty(MessageAttributes.CLIENT_ID, userInfo?.clientId)
+            addProperty(MessageAttributes.CLIENT_ID, userInfo.clientId)
             addProperty(MessageAttributes.TYPE, ChatItemType.REOPEN_THREAD.name)
-            addProperty(MessageAttributes.APP_MARKER_KEY, userInfo?.appMarker)
+            addProperty(MessageAttributes.APP_MARKER_KEY, userInfo.appMarker)
         }
         return jsonObject
     }
 
-    fun createMessageClientOffline(clientId: String?): JsonObject {
-        val userInfo = clientUseCase.getUserInfo()
+    fun createMessageClientOffline(clientId: String, appMarker: String?): JsonObject {
         val jsonObject = JsonObject().apply {
             addProperty(MessageAttributes.CLIENT_ID, clientId)
             addProperty(MessageAttributes.TYPE, ChatItemType.CLIENT_OFFLINE.name)
-            addProperty(MessageAttributes.APP_MARKER_KEY, userInfo?.appMarker)
+            addProperty(MessageAttributes.APP_MARKER_KEY, appMarker)
         }
         return jsonObject
     }
@@ -132,17 +126,17 @@ class OutgoingMessageCreator(
     fun createMessageUpdateLocation(
         latitude: Double,
         longitude: Double,
-        locale: String
+        locale: String,
+        userInfo: UserInfoBuilder
     ): JsonObject {
-        val userInfo = clientUseCase.getUserInfo()
         val jsonObject = JsonObject().apply {
             val location = JsonObject().apply {
                 addProperty(MessageAttributes.COORDINATES, "$latitude, $longitude")
             }
             addProperty(MessageAttributes.DATA, location.toString())
-            addProperty("name", userInfo?.userName)
-            addProperty(MessageAttributes.CLIENT_ID, userInfo?.clientId)
-            addProperty(MessageAttributes.CLIENT_ID_ENCRYPTED, userInfo?.clientIdEncrypted)
+            addProperty("name", userInfo.userName)
+            addProperty(MessageAttributes.CLIENT_ID, userInfo.clientId)
+            addProperty(MessageAttributes.CLIENT_ID_ENCRYPTED, userInfo.clientIdEncrypted)
             addProperty("platform", "Android")
             addProperty("osVersion", deviceInfo.osVersion)
             addProperty("device", deviceInfo.deviceName)
@@ -150,7 +144,7 @@ class OutgoingMessageCreator(
             addProperty("appVersion", appInfo.appVersion)
             addProperty("appName", appInfo.appName)
             addProperty(MessageAttributes.APP_BUNDLE_KEY, appInfo.appId)
-            addProperty(MessageAttributes.APP_MARKER_KEY, userInfo?.appMarker)
+            addProperty(MessageAttributes.APP_MARKER_KEY, userInfo.appMarker)
             addProperty("libVersion", appInfo.libVersion)
             addProperty("clientLocale", locale)
             addProperty("chatApiVersion", ThreadsApi.getApiVersion())
@@ -163,19 +157,19 @@ class OutgoingMessageCreator(
         userPhrase: UserPhrase,
         consultInfo: ConsultInfo?,
         quoteMfmsFilePath: String?,
-        mfmsFilePath: String?
+        mfmsFilePath: String?,
+        userInfo: UserInfoBuilder
     ): JsonObject {
         val phrase = userPhrase.phraseText
         val quote = userPhrase.quote
         val fileDescription = userPhrase.fileDescription
         val campaignMessage = userPhrase.campaignMessage
-        val userInfo = clientUseCase.getUserInfo()
         val deviceAddress = preferences.get(PreferencesCoreKeys.DEVICE_ADDRESS) ?: ""
         val formattedMessage = JsonObject().apply {
             addProperty(MessageAttributes.UUID, userPhrase.id)
-            addProperty(MessageAttributes.CLIENT_ID, userInfo?.clientId)
+            addProperty(MessageAttributes.CLIENT_ID, userInfo.clientId)
             addProperty(MessageAttributes.TEXT, phrase ?: "")
-            addProperty(MessageAttributes.APP_MARKER_KEY, userInfo?.appMarker)
+            addProperty(MessageAttributes.APP_MARKER_KEY, userInfo.appMarker)
             addProperty(MessageAttributes.DEVICE_ADDRESS, deviceAddress)
             addProperty(MessageAttributes.TYPE, ChatItemType.MESSAGE.name)
         }

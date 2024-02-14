@@ -33,7 +33,7 @@ val coreSLModule = module {
     factory { AuthHeadersProvider() }
     factory { ImageLoaderOkHttpProvider(get(), get()) }
     factory { OutgoingMessageCreator(get(), get(), get(), get()) }
-    factory { ClientUseCase(get()) }
+    factory { ClientUseCase() }
     factory { AuthInterceptor(get(), get()) }
     factory { ConsultWriter(get()) }
     factory { ChatUpdateProcessor() }
@@ -45,6 +45,6 @@ val coreSLModule = module {
     factory { AppInfo() }
     factory { DeviceInfo() }
     factory { FileProvider() }
-    factory { ChatState(get()) }
+    factory { ChatState(get(), get()) }
     factory { DemoModeProvider(get()) }
 }

@@ -67,7 +67,6 @@ import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.logging.HttpLoggingInterceptor
 import okio.ByteString
-import okio.IOException
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -132,17 +131,21 @@ class ThreadsGateTransport(
             .readTimeout(socketSettings.readTimeoutMillis, TimeUnit.MILLISECONDS)
             .writeTimeout(socketSettings.writeTimeoutMillis, TimeUnit.MILLISECONDS)
             .addInterceptor {
-                try {
-                    it.proceed(it.request())
-                } catch (e: IOException) {
-                    val message = "Socket request failed with: ${e.message}"
+                val response: Response = it.proceed(it.request())
+                if (response.code > 299) {
+                    val message = "Socket request failed with: ${response.message}"
+                    val cacheHeaderValue = "public, only-if-cached, max-stale=" + 60 * 60 * 24 * 1
                     chatUpdateProcessor.postError(TransportException(message))
-                    LoggerEdna.error("Socket request failed. ", e)
-                    Response.Builder()
-                        .code(500)
+                    LoggerEdna.error("Socket request failed. ", message)
+                    response.newBuilder()
+                        .removeHeader("Pragma")
+                        .removeHeader("Cache-Control")
                         .message(message)
+                        .code(response.code)
+                        .header("Cache-Control", cacheHeaderValue)
                         .build()
                 }
+                response
             }
         if (isDebugLoggingEnabled) {
             httpClientBuilder.addInterceptor(
@@ -169,8 +172,9 @@ class ThreadsGateTransport(
     }
 
     override fun sendRatingDone(survey: Survey) {
-        if (!survey.questions.isNullOrEmpty()) {
-            val content = outgoingMessageCreator.createRatingDoneMessage(survey)
+        val userInfo = clientUseCase.getUserInfo()
+        if (!survey.questions.isNullOrEmpty() && userInfo != null) {
+            val content = outgoingMessageCreator.createRatingDoneMessage(userInfo, survey)
             val firstPartOfCorrelationId = "${ChatItemType.SURVEY_QUESTION_ANSWER.name}$CORRELATION_ID_DIVIDER"
             val secondPartOfCorrelationId = "${survey.sendingId}$CORRELATION_ID_DIVIDER${survey.questions?.first()?.correlationId}"
             val correlationId = "$firstPartOfCorrelationId$secondPartOfCorrelationId"
@@ -182,19 +186,23 @@ class ThreadsGateTransport(
     override fun sendResolveThread(approveResolve: Boolean) {
         val content: JsonObject
         var correlationId: String
-        if (approveResolve) {
-            content = outgoingMessageCreator.createResolveThreadMessage()
-            correlationId = ChatItemType.CLOSE_THREAD.name
-        } else {
-            content = outgoingMessageCreator.createReopenThreadMessage()
-            correlationId = ChatItemType.REOPEN_THREAD.name
+        clientUseCase.getUserInfo()?.let {
+            if (approveResolve) {
+                content = outgoingMessageCreator.createResolveThreadMessage(it)
+                correlationId = ChatItemType.CLOSE_THREAD.name
+            } else {
+                content = outgoingMessageCreator.createReopenThreadMessage(it)
+                correlationId = ChatItemType.REOPEN_THREAD.name
+            }
+            correlationId += CORRELATION_ID_DIVIDER + UUID.randomUUID().toString()
+            sendMessage(content, false, correlationId)
         }
-        correlationId += CORRELATION_ID_DIVIDER + UUID.randomUUID().toString()
-        sendMessage(content, false, correlationId)
     }
 
     override fun sendUserTying(input: String) {
-        sendMessage(outgoingMessageCreator.createMessageTyping(input))
+        clientUseCase.getUserInfo()?.let {
+            sendMessage(outgoingMessageCreator.createMessageTyping(it, input))
+        }
     }
 
     override fun sendRegisterDevice(forceRegistration: Boolean) {
@@ -223,39 +231,48 @@ class ThreadsGateTransport(
         filePath: String?,
         quoteFilePath: String?
     ): Boolean {
-        userPhrase.campaignMessage?.let {
-            campaignsInProcess[userPhrase.id] = it
+        clientUseCase.getUserInfo()?.let {
+            userPhrase.campaignMessage?.let {
+                campaignsInProcess[userPhrase.id] = it
+            }
+            val content = outgoingMessageCreator.createUserPhraseMessage(
+                userPhrase,
+                consultInfo,
+                quoteFilePath,
+                filePath,
+                it
+            )
+            return sendMessage(
+                content,
+                true,
+                ChatItemType.MESSAGE.name + CORRELATION_ID_DIVIDER + userPhrase.id
+            )
         }
-        val content = outgoingMessageCreator.createUserPhraseMessage(
-            userPhrase,
-            consultInfo,
-            quoteFilePath,
-            filePath
-        )
-        return sendMessage(
-            content,
-            true,
-            ChatItemType.MESSAGE.name + CORRELATION_ID_DIVIDER + userPhrase.id
-        )
+        return false
     }
 
     override fun sendClientOffline(clientId: String) {
         if (preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS).isNullOrBlank()) {
             return
         }
-        val content = outgoingMessageCreator.createMessageClientOffline(clientId)
-        sendMessage(content, sendInit = false)
+        val userInfo = clientUseCase.getUserInfo()
+        if (clientId.isNotBlank() && userInfo != null) {
+            val content = outgoingMessageCreator.createMessageClientOffline(clientId, userInfo.appMarker)
+            sendMessage(content, sendInit = false)
+        }
     }
 
     override fun sendClientOffline(clientId: String, callBack: () -> Unit) {
         if (preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS).isNullOrBlank()) {
             return
         }
-        val content = outgoingMessageCreator.createMessageClientOffline(clientId)
-        sendMessage(
-            content,
-            sendInit = false
-        )
+        val userInfo = clientUseCase.getUserInfo()
+        if (clientId.isNotBlank() && userInfo != null) {
+            sendMessage(
+                outgoingMessageCreator.createMessageClientOffline(clientId, userInfo.appMarker),
+                sendInit = false
+            )
+        }
 
         logoutScope = CoroutineScope(Dispatchers.Unconfined)
         logoutScope?.launch(Dispatchers.Unconfined) {
@@ -270,13 +287,15 @@ class ThreadsGateTransport(
 
     override fun updateLocation(latitude: Double, longitude: Double) {
         val deviceAddress = preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS)
+        val userInfo = clientUseCase.getUserInfo()
         if (deviceAddress.isNullOrEmpty()) {
             location = LatLng(latitude, longitude)
-        } else {
+        } else if (userInfo != null) {
             val content = outgoingMessageCreator.createMessageUpdateLocation(
                 latitude,
                 longitude,
-                deviceInfo.getLocale(BaseConfig.getInstance().context)
+                deviceInfo.getLocale(BaseConfig.getInstance().context),
+                userInfo
             )
             sendMessage(content, sendInit = false)
         }
@@ -437,25 +456,34 @@ class ThreadsGateTransport(
 
     private fun sendInitChatMessage(tryOpeningWebSocket: Boolean): Boolean {
         chatState.changeState(ChatStateEnum.SENDING_INIT_USER)
-        return sendMessage(
-            content = outgoingMessageCreator.createInitChatMessage(),
-            tryOpeningWebSocket = tryOpeningWebSocket,
-            sendInit = false
-        )
+        clientUseCase.getUserInfo()?.let {
+            return sendMessage(
+                content = outgoingMessageCreator.createInitChatMessage(it),
+                tryOpeningWebSocket = tryOpeningWebSocket,
+                sendInit = false
+            )
+        }
+        return false
     }
 
     private fun sendEnvironmentMessage(
         tryOpeningWebSocket: Boolean,
         isPreregister: Boolean
     ): Boolean {
-        return sendMessage(
-            outgoingMessageCreator.createClientInfoMessage(
-                deviceInfo.getLocale(BaseConfig.getInstance().context),
-                isPreregister
-            ),
-            tryOpeningWebSocket = tryOpeningWebSocket,
-            sendInit = false
-        )
+        val userInfo = clientUseCase.getUserInfo()
+        return if (userInfo?.clientId != null) {
+            sendMessage(
+                outgoingMessageCreator.createClientInfoMessage(
+                    userInfo,
+                    deviceInfo.getLocale(BaseConfig.getInstance().context),
+                    isPreregister
+                ),
+                tryOpeningWebSocket = tryOpeningWebSocket,
+                sendInit = false
+            )
+        } else {
+            false
+        }
     }
 
     /**

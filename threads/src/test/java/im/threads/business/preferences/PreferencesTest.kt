@@ -86,7 +86,7 @@ class PreferencesTest {
 
     @Test
     fun whenOldUserInfoExist_thenTestMigration() {
-        val clientUseCase = ClientUseCase(preferences)
+        val clientUseCase = ClientUseCase()
         val migrationKeys = PrefKeysForMigration()
         val value = "testValue"
         val booleanValue = true

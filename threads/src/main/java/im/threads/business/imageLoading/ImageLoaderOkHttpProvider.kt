@@ -26,9 +26,9 @@ class ImageLoaderOkHttpProvider(
                 val request = authHeadersProvider.getRequestWithHeaders(userInfo, builder.build())
                 chain.proceed(request)
             }
-            .connectTimeout(httpClientSettings.connectTimeoutMillis.toLong(), TimeUnit.MILLISECONDS)
-            .readTimeout(httpClientSettings.readTimeoutMillis.toLong(), TimeUnit.MILLISECONDS)
-            .writeTimeout(httpClientSettings.writeTimeoutMillis.toLong(), TimeUnit.MILLISECONDS)
+            .connectTimeout(httpClientSettings.connectTimeoutMillis, TimeUnit.MILLISECONDS)
+            .readTimeout(httpClientSettings.readTimeoutMillis, TimeUnit.MILLISECONDS)
+            .writeTimeout(httpClientSettings.writeTimeoutMillis, TimeUnit.MILLISECONDS)
 
         if (sslSocketFactoryConfig != null) {
             httpClientBuilder.sslSocketFactory(

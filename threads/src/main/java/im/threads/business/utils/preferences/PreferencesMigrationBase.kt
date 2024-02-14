@@ -57,7 +57,7 @@ open class PreferencesMigrationBase(
         val keysForMigration = PrefKeysForMigration()
         val editor = sharedPreferences.edit()
         val stubClientId = "stub"
-        val clientUseCase = ClientUseCase(this)
+        val clientUseCase = ClientUseCase()
 
         try {
             keysForMigration.list.forEach { key ->
