@@ -112,7 +112,9 @@ open class ThreadsLibBase protected constructor(context: Context) {
                 }
             }
         }
-        checkAndUpdateFCMToken()
+        if (Build.FINGERPRINT != "robolectric") {
+            checkAndUpdateFCMToken()
+        }
     }
 
     internal fun updateUnreadCountMessagesIfNeed() {
