@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import android.os.Looper
+import com.google.firebase.messaging.FirebaseMessaging
 import im.threads.BuildConfig
 import im.threads.business.AuthMethod
 import im.threads.business.UserInfoBuilder
@@ -33,6 +34,7 @@ import im.threads.business.useractivity.UserActivityTimeProvider.initializeLastU
 import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.MetadataBusiness
 import im.threads.business.utils.preferences.PreferencesMigrationBase
+import im.threads.ui.ChatCenterPushMessageHelper
 import im.threads.ui.controllers.ChatController
 import im.threads.ui.serviceLocator.uiSLModule
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -110,6 +112,9 @@ open class ThreadsLibBase protected constructor(context: Context) {
                 }
             }
         }
+        if (Build.FINGERPRINT != "robolectric") {
+            checkAndUpdateFCMToken()
+        }
     }
 
     internal fun updateUnreadCountMessagesIfNeed() {
@@ -157,6 +162,20 @@ open class ThreadsLibBase protected constructor(context: Context) {
             clientUseCase.saveUserInfo(it)
         }
         BaseConfig.getInstance().transport.buildTransport()
+    }
+
+    /**
+     * Проверяет наличие сохраненного FCM пуш токена. Если его нет, запрашивает и обрабатывает
+     */
+    private fun checkAndUpdateFCMToken() {
+        if (preferences.get<String>(PreferencesCoreKeys.FCM_TOKEN).isNullOrEmpty()) {
+            FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val token = task.result
+                    ChatCenterPushMessageHelper().setFcmToken(token)
+                }
+            }
+        }
     }
 
     companion object {
