@@ -209,8 +209,8 @@ class FileDescriptionsTable : Table() {
         sqlHelper.writableDatabase.update(
             TABLE_FILE_DESCRIPTION,
             cv,
-            ("$COLUMN_FD_FILENAME like ? and $COLUMN_FD_URL like ?"),
-            arrayOf(fileDescription.incomingName, fileDescription.downloadPath)
+            ("$COLUMN_FD_FILENAME like ?"),
+            arrayOf(fileDescription.incomingName)
         )
     }
 

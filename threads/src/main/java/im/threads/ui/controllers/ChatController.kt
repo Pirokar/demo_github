@@ -1023,13 +1023,8 @@ class ChatController private constructor() {
                                 if (item is ChatPhrase) {
                                     if (item.fileDescription != null) {
                                         val attachmentName = attachment.name ?: ""
-                                        val incomingNameEquals =
-                                            (item.fileDescription?.incomingName == attachmentName)
-                                        val isUrlHashFileName =
-                                            (
-                                                item.fileDescription?.fileUri.toString()
-                                                    .contains(attachmentName)
-                                                )
+                                        val incomingNameEquals = (item.fileDescription?.incomingName == attachmentName)
+                                        val isUrlHashFileName = item.fileDescription?.fileUri.toString().contains(attachmentName)
                                         val isOriginalUrlValid = attachment.originalUrl?.let {
                                             val downloadPathContainsUrl = item.fileDescription?.downloadPath?.contains(it) ?: false
                                             val fileUriContainsUrl = item.fileDescription?.fileUri?.toString()?.contains(it) ?: false
@@ -1037,11 +1032,13 @@ class ChatController private constructor() {
                                             downloadPathContainsUrl || fileUriContainsUrl
                                         } ?: false
                                         if ((incomingNameEquals || isUrlHashFileName || isOriginalUrlValid) && fragment?.get()?.isAdded == true) {
-                                            item.fileDescription?.state = attachment.state
-                                            item.fileDescription?.errorCode =
-                                                attachment.getErrorCodeState()
-                                            item.fileDescription?.downloadPath = attachment.result
-                                            fragment?.get()?.updateProgress(item.fileDescription)
+                                            item.fileDescription?.let { fileDescription ->
+                                                fileDescription.state = attachment.state
+                                                fileDescription.errorCode = attachment.getErrorCodeState()
+                                                fileDescription.downloadPath = attachment.result
+                                                database.updateFileDescription(fileDescription)
+                                                fragment?.get()?.updateProgress(fileDescription)
+                                            }
                                         }
                                     }
                                 }
