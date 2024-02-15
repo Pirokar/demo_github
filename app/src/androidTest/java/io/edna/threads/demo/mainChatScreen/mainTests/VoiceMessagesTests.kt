@@ -1,6 +1,7 @@
 package io.edna.threads.demo.mainChatScreen.mainTests
 
 import android.os.Build
+import android.os.Build
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
@@ -136,14 +137,17 @@ class VoiceMessagesTests : BaseFilesTestCase() {
                     sendMessageBtn.isVisible()
                     sendMessageBtn.click()
                 }
-                assert("В списке должно отображаться больше сообщений, чем до отправки") {
-                    assert(chatItemsRecyclerView.getSize() > sizeBeforeSend)
+                assert("В списке должно отображаться ${sizeBeforeSend + 2} сообщений") {
+                    assert(chatItemsRecyclerView.getSize() == sizeBeforeSend + 2)
                 }
                 assert("В списке сообщений должно быть аудиосообщение от пользователя") {
                     chatItemsRecyclerView {
                         isVisible()
                         scrollTo(0)
                     }
+                }
+                assert("В списке должно отображаться ${sizeBeforeSend + 2} сообщений") {
+                    assert(chatItemsRecyclerView.getSize() == sizeBeforeSend + 2)
                 }
             }
         }
@@ -152,7 +156,7 @@ class VoiceMessagesTests : BaseFilesTestCase() {
     @Test
     fun prepareAndSendVoiceMessageNoHistoryWithPlayMessageTest() {
         runTestWithVersionApiCheck {
-            prepareHttpMocks()
+            runTestWithVersionApiCheck {prepareHttpMocks()
             openChatFromDemoLoginPage()
             val recordButton = uiDevice.findObject(uiSelector)
             ChatMainScreen {
@@ -191,6 +195,16 @@ class VoiceMessagesTests : BaseFilesTestCase() {
                 assert("В списке должно отображаться ${sizeBeforeSend + 2} сообщений") {
                     assert(chatItemsRecyclerView.getSize() == sizeBeforeSend + 2)
                 }
+            }
+        }
+    }
+
+    private fun runTestWithVersionApiCheck(test: () -> Unit) {
+        val minVersionApi = Build.VERSION_CODES.Q
+        if (Build.VERSION.SDK_INT >= minVersionApi) {
+            test()
+        } else {
+                assert(true)
             }
         }
     }

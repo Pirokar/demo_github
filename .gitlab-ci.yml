@@ -5,6 +5,7 @@ image: images.mfms.ru/gitlab/builder/android:31_02r
 variables:
   LC_ALL: "en_US.UTF-8"
   LANG: "en_US.UTF-8"
+  GIT_SUBMODULE_STRATEGY: recursive
 
 # Кэш для ускорения шагов для текущего пайплайна
 cache:
@@ -19,6 +20,8 @@ cache:
 before_script:
   - chmod +x ./gradlew
   - export GRADLE_USER_HOME=$PWD/.gradle
+  - export ANDROID_HOME="$HOME/Library/Android/sdk"
+  - bundle install
 
 # Основные шаги
 stages:
@@ -30,13 +33,13 @@ stages:
 linting:
   stage: lint
   script:
-    - bundle exec fastlane sdkLint
+    - bundle exec fastlane demoLint
   only:
     - merge_requests
 
 unitTests:
   stage: test
   script:
-    - bundle exec fastlane sdkUnitTests
+    - bundle exec fastlane demoUnitTests
   only:
     - merge_requests
