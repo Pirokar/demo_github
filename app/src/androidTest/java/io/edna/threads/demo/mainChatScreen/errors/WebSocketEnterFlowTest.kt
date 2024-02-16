@@ -115,7 +115,7 @@ class WebSocketEnterFlowTest : BaseTestCase() {
 
     @Test
     fun testNoAttachmentSettings() {
-        wsMocksMap = getDefaultWsMocksMap()
+        wsMocksMap = HashMap()
         prepareHttpMocks(configAnswer = defaultConfigNoAttachmentSettingsMock)
         openChatFromDemoLoginPage()
         Thread.sleep(BaseConfig.getInstance().requestConfig.socketClientSettings.connectTimeoutMillis)

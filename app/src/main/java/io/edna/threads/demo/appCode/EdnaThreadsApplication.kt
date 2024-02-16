@@ -20,6 +20,7 @@ import io.edna.threads.demo.R
 import io.edna.threads.demo.appCode.business.PreferencesProvider
 import io.edna.threads.demo.appCode.business.ServersProvider
 import io.edna.threads.demo.appCode.business.appModule
+import io.edna.threads.demo.appCode.push.HCMTokenRefresher
 import io.edna.threads.demo.integrationCode.fragments.launch.LaunchFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -186,6 +187,7 @@ class EdnaThreadsApplication : Application() {
             }
         }
         ThreadsLib.init(configBuilder)
+        HCMTokenRefresher.requestToken(this)
     }
 
     private fun initUser() {
