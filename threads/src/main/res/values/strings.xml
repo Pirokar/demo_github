@@ -21,14 +21,9 @@
     <string name="ecc_search_messages">Search message</string>
     <string name="ecc_search_files">Search files</string>
     <string name="ecc_talkback_search_icon">Search icon</string>
-    <string name="ecc_search_photos">Search photos…</string>
     <string name="ecc_recently">Recently</string>
     <string name="ecc_yesterday">Yesterday</string>
-    <string name="ecc_photos">Photographies</string>
-    <string name="ecc_find_photos">Find photos</string>
-    <string name="ecc_on_your_device">on your device</string>
     <string name="ecc_cancel">Cancel</string>
-    <string name="ecc_nothing_found">Nothing found</string>
     <string name="ecc_no_cameras_detected">Your device doesn\'t have a camera</string>
     <string name="ecc_back_camera_could_not_start_error">Failed to start the rear camera.</string>
     <string name="ecc_consult">Consultant</string>
@@ -134,7 +129,6 @@
     <string name="ecc_voice_message_is_processing">Voice message is processing</string>
     <string name="ecc_voice_message_error">Voice message processing error</string>
     <string name="ecc_empty_state_hint">Client initialization</string>
-    <string name="ecc_achieve_images_count_limit_message">You\'ve reached the limit of images to send</string>
 
     <string name="ecc_disallowed_error_during_load_file">File upload failed:\nFile verification failed </string>
     <string name="ecc_timeout_error_during_load_file">The file upload cannot be completed due to a timeout.\nPlease try uploading the file later</string>
