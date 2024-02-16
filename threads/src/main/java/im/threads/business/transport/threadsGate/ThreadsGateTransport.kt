@@ -384,7 +384,9 @@ class ThreadsGateTransport(
 
     override fun onStop(owner: LifecycleOwner) {
         super.onStop(owner)
-        closeWebSocket()
+        if (!BaseConfig.getInstance().keepSocketActive) {
+            closeWebSocket()
+        }
     }
 
     @Synchronized
