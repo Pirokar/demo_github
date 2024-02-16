@@ -30,6 +30,7 @@ class WebSocketEnterFlowTest : BaseTestCase() {
 
     @Test
     fun testNoRegisterDevice() {
+        prepareHttpMocks()
         wsMocksMap = HashMap()
         openChatFromDemoLoginPage()
         Thread.sleep(BaseConfig.getInstance().requestConfig.socketClientSettings.connectTimeoutMillis)
@@ -93,7 +94,7 @@ class WebSocketEnterFlowTest : BaseTestCase() {
 
     @Test
     fun testNoSettings() {
-        wsMocksMap = getDefaultWsMocksMap()
+        wsMocksMap = HashMap()
         prepareHttpMocks(configAnswer = defaultConfigNoSettingsMock)
         openChatFromDemoLoginPage()
         Thread.sleep(BaseConfig.getInstance().requestConfig.socketClientSettings.connectTimeoutMillis)
