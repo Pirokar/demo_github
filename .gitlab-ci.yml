@@ -46,7 +46,7 @@ release:
     - git config --global user.email "vladimir.rybalka@edna.ru"
     - git config --global user.name "Vladimir"
     - |
-      if [ "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME" = "master" ]; then
+      if [[ "$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME" = release* && "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME" = "develop" ]]; then
         version=$(grep "version=" gradle.properties | cut -d'=' -f2)
         IFS='.' read -ra VERSION_PARTS <<< "$version"
         if [[ ${#VERSION_PARTS[@]} -ge 2 && ${VERSION_PARTS[1]} =~ ^[0-9]+$ ]]; then
@@ -55,19 +55,19 @@ release:
           git remote rm gitlab_origin || true
           git remote add gitlab_origin http://$SDK_ACCESS_TOKEN_NAME:$SDK_ACCESS_TOKEN@gitlab.mfms/android/chat-center/chatcenter-sdk.git
           git fetch --all
-          if git show-ref --verify --quiet refs/heads/develop; then
-            git checkout develop
-            git pull origin develop
+          if git show-ref --verify --quiet refs/heads/$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME; then
+            git checkout $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME
+            git pull origin $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME
           else
-            git checkout -b develop origin/develop
+            git checkout -b $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME origin/$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME
           fi
           echo "Old version is $version. New version is $newVersion"
-          git tag "Release v$version"
-          git push --tags http://$SDK_ACCESS_TOKEN_NAME:$SDK_ACCESS_TOKEN@gitlab.mfms/android/chat-center/chatcenter-sdk.git HEAD:develop
+          git tag "Release_v$version"
+          git push --tags http://$SDK_ACCESS_TOKEN_NAME:$SDK_ACCESS_TOKEN@gitlab.mfms/android/chat-center/chatcenter-sdk.git HEAD:$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME
           sed -i "s/^version=.*/version=$newVersion/g" gradle.properties
           git add gradle.properties
-          git diff --quiet && git diff --staged --quiet || git commit -m "Starting development of v$newVersion"
-          git push -f http://$SDK_ACCESS_TOKEN_NAME:$SDK_ACCESS_TOKEN@gitlab.mfms/android/chat-center/chatcenter-sdk.git HEAD:develop
+          git diff --quiet && git diff --staged --quiet || git commit -m "Starting development of v$newVersion [ci skip]"
+          git push -f http://$SDK_ACCESS_TOKEN_NAME:$SDK_ACCESS_TOKEN@gitlab.mfms/android/chat-center/chatcenter-sdk.git HEAD:$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME
         else
           echo "Version format is not supported for auto increment"
         fi
@@ -79,3 +79,4 @@ release:
       - "./**/build/outputs/aar/*.aar"
     expire_in: 1 hrs
   when: manual
+
