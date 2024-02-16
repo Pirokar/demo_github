@@ -62,8 +62,10 @@ release:
             git checkout -b $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME origin/$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME
           fi
           echo "Old version is $version. New version is $newVersion"
-          git tag "Release_v$version"
-          git push --tags http://$SDK_ACCESS_TOKEN_NAME:$SDK_ACCESS_TOKEN@gitlab.mfms/android/chat-center/chatcenter-sdk.git HEAD:$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME
+          if ! git rev-parse "Release_v$version" >/dev/null 2>&1; then
+            git tag "Release_v$version"
+            git push --tags http://$SDK_ACCESS_TOKEN_NAME:$SDK_ACCESS_TOKEN@gitlab.mfms/android/chat-center/chatcenter-sdk.git HEAD:$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME
+          fi
           sed -i "s/^version=.*/version=$newVersion/g" gradle.properties
           git add gradle.properties
           git diff --quiet && git diff --staged --quiet || git commit -m "Starting development of v$newVersion [ci skip]"
@@ -79,4 +81,5 @@ release:
       - "./**/build/outputs/aar/*.aar"
     expire_in: 1 hrs
   when: manual
+
 
