@@ -1727,7 +1727,9 @@ class ChatController private constructor() {
                         if (!ChatFragment.isShown || ThreadsGateTransport.isForceRegistration) {
                             BaseConfig.getInstance().transport.apply {
                                 sendInitMessages(true)
-                                closeWebSocket()
+                                if (!BaseConfig.getInstance().keepSocketActive) {
+                                    closeWebSocket()
+                                }
                                 ThreadsGateTransport.isForceRegistration = false
                             }
                         } else {
