@@ -10,6 +10,7 @@ import im.threads.business.logger.LoggerConfig
 import im.threads.business.logger.LoggerRetentionPolicy
 import im.threads.business.markdown.MarkdownConfig
 import im.threads.ui.config.ConfigBuilder
+import im.threads.ui.core.ChatCenterUI
 import im.threads.ui.core.ThreadsLib
 import im.threads.ui.uiStyle.settings.ChatSettings
 import im.threads.ui.uiStyle.settings.ChatTheme
@@ -40,6 +41,7 @@ class EdnaThreadsApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        val lib = ChatCenterUI()
 
         startKoin {
             androidContext(this@EdnaThreadsApplication)
@@ -157,7 +159,7 @@ class EdnaThreadsApplication : Application() {
             .maxTotalSize(5242880)
             .build()
 
-        val configBuilder = ConfigBuilder(applicationContext)
+        val chatConfig = ConfigBuilder(applicationContext)
             .unreadMessagesCountListener(object : UnreadMessagesCountListener {
                 override fun onUnreadMessagesCountChanged(count: Int) {
                     val intent = Intent(LaunchFragment.APP_UNREAD_COUNT_BROADCAST)
@@ -174,18 +176,18 @@ class EdnaThreadsApplication : Application() {
             .enableLogging(loggerConfig)
 
         serversProvider.getSelectedServer()?.let { server ->
-            configBuilder.serverBaseUrl(server.serverBaseUrl)
-            configBuilder.datastoreUrl(server.datastoreUrl)
-            configBuilder.threadsGateUrl(server.threadsGateUrl)
-            configBuilder.threadsGateProviderUid(server.threadsGateProviderUid)
-            configBuilder.trustedSSLCertificates(server.trustedSSLCertificates)
-            configBuilder.setNewChatCenterApi()
+            chatConfig.serverBaseUrl(server.serverBaseUrl)
+            chatConfig.datastoreUrl(server.datastoreUrl)
+            chatConfig.threadsGateUrl(server.threadsGateUrl)
+            chatConfig.threadsGateProviderUid(server.threadsGateProviderUid)
+            chatConfig.trustedSSLCertificates(server.trustedSSLCertificates)
+            chatConfig.setNewChatCenterApi()
 
             if (server.allowUntrustedSSLCertificate) {
-                configBuilder.allowUntrustedSSLCertificates()
+                chatConfig.allowUntrustedSSLCertificates()
             }
         }
-        ThreadsLib.init(configBuilder)
+        ThreadsLib.init(chatConfig)
     }
 
     private fun initUser() {
