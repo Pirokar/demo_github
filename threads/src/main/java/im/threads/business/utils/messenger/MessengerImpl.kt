@@ -51,6 +51,7 @@ class MessengerImpl(
     private val database: DatabaseHolder by inject()
     private val historyLoader: HistoryLoader by inject()
     private var lastMessages: List<ChatItem> = listOf()
+    private var lastHistoryQuery = ""
 
     private var isViewActive = false
     var pageItemsCount = 100
@@ -65,6 +66,7 @@ class MessengerImpl(
 
     override fun onViewStop() {
         isViewActive = false
+        lastHistoryQuery = ""
     }
 
     override fun onViewDestroy() {
@@ -91,20 +93,19 @@ class MessengerImpl(
     }
 
     override fun downloadMessagesTillEnd(): Single<List<ChatItem>> {
-        return Single.fromCallable<List<ChatItem>> {
+        return Single.fromCallable {
             synchronized(this) {
                 if (!isDownloadingMessages) {
                     isDownloadingMessages = true
                     debug(ThreadsApi.REST_TAG, "downloadMessagesTillEnd")
-                    while (!isAllMessagesDownloaded) {
+                    while (!isAllMessagesDownloaded && isNotTheSameQuery()) {
                         val response = historyLoader.getHistorySync(lastMessageTimestamp, pageItemsCount)
                         val serverItems = HistoryParser.getChatItems(response)
                         if (serverItems.isEmpty()) {
                             isAllMessagesDownloaded = true
                         } else {
                             lastMessageTimestamp = serverItems[0].timeStamp
-                            isAllMessagesDownloaded =
-                                serverItems.size < pageItemsCount
+                            isAllMessagesDownloaded = serverItems.size < pageItemsCount || isEqualsToPreviousSaved(serverItems)
                             saveMessages(serverItems)
                         }
                     }
@@ -121,7 +122,10 @@ class MessengerImpl(
         database.putChatItems(chatItems)
     }
 
-    override fun isEqualsToPreviousSaved(chatItems: List<ChatItem>) = chatItems == lastMessages
+    override fun isEqualsToPreviousSaved(chatItems: List<ChatItem>) =
+        lastMessages
+            .map { it.timeStamp }
+            .containsAll(chatItems.map { it.timeStamp })
 
     override fun clearSendQueue() {
         sendQueue.clear()
@@ -182,6 +186,8 @@ class MessengerImpl(
             }
         }
     }
+
+    private fun isNotTheSameQuery() = lastHistoryQuery == "$lastMessageTimestamp,$pageItemsCount"
 
     private fun checkAndResendPhrase(userPhrase: UserPhrase) {
         if (userPhrase.sentState.ordinal < MessageStatus.SENT.ordinal) {
