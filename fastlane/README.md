@@ -15,21 +15,29 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 ## Android
 
-### android sdkLint
+### android demoLint
 
 ```sh
-[bundle exec] fastlane android sdkLint
+[bundle exec] fastlane android demoLint
 ```
 
 Запуск модульных тестов для SDK
 
-### android sdkUnitTests
+### android demoUnitTests
 
 ```sh
-[bundle exec] fastlane android sdkUnitTests
+[bundle exec] fastlane android demoUnitTests
 ```
 
-Запуск модульных тестов для SDK
+Запуск модульных тестов для Demo
+
+### android demoUITests
+
+```sh
+[bundle exec] fastlane android demoUITests
+```
+
+Запуск UI тестов для Demo
 
 ----
 

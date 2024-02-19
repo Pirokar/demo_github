@@ -7,17 +7,21 @@ default_platform(:android)
 platform :android do
 
   desc "Запуск модульных тестов для SDK"
-  lane :sdkLint do
+  lane :demoLint do
     gradle(
       task: "app:lintDebug",
   )
   end
 
-  desc "Запуск модульных тестов для SDK"
-  lane :sdkUnitTests do
+  desc "Запуск модульных тестов для Demo"
+  lane :demoUnitTests do
     gradle(
       task: "app:testDebugUnitTest",
   )
+  end
+
+  desc "Запуск UI тестов для Demo"
+  lane :demoUITests do
   end
 
 end

@@ -145,6 +145,9 @@ class VoiceMessagesTests : BaseFilesTestCase() {
                         scrollTo(0)
                     }
                 }
+                assert("В списке должно отображаться больше сообщений, чем до отправки") {
+                    assert(chatItemsRecyclerView.getSize() > sizeBeforeSend)
+                }
             }
         }
     }
@@ -152,44 +155,46 @@ class VoiceMessagesTests : BaseFilesTestCase() {
     @Test
     fun prepareAndSendVoiceMessageNoHistoryWithPlayMessageTest() {
         runTestWithVersionApiCheck {
-            prepareHttpMocks()
-            openChatFromDemoLoginPage()
-            val recordButton = uiDevice.findObject(uiSelector)
-            ChatMainScreen {
-                assert("Кнопка записи должна отображаться и быть активной") {
-                    ChatMainScreen.recordButton.isVisible()
-                    recordButton.longClick()
-                    recordButton.waitForExists(100)
-                }
-                assert("Кнопка \"Play/Stop\" должна отображаться") {
-                    playPauseButton.isVisible()
-                }
-                assert("Прогресс бар для аудиофайла должен отображаться") {
-                    quoteSlider.isVisible()
-                }
-                assert("Кнопка \"Удалить вложение\" должна  отображаться") {
-                    quoteClear.isVisible()
-                }
+            runTestWithVersionApiCheck {
+                prepareHttpMocks()
+                openChatFromDemoLoginPage()
+                val recordButton = uiDevice.findObject(uiSelector)
+                ChatMainScreen {
+                    assert("Кнопка записи должна отображаться и быть активной") {
+                        ChatMainScreen.recordButton.isVisible()
+                        recordButton.longClick()
+                        recordButton.waitForExists(100)
+                    }
+                    assert("Кнопка \"Play/Stop\" должна отображаться") {
+                        playPauseButton.isVisible()
+                    }
+                    assert("Прогресс бар для аудиофайла должен отображаться") {
+                        quoteSlider.isVisible()
+                    }
+                    assert("Кнопка \"Удалить вложение\" должна  отображаться") {
+                        quoteClear.isVisible()
+                    }
 
-                val sizeBeforeSend = chatItemsRecyclerView.getSize()
-                assert("Кнопка \"Отправить сообщение\" должна  отображаться") {
-                    sendMessageBtn.isVisible()
-                    sendMessageBtn.click()
-                }
-                assert("В списке должно отображаться ${sizeBeforeSend + 2} сообщений") {
-                    assert(chatItemsRecyclerView.getSize() == sizeBeforeSend + 2)
-                }
-                assert("В списке сообщений должно быть аудиосообщение от пользователя") {
-                    chatItemsRecyclerView {
-                        isVisible()
-                        scrollTo(0)
-                        lastChild<ChatMainScreen.ChatRecyclerItem> {
-                            click()
+                    val sizeBeforeSend = chatItemsRecyclerView.getSize()
+                    assert("Кнопка \"Отправить сообщение\" должна  отображаться") {
+                        sendMessageBtn.isVisible()
+                        sendMessageBtn.click()
+                    }
+                    assert("В списке должно отображаться ${sizeBeforeSend + 2} сообщений") {
+                        assert(chatItemsRecyclerView.getSize() == sizeBeforeSend + 2)
+                    }
+                    assert("В списке сообщений должно быть аудиосообщение от пользователя") {
+                        chatItemsRecyclerView {
+                            isVisible()
+                            scrollTo(0)
+                            lastChild<ChatMainScreen.ChatRecyclerItem> {
+                                click()
+                            }
                         }
                     }
-                }
-                assert("В списке должно отображаться ${sizeBeforeSend + 2} сообщений") {
-                    assert(chatItemsRecyclerView.getSize() == sizeBeforeSend + 2)
+                    assert("В списке должно отображаться ${sizeBeforeSend + 2} сообщений") {
+                        assert(chatItemsRecyclerView.getSize() == sizeBeforeSend + 2)
+                    }
                 }
             }
         }
