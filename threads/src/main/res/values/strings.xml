@@ -70,7 +70,6 @@
     <string name="ecc_permissions_string_help_text">Permission is not available.\n\nTo provide permissions, click "Settings", then "Permissions" and enable them.\n\nThen return to the application.</string>
     <string name="ecc_permissions_camera_and_write_external_storage_help_text">There are no permissions to the Camera and External Storage\n\nTo grant permissions, click "Settings", then "Permissions" and enable them.\n\nThen return to the application.</string>
     <string name="ecc_permissions_write_external_storage_help_text">Memory permission is missing (Write to external storage).\n\nTo grant permissions, click "Settings", then "Permissions" and enable them.\n\nThen return to the application.</string>
-    <string name="ecc_permissions_read_external_storage_help_text">There is no permission to Memory (Reading from external storage).\n\nTo grant permissions, click "Settings", then "Permissions" and enable them.\n\nThen return to the application.</string>
     <string name="ecc_permissions_record_audio_help_text">Audio recording permission is missing (Microphone).\n\nTo grant permissions, click "Settings", then "Permissions" and enable them.\n\nThen return to the application.</string>
     <string name="ecc_permissions_settings">Settings</string>
 

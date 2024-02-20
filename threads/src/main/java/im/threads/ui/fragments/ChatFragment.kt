@@ -1057,9 +1057,9 @@ class ChatFragment :
 
     override fun onAllowClick(type: PermissionDescriptionType, requestCode: Int) {
         when (type) {
-            PermissionDescriptionType.STORAGE -> startStoragePermissionActivity(requestCode)
             PermissionDescriptionType.RECORD_AUDIO -> startRecordAudioPermissionActivity(requestCode)
             PermissionDescriptionType.CAMERA -> startCameraPermissionActivity(requestCode)
+            else -> {}
         }
     }
 
@@ -1068,24 +1068,6 @@ class ChatFragment :
         val hasFile = getFileDescription() != null
         val hasImages = !(mAttachedImages == null || mAttachedImages.isNullOrEmpty())
         return hasVoice || hasFile || hasImages
-    }
-
-    private fun startStoragePermissionActivity(requestCode: Int) {
-        if (requestCode == REQUEST_PERMISSION_READ_EXTERNAL) {
-            PermissionsActivity.startActivityForResult(
-                activity,
-                REQUEST_PERMISSION_READ_EXTERNAL,
-                R.string.ecc_permissions_read_external_storage_help_text,
-                Manifest.permission.READ_EXTERNAL_STORAGE
-            )
-        } else if (requestCode == REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY) {
-            PermissionsActivity.startActivityForResult(
-                activity,
-                REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY,
-                R.string.ecc_permissions_read_external_storage_help_text,
-                Manifest.permission.READ_EXTERNAL_STORAGE
-            )
-        }
     }
 
     private fun startRecordAudioPermissionActivity(requestCode: Int) {
