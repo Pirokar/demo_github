@@ -2,17 +2,22 @@ package io.edna.threads.demo.appCode
 
 import android.app.Application
 import android.content.Intent
+import android.widget.Toast
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.perf.FirebasePerformance
-import im.threads.business.UserInfoBuilder
-import im.threads.business.core.UnreadMessagesCountListener
-import im.threads.business.logger.LoggerConfig
-import im.threads.business.logger.LoggerRetentionPolicy
-import im.threads.business.markdown.MarkdownConfig
-import im.threads.ui.config.ConfigBuilder
+import im.threads.business.config.ChatAuth
+import im.threads.business.config.ChatUser
+import im.threads.business.config.transport.ChatNetworkConfig
+import im.threads.business.config.transport.ChatSSLCertificate
+import im.threads.business.config.transport.ChatTransportConfig
+import im.threads.business.config.transport.HTTPConfig
+import im.threads.business.config.transport.SSLPinningConfig
+import im.threads.business.config.transport.WSConfig
+import im.threads.business.extensions.jsonStringToMap
+import im.threads.business.logger.ChatLoggerConfig
+import im.threads.business.models.enums.ChatApiVersion
+import im.threads.ui.ChatConfig
 import im.threads.ui.core.ChatCenterUI
-import im.threads.ui.core.ThreadsLib
-import im.threads.ui.uiStyle.settings.ChatSettings
 import im.threads.ui.uiStyle.settings.ChatTheme
 import im.threads.ui.uiStyle.settings.theme.ChatColors
 import im.threads.ui.uiStyle.settings.theme.ChatImages
@@ -21,6 +26,7 @@ import io.edna.threads.demo.R
 import io.edna.threads.demo.appCode.business.PreferencesProvider
 import io.edna.threads.demo.appCode.business.ServersProvider
 import io.edna.threads.demo.appCode.business.appModule
+import io.edna.threads.demo.appCode.models.ServerConfig
 import io.edna.threads.demo.appCode.push.HCMTokenRefresher
 import io.edna.threads.demo.integrationCode.fragments.launch.LaunchFragment
 import kotlinx.coroutines.CoroutineScope
@@ -29,20 +35,21 @@ import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
-import java.io.File
+import java.lang.Exception
 
 class EdnaThreadsApplication : Application() {
-    private var chatLightTheme: ChatTheme? = null
-    private var chatDarkTheme: ChatTheme? = null
+    private lateinit var chatLightTheme: ChatTheme
+    private lateinit var chatDarkTheme: ChatTheme
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
     private val asyncInit = false
 
     private val serversProvider: ServersProvider by inject()
     private val preferences: PreferencesProvider by inject()
 
+    var chatCenterUI: ChatCenterUI? = null
+
     override fun onCreate() {
         super.onCreate()
-        val lib = ChatCenterUI()
 
         startKoin {
             androidContext(this@EdnaThreadsApplication)
@@ -152,74 +159,70 @@ class EdnaThreadsApplication : Application() {
         )
     }
 
-    private fun initThreadsLib() {
-        val loggerConfig = LoggerConfig.Builder(applicationContext)
-            .logToFile()
-            .dir(File(applicationContext.filesDir, "logs"))
-            .retentionPolicy(LoggerRetentionPolicy.TOTAL_SIZE)
-            .maxTotalSize(5242880)
-            .build()
+    fun initThreadsLib(
+        serverConfig: ServerConfig? = null,
+        apiVersion: ChatApiVersion = ChatApiVersion.defaultApiVersionEnum
+    ) {
+        val loggerConfig = ChatLoggerConfig(
+            applicationContext,
+            logFileSize = 50
+        )
 
-        val chatConfig = ConfigBuilder(applicationContext)
-            .unreadMessagesCountListener(object : UnreadMessagesCountListener {
-                override fun onUnreadMessagesCountChanged(count: Int) {
-                    val intent = Intent(LaunchFragment.APP_UNREAD_COUNT_BROADCAST)
-                    intent.putExtra(LaunchFragment.UNREAD_COUNT_KEY, count)
-                    applicationContext.sendBroadcast(intent)
-                }
-            })
-            .historyLoadingCount(50)
-            .applyLightTheme(chatLightTheme)
-            .applyDarkTheme(chatDarkTheme)
-            .applyChatSettings(getMainChatTheme())
-            .isDebugLoggingEnabled(true)
-            .showAttachmentsButton()
-            .enableLogging(loggerConfig)
-
-        serversProvider.getSelectedServer()?.let { server ->
-            chatConfig.serverBaseUrl(server.serverBaseUrl)
-            chatConfig.datastoreUrl(server.datastoreUrl)
-            chatConfig.threadsGateUrl(server.threadsGateUrl)
-            chatConfig.threadsGateProviderUid(server.threadsGateProviderUid)
-            chatConfig.trustedSSLCertificates(server.trustedSSLCertificates)
-            chatConfig.setNewChatCenterApi()
-
-            if (server.allowUntrustedSSLCertificate) {
-                chatConfig.allowUntrustedSSLCertificates()
-            }
+        val server = serverConfig ?: try {
+            serversProvider.getSelectedServer() ?: serversProvider.readServersFromFile().first()
+        } catch (exc: Exception) {
+            Toast.makeText(
+                applicationContext,
+                applicationContext.getString(R.string.no_servers),
+                Toast.LENGTH_LONG
+            ).show()
+            return
         }
-        ThreadsLib.init(chatConfig)
+
+        val transportConfig = ChatTransportConfig(
+            server.serverBaseUrl ?: "",
+            server.threadsGateUrl ?: "",
+            server.datastoreUrl ?: "",
+            apiVersion,
+            hashMapOf()
+        )
+        val certificates = server.trustedSSLCertificates?.map { ChatSSLCertificate(it) }?.toTypedArray() ?: arrayOf()
+        val networkConfig = ChatNetworkConfig(
+            HTTPConfig(),
+            WSConfig(),
+            SSLPinningConfig(certificates, server.allowUntrustedSSLCertificate)
+        )
+
+        val chatConf = ChatConfig(
+            transportConfig,
+            networkConfig,
+            searchEnabled = true,
+            linkPreviewEnabled = true,
+            voiceRecordingEnabled = true,
+            chatSubtitleEnabled = true,
+            autoScrollToLatest = true
+        )
+
+        chatCenterUI = ChatCenterUI(applicationContext, loggerConfig).apply {
+            theme = chatLightTheme
+            darkTheme = chatDarkTheme
+            init(server.threadsGateProviderUid ?: "", "demo_app", chatConf)
+        }
         HCMTokenRefresher.requestToken(this)
     }
 
     private fun initUser() {
         val user = preferences.getSelectedUser()
         if (user != null && user.isAllFieldsFilled()) {
-            ThreadsLib.getInstance().initUser(
-                UserInfoBuilder(user.userId!!)
-                    .setAuthData(user.authorizationHeader, user.xAuthSchemaHeader)
-                    .setClientData(user.userData)
-                    .setClientIdSignature(user.signature)
-                    .setAppMarker(user.appMarker),
-                false
+            chatCenterUI?.authorize(
+                ChatUser(user.userId!!, data = user.userData?.jsonStringToMap()),
+                ChatAuth(
+                    user.authorizationHeader,
+                    user.xAuthSchemaHeader,
+                    signature = user.signature
+                )
             )
         }
-    }
-
-    private fun getMainChatTheme(): ChatSettings {
-        val chatSettings = ChatSettings()
-
-        val markdownConfig = MarkdownConfig()
-        markdownConfig.isLinkUnderlined = true
-        chatSettings
-            .enableLinkPreview()
-            .enableChatSubtitleShowConsultOrgUnit()
-            .setIncomingMarkdownConfiguration(markdownConfig)
-            .setOutgoingMarkdownConfiguration(markdownConfig)
-            .enableVoiceMessages()
-            .showChatBackButton()
-            .enableLinkPreview()
-        return chatSettings
     }
 }
 

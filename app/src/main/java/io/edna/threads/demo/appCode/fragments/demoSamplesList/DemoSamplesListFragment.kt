@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
-import im.threads.ui.core.ThreadsLib
 import io.edna.threads.demo.R
 import io.edna.threads.demo.appCode.adapters.demoSamplesList.DemoSamplesAdapter
 import io.edna.threads.demo.appCode.adapters.demoSamplesList.SampleListItemOnClick
@@ -20,6 +19,7 @@ class DemoSamplesListFragment : BaseAppFragment<FragmentSamplesListBinding>(Frag
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.providerChatCenterUI(chatCenterUI)
         createAdapter()
         setNavigationIcon()
         subscribeForData()
@@ -40,7 +40,7 @@ class DemoSamplesListFragment : BaseAppFragment<FragmentSamplesListBinding>(Frag
     private fun setNavigationIcon() = getBinding()?.apply {
         toolbar.navigationIcon?.setTint(ContextCompat.getColor(requireContext(), R.color.white_color_ec))
         toolbar.setNavigationOnClickListener {
-            ThreadsLib.getInstance().logoutClient()
+            chatCenterUI?.logout()
             findNavController().navigateUp()
         }
     }

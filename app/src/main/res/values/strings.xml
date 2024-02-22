@@ -71,4 +71,5 @@
     <string name="remove">Удалить</string>
     <string name="edit">Изменить</string>
     <string name="pre_register">Предварительная регистрация</string>
+    <string name="no_servers">Нет доступных серверов для запуска</string>
 </resources>
