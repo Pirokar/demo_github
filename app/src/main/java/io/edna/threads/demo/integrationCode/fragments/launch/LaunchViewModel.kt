@@ -27,11 +27,8 @@ import io.edna.threads.demo.R
 import io.edna.threads.demo.appCode.EdnaThreadsApplication
 import io.edna.threads.demo.appCode.business.PreferencesProvider
 import io.edna.threads.demo.appCode.business.ServersProvider
-import io.edna.threads.demo.appCode.business.UiThemeProvider
-import io.edna.threads.demo.appCode.business.VolatileLiveData
 import io.edna.threads.demo.appCode.models.ServerConfig
 import io.edna.threads.demo.appCode.models.TestData
-import io.edna.threads.demo.appCode.models.UiTheme
 import io.edna.threads.demo.appCode.models.UserInfo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -40,10 +37,8 @@ import org.parceler.Parcels
 
 class LaunchViewModel(
     private val preferences: PreferencesProvider,
-    private val uiThemeProvider: UiThemeProvider,
     private val serversProvider: ServersProvider
 ) : ViewModel(), DefaultLifecycleObserver {
-    val themeSelectorLiveData: VolatileLiveData<CurrentUiTheme> = VolatileLiveData()
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
     private var _selectedApiVersionLiveData = MutableLiveData(getSelectedApiVersion())
@@ -152,20 +147,6 @@ class LaunchViewModel(
 
     private fun initPreregisterCheckbox() {
         _preregisterLiveData.postValue(isPreregisterEnabled)
-    }
-
-    private fun getCurrentUiTheme(currentUiTheme: CurrentUiTheme): UiTheme {
-        return when (currentUiTheme) {
-            CurrentUiTheme.LIGHT -> UiTheme.LIGHT
-            CurrentUiTheme.DARK -> UiTheme.DARK
-            CurrentUiTheme.SYSTEM -> {
-                if (uiThemeProvider.isDarkThemeOn()) {
-                    UiTheme.DARK
-                } else {
-                    UiTheme.LIGHT
-                }
-            }
-        }
     }
 
     fun callFragmentResultListener(key: String, bundle: Bundle) {

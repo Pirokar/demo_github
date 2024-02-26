@@ -206,7 +206,7 @@ class EdnaThreadsApplication : Application() {
         chatCenterUI = ChatCenterUI(applicationContext, loggerConfig).apply {
             theme = chatLightTheme
             darkTheme = chatDarkTheme
-            init(server.threadsGateProviderUid ?: "", "demo_app", chatConf)
+            init(server.threadsGateProviderUid ?: "", "", chatConf)
         }
         HCMTokenRefresher.requestToken(this)
     }
