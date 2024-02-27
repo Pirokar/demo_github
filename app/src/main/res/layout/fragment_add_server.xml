@@ -61,6 +61,18 @@
         app:layout_constraintTop_toBottomOf="@+id/toolbar"/>
 
     <io.edna.threads.demo.appCode.views.InputField
+        android:id="@+id/appMarker"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/common_app_margins"
+        android:layout_marginTop="@dimen/margin_16"
+        android:layout_marginEnd="@dimen/common_app_margins"
+        app:hint="@string/app_marker"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/name" />
+
+    <io.edna.threads.demo.appCode.views.InputField
         android:id="@+id/providerId"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -70,14 +82,14 @@
         app:hint="@string/threads_gate_provider_uid_hint"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/name" />
+        app:layout_constraintTop_toBottomOf="@+id/appMarker" />
 
     <io.edna.threads.demo.appCode.views.InputField
         android:id="@+id/baseUrl"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/common_app_margins"
-        android:layout_marginTop="@dimen/margin_32"
+        android:layout_marginTop="@dimen/margin_16"
         android:layout_marginEnd="@dimen/common_app_margins"
         android:text="@{viewModel.serverConfigLiveData.serverBaseUrl}"
         app:error="@{viewModel.errorStringForBaseUrlFieldLiveData}"

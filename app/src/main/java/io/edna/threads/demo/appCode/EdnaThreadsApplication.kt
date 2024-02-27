@@ -66,7 +66,7 @@ class EdnaThreadsApplication : Application() {
         if (asyncInit) {
             coroutineScope.launch {
                 initThemes()
-                initThreadsLib()
+                initChatCenterUI()
                 initUser()
                 applicationContext.sendBroadcast(
                     Intent(LaunchFragment.APP_INIT_THREADS_LIB_ACTION)
@@ -74,7 +74,7 @@ class EdnaThreadsApplication : Application() {
             }
         } else {
             initThemes()
-            initThreadsLib()
+            initChatCenterUI()
             initUser()
         }
     }
@@ -159,7 +159,7 @@ class EdnaThreadsApplication : Application() {
         )
     }
 
-    fun initThreadsLib(
+    fun initChatCenterUI(
         serverConfig: ServerConfig? = null,
         apiVersion: ChatApiVersion = ChatApiVersion.defaultApiVersionEnum
     ) {
@@ -206,7 +206,7 @@ class EdnaThreadsApplication : Application() {
         chatCenterUI = ChatCenterUI(applicationContext, loggerConfig).apply {
             theme = chatLightTheme
             darkTheme = chatDarkTheme
-            init(server.threadsGateProviderUid ?: "", "", chatConf)
+            init(server.threadsGateProviderUid ?: "", server.appMarker ?: "", chatConf)
         }
         HCMTokenRefresher.requestToken(this)
     }

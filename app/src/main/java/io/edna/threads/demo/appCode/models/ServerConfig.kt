@@ -6,6 +6,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class ServerConfig(
     var name: String? = null,
+    var appMarker: String? = null,
     var threadsGateProviderUid: String? = null,
     var datastoreUrl: String? = null,
     var serverBaseUrl: String? = null,
@@ -18,6 +19,7 @@ data class ServerConfig(
 ) : Parcelable {
 
     override fun toString() = "Server config:\n = $name, " +
+        "\nappMarker = $appMarker, " +
         "\nthreadsGateProviderUid = $threadsGateProviderUid, " +
         "\ndatastoreUrl = $datastoreUrl, " +
         "\nserverBaseUrl = $serverBaseUrl, " +
@@ -39,6 +41,7 @@ data class ServerConfig(
     fun copy(): ServerConfig {
         return ServerConfig(
             name,
+            appMarker,
             threadsGateProviderUid,
             datastoreUrl,
             serverBaseUrl,

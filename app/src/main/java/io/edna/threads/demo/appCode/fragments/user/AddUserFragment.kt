@@ -26,7 +26,6 @@ class AddUserFragment : BaseAppFragment<FragmentAddUserBinding>(FragmentAddUserB
     private fun subscribeForTextWatchers() = getBinding()?.apply {
         userId.setTextChangedListener(viewModel.userIdTextWatcher)
         userData.setTextChangedListener(viewModel.userDataTextWatcher)
-        appMarker.setTextChangedListener(viewModel.appMarkerTextWatcher)
         signature.setTextChangedListener(viewModel.signatureTextWatcher)
         authorizationHeader.setTextChangedListener(viewModel.authorizationHeaderTextWatcher)
         xAuthSchemaHeader.setTextChangedListener(viewModel.xAuthSchemaHeaderTextWatcher)
@@ -49,7 +48,6 @@ class AddUserFragment : BaseAppFragment<FragmentAddUserBinding>(FragmentAddUserB
         viewModel.userLiveData.observe(viewLifecycleOwner) {
             userId.text = it.userId
             userData.text = it.userData
-            appMarker.text = it.appMarker
             signature.text = it.signature
             authorizationHeader.text = it.authorizationHeader
             xAuthSchemaHeader.text = it.xAuthSchemaHeader

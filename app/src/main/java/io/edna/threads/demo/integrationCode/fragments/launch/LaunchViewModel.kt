@@ -123,7 +123,7 @@ class LaunchViewModel(
             if (apiVersion == null) {
                 apiVersion = ChatApiVersion.defaultApiVersionEnum
             }
-            application?.initThreadsLib(serverConfig, apiVersion)
+            application?.initChatCenterUI(serverConfig, apiVersion)
             if (user != null && !isPreregisterEnabled) callInitUser(user)
             navigationController.navigate(R.id.action_LaunchFragment_to_ChatAppFragment)
         }
@@ -228,6 +228,7 @@ class LaunchViewModel(
                     if (server.name == it.name) {
                         return ServerConfig(
                             it.name,
+                            it.appMarker,
                             it.threadsGateProviderUid,
                             it.datastoreUrl,
                             it.serverBaseUrl,

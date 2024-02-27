@@ -7,7 +7,6 @@ import kotlinx.parcelize.Parcelize
 data class UserInfo(
     var userId: String? = null,
     var userData: String? = null,
-    var appMarker: String? = null,
     var signature: String? = null,
     var authorizationHeader: String? = null,
     var xAuthSchemaHeader: String? = null,
@@ -16,7 +15,6 @@ data class UserInfo(
 
     override fun toString() = "$userId," +
         "$userData," +
-        "$appMarker," +
         "$signature," +
         "$authorizationHeader," +
         "$xAuthSchemaHeader," +
@@ -33,7 +31,6 @@ data class UserInfo(
     override fun equals(other: Any?): Boolean {
         if (other is UserInfo) {
             return other.userId == userId &&
-                other.appMarker == appMarker &&
                 other.signature == signature &&
                 other.authorizationHeader == authorizationHeader &&
                 other.xAuthSchemaHeader == xAuthSchemaHeader &&
@@ -46,7 +43,6 @@ data class UserInfo(
         return UserInfo(
             userId,
             userData,
-            appMarker,
             signature,
             authorizationHeader,
             xAuthSchemaHeader,

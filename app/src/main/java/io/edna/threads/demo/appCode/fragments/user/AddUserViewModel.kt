@@ -95,17 +95,6 @@ class AddUserViewModel(
         }
     }
 
-    val appMarkerTextWatcher = object : AfterTextChangedTextWatcher {
-        override fun afterTextChanged(s: Editable?) {
-            if (s != null) {
-                if (userLiveData.value?.appMarker != s.toString()) {
-                    userLiveData.value?.appMarker = s.toString()
-                    _userLiveData.postValue(userLiveData.value)
-                }
-            }
-        }
-    }
-
     val signatureTextWatcher = object : AfterTextChangedTextWatcher {
         override fun afterTextChanged(s: Editable?) {
             if (s != null) {
