@@ -65,7 +65,6 @@ class OutgoingMessageCreatorTest {
         val result = outgoingMessageCreator.createInitChatMessage(userInfo)
 
         assertEquals("testClientId", result.get(MessageAttributes.CLIENT_ID).asString)
-        assertEquals("INIT_CHAT", result.get(MessageAttributes.TYPE).asString)
         assertEquals("testData", result.get(MessageAttributes.DATA).asString)
         assertEquals("testAppMarker", result.get(MessageAttributes.APP_MARKER_KEY).asString)
     }
