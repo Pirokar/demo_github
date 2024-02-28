@@ -118,6 +118,10 @@ dependencies {
     implementation "com.google.firebase:firebase-messaging-ktx:$rootProject.firebaseMessagingVersion"
     implementation "com.huawei.hms:push:$rootProject.hmsMessagingVersion"
 
+    // Microsoft Appcenter
+    implementation "com.microsoft.appcenter:appcenter-analytics:${appCenterSdkVersion}"
+    implementation "com.microsoft.appcenter:appcenter-crashes:${appCenterSdkVersion}"
+
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.12'
 
     testImplementation "junit:junit:$rootProject.testJunitVersion"

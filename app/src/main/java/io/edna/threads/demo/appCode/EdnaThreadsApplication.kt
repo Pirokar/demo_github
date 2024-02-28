@@ -5,6 +5,9 @@ import android.content.Intent
 import android.widget.Toast
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.perf.FirebasePerformance
+import com.microsoft.appcenter.AppCenter
+import com.microsoft.appcenter.analytics.Analytics
+import com.microsoft.appcenter.crashes.Crashes
 import im.threads.business.config.ChatAuth
 import im.threads.business.config.ChatUser
 import im.threads.business.config.transport.ChatNetworkConfig
@@ -50,6 +53,7 @@ class EdnaThreadsApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        startAppCenter()
 
         startKoin {
             androidContext(this@EdnaThreadsApplication)
@@ -224,6 +228,19 @@ class EdnaThreadsApplication : Application() {
                     signature = user.signature
                 )
             )
+        }
+    }
+
+    private fun startAppCenter() {
+        if (BuildConfig.DEBUG.not()) {
+            System.getenv("APP_CENTER_KEY")?.let { appCenterKey ->
+                AppCenter.start(
+                    this,
+                    appCenterKey,
+                    Analytics::class.java,
+                    Crashes::class.java
+                )
+            }
         }
     }
 }
