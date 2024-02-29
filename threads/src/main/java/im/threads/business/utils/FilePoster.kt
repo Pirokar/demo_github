@@ -17,6 +17,7 @@ import im.threads.business.transport.InputStreamRequestBody
 import im.threads.business.transport.TransportException
 import im.threads.business.utils.FileUtils.getFileName
 import im.threads.business.utils.FileUtils.getMimeType
+import im.threads.business.utils.FileUtils.isImage
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -99,7 +100,7 @@ private fun sendFile(uri: Uri, mimeType: String, token: String, fileDescription:
 }
 
 private fun getFileRequestBody(uri: Uri, mimeType: String): RequestBody {
-    if (isJpeg(uri)) {
+    if (isImage(uri)) {
         getJpegRequestBody(uri)?.let {
             return it
         }

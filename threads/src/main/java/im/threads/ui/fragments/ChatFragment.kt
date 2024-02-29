@@ -1442,9 +1442,7 @@ class ChatFragment :
             fileSize,
             System.currentTimeMillis()
         )
-        setFileDescription(
-            fileDescription
-        )
+        setFileDescription(fileDescription)
         val inputText = inputTextObservable.value
         val uum = UpcomingUserMessage(
             fileDescription,

@@ -34,12 +34,6 @@ import java.text.DecimalFormat
 import java.util.UUID
 
 object FileUtils {
-    internal const val JPEG = 0
-    private const val PNG = 1
-    private const val PDF = 2
-    private const val AUDIO = 3
-    private const val OTHER_DOC_FORMATS = 4
-    internal const val UNKNOWN = -1
     private const val UNKNOWN_MIME_TYPE = "*/*"
 
     @JvmStatic
@@ -107,11 +101,18 @@ object FileUtils {
         return (
             fileDescription != null &&
                 (
-                    getExtensionFromFileDescription(fileDescription) == JPEG ||
-                        getExtensionFromFileDescription(fileDescription) == PNG
+                    getExtensionFromFileDescription(fileDescription) == FileExtensions.JPEG ||
+                        getExtensionFromFileDescription(fileDescription) == FileExtensions.PNG ||
+                        getExtensionFromFileDescription(fileDescription) == FileExtensions.BMP
                     )
             )
     }
+
+    @JvmStatic
+    fun isImage(uri: Uri): Boolean =
+        (getMimeType(uri) == ImageMimeType.BMP.value) ||
+                (getMimeType(uri) == ImageMimeType.PNG.value) ||
+                (getMimeType(uri) == ImageMimeType.JPEG.value)
 
     private fun isFileCorrupted(fileDescription: FileDescription): Boolean {
         val actualSize = fileDescription.fileUri?.let {
@@ -124,7 +125,7 @@ object FileUtils {
     fun isVoiceMessage(fileDescription: FileDescription?): Boolean {
         return (
             fileDescription != null &&
-                getExtensionFromFileDescription(fileDescription) == AUDIO
+                getExtensionFromFileDescription(fileDescription) == FileExtensions.AUDIO
             )
     }
 
@@ -286,16 +287,16 @@ object FileUtils {
         return output
     }
 
-    private fun getExtensionFromFileDescription(fileDescription: FileDescription): Int {
+    private fun getExtensionFromFileDescription(fileDescription: FileDescription): FileExtensions {
         val mimeType = getMimeType(fileDescription)
         if (mimeType != UNKNOWN_MIME_TYPE) {
             val extensionFromMimeType = getExtensionFromMimeType(mimeType)
-            if (extensionFromMimeType != UNKNOWN) {
+            if (extensionFromMimeType != FileExtensions.UNKNOWN) {
                 return extensionFromMimeType
             }
         }
         val extensionFromPath = getExtensionFromPath(fileDescription.incomingName)
-        return if (extensionFromPath != UNKNOWN) {
+        return if (extensionFromPath != FileExtensions.UNKNOWN) {
             extensionFromPath
         } else {
             getExtensionFromPath(
@@ -318,9 +319,9 @@ object FileUtils {
         }
     }
 
-    internal fun getExtensionFromPath(path: String?): Int {
+    internal fun getExtensionFromPath(path: String?): FileExtensions {
         if (path == null || !path.contains(".")) {
-            return UNKNOWN
+            return FileExtensions.UNKNOWN
         }
         val extension = path.substring(path.lastIndexOf(".") + 1)
         if (extension.equals("jpg", ignoreCase = true) || extension.equals(
@@ -328,20 +329,20 @@ object FileUtils {
                 ignoreCase = true
             )
         ) {
-            return JPEG
+            return FileExtensions.JPEG
         }
         if (extension.equals("png", ignoreCase = true)) {
-            return PNG
+            return FileExtensions.PNG
         }
         if (extension.equals("pdf", ignoreCase = true)) {
-            return PDF
+            return FileExtensions.PDF
         }
         if (extension.equals("wav", ignoreCase = true) || extension.equals(
                 "ogg",
                 ignoreCase = true
             )
         ) {
-            return AUDIO
+            return FileExtensions.AUDIO
         }
         return if (extension.equals("txt", ignoreCase = true) ||
             extension.equals("doc", ignoreCase = true) ||
@@ -352,20 +353,21 @@ object FileUtils {
             extension.equals("xltx", ignoreCase = true) ||
             extension.equals("xlt", ignoreCase = true)
         ) {
-            OTHER_DOC_FORMATS
+            FileExtensions.OTHER_DOC_FORMATS
         } else {
-            UNKNOWN
+            FileExtensions.UNKNOWN
         }
     }
 
-    private fun getExtensionFromMimeType(mimeType: String): Int {
+    private fun getExtensionFromMimeType(mimeType: String): FileExtensions {
         return when (mimeType) {
-            "image/jpeg" -> JPEG
-            "image/png" -> PNG
-            "application/pdf" -> PDF
-            "audio/wav", "audio/wave", "audio/x-wav", "audio/ogg", "application/ogg" -> AUDIO
-            "text/plain", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "application/vnd.ms-excel.sheet.macroenabled.12", "application/vnd.openxmlformats-officedocument.spreadsheetml.template" -> UNKNOWN
-            else -> UNKNOWN
+            "image/jpeg" -> FileExtensions.JPEG
+            "image/png" -> FileExtensions.PNG
+            "image/x-ms-bmp" -> FileExtensions.BMP
+            "application/pdf" -> FileExtensions.PDF
+            "audio/wav", "audio/wave", "audio/x-wav", "audio/ogg", "application/ogg" -> FileExtensions.AUDIO
+            "text/plain", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "application/vnd.ms-excel.sheet.macroenabled.12", "application/vnd.openxmlformats-officedocument.spreadsheetml.template" -> FileExtensions.UNKNOWN
+            else -> FileExtensions.UNKNOWN
         }
     }
 
@@ -559,4 +561,20 @@ private fun format(
 ): String {
     val result = if (divider > 1) value.toDouble() / divider.toDouble() else value.toDouble()
     return DecimalFormat("#,##0.#").format(result).toString() + " " + unit
+}
+
+enum class FileExtensions {
+    JPEG,
+    PNG,
+    BMP,
+    PDF,
+    AUDIO,
+    OTHER_DOC_FORMATS,
+    UNKNOWN
+}
+
+enum class ImageMimeType(val value: String) {
+    PNG("image/png"),
+    JPEG("image/jpg"),
+    BMP("image/x-ms-bmp")
 }

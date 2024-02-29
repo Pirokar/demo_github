@@ -77,12 +77,12 @@ class FileUtilsTest {
 
     @Test
     fun whenGetExtensionFromPathWithKnownExtension_thenReturnsCorrectExtension() {
-        assertEquals(FileUtils.JPEG, FileUtils.getExtensionFromPath("file.jpg"))
+        assertEquals(FileExtensions.JPEG, FileUtils.getExtensionFromPath("file.jpg"))
     }
 
     @Test
     fun whenGetExtensionFromPathWithUnknownExtension_thenReturnsUnknownExtension() {
-        assertEquals(FileUtils.UNKNOWN, FileUtils.getExtensionFromPath("file.unknown"))
+        assertEquals(FileExtensions.UNKNOWN, FileUtils.getExtensionFromPath("file.unknown"))
     }
 
     @Test

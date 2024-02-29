@@ -83,10 +83,10 @@ class MessengerImpl(
                 consultInfo = consultWriter.getConsultInfo(id)
             }
         }
-        if (!userPhrase.hasFile()) {
-            sendTextMessage(userPhrase, consultInfo)
-        } else {
+        if (userPhrase.hasFile()) {
             sendFileMessage(userPhrase, consultInfo)
+        } else {
+            sendTextMessage(userPhrase, consultInfo)
         }
     }
 
