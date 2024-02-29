@@ -32,7 +32,7 @@ val coreSLModule = module {
     factory { DatabaseHolder(get()) }
     factory { AuthHeadersProvider() }
     factory { ImageLoaderOkHttpProvider(get(), get()) }
-    factory { OutgoingMessageCreator(get(), get(), get(), get()) }
+    factory { OutgoingMessageCreator(get(), get(), get()) }
     factory { ClientUseCase() }
     factory { AuthInterceptor(get(), get()) }
     factory { ConsultWriter(get()) }
