@@ -183,8 +183,8 @@ class EdnaThreadsApplication : Application() {
             server.serverBaseUrl ?: "",
             server.threadsGateUrl ?: "",
             server.datastoreUrl ?: "",
-            apiVersion,
-            hashMapOf()
+            hashMapOf(),
+            apiVersion = apiVersion
         )
         val certificates = server.trustedSSLCertificates?.map { ChatSSLCertificate(it) }?.toTypedArray() ?: arrayOf()
         val networkConfig = ChatNetworkConfig(
