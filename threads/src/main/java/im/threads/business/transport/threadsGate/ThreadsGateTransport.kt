@@ -214,7 +214,6 @@ class ThreadsGateTransport(
     }
 
     override fun sendInitMessages(isPreregister: Boolean) {
-        //sendInitChatMessage(true)
         sendEnvironmentMessage(true, isPreregister)
     }
 
@@ -338,7 +337,6 @@ class ThreadsGateTransport(
         val clientId = clientUseCase.getUserInfo()?.clientId
         val deviceAddress = preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS)
         if (sendInit && !clientId.isNullOrBlank() && !deviceAddress.isNullOrBlank()) {
-            //sendInitChatMessage(false)
             sendEnvironmentMessage(tryOpeningWebSocket = false, isPreregister = false)
         }
         val text = BaseConfig.getInstance().gson.toJson(

@@ -44,7 +44,6 @@ class OutgoingMessageCreatorTest {
 
     private val outgoingMessageCreator = OutgoingMessageCreator(
         preferences,
-        clientUseCase,
         appInfo,
         deviceInfo
     )
@@ -52,21 +51,6 @@ class OutgoingMessageCreatorTest {
     @Before
     fun setup() {
         `when`(preferences.sharedPreferences).thenReturn(sharedPreferences)
-    }
-
-    @Test
-    fun whenUserInfoExists_thenCreateInitChatMessage() {
-        val userInfo = UserInfoBuilder("testClientId")
-        userInfo.setClientData("testData")
-        userInfo.setAppMarker("testAppMarker")
-        `when`(clientUseCase.getUserInfo()).thenReturn(userInfo)
-        `when`(sharedPreferences.getString(PreferencesCoreKeys.DEVICE_ADDRESS, null)).thenReturn("testDeviceAddress")
-
-        val result = outgoingMessageCreator.createInitChatMessage(userInfo)
-
-        assertEquals("testClientId", result.get(MessageAttributes.CLIENT_ID).asString)
-        assertEquals("testData", result.get(MessageAttributes.DATA).asString)
-        assertEquals("testAppMarker", result.get(MessageAttributes.APP_MARKER_KEY).asString)
     }
 
     @Test
