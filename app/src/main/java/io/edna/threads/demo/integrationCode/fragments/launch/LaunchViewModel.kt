@@ -237,7 +237,8 @@ class LaunchViewModel(
                             it.isShowMenu,
                             it.filesAndMediaMenuItemEnabled,
                             it.trustedSSLCertificates,
-                            it.allowUntrustedSSLCertificate
+                            it.allowUntrustedSSLCertificate,
+                            it.isInputEnabled
                         )
                     }
                 }

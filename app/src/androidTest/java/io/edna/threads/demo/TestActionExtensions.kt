@@ -1,6 +1,7 @@
 package io.edna.threads.demo
 
 import androidx.test.espresso.PerformException
+import io.github.kakaocup.kakao.common.views.KBaseView
 import io.github.kakaocup.kakao.recycler.KRecyclerView
 import junit.framework.AssertionFailedError
 import java.util.concurrent.TimeoutException
@@ -53,4 +54,27 @@ fun assert(messageIfFails: String?, vararg function: () -> Unit) {
     } catch (exc: AssertionFailedError) {
         throw AssertionError(message)
     }
+}
+
+/**
+ * Ожидает видимости view в иерархии.
+ * После отпускает поток
+ */
+fun <T> KBaseView<T>.waitForExists(timeoutMs: Long) {
+    val startTime = System.currentTimeMillis()
+    val timeStep = 100L
+
+    do {
+        var isVisible = true
+        try {
+            this.isVisible()
+        } catch (exc: AssertionFailedError) {
+            isVisible = false
+        }
+        if (isVisible) {
+            return
+        } else {
+            Thread.sleep(timeStep)
+        }
+    } while (System.currentTimeMillis() - startTime < timeoutMs)
 }

@@ -63,9 +63,9 @@ class VoiceMessagesTests : BaseFilesTestCase() {
                     quoteClear.click()
                 }
                 assert("Лейаут с вложением не должен отображаться") {
-                    playPauseButton.isNotDisplayed()
-                    quoteSlider.isNotDisplayed()
-                    quoteClear.isNotDisplayed()
+                    playPauseButton.isGone()
+                    quoteSlider.isGone()
+                    quoteClear.isGone()
                 }
                 assert("Кнопка записи должна отображаться и быть активной") {
                     recordButton.isVisible()
@@ -97,9 +97,9 @@ class VoiceMessagesTests : BaseFilesTestCase() {
                     quoteClear.click()
                 }
                 assert("Лейаут с вложением не должен отображаться") {
-                    playPauseButton.isNotDisplayed()
-                    quoteSlider.isNotDisplayed()
-                    quoteClear.isNotDisplayed()
+                    playPauseButton.isGone()
+                    quoteSlider.isGone()
+                    quoteClear.isGone()
                 }
                 assert("Кнопка записи должна отображаться и быть активной") {
                     recordButton.isVisible()

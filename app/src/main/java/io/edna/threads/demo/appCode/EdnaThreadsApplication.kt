@@ -201,7 +201,9 @@ class EdnaThreadsApplication : Application() {
             voiceRecordingEnabled = true,
             chatSubtitleEnabled = true,
             autoScrollToLatest = true
-        )
+        ).apply {
+            userInputEnabled = server.isInputEnabled
+        }
 
         chatCenterUI = ChatCenterUI(applicationContext, loggerConfig).apply {
             theme = chatLightTheme

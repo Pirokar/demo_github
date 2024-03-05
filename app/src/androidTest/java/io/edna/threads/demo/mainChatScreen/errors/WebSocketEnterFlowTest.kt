@@ -4,7 +4,6 @@ import android.content.Intent
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import im.threads.business.config.BaseConfig
 import io.edna.threads.demo.BaseTestCase
 import io.edna.threads.demo.TestMessages
 import io.edna.threads.demo.TestMessages.defaultConfigNoAttachmentSettingsMock
@@ -12,6 +11,7 @@ import io.edna.threads.demo.TestMessages.defaultConfigNoSettingsMock
 import io.edna.threads.demo.appCode.activity.MainActivity
 import io.edna.threads.demo.assert
 import io.edna.threads.demo.kaspressoSreens.ChatMainScreen
+import io.edna.threads.demo.waitForExists
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -33,8 +33,8 @@ class WebSocketEnterFlowTest : BaseTestCase() {
         prepareHttpMocks()
         wsMocksMap = HashMap()
         openChatFromDemoLoginPage()
-        Thread.sleep(BaseConfig.getInstance().requestConfig.socketClientSettings.connectTimeoutMillis)
         ChatMainScreen {
+            errorImage.waitForExists(60000)
             errorImage {
                 assert("Изображение с ошибкой должно быть видимо") { isVisible() }
             }
@@ -56,7 +56,7 @@ class WebSocketEnterFlowTest : BaseTestCase() {
             put("registerDevice", TestMessages.registerDeviceWsAnswer)
         }
         openChatFromDemoLoginPage()
-        Thread.sleep(BaseConfig.getInstance().requestConfig.socketClientSettings.connectTimeoutMillis)
+        Thread.sleep(config.networkConfig.httpConfig.connectionTimeout * 1000L)
         ChatMainScreen {
             errorImage {
                 assert("Изображение с ошибкой должно быть видимо") { isVisible() }
@@ -78,7 +78,7 @@ class WebSocketEnterFlowTest : BaseTestCase() {
             put("INIT_CHAT", TestMessages.initChatWsAnswer)
         }
         openChatFromDemoLoginPage()
-        Thread.sleep(BaseConfig.getInstance().requestConfig.socketClientSettings.connectTimeoutMillis)
+        Thread.sleep(config.networkConfig.httpConfig.connectionTimeout * 1000L)
         ChatMainScreen {
             errorImage {
                 assert("Изображение с ошибкой должно быть видимо") { isVisible() }
@@ -97,7 +97,7 @@ class WebSocketEnterFlowTest : BaseTestCase() {
         wsMocksMap = HashMap()
         prepareHttpMocks(configAnswer = defaultConfigNoSettingsMock)
         openChatFromDemoLoginPage()
-        Thread.sleep(BaseConfig.getInstance().requestConfig.socketClientSettings.connectTimeoutMillis)
+        Thread.sleep(config.networkConfig.httpConfig.connectionTimeout * 1000L)
         ChatMainScreen {
             errorImage {
                 assert("Изображение с ошибкой должно быть видимо") { isVisible() }
@@ -119,7 +119,7 @@ class WebSocketEnterFlowTest : BaseTestCase() {
         wsMocksMap = HashMap()
         prepareHttpMocks(configAnswer = defaultConfigNoAttachmentSettingsMock)
         openChatFromDemoLoginPage()
-        Thread.sleep(BaseConfig.getInstance().requestConfig.socketClientSettings.connectTimeoutMillis)
+        Thread.sleep(config.networkConfig.httpConfig.connectionTimeout * 1000L)
         ChatMainScreen {
             errorImage {
                 assert("Изображение с ошибкой должно быть видимо") { isVisible() }

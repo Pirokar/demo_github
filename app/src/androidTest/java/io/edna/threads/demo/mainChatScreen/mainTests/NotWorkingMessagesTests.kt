@@ -89,7 +89,7 @@ class NotWorkingMessagesTests : BaseTestCase() {
     private fun checkInputFieldsEnabledHasNotificationMessage() {
         ChatMainScreen {
             assert("Приветственное сообщение не должно отображаться") {
-                welcomeScreen.isNotDisplayed()
+                welcomeScreen.isGone()
             }
             assert("Поле ввода должно отображаться") {
                 inputEditView.isVisible()
@@ -113,7 +113,7 @@ class NotWorkingMessagesTests : BaseTestCase() {
     private fun checkInputFieldsDisabledHasNotificationMessage() {
         ChatMainScreen {
             assert("Приветственное сообщение не должно отображаться") {
-                welcomeScreen.isNotDisplayed()
+                welcomeScreen.isGone()
             }
             assert("Поле ввода должно отображаться") {
                 inputEditView.isVisible()
@@ -131,7 +131,7 @@ class NotWorkingMessagesTests : BaseTestCase() {
     private fun checkInputFieldsDisabledHasNotificationMessageWithMessageFromConsultant() {
         ChatMainScreen {
             assert("Приветственное сообщение не должно отображаться") {
-                welcomeScreen.isNotDisplayed()
+                welcomeScreen.isGone()
             }
             assert("Поле ввода должно отображаться") {
                 inputEditView.isVisible()
@@ -154,7 +154,7 @@ class NotWorkingMessagesTests : BaseTestCase() {
     private fun checkInputFieldsEnabledHasNotificationMessageWithMessageFromConsultant() {
         ChatMainScreen {
             assert("Приветственное сообщение не должно отображаться") {
-                welcomeScreen.isNotDisplayed()
+                welcomeScreen.isGone()
             }
             assert("Поле ввода должно отображаться") {
                 inputEditView.isVisible()
@@ -201,7 +201,7 @@ class NotWorkingMessagesTests : BaseTestCase() {
     private fun checkInputFieldsNoClientInfoResponse() {
         ChatMainScreen {
             assert("Приветственное сообщение не должны отображаться") {
-                welcomeScreen.isNotDisplayed()
+                welcomeScreen.isGone()
             }
             assert("Поле ввода не должно отображаться") {
                 inputEditView.isNotDisplayed()

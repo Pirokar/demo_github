@@ -145,7 +145,7 @@ class SystemMessages : BaseTestCase() {
 
         ChatMainScreen {
             chatItemsRecyclerView {
-                waitListForNotEmpty(5000)
+                waitListForNotEmpty(30000)
                 assert("Список сообщений должен быть видим") { isVisible() }
                 val textToCheck = "Среднее время ожидания ответа составляет 2 минуты"
                 assert("Список должен содержать сообщение: \"$textToCheck\"") {

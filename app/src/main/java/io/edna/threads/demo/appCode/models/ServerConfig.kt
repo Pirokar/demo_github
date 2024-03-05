@@ -15,7 +15,8 @@ data class ServerConfig(
     var isShowMenu: Boolean = false,
     var filesAndMediaMenuItemEnabled: Boolean = true,
     var trustedSSLCertificates: List<Int>? = null,
-    var allowUntrustedSSLCertificate: Boolean = false
+    var allowUntrustedSSLCertificate: Boolean = false,
+    var isInputEnabled: Boolean = true
 ) : Parcelable {
 
     override fun toString() = "Server config:\n = $name, " +

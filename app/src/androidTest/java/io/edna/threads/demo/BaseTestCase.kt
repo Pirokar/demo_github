@@ -7,10 +7,17 @@ import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import com.github.tomakehurst.wiremock.junit.WireMockRule
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
-import im.threads.business.UserInfoBuilder
-import im.threads.business.config.BaseConfig
+import im.threads.business.ChatAuthType
+import im.threads.business.config.ChatAuth
+import im.threads.business.config.ChatUser
+import im.threads.business.config.transport.ChatNetworkConfig
+import im.threads.business.config.transport.ChatTransportConfig
+import im.threads.business.config.transport.HTTPConfig
+import im.threads.business.config.transport.SSLPinningConfig
+import im.threads.business.config.transport.WSConfig
+import im.threads.business.serviceLocator.core.inject
 import im.threads.business.transport.threadsGate.ThreadsGateTransport
-import im.threads.ui.core.ThreadsLib
+import im.threads.ui.ChatConfig
 import io.edna.threads.demo.appCode.ednaMockPort
 import io.edna.threads.demo.appCode.ednaMockThreadsGateProviderUid
 import io.edna.threads.demo.appCode.ednaMockThreadsGateUrl
@@ -37,8 +44,43 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
 
-abstract class BaseTestCase : TestCase() {
+abstract class BaseTestCase(private val isUserInputEnabled: Boolean = true) : TestCase() {
     private val userId = (10000..99999).random().toString()
+    protected val transportConfig = ChatTransportConfig(
+        ednaMockUrl,
+        ednaMockThreadsGateUrl,
+        ednaMockUrl,
+        dataStoreHTTPHeaders = mapOf()
+    )
+    protected val networkConfig = ChatNetworkConfig(
+        HTTPConfig(
+            10,
+            10,
+            10
+        ),
+        WSConfig(
+            20,
+            20,
+            15
+        ),
+        SSLPinningConfig(
+            allowUntrustedCertificates = true
+        )
+    )
+    protected val config = ChatConfig(
+        transportConfig,
+        networkConfig,
+        true,
+        searchEnabled = true,
+        linkPreviewEnabled = true,
+        voiceRecordingEnabled = true,
+        autoScrollToLatest = true,
+        historyLoadingCount = 50
+    )
+    protected val providerUid = "testProviderUid"
+    protected val appMarker = "testAppMarker"
+    protected val user = ChatUser("userTest:$userId", "Vladimir", mapOf(Pair("specialKey", "w33")))
+    protected val auth = ChatAuth("sdfw34r43", "retail", ChatAuthType.COOKIES, "23t5ef", true)
 
     private val coroutineScope = CoroutineScope(Dispatchers.Unconfined)
 
@@ -62,7 +104,8 @@ abstract class BaseTestCase : TestCase() {
     protected lateinit var socket: WebSocket
 
     private val socketListener: ThreadsGateTransport.WebSocketListener by lazy {
-        (BaseConfig.getInstance().transport as ThreadsGateTransport).listener
+        val transport: ThreadsGateTransport by inject()
+        transport.listener
     }
 
     init {
@@ -78,10 +121,6 @@ abstract class BaseTestCase : TestCase() {
             userInfo = UserInfo(userId = if (noUserId) null else userId)
         )
         BuildConfig.TEST_DATA.set(testData.toJson())
-    }
-
-    protected fun initUserDirectly() {
-        ThreadsLib.getInstance().initUser(UserInfoBuilder(userId), true)
     }
 
     protected fun sendMessageToSocket(message: String) {
@@ -254,7 +293,8 @@ abstract class BaseTestCase : TestCase() {
         datastoreUrl = ednaMockUrl,
         serverBaseUrl = ednaMockUrl,
         threadsGateUrl = ednaMockThreadsGateUrl,
-        isShowMenu = true
+        isShowMenu = true,
+        isInputEnabled = isUserInputEnabled
     )
 
     private fun getExistedTestData(): TestData {
