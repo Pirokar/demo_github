@@ -652,6 +652,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         } else {
             diffResult.dispatchUpdatesTo(this);
         }
+        removeQuickRepliesIfAnswered();
     }
 
     public void modifyImageInItem(FileDescription newFileDescription) {
@@ -1215,6 +1216,23 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     }
                 } else {
                     return;
+                }
+            }
+        }
+    }
+
+    private void removeQuickRepliesIfAnswered() {
+        int index = -1;
+        for (int i = 0; i < getList().size(); i ++ ) {
+            if (getList().get(i) instanceof QuickReplyItem) {
+                index = i;
+            }
+        }
+        if (index >= 0) {
+            for (int i = index; i < getList().size(); i++) {
+                if (getList().get(i) instanceof UserPhrase) {
+                    removeItem(index);
+                    break;
                 }
             }
         }
