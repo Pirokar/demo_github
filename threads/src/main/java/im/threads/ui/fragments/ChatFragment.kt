@@ -967,7 +967,7 @@ class ChatFragment :
 
     private fun onRefresh() {
         if (chatController.isChatReady()) {
-            chatController.loadHistory(forceLoad = true)
+            chatController.onSwipeToRefresh()
         }
     }
 

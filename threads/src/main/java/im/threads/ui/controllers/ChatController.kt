@@ -130,6 +130,7 @@ class ChatController private constructor() {
     private val chatState: ChatState by inject()
     private val demoModeProvider: DemoModeProvider by inject()
     private val transport = Config.getInstance().transport
+    private var lastHistoryQuery = ""
 
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
@@ -182,6 +183,7 @@ class ChatController private constructor() {
 
     fun onViewStop() {
         isAllMessagesDownloaded = false
+        lastHistoryQuery = ""
         messenger.onViewStop()
     }
 
@@ -561,6 +563,11 @@ class ChatController private constructor() {
         if (isChatReady()) loadHistory()
     }
 
+    internal fun onSwipeToRefresh() {
+        lastHistoryQuery = ""
+        loadHistory(forceLoad = true)
+    }
+
     internal fun loadHistoryAfterWithLastMessageCheck(
         applyUiChanges: Boolean = true,
         forceLoad: Boolean = false,
@@ -606,12 +613,14 @@ class ChatController private constructor() {
             return
         }
         if (!chatState.isChatReady() && !fromQuickAnswerController) return
+        val count = BaseConfig.getInstance().historyLoadingCount
+        val stringQuery = "$anchorTimestamp,$count,$isAfterAnchor"
+        if (lastHistoryQuery == stringQuery) return
         synchronized(this) {
             if (!isDownloadingMessages) {
                 isDownloadingMessages = true
                 subscribe(
                     Single.fromCallable {
-                        val count = BaseConfig.getInstance().historyLoadingCount
                         val response = if (isAfterAnchor == true && anchorTimestamp != null) {
                             historyLoader.getHistorySync(anchorTimestamp, count, true)
                         } else {
@@ -620,6 +629,7 @@ class ChatController private constructor() {
                                 isAfterAnchor == null
                             )
                         }
+                        lastHistoryQuery = stringQuery
                         val serverItems = HistoryParser.getChatItems(response)
                         if (serverItems.isEmpty()) {
                             isAllMessagesDownloaded = true
