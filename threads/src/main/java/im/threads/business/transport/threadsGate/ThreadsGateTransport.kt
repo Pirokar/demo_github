@@ -53,6 +53,7 @@ import im.threads.business.utils.AppInfo
 import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.DeviceInfo
 import im.threads.business.utils.SSLCertificateInterceptor
+import im.threads.ui.config.Config
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -133,7 +134,11 @@ class ThreadsGateTransport(
             .addInterceptor {
                 val response: Response = it.proceed(it.request())
                 if (response.code > 299) {
-                    val message = "Socket request failed with: ${response.message}"
+                    val message = if (response.code in 400..599) {
+                        context.getString(Config.getInstance().chatStyle.networkErrorText)
+                    } else {
+                        "Socket request failed with: ${response.message}"
+                    }
                     val cacheHeaderValue = "public, only-if-cached, max-stale=" + 60 * 60 * 24 * 1
                     chatUpdateProcessor.postError(TransportException(message))
                     LoggerEdna.error("Socket request failed. ", message)
@@ -766,7 +771,7 @@ class ThreadsGateTransport(
             LoggerEdna.info("[WS] ☚\u274C On Websocket error : ${t.message}")
             LoggerEdna.error("[WS] ☚\u274C On Websocket error : ", t)
 
-            val message = if (t.localizedMessage.isNullOrBlank()) t.message else t.localizedMessage
+            val message = getNetworkErrorMessage(t)
             chatUpdateProcessor.postError(TransportException(message))
 
             synchronized(messageInProcessIds) {
@@ -780,6 +785,19 @@ class ThreadsGateTransport(
                 }
                 closeWebSocket()
             }
+        }
+
+        private fun getNetworkErrorMessage(t: Throwable): String? {
+            if (!t.message.isNullOrEmpty()) {
+                val message = t.message!!
+                if (message.contains("Connection reset") ||
+                    message.contains("failed to connect to") ||
+                    message.contains("Unable to resolve host")
+                ) {
+                    return Config.getInstance().context.getString(Config.getInstance().chatStyle.networkErrorText)
+                }
+            }
+            return if (t.localizedMessage.isNullOrBlank()) t.message else t.localizedMessage
         }
 
         private fun getMessageStatus(chatItem: ChatItem?, receivedStatus: Status): Status {

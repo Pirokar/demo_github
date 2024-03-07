@@ -686,6 +686,9 @@ class ChatController private constructor() {
                                 fragment?.get()?.showBottomBar()
                             }
                             error(e)
+                            if (e?.message != null) {
+                                chatUpdateProcessor.postError(TransportException(e.message))
+                            }
                         }
                 )
             } else {
@@ -704,10 +707,7 @@ class ChatController private constructor() {
                 .subscribe(
                     { response: Response<ConfigResponse?>? ->
                         if (response?.isSuccessful != true) {
-                            val message = getErrorMessage(
-                                settingsLoaded = false,
-                                attachmentSettingsLoaded = false
-                            )
+                            val message = getNetworkErrorMessage(response)
                             error("error on getting settings: $message")
                             chatUpdateProcessor.postError(TransportException(message))
                         } else {
@@ -736,6 +736,14 @@ class ChatController private constructor() {
                     chatUpdateProcessor.postError(TransportException(message))
                 }
         )
+    }
+
+    private fun getNetworkErrorMessage(response: Response<ConfigResponse?>?): String {
+        return if (response?.code() in 400..599) {
+            appContext.getString(chatStyle.networkErrorText)
+        } else {
+            appContext.getString(chatStyle.loadedSettingsErrorText)
+        }
     }
 
     private fun getErrorMessage(

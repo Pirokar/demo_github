@@ -372,6 +372,7 @@ class ChatFragment :
         }
 
     internal fun showErrorView(message: String?) = binding?.apply {
+        chatErrorLayout.errorMessage.text = message
         if (chatErrorLayout.errorLayout.isNotVisible()) {
             showWelcomeScreen(false)
             hideProgressBar()
@@ -380,7 +381,6 @@ class ChatFragment :
             info("Hiding bottom layout, recycler view, progress bar, welcome screen. Showing error layout.")
             chatErrorLayout.errorLayout.visible()
             initErrorViewStyles()
-            chatErrorLayout.errorMessage.text = message
             popupMenuButton.visibility = View.GONE
         }
     }

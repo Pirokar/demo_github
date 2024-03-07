@@ -12,6 +12,8 @@ import im.threads.business.rest.queries.ThreadsApi
 import im.threads.business.utils.AppInfo
 import im.threads.business.utils.DateHelper
 import im.threads.business.utils.DemoModeProvider
+import im.threads.ui.config.Config
+import retrofit2.Response
 import java.io.IOException
 
 class HistoryLoader(private val demoModeProvider: DemoModeProvider, private val appInfo: AppInfo) {
@@ -34,27 +36,34 @@ class HistoryLoader(private val demoModeProvider: DemoModeProvider, private val 
         val itemsCount = count ?: BaseConfig.getInstance().historyLoadingCount
         val token = BaseConfig.getInstance().transport.getToken()
 
-        return if (token.isNotEmpty()) {
+        if (token.isNotEmpty()) {
             val threadsApi = get()
             val anchorDate = if (anchorTimestamp == null) {
                 null
             } else {
                 DateHelper.getMessageDateStringFromTimestamp(anchorTimestamp)
             }
-            if (isAfterAnchor && anchorDate != null) {
+            val response = if (isAfterAnchor && anchorDate != null) {
                 threadsApi.history(
                     token,
                     afterDate = anchorDate,
                     count = itemsCount,
                     version = appInfo.libVersion
-                )?.execute()?.body()
+                )?.execute()
             } else {
                 threadsApi.history(
                     token,
                     beforeDate = anchorDate,
                     count = itemsCount,
                     version = appInfo.libVersion
-                )?.execute()?.body()
+                )?.execute()
+            }
+            if (response?.isSuccessful != true) {
+                val message = getNetworkErrorMessage(response)
+                error("error loading history: $message")
+                throw IOException(message)
+            } else {
+                return response.body()
             }
         } else {
             error(ThreadsApi.REST_TAG, "Error when loading history - token is empty!")
@@ -83,5 +92,13 @@ class HistoryLoader(private val demoModeProvider: DemoModeProvider, private val 
 
     internal interface HistoryLoadingCallback {
         fun onLoaded(items: List<ChatItem>)
+    }
+
+    private fun getNetworkErrorMessage(response: Response<HistoryResponse?>?): String? {
+        return if (response?.code() in 400..599) {
+            Config.getInstance().context.getString(Config.getInstance().chatStyle.networkErrorText)
+        } else {
+            null
+        }
     }
 }
