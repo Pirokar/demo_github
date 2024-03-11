@@ -15,6 +15,7 @@ import im.threads.business.models.MessageRead
 import im.threads.business.models.MessageStatus
 import im.threads.business.models.Quote
 import im.threads.business.models.RequestResolveThread
+import im.threads.business.models.ScheduleInfo
 import im.threads.business.models.SearchingConsult
 import im.threads.business.models.SimpleSystemMessage
 import im.threads.business.models.SpeechMessageUpdate
@@ -28,6 +29,8 @@ import im.threads.business.transport.models.RequestResolveThreadContent
 import im.threads.business.transport.models.SpeechMessageUpdatedContent
 import im.threads.business.transport.models.SurveyContent
 import im.threads.business.transport.models.SystemMessageContent
+import im.threads.business.transport.models.TextContent
+import java.util.Date
 
 class MessageParser {
     /**
@@ -58,6 +61,7 @@ class MessageParser {
                     fullMessage
                 )
 
+                ChatItemType.SCHEDULE -> getScheduleInfo(fullMessage)
                 ChatItemType.SURVEY -> getSurvey(sentAt, fullMessage)
                 ChatItemType.REQUEST_CLOSE_THREAD -> getRequestResolveThread(
                     sentAt,
@@ -150,6 +154,14 @@ class MessageParser {
             content.text,
             content.threadId
         )
+    }
+
+    private fun getScheduleInfo(fullMessage: JsonObject): ScheduleInfo {
+        val content = BaseConfig.getInstance().gson.fromJson(fullMessage, TextContent::class.java)
+        val scheduleInfo = BaseConfig.getInstance().gson.fromJson(content.text, ScheduleInfo::class.java)
+        scheduleInfo.date = Date().time
+        scheduleInfo.timeStamp = Date().time
+        return scheduleInfo
     }
 
     private fun getSurvey(sentAt: Long, fullMessage: JsonObject): Survey {

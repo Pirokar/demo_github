@@ -706,7 +706,7 @@ class ThreadsGateTransport(
                                 if (chatItem is SpeechMessageUpdate) {
                                     chatUpdateProcessor.postSpeechMessageUpdate(chatItem)
                                 }
-                            } else if (ChatItemType.SCHEDULE != type) {
+                            } else {
                                 val chatItem = messageParser.format(message)
                                 if (chatItem != null) {
                                     chatUpdateProcessor.postNewMessage(chatItem)
