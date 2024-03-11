@@ -53,6 +53,7 @@ import im.threads.business.utils.AppInfo
 import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.DeviceInfo
 import im.threads.business.utils.SSLCertificateInterceptor
+import im.threads.business.utils.internet.NetworkInteractor
 import im.threads.ui.config.Config
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -110,6 +111,7 @@ class ThreadsGateTransport(
     private val jsonFormatter: JsonFormatter by inject()
     private val clientUseCase: ClientUseCase by inject()
     private val messageParser: ThreadsGateMessageParser by inject()
+    private val networkInteractor: NetworkInteractor by inject()
     private val appInfo: AppInfo by inject()
     private val deviceInfo: DeviceInfo by inject()
     private val chatState: ChatState by inject()
@@ -788,6 +790,9 @@ class ThreadsGateTransport(
         }
 
         private fun getNetworkErrorMessage(t: Throwable): String? {
+            if (networkInteractor.hasNoInternet(Config.getInstance().context)) {
+                return Config.getInstance().context.getString(Config.getInstance().chatStyle.networkErrorText)
+            }
             if (!t.message.isNullOrEmpty()) {
                 val message = t.message!!
                 if (message.contains("Connection reset") ||
