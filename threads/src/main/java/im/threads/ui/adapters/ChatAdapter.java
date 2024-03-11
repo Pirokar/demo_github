@@ -624,6 +624,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 listUpdateCallback.onInserted(oldPosition, newSize);
             }
         }
+        removeQuickRepliesIfAnswered();
     }
 
     private void checkIdsForReplacingToNull(@NonNull List<ChatItem> items) {
@@ -652,7 +653,6 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         } else {
             diffResult.dispatchUpdatesTo(this);
         }
-        removeQuickRepliesIfAnswered();
     }
 
     public void modifyImageInItem(FileDescription newFileDescription) {
