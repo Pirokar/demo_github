@@ -85,7 +85,7 @@ class EdnaThreadsApplication : Application() {
             applicationContext,
             colors = ChatColors(
                 main = R.color.light_main,
-                consultSearchingProgress = R.color.light_main,
+                searchingProgressLoader = R.color.light_main,
                 bodyIconsTint = R.color.light_main,
                 incomingText = R.color.black_color,
                 incomingTimeText = R.color.light_time_text,
@@ -126,7 +126,7 @@ class EdnaThreadsApplication : Application() {
             applicationContext,
             colors = ChatColors(
                 main = R.color.dark_main,
-                consultSearchingProgress = R.color.dark_main,
+                searchingProgressLoader = R.color.dark_main,
                 bodyIconsTint = R.color.dark_main,
                 chatBackground = R.color.dark_chat_background,
                 incomingText = R.color.dark_messages_text,
