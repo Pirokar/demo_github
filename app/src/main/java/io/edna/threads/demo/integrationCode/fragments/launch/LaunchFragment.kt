@@ -1,6 +1,5 @@
 package io.edna.threads.demo.integrationCode.fragments.launch
 
-import android.app.AlertDialog
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -8,20 +7,17 @@ import android.content.IntentFilter
 import android.os.Bundle
 import android.view.Menu
 import android.view.View
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.clearFragmentResultListener
 import androidx.fragment.app.setFragmentResultListener
-import im.threads.business.models.enums.ApiVersionEnum
-import im.threads.business.models.enums.CurrentUiTheme
-import im.threads.ui.core.ThreadsLib
+import im.threads.business.models.enums.ChatApiVersion
 import io.edna.threads.demo.BuildConfig
 import io.edna.threads.demo.R
+import io.edna.threads.demo.appCode.EdnaThreadsApplication
 import io.edna.threads.demo.appCode.business.StringsProvider
 import io.edna.threads.demo.appCode.fragments.BaseAppFragment
-import io.edna.threads.demo.appCode.models.UiTheme
 import io.edna.threads.demo.databinding.FragmentLaunchBinding
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -37,6 +33,7 @@ class LaunchFragment : BaseAppFragment<FragmentLaunchBinding>(FragmentLaunchBind
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.provideApplication(context?.applicationContext as? EdnaThreadsApplication)
         subscribeForData()
         initReceivers()
         initObservers()
@@ -81,12 +78,10 @@ class LaunchFragment : BaseAppFragment<FragmentLaunchBinding>(FragmentLaunchBind
     }
 
     private fun setOnClickListeners() = getBinding()?.apply {
-        uiTheme.setOnClickListener { viewModel.click(uiTheme) }
         serverButton.setOnClickListener { viewModel.click(serverButton) }
         userButton.setOnClickListener { viewModel.click(userButton) }
         demonstrations.setOnClickListener { viewModel.click(demonstrations) }
         apiSelector.setOnClickListener { showSelectApiVersionMenu() }
-        uiTheme.setOnClickListener { viewModel.click(uiTheme) }
         login.setOnClickListener {
             viewModel.click(login)
             setUnreadCount(0)
@@ -95,7 +90,8 @@ class LaunchFragment : BaseAppFragment<FragmentLaunchBinding>(FragmentLaunchBind
 
     private fun subscribeForData() = getBinding()?.apply {
         viewModel.selectedApiVersionLiveData.observe(viewLifecycleOwner) {
-            apiSelector.text = "${getString(R.string.api_version)}: $it"
+            val text = "${getString(R.string.api_version)}: $it"
+            apiSelector.text = text
         }
         viewModel.selectedServerConfigLiveData.observe(viewLifecycleOwner) {
             serverButton.text = it?.name
@@ -112,8 +108,6 @@ class LaunchFragment : BaseAppFragment<FragmentLaunchBinding>(FragmentLaunchBind
     }
 
     private fun initObservers() {
-        viewModel.currentUiThemeLiveData.observe(viewLifecycleOwner) { setUiThemeDependentViews(it) }
-        viewModel.themeSelectorLiveData.observe(viewLifecycleOwner) { showUiThemesSelector(it) }
         viewModel.preregisterLiveData.observe(viewLifecycleOwner) { setValueToPreregisterCheckBox(it) }
         viewLifecycleOwner.lifecycle.addObserver(viewModel)
         viewModel.subscribeForData(viewLifecycleOwner)
@@ -143,37 +137,10 @@ class LaunchFragment : BaseAppFragment<FragmentLaunchBinding>(FragmentLaunchBind
         clearFragmentResultListener(SELECTED_SERVER_CONFIG_KEY)
     }
 
-    private fun setUiThemeDependentViews(theme: UiTheme) = getBinding()?.apply {
-        context?.let { context ->
-            when (theme) {
-                UiTheme.LIGHT -> {
-                    title.setTextColor(ContextCompat.getColor(context, R.color.black_color))
-                    about.setTextColor(ContextCompat.getColor(context, R.color.info_text_color))
-                    uiTheme.setImageDrawable(
-                        AppCompatResources.getDrawable(
-                            context,
-                            R.drawable.dark_theme
-                        )
-                    )
-                }
-                UiTheme.DARK -> {
-                    title.setTextColor(ContextCompat.getColor(context, R.color.white_color_fa))
-                    about.setTextColor(ContextCompat.getColor(context, R.color.gray_color_b7))
-                    uiTheme.setImageDrawable(
-                        AppCompatResources.getDrawable(
-                            context,
-                            R.drawable.light_theme
-                        )
-                    )
-                }
-            }
-        }
-    }
-
     private fun showSelectApiVersionMenu() {
         getBinding()?.apiSelector?.let { apiSelector ->
             val menu = PopupMenu(requireActivity(), apiSelector)
-            ApiVersionEnum.values().forEach {
+            ChatApiVersion.values().forEach {
                 menu.menu.add(Menu.NONE, 0, 0, it.toString())
             }
             menu.setOnMenuItemClickListener {
@@ -190,7 +157,7 @@ class LaunchFragment : BaseAppFragment<FragmentLaunchBinding>(FragmentLaunchBind
     }
 
     private fun initReceivers() {
-        if (!ThreadsLib.isInitialized()) {
+        if (chatCenterUI != null) {
             initLibReceiver = InitThreadsLibReceiver(this)
             ContextCompat.registerReceiver(
                 requireContext(),
@@ -217,34 +184,11 @@ class LaunchFragment : BaseAppFragment<FragmentLaunchBinding>(FragmentLaunchBind
         }
     }
 
-    private fun showUiThemesSelector(theme: CurrentUiTheme) {
-        context?.let { context ->
-            val alertDialogBuilder: AlertDialog.Builder = AlertDialog.Builder(context)
-            var alertDialog: AlertDialog? = null
-            alertDialogBuilder.setTitle(stringsProvider.selectTheme)
-            val items = arrayOf(
-                stringsProvider.defaultTheme,
-                stringsProvider.lightTheme,
-                stringsProvider.darkTheme
-            )
-            val checkedItem = theme.value
-            alertDialogBuilder.setSingleChoiceItems(
-                items,
-                checkedItem
-            ) { _, selectedIndex ->
-                viewModel.saveUserSelectedUiTheme(CurrentUiTheme.fromInt(selectedIndex))
-                alertDialog?.dismiss()
-            }
-            alertDialog = alertDialogBuilder.create()
-            alertDialog?.show()
-        }
-    }
-
     private fun generateAboutText(): String {
         return "${getString(R.string.app_name)}  " +
             "v${BuildConfig.VERSION_NAME} " +
             "(${BuildConfig.VERSION_CODE})" +
-            "/ ChatCenter SDK ${ThreadsLib.getLibVersion()}"
+            "/ ChatCenter SDK ${chatCenterUI?.version}"
     }
 
     fun onThreadsLibInitialized() {

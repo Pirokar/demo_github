@@ -18,6 +18,11 @@ class DemoSamplesFragment : BaseAppFragment<FragmentChatBinding>(FragmentChatBin
         viewLifecycleOwner.lifecycle.addObserver(viewModel)
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        chatCenterUI?.logout()
+    }
+
     private fun subscribeToData() {
         viewModel.chatFragmentLiveData.observe(viewLifecycleOwner) {
             fragment = WeakReference(it)

@@ -1,7 +1,7 @@
 {
   "servers": [
     {
-      "name": "Mobile 1",
+      "name": "Default (M1)",
       "threadsGateProviderUid": "MOBILE1_93jLrvripZeDXSKJzdRfEu9QpMMvIe5LKKHQl",
       "serverBaseUrl": "http://arm.mobile1.chc.dte/",
       "datastoreUrl": "http://datastore.mobile1.chc.dte/",

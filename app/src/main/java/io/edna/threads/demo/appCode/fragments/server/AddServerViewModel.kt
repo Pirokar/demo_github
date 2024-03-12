@@ -139,6 +139,17 @@ class AddServerViewModel(
         }
     }
 
+    val appMarkerTextWatcher = object : AfterTextChangedTextWatcher {
+        override fun afterTextChanged(s: Editable?) {
+            if (s != null) {
+                if (serverConfigLiveData.value?.appMarker != s.toString()) {
+                    serverConfigLiveData.value?.appMarker = s.toString()
+                    _serverConfigLiveData.value = serverConfigLiveData.value
+                }
+            }
+        }
+    }
+
     val baseUrlTextWatcher = object : AfterTextChangedTextWatcher {
         override fun afterTextChanged(s: Editable?) {
             if (s != null) {

@@ -2,7 +2,7 @@ package io.edna.threads.demo.appCode.business
 
 import android.content.Context
 import com.google.gson.Gson
-import im.threads.business.models.enums.ApiVersionEnum
+import im.threads.business.models.enums.ChatApiVersion
 import io.edna.threads.demo.appCode.models.ServerConfig
 import io.edna.threads.demo.appCode.models.UserInfo
 
@@ -60,7 +60,7 @@ class PreferencesProvider(private val context: Context) {
 
     fun getSelectedApiVersion(): String? {
         return context.getSharedPreferences(PREF_DEMO, Context.MODE_PRIVATE)
-            .getString(PREF_SELECTED_API_VERSION, ApiVersionEnum.defaultApiVersionEnum.toString())
+            .getString(PREF_SELECTED_API_VERSION, ChatApiVersion.defaultApiVersionEnum.toString())
     }
 
     fun saveSelectedUser(value: UserInfo) {

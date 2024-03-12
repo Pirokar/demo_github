@@ -16,21 +16,19 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
-import im.threads.business.UserInfoBuilder
-import im.threads.business.config.BaseConfig
-import im.threads.business.models.enums.ApiVersionEnum
-import im.threads.business.models.enums.ApiVersionEnum.Companion.defaultApiVersionEnum
+import im.threads.business.config.ChatAuth
+import im.threads.business.config.ChatUser
+import im.threads.business.extensions.jsonStringToMap
+import im.threads.business.models.enums.ChatApiVersion
+import im.threads.business.models.enums.ChatApiVersion.Companion.defaultApiVersionEnum
 import im.threads.business.models.enums.CurrentUiTheme
-import im.threads.ui.core.ThreadsLib
 import io.edna.threads.demo.BuildConfig
 import io.edna.threads.demo.R
+import io.edna.threads.demo.appCode.EdnaThreadsApplication
 import io.edna.threads.demo.appCode.business.PreferencesProvider
 import io.edna.threads.demo.appCode.business.ServersProvider
-import io.edna.threads.demo.appCode.business.UiThemeProvider
-import io.edna.threads.demo.appCode.business.VolatileLiveData
 import io.edna.threads.demo.appCode.models.ServerConfig
 import io.edna.threads.demo.appCode.models.TestData
-import io.edna.threads.demo.appCode.models.UiTheme
 import io.edna.threads.demo.appCode.models.UserInfo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -39,11 +37,8 @@ import org.parceler.Parcels
 
 class LaunchViewModel(
     private val preferences: PreferencesProvider,
-    private val uiThemeProvider: UiThemeProvider,
     private val serversProvider: ServersProvider
 ) : ViewModel(), DefaultLifecycleObserver {
-    val currentUiThemeLiveData: MutableLiveData<UiTheme> = MutableLiveData()
-    val themeSelectorLiveData: VolatileLiveData<CurrentUiTheme> = VolatileLiveData()
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
     private var _selectedApiVersionLiveData = MutableLiveData(getSelectedApiVersion())
@@ -60,6 +55,12 @@ class LaunchViewModel(
 
     private var _enabledLoginButtonLiveData = MutableLiveData(false)
     var enabledLoginButtonLiveData: LiveData<Boolean> = _enabledLoginButtonLiveData
+
+    private var application: EdnaThreadsApplication? = null
+
+    fun provideApplication(application: EdnaThreadsApplication?) {
+        this.application = application
+    }
 
     override fun onCreate(owner: LifecycleOwner) {
         super.onCreate(owner)
@@ -83,33 +84,31 @@ class LaunchViewModel(
         when (view.id) {
             R.id.serverButton -> navigationController.navigate(R.id.action_LaunchFragment_to_ServerListFragment)
             R.id.demonstrations -> navigationController.navigate(R.id.action_LaunchFragment_to_DemonstrationsListFragment)
-            R.id.uiTheme -> themeSelectorLiveData.postValue(ThreadsLib.getInstance().currentUiTheme)
             R.id.userButton -> navigationController.navigate(R.id.action_LaunchFragment_to_UserListFragment)
             R.id.login -> { login(navigationController) }
         }
     }
 
-    fun saveUserSelectedUiTheme(theme: CurrentUiTheme) {
-        coroutineScope.launch {
-            ThreadsLib.getInstance().currentUiTheme = theme
-            currentUiThemeLiveData.postValue(getCurrentUiTheme(theme))
-            applyCurrentUiTheme(theme)
+    fun callInitUser(user: UserInfo) {
+        if (isPreregisterEnabled) {
+            application?.chatCenterUI?.forceAuthorize(
+                ChatUser(user.userId!!, data = user.userData?.jsonStringToMap()),
+                ChatAuth(user.authorizationHeader, user.xAuthSchemaHeader, signature = user.signature)
+            )
+        } else {
+            application?.chatCenterUI?.authorize(
+                ChatUser(user.userId!!, data = user.userData?.jsonStringToMap()),
+                ChatAuth(
+                    user.authorizationHeader,
+                    user.xAuthSchemaHeader,
+                    signature = user.signature
+                )
+            )
         }
     }
 
-    fun callInitUser(user: UserInfo) {
-        ThreadsLib.getInstance().initUser(
-            UserInfoBuilder(user.userId!!)
-                .setAuthData(user.authorizationHeader, user.xAuthSchemaHeader)
-                .setClientData(user.userData)
-                .setClientIdSignature(user.signature)
-                .setAppMarker(user.appMarker),
-            isPreregisterEnabled
-        )
-    }
-
     private fun login(navigationController: NavController) {
-        if (!ThreadsLib.isInitialized()) {
+        if (application?.chatCenterUI == null) {
             return
         }
 
@@ -118,22 +117,13 @@ class LaunchViewModel(
         val isUserHasRequiredFields = user?.userId != null
 
         if (serverConfig != null && isUserHasRequiredFields) {
-            var apiVersion: ApiVersionEnum? = _selectedApiVersionLiveData.value?.let {
-                ApiVersionEnum.createApiVersionEnum(it)
+            var apiVersion: ChatApiVersion? = _selectedApiVersionLiveData.value?.let {
+                ChatApiVersion.createApiVersionEnum(it)
             }
             if (apiVersion == null) {
-                apiVersion = ApiVersionEnum.defaultApiVersionEnum
+                apiVersion = ChatApiVersion.defaultApiVersionEnum
             }
-            BaseConfig.getInstance().apiVersion = apiVersion
-
-            ThreadsLib.changeServerSettings(
-                serverConfig.serverBaseUrl,
-                serverConfig.datastoreUrl,
-                serverConfig.threadsGateUrl,
-                serverConfig.threadsGateProviderUid,
-                serverConfig.trustedSSLCertificates,
-                serverConfig.allowUntrustedSSLCertificate
-            )
+            application?.initChatCenterUI(serverConfig, apiVersion)
             if (user != null && !isPreregisterEnabled) callInitUser(user)
             navigationController.navigate(R.id.action_LaunchFragment_to_ChatAppFragment)
         }
@@ -150,29 +140,13 @@ class LaunchViewModel(
     }
 
     internal fun checkUiTheme() {
-        if (ThreadsLib.isInitialized()) {
-            val uiTheme = ThreadsLib.getInstance().currentUiTheme
-            currentUiThemeLiveData.postValue(getCurrentUiTheme(uiTheme))
-            applyCurrentUiTheme(uiTheme)
+        if (application?.chatCenterUI != null) {
+            applyCurrentUiTheme(CurrentUiTheme.SYSTEM)
         }
     }
 
     private fun initPreregisterCheckbox() {
         _preregisterLiveData.postValue(isPreregisterEnabled)
-    }
-
-    private fun getCurrentUiTheme(currentUiTheme: CurrentUiTheme): UiTheme {
-        return when (currentUiTheme) {
-            CurrentUiTheme.LIGHT -> UiTheme.LIGHT
-            CurrentUiTheme.DARK -> UiTheme.DARK
-            CurrentUiTheme.SYSTEM -> {
-                if (uiThemeProvider.isDarkThemeOn()) {
-                    UiTheme.DARK
-                } else {
-                    UiTheme.LIGHT
-                }
-            }
-        }
     }
 
     fun callFragmentResultListener(key: String, bundle: Bundle) {
@@ -254,6 +228,7 @@ class LaunchViewModel(
                     if (server.name == it.name) {
                         return ServerConfig(
                             it.name,
+                            it.appMarker,
                             it.threadsGateProviderUid,
                             it.datastoreUrl,
                             it.serverBaseUrl,
@@ -262,7 +237,8 @@ class LaunchViewModel(
                             it.isShowMenu,
                             it.filesAndMediaMenuItemEnabled,
                             it.trustedSSLCertificates,
-                            it.allowUntrustedSSLCertificate
+                            it.allowUntrustedSSLCertificate,
+                            it.isInputEnabled
                         )
                     }
                 }

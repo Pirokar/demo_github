@@ -19,7 +19,7 @@ val appModule = module {
     single { PreferencesProvider(get()) }
     single { UiThemeProvider(get()) }
     factory { ServersProvider(get(), get()) }
-    viewModel { LaunchViewModel(get(), get(), get()) }
+    viewModel { LaunchViewModel(get(), get()) }
     viewModel { UserListViewModel(get()) }
     viewModel { AddUserViewModel(get()) }
     viewModel { ServerListViewModel(get(), get()) }

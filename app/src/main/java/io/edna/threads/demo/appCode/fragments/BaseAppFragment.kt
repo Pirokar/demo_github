@@ -10,10 +10,11 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.viewbinding.ViewBinding
-import im.threads.ui.core.ThreadsLib
+import im.threads.ui.core.ChatCenterUI
 import im.threads.ui.extensions.isDarkThemeOn
 import im.threads.ui.fragments.ChatFragment
 import io.edna.threads.demo.R
+import io.edna.threads.demo.appCode.EdnaThreadsApplication
 import io.edna.threads.demo.appCode.fragments.demoSamplesList.DemoSamplesListFragment
 import io.edna.threads.demo.integrationCode.fragments.chatFragment.ChatAppFragment
 import java.lang.ref.WeakReference
@@ -22,6 +23,10 @@ abstract class BaseAppFragment<T : ViewBinding>(
     private val bindingInflater: (layoutInflater: LayoutInflater) -> T
 ) : Fragment() {
     protected var fragment: WeakReference<ChatFragment>? = null
+    protected val chatCenterUI: ChatCenterUI?
+        get() {
+            return (context?.applicationContext as? EdnaThreadsApplication)?.chatCenterUI
+        }
     private var binding: WeakReference<T>? = null
 
     override fun onCreateView(
@@ -59,14 +64,14 @@ abstract class BaseAppFragment<T : ViewBinding>(
         val chatBackPressed = fragment?.get()?.onBackPressed() == true
         if ((chatBackPressed || isDemoListFragment) && isAdded) {
             if (this@BaseAppFragment is ChatAppFragment || this@BaseAppFragment is DemoSamplesListFragment) {
-                ThreadsLib.getInstance().logoutClient()
+                chatCenterUI?.logout()
             }
             findNavController().navigateUp()
         }
     }
 
     protected fun setToolbarColor() = getBinding()?.apply {
-        if (ThreadsLib.isInitialized()) {
+        if (chatCenterUI != null) {
             context?.let { context ->
                 val toolbar = try {
                     root.findViewById<Toolbar>(R.id.toolbar)

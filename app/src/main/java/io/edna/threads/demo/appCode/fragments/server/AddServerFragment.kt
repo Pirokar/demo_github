@@ -25,6 +25,7 @@ class AddServerFragment : BaseAppFragment<FragmentAddServerBinding>(FragmentAddS
 
     private fun subscribeForTextWatchers() = getBinding()?.apply {
         name.setTextChangedListener(viewModel.nameTextWatcher)
+        appMarker.setTextChangedListener(viewModel.appMarkerTextWatcher)
         providerId.setTextChangedListener(viewModel.providerIdTextWatcher)
         baseUrl.setTextChangedListener(viewModel.baseUrlTextWatcher)
         datastoreUrl.setTextChangedListener(viewModel.datastoreUrlTextWatcher)
@@ -42,6 +43,7 @@ class AddServerFragment : BaseAppFragment<FragmentAddServerBinding>(FragmentAddS
         }
         viewModel.serverConfigLiveData.observe(viewLifecycleOwner) {
             name.text = it.name
+            appMarker.text = it.appMarker
             providerId.text = it.threadsGateProviderUid
             baseUrl.text = it.serverBaseUrl
             datastoreUrl.text = it.datastoreUrl

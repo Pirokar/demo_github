@@ -5,11 +5,11 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import im.threads.BuildConfig
-import im.threads.business.config.BaseConfig
 import io.edna.threads.demo.BaseTestCase
 import io.edna.threads.demo.appCode.activity.MainActivity
 import io.edna.threads.demo.assert
 import io.edna.threads.demo.kaspressoSreens.ChatMainScreen
+import io.edna.threads.demo.waitForExists
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -29,8 +29,9 @@ class ServerNotFoundTest : BaseTestCase() {
     @Test
     fun testServerNotFound() {
         openChatFromDemoLoginPage()
-        Thread.sleep(BaseConfig.getInstance().requestConfig.socketClientSettings.connectTimeoutMillis)
+        Thread.sleep(config.networkConfig.httpConfig.connectionTimeout * 1000L)
         ChatMainScreen {
+            errorImage.waitForExists(60000)
             errorImage {
                 assert("Изображение с ошибкой должно быть видимо") { isVisible() }
             }

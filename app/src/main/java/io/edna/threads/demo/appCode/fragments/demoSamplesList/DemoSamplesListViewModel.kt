@@ -5,8 +5,8 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import im.threads.business.UserInfoBuilder
-import im.threads.ui.core.ThreadsLib
+import im.threads.business.config.ChatUser
+import im.threads.ui.core.ChatCenterUI
 import io.edna.threads.demo.R
 import io.edna.threads.demo.appCode.business.StringsProvider
 import io.edna.threads.demo.appCode.business.VolatileLiveData
@@ -24,15 +24,24 @@ class DemoSamplesListViewModel(
     val demoSamplesLiveData: LiveData<List<DemoSamplesListItem>> = mutableDemoSamplesLiveData
     val navigationLiveData = VolatileLiveData<Int>()
 
+    private var chatCenterUI: ChatCenterUI? = null
+
     override fun onCreate(owner: LifecycleOwner) {
         super.onCreate(owner)
         createData()
     }
 
+    fun providerChatCenterUI(chatCenterUI: ChatCenterUI?) {
+        this.chatCenterUI = chatCenterUI
+    }
+
     fun onItemClick(item: DemoSamplesListItem) {
         if (item is TEXT) {
             currentJsonProvider.saveCurrentJson(item.json)
-            ThreadsLib.getInstance().initUser(UserInfoBuilder("333"))
+            chatCenterUI?.authorize(
+                ChatUser("333"),
+                null
+            )
             navigationLiveData.setValue(R.id.action_DemoSamplesListFragment_to_DemoSamplesFragment)
         }
     }
