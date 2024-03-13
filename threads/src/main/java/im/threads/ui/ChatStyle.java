@@ -37,11 +37,6 @@ public final class ChatStyle implements Serializable {
 
     public boolean isSearchLoaderVisible = true;
 
-    /**
-     * Определяет доступность системного пикера
-     */
-    public boolean useSystemFilePicker = true;
-
     @DrawableRes
     public Integer searchLoaderDrawable = null;
 
@@ -2129,14 +2124,6 @@ public final class ChatStyle implements Serializable {
     ) {
         this.isClearSearchBtnVisible = isClearSearchBtnVisible;
         this.isSearchLoaderVisible = isSearchLoaderVisible;
-        return this;
-    }
-
-    /**
-     * Отключает системный файл пикер и включает кастомный
-     */
-    public ChatStyle disableSystemFilePicker() {
-        this.useSystemFilePicker = false;
         return this;
     }
 
