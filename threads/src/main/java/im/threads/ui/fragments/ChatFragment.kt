@@ -53,6 +53,8 @@ import im.threads.business.audio.audioRecorder.AudioRecorder
 import im.threads.business.broadcastReceivers.ProgressReceiver
 import im.threads.business.chatUpdates.ChatUpdateProcessor
 import im.threads.business.config.BaseConfig
+import im.threads.business.extensions.throttle
+import im.threads.business.extensions.toFlow
 import im.threads.business.extensions.withMainContext
 import im.threads.business.imageLoading.ImageLoader.Companion.get
 import im.threads.business.logger.LogZipSender
@@ -136,15 +138,18 @@ import im.threads.ui.views.recordview.VoiceOnRecordListener
 import im.threads.ui.views.recordview.VoiceRecordOnBasketAnimationEnd
 import im.threads.ui.views.recordview.VoiceRecordOnRecordClickListener
 import io.reactivex.Completable
-import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -171,7 +176,7 @@ class ChatFragment :
     private val preferences: Preferences by inject()
     private val handler = Handler(Looper.getMainLooper())
     private val fileNameDateFormat = SimpleDateFormat("dd.MM.yyyy.HH:mm:ss.S", Locale.getDefault())
-    private val inputTextObservable = BehaviorSubject.createDefault("")
+    private val inputTextObservable = MutableStateFlow("")
     internal val fileDescription = BehaviorSubject.createDefault(Optional.empty<FileDescription?>())
     private val mediaMetadataRetriever = MediaMetadataRetriever()
     private val audioConverter = ChatCenterAudioConverter()
@@ -200,6 +205,7 @@ class ChatFragment :
     private var previousChatItemsCount = 0
     private val config = Config.getInstance()
     private val coroutineScope = lifecycle.coroutineScope
+    private var typingCoroutineScope: CoroutineScope? = null
 
     private val pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
         if (uri != null) {
@@ -232,7 +238,6 @@ class ChatFragment :
         setFragmentStyle()
         initMediaPlayer()
         subscribeToFileDescription()
-        subscribeToInputText()
         isShown = true
         return binding!!.root
     }
@@ -337,6 +342,7 @@ class ChatFragment :
         BaseConfig.getInstance().transport.setLifecycle(null)
         chatController.onViewDestroy()
         chatAdapter?.onDestroyView()
+        typingCoroutineScope?.cancel()
         binding = null
         super.onDestroyView()
     }
@@ -840,22 +846,25 @@ class ChatFragment :
     }
 
     fun configureUserTypingSubscription() {
-        coroutineScope.launch {
+        typingCoroutineScope?.cancel()
+        typingCoroutineScope = CoroutineScope(Dispatchers.IO)
+        typingCoroutineScope?.launch {
             delay(500)
-            var typingIntervalSeconds = INPUT_DELAY
+            var typingIntervalSeconds = 1
             preferences.get<Int>(PreferencesCoreKeys.TYPING_MESSAGES_INTERVAL_SECONDS)?.let {
                 typingIntervalSeconds = it
             }
             withContext(Dispatchers.Main) {
-                subscribe(
-                    inputTextObservable
-                        .throttleLatest(typingIntervalSeconds.toLong(), TimeUnit.SECONDS)
-                        .filter { charSequence: String -> charSequence.isNotEmpty() }
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe({ input: String? ->
-                            onInputChanged(input)
-                        }) { error: Throwable? -> error("configureInputChangesSubscription ", error) }
-                )
+                inputTextObservable
+                    .throttle(
+                        typingIntervalSeconds * 1000L,
+                        filter = { it.isNotBlank() }
+                    )
+                    .collect { text ->
+                        if (text.isNotBlank() && isActive) {
+                            onInputChanged(text)
+                        }
+                    }
             }
         }
     }
@@ -871,20 +880,13 @@ class ChatFragment :
     }
 
     private fun configureRecordButtonVisibility() {
-        val recordButtonVisibilityDisposable = Observable.combineLatest(
-            inputTextObservable,
-            fileDescription
-        ) { s: String, fileDescriptionOptional: Optional<FileDescription?>? ->
-            (
-                (TextUtils.isEmpty(s) || s.trim { it <= ' ' }.isEmpty()) &&
-                    (fileDescriptionOptional == null || fileDescriptionOptional.isEmpty)
-                )
+        CoroutineScope(Dispatchers.Main).launch {
+            combine(inputTextObservable, fileDescription.toFlow()) { s, fileDescriptionOptional ->
+                (s.isBlank() && (fileDescriptionOptional == null || fileDescriptionOptional.isEmpty))
+            }.collect { isInputEmpty ->
+                setRecordButtonVisibility(isInputEmpty)
+            }
         }
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { isInputEmpty: Boolean -> setRecordButtonVisibility(isInputEmpty) }
-            ) { error: Throwable? -> error("configureInputChangesSubscription ", error) }
-        subscribe(recordButtonVisibilityDisposable)
     }
 
     private fun setRecordButtonVisibility(isInputEmpty: Boolean) {
@@ -952,18 +954,6 @@ class ChatFragment :
         )
     }
 
-    private fun subscribeToInputText() {
-        subscribe(
-            inputTextObservable
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    onInputChanged(it)
-                }, {
-                    error(it)
-                })
-        )
-    }
-
     private fun onRefresh() {
         if (chatController.isChatReady()) {
             chatController.onSwipeToRefresh()
@@ -1022,7 +1012,7 @@ class ChatFragment :
                 } else {
                     inputEditView.maxLines = INPUT_EDIT_VIEW_MAX_LINES_COUNT
                 }
-                inputTextObservable.onNext(s.toString())
+                coroutineScope.launch { inputTextObservable.emit(s.toString()) }
                 sendMessage.isEnabled = !TextUtils.isEmpty(s) || hasAttachments()
             }
         })
@@ -1257,7 +1247,8 @@ class ChatFragment :
                             show(requireContext(), getString(R.string.ecc_failed_to_open_file))
                             return@subscribe
                         }
-                        val inputText = inputTextObservable.value ?: return@subscribe
+                        if (inputTextObservable.value.isBlank()) return@subscribe
+                        val inputText = inputTextObservable.value
                         coroutineScope.launch {
                             val messagesDef = async(Dispatchers.IO) {
                                 getUpcomingUserMessagesFromSelection(
@@ -1413,7 +1404,7 @@ class ChatFragment :
             fileDescription,
             campaignMessage,
             mQuote,
-            inputText?.trim { it <= ' ' },
+            inputText.trim { it <= ' ' },
             false
         )
         sendMessage(listOf(uum))
@@ -2786,7 +2777,6 @@ class ChatFragment :
         internal const val REQUEST_PERMISSION_RECORD_AUDIO = 204
         private const val ARG_OPEN_WAY = "arg_open_way"
         private const val INVISIBLE_MESSAGES_COUNT = 3
-        private const val INPUT_DELAY: Int = 3
         private const val INPUT_EDIT_VIEW_MIN_LINES_COUNT = 1
         private const val INPUT_EDIT_VIEW_MAX_LINES_COUNT = 7
         var isShown = false

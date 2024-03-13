@@ -724,8 +724,7 @@ class ChatController private constructor() {
                             val responseBody = response.body()
                             if (responseBody != null) {
                                 val settingsLoaded = updateSettings(responseBody.settings)
-                                val attachmentSettingsLoaded =
-                                    updateAttachmentSettings(responseBody.attachmentSettings)
+                                val attachmentSettingsLoaded = updateAttachmentSettings(responseBody.attachmentSettings)
                                 updateSchedule(responseBody.schedule)
                                 if (settingsLoaded && attachmentSettingsLoaded) {
                                     chatState.changeState(ChatStateEnum.SETTINGS_LOADED)
