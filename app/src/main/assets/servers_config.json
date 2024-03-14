@@ -24,9 +24,9 @@
     {
       "name": "Mobile 4",
       "threadsGateProviderUid": "MOBILE4_HwZ9QhTihb2d8U3I17dBHy1NB9vA9XVkMz65",
-      "serverBaseUrl": "https://mobile4.dev.flex.mfms.ru/",
-      "datastoreUrl": "https://mobile4.dev.flex.mfms.ru/",
-      "threadsGateUrl": "ws://mobile4.dev.flex.mfms.ru/gate/socket",
+      "serverBaseUrl": "https://arm-mobile4-ecc.edna.ru/",
+      "datastoreUrl": "https://arm-mobile4-ecc.edna.ru/",
+      "threadsGateUrl": "wss://arm-mobile4-ecc.edna.ru/gate/socket",
       "trustedSSLCertificates": [
         "edna"
       ]
