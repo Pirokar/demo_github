@@ -1796,7 +1796,9 @@ class ChatFragment :
             return
         }
         handler.post {
-            if (!isAdded || fdMediaPlayer == null || chatAdapterCallback == null) { return@post }
+            if (!isAdded || fdMediaPlayer == null || chatAdapterCallback == null) {
+                return@post
+            }
             chatAdapter = ChatAdapter(
                 chatAdapterCallback!!,
                 fdMediaPlayer!!,
