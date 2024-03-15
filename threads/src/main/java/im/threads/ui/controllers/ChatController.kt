@@ -64,7 +64,6 @@ import im.threads.business.state.ChatStateEnum
 import im.threads.business.transport.ChatItemProviderData
 import im.threads.business.transport.HistoryLoader
 import im.threads.business.transport.HistoryParser
-import im.threads.business.transport.ServerConnectionException
 import im.threads.business.transport.TransportException
 import im.threads.business.transport.models.Attachment
 import im.threads.business.transport.models.ContentAttachmentSettings
@@ -684,7 +683,8 @@ class ChatController private constructor() {
                         ) { e: Throwable? ->
                             isDownloadingMessages = false
                             error(e)
-                            if (e is ServerConnectionException) {
+                            val errorConnectionMessage = appContext.getString(chatStyle.networkErrorText)
+                            if (e?.message == errorConnectionMessage) {
                                 chatUpdateProcessor.postError(TransportException(e.message))
                             } else {
                                 if (fragment != null) {

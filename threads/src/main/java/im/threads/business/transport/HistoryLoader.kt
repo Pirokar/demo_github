@@ -64,17 +64,13 @@ class HistoryLoader(private val demoModeProvider: DemoModeProvider, private val 
             if (response?.isSuccessful != true) {
                 val message = getNetworkErrorMessage(response)
                 error("error loading history: $message")
-                if (message.isNullOrEmpty()) {
-                    throw IOException()
-                } else {
-                    throw ServerConnectionException(message)
-                }
+                throw IOException(message)
             } else {
                 return response.body()
             }
         } else {
             error(ThreadsApi.REST_TAG, "Error when loading history - token is empty!")
-            throw IOException()
+            throw IOException("Error when loading history - token is empty")
         }
     }
 
@@ -107,7 +103,7 @@ class HistoryLoader(private val demoModeProvider: DemoModeProvider, private val 
         } else if (response?.code() in 400..599) {
             Config.getInstance().context.getString(Config.getInstance().chatStyle.networkErrorText)
         } else {
-            null
+            response?.message() ?: "Error during load history."
         }
     }
 }
