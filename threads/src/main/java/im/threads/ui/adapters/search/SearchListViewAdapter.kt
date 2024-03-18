@@ -16,6 +16,7 @@ import im.threads.business.utils.FileUtils.toAbsoluteUrl
 import im.threads.business.utils.UrlUtils
 import im.threads.databinding.EccItemSearchResultBinding
 import im.threads.ui.config.Config
+import im.threads.ui.core.ThreadsLib
 import im.threads.ui.holders.BaseHolder
 import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.utils.invisible
@@ -80,7 +81,9 @@ internal class SearchListViewAdapter(private val onClickCallback: (String?, date
             message: MessageFromHistory
         ) {
             nameTextView.setTextColor(ContextCompat.getColor(context, chatStyle.searchResultsItemNameTextColor))
-            nameTextView.text = message.operator?.name ?: this@SearchListViewHolder.itemView.context.getString(R.string.ecc_I)
+            nameTextView.text = message.operator?.name
+                ?: ThreadsLib.getInstance().userName
+                ?: this@SearchListViewHolder.itemView.context.getString(R.string.ecc_you)
         }
 
         private fun setMessageText(

@@ -6,7 +6,6 @@ import android.view.View
 import android.view.View.OnLongClickListener
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
@@ -25,6 +24,7 @@ import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.utils.gone
 import im.threads.ui.utils.visible
 import im.threads.ui.views.CircularProgressButton
+import im.threads.ui.views.QuoteHolderView
 import io.reactivex.subjects.PublishSubject
 
 class ConsultFileViewHolder(
@@ -36,12 +36,7 @@ class ConsultFileViewHolder(
     highlightingStream,
     openGraphParser
 ) {
-    private val quoteLayout: LinearLayout = itemView.findViewById(R.id.quoteLayout)
-    private val quoteTextHeader: TextView = itemView.findViewById(R.id.quoteTo)
-    private val quoteTextDescription: TextView = itemView.findViewById(R.id.quoteFileSpecs)
-    private val quoteTextTimeStamp: TextView = itemView.findViewById(R.id.quoteSendAt)
-    private val quoteFileImage = itemView.findViewById<ImageView>(R.id.quoteFileImage)
-    private val quoteProgressButton: CircularProgressButton = itemView.findViewById(R.id.quoteButtonDownload)
+    private val quoteView: QuoteHolderView = itemView.findViewById(R.id.quoteView)
     private val mCircularProgressButton: CircularProgressButton = itemView.findViewById(R.id.circ_button)
     private val errorText: TextView = itemView.findViewById(R.id.errorText)
     private val loader: ImageView = itemView.findViewById(R.id.loader)
@@ -65,8 +60,6 @@ class ConsultFileViewHolder(
     }
 
     init {
-        itemView.findViewById<View>(R.id.quoteDelimiter)
-            .setBackgroundColor(getColorInt(style.incomingDelimitersColor))
         itemView.findViewById<View>(R.id.delimiter)
             .setBackgroundColor(getColorInt(style.incomingDelimitersColor))
         setTextColorToViews(arrayOf(mFileHeader, mSizeTextView), style.incomingMessageTextColor)
@@ -84,20 +77,12 @@ class ConsultFileViewHolder(
     ) {
         subscribeForHighlighting(consultPhrase, rootLayout)
         applyBubbleLayoutStyle()
-        consultPhrase.quote?.let {
-            showQuote(
-                it,
-                onQuoteClickListener,
-                quoteLayout,
-                quoteTextHeader,
-                quoteTextDescription,
-                quoteTextTimeStamp,
-                quoteFileImage,
-                quoteProgressButton
-            )
-        } ?: run {
-            quoteLayout.isVisible = false
-        }
+        showQuote(
+            quote = consultPhrase.quote,
+            quoteView = quoteView,
+            onQuoteClickListener = onQuoteClickListener,
+            isIncoming = true
+        )
         showFile(consultPhrase.fileDescription)
         showConsultTimeStamp(consultPhrase, listOf(timeStampTextView))
         val vg = itemView as ViewGroup

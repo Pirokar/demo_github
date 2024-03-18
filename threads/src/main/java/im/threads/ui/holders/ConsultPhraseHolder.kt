@@ -11,7 +11,6 @@ import android.view.ViewGroup.MarginLayoutParams
 import android.view.animation.Animation
 import android.widget.FrameLayout
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
@@ -36,6 +35,7 @@ import im.threads.ui.utils.gone
 import im.threads.ui.utils.invisible
 import im.threads.ui.utils.visible
 import im.threads.ui.views.CircularProgressButton
+import im.threads.ui.views.QuoteHolderView
 import im.threads.ui.widget.textView.BubbleMessageTextView
 import im.threads.ui.widget.textView.BubbleTimeTextView
 import io.reactivex.subjects.PublishSubject
@@ -55,12 +55,7 @@ class ConsultPhraseHolder(
     openGraphParser
 ) {
     private val fileRow: View = itemView.findViewById(R.id.rightTextRow)
-    private val quoteLayout: LinearLayout = itemView.findViewById(R.id.quoteLayout)
-    private val quoteTextHeader: TextView = itemView.findViewById(R.id.quoteTo)
-    private val quoteTextDescription: TextView = itemView.findViewById(R.id.quoteFileSpecs)
-    private val quoteTextTimeStamp: TextView = itemView.findViewById(R.id.quoteSendAt)
-    private val quoteFileImage = itemView.findViewById<ImageView>(R.id.quoteFileImage)
-    private val quoteProgressButton: CircularProgressButton = itemView.findViewById(R.id.quoteButtonDownload)
+    private val quoteView: QuoteHolderView = itemView.findViewById(R.id.quoteView)
     private val circularProgressButton: CircularProgressButton = itemView.findViewById(R.id.buttonDownload)
     private val errorTextView: TextView = itemView.findViewById(R.id.errorText)
     private val fileImage = itemView.findViewById<ImageView>(R.id.fileImage)
@@ -116,8 +111,6 @@ class ConsultPhraseHolder(
     init {
         itemView.findViewById<View>(R.id.delimiter)
             .setBackgroundColor(getColorInt(style.incomingDelimitersColor))
-        itemView.findViewById<View>(R.id.quoteDelimiter)
-            .setBackgroundColor(getColorInt(style.incomingDelimitersColor))
         setTextColorToViews(
             arrayOf(
                 phraseTextView,
@@ -155,7 +148,6 @@ class ConsultPhraseHolder(
         showConsultTimeStamp(consultPhrase, listOf(ogTimestamp, timeStampTextView))
         imageLayout.isVisible = false
         fileRow.isVisible = false
-        quoteLayout.isVisible = false
         imageRoot.isVisible = false
         setLayoutMargins(true, bubbleLayout)
         changeHighlighting(highlighted)
@@ -176,22 +168,12 @@ class ConsultPhraseHolder(
             } ?: run {
                 phraseTextView.isVisible = false
             }
-
-            consultPhrase.quote?.let {
-                showQuote(
-                    it,
-                    onQuoteClickListener,
-                    quoteLayout,
-                    quoteTextHeader,
-                    quoteTextDescription,
-                    quoteTextTimeStamp,
-                    quoteFileImage,
-                    quoteProgressButton
-                )
-            } ?: run {
-                quoteLayout.isVisible = false
-            }
-
+            showQuote(
+                quote = consultPhrase.quote,
+                quoteView = quoteView,
+                onQuoteClickListener = onQuoteClickListener,
+                isIncoming = true
+            )
             consultPhrase.fileDescription?.let {
                 when (it.state) {
                     AttachmentStateEnum.PENDING -> {
@@ -243,7 +225,7 @@ class ConsultPhraseHolder(
 
             if (isBordersNotSet) {
                 phraseFrame.setPadding(0, 0, 0, 0)
-                quoteLayout.setPadding(0, 0, 0, 0)
+                quoteView.setPadding(0, 0, 0, 0)
                 setPaddings(true, this)
             } else {
                 setPadding(0, 0, 0, 0)
@@ -257,7 +239,7 @@ class ConsultPhraseHolder(
                     borderRight,
                     resources.getDimensionPixelSize(style.bubbleIncomingPaddingBottom)
                 )
-                quoteLayout.setPadding(
+                quoteView.setPadding(
                     borderLeft,
                     resources.getDimensionPixelSize(style.bubbleIncomingPaddingTop),
                     borderRight,
@@ -278,7 +260,7 @@ class ConsultPhraseHolder(
             imageRoot.gone()
 
             phraseFrame.setPadding(0, 0, 0, 0)
-            quoteLayout.setPadding(0, 0, 0, 0)
+            quoteView.setPadding(0, 0, 0, 0)
             setPaddings(true, this)
         }
     }

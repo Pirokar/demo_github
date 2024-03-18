@@ -28,7 +28,6 @@ import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.imageLoading.ImageLoader.Companion.get
 import im.threads.business.imageLoading.ImageModifications
 import im.threads.business.media.FileDescriptionMediaPlayer
-import im.threads.business.models.CampaignMessage
 import im.threads.business.models.ChatItem
 import im.threads.business.models.FileDescription
 import im.threads.business.models.MessageStatus
@@ -46,6 +45,7 @@ import im.threads.ui.utils.invisible
 import im.threads.ui.utils.isVisible
 import im.threads.ui.utils.visible
 import im.threads.ui.views.CircularProgressButton
+import im.threads.ui.views.QuoteHolderView
 import im.threads.ui.views.VoiceTimeLabelFormatter
 import im.threads.ui.views.formatAsDuration
 import im.threads.ui.widget.textView.BubbleMessageTextView
@@ -86,17 +86,13 @@ class UserPhraseViewHolder(
     private var formattedDuration = ""
 
     private val rootLayout: RelativeLayout = itemView.findViewById(R.id.rootLayout)
+    private val quoteView: QuoteHolderView = itemView.findViewById(R.id.quoteView)
     private val rightTextRow: TableRow = itemView.findViewById(R.id.rightTextRow)
     private val image: ImageView = itemView.findViewById(R.id.image)
     private val imageRoot: FrameLayout = itemView.findViewById(R.id.imageRoot)
     private val imageLayout: FrameLayout = itemView.findViewById(R.id.imageLayout)
     private val errorImage: ImageView = itemView.findViewById(R.id.errorImage)
     private val rightTextDescription: TextView = itemView.findViewById(R.id.fileSpecs)
-    private val quoteTextRow: TableRow = itemView.findViewById(R.id.quoteTextRow)
-    private val quoteImage: ImageView = itemView.findViewById(R.id.quoteImage)
-    private val quoteTextDescription: TextView = itemView.findViewById(R.id.quoteFileSpecs)
-    private val quoteTextHeader: TextView = itemView.findViewById(R.id.quoteTo)
-    private val quoteTextTimeStamp: TextView = itemView.findViewById(R.id.quoteSendAt)
     private val phraseFrame: FrameLayout = itemView.findViewById(R.id.phraseFrame)
     private val ogDataLayout: ViewGroup = itemView.findViewById(R.id.ogDataLayout)
     private val slider: Slider = itemView.findViewById(R.id.voiceMessageUserSlider)
@@ -143,15 +139,11 @@ class UserPhraseViewHolder(
                 phraseTextView,
                 rightTextHeader,
                 rightTextTimeStamp,
-                fileSizeTextView,
-                quoteTextDescription,
-                quoteTextHeader,
-                quoteTextTimeStamp
+                fileSizeTextView
             ),
             style.outgoingMessageTextColor
         )
         itemView.findViewById<View>(R.id.delimiter).setBackgroundColor(getColorInt(style.outgoingDelimitersColor))
-        itemView.findViewById<View>(R.id.quoteDelimiter).setBackgroundColor(getColorInt(style.outgoingDelimitersColor))
         ColorsHelper.setTextColor(errorText, style.errorMessageTextColor)
         setUpProgressButton(fileImageButton)
     }
@@ -189,7 +181,6 @@ class UserPhraseViewHolder(
         val timeStamp = userPhrase.timeStamp
         val sendState = userPhrase.sentState
         val quote = userPhrase.quote
-        val campaignMessage = userPhrase.campaignMessage
         this.formattedDuration = formattedDuration
         viewUtils.setClickListener(rootLayout, onLongClickListener)
         viewUtils.setClickListener(rootLayout, onRowClickListener)
@@ -202,20 +193,13 @@ class UserPhraseViewHolder(
         if (userPhrase.sentState == MessageStatus.FAILED) {
             showErrorText()
         }
-        quote?.let {
-            showQuote(
-                it,
-                onQuoteClickListener,
-                quoteTextRow,
-                quoteTextHeader,
-                quoteTextDescription,
-                quoteTextTimeStamp,
-                quoteImage,
-                null
-            )
-        }
-            ?: campaignMessage?.let { showCampaign(it) }
-
+        showQuote(
+            quote = quote,
+            campaignMessage = userPhrase.campaignMessage,
+            quoteView = quoteView,
+            onQuoteClickListener = onQuoteClickListener,
+            isIncoming = false
+        )
         showFiles(userPhrase, imageClickListener, fileClickListener)
         setTimestamp(timeStamp)
         setSendState(sendState)
@@ -246,10 +230,9 @@ class UserPhraseViewHolder(
 
     private fun hideAll() {
         imageLayout.gone()
-        quoteImage.gone()
+        quoteView.gone()
         fileImageButton.gone()
         voiceMessage.gone()
-        quoteTextRow.gone()
         rightTextRow.gone()
     }
 
@@ -265,6 +248,10 @@ class UserPhraseViewHolder(
 
         setImageSize(imageRoot)
         setLayoutMargins(false, bubbleLayout)
+        (quoteView.layoutParams as LinearLayout.LayoutParams).apply {
+            setMargins(0, 0, 0, 0)
+            quoteView.layoutParams = this
+        }
         if (isImage) {
             imageRoot.visible()
 
@@ -277,7 +264,6 @@ class UserPhraseViewHolder(
 
             if (isBordersNotSet) {
                 phraseFrame.setPadding(borderLeft, 0, borderRight, 0)
-                quoteTextRow.setPadding(borderLeft, 0, borderRight, 0)
                 setPaddings(false, this)
             } else {
                 (image.layoutParams as FrameLayout.LayoutParams).apply {
@@ -290,14 +276,14 @@ class UserPhraseViewHolder(
                     borderRight,
                     resources.getDimensionPixelSize(style.bubbleIncomingPaddingBottom)
                 )
-                (quoteTextRow.layoutParams as LinearLayout.LayoutParams).apply {
+                (quoteView.layoutParams as LinearLayout.LayoutParams).apply {
                     setMargins(
                         borderLeft,
                         resources.getDimensionPixelSize(style.bubbleIncomingPaddingTop),
                         borderRight,
                         resources.getDimensionPixelSize(style.bubbleIncomingPaddingTop)
                     )
-                    quoteTextRow.layoutParams = this
+                    quoteView.layoutParams = this
                 }
                 setPadding(0, 0, 0, 0)
             }
@@ -310,9 +296,7 @@ class UserPhraseViewHolder(
             }
             bubbleLayout.invalidate()
             bubbleLayout.requestLayout()
-
             imageRoot.gone()
-
             phraseFrame.setPadding(0, 0, 0, 0)
             setPaddings(false, this)
         }
@@ -406,8 +390,8 @@ class UserPhraseViewHolder(
                             image.setImageResource(style.imagePlaceholder)
                         }
                         image.post {
-                            if (quoteTextRow.isVisible()) {
-                                quoteTextRow.layoutParams.width = image.width
+                            if (quoteView.isVisible()) {
+                                quoteView.layoutParams.width = image.width
                             }
                         }
                         val chatStyle = Config.getInstance().chatStyle
@@ -451,17 +435,6 @@ class UserPhraseViewHolder(
                 }
             }
         }
-    }
-
-    private fun showCampaign(campaignMessage: CampaignMessage) {
-        quoteTextRow.visible()
-        quoteTextDescription.text = campaignMessage.text
-        quoteTextHeader.text = campaignMessage.senderName
-        val text = parentView.context.resources.getString(
-            R.string.ecc_sent_at,
-            fileSdf.format(campaignMessage.receivedDate)
-        )
-        quoteTextTimeStamp.text = text
     }
 
     override fun init(maxValue: Int, progress: Int, isPlaying: Boolean) {

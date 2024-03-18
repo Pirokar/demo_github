@@ -114,6 +114,7 @@ import im.threads.ui.activities.ImagesActivity.Companion.getStartIntent
 import im.threads.ui.adapters.ChatAdapter
 import im.threads.ui.config.Config
 import im.threads.ui.controllers.ChatController
+import im.threads.ui.core.ThreadsLib
 import im.threads.ui.fragments.PermissionDescriptionAlertFragment.Companion.newInstance
 import im.threads.ui.fragments.PermissionDescriptionAlertFragment.OnAllowPermissionClickListener
 import im.threads.ui.holders.BaseHolder.Companion.statuses
@@ -1198,7 +1199,7 @@ class ChatFragment :
         if (userPhrase != null) {
             mQuote = Quote(
                 userPhrase.id,
-                requireContext().getString(R.string.ecc_I),
+                ThreadsLib.getInstance().userName ?: requireContext().getString(R.string.ecc_you),
                 userPhrase.phraseText,
                 userPhrase.fileDescription,
                 userPhrase.timeStamp
@@ -1298,7 +1299,7 @@ class ChatFragment :
                                 getUpcomingUserMessagesFromSelection(
                                     filteredPhotos,
                                     inputText,
-                                    requireContext().getString(R.string.ecc_I),
+                                    ThreadsLib.getInstance().userName ?: requireContext().getString(R.string.ecc_you),
                                     campaignMessage,
                                     mQuote
                                 )
@@ -1410,7 +1411,14 @@ class ChatFragment :
     private fun onFileResult(uri: Uri) {
         info("onFileSelected: $uri")
         coroutineScope.launch(Dispatchers.IO) {
-            setFileDescription(FileDescription(requireContext().getString(R.string.ecc_I), uri, getFileSize(uri), System.currentTimeMillis()))
+            setFileDescription(
+                FileDescription(
+                    ThreadsLib.getInstance().userName ?: requireContext().getString(R.string.ecc_you),
+                    uri,
+                    getFileSize(uri),
+                    System.currentTimeMillis()
+                )
+            )
             val fileName = getFileName(uri)
             withMainContext {
                 quoteLayoutHolder?.setContent(
@@ -1486,7 +1494,7 @@ class ChatFragment :
                             var fileSize = fileSizes[0]
                             var uum = UpcomingUserMessage(
                                 FileDescription(
-                                    requireContext().getString(R.string.ecc_I),
+                                    ThreadsLib.getInstance().userName ?: requireContext().getString(R.string.ecc_you),
                                     fileUri,
                                     fileSize,
                                     System.currentTimeMillis()
@@ -1508,7 +1516,7 @@ class ChatFragment :
                                 fileSize = fileSizes[i]
                                 uum = UpcomingUserMessage(
                                     FileDescription(
-                                        requireContext().getString(R.string.ecc_I),
+                                        ThreadsLib.getInstance().userName ?: requireContext().getString(R.string.ecc_you),
                                         fileUri,
                                         fileSize,
                                         System.currentTimeMillis()

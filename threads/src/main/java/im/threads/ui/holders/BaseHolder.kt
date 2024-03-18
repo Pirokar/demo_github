@@ -10,7 +10,6 @@ import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.RotateAnimation
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
@@ -32,6 +31,7 @@ import im.threads.business.imageLoading.loadImage
 import im.threads.business.logger.LoggerEdna
 import im.threads.business.markdown.LinkifyLinksHighlighter
 import im.threads.business.markdown.LinksHighlighter
+import im.threads.business.models.CampaignMessage
 import im.threads.business.models.ChatItem
 import im.threads.business.models.ConsultPhrase
 import im.threads.business.models.ExtractedLink
@@ -61,6 +61,7 @@ import im.threads.ui.utils.gone
 import im.threads.ui.utils.invisible
 import im.threads.ui.utils.visible
 import im.threads.ui.views.CircularProgressButton
+import im.threads.ui.views.QuoteHolderView
 import im.threads.ui.widget.textView.BubbleMessageTextView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -748,70 +749,23 @@ abstract class BaseHolder internal constructor(
     }
 
     protected fun showQuote(
-        quote: Quote,
+        quote: Quote?,
+        campaignMessage: CampaignMessage? = null,
+        quoteView: QuoteHolderView,
         onQuoteClickListener: View.OnClickListener?,
-        quoteLayout: LinearLayout,
-        quoteTextHeader: TextView,
-        quoteTextDescription: TextView,
-        quoteTextTimeStamp: TextView,
-        quoteFileImage: ImageView,
-        quoteProgressButton: CircularProgressButton?
+        isIncoming: Boolean
     ) {
-        quoteLayout.isVisible = true
-        if (quote.modified == ModificationStateEnum.DELETED) {
-            quoteTextDescription.setTextColor(ContextCompat.getColor(itemView.context, style.systemMessageTextColorResId))
-            quoteTextDescription.visible()
-            quoteTextDescription.text = itemView.context.getString(R.string.ecc_message_deleted)
-            quoteProgressButton?.visibility = View.GONE
-            quoteFileImage.visibility = View.GONE
+        if (quote != null) {
+            quoteView.isVisible = true
+            quoteView.showQuote(
+                quote,
+                onQuoteClickListener,
+                isIncoming
+            )
+        } else if (campaignMessage != null) {
+            quoteView.showCampaign(campaignMessage)
         } else {
-            quoteProgressButton?.isVisible = false
-            quoteTextHeader.text = if (quote.phraseOwnerTitle == null) {
-                itemView.context
-                    .getString(R.string.ecc_I)
-            } else {
-                quote.phraseOwnerTitle
-            }
-            quoteTextDescription.setTextColor(ContextCompat.getColor(itemView.context, style.incomingMessageTextColor))
-            quoteProgressButton?.visibility = View.GONE
-            quoteTextDescription.text = quote.text
-            quoteTextTimeStamp.text = itemView.context
-                .getString(R.string.ecc_sent_at, quoteSdf.format(Date(quote.timeStamp)))
-            viewUtils.setClickListener(quoteLayout, onQuoteClickListener)
-            val quoteFileDescription = quote.fileDescription
-            quoteFileImage.visibility = View.GONE
-            if (quoteFileDescription != null) {
-                fileNameFromDescription(quoteFileDescription) { fileName ->
-                    quoteTextDescription.text =
-                        getFileDescriptionText(fileName, quoteFileDescription)
-                }
-                if (FileUtils.isVoiceMessage(quoteFileDescription)) {
-                    quoteTextDescription.setText(R.string.ecc_voice_message)
-                } else {
-                    if (FileUtils.isImage(quote.fileDescription)) {
-                        quoteFileImage.visibility = View.VISIBLE
-                        val fileUri = quoteFileDescription.fileUri?.toString()
-                            ?: quoteFileDescription.downloadPath
-                        if (!fileUri.isNullOrEmpty()) {
-                            quoteFileImage.loadImage(
-                                quoteFileDescription.downloadPath,
-                                listOf(
-                                    ImageView.ScaleType.FIT_CENTER,
-                                    ImageView.ScaleType.CENTER_CROP
-                                ),
-                                style.imagePlaceholder,
-                                autoRotateWithExif = true
-                            )
-                        } else {
-                            quoteFileImage.setImageResource(style.imagePlaceholder)
-                        }
-                        quoteFileImage.setOnClickListener(onQuoteClickListener)
-                    } else {
-                        quoteProgressButton?.setOnClickListener(onQuoteClickListener)
-                        quoteProgressButton?.setProgress(if (quoteFileDescription.fileUri != null) 100 else quoteFileDescription.downloadProgress)
-                    }
-                }
-            }
+            quoteView.isVisible = false
         }
     }
 

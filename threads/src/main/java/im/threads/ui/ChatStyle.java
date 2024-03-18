@@ -163,6 +163,28 @@ public final class ChatStyle implements Serializable {
     @ColorRes
     public int outgoingMessageTextColor = R.color.ecc_outgoing_message_text;
 
+    @DrawableRes
+    public int quoteBackgroundResId = R.drawable.ecc_quote_background;
+    @ColorRes
+    public int quoteIconColorRes = R.color.ecc_white;
+    @ColorRes
+    public int quoteOutgoingBackgroundColorRes = R.color.ecc_quote_bg_color;
+    @ColorRes
+    public int quoteOutgoingDelimiterColorRes = R.color.ecc_quote_delimiter_color;
+    @ColorRes
+    public int quoteIncomingBackgroundColorRes = R.color.ecc_quote_bg_color;
+    @ColorRes
+    public int quoteIncomingDelimiterColorRes = R.color.ecc_quote_delimiter_color;
+    @ColorRes
+    public int quoteIncomingAuthorTextColorRes = R.color.ecc_quote_author_color_text;
+    @ColorRes
+    public int quoteIncomingTextColorRes = R.color.ecc_quote_color_text;
+    @ColorRes
+    public int quoteOutgoingAuthorTextColorRes = R.color.ecc_quote_author_color_text;
+    @ColorRes
+    public int quoteOutgoingTextColorRes = R.color.ecc_quote_color_text;
+
+
     @ColorRes
     public int errorMessageTextColor = R.color.ecc_error_red_df0000;
 
@@ -2309,5 +2331,61 @@ public final class ChatStyle implements Serializable {
         stringBuilder.append("voiceMessageEnabled: ").append(voiceMessageEnabled).append(",");
 
         return stringBuilder.toString();
+    }
+
+    /**
+     * Кастомизирует внешний вид цитат во входящих сообщениях
+     * @param quoteIncomingBackgroundColorRes ресурс цвета фона цитаты
+     * @param quoteIncomingDelimiterColorRes ресурс цвета разделителя
+     * @param quoteIncomingAuthorTextColorRes ресурс цвета текста автора цитируемого сообщения
+     * @param quoteIncomingTextColorRes ресурс цвета текста цитируемого сообщения
+     */
+    public ChatStyle setIncomingQuoteViewStyle(
+            @ColorRes Integer quoteIncomingBackgroundColorRes,
+            @ColorRes Integer quoteIncomingDelimiterColorRes,
+            @ColorRes Integer quoteIncomingAuthorTextColorRes,
+            @ColorRes Integer quoteIncomingTextColorRes
+    ) {
+        if (quoteIncomingBackgroundColorRes != null) {
+            this.quoteIncomingBackgroundColorRes = quoteIncomingBackgroundColorRes;
+        }
+        if (quoteIncomingDelimiterColorRes != null) {
+            this.quoteIncomingDelimiterColorRes = quoteIncomingDelimiterColorRes;
+        }
+        if (quoteIncomingAuthorTextColorRes != null) {
+            this.quoteIncomingAuthorTextColorRes = quoteIncomingAuthorTextColorRes;
+        }
+        if (quoteIncomingTextColorRes != null) {
+            this.quoteIncomingTextColorRes = quoteIncomingTextColorRes;
+        }
+        return this;
+    }
+
+    /**
+     * Кастомизирует внешний вид цитат в исходящих сообщениях
+     * @param quoteIncomingBackgroundColorRes ресурс цвета фона цитаты
+     * @param quoteIncomingDelimiterColorRes ресурс цвета разделителя
+     * @param quoteIncomingAuthorTextColorRes ресурс цвета текста автора цитируемого сообщения
+     * @param quoteIncomingTextColorRes ресурс цвета текста цитируемого сообщения
+     */
+    public ChatStyle setOutgoingQuoteViewStyle(
+            @ColorRes Integer quoteOutgoingBackgroundColorRes,
+            @ColorRes Integer quoteOutgoingDelimiterColorRes,
+            @ColorRes Integer quoteOutgoingAuthorTextColorRes,
+            @ColorRes Integer quoteOutgoingTextColorRes
+    ) {
+        if (quoteOutgoingBackgroundColorRes != null) {
+            this.quoteOutgoingBackgroundColorRes = quoteOutgoingBackgroundColorRes;
+        }
+        if (quoteOutgoingDelimiterColorRes != null) {
+            this.quoteOutgoingDelimiterColorRes = quoteOutgoingDelimiterColorRes;
+        }
+        if (quoteOutgoingAuthorTextColorRes != null) {
+            this.quoteOutgoingAuthorTextColorRes = quoteOutgoingAuthorTextColorRes;
+        }
+        if (quoteOutgoingTextColorRes != null) {
+            this.quoteOutgoingTextColorRes = quoteOutgoingTextColorRes;
+        }
+        return this;
     }
 }

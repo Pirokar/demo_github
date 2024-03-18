@@ -26,6 +26,7 @@ import im.threads.business.models.enums.ModificationStateEnum
 import im.threads.business.rest.models.HistoryResponse
 import im.threads.business.serviceLocator.core.inject
 import im.threads.business.utils.DateHelper
+import im.threads.ui.core.ThreadsLib
 import java.util.ArrayList
 
 object HistoryParser {
@@ -149,7 +150,7 @@ object HistoryParser {
                             )
                         } else {
                             if (fileDescription != null) {
-                                fileDescription.from = BaseConfig.getInstance().context.getString(R.string.ecc_I)
+                                fileDescription.from = ThreadsLib.getInstance().userName ?: BaseConfig.getInstance().context.getString(R.string.ecc_you)
                             }
                             val sentState = if (message.errorMock == true) {
                                 MessageStatus.FAILED
@@ -231,7 +232,9 @@ object HistoryParser {
             ) {
                 quoteFileDescription = fileDescriptionFromList(quoteFromHistory.attachments!!)
             }
-            val authorName = quoteFromHistory.operator?.aliasOrName ?: BaseConfig.getInstance().context.getString(R.string.ecc_I)
+            val authorName = quoteFromHistory.operator?.aliasOrName
+                ?: ThreadsLib.getInstance().userName
+                ?: BaseConfig.getInstance().context.getString(R.string.ecc_you)
 
             if (quoteString != null || quoteFileDescription != null) {
                 quote = Quote(quoteFromHistory.uuid, authorName, quoteString, quoteFileDescription, timestamp)

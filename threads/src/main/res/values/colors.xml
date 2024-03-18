@@ -26,6 +26,10 @@
     <color name="ecc_cian_b2dfdb">#b2dfdb</color>
     <color name="ecc_red_f44336">#f44336</color>
     <color name="ecc_error_red_df0000">#df0000</color>
+    <color name="ecc_quote_bg_color">#98EAC6</color>
+    <color name="ecc_quote_delimiter_color">#54DCA0</color>
+    <color name="ecc_quote_author_color_text">#2A6E50</color>
+    <color name="ecc_quote_color_text">#191E23</color>
 
     <!-- Цвета для кастомизации -->
 

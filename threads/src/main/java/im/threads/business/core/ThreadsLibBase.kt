@@ -61,6 +61,7 @@ open class ThreadsLibBase protected constructor(context: Context) {
     private val chatUpdateProcessor: ChatUpdateProcessor by inject()
     private val database: DatabaseHolder by inject()
     private val chatState: ChatState by inject()
+    var userName: String? = null
 
     /**
      * @return time in seconds since the last user activity
