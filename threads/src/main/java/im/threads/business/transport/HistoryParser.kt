@@ -25,12 +25,13 @@ import im.threads.business.models.UserPhrase
 import im.threads.business.models.enums.ModificationStateEnum
 import im.threads.business.rest.models.HistoryResponse
 import im.threads.business.serviceLocator.core.inject
+import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.DateHelper
-import im.threads.ui.core.ThreadsLib
 import java.util.ArrayList
 
 object HistoryParser {
     private val historyLoader: HistoryLoader by inject()
+    private val clientUseCase: ClientUseCase by inject()
 
     fun getChatItems(response: HistoryResponse?): List<ChatItem> {
         var list: List<ChatItem> = ArrayList()
@@ -150,7 +151,7 @@ object HistoryParser {
                             )
                         } else {
                             if (fileDescription != null) {
-                                fileDescription.from = ThreadsLib.getInstance().userName ?: BaseConfig.getInstance().context.getString(R.string.ecc_you)
+                                fileDescription.from = clientUseCase.getUserInfo()?.userName ?: BaseConfig.getInstance().context.getString(R.string.ecc_you)
                             }
                             val sentState = if (message.errorMock == true) {
                                 MessageStatus.FAILED
@@ -233,7 +234,7 @@ object HistoryParser {
                 quoteFileDescription = fileDescriptionFromList(quoteFromHistory.attachments!!)
             }
             val authorName = quoteFromHistory.operator?.aliasOrName
-                ?: ThreadsLib.getInstance().userName
+                ?: clientUseCase.getUserInfo()?.userName
                 ?: BaseConfig.getInstance().context.getString(R.string.ecc_you)
 
             if (quoteString != null || quoteFileDescription != null) {

@@ -19,10 +19,11 @@ import im.threads.business.models.CampaignMessage
 import im.threads.business.models.FileDescription
 import im.threads.business.models.Quote
 import im.threads.business.models.enums.ModificationStateEnum
+import im.threads.business.serviceLocator.core.inject
+import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.FileUtils
 import im.threads.business.utils.toFileSize
 import im.threads.ui.config.Config
-import im.threads.ui.core.ThreadsLib
 import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.utils.ViewUtils
 import kotlinx.coroutines.CoroutineScope
@@ -32,6 +33,7 @@ import kotlinx.coroutines.launch
 class QuoteHolderView : FrameLayout {
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
     private val viewUtils = ViewUtils()
+    private val clientUseCase: ClientUseCase by inject()
     private val config: Config by lazy { Config.getInstance() }
     private val style = config.chatStyle
 
@@ -106,7 +108,7 @@ class QuoteHolderView : FrameLayout {
             }
             quoteAuthor.text =
                 if (quote.phraseOwnerTitle == null) {
-                    ThreadsLib.getInstance().userName ?: context.getString(R.string.ecc_you)
+                    clientUseCase.getUserInfo()?.userName ?: context.getString(R.string.ecc_you)
                 } else {
                     quote.phraseOwnerTitle
                 }

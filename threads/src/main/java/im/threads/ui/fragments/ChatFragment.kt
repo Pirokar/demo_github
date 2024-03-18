@@ -89,6 +89,7 @@ import im.threads.business.preferences.PreferencesCoreKeys
 import im.threads.business.serviceLocator.core.inject
 import im.threads.business.useractivity.UserActivityTimeProvider.getLastUserActivityTimeCounter
 import im.threads.business.utils.Balloon.show
+import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.FileProvider
 import im.threads.business.utils.FileUtils
 import im.threads.business.utils.FileUtils.canBeSent
@@ -113,7 +114,6 @@ import im.threads.ui.activities.ImagesActivity.Companion.getStartIntent
 import im.threads.ui.adapters.ChatAdapter
 import im.threads.ui.config.Config
 import im.threads.ui.controllers.ChatController
-import im.threads.ui.core.ThreadsLib
 import im.threads.ui.fragments.PermissionDescriptionAlertFragment.Companion.newInstance
 import im.threads.ui.fragments.PermissionDescriptionAlertFragment.OnAllowPermissionClickListener
 import im.threads.ui.holders.BaseHolder.Companion.statuses
@@ -177,6 +177,7 @@ class ChatFragment :
     private val mediaMetadataRetriever = MediaMetadataRetriever()
     private val audioConverter = ChatCenterAudioConverter()
     private val chatUpdateProcessor: ChatUpdateProcessor by inject()
+    private val clientUseCase: ClientUseCase by inject()
     private val fileProvider: FileProvider by inject()
     private var fdMediaPlayer: FileDescriptionMediaPlayer? = null
     private val chatController: ChatController by lazy { ChatController.getInstance() }
@@ -1164,7 +1165,7 @@ class ChatFragment :
         if (userPhrase != null) {
             mQuote = Quote(
                 userPhrase.id,
-                ThreadsLib.getInstance().userName ?: requireContext().getString(R.string.ecc_you),
+                clientUseCase.getUserInfo()?.userName ?: requireContext().getString(R.string.ecc_you),
                 userPhrase.phraseText,
                 userPhrase.fileDescription,
                 userPhrase.timeStamp
@@ -1264,7 +1265,7 @@ class ChatFragment :
                                 getUpcomingUserMessagesFromSelection(
                                     filteredPhotos,
                                     inputText,
-                                    ThreadsLib.getInstance().userName ?: requireContext().getString(R.string.ecc_you),
+                                    clientUseCase.getUserInfo()?.userName ?: requireContext().getString(R.string.ecc_you),
                                     campaignMessage,
                                     mQuote
                                 )
@@ -1378,7 +1379,7 @@ class ChatFragment :
         coroutineScope.launch(Dispatchers.IO) {
             setFileDescription(
                 FileDescription(
-                    ThreadsLib.getInstance().userName ?: requireContext().getString(R.string.ecc_you),
+                    clientUseCase.getUserInfo()?.userName ?: requireContext().getString(R.string.ecc_you),
                     uri,
                     getFileSize(uri),
                     System.currentTimeMillis()

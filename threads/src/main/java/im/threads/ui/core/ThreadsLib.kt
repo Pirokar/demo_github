@@ -116,7 +116,7 @@ class ThreadsLib(context: Context) : ThreadsLibBase(context) {
             var fileDescription: FileDescription? = null
             if (fileUri != null) {
                 fileDescription = FileDescription(
-                    userName ?: Config.getInstance().context.getString(R.string.ecc_you),
+                    clientUseCase.getUserInfo()?.userName ?: Config.getInstance().context.getString(R.string.ecc_you),
                     fileUri,
                     getFileSize(fileUri),
                     System.currentTimeMillis()
