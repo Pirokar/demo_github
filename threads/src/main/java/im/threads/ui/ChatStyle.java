@@ -80,6 +80,9 @@ public final class ChatStyle implements Serializable {
     public int searchMessageHintText = R.string.ecc_search_messages;
 
     @StringRes
+    public int networkErrorText = R.string.ecc_chat_not_available;
+
+    @StringRes
     public int loadedSettingsErrorText = R.string.ecc_settings_not_loaded;
 
     @StringRes
@@ -2261,6 +2264,17 @@ public final class ChatStyle implements Serializable {
         }
         if (loadedAttachmentSettingsErrorTextRes != null) {
             this.loadedAttachmentSettingsErrorText = loadedAttachmentSettingsErrorTextRes;
+        }
+        return this;
+    }
+
+    /**
+     * Устанавливает текст сетевых ошибок
+     * @param networkErrorTextRes ресурс текста сетевых ошибок. Передайте null, если хотите оставить значение по умолчанию
+     */
+    public ChatStyle setNetworkErrorText(@StringRes Integer networkErrorTextRes) {
+        if (networkErrorTextRes != null) {
+            this.networkErrorText = networkErrorTextRes;
         }
         return this;
     }

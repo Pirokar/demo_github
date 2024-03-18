@@ -79,6 +79,7 @@ import im.threads.business.utils.FileUtils.getMimeType
 import im.threads.business.utils.FileUtils.isImage
 import im.threads.business.utils.FileUtils.isVoiceMessage
 import im.threads.business.utils.getDuration
+import im.threads.business.utils.internet.NetworkInteractor
 import im.threads.business.utils.messenger.Messenger
 import im.threads.business.utils.messenger.MessengerImpl
 import im.threads.business.workers.FileDownloadWorker.Companion.startDownload
@@ -129,6 +130,7 @@ class ChatController private constructor() {
     private val clientUseCase: ClientUseCase by inject()
     private val chatState: ChatState by inject()
     private val demoModeProvider: DemoModeProvider by inject()
+    private val networkInteractor: NetworkInteractor by inject()
     private val transport = Config.getInstance().transport
     private var lastHistoryQuery = ""
 
@@ -690,12 +692,17 @@ class ChatController private constructor() {
                             }
                         ) { e: Throwable? ->
                             isDownloadingMessages = false
-                            if (fragment != null) {
-                                fragment?.get()?.hideProgressBar()
-                                fragment?.get()?.showWelcomeScreenIfNeed()
-                                fragment?.get()?.showBottomBar()
-                            }
                             error(e)
+                            val errorConnectionMessage = appContext.getString(chatStyle.networkErrorText)
+                            if (e?.message == errorConnectionMessage) {
+                                chatUpdateProcessor.postError(TransportException(e.message))
+                            } else {
+                                if (fragment != null) {
+                                    fragment?.get()?.hideProgressBar()
+                                    fragment?.get()?.showWelcomeScreenIfNeed()
+                                    fragment?.get()?.showBottomBar()
+                                }
+                            }
                         }
                 )
             } else {
@@ -748,10 +755,7 @@ class ChatController private constructor() {
                 .subscribe(
                     { response: Response<ConfigResponse?>? ->
                         if (response?.isSuccessful != true) {
-                            val message = getErrorMessage(
-                                settingsLoaded = false,
-                                attachmentSettingsLoaded = false
-                            )
+                            val message = getNetworkErrorMessage(response)
                             error("error on getting settings: $message")
                             chatUpdateProcessor.postError(TransportException(message))
                         } else {
@@ -775,11 +779,25 @@ class ChatController private constructor() {
                         }
                     }
                 ) { e: Throwable ->
-                    val message = if (e.localizedMessage.isNullOrBlank()) e.message else e.localizedMessage
+                    val message = if (networkInteractor.hasNoInternet(appContext)) {
+                        appContext.getString(chatStyle.networkErrorText)
+                    } else {
+                        if (e.localizedMessage.isNullOrBlank()) e.message else e.localizedMessage
+                    }
                     info("error on getting settings: $message")
                     chatUpdateProcessor.postError(TransportException(message))
                 }
         )
+    }
+
+    private fun getNetworkErrorMessage(response: Response<ConfigResponse?>?): String {
+        return if (networkInteractor.hasNoInternet(appContext)) {
+            appContext.getString(chatStyle.networkErrorText)
+        } else if (response?.code() in 400..599) {
+            appContext.getString(chatStyle.networkErrorText)
+        } else {
+            appContext.getString(chatStyle.loadedSettingsErrorText)
+        }
     }
 
     private fun getErrorMessage(

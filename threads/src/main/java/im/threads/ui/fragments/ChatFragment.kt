@@ -371,21 +371,24 @@ class ChatFragment :
         }
 
     internal fun showErrorView(message: String?) = binding?.apply {
-        if (chatErrorLayout.errorLayout.isNotVisible()) {
-            showWelcomeScreen(false)
-            hideProgressBar()
-            chatItemsRecycler.invisible()
-            bottomLayout.invisible()
-            info("Hiding bottom layout, recycler view, progress bar, welcome screen. Showing error layout.")
-            chatErrorLayout.errorLayout.visible()
-            initErrorViewStyles()
+        if (chatErrorLayout.errorMessage.text != getString(style.networkErrorText)) {
             chatErrorLayout.errorMessage.text = message
-            popupMenuButton.visibility = View.GONE
+            if (chatErrorLayout.errorLayout.isNotVisible()) {
+                showWelcomeScreen(false)
+                hideProgressBar()
+                chatItemsRecycler.invisible()
+                bottomLayout.invisible()
+                info("Hiding bottom layout, recycler view, progress bar, welcome screen. Showing error layout.")
+                chatErrorLayout.errorLayout.visible()
+                initErrorViewStyles()
+                popupMenuButton.visibility = View.GONE
+            }
         }
     }
 
     internal fun hideErrorView(showList: Boolean = true) = binding?.apply {
         chatErrorLayout.errorLayout.gone()
+        chatErrorLayout.errorMessage.text = ""
         info("Hiding error layout")
         bottomLayout.visible()
         info("Showing bottom layout")
