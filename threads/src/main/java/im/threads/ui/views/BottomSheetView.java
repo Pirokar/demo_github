@@ -1,7 +1,5 @@
 package im.threads.ui.views;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
@@ -45,26 +43,6 @@ public final class BottomSheetView extends LinearLayout {
     public BottomSheetView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
-    }
-
-    private static void animateShow(View view) {
-        view.setVisibility(VISIBLE);
-        view.setAlpha(0.0f);
-        view.animate()
-                .alpha(1.0f)
-                .setListener(null);
-    }
-
-    private static void animateHide(View view) {
-        view.animate()
-                .alpha(0.0f)
-                .setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                        view.setVisibility(View.GONE);
-                    }
-                });
     }
 
     private void init() {
@@ -134,40 +112,6 @@ public final class BottomSheetView extends LinearLayout {
 
     public void setButtonsListener(ButtonsListener listener) {
         this.buttonsListener = listener;
-    }
-
-    public void showMainItemList() {
-        if (send.getVisibility() == VISIBLE) {
-            send.animate()
-                    .alpha(0.0f)
-                    .setListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            super.onAnimationEnd(animation);
-                            send.setVisibility(GONE);
-                            animateShow(file);
-                            animateShow(camera);
-                            animateShow(gallery);
-                        }
-                    });
-        }
-    }
-
-    public void showSend() {
-        if (send.getVisibility() == GONE) {
-            animateHide(camera);
-            animateHide(gallery);
-            file.animate()
-                    .alpha(0.0f)
-                    .setListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            super.onAnimationEnd(animation);
-                            file.setVisibility(GONE);
-                            animateShow(send);
-                        }
-                    });
-        }
     }
 
     public interface ButtonsListener {

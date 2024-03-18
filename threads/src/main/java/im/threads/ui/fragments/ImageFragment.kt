@@ -58,9 +58,9 @@ class ImageFragment : BaseFragment() {
     @SuppressLint("SimpleDateFormat")
     private fun applyStyle() = with(binding) {
         val context = requireActivity()
-        if (sdf == null) {
+        if (dateFormat == null) {
             hoursMinutesSdf = SimpleDateFormat("hh:mm", Locale.getDefault())
-            sdf = if (Locale.getDefault().language == "ru") {
+            dateFormat = if (Locale.getDefault().language == "ru") {
                 SimpleDateFormat("dd MMMM yyyy", RussianFormatSymbols())
             } else {
                 SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
@@ -82,7 +82,7 @@ class ImageFragment : BaseFragment() {
             from.text = ""
         }
         if (fileDescription.timeStamp != 0L) {
-            date.text = "${sdf?.format(fileDescription.timeStamp)} ${getString(R.string.ecc_in)} ${hoursMinutesSdf?.format(fileDescription.timeStamp)}"
+            date.text = "${dateFormat?.format(fileDescription.timeStamp)} ${getString(R.string.ecc_in)} ${hoursMinutesSdf?.format(fileDescription.timeStamp)}"
         } else {
             date.text = ""
         }
@@ -203,7 +203,7 @@ class ImageFragment : BaseFragment() {
     }
 
     companion object {
-        private var sdf: SimpleDateFormat? = null
+        private var dateFormat: SimpleDateFormat? = null
         private var hoursMinutesSdf: SimpleDateFormat? = null
 
         @JvmStatic
