@@ -909,13 +909,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     private void bindSystemMessageVH(@NonNull final SystemMessageViewHolder holder, SystemMessage sm) {
-        holder.onBind(
-                sm,
-                v -> {
-                    final SystemMessage cc1 = (SystemMessage) getList().get(holder.getAdapterPosition());
-                    mCallback.onSystemMessageClick(cc1);
-                }
-        );
+        holder.onBind(sm);
     }
 
     private void bindConsultPhraseVH(@NonNull final ConsultPhraseHolder holder, ConsultPhrase consultPhrase) {
