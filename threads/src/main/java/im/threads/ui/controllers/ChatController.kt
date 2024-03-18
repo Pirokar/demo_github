@@ -661,7 +661,7 @@ class ChatController private constructor() {
                                 if (applyUiChanges) {
                                     val items = setLastAvatars(serverItems)
                                     if (fragment != null) {
-                                        fragment?.get()?.addChatItems(items)
+                                        fragment?.get()?.addChatItems(items, fromHistory = true)
                                         if (isAfterAnchor == null) { // from beginning
                                             handleQuickReplies(items)
                                         }
@@ -700,6 +700,40 @@ class ChatController private constructor() {
                 )
             } else {
                 info(ThreadsApi.REST_TAG, "Loading history cancelled. isDownloadingMessages = true")
+            }
+        }
+    }
+
+    /**
+     * Комбинирует пользовательские сообщения с файлами.
+     * Предотвращает удаление локальных Uri через подмену пустыми данными из истории
+     * В итоге переданный параметр [newItems] будет содержать соединенные значения
+     * @param displayedItems элементы, уже отображаемые на экране
+     * @param newItems новые элементы
+     */
+    internal fun mergeUserMessages(displayedItems: List<ChatItem>, newItems: List<ChatItem?>) {
+        val newItemsUserMessages = newItems
+            .filterIsInstance<UserPhrase>()
+            .filter { !it.id.isNullOrBlank() || !it.backendMessageId.isNullOrBlank() }
+        if (newItemsUserMessages.isNotEmpty()) {
+            val displayedUserMessages = displayedItems
+                .filterIsInstance<UserPhrase>()
+                .filter { !it.id.isNullOrBlank() || !it.backendMessageId.isNullOrBlank() }
+            if (displayedUserMessages.isNotEmpty()) {
+                newItemsUserMessages.forEach { newItem ->
+                    val theSameMessage = displayedUserMessages
+                        .firstOrNull {
+                            (it.id == newItem.id && !newItem.id.isNullOrBlank()) ||
+                                (it.backendMessageId == newItem.backendMessageId && !newItem.backendMessageId.isNullOrBlank())
+                        }
+                    if (theSameMessage?.fileDescription?.fileUri != null) {
+                        if (newItem.fileDescription == null) {
+                            newItem.fileDescription = theSameMessage.fileDescription
+                        } else {
+                            newItem.fileDescription?.fileUri = theSameMessage.fileDescription?.fileUri
+                        }
+                    }
+                }
             }
         }
     }

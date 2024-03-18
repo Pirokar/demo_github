@@ -1589,18 +1589,23 @@ class ChatFragment :
      * Добавляет список элементов в чат и осуществляет прокрутку по необходимости
      *
      * @param list - список элементов для добавления
-     * @param forceScrollToTheEnd -  Принудительный скролл в конец чата.
+     * @param forceScrollToTheEnd - Принудительный скролл в конец чата.
      * При возврате с дополнительного экрана (галереи, например) данный флаг не имеет силы.
      * По умолчанию - false
      */
     fun addChatItems(
         list: List<ChatItem?>,
-        forceScrollToTheEnd: Boolean = false
+        forceScrollToTheEnd: Boolean = false,
+        fromHistory: Boolean = false
     ) {
         if (list.isEmpty()) {
             return
         }
         chatAdapter?.let { chatAdapter ->
+            if (fromHistory) {
+                chatController.mergeUserMessages(chatAdapter.list, list)
+            }
+
             val oldAdapterSize = chatAdapter.list.size
             val layoutManager = binding?.chatItemsRecycler?.layoutManager as LinearLayoutManager?
             val isBottomItemsVisible = chatAdapter.itemCount - 1 - lastVisibleItemPosition < INVISIBLE_MESSAGES_COUNT

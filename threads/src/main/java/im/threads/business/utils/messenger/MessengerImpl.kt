@@ -207,13 +207,20 @@ class MessengerImpl(
                 var filePath: String? = null
                 var quoteFilePath: String? = null
                 val clientId = clientUseCase.getUserInfo()?.clientId
-                if (fileDescription != null) {
+                if (fileDescription != null && !clientId.isNullOrBlank()) {
                     filePath = postFile(fileDescription, clientId)
                 }
-                if (quoteFileDescription != null) {
+                if (quoteFileDescription != null && !clientId.isNullOrBlank()) {
                     quoteFilePath = postFile(quoteFileDescription, clientId)
                 }
-                BaseConfig.getInstance().transport.sendMessage(userPhrase, consultInfo, filePath, quoteFilePath)
+                if (filePath != null || quoteFilePath != null) {
+                    BaseConfig.getInstance().transport.sendMessage(
+                        userPhrase,
+                        consultInfo,
+                        filePath,
+                        quoteFilePath
+                    )
+                }
             }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

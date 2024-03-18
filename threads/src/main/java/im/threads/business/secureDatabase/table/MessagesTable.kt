@@ -245,11 +245,18 @@ class MessagesTable(
         }
         if (chatItem is UserPhrase) {
             chatItem.id?.let { id ->
+                val existedItem = getChatItemByCorrelationId(sqlHelper, id) as? UserPhrase
+
                 if (chatItem.sentState != MessageStatus.READ) {
-                    val existedItem = getChatItemByCorrelationId(sqlHelper, id) as? UserPhrase
                     if (existedItem != null && existedItem.sentState.value > chatItem.sentState.value) {
                         chatItem.sentState = existedItem.sentState
                     }
+                }
+
+                if (existedItem?.fileDescription != null && chatItem.fileDescription == null) {
+                    chatItem.fileDescription = existedItem.fileDescription
+                } else if (existedItem?.fileDescription?.fileUri != null && chatItem.fileDescription?.fileUri == null) {
+                    chatItem.fileDescription?.fileUri = existedItem.fileDescription?.fileUri
                 }
 
                 insertOrUpdateMessage(sqlHelper, getUserPhraseCV(chatItem))
