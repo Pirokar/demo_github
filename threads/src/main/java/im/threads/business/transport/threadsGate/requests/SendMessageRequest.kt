@@ -11,6 +11,7 @@ class SendMessageRequest(correlationId: String?, data: Data?) : BaseRequest<Send
     class Data(
         private val deviceAddress: String?,
         private val content: JsonObject,
-        private val important: Boolean
+        private val important: Boolean,
+        private val messageId: String
     )
 }

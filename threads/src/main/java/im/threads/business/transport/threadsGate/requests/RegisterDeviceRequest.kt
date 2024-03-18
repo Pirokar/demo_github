@@ -20,6 +20,7 @@ class RegisterDeviceRequest(correlationId: String?, data: Data?) : BaseRequest<R
         private val deviceName: String,
         private val deviceModel: String,
         private val deviceAddress: String?,
-        private val clientId: String?
+        private val clientId: String?,
+        private val apiVersion: String
     )
 }

@@ -47,7 +47,7 @@ class OutgoingMessageCreator(
             addProperty("chatApiVersion", ThreadsApi.getApiVersion())
             addProperty(MessageAttributes.TYPE, ChatItemType.CLIENT_INFO.name)
             addProperty(MessageAttributes.DEVICE_ADDRESS, deviceAddress)
-            addProperty(MessageAttributes.AUTHORIZED, true)
+            addProperty(MessageAttributes.AUTHORIZED, userInfo.clientId.isNotBlank())
             if (isPreregister) {
                 addProperty("preRegister", true)
             }

@@ -19,8 +19,7 @@ import java.util.concurrent.TimeUnit
 import javax.net.ssl.SSLSession
 
 abstract class ApiGenerator protected constructor(
-    private val config: BaseConfig,
-    private val isDatastoreApi: Boolean
+    private val config: BaseConfig
 ) {
     protected lateinit var threadsApi: ThreadsApi
     protected lateinit var apiBuild: Retrofit
