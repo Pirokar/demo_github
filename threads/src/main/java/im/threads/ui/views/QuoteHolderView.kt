@@ -156,7 +156,7 @@ class QuoteHolderView : FrameLayout {
         }
         if (!fileUri.isNullOrEmpty()) {
             quoteImage.loadImage(
-                fileDescription.downloadPath,
+                fileUri,
                 listOf(
                     ImageView.ScaleType.FIT_CENTER,
                     ImageView.ScaleType.CENTER_CROP
