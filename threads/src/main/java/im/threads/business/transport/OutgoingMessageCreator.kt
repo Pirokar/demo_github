@@ -14,7 +14,6 @@ import im.threads.business.preferences.Preferences
 import im.threads.business.preferences.PreferencesCoreKeys
 import im.threads.business.rest.queries.ThreadsApi
 import im.threads.business.utils.AppInfo
-import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.DeviceInfo
 import im.threads.business.utils.FileUtils.getFileName
 import im.threads.business.utils.FileUtils.getFileSize
@@ -25,23 +24,9 @@ import java.util.TimeZone
 
 class OutgoingMessageCreator(
     private val preferences: Preferences,
-    private val clientUseCase: ClientUseCase,
     private val appInfo: AppInfo,
     private val deviceInfo: DeviceInfo
 ) {
-    fun createInitChatMessage(userInfo: UserInfoBuilder): JsonObject {
-        val jsonObject = JsonObject()
-        val deviceAddress = preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS)
-        jsonObject.apply {
-            addProperty(MessageAttributes.CLIENT_ID, userInfo.clientId)
-            addProperty(MessageAttributes.TYPE, ChatItemType.INIT_CHAT.name)
-            addProperty(MessageAttributes.DATA, userInfo.clientData)
-            addProperty(MessageAttributes.APP_MARKER_KEY, userInfo.appMarker)
-            addProperty(MessageAttributes.DEVICE_ADDRESS, deviceAddress)
-        }
-        return jsonObject
-    }
-
     fun createClientInfoMessage(userInfo: UserInfoBuilder, locale: String, isPreregister: Boolean): JsonObject {
         val deviceAddress = preferences.get(PreferencesCoreKeys.DEVICE_ADDRESS, "")
         val jsonObject = JsonObject().apply {
@@ -62,7 +47,7 @@ class OutgoingMessageCreator(
             addProperty("chatApiVersion", ThreadsApi.getApiVersion())
             addProperty(MessageAttributes.TYPE, ChatItemType.CLIENT_INFO.name)
             addProperty(MessageAttributes.DEVICE_ADDRESS, deviceAddress)
-            addProperty(MessageAttributes.AUTHORIZED, true)
+            addProperty(MessageAttributes.AUTHORIZED, userInfo.clientId.isNotBlank())
             if (isPreregister) {
                 addProperty("preRegister", true)
             }

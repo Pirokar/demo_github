@@ -36,7 +36,6 @@ enum class ChatItemType {
     THREAD_OPENED,
 
     // outgoing
-    INIT_CHAT,
     CLIENT_INFO,
     SURVEY_QUESTION_ANSWER,
     CLOSE_THREAD,

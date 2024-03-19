@@ -221,7 +221,6 @@ class ThreadsGateTransport(
     }
 
     override fun sendInitMessages(isPreregister: Boolean) {
-        sendInitChatMessage(true)
         sendEnvironmentMessage(true, isPreregister)
     }
 
@@ -252,7 +251,8 @@ class ThreadsGateTransport(
             return sendMessage(
                 content,
                 true,
-                ChatItemType.MESSAGE.name + CORRELATION_ID_DIVIDER + userPhrase.id
+                uuid = userPhrase.id,
+                correlationId = ChatItemType.MESSAGE.name + CORRELATION_ID_DIVIDER + userPhrase.id
             )
         }
         return false
@@ -331,10 +331,12 @@ class ThreadsGateTransport(
     private fun sendMessage(
         content: JsonObject,
         important: Boolean = false,
+        uuid: String? = null,
         correlationId: String = UUID.randomUUID().toString(),
         tryOpeningWebSocket: Boolean = true,
         sendInit: Boolean = false
     ): Boolean {
+        val messageId = uuid ?: correlationId
         synchronized(messageInProcessIds) {
             messageInProcessIds.add(correlationId)
         }
@@ -345,20 +347,16 @@ class ThreadsGateTransport(
         val clientId = clientUseCase.getUserInfo()?.clientId
         val deviceAddress = preferences.get<String>(PreferencesCoreKeys.DEVICE_ADDRESS)
         if (sendInit && !clientId.isNullOrBlank() && !deviceAddress.isNullOrBlank()) {
-            sendInitChatMessage(false)
             sendEnvironmentMessage(tryOpeningWebSocket = false, isPreregister = false)
         }
         val text = BaseConfig.getInstance().gson.toJson(
             SendMessageRequest(
                 correlationId,
-                SendMessageRequest.Data(deviceAddress, content, important)
+                SendMessageRequest.Data(deviceAddress, content, important, messageId)
             )
         )
 
         try {
-            if (content["type"].toString().contains(ChatItemType.INIT_CHAT.name)) {
-                chatState.initChatCorrelationId = correlationId
-            }
             if (content["type"].toString().contains(ChatItemType.CLIENT_INFO.name)) {
                 chatState.clientInfoCorrelationId = correlationId
             }
@@ -438,7 +436,8 @@ class ThreadsGateTransport(
             if (!TextUtils.isEmpty(deviceName)) deviceName else deviceModel,
             deviceModel,
             deviceAddress,
-            clientId
+            clientId,
+            BaseConfig.getInstance().apiVersion.toString()
         )
         val text = BaseConfig.getInstance().gson.toJson(
             RegisterDeviceRequest(UUID.randomUUID().toString(), data)
@@ -461,18 +460,6 @@ class ThreadsGateTransport(
         }
 
         return deviceUid
-    }
-
-    private fun sendInitChatMessage(tryOpeningWebSocket: Boolean): Boolean {
-        chatState.changeState(ChatStateEnum.SENDING_INIT_USER)
-        clientUseCase.getUserInfo()?.let {
-            return sendMessage(
-                content = outgoingMessageCreator.createInitChatMessage(it),
-                tryOpeningWebSocket = tryOpeningWebSocket,
-                sendInit = false
-            )
-        }
-        return false
     }
 
     private fun sendEnvironmentMessage(

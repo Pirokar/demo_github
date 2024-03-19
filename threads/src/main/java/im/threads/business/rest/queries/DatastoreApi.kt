@@ -2,7 +2,7 @@ package im.threads.business.rest.queries
 
 import im.threads.business.config.BaseConfig
 
-class DatastoreApi private constructor(config: BaseConfig) : ApiGenerator(config, true) {
+class DatastoreApi private constructor(config: BaseConfig) : ApiGenerator(config) {
     override fun createThreadsApi() {
         threadsApi = ThreadsApi(
             datastoreApi = datastoreBuild.create(ThreadsDatastoreApi::class.java)
