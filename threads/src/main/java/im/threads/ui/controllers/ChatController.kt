@@ -280,6 +280,8 @@ class ChatController private constructor() {
     private fun checkStateOnViewStart() {
         if (chatState.getCurrentState() < ChatStateEnum.REGISTERING_DEVICE) {
             transport.sendRegisterDevice(false)
+        } else if (currentScheduleInfo == null) {
+            loadConfig()
         }
     }
 
