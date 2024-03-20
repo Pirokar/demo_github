@@ -157,6 +157,9 @@ class ChatController private constructor() {
     // На основе этих переменных определяется возможность отправки сообщений в чат
     private var currentScheduleInfo: ScheduleInfo? = null
 
+    // Переменная для временного хранения currentScheduleInfo, когда нужно обнулить значение currentScheduleInfo
+    private var tempScheduleInfo = currentScheduleInfo
+
     // Если пользователь не ответил на вопрос (quickReply), то блокируем поле ввода
     private var hasQuickReplies = false
 
@@ -647,6 +650,15 @@ class ChatController private constructor() {
                                 BaseConfig.getInstance().transport.markMessagesAsRead(uuidList)
                             }
                         }
+                        if (response?.hasThread() == true) {
+                            coroutineScope.launch(Dispatchers.Main) {
+                                tempScheduleInfo = currentScheduleInfo
+                                currentScheduleInfo = null
+                                val model = InputFieldEnableModel(isEnabledInputField = true, isEnabledSendButton = true)
+                                fragment?.get()?.updateInputEnable(model, false)
+                                fragment?.get()?.removeSchedule(false)
+                            }
+                        }
                         Pair(response?.getConsultInfo(), serverItems)
                     }
                         .subscribeOn(Schedulers.io())
@@ -676,6 +688,7 @@ class ChatController private constructor() {
                                             fragment?.get()?.hideErrorView()
                                         }
                                     }
+                                    currentScheduleInfo = tempScheduleInfo
                                     callback?.onLoaded(items)
                                 }
                                 if (!applyUiChanges) callback?.onLoaded(serverItems)

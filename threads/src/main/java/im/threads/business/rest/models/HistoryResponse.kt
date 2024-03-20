@@ -11,6 +11,10 @@ import im.threads.business.transport.models.Operator
 class HistoryResponse(val messages: List<MessageFromHistory>) {
     private val agentInfo: AgentInfo? = null
 
+    fun hasThread(): Boolean {
+        return agentInfo?.thread != null
+    }
+
     fun getConsultInfo(): ConsultInfo? {
         return agentInfo?.agent?.let { operator ->
             ConsultInfo(
@@ -26,5 +30,11 @@ class HistoryResponse(val messages: List<MessageFromHistory>) {
 
     private inner class AgentInfo {
         var agent: Operator? = null
+        var thread: Thread? = null
+    }
+
+    inner class Thread {
+        var id: Integer? = null
+        var state: String? = null
     }
 }

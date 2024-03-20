@@ -111,8 +111,8 @@ object FileUtils {
     @JvmStatic
     fun isImage(uri: Uri): Boolean =
         (getMimeType(uri) == ImageMimeType.BMP.value) ||
-                (getMimeType(uri) == ImageMimeType.PNG.value) ||
-                (getMimeType(uri) == ImageMimeType.JPEG.value)
+            (getMimeType(uri) == ImageMimeType.PNG.value) ||
+            (getMimeType(uri) == ImageMimeType.JPEG.value)
 
     private fun isFileCorrupted(fileDescription: FileDescription): Boolean {
         val actualSize = fileDescription.fileUri?.let {
