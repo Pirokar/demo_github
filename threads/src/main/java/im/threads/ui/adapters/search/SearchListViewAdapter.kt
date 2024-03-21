@@ -11,6 +11,8 @@ import im.threads.R
 import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.imageLoading.ImageModifications
 import im.threads.business.models.MessageFromHistory
+import im.threads.business.serviceLocator.core.inject
+import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.DateHelper
 import im.threads.business.utils.FileUtils.toAbsoluteUrl
 import im.threads.business.utils.UrlUtils
@@ -28,6 +30,7 @@ import java.util.Locale
 internal class SearchListViewAdapter(private val onClickCallback: (String?, date: String?) -> Unit) :
     RecyclerView.Adapter<SearchListViewAdapter.SearchListViewHolder>() {
 
+    private val clientUseCase: ClientUseCase by inject()
     private var data: List<MessageFromHistory> = listOf()
 
     fun updateData(newData: List<MessageFromHistory>?) {
@@ -80,7 +83,9 @@ internal class SearchListViewAdapter(private val onClickCallback: (String?, date
             message: MessageFromHistory
         ) {
             nameTextView.setTextColor(ContextCompat.getColor(context, chatStyle.searchResultsItemNameTextColor))
-            nameTextView.text = message.operator?.name ?: this@SearchListViewHolder.itemView.context.getString(R.string.ecc_I)
+            nameTextView.text = message.operator?.name
+                ?: clientUseCase.getUserInfo()?.userName
+                ?: this@SearchListViewHolder.itemView.context.getString(R.string.ecc_you)
         }
 
         private fun setMessageText(

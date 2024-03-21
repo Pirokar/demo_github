@@ -15,6 +15,7 @@ class QuotesTable(private val fileDescriptionsTable: FileDescriptionsTable) : Ta
                 COLUMN_QUOTE_FROM + " text, " +
                 COLUMN_QUOTE_BODY + " text, " +
                 COLUMN_QUOTE_TIMESTAMP + " integer, " +
+                COLUMN_QUOTE_IS_PERSONAL_OFFER + " integer, " +
                 COLUMN_QUOTED_BY_MESSAGE_UUID_EXT + " integer)" // message id
         )
     }
@@ -48,6 +49,7 @@ class QuotesTable(private val fileDescriptionsTable: FileDescriptionsTable) : Ta
                         cGetString(c, COLUMN_QUOTE_UUID)
                     ),
                     cGetLong(c, COLUMN_QUOTE_TIMESTAMP),
+                    cGetBool(c, COLUMN_QUOTE_IS_PERSONAL_OFFER),
                     ModificationStateEnum.fromString(
                         cGetString(
                             c,
@@ -66,6 +68,7 @@ class QuotesTable(private val fileDescriptionsTable: FileDescriptionsTable) : Ta
         private const val COLUMN_QUOTE_FROM = "COLUMN_QUOTE_HEADER"
         private const val COLUMN_QUOTE_BODY = "COLUMN_QUOTE_BODY"
         private const val COLUMN_QUOTE_TIMESTAMP = "COLUMN_QUOTE_TIMESTAMP"
+        private const val COLUMN_QUOTE_IS_PERSONAL_OFFER = "COLUMN_QUOTE_IS_PERSONAL_OFFER"
         private const val COLUMN_QUOTED_BY_MESSAGE_UUID_EXT = "COLUMN_QUOTED_BY_MESSAGE_UUID_EXT"
         private const val COLUMN_MODIFICATION_STATE = "COLUMN_MODIFICATION_STATE"
     }

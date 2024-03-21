@@ -333,8 +333,8 @@
                 <LinearLayout
                     android:id="@+id/copy_controls"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_horizontal"
+                    android:layout_height="match_parent"
+                    android:gravity="center_horizontal|center_vertical"
                     android:orientation="horizontal"
                     android:visibility="gone">
 

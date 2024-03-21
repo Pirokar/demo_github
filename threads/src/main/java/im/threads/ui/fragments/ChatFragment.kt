@@ -91,6 +91,7 @@ import im.threads.business.preferences.PreferencesCoreKeys
 import im.threads.business.serviceLocator.core.inject
 import im.threads.business.useractivity.UserActivityTimeProvider.getLastUserActivityTimeCounter
 import im.threads.business.utils.Balloon.show
+import im.threads.business.utils.ClientUseCase
 import im.threads.business.utils.FileProvider
 import im.threads.business.utils.FileUtils
 import im.threads.business.utils.FileUtils.canBeSent
@@ -181,6 +182,7 @@ class ChatFragment :
     private val mediaMetadataRetriever = MediaMetadataRetriever()
     private val audioConverter = ChatCenterAudioConverter()
     private val chatUpdateProcessor: ChatUpdateProcessor by inject()
+    private val clientUseCase: ClientUseCase by inject()
     private val fileProvider: FileProvider by inject()
     private var fdMediaPlayer: FileDescriptionMediaPlayer? = null
     private val chatController: ChatController by lazy { ChatController.getInstance() }
@@ -264,6 +266,7 @@ class ChatFragment :
                 campaignMessage.text,
                 null,
                 campaignMessage.receivedDate.time,
+                false,
                 ModificationStateEnum.NONE
             )
             this.campaignMessage = campaignMessage
@@ -1156,7 +1159,7 @@ class ChatFragment :
         if (userPhrase != null) {
             mQuote = Quote(
                 userPhrase.id,
-                requireContext().getString(R.string.ecc_I),
+                clientUseCase.getUserInfo()?.userName ?: requireContext().getString(R.string.ecc_you),
                 userPhrase.phraseText,
                 userPhrase.fileDescription,
                 userPhrase.timeStamp
@@ -1169,6 +1172,7 @@ class ChatFragment :
                 consultPhrase.phraseText,
                 consultPhrase.fileDescription,
                 consultPhrase.timeStamp,
+                consultPhrase.isPersonalOffer,
                 consultPhrase.modified
             )
             mQuote?.isFromConsult = true
@@ -1257,7 +1261,7 @@ class ChatFragment :
                                 getUpcomingUserMessagesFromSelection(
                                     filteredPhotos,
                                     inputText,
-                                    requireContext().getString(R.string.ecc_I),
+                                    clientUseCase.getUserInfo()?.userName ?: requireContext().getString(R.string.ecc_you),
                                     campaignMessage,
                                     mQuote
                                 )
@@ -1369,7 +1373,14 @@ class ChatFragment :
     private fun onFileResult(uri: Uri) {
         info("onFileSelected: $uri")
         coroutineScope.launch(Dispatchers.IO) {
-            setFileDescription(FileDescription(requireContext().getString(R.string.ecc_I), uri, getFileSize(uri), System.currentTimeMillis()))
+            setFileDescription(
+                FileDescription(
+                    clientUseCase.getUserInfo()?.userName ?: requireContext().getString(R.string.ecc_you),
+                    uri,
+                    getFileSize(uri),
+                    System.currentTimeMillis()
+                )
+            )
             val fileName = getFileName(uri)
             withMainContext {
                 quoteLayoutHolder?.setContent(

@@ -14,6 +14,7 @@
     <string name="ecc_connected">connected to dialog</string>
     <string name="ecc_sent_at">sent at %1$s</string>
     <string name="ecc_image">Picture</string>
+    <string name="ecc_quote">Quote</string>
     <string name="ecc_send">Send</string>
     <string name="ecc_repeat_sending">Retry</string>
     <string name="ecc_repeat">Retry</string>
@@ -32,7 +33,7 @@
 
     <string name="ecc_error_no_file">Unfortunately, file was deleted from server</string>
     <string name="ecc_no_media_and_files_description">Add new ones using\n"Attach" button on the chat screen</string>
-    <string name="ecc_I">I</string>
+    <string name="ecc_you">You</string>
     <string name="ecc_download">Download</string>
     <string name="ecc_choose_file">Choose file to send</string>
     <string name="ecc_sending_files_not_allowed">Sending files is not allowed</string>
@@ -124,6 +125,7 @@
     <string name="ecc_message_sending_is_unavailable">You cannot send message at the moment</string>
     <string name="ecc_hold_button_to_record_audio">Hold record button to send voice message</string>
     <string name="ecc_voice_message">Voice message</string>
+    <string name="ecc_photo_message">Photo</string>
     <string name="ecc_voice_message_slide_to_cancel">Slide to cancel</string>
     <string name="ecc_voice_message_is_processing">Voice message is processing</string>
     <string name="ecc_voice_message_error">Voice message processing error</string>

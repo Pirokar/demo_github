@@ -321,7 +321,15 @@ class MessageParser {
                 fileDescription = getFileDescription(quote.attachments, authorName, timestamp)
             }
             if (quote?.uuid != null && (quote.text != null || fileDescription != null)) {
-                return Quote(quote.uuid, authorName, quote.text, fileDescription, timestamp, quote.modified)
+                return Quote(
+                    quote.uuid,
+                    authorName,
+                    quote.text,
+                    fileDescription,
+                    timestamp,
+                    quote.isPersonalOffer,
+                    quote.modified
+                )
             }
         }
         return null

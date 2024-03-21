@@ -11,6 +11,7 @@
     <string name="ecc_connected">подключился к диалогу в</string>
     <string name="ecc_sent_at">отправлено %1$s</string>
     <string name="ecc_image">изображение</string>
+    <string name="ecc_quote">Цитата</string>
     <string name="ecc_send">Отправить</string>
     <string name="ecc_repeat">Повторить</string>
     <string name="ecc_repeat_sending">Повторить отправку</string>
@@ -28,7 +29,7 @@
 
     <string name="ecc_error_no_file">Файл удалён на сервере</string>
     <string name="ecc_no_media_and_files_description">Добавьте новые с помощью кнопки\n«Прикрепить» на экране чата</string>
-    <string name="ecc_I">Я</string>
+    <string name="ecc_you">Вы</string>
     <string name="ecc_choose_file">Выберите файл</string>
     <string name="ecc_sending_files_not_allowed">Отправка файлов запрещена</string>
     <string name="ecc_folder_up">Выше</string>
@@ -132,6 +133,7 @@
     <string name="ecc_message_sending_is_unavailable">Отправка сообщения временно недоступна</string>
     <string name="ecc_hold_button_to_record_audio">Удерживайте кнопку записи для отправки голосового сообщения</string>
     <string name="ecc_voice_message">Голосовое сообщение</string>
+    <string name="ecc_photo_message">Фото</string>
     <string name="ecc_voice_message_slide_to_cancel">Влево - отмена</string>
     <string name="ecc_voice_message_is_processing">Голосовое сообщение обрабатывается</string>
     <string name="ecc_voice_message_error">Ошибка обработки голосового сообщения</string>

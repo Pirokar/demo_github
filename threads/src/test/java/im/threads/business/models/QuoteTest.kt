@@ -29,7 +29,7 @@ class QuoteTest {
     fun whenToString_thenCorrect() {
         val quote = Quote("uuid", "title", "text", null, 0L)
         val expectedString = "Quote{phraseOwnerTitle='title', text='text', fileDescription=null, timeStamp=0, isFromConsult=false, " +
-            "modified=NONE, quotedPhraseConsultId='null'}"
+            "modified=NONE, isPersonalOffer=false, quotedPhraseConsultId='null'}"
         Assert.assertEquals(expectedString, quote.toString())
     }
 

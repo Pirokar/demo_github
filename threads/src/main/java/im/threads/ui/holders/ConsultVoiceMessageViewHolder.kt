@@ -8,13 +8,11 @@ import android.view.View.OnLongClickListener
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
-import androidx.core.view.isVisible
 import com.google.android.material.slider.Slider
 import im.threads.R
 import im.threads.business.formatters.SpeechStatus
@@ -29,7 +27,7 @@ import im.threads.ui.utils.ColorsHelper
 import im.threads.ui.utils.gone
 import im.threads.ui.utils.invisible
 import im.threads.ui.utils.visible
-import im.threads.ui.views.CircularProgressButton
+import im.threads.ui.views.QuoteHolderView
 import im.threads.ui.views.VoiceTimeLabelFormatter
 import im.threads.ui.views.formatAsDuration
 import im.threads.ui.widget.textView.QuoteMessageTextView
@@ -50,12 +48,7 @@ class ConsultVoiceMessageViewHolder(
     override var fileDescription: FileDescription? = null
     private var formattedDuration = ""
 
-    private val quoteLayout: LinearLayout = itemView.findViewById(R.id.quoteLayout)
-    private val quoteTextHeader: TextView = itemView.findViewById(R.id.quoteTo)
-    private val quoteTextDescription: TextView = itemView.findViewById(R.id.quoteFileSpecs)
-    private val quoteTextTimeStamp: TextView = itemView.findViewById(R.id.quoteSendAt)
-    private val quoteFileImage = itemView.findViewById<ImageView>(R.id.quoteFileImage)
-    private val quoteProgressButton: CircularProgressButton = itemView.findViewById(R.id.quoteButtonDownload)
+    private val quoteView: QuoteHolderView = itemView.findViewById(R.id.quoteView)
     private val errorTextView: TextView = itemView.findViewById(R.id.errorText)
     private val loader: ImageView = itemView.findViewById(R.id.loader)
     private val rootLayout: ConstraintLayout = itemView.findViewById(R.id.rootLayout)
@@ -97,8 +90,6 @@ class ConsultVoiceMessageViewHolder(
     }
 
     init {
-        itemView.findViewById<View>(R.id.quoteDelimiter)
-            .setBackgroundColor(getColorInt(style.incomingDelimitersColor))
         voiceMessage.apply {
             background =
                 AppCompatResources.getDrawable(
@@ -156,20 +147,12 @@ class ConsultVoiceMessageViewHolder(
             showAvatar(consultAvatar, consultPhrase, onAvatarClickListener)
             changeHighlighting(highlighted)
         }
-        consultPhrase.quote?.let {
-            showQuote(
-                it,
-                onQuoteClickListener,
-                quoteLayout,
-                quoteTextHeader,
-                quoteTextDescription,
-                quoteTextTimeStamp,
-                quoteFileImage,
-                quoteProgressButton
-            )
-        } ?: run {
-            quoteLayout.isVisible = false
-        }
+        showQuote(
+            quote = consultPhrase.quote,
+            quoteView = quoteView,
+            onQuoteClickListener = onQuoteClickListener,
+            isIncoming = true
+        )
     }
 
     private fun checkText(consultPhrase: ConsultPhrase) {

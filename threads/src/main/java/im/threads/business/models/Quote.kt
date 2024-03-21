@@ -9,6 +9,7 @@ class Quote(
     var text: String?,
     var fileDescription: FileDescription?,
     val timeStamp: Long,
+    val isPersonalOffer: Boolean = false,
     var modified: ModificationStateEnum = ModificationStateEnum.NONE
 ) {
     var isFromConsult = false
@@ -41,6 +42,7 @@ class Quote(
             ", timeStamp=" + timeStamp +
             ", isFromConsult=" + isFromConsult +
             ", modified=" + modified +
+            ", isPersonalOffer=" + isPersonalOffer +
             ", quotedPhraseConsultId='" + quotedPhraseConsultId + '\'' +
             '}'
     }
@@ -54,6 +56,7 @@ class Quote(
                 ObjectsCompat.equals(phraseOwnerTitle, quote.phraseOwnerTitle) &&
                 ObjectsCompat.equals(text, quote.text) &&
                 ObjectsCompat.equals(modified, quote.modified) &&
+                ObjectsCompat.equals(isPersonalOffer, quote.isPersonalOffer) &&
                 ObjectsCompat.equals(timeStamp, quote.timeStamp)
             )
         if (fileDescription != null) {
