@@ -3,8 +3,10 @@ package im.threads.ui.views
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.appcompat.content.res.AppCompatResources
@@ -15,6 +17,7 @@ import im.threads.R
 import im.threads.business.extensions.withMainContext
 import im.threads.business.imageLoading.ImageModifications
 import im.threads.business.imageLoading.loadImage
+import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.CampaignMessage
 import im.threads.business.models.FileDescription
 import im.threads.business.models.Quote
@@ -47,6 +50,7 @@ class QuoteHolderView : FrameLayout {
     private var imageMask: Drawable? = ContextCompat.getDrawable(context, R.drawable.ecc_quote_image_mask)
     private val fileIconBackground = AppCompatResources.getDrawable(context, R.drawable.ecc_circle_gray_48dp)?.mutate()
     private val fileIconImage = AppCompatResources.getDrawable(context, style.completedIconResId)?.mutate()
+    private val micIconImage = AppCompatResources.getDrawable(context, style.iconMicResId)?.mutate()
 
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attr: AttributeSet?) : this(context, attr, 0)
@@ -66,7 +70,7 @@ class QuoteHolderView : FrameLayout {
         delimiterImage = findViewById(R.id.delimiterImage)
     }
 
-    private fun applyStyle(isIncoming: Boolean) {
+    private fun applyStyle(isIncoming: Boolean, isPersonalOffer: Boolean) {
         delimiterImage.setImageResource(style.quoteBackgroundResId)
         bgImage.setImageResource(style.quoteBackgroundResId)
         if (isIncoming) {
@@ -82,11 +86,17 @@ class QuoteHolderView : FrameLayout {
             quoteMessage.setTextColor(ContextCompat.getColor(context, style.quoteOutgoingTextColorRes))
             ColorsHelper.setDrawableColor(context, fileIconBackground, style.quoteOutgoingDelimiterColorRes)
         }
+        if (isPersonalOffer) {
+            quoteMessage.maxLines = 100
+        } else {
+            quoteMessage.maxLines = 1
+        }
         ColorsHelper.setDrawableColor(context, fileIconImage, style.quoteIconColorRes)
+        ColorsHelper.setDrawableColor(context, micIconImage, style.quoteIconColorRes)
     }
 
     fun showCampaign(campaignMessage: CampaignMessage) {
-        applyStyle(false)
+        applyStyle(isIncoming = false, isPersonalOffer = false)
         quoteMessage.text = campaignMessage.text
         quoteAuthor.text = campaignMessage.senderName
     }
@@ -96,7 +106,7 @@ class QuoteHolderView : FrameLayout {
         onQuoteClickListener: OnClickListener?,
         isIncoming: Boolean
     ) {
-        applyStyle(isIncoming)
+        applyStyle(isIncoming, quote.isPersonalOffer)
         quoteImage.isVisible = false
         if (quote.modified == ModificationStateEnum.DELETED) {
             quoteMessage.setTextColor(ContextCompat.getColor(context, style.systemMessageTextColorResId))
@@ -112,7 +122,6 @@ class QuoteHolderView : FrameLayout {
                 } else {
                     quote.phraseOwnerTitle
                 }
-            quoteMessage.setTextColor(ContextCompat.getColor(context, style.incomingMessageTextColor))
             if (!quote.text.isNullOrEmpty()) {
                 quoteMessage.text = quote.text
             }
@@ -126,25 +135,20 @@ class QuoteHolderView : FrameLayout {
     ) {
         if (FileUtils.isVoiceMessage(fileDescription)) {
             quoteMessage.setText(R.string.ecc_voice_message)
+            showMicIcon()
+        } else if (FileUtils.isImage(fileDescription)) {
+            quoteImage.isVisible = true
+            quoteImage.background = null
+            quoteImage.setImageDrawable(null)
+            showImage(fileDescription)
+            quoteImage.setPadding(0, 0, 0, 0)
+            quoteImage.setOnClickListener(onQuoteClickListener)
+            quoteMessage.setText(R.string.ecc_photo_message)
         } else {
-            if (FileUtils.isImage(fileDescription)) {
-                quoteImage.isVisible = true
-                quoteImage.background = null
-                quoteImage.setImageDrawable(null)
-                showImage(fileDescription)
-                quoteImage.setPadding(0, 0, 0, 0)
-                quoteImage.setOnClickListener(onQuoteClickListener)
-                quoteMessage.setText(R.string.ecc_photo_message)
-            } else {
-                fileNameFromDescription(fileDescription) { fileName ->
-                    quoteMessage.text = getFileDescriptionText(fileName, fileDescription)
-                }
-                quoteImage.isVisible = true
-                quoteImage.background = fileIconBackground
-                quoteImage.setImageDrawable(fileIconImage)
-                val padding = resources.getDimensionPixelSize(R.dimen.ecc_margin_half)
-                quoteImage.setPadding(padding, padding, padding, padding)
+            fileNameFromDescription(fileDescription) { fileName ->
+                quoteMessage.text = getFileDescriptionText(fileName, fileDescription)
             }
+            showFileIcon()
         }
     }
 
@@ -168,6 +172,22 @@ class QuoteHolderView : FrameLayout {
         } else {
             quoteImage.setImageResource(style.imagePlaceholder)
         }
+    }
+
+    private fun showFileIcon() {
+        quoteImage.isVisible = true
+        quoteImage.background = fileIconBackground
+        quoteImage.setImageDrawable(fileIconImage)
+        val padding = resources.getDimensionPixelSize(R.dimen.ecc_margin_half)
+        quoteImage.setPadding(padding, padding, padding, padding)
+    }
+
+    private fun showMicIcon() {
+        quoteImage.isVisible = true
+        quoteImage.background = fileIconBackground
+        quoteImage.setImageDrawable(micIconImage)
+        val padding = resources.getDimensionPixelSize(R.dimen.ecc_margin_half)
+        quoteImage.setPadding(padding, padding, padding, padding)
     }
 
     private fun getFileDescriptionText(

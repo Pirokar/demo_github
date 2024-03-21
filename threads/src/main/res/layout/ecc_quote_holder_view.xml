@@ -28,7 +28,6 @@
             android:id="@+id/quoteImage"
             android:layout_width="36dp"
             android:layout_height="36dp"
-            android:layout_gravity="center_vertical"
             android:layout_marginStart="@dimen/ecc_margin_three_fourth"
             android:layout_marginTop="@dimen/ecc_margin_half"
             android:layout_marginBottom="@dimen/ecc_margin_half"

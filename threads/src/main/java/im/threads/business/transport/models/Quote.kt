@@ -11,4 +11,5 @@ class Quote {
     val attachments: List<Attachment>? = null
     val operator: Operator? = null
     val modified = ModificationStateEnum.NONE
+    val isPersonalOffer: Boolean = false
 }

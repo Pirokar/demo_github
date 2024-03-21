@@ -238,7 +238,14 @@ object HistoryParser {
                 ?: BaseConfig.getInstance().context.getString(R.string.ecc_you)
 
             if (quoteString != null || quoteFileDescription != null) {
-                quote = Quote(quoteFromHistory.uuid, authorName, quoteString, quoteFileDescription, timestamp)
+                quote = Quote(
+                    quoteFromHistory.uuid,
+                    authorName,
+                    quoteString,
+                    quoteFileDescription,
+                    timestamp,
+                    quoteFromHistory.isPersonalOffer
+                )
             }
             if (quoteFileDescription != null) {
                 quoteFileDescription.from = authorName

@@ -383,6 +383,8 @@ public final class ChatStyle implements Serializable {
     public int inProgressIconResId = R.drawable.ecc_ic_clear_36dp;
     @DrawableRes
     public int completedIconResId = R.drawable.ecc_ic_file_outline_24dp;
+    @DrawableRes
+    public int iconMicResId = R.drawable.ecc_ic_mic_24dp;
 
     //TODO #THREADS-3523
     //chat message statuses
@@ -2350,10 +2352,10 @@ public final class ChatStyle implements Serializable {
 
     /**
      * Кастомизирует внешний вид цитат в исходящих сообщениях
-     * @param quoteIncomingBackgroundColorRes ресурс цвета фона цитаты
-     * @param quoteIncomingDelimiterColorRes ресурс цвета разделителя
-     * @param quoteIncomingAuthorTextColorRes ресурс цвета текста автора цитируемого сообщения
-     * @param quoteIncomingTextColorRes ресурс цвета текста цитируемого сообщения
+     * @param quoteOutgoingBackgroundColorRes ресурс цвета фона цитаты
+     * @param quoteOutgoingDelimiterColorRes ресурс цвета разделителя
+     * @param quoteOutgoingAuthorTextColorRes ресурс цвета текста автора цитируемого сообщения
+     * @param quoteOutgoingTextColorRes ресурс цвета текста цитируемого сообщения
      */
     public ChatStyle setOutgoingQuoteViewStyle(
             @ColorRes Integer quoteOutgoingBackgroundColorRes,

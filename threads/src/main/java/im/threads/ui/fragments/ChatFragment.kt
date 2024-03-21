@@ -261,6 +261,7 @@ class ChatFragment :
                 campaignMessage.text,
                 null,
                 campaignMessage.receivedDate.time,
+                false,
                 ModificationStateEnum.NONE
             )
             this.campaignMessage = campaignMessage
@@ -1178,6 +1179,7 @@ class ChatFragment :
                 consultPhrase.phraseText,
                 consultPhrase.fileDescription,
                 consultPhrase.timeStamp,
+                consultPhrase.isPersonalOffer,
                 consultPhrase.modified
             )
             mQuote?.isFromConsult = true

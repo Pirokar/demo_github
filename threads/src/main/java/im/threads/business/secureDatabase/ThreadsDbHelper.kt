@@ -164,7 +164,7 @@ class ThreadsDbHelper private constructor(val context: Context) :
     }
 
     companion object {
-        private const val VERSION = 11
+        private const val VERSION = 12
 
         @SuppressLint("StaticFieldLeak")
         private var dbInstance: ThreadsDbHelper? = null
