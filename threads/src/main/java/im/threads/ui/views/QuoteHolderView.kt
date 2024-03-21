@@ -3,10 +3,8 @@ package im.threads.ui.views
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.appcompat.content.res.AppCompatResources
@@ -17,7 +15,6 @@ import im.threads.R
 import im.threads.business.extensions.withMainContext
 import im.threads.business.imageLoading.ImageModifications
 import im.threads.business.imageLoading.loadImage
-import im.threads.business.logger.LoggerEdna
 import im.threads.business.models.CampaignMessage
 import im.threads.business.models.FileDescription
 import im.threads.business.models.Quote
@@ -87,7 +84,7 @@ class QuoteHolderView : FrameLayout {
             ColorsHelper.setDrawableColor(context, fileIconBackground, style.quoteOutgoingDelimiterColorRes)
         }
         if (isPersonalOffer) {
-            quoteMessage.maxLines = 100
+            quoteMessage.maxLines = Integer.MAX_VALUE
         } else {
             quoteMessage.maxLines = 1
         }

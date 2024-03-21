@@ -3,7 +3,6 @@ package im.threads.business.secureDatabase.table
 import android.content.ContentValues
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import im.threads.business.database.table.QuotesTable
 import im.threads.business.models.Quote
 import im.threads.business.models.enums.ModificationStateEnum
 import java.util.Locale
