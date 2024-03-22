@@ -218,6 +218,7 @@ class UserPhraseViewHolder(
             !(rightTextHeader.text == null || rightTextHeader.text.toString() == "null")
 
         checkOpenGraphVisibility()
+        checkOpenGraphWidthOnBubbleSizeChanging(bubbleLayout)
     }
 
     private fun checkOpenGraphVisibility() {
