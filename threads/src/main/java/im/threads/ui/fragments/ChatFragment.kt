@@ -1971,7 +1971,7 @@ class ChatFragment :
         if (disableInputFields) {
             val disabledInputMessage = ScheduleInfo()
             disabledInputMessage.timeStamp = System.currentTimeMillis()
-            disabledInputMessage.notification = getString(R.string.ecc_disabled_input_message)
+            disabledInputMessage.notification = getString(style.disabledInputMessageText)
             addChatItem(disabledInputMessage)
         } else {
             if (enableModel != null &&
