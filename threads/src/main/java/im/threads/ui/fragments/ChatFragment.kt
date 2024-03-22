@@ -58,6 +58,7 @@ import im.threads.business.extensions.toFlow
 import im.threads.business.extensions.withMainContext
 import im.threads.business.imageLoading.ImageLoader.Companion.get
 import im.threads.business.logger.LogZipSender
+import im.threads.business.logger.LoggerEdna
 import im.threads.business.logger.LoggerEdna.debug
 import im.threads.business.logger.LoggerEdna.error
 import im.threads.business.logger.LoggerEdna.info
@@ -1180,10 +1181,11 @@ class ChatFragment :
         }
         setFileDescription(null)
         if (isImage(cp.fileDescription)) {
+            val filePath = cp.fileDescription?.fileUri?.toString() ?: cp.fileDescription?.downloadPath
             quoteLayoutHolder?.setContent(
                 if (mQuote?.phraseOwnerTitle.isNullOrEmpty()) "" else mQuote?.phraseOwnerTitle,
                 (if (text.isNullOrEmpty()) requireContext().getString(R.string.ecc_image) else text),
-                cp.fileDescription?.fileUri,
+                filePath,
                 false
             )
         } else if (cp.fileDescription != null) {
@@ -2492,7 +2494,7 @@ class ChatFragment :
             chatUpdateProcessor.postAttachAudioFile(false)
         }
 
-        fun setContent(header: String?, text: String, imagePath: Uri?, isFromFilePicker: Boolean) = binding?.apply {
+        fun setContent(header: String?, text: String, imagePath: String?, isFromFilePicker: Boolean) = binding?.apply {
             isVisible = true
             setQuotePast(isFromFilePicker)
             if (header == null || header == "null") {
@@ -2506,10 +2508,10 @@ class ChatFragment :
             quoteSlider.visibility = View.GONE
             quoteDuration.visibility = View.GONE
             quoteText.text = text
-            if (imagePath != null) {
+            if (!imagePath.isNullOrEmpty()) {
                 quoteImage.visibility = View.VISIBLE
                 get()
-                    .load(imagePath.toString())
+                    .load(imagePath)
                     .scales(ImageView.ScaleType.FIT_CENTER, ImageView.ScaleType.CENTER_CROP)
                     .into(quoteImage)
             } else {
