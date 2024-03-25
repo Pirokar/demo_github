@@ -384,6 +384,7 @@ class ChatFragment :
             chatErrorLayout.errorMessage.text = message
             if (chatErrorLayout.errorLayout.isNotVisible()) {
                 showWelcomeScreen(false)
+                hideSearchMode()
                 hideProgressBar()
                 chatItemsRecycler.invisible()
                 bottomLayout.invisible()
