@@ -89,10 +89,7 @@ class ThreadsApi(
     private fun getHeadersMap(token: String?): Map<String, String?> {
         val isClientIdEncrypted = clientInfo.getUserInfo()?.clientIdEncrypted == true
         return if (isClientIdEncrypted) {
-            mapOf(
-                Pair("X-Client-Token", token),
-                Pair("X-Client-Token", token)
-            )
+            mapOf(Pair("X-Client-Token", token))
         } else {
             mapOf(
                 Pair("X-Client-Token", token?.encodeUrl()),
