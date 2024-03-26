@@ -12,6 +12,7 @@ import im.threads.business.utils.encodeUrl
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Call
+import java.net.URLEncoder.encode
 
 class ThreadsApi(
     private val oldThreadsApi: OldThreadsBackendApi? = null,
@@ -65,11 +66,11 @@ class ThreadsApi(
         if (searchString == null) {
             return null
         }
-
+        val search = searchString.replace("+", encode("+", Charsets.UTF_8.name()))
         return if (BaseConfig.getInstance().isNewChatCenterApi) {
-            newThreadsApi?.search(getHeadersMap(token), searchString, page)
+            newThreadsApi?.search(getHeadersMap(token), search, page)
         } else {
-            oldThreadsApi?.search(getHeadersMap(token), searchString, page)
+            oldThreadsApi?.search(getHeadersMap(token), search, page)
         }
     }
 

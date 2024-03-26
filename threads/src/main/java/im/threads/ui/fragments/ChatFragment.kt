@@ -53,8 +53,6 @@ import im.threads.business.audio.audioRecorder.AudioRecorder
 import im.threads.business.broadcastReceivers.ProgressReceiver
 import im.threads.business.chatUpdates.ChatUpdateProcessor
 import im.threads.business.config.BaseConfig
-import im.threads.business.extensions.throttle
-import im.threads.business.extensions.toFlow
 import im.threads.business.extensions.withMainContext
 import im.threads.business.imageLoading.ImageLoader.Companion.get
 import im.threads.business.logger.LogZipSender
@@ -142,7 +140,6 @@ import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.BehaviorSubject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -178,7 +175,7 @@ class ChatFragment :
     private val handler = Handler(Looper.getMainLooper())
     private val fileNameDateFormat = SimpleDateFormat("dd.MM.yyyy.HH:mm:ss.S", Locale.getDefault())
     private val inputTextObservable = MutableStateFlow("")
-    internal val fileDescription = BehaviorSubject.createDefault(Optional.empty<FileDescription?>())
+    internal val fileDescription = MutableStateFlow(Optional.empty<FileDescription?>())
     private val mediaMetadataRetriever = MediaMetadataRetriever()
     private val audioConverter = ChatCenterAudioConverter()
     private val chatUpdateProcessor: ChatUpdateProcessor by inject()
@@ -384,6 +381,7 @@ class ChatFragment :
             chatErrorLayout.errorMessage.text = message
             if (chatErrorLayout.errorLayout.isNotVisible()) {
                 showWelcomeScreen(false)
+                hideSearchMode()
                 hideProgressBar()
                 chatItemsRecycler.invisible()
                 bottomLayout.invisible()
@@ -861,16 +859,16 @@ class ChatFragment :
                 typingIntervalSeconds = it
             }
             withContext(Dispatchers.Main) {
-                inputTextObservable
-                    .throttle(
-                        typingIntervalSeconds * 1000L,
-                        filter = { it.isNotBlank() }
-                    )
-                    .collect { text ->
-                        if (text.isNotBlank() && isActive) {
+                var nextTime = System.currentTimeMillis()
+                inputTextObservable.collect { text ->
+                    val curTime = System.currentTimeMillis()
+                    if (text.isNotBlank() && curTime >= nextTime) {
+                        nextTime = curTime + typingIntervalSeconds * 1000L
+                        if (isActive) {
                             onInputChanged(text)
                         }
                     }
+                }
             }
         }
     }
@@ -887,7 +885,7 @@ class ChatFragment :
 
     private fun configureRecordButtonVisibility() {
         CoroutineScope(Dispatchers.Main).launch {
-            combine(inputTextObservable, fileDescription.toFlow()) { s, fileDescriptionOptional ->
+            combine(inputTextObservable, fileDescription) { s, fileDescriptionOptional ->
                 (s.isBlank() && (fileDescriptionOptional == null || fileDescriptionOptional.isEmpty))
             }.collect { isInputEmpty ->
                 setRecordButtonVisibility(isInputEmpty)
@@ -944,20 +942,20 @@ class ChatFragment :
     }
 
     private fun setFileDescription(fileDescription: FileDescription?) {
-        this.fileDescription.onNext(Optional.ofNullable(fileDescription))
+        coroutineScope.launch {
+            this@ChatFragment.fileDescription.emit(Optional.ofNullable(fileDescription))
+        }
     }
 
     private fun subscribeToFileDescription() {
-        subscribe(
-            fileDescription
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { files: Optional<FileDescription?>? ->
-                    val isFilesAvailable = files != null && !files.isEmpty
-                    val isInputAvailable = binding?.inputEditView?.text?.isNotBlank()
-                    val isEnable = isFilesAvailable || isInputAvailable == true
-                    binding?.sendMessage?.isEnabled = isEnable
-                }
-        )
+        coroutineScope.launch(Dispatchers.Main) {
+            fileDescription.collect { files: Optional<FileDescription?>? ->
+                val isFilesAvailable = files != null && !files.isEmpty
+                val isInputAvailable = binding?.inputEditView?.text?.isNotBlank()
+                val isEnable = isFilesAvailable || isInputAvailable == true
+                binding?.sendMessage?.isEnabled = isEnable
+            }
+        }
     }
 
     private fun onRefresh() {
@@ -1180,10 +1178,11 @@ class ChatFragment :
         }
         setFileDescription(null)
         if (isImage(cp.fileDescription)) {
+            val filePath = cp.fileDescription?.fileUri?.toString() ?: cp.fileDescription?.downloadPath
             quoteLayoutHolder?.setContent(
                 if (mQuote?.phraseOwnerTitle.isNullOrEmpty()) "" else mQuote?.phraseOwnerTitle,
                 (if (text.isNullOrEmpty()) requireContext().getString(R.string.ecc_image) else text),
-                cp.fileDescription?.fileUri,
+                filePath,
                 false
             )
         } else if (cp.fileDescription != null) {
@@ -1971,7 +1970,7 @@ class ChatFragment :
         if (disableInputFields) {
             val disabledInputMessage = ScheduleInfo()
             disabledInputMessage.timeStamp = System.currentTimeMillis()
-            disabledInputMessage.notification = getString(R.string.ecc_disabled_input_message)
+            disabledInputMessage.notification = getString(style.disabledInputMessageText)
             addChatItem(disabledInputMessage)
         } else {
             if (enableModel != null &&
@@ -2492,7 +2491,7 @@ class ChatFragment :
             chatUpdateProcessor.postAttachAudioFile(false)
         }
 
-        fun setContent(header: String?, text: String, imagePath: Uri?, isFromFilePicker: Boolean) = binding?.apply {
+        fun setContent(header: String?, text: String, imagePath: String?, isFromFilePicker: Boolean) = binding?.apply {
             isVisible = true
             setQuotePast(isFromFilePicker)
             if (header == null || header == "null") {
@@ -2506,10 +2505,10 @@ class ChatFragment :
             quoteSlider.visibility = View.GONE
             quoteDuration.visibility = View.GONE
             quoteText.text = text
-            if (imagePath != null) {
+            if (!imagePath.isNullOrEmpty()) {
                 quoteImage.visibility = View.VISIBLE
                 get()
-                    .load(imagePath.toString())
+                    .load(imagePath)
                     .scales(ImageView.ScaleType.FIT_CENTER, ImageView.ScaleType.CENTER_CROP)
                     .into(quoteImage)
             } else {

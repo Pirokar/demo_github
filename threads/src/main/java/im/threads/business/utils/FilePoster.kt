@@ -7,7 +7,6 @@ import im.threads.business.chatUpdates.ChatUpdateProcessor
 import im.threads.business.config.BaseConfig
 import im.threads.business.imageLoading.ImageLoader
 import im.threads.business.logger.LoggerEdna
-import im.threads.business.models.ErrorResponse
 import im.threads.business.models.FileDescription
 import im.threads.business.models.enums.AttachmentStateEnum
 import im.threads.business.rest.queries.DatastoreApi
@@ -50,6 +49,7 @@ fun postFile(fileDescription: FileDescription, clientId: String?): String? {
             }
         } catch (exc: Exception) {
             chatUpdateProcessor.postError(TransportException(exc.message))
+            return null
         }
     }
 
@@ -85,11 +85,10 @@ private fun sendFile(uri: Uri, mimeType: String, token: String, fileDescription:
         } else {
             response.errorBody()?.let { responseBody ->
                 chatUpdateProcessor.postUploadResult(fileDescription.apply { state = AttachmentStateEnum.ERROR })
-                val errorBody: ErrorResponse =
-                    BaseConfig.getInstance().gson.fromJson(responseBody.string(), ErrorResponse::class.java)
-                if (!errorBody.message.isNullOrEmpty()) {
-                    showErrorMessageLog(errorBody.message)
-                    throw IOException(errorBody.code)
+                val errorMessage = "Code: ${response.code()}, message: ${response.message()}. ${responseBody.string()}"
+                if (errorMessage.isNotEmpty()) {
+                    showErrorMessageLog(errorMessage)
+                    throw IOException(errorMessage)
                 }
             }
         }

@@ -20,6 +20,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
+import androidx.core.view.doOnLayout
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import im.threads.R
@@ -59,6 +60,7 @@ import im.threads.ui.utils.dpToPx
 import im.threads.ui.utils.getWidthInDp
 import im.threads.ui.utils.gone
 import im.threads.ui.utils.invisible
+import im.threads.ui.utils.isVisible
 import im.threads.ui.utils.visible
 import im.threads.ui.views.CircularProgressButton
 import im.threads.ui.views.QuoteHolderView
@@ -388,7 +390,7 @@ abstract class BaseHolder internal constructor(
                     setOgDataDescription(ogData, ogDescription)
                     setOgDataUrl(ogUrl, ogData)
                     setOgDataImage(ogData, ogImage)
-                    checkOgWidth(ogDataLayout)
+                    checkOgWidth()
 
                     viewUtils.setClickListener(
                         ogDataLayout,
@@ -512,13 +514,25 @@ abstract class BaseHolder internal constructor(
         }
     }
 
-    private fun checkOgWidth(ogDataLayout: ViewGroup) {
-        ogDataLayout.post {
-            if (ogDataLayout.getWidthInDp() < 240) {
-                ogDataLayout.layoutParams.width = ogDataLayout.context.dpToPx(240).toInt()
-                ogDataLayout.requestLayout()
-            } else {
-                ogDataLayout.layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
+    protected fun checkOpenGraphWidthOnBubbleSizeChanging(bubbleLayout: ViewGroup) {
+        bubbleLayout.doOnLayout {
+            checkOgWidth()
+        }
+    }
+
+    private fun checkOgWidth() {
+        ogDataContent?.ogDataLayout?.get()?.let { ogDataLayout ->
+            ogDataLayout.post {
+                if (ogDataLayout.isVisible()) {
+                    val widthInDp = 250
+                    if (ogDataLayout.getWidthInDp() < widthInDp) {
+                        ogDataLayout.layoutParams.width =
+                            ogDataLayout.context.dpToPx(widthInDp).toInt()
+                        ogDataLayout.requestLayout()
+                    } else {
+                        ogDataLayout.layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
+                    }
+                }
             }
         }
     }

@@ -86,6 +86,9 @@ public final class ChatStyle implements Serializable {
     public int loadedSettingsErrorText = R.string.ecc_settings_not_loaded;
 
     @StringRes
+    public int disabledInputMessageText = R.string.ecc_disabled_input_message;
+
+    @StringRes
     public int loadedAttachmentSettingsErrorText = R.string.ecc_attachment_settings_not_loaded;
 
     @ColorRes
@@ -2388,6 +2391,17 @@ public final class ChatStyle implements Serializable {
         }
         if (quoteOutgoingTextColorRes != null) {
             this.quoteOutgoingTextColorRes = quoteOutgoingTextColorRes;
+        }
+        return this;
+    }
+
+    /**
+     * Устанавливает тексты ошибки, когда принудительно блокируется поле ввода
+     * @param disabledInputMessageTextRes ресурс текста ошибки при принудительной блокировке поле ввода.
+     */
+    public ChatStyle setOutgoingQuoteViewStyle(@StringRes Integer disabledInputMessageTextRes) {
+        if (disabledInputMessageTextRes != null) {
+            this.disabledInputMessageText = disabledInputMessageTextRes;
         }
         return this;
     }

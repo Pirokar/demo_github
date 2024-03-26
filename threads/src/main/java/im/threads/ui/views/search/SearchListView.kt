@@ -121,6 +121,12 @@ internal class SearchListView : FrameLayout {
     private fun loadSearchResults(searchString: String, page: Int) {
         if (searchString.isBlank() || loadingChannel.value) return
 
+        if (!lastSearchString.isNullOrBlank() &&
+            searchString.trim() == lastSearchString?.trim() &&
+            lastSearchResults?.pages == page
+        ) {
+            return
+        }
         setLoadingChannelValue(true)
 
         val query = BackendApi.get().search(

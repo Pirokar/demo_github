@@ -15,7 +15,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import im.threads.R;
 import im.threads.business.utils.Balloon;
 import im.threads.ui.ChatStyle;
 import im.threads.business.logger.LoggerEdna;
@@ -31,6 +30,7 @@ public final class QuickAnswerActivity extends BaseActivity {
     public static final String ACTION_CANCEL = "im.threads.ACTION_CANCEL";
     private QuickAnswerReceiver mQuickAnswerReceiver;
     private QuickAnswerController controller;
+    private ChatStyle style = Config.getInstance().getChatStyle();
 
     public static PendingIntent createPendingIntent(Context context) {
         final Intent buttonIntent = new Intent(context, QuickAnswerActivity.class)
@@ -58,7 +58,6 @@ public final class QuickAnswerActivity extends BaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ChatStyle style = Config.getInstance().getChatStyle();
         Window window = getWindow();
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -98,7 +97,7 @@ public final class QuickAnswerActivity extends BaseActivity {
             } else if (intent.getAction().equalsIgnoreCase(ACTION_ANSWER)) {
                 if (ChatController.getInstance().isInputDisabled()) {
                     LoggerEdna.info("onReceive: ACTION_ANSWER. Input is disabled.");
-                    Balloon.show(context, context.getString(R.string.ecc_disabled_input_message));
+                    Balloon.show(context, context.getString(style.disabledInputMessageText));
                 } else {
                     LoggerEdna.info("onReceive: ACTION_ANSWER");
                     controller.onUserAnswer(new UpcomingUserMessage(null, null, null, intent.getStringExtra(ACTION_ANSWER), false));

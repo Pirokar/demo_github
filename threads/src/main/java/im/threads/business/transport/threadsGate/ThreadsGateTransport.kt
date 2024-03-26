@@ -186,7 +186,7 @@ class ThreadsGateTransport(
             val secondPartOfCorrelationId = "${survey.sendingId}$CORRELATION_ID_DIVIDER${survey.questions?.first()?.correlationId}"
             val correlationId = "$firstPartOfCorrelationId$secondPartOfCorrelationId"
             surveysInProcess[survey.sendingId] = survey
-            sendMessage(content, true, correlationId)
+            sendMessage(content, true, uuid = survey.questions?.first()?.correlationId, correlationId)
         }
     }
 

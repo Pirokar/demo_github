@@ -198,6 +198,8 @@ class ConsultPhraseHolder(
             } else {
                 phraseFrame.layoutParams.width = FrameLayout.LayoutParams.WRAP_CONTENT
             }
+
+            checkOpenGraphWidthOnBubbleSizeChanging(bubbleLayout)
         }
     }
 
