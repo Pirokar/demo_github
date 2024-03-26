@@ -148,6 +148,7 @@
                     android:id="@+id/quote_image"
                     android:layout_width="64dp"
                     android:layout_height="64dp"
+                    android:layout_gravity="center_vertical"
                     android:minWidth="1dp"
                     android:padding="@dimen/ecc_margin_half"
                     android:visibility="gone" />
