@@ -799,7 +799,9 @@ class ChatFragment :
                         chatController.isChatReady()
                     ) {
                         swipeRefresh.isRefreshing = true
-                        chatController.loadHistory(isAfterAnchor = false) // before
+
+                        val firstMessageTimestamp = chatAdapter?.list?.firstOrNull()?.timeStamp
+                        chatController.loadHistory(isAfterAnchor = false, anchorTimestamp = firstMessageTimestamp) // before
                     }
                 }
             }

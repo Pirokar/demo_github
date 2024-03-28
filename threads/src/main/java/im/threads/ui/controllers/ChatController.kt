@@ -622,7 +622,13 @@ class ChatController private constructor() {
         if (!chatState.isChatReady() && !fromQuickAnswerController) return
         val count = BaseConfig.getInstance().historyLoadingCount
         val stringQuery = "$anchorTimestamp,$count,$isAfterAnchor"
-        if (lastHistoryQuery == stringQuery) return
+        if (lastHistoryQuery == stringQuery) {
+            warning(
+                "Запрос истории отменен, так как сигнатура запроса совпадает с предыдущей." +
+                    " Предыдущая: $lastHistoryQuery, текущая: $stringQuery"
+            )
+            return
+        }
         synchronized(this) {
             if (!isDownloadingMessages) {
                 isDownloadingMessages = true

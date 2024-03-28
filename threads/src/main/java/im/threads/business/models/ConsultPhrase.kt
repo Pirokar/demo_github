@@ -7,7 +7,7 @@ import im.threads.business.ogParser.OGData
 import im.threads.business.utils.FileUtils.isImage
 import im.threads.business.utils.FileUtils.isVoiceMessage
 
-class ConsultPhrase constructor(
+class ConsultPhrase(
     override var id: String?, // This this a mfms messageId required for read status updates
     override var fileDescription: FileDescription?,
     val modified: ModificationStateEnum,
