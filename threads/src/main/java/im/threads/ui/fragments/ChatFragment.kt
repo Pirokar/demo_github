@@ -801,6 +801,7 @@ class ChatFragment :
                         swipeRefresh.isRefreshing = true
 
                         val firstMessageTimestamp = chatAdapter?.list?.firstOrNull()?.timeStamp
+                        info("Загрузка истории сообщений перед timestamp: $firstMessageTimestamp")
                         chatController.loadHistory(isAfterAnchor = false, anchorTimestamp = firstMessageTimestamp) // before
                     }
                 }
