@@ -8,6 +8,7 @@ import io.edna.threads.demo.BaseTestCase
 import io.edna.threads.demo.TestMessages.defaultConfigNoScheduleMock
 import io.edna.threads.demo.TestMessages.defaultConfigScheduleInactiveCanSendMock
 import io.edna.threads.demo.TestMessages.defaultConfigScheduleInactiveCannotSendMock
+import io.edna.threads.demo.TestMessages.emptyNoThreadHistoryMessage
 import io.edna.threads.demo.TestMessages.operatorHelloMessage
 import io.edna.threads.demo.appCode.activity.MainActivity
 import io.edna.threads.demo.assert
@@ -56,7 +57,10 @@ class NotWorkingMessagesTests : BaseTestCase() {
 
     @Test
     fun sendMessageWhenScheduleInActiveSendDuringInactive() {
-        prepareHttpMocks(configAnswer = defaultConfigScheduleInactiveCanSendMock)
+        prepareHttpMocks(
+            configAnswer = defaultConfigScheduleInactiveCanSendMock,
+            historyAnswer = emptyNoThreadHistoryMessage
+        )
         prepareWsMocks()
         openChatFromDemoLoginPage()
         checkInputFieldsEnabledHasNotificationMessage()
@@ -64,7 +68,10 @@ class NotWorkingMessagesTests : BaseTestCase() {
 
     @Test
     fun sendMessageWhenScheduleInActiveSendDuringInactiveWithMessageFromConsultant() {
-        prepareHttpMocks(configAnswer = defaultConfigScheduleInactiveCanSendMock)
+        prepareHttpMocks(
+            configAnswer = defaultConfigScheduleInactiveCanSendMock,
+            historyAnswer = emptyNoThreadHistoryMessage
+        )
         prepareWsMocks()
         openChatFromDemoLoginPage()
         checkInputFieldsEnabledHasNotificationMessageWithMessageFromConsultant()
@@ -72,7 +79,10 @@ class NotWorkingMessagesTests : BaseTestCase() {
 
     @Test
     fun sendMessageWhenScheduleInActiveNotSendDuringInactive() {
-        prepareHttpMocks(configAnswer = defaultConfigScheduleInactiveCannotSendMock)
+        prepareHttpMocks(
+            configAnswer = defaultConfigScheduleInactiveCannotSendMock,
+            historyAnswer = emptyNoThreadHistoryMessage
+        )
         prepareWsMocks()
         openChatFromDemoLoginPage()
         checkInputFieldsDisabledHasNotificationMessage()
@@ -80,7 +90,10 @@ class NotWorkingMessagesTests : BaseTestCase() {
 
     @Test
     fun sendMessageWhenScheduleInActiveNotSendDuringInactiveWithMessageFromConsultant() {
-        prepareHttpMocks(configAnswer = defaultConfigScheduleInactiveCannotSendMock)
+        prepareHttpMocks(
+            configAnswer = defaultConfigScheduleInactiveCannotSendMock,
+            historyAnswer = emptyNoThreadHistoryMessage
+        )
         prepareWsMocks()
         openChatFromDemoLoginPage()
         checkInputFieldsDisabledHasNotificationMessageWithMessageFromConsultant()

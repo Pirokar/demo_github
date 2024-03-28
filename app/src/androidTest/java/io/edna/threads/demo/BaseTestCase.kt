@@ -139,15 +139,19 @@ abstract class BaseTestCase(private val isUserInputEnabled: Boolean = true) : Te
         }
     }
 
-    protected fun prepareWsMocks() {
+    protected fun prepareWsMocks(t: Throwable? = null) {
         BuildConfig.IS_MOCK_WEB_SERVER.set(true)
         MockitoAnnotations.openMocks(this)
         Mockito.`when`(okHttpClient.newWebSocket(anyOrNull(), anyOrNull())).thenReturn(socket)
         Mockito.doAnswer { mock: InvocationOnMock ->
-            val stringArg = mock.arguments[0] as String
-            val answer = getAnswersForWebSocket(stringArg)
-            answer?.let { wsAnswer ->
-                sendMessageToSocket(wsAnswer)
+            if (t != null) {
+                sendErrorMessageToSocket(t)
+            } else {
+                val stringArg = mock.arguments[0] as String
+                val answer = getAnswersForWebSocket(stringArg)
+                answer?.let { wsAnswer ->
+                    sendMessageToSocket(wsAnswer)
+                }
             }
             null
         }.`when`(socket).send(Mockito.anyString())
@@ -203,6 +207,29 @@ abstract class BaseTestCase(private val isUserInputEnabled: Boolean = true) : Te
                     WireMock.aResponse()
                         .withStatus(200)
                         .withBody(configAnswer ?: TestMessages.defaultConfigMock)
+                        .withHeader("Content-Type", "application/json")
+                )
+        )
+    }
+
+    protected fun prepareHttpErrorMocks(withAnswerDelayInMs: Int = 0) {
+        BuildConfig.IS_MOCK_WEB_SERVER.set(true)
+        wireMockRule.stubFor(
+            WireMock.get(WireMock.urlPathMatching(".*/history.*"))
+                .willReturn(
+                    WireMock.aResponse()
+                        .withStatus(404)
+                        .withBody(TestMessages.emptyHistoryMessage)
+                        .withHeader("Content-Type", "application/json")
+                        .withFixedDelay(withAnswerDelayInMs)
+                )
+        )
+        wireMockRule.stubFor(
+            WireMock.get(WireMock.urlPathMatching(".*/config.*"))
+                .willReturn(
+                    WireMock.aResponse()
+                        .withStatus(404)
+                        .withBody(TestMessages.defaultConfigMock)
                         .withHeader("Content-Type", "application/json")
                 )
         )

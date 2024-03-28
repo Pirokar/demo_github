@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Intent
 import android.widget.Toast
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.perf.FirebasePerformance
 import com.microsoft.appcenter.AppCenter
 import com.microsoft.appcenter.analytics.Analytics
@@ -19,6 +20,7 @@ import im.threads.business.config.transport.WSConfig
 import im.threads.business.extensions.jsonStringToMap
 import im.threads.business.logger.ChatLoggerConfig
 import im.threads.business.models.enums.ChatApiVersion
+import im.threads.ui.ChatCenterPushMessageHelper
 import im.threads.ui.ChatConfig
 import im.threads.ui.core.ChatCenterUI
 import im.threads.ui.uiStyle.settings.ChatTheme
@@ -81,6 +83,17 @@ class EdnaThreadsApplication : Application() {
             initChatCenterUI()
             initUser()
         }
+        checkAndUpdateTokens()
+    }
+
+    private fun checkAndUpdateTokens() {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val token = task.result
+                ChatCenterPushMessageHelper().setFcmToken(token)
+            }
+        }
+        HCMTokenRefresher.requestToken(this)
     }
 
     private fun initThemes() {
