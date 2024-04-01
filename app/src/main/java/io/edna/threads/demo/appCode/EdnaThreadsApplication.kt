@@ -2,6 +2,7 @@ package io.edna.threads.demo.appCode
 
 import android.app.Application
 import android.content.Intent
+import android.util.Log
 import android.widget.Toast
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.perf.FirebasePerformance
@@ -16,6 +17,7 @@ import im.threads.business.config.transport.ChatTransportConfig
 import im.threads.business.config.transport.HTTPConfig
 import im.threads.business.config.transport.SSLPinningConfig
 import im.threads.business.config.transport.WSConfig
+import im.threads.business.core.ChatCenterUIListener
 import im.threads.business.extensions.jsonStringToMap
 import im.threads.business.logger.ChatLoggerConfig
 import im.threads.business.models.enums.ChatApiVersion
@@ -38,7 +40,6 @@ import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
-import java.lang.Exception
 
 class EdnaThreadsApplication : Application() {
     private lateinit var chatLightTheme: ChatTheme
@@ -214,6 +215,20 @@ class EdnaThreadsApplication : Application() {
             darkTheme = chatDarkTheme
             init(server.threadsGateProviderUid ?: "", server.appMarker ?: "", chatConf)
         }
+
+        chatCenterUI?.setChatCenterUIListener(object : ChatCenterUIListener {
+            override fun unreadMessageCountChanged(count: UInt) {
+                val intent = Intent(LaunchFragment.APP_UNREAD_COUNT_BROADCAST)
+                intent.putExtra(LaunchFragment.UNREAD_COUNT_KEY, count.toInt())
+                sendBroadcast(intent)
+            }
+
+            override fun urlClicked(url: String) {
+                super.urlClicked(url)
+                Log.i("UrlClicked", url)
+            }
+        })
+
         HCMTokenRefresher.requestToken(this)
     }
 
