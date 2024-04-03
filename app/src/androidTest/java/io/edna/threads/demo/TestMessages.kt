@@ -15,6 +15,9 @@ object TestMessages {
     const val emptyHistoryMessage = "{\"messages\":[],\"agentInfo\":{\"action\":\"AGENT_LOOKUP\",\"actionDate\":\"2023-03-22T08:51:43.124Z\"," +
         "\"thread\":{\"id\":304,\"state\":\"UNASSIGNED\"},\"agent\":null},\"allowedToSendMessages\":true}"
 
+    const val emptyNoThreadHistoryMessage = "{\"messages\":[],\"agentInfo\":{\"action\":\"AGENT_LOOKUP\",\"actionDate\":\"2023-03-22T08:51:43.124Z\"," +
+            "\"state\":\"UNASSIGNED\"},\"agent\":null},\"allowedToSendMessages\":true}"
+
     const val operatorHelloMessage = "{\"action\":\"getMessages\",\"data\":{\"messages\":[" +
         "{\"messageId\":\"0238fafc-132e-4a7c-87e6-834d50c3a551\",\"sentAt\":\"2023-09-25T13:07:29.213Z\"," +
         "\"notification\":\"New chat message received\",\"content\":{\"type\":\"MESSAGE\",\"clientId\":\"545\"," +
@@ -195,4 +198,6 @@ object TestMessages {
         "\"attachmentSettings\": {\"content\": {\"type\": \"ATTACHMENT_SETTINGS\",\"content\": {" +
         "\"maxSize\": 1,\"fileExtensions\": [\"jpeg\",\"jpg\",\"png\",\"pdf\",\"doc\",\"docx\",\"rtf\",\"bmp\"," +
         "\"ogg\",\"txt\",\"oga\",\"mp3\"]}}}}"
+
+    const val websocketErrorStringMock = "Unable to resolve host tg.mobile3.chc.dte: No address associated with hostname"
 }
