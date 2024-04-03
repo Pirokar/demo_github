@@ -3,8 +3,8 @@ package io.edna.threads.demo.appCode.test
 import android.content.Context
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import im.threads.business.annotation.OpenWay
-import im.threads.ui.fragments.ChatFragment
+import edna.chatcenter.ui.core.annotation.OpenWay
+import edna.chatcenter.ui.visual.fragments.ChatFragment
 import io.edna.threads.demo.R
 
 class TestChatActivity : AppCompatActivity() {

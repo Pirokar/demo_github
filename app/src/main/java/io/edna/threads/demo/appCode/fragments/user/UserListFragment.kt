@@ -8,7 +8,7 @@ import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
-import im.threads.ui.utils.EdnaColors
+import edna.chatcenter.ui.visual.utils.EdnaColors
 import io.edna.threads.demo.R
 import io.edna.threads.demo.appCode.adapters.EccTouchHelperCallBack
 import io.edna.threads.demo.appCode.adapters.ListItemClickListener

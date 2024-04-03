@@ -40,7 +40,7 @@ class MessagesErrorTest : BaseTestCase() {
                 val itemsSize = getSize()
                 assert("Список сообщений должен быть видимый") { isVisible() }
                 assert("Список должен содержать сообщение об ошибке при загрузке файла") {
-                    hasDescendant { containsText(context.getString(im.threads.R.string.ecc_some_error_during_load_file)) }
+                    hasDescendant { containsText(context.getString(edna.chatcenter.R.string.ecc_some_error_during_load_file)) }
                 }
                 childAt<ChatMainScreen.ChatRecyclerItem>(1) {
                     itemTime {

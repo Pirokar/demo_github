@@ -2,8 +2,8 @@ package io.edna.threads.demo.kaspressoSreens
 
 import android.view.View
 import com.kaspersky.kaspresso.screens.KScreen
-import im.threads.R
-import im.threads.ui.fragments.ChatFragment
+import edna.chatcenter.ui.R
+import edna.chatcenter.ui.visual.fragments.ChatFragment
 import io.github.kakaocup.kakao.common.views.KView
 import io.github.kakaocup.kakao.edit.KEditText
 import io.github.kakaocup.kakao.image.KImageView

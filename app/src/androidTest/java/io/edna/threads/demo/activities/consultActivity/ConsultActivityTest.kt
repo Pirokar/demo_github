@@ -3,8 +3,8 @@ package io.edna.threads.demo.activities.consultActivity
 import android.content.Intent
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.rules.ActivityScenarioRule
-import im.threads.business.models.ConsultInfo
-import im.threads.ui.activities.ConsultActivity
+import edna.chatcenter.ui.core.models.ConsultInfo
+import edna.chatcenter.ui.visual.activities.ConsultActivity
 import io.edna.threads.demo.BaseTestCase
 import org.junit.Rule
 import org.junit.Test

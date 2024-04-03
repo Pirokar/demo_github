@@ -10,9 +10,9 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.viewbinding.ViewBinding
-import im.threads.ui.core.ChatCenterUI
-import im.threads.ui.extensions.isDarkThemeOn
-import im.threads.ui.fragments.ChatFragment
+import edna.chatcenter.ui.visual.core.ChatCenterUI
+import edna.chatcenter.ui.visual.extensions.isDarkThemeOn
+import edna.chatcenter.ui.visual.fragments.ChatFragment
 import io.edna.threads.demo.R
 import io.edna.threads.demo.appCode.EdnaThreadsApplication
 import io.edna.threads.demo.appCode.fragments.demoSamplesList.DemoSamplesListFragment

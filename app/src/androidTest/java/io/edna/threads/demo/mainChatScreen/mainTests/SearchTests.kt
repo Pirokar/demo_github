@@ -49,7 +49,7 @@ class SearchTests : BaseTestCase() {
 
                 firstChild<ChatMainScreen.SearchRecyclerItem> {
                     assert("Первый элемент в списке должен содержать имя \"Я\"") {
-                        nameTextView.hasText(im.threads.R.string.ecc_I)
+                        nameTextView.hasText(edna.chatcenter.R.string.ecc_I)
                     }
                     assert("Первый элемент в списке не содержит правильный текст") {
                         messageTextView.hasText("Добро пожаловать в наш чат! А кто такие Edna?")

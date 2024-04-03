@@ -2,8 +2,8 @@ package io.edna.threads.demo.integrationCode.fragments.chatFragment
 
 import android.os.Bundle
 import android.view.View
-import im.threads.business.annotation.OpenWay
-import im.threads.ui.fragments.ChatFragment
+import edna.chatcenter.ui.core.annotation.OpenWay
+import edna.chatcenter.ui.visual.fragments.ChatFragment
 import io.edna.threads.demo.R
 import io.edna.threads.demo.appCode.fragments.BaseAppFragment
 import io.edna.threads.demo.databinding.FragmentChatBinding

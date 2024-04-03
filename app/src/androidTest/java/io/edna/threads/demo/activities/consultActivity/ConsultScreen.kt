@@ -1,8 +1,8 @@
 package io.edna.threads.demo.activities.consultActivity
 
 import com.kaspersky.kaspresso.screens.KScreen
-import im.threads.R
-import im.threads.ui.activities.ConsultActivity
+import edna.chatcenter.ui.R
+import edna.chatcenter.ui.visual.activities.ConsultActivity
 import io.github.kakaocup.kakao.image.KImageView
 import io.github.kakaocup.kakao.text.KTextView
 import io.github.kakaocup.kakao.toolbar.KToolbar

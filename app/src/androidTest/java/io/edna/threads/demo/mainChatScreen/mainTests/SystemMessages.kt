@@ -39,7 +39,7 @@ class SystemMessages : BaseTestCase() {
                 assert(getSize() == 11) { "Неверное количество сообщений в списке" }
 
                 childWith<ChatMainScreen.ChatRecyclerItem> {
-                    withDescendant { containsText(context.getString(im.threads.R.string.ecc_ask_to_rate)) }
+                    withDescendant { containsText(context.getString(edna.chatcenter.R.string.ecc_ask_to_rate)) }
                 }.apply {
                     thumbUp {
                         assert("Иконка с пальцем вверх должна быть видимой и кликабельной", ::isVisible, ::isClickable)
@@ -62,9 +62,9 @@ class SystemMessages : BaseTestCase() {
                     assert("Общее число звезд должно равняться 1") { totalStarsCount.hasText("1") }
 
                     fromTextSurvey {
-                        assert("Текст \"${context.getString(im.threads.R.string.ecc_from)}\" должен быть видим") { isVisible() }
-                        assert("Текст \"${context.getString(im.threads.R.string.ecc_from)}\" не соответствует отображаемому") {
-                            hasText(im.threads.R.string.ecc_from)
+                        assert("Текст \"${context.getString(edna.chatcenter.R.string.ecc_from)}\" должен быть видим") { isVisible() }
+                        assert("Текст \"${context.getString(edna.chatcenter.R.string.ecc_from)}\" не соответствует отображаемому") {
+                            hasText(edna.chatcenter.R.string.ecc_from)
                         }
                     }
 
@@ -82,9 +82,9 @@ class SystemMessages : BaseTestCase() {
                     assert("Общее число звезд должно равняться 5") { totalStarsCount.hasText("5") }
 
                     fromTextSurvey {
-                        assert("Текст \"${context.getString(im.threads.R.string.ecc_from)}\" должен быть видим") { isVisible() }
-                        assert("Текст \"${context.getString(im.threads.R.string.ecc_from)}\" не соответствует отображаемому") {
-                            hasText(im.threads.R.string.ecc_from)
+                        assert("Текст \"${context.getString(edna.chatcenter.R.string.ecc_from)}\" должен быть видим") { isVisible() }
+                        assert("Текст \"${context.getString(edna.chatcenter.R.string.ecc_from)}\" не соответствует отображаемому") {
+                            hasText(edna.chatcenter.R.string.ecc_from)
                         }
                     }
 
@@ -102,9 +102,9 @@ class SystemMessages : BaseTestCase() {
                     assert("Общее число звезд должно равняться 5") { totalStarsCount.hasText("5") }
 
                     fromTextSurvey {
-                        assert("Текст \"${context.getString(im.threads.R.string.ecc_from)}\" должен быть видим") { isVisible() }
-                        assert("Текст \"${context.getString(im.threads.R.string.ecc_from)}\" не соответствует отображаемому") {
-                            hasText(im.threads.R.string.ecc_from)
+                        assert("Текст \"${context.getString(edna.chatcenter.R.string.ecc_from)}\" должен быть видим") { isVisible() }
+                        assert("Текст \"${context.getString(edna.chatcenter.R.string.ecc_from)}\" не соответствует отображаемому") {
+                            hasText(edna.chatcenter.R.string.ecc_from)
                         }
                     }
 
@@ -116,7 +116,7 @@ class SystemMessages : BaseTestCase() {
                     }
                 }
                 childAt<ChatMainScreen.ChatRecyclerItem>(8) {
-                    askForRateText.hasText(im.threads.R.string.ecc_ask_to_rate)
+                    askForRateText.hasText(edna.chatcenter.R.string.ecc_ask_to_rate)
                     thumbUp.isVisible()
                     thumbUp.isClickable()
                     thumbDown.isVisible()
@@ -164,8 +164,8 @@ class SystemMessages : BaseTestCase() {
         ChatMainScreen {
             chatItemsRecyclerView {
                 sendMessageToSocket(TestMessages.typingMessage)
-                assert("Список должен содержать сообщение: \"${context.getString(im.threads.R.string.ecc_typing)}\"") {
-                    hasDescendant { withText(context.getString(im.threads.R.string.ecc_typing)) }
+                assert("Список должен содержать сообщение: \"${context.getString(edna.chatcenter.R.string.ecc_typing)}\"") {
+                    hasDescendant { withText(context.getString(edna.chatcenter.R.string.ecc_typing)) }
                 }
             }
         }

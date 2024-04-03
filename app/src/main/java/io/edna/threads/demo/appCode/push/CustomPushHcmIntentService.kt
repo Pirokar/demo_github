@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.util.Base64
 import com.huawei.hms.push.HmsMessageService
 import com.huawei.hms.push.RemoteMessage
-import im.threads.ui.ChatCenterPushMessageHelper
+import edna.chatcenter.ui.visual.ChatCenterPushMessageHelper
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.UnsupportedEncodingException

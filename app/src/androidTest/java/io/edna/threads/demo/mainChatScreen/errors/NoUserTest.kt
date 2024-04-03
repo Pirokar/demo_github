@@ -4,10 +4,10 @@ import android.content.Intent
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import im.threads.BuildConfig
-import im.threads.R
-import im.threads.ui.activities.ChatActivity
-import im.threads.ui.core.ChatCenterUI
+import edna.chatcenter.ui.BuildConfig
+import edna.chatcenter.ui.R
+import edna.chatcenter.ui.visual.activities.ChatActivity
+import edna.chatcenter.ui.visual.core.ChatCenterUI
 import io.edna.threads.demo.BaseTestCase
 import io.edna.threads.demo.appCode.ednaMockThreadsGateProviderUid
 import io.edna.threads.demo.assert

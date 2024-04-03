@@ -104,8 +104,8 @@ class WebSocketEnterFlowTest : BaseTestCase() {
             }
             errorText {
                 assert("Текст с ошибкой должен быть видимый") { isVisible() }
-                assert("Текст с ошибкой должен содержать: \"${context.getString(im.threads.R.string.ecc_settings_not_loaded)}\"") {
-                    hasText(context.getString(im.threads.R.string.ecc_settings_not_loaded))
+                assert("Текст с ошибкой должен содержать: \"${context.getString(edna.chatcenter.R.string.ecc_settings_not_loaded)}\"") {
+                    hasText(context.getString(edna.chatcenter.R.string.ecc_settings_not_loaded))
                 }
             }
             errorRetryBtn {
@@ -126,8 +126,8 @@ class WebSocketEnterFlowTest : BaseTestCase() {
             }
             errorText {
                 assert("Текст с ошибкой должен быть видимый") { isVisible() }
-                assert("Текст с ошибкой должен содержать: \"${context.getString(im.threads.R.string.ecc_attachment_settings_not_loaded)}\"") {
-                    hasText(context.getString(im.threads.R.string.ecc_attachment_settings_not_loaded))
+                assert("Текст с ошибкой должен содержать: \"${context.getString(edna.chatcenter.R.string.ecc_attachment_settings_not_loaded)}\"") {
+                    hasText(context.getString(edna.chatcenter.R.string.ecc_attachment_settings_not_loaded))
                 }
             }
             errorRetryBtn {

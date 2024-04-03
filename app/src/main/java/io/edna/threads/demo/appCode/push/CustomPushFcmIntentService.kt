@@ -2,7 +2,7 @@ package io.edna.threads.demo.appCode.push
 
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import im.threads.ui.ChatCenterPushMessageHelper
+import edna.chatcenter.ui.visual.ChatCenterPushMessageHelper
 
 class CustomPushFcmIntentService : FirebaseMessagingService() {
     private val chatCenterPushMessageHelper = ChatCenterPushMessageHelper()

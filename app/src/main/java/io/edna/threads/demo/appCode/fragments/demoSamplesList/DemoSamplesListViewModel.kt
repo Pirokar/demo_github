@@ -5,8 +5,8 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import im.threads.business.config.ChatUser
-import im.threads.ui.core.ChatCenterUI
+import edna.chatcenter.ui.core.config.ChatUser
+import edna.chatcenter.ui.visual.core.ChatCenterUI
 import io.edna.threads.demo.R
 import io.edna.threads.demo.appCode.business.StringsProvider
 import io.edna.threads.demo.appCode.business.VolatileLiveData

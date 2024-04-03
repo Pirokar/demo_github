@@ -3,8 +3,8 @@ package io.edna.threads.demo.screenshot
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import dev.testify.ScreenshotRule
 import dev.testify.annotation.ScreenshotInstrumentation
-import im.threads.business.models.ConsultInfo
-import im.threads.ui.activities.ConsultActivity
+import edna.chatcenter.ui.core.models.ConsultInfo
+import edna.chatcenter.ui.visual.activities.ConsultActivity
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith

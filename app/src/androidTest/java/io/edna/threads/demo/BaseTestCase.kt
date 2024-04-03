@@ -7,17 +7,17 @@ import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import com.github.tomakehurst.wiremock.junit.WireMockRule
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
-import im.threads.business.ChatAuthType
-import im.threads.business.config.ChatAuth
-import im.threads.business.config.ChatUser
-import im.threads.business.config.transport.ChatNetworkConfig
-import im.threads.business.config.transport.ChatTransportConfig
-import im.threads.business.config.transport.HTTPConfig
-import im.threads.business.config.transport.SSLPinningConfig
-import im.threads.business.config.transport.WSConfig
-import im.threads.business.serviceLocator.core.inject
-import im.threads.business.transport.threadsGate.ThreadsGateTransport
-import im.threads.ui.ChatConfig
+import edna.chatcenter.ui.core.ChatAuthType
+import edna.chatcenter.ui.core.config.ChatAuth
+import edna.chatcenter.ui.core.config.ChatUser
+import edna.chatcenter.ui.core.config.transport.ChatNetworkConfig
+import edna.chatcenter.ui.core.config.transport.ChatTransportConfig
+import edna.chatcenter.ui.core.config.transport.HTTPConfig
+import edna.chatcenter.ui.core.config.transport.SSLPinningConfig
+import edna.chatcenter.ui.core.config.transport.WSConfig
+import edna.chatcenter.ui.core.serviceLocator.core.inject
+import edna.chatcenter.ui.core.transport.threadsGate.ThreadsGateTransport
+import edna.chatcenter.ui.visual.ChatConfig
 import io.edna.threads.demo.appCode.ednaMockPort
 import io.edna.threads.demo.appCode.ednaMockThreadsGateProviderUid
 import io.edna.threads.demo.appCode.ednaMockThreadsGateUrl
@@ -113,7 +113,7 @@ abstract class BaseTestCase(private val isUserInputEnabled: Boolean = true) : Te
             serverConfig = getDefaultServerConfig()
         )
         BuildConfig.TEST_DATA.set(testData.toJson())
-        im.threads.BuildConfig.IS_ANIMATIONS_DISABLED.set(true)
+        edna.chatcenter.BuildConfig.IS_ANIMATIONS_DISABLED.set(true)
     }
 
     protected fun applyDefaultUserToDemoApp(noUserId: Boolean = false) {

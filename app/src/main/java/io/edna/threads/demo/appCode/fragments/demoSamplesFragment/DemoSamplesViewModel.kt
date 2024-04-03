@@ -4,8 +4,8 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import im.threads.business.annotation.OpenWay
-import im.threads.ui.fragments.ChatFragment
+import edna.chatcenter.ui.core.annotation.OpenWay
+import edna.chatcenter.ui.visual.fragments.ChatFragment
 import io.edna.threads.demo.appCode.business.PreferencesProvider
 import io.edna.threads.demo.appCode.business.SingleLiveEvent
 import io.edna.threads.demo.appCode.business.mockJsonProvider.CurrentJsonProvider

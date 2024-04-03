@@ -4,7 +4,7 @@ import android.content.Context
 import com.huawei.agconnect.AGConnectOptionsBuilder
 import com.huawei.hms.aaid.HmsInstanceId
 import com.huawei.hms.common.ApiException
-import im.threads.ui.ChatCenterPushMessageHelper
+import edna.chatcenter.ui.visual.ChatCenterPushMessageHelper
 import java.io.IOException
 
 object HCMTokenRefresher {

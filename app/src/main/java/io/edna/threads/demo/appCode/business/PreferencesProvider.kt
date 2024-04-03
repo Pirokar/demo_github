@@ -2,7 +2,7 @@ package io.edna.threads.demo.appCode.business
 
 import android.content.Context
 import com.google.gson.Gson
-import im.threads.business.models.enums.ChatApiVersion
+import edna.chatcenter.ui.core.models.enums.ChatApiVersion
 import io.edna.threads.demo.appCode.models.ServerConfig
 import io.edna.threads.demo.appCode.models.UserInfo
 

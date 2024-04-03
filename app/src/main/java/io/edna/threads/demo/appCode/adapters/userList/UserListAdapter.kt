@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import im.threads.ui.utils.EdnaColors
+import edna.chatcenter.ui.visual.utils.EdnaColors
 import io.edna.threads.demo.R
 import io.edna.threads.demo.appCode.adapters.ListItemClickListener
 import io.edna.threads.demo.appCode.business.UiThemeProvider

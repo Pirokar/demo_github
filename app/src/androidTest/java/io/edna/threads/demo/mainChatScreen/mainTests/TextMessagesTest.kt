@@ -356,7 +356,7 @@ class TextMessagesTest : BaseTestCase() {
         sendMessageToSocket(TestMessages.operatorWaiting)
 
         ChatMainScreen {
-            val operatorName = context.getString(im.threads.R.string.ecc_searching_operator)
+            val operatorName = context.getString(edna.chatcenter.R.string.ecc_searching_operator)
             assert("Имя оператора в тулбаре должно быть: \"$operatorName\"") {
                 toolbarOperatorName.hasText(operatorName)
             }
