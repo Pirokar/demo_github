@@ -90,7 +90,7 @@ dependencies {
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.9'
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation project(path: ':threads')
+    implementation project(path: ':chatcenterui')
 
     implementation "androidx.core:core-ktx:$rootProject.androidXCoreVersion"
     implementation "org.jetbrains.kotlin:kotlin-reflect:$rootProject.kotlinReflect"

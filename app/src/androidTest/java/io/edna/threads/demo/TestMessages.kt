@@ -16,7 +16,7 @@ object TestMessages {
         "\"thread\":{\"id\":304,\"state\":\"UNASSIGNED\"},\"agent\":null},\"allowedToSendMessages\":true}"
 
     const val emptyNoThreadHistoryMessage = "{\"messages\":[],\"agentInfo\":{\"action\":\"AGENT_LOOKUP\",\"actionDate\":\"2023-03-22T08:51:43.124Z\"," +
-            "\"state\":\"UNASSIGNED\"},\"agent\":null},\"allowedToSendMessages\":true}"
+        "\"state\":\"UNASSIGNED\"},\"agent\":null},\"allowedToSendMessages\":true}"
 
     const val operatorHelloMessage = "{\"action\":\"getMessages\",\"data\":{\"messages\":[" +
         "{\"messageId\":\"0238fafc-132e-4a7c-87e6-834d50c3a551\",\"sentAt\":\"2023-09-25T13:07:29.213Z\"," +
