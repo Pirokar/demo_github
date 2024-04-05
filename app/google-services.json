@@ -1,44 +1,26 @@
 {
   "project_info": {
-    "project_number": "418894166673",
-    "project_id": "ednachatcenterandroid",
-    "storage_bucket": "ednachatcenterandroid.appspot.com"
+    "project_number": "638502886045",
+    "project_id": "chatcenterandroid-5x-9e183",
+    "storage_bucket": "chatcenterandroid-5x-9e183.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:418894166673:android:d783cdff1ade17d27a9d30",
+        "mobilesdk_app_id": "1:638502886045:android:70d4ec6cf525b2f016d274",
         "android_client_info": {
           "package_name": "edna.chatcenter.demo"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "418894166673-fi80ati08ck9dck13h4enenpifnbtovs.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "edna.chatcenter.demo",
-            "certificate_hash": "368d0a18a1635867e8497b6d5286fc44aaed32e7"
-          }
-        },
-        {
-          "client_id": "418894166673-7csjd4j6sp0u1h3a4bcap25t7fnokkee.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDlDWZ8VGgghh68s3VdxOtAjTSIV1WkM8E"
+          "current_key": "AIzaSyCox9To9W4lsYTQ7IyeO5Pcrllc-0eX0b0"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "418894166673-7csjd4j6sp0u1h3a4bcap25t7fnokkee.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }
