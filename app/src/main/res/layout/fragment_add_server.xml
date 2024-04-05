@@ -48,7 +48,7 @@
 
     </LinearLayout>
 
-    <io.edna.threads.demo.appCode.views.InputField
+    <edna.chatcenter.demo.appCode.views.InputField
         android:id="@+id/name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -60,7 +60,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar"/>
 
-    <io.edna.threads.demo.appCode.views.InputField
+    <edna.chatcenter.demo.appCode.views.InputField
         android:id="@+id/appMarker"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -72,7 +72,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/name" />
 
-    <io.edna.threads.demo.appCode.views.InputField
+    <edna.chatcenter.demo.appCode.views.InputField
         android:id="@+id/providerId"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -84,7 +84,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/appMarker" />
 
-    <io.edna.threads.demo.appCode.views.InputField
+    <edna.chatcenter.demo.appCode.views.InputField
         android:id="@+id/baseUrl"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -98,7 +98,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/providerId" />
 
-    <io.edna.threads.demo.appCode.views.InputField
+    <edna.chatcenter.demo.appCode.views.InputField
         android:id="@+id/datastoreUrl"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -112,7 +112,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/baseUrl" />
 
-    <io.edna.threads.demo.appCode.views.InputField
+    <edna.chatcenter.demo.appCode.views.InputField
         android:id="@+id/threadsGateUrl"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

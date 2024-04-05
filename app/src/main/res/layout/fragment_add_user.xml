@@ -48,7 +48,7 @@
 
     </LinearLayout>
 
-    <io.edna.threads.demo.appCode.views.InputField
+    <edna.chatcenter.demo.appCode.views.InputField
         android:id="@+id/userId"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -60,7 +60,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
-    <io.edna.threads.demo.appCode.views.InputField
+    <edna.chatcenter.demo.appCode.views.InputField
         android:id="@+id/userData"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -72,7 +72,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/userId" />
 
-    <io.edna.threads.demo.appCode.views.InputField
+    <edna.chatcenter.demo.appCode.views.InputField
         android:id="@+id/signature"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -84,7 +84,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/userData" />
 
-    <io.edna.threads.demo.appCode.views.InputField
+    <edna.chatcenter.demo.appCode.views.InputField
         android:id="@+id/authorizationHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -96,7 +96,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/signature" />
 
-    <io.edna.threads.demo.appCode.views.InputField
+    <edna.chatcenter.demo.appCode.views.InputField
         android:id="@+id/xAuthSchemaHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

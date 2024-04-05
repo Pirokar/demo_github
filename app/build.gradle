@@ -14,7 +14,7 @@ android {
     compileSdk rootProject.compileSdkVersion
 
     defaultConfig {
-        applicationId "io.edna.threads.demo"
+        applicationId "edna.chatcenter.demo"
         minSdk rootProject.minSdkVersion
         targetSdk rootProject.targetSdkVersion
         versionName "1.0.3"

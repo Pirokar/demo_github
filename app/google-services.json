@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:418894166673:android:d783cdff1ade17d27a9d30",
         "android_client_info": {
-          "package_name": "io.edna.threads.demo"
+          "package_name": "edna.chatcenter.demo"
         }
       },
       "oauth_client": [
@@ -17,7 +17,7 @@
           "client_id": "418894166673-fi80ati08ck9dck13h4enenpifnbtovs.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "io.edna.threads.demo",
+            "package_name": "edna.chatcenter.demo",
             "certificate_hash": "368d0a18a1635867e8497b6d5286fc44aaed32e7"
           }
         },

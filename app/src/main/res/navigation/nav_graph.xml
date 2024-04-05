@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/LaunchFragment"
-        android:name="io.edna.threads.demo.integrationCode.fragments.launch.LaunchFragment"
+        android:name="edna.chatcenter.demo.integrationCode.fragments.launch.LaunchFragment"
         android:label="@string/launch_fragment_label"
         tools:layout="@layout/fragment_launch">
 
@@ -31,7 +31,7 @@
 
     <fragment
         android:id="@+id/ServerListFragment"
-        android:name="io.edna.threads.demo.appCode.fragments.server.ServerListFragment"
+        android:name="edna.chatcenter.demo.appCode.fragments.server.ServerListFragment"
         android:label="@string/servers_fragment_label"
         tools:layout="@layout/fragment_server_list">
 
@@ -47,7 +47,7 @@
 
     <fragment
         android:id="@+id/DemoSamplesListFragment"
-        android:name="io.edna.threads.demo.appCode.fragments.demoSamplesList.DemoSamplesListFragment"
+        android:name="edna.chatcenter.demo.appCode.fragments.demoSamplesList.DemoSamplesListFragment"
         android:label="@string/demonstrations"
         tools:layout="@layout/fragment_samples_list">
 
@@ -59,7 +59,7 @@
 
     <fragment
         android:id="@+id/DemoSamplesFragment"
-        android:name="io.edna.threads.demo.appCode.fragments.demoSamplesFragment.DemoSamplesFragment"
+        android:name="edna.chatcenter.demo.appCode.fragments.demoSamplesFragment.DemoSamplesFragment"
         android:label="@string/demonstrations"
         tools:layout="@layout/fragment_chat">
 
@@ -67,7 +67,7 @@
 
     <fragment
         android:id="@+id/ChatAppFragment"
-        android:name="io.edna.threads.demo.integrationCode.fragments.chatFragment.ChatAppFragment"
+        android:name="edna.chatcenter.demo.integrationCode.fragments.chatFragment.ChatAppFragment"
         android:label="@string/chat"
         tools:layout="@layout/fragment_chat">
 
@@ -75,7 +75,7 @@
 
     <fragment
         android:id="@+id/UserListFragment"
-        android:name="io.edna.threads.demo.appCode.fragments.user.UserListFragment"
+        android:name="edna.chatcenter.demo.appCode.fragments.user.UserListFragment"
         android:label="@string/user_list_fragment_label"
         tools:layout="@layout/fragment_user_list">
 
@@ -90,7 +90,7 @@
 
     <fragment
         android:id="@+id/AddServerFragment"
-        android:name="io.edna.threads.demo.appCode.fragments.server.AddServerFragment"
+        android:name="edna.chatcenter.demo.appCode.fragments.server.AddServerFragment"
         android:label="@string/add_server_fragment_label"
         tools:layout="@layout/fragment_add_server">
 
@@ -102,7 +102,7 @@
 
     <fragment
         android:id="@+id/AddUserFragment"
-        android:name="io.edna.threads.demo.appCode.fragments.user.AddUserFragment"
+        android:name="edna.chatcenter.demo.appCode.fragments.user.AddUserFragment"
         android:label="@string/add_user_fragment_label"
         tools:layout="@layout/fragment_add_user">
 
