@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="io.edna.threads.demo">
+    package="edna.chatcenter.demo">
 
     <permission
         android:name="${applicationId}.permission.pushserver.RECEIVE"
@@ -27,7 +27,7 @@
 
 
     <application
-        android:name=".appCode.EdnaThreadsApplication"
+        android:name="edna.chatcenter.demo.appCode.EdnaChatCenterApplication"
         android:networkSecurityConfig="@xml/network_security_config"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -41,7 +41,7 @@
         android:requestLegacyExternalStorage="true"
         tools:targetApi="31">
 
-        <activity android:name=".appCode.activity.SplashScreenActivity"
+        <activity android:name="edna.chatcenter.demo.appCode.activity.SplashScreenActivity"
             android:theme="@style/SplashTheme"
             android:exported="true"
             android:screenOrientation="portrait">
@@ -52,14 +52,14 @@
         </activity>
 
         <activity
-            android:name=".appCode.activity.MainActivity"
+            android:name="edna.chatcenter.demo.appCode.activity.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.EdnaChatCenter.NoActionBar"
             android:screenOrientation="portrait"/>
 
-        <activity android:name=".appCode.test.TestChatActivity"/>
+        <activity android:name="edna.chatcenter.demo.appCode.test.TestChatActivity"/>
 
-        <service android:name=".appCode.push.CustomPushFcmIntentService"
+        <service android:name="edna.chatcenter.demo.appCode.push.CustomPushFcmIntentService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
@@ -67,14 +67,14 @@
         </service>
 
         <service
-            android:name=".appCode.push.CustomPushHcmIntentService"
+            android:name="edna.chatcenter.demo.appCode.push.CustomPushHcmIntentService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.huawei.push.action.MESSAGING_EVENT" />
             </intent-filter>
         </service>
 
-        <receiver android:name=".integrationCode.fragments.launch.LaunchFragment$InitThreadsLibReceiver" android:exported="false"
+        <receiver android:name="edna.chatcenter.demo.integrationCode.fragments.launch.LaunchFragment$InitThreadsLibReceiver" android:exported="false"
             tools:ignore="Instantiatable">
             <intent-filter>
                 <action android:name="APP_INIT_THREADS_LIB_BROADCAST" />
