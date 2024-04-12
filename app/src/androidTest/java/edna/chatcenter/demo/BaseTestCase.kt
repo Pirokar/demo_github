@@ -21,7 +21,7 @@ import edna.chatcenter.ui.core.config.transport.HTTPConfig
 import edna.chatcenter.ui.core.config.transport.SSLPinningConfig
 import edna.chatcenter.ui.core.config.transport.WSConfig
 import edna.chatcenter.ui.core.serviceLocator.core.inject
-import edna.chatcenter.ui.core.transport.threadsGate.ThreadsGateTransport
+import edna.chatcenter.ui.core.transport.websocketGate.WebsocketTransport
 import edna.chatcenter.ui.visual.ChatConfig
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -99,8 +99,8 @@ abstract class BaseTestCase(private val isUserInputEnabled: Boolean = true) : Te
     @Mock
     protected lateinit var socket: WebSocket
 
-    private val socketListener: ThreadsGateTransport.WebSocketListener by lazy {
-        val transport: ThreadsGateTransport by inject()
+    private val socketListener: WebsocketTransport.WebSocketListener by lazy {
+        val transport: WebsocketTransport by inject()
         transport.listener
     }
 
@@ -153,7 +153,7 @@ abstract class BaseTestCase(private val isUserInputEnabled: Boolean = true) : Te
         }.`when`(socket).send(Mockito.anyString())
 
         coroutineScope.launch {
-            ThreadsGateTransport.transportUpdatedChannel.collect {
+            WebsocketTransport.transportUpdatedChannel.collect {
                 it.client = okHttpClient
                 it.webSocket = null
             }

@@ -66,6 +66,7 @@ class LaunchViewModel(
         getSelectedServer()?.let { server ->
             if (server.isAllFieldsFilled()) {
                 _selectedServerLiveData.postValue(server)
+                changeServerSettings(server)
             }
         }
     }
@@ -115,16 +116,20 @@ class LaunchViewModel(
         val isUserHasRequiredFields = user?.userId != null
 
         if (serverConfig != null && isUserHasRequiredFields) {
-            var apiVersion: ChatApiVersion? = _selectedApiVersionLiveData.value?.let {
-                ChatApiVersion.createApiVersionEnum(it)
-            }
-            if (apiVersion == null) {
-                apiVersion = ChatApiVersion.defaultApiVersionEnum
-            }
-            application?.initChatCenterUI(serverConfig, apiVersion)
+            changeServerSettings(serverConfig)
             if (user != null && !isPreregisterEnabled) callInitUser(user)
             navigationController.navigate(R.id.action_LaunchFragment_to_ChatAppFragment)
         }
+    }
+
+    private fun changeServerSettings(serverConfig: ServerConfig) {
+        var apiVersion: ChatApiVersion? = _selectedApiVersionLiveData.value?.let {
+            ChatApiVersion.createApiVersionEnum(it)
+        }
+        if (apiVersion == null) {
+            apiVersion = ChatApiVersion.defaultApiVersionEnum
+        }
+        application?.initChatCenterUI(serverConfig, apiVersion)
     }
 
     private fun applyCurrentUiTheme(currentUiTheme: CurrentUiTheme) {
