@@ -73,7 +73,7 @@ class EdnaChatCenterApplication : Application() {
             coroutineScope.launch {
                 initThemes()
                 initChatCenterUI()
-                initUser()
+                initUser { checkAndUpdateTokens() }
                 applicationContext.sendBroadcast(
                     Intent(LaunchFragment.APP_INIT_THREADS_LIB_ACTION)
                 )
@@ -81,9 +81,8 @@ class EdnaChatCenterApplication : Application() {
         } else {
             initThemes()
             initChatCenterUI()
-            initUser()
+            initUser { checkAndUpdateTokens() }
         }
-        checkAndUpdateTokens()
     }
 
     private fun checkAndUpdateTokens() {
@@ -244,7 +243,7 @@ class EdnaChatCenterApplication : Application() {
         HCMTokenRefresher.requestToken(this)
     }
 
-    private fun initUser() {
+    private fun initUser(callback: (() -> Unit)? = null) {
         val user = preferences.getSelectedUser()
         if (user != null && user.isAllFieldsFilled()) {
             chatCenterUI?.authorize(
@@ -255,6 +254,7 @@ class EdnaChatCenterApplication : Application() {
                     signature = user.signature
                 )
             )
+            callback?.invoke()
         }
     }
 
