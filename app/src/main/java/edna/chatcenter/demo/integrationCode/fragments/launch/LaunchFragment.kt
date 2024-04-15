@@ -13,16 +13,13 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.clearFragmentResultListener
 import androidx.fragment.app.setFragmentResultListener
 import edna.chatcenter.demo.R
-import edna.chatcenter.demo.appCode.business.StringsProvider
 import edna.chatcenter.demo.appCode.fragments.BaseAppFragment
 import edna.chatcenter.demo.databinding.FragmentLaunchBinding
 import edna.chatcenter.ui.core.models.enums.ChatApiVersion
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class LaunchFragment : BaseAppFragment<FragmentLaunchBinding>(FragmentLaunchBinding::inflate) {
     private val viewModel: LaunchViewModel by viewModel()
-    private val stringsProvider: StringsProvider by inject()
 
     private var initLibReceiver: InitThreadsLibReceiver? = null
     private var unreadCountReceiver: InitUnreadCountReceiver? = null
