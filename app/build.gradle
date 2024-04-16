@@ -84,6 +84,7 @@ android {
             universalApk true
         }
     }
+    namespace 'edna.chatcenter.demo'
 }
 
 dependencies {
