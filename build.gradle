@@ -82,7 +82,7 @@ ext {
     sqlite_version = "2.4.0"
     crypto_tink = '1.7.0'
     markwonVersion = '4.6.2'
-    robolectricVersion = '4.11'
+    robolectricVersion = '4.12.1'
     androidXJunitVersion = '1.1.5'
     androidXTestVersion = '1.5.0'
     espressoVersion = '3.4.0'
