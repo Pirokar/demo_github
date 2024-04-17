@@ -86,7 +86,7 @@ ext {
     androidXJunitVersion = '1.1.5'
     androidXTestVersion = '1.5.0'
     espressoVersion = '3.4.0'
-    mockitoVersion = '5.8.0'
+    mockitoVersion = '5.11.0'
     mockitoInlineVersion = '2.21.0'
     webserver_version = '2.35.0'
     test_ext = '1.1.5'
