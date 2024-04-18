@@ -49,7 +49,7 @@
     <color name="dark_main">#1C1B1F</color>
     <color name="dark_statusbar">#000000</color>
     <color name="dark_outgoing_image_time_background">#4D000000</color>
-    <color name="dark_links">#CAFFFFFF</color>
+    <color name="dark_links">#00BCD4</color>
     <color name="dark_chat_background">#505050</color>
     <color name="dark_system_text">#f2f2f7</color>
     <color name="dark_messages_text">#f2f2f7</color>
