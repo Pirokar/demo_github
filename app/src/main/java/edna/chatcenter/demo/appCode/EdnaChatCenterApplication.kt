@@ -29,7 +29,6 @@ import edna.chatcenter.ui.core.core.ChatCenterUIListener
 import edna.chatcenter.ui.core.extensions.jsonStringToMap
 import edna.chatcenter.ui.core.logger.ChatLoggerConfig
 import edna.chatcenter.ui.core.models.enums.ChatApiVersion
-import edna.chatcenter.ui.visual.ChatCenterPushMessageHelper
 import edna.chatcenter.ui.visual.ChatConfig
 import edna.chatcenter.ui.visual.core.ChatCenterUI
 import edna.chatcenter.ui.visual.uiStyle.settings.ChatTheme
@@ -89,7 +88,7 @@ class EdnaChatCenterApplication : Application() {
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 val token = task.result
-                ChatCenterPushMessageHelper().setFcmToken(token)
+                chatCenterUI?.setFcmToken(token)
             }
         }
         HCMTokenRefresher.requestToken(this)
