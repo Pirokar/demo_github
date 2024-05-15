@@ -27,7 +27,7 @@ class EnabledInputTest : BaseTestCase(true) {
     }
 
     @Test
-    fun startWithDisableInputTest() {
+    fun inputTest() {
         openChatFromDemoLoginPage()
         ChatMainScreen {
             inputEditView {
