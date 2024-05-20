@@ -48,7 +48,8 @@ class TextMessagesTest : BaseTestCase() {
     }
 
     @Before
-    fun stubAllExternalIntents() {
+    override fun before() {
+        super.before()
         intending(not(isInternal())).respondWith(
             Instrumentation.ActivityResult(
                 Activity.RESULT_OK,
@@ -354,6 +355,8 @@ class TextMessagesTest : BaseTestCase() {
         openChatFromDemoLoginPage()
         sendHelloMessageFromUser()
         sendMessageToSocket(TestMessages.operatorWaiting)
+
+        Thread.sleep(500)
 
         ChatMainScreen {
             val operatorName = context.getString(edna.chatcenter.ui.R.string.ecc_searching_operator)

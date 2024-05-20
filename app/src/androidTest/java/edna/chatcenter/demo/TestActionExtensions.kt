@@ -1,9 +1,16 @@
 package edna.chatcenter.demo
 
+import android.view.View
+import android.widget.TextView
 import androidx.test.espresso.PerformException
+import androidx.test.espresso.UiController
+import androidx.test.espresso.ViewAction
+import androidx.test.espresso.ViewInteraction
+import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
 import io.github.kakaocup.kakao.common.views.KBaseView
 import io.github.kakaocup.kakao.recycler.KRecyclerView
 import junit.framework.AssertionFailedError
+import org.hamcrest.Matcher
 import java.util.concurrent.TimeoutException
 
 /**
@@ -77,4 +84,27 @@ fun <T> KBaseView<T>.waitForExists(timeoutMs: Long) {
             Thread.sleep(timeStep)
         }
     } while (System.currentTimeMillis() - startTime < timeoutMs)
+}
+
+/**
+ * Получает текст из ViewInteraction -> TextView. Пример: getText(errorText.view.interaction) = "Hello!"
+ */
+fun getText(matcher: ViewInteraction): String {
+    var text = String()
+    matcher.perform(object : ViewAction {
+        override fun getConstraints(): Matcher<View> {
+            return isAssignableFrom(TextView::class.java)
+        }
+
+        override fun getDescription(): String {
+            return "Text of the view"
+        }
+
+        override fun perform(uiController: UiController, view: View) {
+            val tv = view as TextView
+            text = tv.text.toString()
+        }
+    })
+
+    return text
 }
