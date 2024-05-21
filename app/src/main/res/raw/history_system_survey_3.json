@@ -1,0 +1,19 @@
+{
+  "messages": [
+    {
+      "clientId": "987525",
+      "display": false,
+      "questionId": 4,
+      "rate": 4,
+      "read": false,
+      "receivedDate": "2023-03-24T11:40:39.066Z",
+      "scale": 5,
+      "sendingId": 136,
+      "simple": false,
+      "text": "Оцените насколько внимательным был наш сотрудник",
+      "threadId": 137,
+      "type": "SURVEY_QUESTION_ANSWER",
+      "uuid": "7c919dc8-8c10-4432-9bdf-88707b56d02d"
+    }
+  ]
+}

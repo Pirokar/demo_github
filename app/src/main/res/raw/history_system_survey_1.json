@@ -1,0 +1,19 @@
+{
+  "messages": [
+    {
+      "clientId": "987525",
+      "display": false,
+      "questionId": 1,
+      "rate": 1,
+      "read": false,
+      "receivedDate": "2023-03-24T11:40:34.324Z",
+      "scale": 1,
+      "sendingId": 136,
+      "simple": true,
+      "text": "Оцените наше обслуживание",
+      "threadId": 137,
+      "type": "SURVEY_QUESTION_ANSWER",
+      "uuid": "3a84a1c8-5f2e-4e31-abcb-6fc8559b2dc9"
+    }
+  ]
+}

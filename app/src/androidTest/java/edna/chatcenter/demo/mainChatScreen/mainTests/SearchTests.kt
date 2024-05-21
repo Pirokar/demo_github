@@ -36,6 +36,8 @@ class SearchTests : BaseTestCase() {
         val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
 
         ChatMainScreen {
+            chatItemsRecyclerView.waitListForNotEmpty(5000)
+
             assert("Кнопка открытия верхнего должна быть кликабельной") { popupMenuButton.isClickable() }
             popupMenuButton.click()
 

@@ -7,7 +7,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import edna.chatcenter.demo.BaseTestCase
 import edna.chatcenter.demo.assert
 import edna.chatcenter.demo.kaspressoSreens.ChatMainScreen
-import edna.chatcenter.ui.BuildConfig
 import edna.chatcenter.ui.R
 import edna.chatcenter.ui.visual.activities.ChatActivity
 import edna.chatcenter.ui.visual.core.ChatCenterUI
@@ -31,7 +30,6 @@ class NoUserTest : BaseTestCase() {
             config
         )
 
-        BuildConfig.IS_ANIMATIONS_DISABLED.set(true)
         prepareHttpMocks()
         prepareWsMocks()
     }

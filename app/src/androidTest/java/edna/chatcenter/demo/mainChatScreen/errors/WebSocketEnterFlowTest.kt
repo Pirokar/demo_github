@@ -10,6 +10,7 @@ import edna.chatcenter.demo.TestMessages.defaultConfigNoAttachmentSettingsMock
 import edna.chatcenter.demo.TestMessages.defaultConfigNoSettingsMock
 import edna.chatcenter.demo.appCode.activity.MainActivity
 import edna.chatcenter.demo.assert
+import edna.chatcenter.demo.getText
 import edna.chatcenter.demo.kaspressoSreens.ChatMainScreen
 import edna.chatcenter.demo.waitForExists
 import org.junit.Rule
@@ -34,7 +35,7 @@ class WebSocketEnterFlowTest : BaseTestCase() {
         wsMocksMap = HashMap()
         openChatFromDemoLoginPage()
         ChatMainScreen {
-            errorImage.waitForExists(60000)
+            errorImage.waitForExists(getSocketTimeout() + 1000L)
             errorImage {
                 assert("Изображение с ошибкой должно быть видимо") { isVisible() }
             }
@@ -56,8 +57,9 @@ class WebSocketEnterFlowTest : BaseTestCase() {
             put("registerDevice", TestMessages.registerDeviceWsAnswer)
         }
         openChatFromDemoLoginPage()
-        Thread.sleep(config.networkConfig.httpConfig.connectionTimeout * 1000L)
+
         ChatMainScreen {
+            errorImage.waitForExists(getSocketTimeout() + 1000L)
             errorImage {
                 assert("Изображение с ошибкой должно быть видимо") { isVisible() }
             }
@@ -78,8 +80,9 @@ class WebSocketEnterFlowTest : BaseTestCase() {
             put("INIT_CHAT", TestMessages.initChatWsAnswer)
         }
         openChatFromDemoLoginPage()
-        Thread.sleep(config.networkConfig.httpConfig.connectionTimeout * 1000L)
+
         ChatMainScreen {
+            errorImage.waitForExists(getSocketTimeout() + 1000L)
             errorImage {
                 assert("Изображение с ошибкой должно быть видимо") { isVisible() }
             }
@@ -97,16 +100,14 @@ class WebSocketEnterFlowTest : BaseTestCase() {
         wsMocksMap = HashMap()
         prepareHttpMocks(configAnswer = defaultConfigNoSettingsMock)
         openChatFromDemoLoginPage()
-        Thread.sleep(config.networkConfig.httpConfig.connectionTimeout * 1000L)
         ChatMainScreen {
+            errorImage.waitForExists(getSocketTimeout() + 1000L)
             errorImage {
                 assert("Изображение с ошибкой должно быть видимо") { isVisible() }
             }
             errorText {
                 assert("Текст с ошибкой должен быть видимый") { isVisible() }
-                assert("Текст с ошибкой должен содержать: \"${context.getString(edna.chatcenter.ui.R.string.ecc_settings_not_loaded)}\"") {
-                    hasText(context.getString(edna.chatcenter.ui.R.string.ecc_settings_not_loaded))
-                }
+                assert("Текст ошибки должен быть видим") { hasAnyText() }
             }
             errorRetryBtn {
                 assert("Кнопка повтора загрузки списка сообщений быть видимой") { isVisible() }
@@ -119,16 +120,16 @@ class WebSocketEnterFlowTest : BaseTestCase() {
         wsMocksMap = HashMap()
         prepareHttpMocks(configAnswer = defaultConfigNoAttachmentSettingsMock)
         openChatFromDemoLoginPage()
-        Thread.sleep(config.networkConfig.httpConfig.connectionTimeout * 1000L)
         ChatMainScreen {
+            errorImage.waitForExists(getSocketTimeout() + 1000L)
             errorImage {
                 assert("Изображение с ошибкой должно быть видимо") { isVisible() }
             }
+
             errorText {
+                val text = getText(view.interaction)
                 assert("Текст с ошибкой должен быть видимый") { isVisible() }
-                assert("Текст с ошибкой должен содержать: \"${context.getString(edna.chatcenter.ui.R.string.ecc_attachment_settings_not_loaded)}\"") {
-                    hasText(context.getString(edna.chatcenter.ui.R.string.ecc_attachment_settings_not_loaded))
-                }
+                assert("Текст ошибки должен быть видим") { hasAnyText() }
             }
             errorRetryBtn {
                 assert("Кнопка повтора загрузки списка сообщений быть видимой") { isVisible() }

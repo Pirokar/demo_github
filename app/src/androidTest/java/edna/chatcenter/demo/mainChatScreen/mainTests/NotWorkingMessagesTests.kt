@@ -13,6 +13,7 @@ import edna.chatcenter.demo.TestMessages.operatorHelloMessage
 import edna.chatcenter.demo.appCode.activity.MainActivity
 import edna.chatcenter.demo.assert
 import edna.chatcenter.demo.kaspressoSreens.ChatMainScreen
+import edna.chatcenter.demo.waitForExists
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -36,6 +37,7 @@ class NotWorkingMessagesTests : BaseTestCase() {
     @Test
     fun sendMessageNoClientInfoResponse() {
         openChatFromDemoLoginPage()
+        ChatMainScreen.errorImage.waitForExists(getSocketTimeout() + 1000)
         checkInputFieldsNoClientInfoResponse()
     }
 
