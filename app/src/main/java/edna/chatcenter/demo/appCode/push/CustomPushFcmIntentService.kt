@@ -12,5 +12,9 @@ class CustomPushFcmIntentService : FirebaseMessagingService() {
         application.chatCenterUI?.setFcmToken(token)
     }
 
-    override fun onMessageReceived(message: RemoteMessage) {}
+    override fun onMessageReceived(message: RemoteMessage) {
+        super.onMessageReceived(message)
+        val application = applicationContext as EdnaChatCenterApplication
+        application.chatCenterUI?.processFcmMessage(message.data)
+    }
 }
