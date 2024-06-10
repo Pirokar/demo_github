@@ -6,6 +6,7 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import edna.chatcenter.demo.BaseTestCase
 import edna.chatcenter.demo.assert
+import edna.chatcenter.demo.integrationCode.ednaMockThreadsGateProviderUid
 import edna.chatcenter.demo.kaspressoSreens.ChatMainScreen
 import edna.chatcenter.ui.R
 import edna.chatcenter.ui.visual.activities.ChatActivity
@@ -25,7 +26,7 @@ class NoUserTest : BaseTestCase() {
 
     init {
         chatCenterUI.init(
-            edna.chatcenter.demo.appCode.ednaMockThreadsGateProviderUid,
+            ednaMockThreadsGateProviderUid,
             "",
             config
         )

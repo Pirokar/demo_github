@@ -3,7 +3,7 @@ package edna.chatcenter.demo.appCode.push
 import com.huawei.agconnect.AGConnectOptionsBuilder
 import com.huawei.hms.aaid.HmsInstanceId
 import com.huawei.hms.common.ApiException
-import edna.chatcenter.demo.appCode.EdnaChatCenterApplication
+import edna.chatcenter.demo.integrationCode.EdnaChatCenterApplication
 import java.io.IOException
 
 object HCMTokenRefresher {

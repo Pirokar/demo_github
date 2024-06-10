@@ -2,7 +2,7 @@ package edna.chatcenter.demo.appCode.push
 
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import edna.chatcenter.demo.appCode.EdnaChatCenterApplication
+import edna.chatcenter.demo.integrationCode.EdnaChatCenterApplication
 
 class CustomPushFcmIntentService : FirebaseMessagingService() {
 

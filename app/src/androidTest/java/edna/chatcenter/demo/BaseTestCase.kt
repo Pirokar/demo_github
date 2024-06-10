@@ -8,6 +8,9 @@ import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import edna.chatcenter.demo.appCode.models.ServerConfig
 import edna.chatcenter.demo.appCode.models.TestData
 import edna.chatcenter.demo.appCode.models.UserInfo
+import edna.chatcenter.demo.integrationCode.ednaMockThreadsGateProviderUid
+import edna.chatcenter.demo.integrationCode.ednaMockThreadsGateUrl
+import edna.chatcenter.demo.integrationCode.ednaMockUrl
 import edna.chatcenter.demo.kaspressoSreens.ChatMainScreen
 import edna.chatcenter.demo.kaspressoSreens.DemoLoginScreen
 import edna.chatcenter.ui.core.ChatAuthType
@@ -51,9 +54,9 @@ abstract class BaseTestCase(
 ) : TestCase() {
     private val userId = (10000..99999).random().toString()
     protected val transportConfig = ChatTransportConfig(
-        edna.chatcenter.demo.appCode.ednaMockUrl,
-        edna.chatcenter.demo.appCode.ednaMockThreadsGateUrl,
-        edna.chatcenter.demo.appCode.ednaMockUrl,
+        ednaMockUrl,
+        ednaMockThreadsGateUrl,
+        ednaMockUrl,
         dataStoreHTTPHeaders = mapOf()
     )
     protected val networkConfig = ChatNetworkConfig(
@@ -363,10 +366,10 @@ abstract class BaseTestCase(
 
     private fun getDefaultServerConfig() = ServerConfig(
         name = "TestServer",
-        threadsGateProviderUid = edna.chatcenter.demo.appCode.ednaMockThreadsGateProviderUid,
-        datastoreUrl = edna.chatcenter.demo.appCode.ednaMockUrl,
-        serverBaseUrl = edna.chatcenter.demo.appCode.ednaMockUrl,
-        threadsGateUrl = edna.chatcenter.demo.appCode.ednaMockThreadsGateUrl,
+        threadsGateProviderUid = ednaMockThreadsGateProviderUid,
+        datastoreUrl = ednaMockUrl,
+        serverBaseUrl = ednaMockUrl,
+        threadsGateUrl = ednaMockThreadsGateUrl,
         isShowMenu = true,
         isInputEnabled = isUserInputEnabled
     )
