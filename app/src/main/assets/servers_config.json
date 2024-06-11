@@ -17,16 +17,16 @@
     {
       "name": "Mobile 3",
       "threadsGateProviderUid": "MOBILE3_MMvIe5LKKHQlepr8vripZeDXSKJzdRfEu9Qp",
-      "serverBaseUrl": "http://arm.mobile3.chc.dte/",
-      "datastoreUrl": "http://datastore.mobile3.chc.dte/",
-      "threadsGateUrl": "http://tg.mobile3.chc.dte/gate/socket"
+      "serverBaseUrl": "http://mobile3.chc.dte/",
+      "datastoreUrl": "http://mobile3.chc.dte/",
+      "threadsGateUrl": "ws://mobile3.chc.dte/socket"
     },
     {
       "name": "Mobile 4",
       "threadsGateProviderUid": "MOBILE4_HwZ9QhTihb2d8U3I17dBHy1NB9vA9XVkMz65",
       "serverBaseUrl": "https://arm-mobile4-ecc.edna.ru/",
       "datastoreUrl": "https://arm-mobile4-ecc.edna.ru/",
-      "threadsGateUrl": "wss://arm-mobile4-ecc.edna.ru/gate/socket",
+      "threadsGateUrl": "wss://arm-mobile4-ecc.edna.ru/socket",
       "trustedSSLCertificates": [
         "edna"
       ]
