@@ -15,6 +15,7 @@ import androidx.fragment.app.setFragmentResultListener
 import edna.chatcenter.demo.R
 import edna.chatcenter.demo.appCode.fragments.BaseAppFragment
 import edna.chatcenter.demo.databinding.FragmentLaunchBinding
+import edna.chatcenter.demo.integrationCode.EdnaChatCenterApplication
 import edna.chatcenter.ui.core.models.enums.ChatApiVersion
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -28,7 +29,7 @@ class LaunchFragment : BaseAppFragment<FragmentLaunchBinding>(FragmentLaunchBind
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.provideApplication(context?.applicationContext as? edna.chatcenter.demo.appCode.EdnaChatCenterApplication)
+        viewModel.provideApplication(context?.applicationContext as? EdnaChatCenterApplication)
         subscribeForData()
         initReceivers()
         initObservers()

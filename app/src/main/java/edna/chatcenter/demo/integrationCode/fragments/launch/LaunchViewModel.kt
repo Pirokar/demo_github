@@ -22,6 +22,7 @@ import edna.chatcenter.demo.appCode.business.ServersProvider
 import edna.chatcenter.demo.appCode.models.ServerConfig
 import edna.chatcenter.demo.appCode.models.TestData
 import edna.chatcenter.demo.appCode.models.UserInfo
+import edna.chatcenter.demo.integrationCode.EdnaChatCenterApplication
 import edna.chatcenter.ui.core.config.ChatAuth
 import edna.chatcenter.ui.core.config.ChatUser
 import edna.chatcenter.ui.core.extensions.jsonStringToMap
@@ -54,9 +55,9 @@ class LaunchViewModel(
     private var _enabledLoginButtonLiveData = MutableLiveData(false)
     var enabledLoginButtonLiveData: LiveData<Boolean> = _enabledLoginButtonLiveData
 
-    private var application: edna.chatcenter.demo.appCode.EdnaChatCenterApplication? = null
+    private var application: EdnaChatCenterApplication? = null
 
-    fun provideApplication(application: edna.chatcenter.demo.appCode.EdnaChatCenterApplication?) {
+    fun provideApplication(application: EdnaChatCenterApplication?) {
         this.application = application
     }
 

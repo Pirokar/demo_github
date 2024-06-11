@@ -12,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.viewbinding.ViewBinding
 import edna.chatcenter.demo.R
 import edna.chatcenter.demo.appCode.fragments.demoSamplesList.DemoSamplesListFragment
+import edna.chatcenter.demo.integrationCode.EdnaChatCenterApplication
 import edna.chatcenter.demo.integrationCode.fragments.chatFragment.ChatAppFragment
 import edna.chatcenter.ui.visual.core.ChatCenterUI
 import edna.chatcenter.ui.visual.extensions.isDarkThemeOn
@@ -24,7 +25,7 @@ abstract class BaseAppFragment<T : ViewBinding>(
     protected var fragment: WeakReference<ChatFragment>? = null
     protected val chatCenterUI: ChatCenterUI?
         get() {
-            return (context?.applicationContext as? edna.chatcenter.demo.appCode.EdnaChatCenterApplication)?.chatCenterUI
+            return (context?.applicationContext as? EdnaChatCenterApplication)?.chatCenterUI
         }
     private var binding: WeakReference<T>? = null
 
