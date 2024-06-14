@@ -7,6 +7,7 @@ import edna.chatcenter.demo.BaseFilesTestCase
 import edna.chatcenter.demo.R
 import edna.chatcenter.demo.assert
 import edna.chatcenter.demo.kaspressoSreens.ChatMainScreen
+import edna.chatcenter.demo.waitListForNotEmpty
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -16,7 +17,8 @@ class ImagesTest : BaseFilesTestCase() {
     private var uiDevice: UiDevice? = null
 
     @Before
-    fun before() {
+    override fun before() {
+        super.before()
         uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
     }
 
@@ -29,6 +31,8 @@ class ImagesTest : BaseFilesTestCase() {
 
         ChatMainScreen {
             chatItemsRecyclerView {
+                waitListForNotEmpty(5000)
+
                 scrollToStart()
                 scrollToEnd()
 
@@ -62,6 +66,8 @@ class ImagesTest : BaseFilesTestCase() {
 
         ChatMainScreen {
             chatItemsRecyclerView {
+                waitListForNotEmpty(5000)
+
                 assert("Список сообщений должен быть видим") { isVisible() }
                 lastChild<ChatMainScreen.ChatRecyclerItem> {
                     assert("Последнее сообщение в списке должно быть видимым") { isVisible() }

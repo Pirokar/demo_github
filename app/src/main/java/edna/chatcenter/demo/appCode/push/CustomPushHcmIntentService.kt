@@ -3,7 +3,7 @@ package edna.chatcenter.demo.appCode.push
 import android.annotation.SuppressLint
 import com.huawei.hms.push.HmsMessageService
 import com.huawei.hms.push.RemoteMessage
-import edna.chatcenter.demo.appCode.EdnaChatCenterApplication
+import edna.chatcenter.demo.integrationCode.EdnaChatCenterApplication
 
 class CustomPushHcmIntentService : HmsMessageService() {
 

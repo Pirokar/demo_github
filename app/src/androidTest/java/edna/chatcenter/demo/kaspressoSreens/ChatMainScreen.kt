@@ -68,6 +68,7 @@ object ChatMainScreen : KScreen<ChatMainScreen>() {
         val askForRateText = KTextView(matcher) { withId(R.id.ask_for_rate) }
         val thumbUp = KImageView(matcher) { withId(R.id.thumb_up) }
         val thumbDown = KImageView(matcher) { withId(R.id.thumb_down) }
+        val oneThumb = KImageView(matcher) { withId(R.id.thumb) }
         val ratingStars = KView(matcher) { withId(R.id.mark) }
     }
 

@@ -30,7 +30,7 @@ class SystemMessages : BaseTestCase() {
 
     @Test
     fun systemMessagesTest() {
-        prepareHttpMocks(historyAnswer = readTextFileFromRawResourceId(R.raw.history_system_response))
+        prepareHttpMocks(historyAnswer = readTextFileFromRawResourceId(R.raw.history_full_system_response))
         openChatFromDemoLoginPage()
         ChatMainScreen {
             chatItemsRecyclerView {
@@ -38,16 +38,6 @@ class SystemMessages : BaseTestCase() {
                 assert("Список сообщений должен быть видим") { isVisible() }
                 assert(getSize() == 11) { "Неверное количество сообщений в списке" }
 
-                childWith<ChatMainScreen.ChatRecyclerItem> {
-                    withDescendant { containsText(context.getString(edna.chatcenter.ui.R.string.ecc_ask_to_rate)) }
-                }.apply {
-                    thumbUp {
-                        assert("Иконка с пальцем вверх должна быть видимой и кликабельной", ::isVisible, ::isClickable)
-                    }
-                    thumbDown {
-                        assert("Иконка с пальцем вниз должна быть видимой и кликабельной", ::isVisible, ::isClickable)
-                    }
-                }
                 firstChild<ChatMainScreen.ChatRecyclerItem> {
                     itemText {
                         assert("Первый элемент списка должен быть видимым") { isVisible() }
@@ -55,27 +45,48 @@ class SystemMessages : BaseTestCase() {
                         assert("Первый элемент списка должен содержать число 2023") { containsText("2023") }
                     }
                 }
-                childAt<ChatMainScreen.ChatRecyclerItem>(4) {
-                    assert("Элемент \"Звезда\" должен быть видимый") { star.isVisible() }
-                    assert("Общее число звезд должно быть видимо") { totalStarsCount.isVisible() }
-                    assert("Число проставленных звезд должно равняться 1") { rateStarsCount.hasText("1") }
-                    assert("Общее число звезд должно равняться 1") { totalStarsCount.hasText("1") }
+            }
+        }
+    }
 
-                    fromTextSurvey {
-                        assert("Текст \"${context.getString(edna.chatcenter.ui.R.string.ecc_from)}\" должен быть видим") { isVisible() }
-                        assert("Текст \"${context.getString(edna.chatcenter.ui.R.string.ecc_from)}\" не соответствует отображаемому") {
-                            hasText(edna.chatcenter.ui.R.string.ecc_from)
-                        }
-                    }
+    @Test
+    fun historySurvey1Test() {
+        prepareHttpMocks(historyAnswer = readTextFileFromRawResourceId(R.raw.history_system_survey_1))
+        openChatFromDemoLoginPage()
+        ChatMainScreen {
+            chatItemsRecyclerView {
+                waitListForNotEmpty(getSocketTimeout() + 1000)
+                assert("Список сообщений должен быть видим") { isVisible() }
 
+                lastChild<ChatMainScreen.ChatRecyclerItem> {
                     surveyHeader {
                         assert("Текст отзыва должен быть видим") { isVisible() }
                         assert("Текст \"Оцените наше обслуживание\" не соответствует отображаемому") {
                             hasText("Оцените наше обслуживание")
                         }
                     }
+
+                    oneThumb {
+                        assert(
+                            "Иконка с пальцем вверх должна быть видимой",
+                            ::isVisible
+                        )
+                    }
                 }
-                childAt<ChatMainScreen.ChatRecyclerItem>(5) {
+            }
+        }
+    }
+
+    @Test
+    fun historySurvey2Test() {
+        prepareHttpMocks(historyAnswer = readTextFileFromRawResourceId(R.raw.history_system_survey_2))
+        openChatFromDemoLoginPage()
+        ChatMainScreen {
+            chatItemsRecyclerView {
+                waitListForNotEmpty(getSocketTimeout() + 1000)
+                assert("Список сообщений должен быть видим") { isVisible() }
+
+                lastChild<ChatMainScreen.ChatRecyclerItem> {
                     assert("Элемент \"Звезда\" должен быть видимый") { star.isVisible() }
                     assert("Общее число звезд должно быть видимо") { totalStarsCount.isVisible() }
                     assert("Число проставленных звезд должно равняться 3") { rateStarsCount.hasText("3") }
@@ -95,7 +106,20 @@ class SystemMessages : BaseTestCase() {
                         }
                     }
                 }
-                childAt<ChatMainScreen.ChatRecyclerItem>(6) {
+            }
+        }
+    }
+
+    @Test
+    fun historySurvey3Test() {
+        prepareHttpMocks(historyAnswer = readTextFileFromRawResourceId(R.raw.history_system_survey_3))
+        openChatFromDemoLoginPage()
+        ChatMainScreen {
+            chatItemsRecyclerView {
+                waitListForNotEmpty(getSocketTimeout() + 1000)
+                assert("Список сообщений должен быть видим") { isVisible() }
+
+                lastChild<ChatMainScreen.ChatRecyclerItem> {
                     assert("Элемент \"Звезда\" должен быть видимый") { star.isVisible() }
                     assert("Общее число звезд должно быть видимо") { totalStarsCount.isVisible() }
                     assert("Число проставленных звезд должно равняться 4") { rateStarsCount.hasText("4") }
@@ -115,22 +139,41 @@ class SystemMessages : BaseTestCase() {
                         }
                     }
                 }
-                childAt<ChatMainScreen.ChatRecyclerItem>(8) {
-                    askForRateText.hasText(edna.chatcenter.ui.R.string.ecc_ask_to_rate)
-                    thumbUp.isVisible()
-                    thumbUp.isClickable()
-                    thumbDown.isVisible()
-                    thumbDown.isClickable()
+            }
+        }
+    }
+
+    @Test
+    fun historySurvey4Test() {
+        prepareHttpMocks(historyAnswer = readTextFileFromRawResourceId(R.raw.history_system_survey_4))
+        openChatFromDemoLoginPage()
+        ChatMainScreen {
+            chatItemsRecyclerView {
+                waitListForNotEmpty(getSocketTimeout() + 1000)
+                assert("Список сообщений должен быть видим") { isVisible() }
+
+                childAt<ChatMainScreen.ChatRecyclerItem>(1) {
+                    val text = context.getString(edna.chatcenter.ui.R.string.ecc_ask_to_rate)
+                    assert("Текст должен быть \"$text") { askForRateText.hasText(text) }
+                    assert("Палец вверх должен быть видим и кликабелен") {
+                        thumbUp::isVisible
+                        thumbUp::isClickable
+                    }
+                    assert("Палец вниз должен быть видим и кликабелен") {
+                        thumbDown::isVisible
+                        thumbDown::isClickable
+                    }
                 }
-                childAt<ChatMainScreen.ChatRecyclerItem>(9) {
-                    assert("Текст \"Оцените насколько мы решили ваш вопрос\" не соответствует отображаемому в сообщении с индексом 9") {
+
+                childAt<ChatMainScreen.ChatRecyclerItem>(2) {
+                    assert("Текст должен быть \"Оцените насколько мы решили ваш вопрос\"") {
                         askForRateText.hasText("Оцените насколько мы решили ваш вопрос")
                     }
-                    assert("Звезды рейтинга в сообщении с индексом 9 должны быть видимы") { ratingStars.isVisible() }
                 }
-                childAt<ChatMainScreen.ChatRecyclerItem>(10) {
-                    assert("Текст \"Оцените насколько внимательным был наш сотрудник\" не соответствует отображаемому в сообщении с индексом 10") {
-                        askForRateText.hasText("Оцените насколько внимательным был наш сотрудник")
+
+                lastChild<ChatMainScreen.ChatRecyclerItem> {
+                    assert("Текст должен быть \"Оцените насколько хорош был наш сотрудник\"") {
+                        askForRateText.hasText("Оцените насколько хорош был наш сотрудник")
                     }
                     assert("Звезды рейтинга в сообщении с индексом 9 должны быть видимы") { ratingStars.isVisible() }
                 }

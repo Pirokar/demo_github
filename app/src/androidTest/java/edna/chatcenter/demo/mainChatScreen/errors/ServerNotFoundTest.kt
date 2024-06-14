@@ -9,7 +9,6 @@ import edna.chatcenter.demo.appCode.activity.MainActivity
 import edna.chatcenter.demo.assert
 import edna.chatcenter.demo.kaspressoSreens.ChatMainScreen
 import edna.chatcenter.demo.waitForExists
-import edna.chatcenter.ui.BuildConfig
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -23,7 +22,6 @@ class ServerNotFoundTest : BaseTestCase() {
 
     init {
         applyDefaultUserToDemoApp()
-        BuildConfig.IS_ANIMATIONS_DISABLED.set(true)
     }
 
     @Test

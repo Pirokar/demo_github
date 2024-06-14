@@ -1,0 +1,19 @@
+{
+  "messages": [
+    {
+      "clientId": "987525",
+      "display": false,
+      "questionId": 3,
+      "rate": 3,
+      "read": false,
+      "receivedDate": "2023-03-24T11:40:36.218Z",
+      "scale": 5,
+      "sendingId": 136,
+      "simple": false,
+      "text": "Оцените насколько мы решили ваш вопрос",
+      "threadId": 137,
+      "type": "SURVEY_QUESTION_ANSWER",
+      "uuid": "0ee9607d-e444-4a4a-8fec-a2d928c7e40f"
+    }
+  ]
+}

@@ -2,7 +2,7 @@ package edna.chatcenter.demo.appCode.push
 
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import edna.chatcenter.demo.appCode.EdnaChatCenterApplication
+import edna.chatcenter.demo.integrationCode.EdnaChatCenterApplication
 
 class CustomPushFcmIntentService : FirebaseMessagingService() {
 
@@ -12,5 +12,9 @@ class CustomPushFcmIntentService : FirebaseMessagingService() {
         application.chatCenterUI?.setFcmToken(token)
     }
 
-    override fun onMessageReceived(message: RemoteMessage) {}
+    override fun onMessageReceived(message: RemoteMessage) {
+        super.onMessageReceived(message)
+        val application = applicationContext as EdnaChatCenterApplication
+        application.chatCenterUI?.processFcmMessage(message.data)
+    }
 }

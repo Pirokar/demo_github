@@ -29,7 +29,9 @@ class VoiceMessagesTests : BaseFilesTestCase() {
     private lateinit var uiDevice: UiDevice
 
     @Before
-    fun before() {
+    override fun before() {
+        super.before()
+
         uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
         uiDevice.executeShellCommand("settings put secure long_press_timeout 4000")
     }

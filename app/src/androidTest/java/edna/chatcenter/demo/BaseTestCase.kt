@@ -2,18 +2,21 @@ package edna.chatcenter.demo
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.test.platform.app.InstrumentationRegistry
-import com.github.tomakehurst.wiremock.client.WireMock
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration
-import com.github.tomakehurst.wiremock.junit.WireMockRule
+import androidx.test.rule.GrantPermissionRule
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import edna.chatcenter.demo.appCode.models.ServerConfig
 import edna.chatcenter.demo.appCode.models.TestData
 import edna.chatcenter.demo.appCode.models.UserInfo
+import edna.chatcenter.demo.integrationCode.ednaMockThreadsGateProviderUid
+import edna.chatcenter.demo.integrationCode.ednaMockThreadsGateUrl
+import edna.chatcenter.demo.integrationCode.ednaMockUrl
 import edna.chatcenter.demo.kaspressoSreens.ChatMainScreen
 import edna.chatcenter.demo.kaspressoSreens.DemoLoginScreen
 import edna.chatcenter.ui.core.ChatAuthType
 import edna.chatcenter.ui.core.config.ChatAuth
+import edna.chatcenter.ui.core.config.ChatConfigCore
 import edna.chatcenter.ui.core.config.ChatUser
 import edna.chatcenter.ui.core.config.transport.ChatNetworkConfig
 import edna.chatcenter.ui.core.config.transport.ChatTransportConfig
@@ -26,8 +29,15 @@ import edna.chatcenter.ui.visual.ChatConfig
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.WebSocket
+import okhttp3.mockwebserver.Dispatcher
+import okhttp3.mockwebserver.MockResponse
+import okhttp3.mockwebserver.MockWebServer
+import okhttp3.mockwebserver.RecordedRequest
+import org.junit.After
+import org.junit.Before
 import org.junit.Rule
 import org.mockito.Mock
 import org.mockito.Mockito
@@ -39,13 +49,21 @@ import java.io.File
 import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
+import java.util.concurrent.TimeUnit
 
-abstract class BaseTestCase(private val isUserInputEnabled: Boolean = true) : TestCase() {
+abstract class BaseTestCase(
+    private val isUserInputEnabled: Boolean = true
+) : TestCase() {
+    @get:Rule
+    val grantPermissionRule: GrantPermissionRule = GrantPermissionRule.grant(
+        android.Manifest.permission.POST_NOTIFICATIONS
+    )
+
     private val userId = (10000..99999).random().toString()
     protected val transportConfig = ChatTransportConfig(
-        edna.chatcenter.demo.appCode.ednaMockUrl,
-        edna.chatcenter.demo.appCode.ednaMockThreadsGateUrl,
-        edna.chatcenter.demo.appCode.ednaMockUrl,
+        ednaMockUrl,
+        ednaMockThreadsGateUrl,
+        ednaMockUrl,
         dataStoreHTTPHeaders = mapOf()
     )
     protected val networkConfig = ChatNetworkConfig(
@@ -85,13 +103,8 @@ abstract class BaseTestCase(private val isUserInputEnabled: Boolean = true) : Te
 
     protected val helloTextToSend = "Hello, Edna! This is a test message"
 
-    @get:Rule
-    val wireMockRule = WireMockRule(
-        WireMockConfiguration.wireMockConfig().apply {
-            port(edna.chatcenter.demo.appCode.ednaMockPort)
-        },
-        false
-    )
+    private val apiTestServer = MockWebServer()
+    private val datastoreTestServer = MockWebServer()
 
     @Mock
     protected lateinit var okHttpClient: OkHttpClient
@@ -109,7 +122,16 @@ abstract class BaseTestCase(private val isUserInputEnabled: Boolean = true) : Te
             serverConfig = getDefaultServerConfig()
         )
         BuildConfig.TEST_DATA.set(testData.toJson())
-        edna.chatcenter.ui.BuildConfig.IS_ANIMATIONS_DISABLED.set(true)
+    }
+
+    @Before
+    open fun before() {
+        startTestServer()
+    }
+
+    @After
+    open fun after() {
+        stopTestServer()
     }
 
     protected fun applyDefaultUserToDemoApp(noUserId: Boolean = false) {
@@ -117,6 +139,26 @@ abstract class BaseTestCase(private val isUserInputEnabled: Boolean = true) : Te
             userInfo = UserInfo(userId = if (noUserId) null else userId)
         )
         BuildConfig.TEST_DATA.set(testData.toJson())
+    }
+
+    protected fun startTestServer() {
+        apiTestServer.start(8080)
+        datastoreTestServer.start(8090)
+
+        val baseUrl: HttpUrl = apiTestServer.url("/")
+        val datastoreUrl: HttpUrl = datastoreTestServer.url("/")
+
+        edna.chatcenter.ui.BuildConfig.TEST_BASE_URL.set(baseUrl)
+        edna.chatcenter.ui.BuildConfig.TEST_DATASTORE_URL.set(datastoreUrl)
+    }
+
+    protected fun stopTestServer() {
+        try {
+            apiTestServer.shutdown()
+            datastoreTestServer.shutdown()
+        } catch (exc: Exception) {
+            exc.printStackTrace()
+        }
     }
 
     protected fun sendMessageToSocket(message: String) {
@@ -147,6 +189,7 @@ abstract class BaseTestCase(private val isUserInputEnabled: Boolean = true) : Te
                 val answer = getAnswersForWebSocket(stringArg)
                 answer?.let { wsAnswer ->
                     sendMessageToSocket(wsAnswer)
+                    Log.i("WS_MOCK_APPLIED", wsAnswer)
                 }
             }
             null
@@ -161,74 +204,83 @@ abstract class BaseTestCase(private val isUserInputEnabled: Boolean = true) : Te
     }
 
     protected fun prepareHttpMocks(
-        withAnswerDelayInMs: Int = 0,
+        withAnswerDelayInMs: Long = 0,
         historyAnswer: String? = null,
         configAnswer: String? = null
     ) {
         BuildConfig.IS_MOCK_WEB_SERVER.set(true)
-        wireMockRule.stubFor(
-            WireMock.get(WireMock.urlPathMatching(".*/search.*"))
-                .willReturn(
-                    WireMock.aResponse()
-                        .withStatus(200)
-                        .withBody(TestMessages.searchEdnHttpMock)
-                        .withHeader("Content-Type", "application/json")
-                )
-        )
-        wireMockRule.stubFor(
-            WireMock.get(WireMock.urlPathMatching(".*/history.*"))
-                .willReturn(
-                    WireMock.aResponse()
-                        .withBody(historyAnswer ?: TestMessages.emptyHistoryMessage)
-                        .withHeader("Content-Type", "application/json")
-                        .withFixedDelay(withAnswerDelayInMs)
-                )
-        )
-        wireMockRule.stubFor(
-            WireMock.put(WireMock.urlEqualTo("/files"))
-                .willReturn(
-                    WireMock.aResponse()
-                        .withStatus(200)
-                        .withBody(
-                            "{\"result\":\"20231013-8054e1c4-ccd4-44da-ac96-d5dc2c4c1601.jpg\"," +
-                                "\"optional\":{\"name\":\"test_image2.jpg\",\"type\":\"image/jpeg\",\"size\":617636},\"state\":\"READY\"}"
-                        )
-                        .withHeader("Content-Type", "application/json")
-                        .withFixedDelay(withAnswerDelayInMs)
-                )
-        )
-        wireMockRule.stubFor(
-            WireMock.get(WireMock.urlPathMatching(".*/config.*"))
-                .willReturn(
-                    WireMock.aResponse()
-                        .withStatus(200)
-                        .withBody(configAnswer ?: TestMessages.defaultConfigMock)
-                        .withHeader("Content-Type", "application/json")
-                )
-        )
+
+        val dispatcher = object : Dispatcher() {
+            override fun dispatch(request: RecordedRequest): MockResponse {
+                val path = request.path ?: ""
+
+                return if (path.contains("search")) {
+                    MockResponse()
+                        .setResponseCode(200)
+                        .setBody(TestMessages.searchEdnHttpMock)
+                        .addHeader("Content-Type", "application/json")
+                } else if (path.contains("history")) {
+                    MockResponse()
+                        .setResponseCode(200)
+                        .setBody(historyAnswer ?: TestMessages.emptyHistoryMessage)
+                        .setBodyDelay(withAnswerDelayInMs, TimeUnit.MILLISECONDS)
+                        .addHeader("Content-Type", "application/json")
+                } else if (path.contains("config")) {
+                    MockResponse()
+                        .setResponseCode(200)
+                        .setBody(configAnswer ?: TestMessages.defaultConfigMock)
+                        .addHeader("Content-Type", "application/json")
+                } else {
+                    MockResponse().setResponseCode(404)
+                }
+            }
+        }
+
+        val datastoreDispatcher = object : Dispatcher() {
+            override fun dispatch(request: RecordedRequest): MockResponse {
+                val path = request.path ?: ""
+
+                return if (path.contains("files")) {
+                    MockResponse()
+                        .setResponseCode(200)
+                        .setBody("{\"result\":\"20231013-8054e1c4-ccd4-44da-ac96-d5dc2c4c1601.jpg\"}")
+                        .addHeader("Content-Type", "application/json")
+                        .setBodyDelay(withAnswerDelayInMs, TimeUnit.MILLISECONDS)
+                } else {
+                    MockResponse().setResponseCode(404)
+                }
+            }
+        }
+
+        apiTestServer.dispatcher = dispatcher
+        datastoreTestServer.dispatcher = datastoreDispatcher
     }
 
-    protected fun prepareHttpErrorMocks(withAnswerDelayInMs: Int = 0) {
+    protected fun prepareHttpErrorMocks(withAnswerDelayInMs: Long = 0) {
         BuildConfig.IS_MOCK_WEB_SERVER.set(true)
-        wireMockRule.stubFor(
-            WireMock.get(WireMock.urlPathMatching(".*/history.*"))
-                .willReturn(
-                    WireMock.aResponse()
-                        .withStatus(404)
-                        .withBody(TestMessages.emptyHistoryMessage)
-                        .withHeader("Content-Type", "application/json")
-                        .withFixedDelay(withAnswerDelayInMs)
-                )
-        )
-        wireMockRule.stubFor(
-            WireMock.get(WireMock.urlPathMatching(".*/config.*"))
-                .willReturn(
-                    WireMock.aResponse()
-                        .withStatus(404)
-                        .withBody(TestMessages.defaultConfigMock)
-                        .withHeader("Content-Type", "application/json")
-                )
-        )
+
+        val dispatcher = object : Dispatcher() {
+            override fun dispatch(request: RecordedRequest): MockResponse {
+                val path = request.path ?: ""
+
+                return if (path.contains("history")) {
+                    MockResponse()
+                        .setResponseCode(404)
+                        .setBody(TestMessages.emptyHistoryMessage)
+                        .setBodyDelay(withAnswerDelayInMs, TimeUnit.MILLISECONDS)
+                        .addHeader("Content-Type", "application/json")
+                } else if (path.contains("config")) {
+                    MockResponse()
+                        .setResponseCode(404)
+                        .setBody(TestMessages.defaultConfigMock)
+                        .addHeader("Content-Type", "application/json")
+                } else {
+                    MockResponse().setResponseCode(404)
+                }
+            }
+        }
+
+        apiTestServer.dispatcher = dispatcher
     }
 
     protected fun getDefaultWsMocksMap() = HashMap<String, String>().apply {
@@ -252,6 +304,15 @@ abstract class BaseTestCase(private val isUserInputEnabled: Boolean = true) : Te
         }
         inputStream.close()
         return stringBuilder.toString()
+    }
+
+    protected fun getSocketTimeout(): Long {
+        return try {
+            val config: ChatConfigCore by inject()
+            config.networkConfig.wsConfig.connectionTimeout * 1000L
+        } catch (exc: Exception) {
+            30000L
+        }
     }
 
     protected fun sendHelloMessageFromUser() {
@@ -312,10 +373,10 @@ abstract class BaseTestCase(private val isUserInputEnabled: Boolean = true) : Te
 
     private fun getDefaultServerConfig() = ServerConfig(
         name = "TestServer",
-        threadsGateProviderUid = edna.chatcenter.demo.appCode.ednaMockThreadsGateProviderUid,
-        datastoreUrl = edna.chatcenter.demo.appCode.ednaMockUrl,
-        serverBaseUrl = edna.chatcenter.demo.appCode.ednaMockUrl,
-        threadsGateUrl = edna.chatcenter.demo.appCode.ednaMockThreadsGateUrl,
+        threadsGateProviderUid = ednaMockThreadsGateProviderUid,
+        datastoreUrl = ednaMockUrl,
+        serverBaseUrl = ednaMockUrl,
+        threadsGateUrl = ednaMockThreadsGateUrl,
         isShowMenu = true,
         isInputEnabled = isUserInputEnabled
     )
