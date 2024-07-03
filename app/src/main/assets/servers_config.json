@@ -61,10 +61,17 @@
     },
     {
       "name": "GPB",
-      "threadsGateProviderUid": "GPB-TEST_YcTZr5nwnTGIGJ9ehYRI1HXtqDhRWNx6m7531",
+      "threadsGateProviderUid": "GPB-TEST_iT6VrvripZeDCCVJzdRfEu9QpMMvIe5L5KcEM",
       "serverBaseUrl": "http://open-ig.gpb-test.chc.dte/",
       "datastoreUrl": "http://open-ig.gpb-test.chc.dte/",
-      "threadsGateUrl": "ws://open-ig.gpb-test.chc.dte/gate/socket"
+      "threadsGateUrl": "ws://open-ig.gpb-test.chc.dte/socket"
+    },
+    {
+      "name": "GPB2",
+      "threadsGateProviderUid": "GPB-TEST2_iT6VrvripZeDCCVJzdRfEu9QpMMvIe5L5KcEM",
+      "serverBaseUrl": "http://open-ig.gpb-test2.chc.dte/",
+      "datastoreUrl": "http://open-ig.gpb-test2.chc.dte/",
+      "threadsGateUrl": "ws://open-ig.gpb-test2.chc.dte/socket"
     },
     {
       "name": "Amurtiger",
