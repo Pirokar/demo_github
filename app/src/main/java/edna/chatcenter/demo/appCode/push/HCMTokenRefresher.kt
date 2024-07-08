@@ -4,6 +4,7 @@ import com.huawei.agconnect.AGConnectOptionsBuilder
 import com.huawei.hms.aaid.HmsInstanceId
 import com.huawei.hms.common.ApiException
 import edna.chatcenter.demo.integrationCode.EdnaChatCenterApplication
+import edna.chatcenter.ui.core.logger.LoggerEdna
 import java.io.IOException
 
 object HCMTokenRefresher {
@@ -15,7 +16,9 @@ object HCMTokenRefresher {
                 val token = hmsInstanceId.getToken(hcmAppId, "HCM")
                 application.chatCenterUI?.setFcmToken(token)
             } catch (e: IOException) {
+                LoggerEdna.info("Called requestToken()  Exception 1: $e")
             } catch (e: ApiException) {
+                LoggerEdna.info("Called requestToken()  Exception 2: $e")
             }
         }
     }
