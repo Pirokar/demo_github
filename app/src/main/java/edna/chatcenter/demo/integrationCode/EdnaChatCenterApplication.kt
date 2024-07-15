@@ -73,7 +73,7 @@ class EdnaChatCenterApplication : Application() {
             coroutineScope.launch {
                 initThemes()
                 initChatCenterUI()
-                initUser { checkAndUpdateTokens() }
+                initUser()
                 applicationContext.sendBroadcast(
                     Intent(LaunchFragment.APP_INIT_THREADS_LIB_ACTION)
                 )
@@ -81,8 +81,9 @@ class EdnaChatCenterApplication : Application() {
         } else {
             initThemes()
             initChatCenterUI()
-            initUser { checkAndUpdateTokens() }
+            initUser()
         }
+        checkAndUpdateTokens()
     }
 
     private fun checkAndUpdateTokens() {
@@ -92,7 +93,9 @@ class EdnaChatCenterApplication : Application() {
                 chatCenterUI?.setFcmToken(token)
             }
         }
-        HCMTokenRefresher.requestToken(this)
+        coroutineScope.launch {
+            HCMTokenRefresher.requestToken(this@EdnaChatCenterApplication)
+        }
     }
 
     private fun initThemes() {
@@ -252,8 +255,6 @@ class EdnaChatCenterApplication : Application() {
                 Log.i("UrlClicked", url)
             }
         })
-
-        HCMTokenRefresher.requestToken(this)
     }
 
     private fun initUser(callback: (() -> Unit)? = null) {
