@@ -14,6 +14,7 @@ import edna.chatcenter.demo.R
 import edna.chatcenter.demo.appCode.business.PreferencesProvider
 import edna.chatcenter.demo.appCode.business.ServersProvider
 import edna.chatcenter.demo.appCode.business.appModule
+import edna.chatcenter.demo.appCode.business.jsonStringToMap
 import edna.chatcenter.demo.appCode.models.ServerConfig
 import edna.chatcenter.demo.appCode.push.HCMTokenRefresher
 import edna.chatcenter.demo.integrationCode.fragments.launch.LaunchFragment
@@ -26,7 +27,6 @@ import edna.chatcenter.ui.core.config.transport.HTTPConfig
 import edna.chatcenter.ui.core.config.transport.SSLPinningConfig
 import edna.chatcenter.ui.core.config.transport.WSConfig
 import edna.chatcenter.ui.core.core.ChatCenterUIListener
-import edna.chatcenter.ui.core.extensions.jsonStringToMap
 import edna.chatcenter.ui.core.logger.ChatLoggerConfig
 import edna.chatcenter.ui.core.models.enums.ChatApiVersion
 import edna.chatcenter.ui.visual.ChatConfig
