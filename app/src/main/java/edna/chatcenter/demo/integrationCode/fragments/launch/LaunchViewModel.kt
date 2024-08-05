@@ -19,13 +19,13 @@ import androidx.navigation.findNavController
 import edna.chatcenter.demo.R
 import edna.chatcenter.demo.appCode.business.PreferencesProvider
 import edna.chatcenter.demo.appCode.business.ServersProvider
+import edna.chatcenter.demo.appCode.business.jsonStringToMap
 import edna.chatcenter.demo.appCode.models.ServerConfig
 import edna.chatcenter.demo.appCode.models.TestData
 import edna.chatcenter.demo.appCode.models.UserInfo
 import edna.chatcenter.demo.integrationCode.EdnaChatCenterApplication
 import edna.chatcenter.ui.core.config.ChatAuth
 import edna.chatcenter.ui.core.config.ChatUser
-import edna.chatcenter.ui.core.extensions.jsonStringToMap
 import edna.chatcenter.ui.core.models.enums.ChatApiVersion
 import edna.chatcenter.ui.core.models.enums.ChatApiVersion.Companion.defaultApiVersionEnum
 import edna.chatcenter.ui.core.models.enums.CurrentUiTheme
