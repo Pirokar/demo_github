@@ -200,4 +200,15 @@ object TestMessages {
         "\"ogg\",\"txt\",\"oga\",\"mp3\"]}}}}"
 
     const val websocketErrorStringMock = "Unable to resolve host tg.mobile3.chc.dte: No address associated with hostname"
+
+    const val buttonsSurveyMock = "{\"action\":\"getMessages\",\"data\":{\"messages\":[{\"messageId\":\"08cfb72f-b480-401f-bf3c-c8eb2b6815bc\"," +
+        "\"sentAt\":\"2024-08-14T11:48:59.050Z\",\"notification\":\"New chat message received\",\"content\":{\"type\":\"BUTTON_SURVEY\"," +
+        "\"uuid\":\"08cfb72f-b480-401f-bf3c-c8eb2b6815bc\",\"content\":{\"id\":2,\"uuid\":\"08cfb72f-b480-401f-bf3c-c8eb2b6815bc\"," +
+        "\"sendingId\":86,\"hideAfter\":5,\"blockInput\":true,\"questions\":[{\"id\":2,\"sendingId\":86,\"text\":\"Доброжелательность\"," +
+        "\"displayText\":\"Доброжелательность\",\"buttons\":[{\"text\":\"Text 1\",\"value\":1},{\"text\":\"Text 2\",\"value\":2}]}," +
+        "{\"id\":3,\"sendingId\":86,\"text\":\"Недоброжелательность\",\"displayText\":\"Недоброжелательность\"," +
+        "\"buttons\":[{\"text\":\"Text 3-1\",\"value\":1},{\"text\":\"Text 3-2\",\"value\":3},{\"text\":\"Text 3-3\",\"value\":5}," +
+        "{\"text\":\"Text 3-4\",\"value\":7},{\"text\":\"Text 3-5\",\"value\":9},{\"text\":\"Text 3-6\",\"value\":11}," +
+        "{\"text\":\"Text 3-7\",\"value\":13},{\"text\":\"Text 3-8\",\"value\":15},{\"text\":\"Text 3-9\",\"value\":16}," +
+        "{\"text\":\"Text 3-10\",\"value\":18}]}]}},\"important\":true,\"messageType\":\"NORMAL\"}]},\"createdAt\":1723636139109}"
 }

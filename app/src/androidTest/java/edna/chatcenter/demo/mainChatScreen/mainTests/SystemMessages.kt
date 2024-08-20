@@ -1,6 +1,9 @@
 package edna.chatcenter.demo.mainChatScreen.mainTests
 
 import android.content.Intent
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import edna.chatcenter.demo.BaseTestCase
@@ -210,6 +213,165 @@ class SystemMessages : BaseTestCase() {
                 assert("Список должен содержать сообщение: \"${context.getString(edna.chatcenter.ui.R.string.ecc_typing)}\"") {
                     hasDescendant { withText(context.getString(edna.chatcenter.ui.R.string.ecc_typing)) }
                 }
+            }
+        }
+    }
+
+    @Test
+    fun buttonsSurveyHasAllTexts() {
+        prepareHttpMocks()
+        openChatFromDemoLoginPage()
+        sendMessageToSocket(TestMessages.buttonsSurveyMock)
+
+        ChatMainScreen {
+            chatItemsRecyclerView {
+                waitListForNotEmpty(5000)
+                assert("Список сообщений должен быть видим") { isVisible() }
+                assert("Содержит текст \"Доброжелательность\"") {
+                    hasDescendant {
+                        withText("Доброжелательность")
+                    }
+                }
+                assert("Содержит текст \"Text 1\"") {
+                    hasDescendant {
+                        withText("Text 1")
+                    }
+                }
+                assert("Содержит текст \"Text 1\"") {
+                    hasDescendant {
+                        withText("Text 2")
+                    }
+                }
+                assert("Text 3-1") {
+                    hasDescendant {
+                        withText("Text 3-1")
+                    }
+                }
+                assert("Содержит текст \"Text 3-2\"") {
+                    hasDescendant {
+                        withText("Text 3-2")
+                    }
+                }
+                assert("Содержит текст \"Text 3-3\"") {
+                    hasDescendant {
+                        withText("Text 3-3")
+                    }
+                }
+                assert("Содержит текст \"Text 3-4\"") {
+                    hasDescendant {
+                        withText("Text 3-4")
+                    }
+                }
+                assert("Содержит текст \"Text 3-5\"") {
+                    hasDescendant {
+                        withText("Text 3-5")
+                    }
+                }
+                assert("Содержит текст \"Text 3-6\"") {
+                    hasDescendant {
+                        withText("Text 3-6")
+                    }
+                }
+                assert("Содержит текст \"Text 3-7\"") {
+                    hasDescendant {
+                        withText("Text 3-7")
+                    }
+                }
+                assert("Содержит текст \"Text 3-8\"") {
+                    hasDescendant {
+                        withText("Text 3-8")
+                    }
+                }
+                assert("Содержит текст \"Text 3-9\"") {
+                    hasDescendant {
+                        withText("Text 3-9")
+                    }
+                }
+                assert("Содержит текст \"Text 3-10\"") {
+                    hasDescendant {
+                        withText("Text 3-10")
+                    }
+                }
+                assert("Содержит текст \"Text 1\"") {
+                    hasDescendant {
+                        withText("Text 2")
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun whenClickToButtonInSurvey_ThenItDisappears() {
+        prepareHttpMocks()
+        openChatFromDemoLoginPage()
+        sendMessageToSocket(TestMessages.buttonsSurveyMock)
+
+        ChatMainScreen {
+            chatItemsRecyclerView {
+                waitListForNotEmpty(5000)
+                assert("Список сообщений должен быть видим") { isVisible() }
+
+                onView(withText("Text 1")).perform(
+                    ViewActions.click()
+                )
+
+                Thread.sleep(500)
+
+                assert("Не содержит опрос с текстом \"Доброжелательность\"") {
+                    hasNotDescendant {
+                        withText("Доброжелательность")
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun whenInputIsBlockedBySurveyButtons_ThenItBlocked() {
+        prepareHttpMocks()
+        openChatFromDemoLoginPage()
+        sendMessageToSocket(TestMessages.buttonsSurveyMock)
+
+        ChatMainScreen {
+            chatItemsRecyclerView {
+                waitListForNotEmpty(5000)
+                assert("Список сообщений должен быть видим") { isVisible() }
+            }
+
+            inputEditView.click()
+            assert("Поле ввода не должно быть активно") {
+                inputEditView.isNotFocused()
+            }
+        }
+    }
+
+    @Test
+    fun whenHideAfterInButtonsSurveyActive_thenMessageDisappears_andInputInblocked() {
+        prepareHttpMocks()
+        openChatFromDemoLoginPage()
+        sendMessageToSocket(TestMessages.buttonsSurveyMock)
+
+        ChatMainScreen {
+            chatItemsRecyclerView {
+                waitListForNotEmpty(5000)
+                assert("Список сообщений должен быть видим") { isVisible() }
+                Thread.sleep(5000)
+                assert("Содержит опрос с текстом \"Недоброжелательность\"") {
+                    hasNotDescendant {
+                        withText("Недоброжелательность")
+                    }
+                }
+                assert("Не содержит опрос с текстом \"Доброжелательность\"") {
+                    hasNotDescendant {
+                        withText("Доброжелательность")
+                    }
+                }
+            }
+
+            inputEditView.click()
+            assert("Поле ввода должно быть активно") {
+                inputEditView.isFocused()
             }
         }
     }
