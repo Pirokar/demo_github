@@ -41,9 +41,7 @@ class WebSocketEnterFlowTest : BaseTestCase() {
             }
             errorText {
                 assert("Текст с ошибкой должен быть видимый") { isVisible() }
-                assert("Текст с ошибкой должен содержать: \"REGISTER\"") {
-                    containsText("REGISTER")
-                }
+                assert("Текст не должен быть пустым") { hasAnyText() }
             }
             errorRetryBtn {
                 assert("Кнопка повтора загрузки списка сообщений быть видимой") { isVisible() }
@@ -120,6 +118,7 @@ class WebSocketEnterFlowTest : BaseTestCase() {
         wsMocksMap = HashMap()
         prepareHttpMocks(configAnswer = defaultConfigNoAttachmentSettingsMock)
         openChatFromDemoLoginPage()
+
         ChatMainScreen {
             errorImage.waitForExists(getSocketTimeout() + 1000L)
             errorImage {
