@@ -14,7 +14,7 @@ object HCMTokenRefresher {
             try {
                 val hmsInstanceId = HmsInstanceId.getInstance(application)
                 val token = hmsInstanceId.getToken(hcmAppId, "HCM")
-                application.chatCenterUI?.setFcmToken(token)
+                application.chatCenterUI?.setHcmToken(token)
             } catch (e: IOException) {
                 LoggerEdna.info("Called requestToken()  Exception 1: $e")
             } catch (e: ApiException) {
