@@ -58,6 +58,21 @@
 
         <activity android:name="edna.chatcenter.demo.appCode.test.TestChatActivity"/>
 
+        <service android:name="edna.chatcenter.demo.appCode.push.CustomPushFcmIntentService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name="edna.chatcenter.demo.appCode.push.CustomPushHcmIntentService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.huawei.push.action.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
         <receiver android:name="edna.chatcenter.demo.integrationCode.fragments.launch.LaunchFragment$InitThreadsLibReceiver" android:exported="false"
             tools:ignore="Instantiatable">
             <intent-filter>
