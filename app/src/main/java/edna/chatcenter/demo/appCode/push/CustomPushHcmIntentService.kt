@@ -22,7 +22,7 @@ class CustomPushHcmIntentService : HmsMessageService() {
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
         val application = applicationContext as EdnaChatCenterApplication
-        application.chatCenterUI?.process(base64JsonStringToBundle(message.data))
+        application.chatCenterUI?.handlePushMessage(base64JsonStringToBundle(message.data))
     }
 
     private fun base64JsonStringToBundle(base64Str: String): Bundle {
