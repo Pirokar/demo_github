@@ -170,13 +170,13 @@ class EdnaChatCenterApplication : Application() {
             images = darkImages
         )
 
+        chatDarkTheme = ChatTheme(darkChatComponents)
+
         /*chatLightTheme = ChatTheme(
             lightChatComponents.apply {
                 inputTextComponent.inputMessageColor = R.color.alt_blue
             }
         ) // создайте инстанс, задав основные компоненты. В данном случае цвет текста во всех инпутах изменен*/
-
-        chatDarkTheme = ChatTheme(darkChatComponents)
 
         // chatLightTheme = ChatTheme(applicationContext, lightColors, lightImages) // можно передать только нужные ресуры
 
