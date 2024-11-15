@@ -231,7 +231,6 @@ class EdnaChatCenterApplication : Application() {
             searchEnabled = true,
             linkPreviewEnabled = true,
             voiceRecordingEnabled = true,
-            chatSubtitleEnabled = true,
             autoScrollToLatest = true
         ).apply {
             userInputEnabled = server.isInputEnabled
