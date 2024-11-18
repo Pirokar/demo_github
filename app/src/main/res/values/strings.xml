@@ -5,7 +5,14 @@
     <string name="server">Сервер</string>
     <string name="user">Пользователь</string>
     <string name="api_version">Версия API</string>
+    <string name="log_level">Уровень лога: </string>
+    <string name="clear">Очистить</string>
     <string name="login">Войти</string>
+    <string name="log">Лог</string>
+    <string name="go_to_chat">Перейти в чат</string>
+    <string name="ecc_start">Старт</string>
+    <string name="ecc_log">Лог</string>
+    <string name="ecc_chat">Чат</string>
     <string name="logout">Logout</string>
     <string name="logout_client_text">Вход под пользователем: </string>
     <string name="demonstrations_examples">Демонстрационные примеры</string>

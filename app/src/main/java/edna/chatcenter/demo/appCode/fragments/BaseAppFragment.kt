@@ -17,6 +17,7 @@ import edna.chatcenter.demo.integrationCode.fragments.chatFragment.ChatAppFragme
 import edna.chatcenter.ui.visual.core.ChatCenterUI
 import edna.chatcenter.ui.visual.extensions.isDarkThemeOn
 import edna.chatcenter.ui.visual.fragments.ChatFragment
+import java.lang.ref.SoftReference
 import java.lang.ref.WeakReference
 
 abstract class BaseAppFragment<T : ViewBinding>(
@@ -27,14 +28,14 @@ abstract class BaseAppFragment<T : ViewBinding>(
         get() {
             return (context?.applicationContext as? EdnaChatCenterApplication)?.chatCenterUI
         }
-    private var binding: WeakReference<T>? = null
+    internal var binding: SoftReference<T>? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = WeakReference(bindingInflater.invoke(inflater))
+        binding = SoftReference(bindingInflater.invoke(inflater))
         return getBinding()?.root
     }
 

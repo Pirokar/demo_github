@@ -15,6 +15,8 @@ import edna.chatcenter.demo.appCode.business.PreferencesProvider
 import edna.chatcenter.demo.appCode.business.ServersProvider
 import edna.chatcenter.demo.appCode.business.appModule
 import edna.chatcenter.demo.appCode.business.jsonStringToMap
+import edna.chatcenter.demo.appCode.fragments.log.LogViewModel
+import edna.chatcenter.demo.appCode.models.LogModel
 import edna.chatcenter.demo.appCode.models.ServerConfig
 import edna.chatcenter.demo.appCode.push.HCMTokenRefresher
 import edna.chatcenter.demo.integrationCode.fragments.launch.LaunchFragment
@@ -197,7 +199,15 @@ class EdnaChatCenterApplication : Application() {
     ) {
         val loggerConfig = ChatLoggerConfig(
             applicationContext,
-            logFileSize = 50
+            logFileSize = 50,
+            logInterceptor = object : ChatLoggerConfig.LogInterceptor {
+                override fun addLogEvent(logLevel: edna.chatcenter.ui.core.logger.ChatLogLevel, logText: String) {
+                    LogViewModel.logsFlow.value?.let { logList ->
+                        logList.add(LogModel(logLevel, logText))
+                        LogViewModel.logsFlow.postValue(logList)
+                    }
+                }
+            }
         )
 
         val server = serverConfig ?: try {

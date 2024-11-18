@@ -36,6 +36,7 @@
     <color name="light_icons">#54DCA0</color>
     <color name="light_highlighting">#DFF3E7</color>
     <color name="light_main">#2E7B59</color>
+    <color name="light_toolbar">#2E7B59</color>
     <color name="light_statusbar">#18382A</color>
     <color name="light_time_text">#D0D2D4</color>
     <color name="light_outgoing_image_time_background">#4D000000</color>
@@ -47,7 +48,9 @@
     <color name="dark_icons">#2A6E50</color>
     <color name="dark_highlighting">#628676</color>
     <color name="dark_main">#1C1B1F</color>
+    <color name="dark_toolbar">#1C1B1F</color>
     <color name="dark_statusbar">#000000</color>
+    <color name="dark_outgoing_time_text">#9fa5a9</color>
     <color name="dark_outgoing_image_time_background">#4D000000</color>
     <color name="dark_links">#00BCD4</color>
     <color name="dark_chat_background">#505050</color>
@@ -61,4 +64,9 @@
     <color name="alt_green">#83B144</color>
     <color name="alt_blue">#3299de</color>
     <color name="alt_blue_transparent">#303299de</color>
+
+    <color name="log_flush_color">#0000ff</color>
+    <color name="log_error_color">#ac030a</color>
+    <color name="log_warning_color">#fd7e0d</color>
+    <color name="log_info_color">#30c106</color>
 </resources>
