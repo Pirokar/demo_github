@@ -1,14 +1,10 @@
 package edna.chatcenter.demo.appCode.fragments.log
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
 import android.view.Menu
 import android.view.View
 import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import edna.chatcenter.demo.R
 import edna.chatcenter.demo.appCode.adapters.logList.LogListAdapter
 import edna.chatcenter.demo.appCode.fragments.BaseAppFragment
@@ -21,9 +17,6 @@ class LogFragment : BaseAppFragment<FragmentLogBinding>(FragmentLogBinding::infl
     private var adapter: LogListAdapter? = null
     private val viewModel: LogViewModel by viewModel()
     private var layoutManager: LinearLayoutManager? = null
-    private var isNewMessageUpdateTimeoutOn = false
-    private val handler = Handler(Looper.getMainLooper())
-    private val invisibleMessagesCount = 3
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -31,6 +24,11 @@ class LogFragment : BaseAppFragment<FragmentLogBinding>(FragmentLogBinding::infl
         createAdapter()
         initListeners()
         subscribeForData()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.onLogViewResume()
     }
 
     private fun initListeners() = getBinding()?.apply {
@@ -43,15 +41,6 @@ class LogFragment : BaseAppFragment<FragmentLogBinding>(FragmentLogBinding::infl
             adapter?.clear()
             viewModel.clearLog()
         }
-        scrollDownButton.setOnClickListener {
-            scrollDownWithBtnClick()
-        }
-        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                onScrollChange()
-                super.onScrolled(recyclerView, dx, dy)
-            }
-        })
     }
 
     private fun createAdapter() = getBinding()?.apply {
@@ -61,18 +50,12 @@ class LogFragment : BaseAppFragment<FragmentLogBinding>(FragmentLogBinding::infl
     }
 
     private fun subscribeForData() = getBinding()?.apply {
-        viewModel.logLiveData.observe(viewLifecycleOwner) {
-            viewModel.addItems(it)
-        }
-
-        viewModel.logListLiveData.observe(viewLifecycleOwner) {
-            val lastMessageVisible = isLastMessageVisible()
+        viewModel.logsLiveData.observe(viewLifecycleOwner) {
             if (adapter?.getCount() == 0) {
                 adapter?.setItems(it)
             } else {
                 adapter?.addItems(it)
             }
-            scrollDelayedOnNewMessageReceived(lastMessageVisible)
         }
 
         viewModel.selectedLogLevelLiveData.observe(viewLifecycleOwner) {
@@ -81,7 +64,7 @@ class LogFragment : BaseAppFragment<FragmentLogBinding>(FragmentLogBinding::infl
                 append(" ")
                 append(getLogLevelString(it))
             }
-            viewModel.filter(it)
+            viewModel.filterAndShow(it)
         }
     }
 
@@ -116,65 +99,6 @@ class LogFragment : BaseAppFragment<FragmentLogBinding>(FragmentLogBinding::infl
             "WARN" -> ChatLogLevel.WARNING
             "INFO" -> ChatLogLevel.INFO
             else -> ChatLogLevel.DEBUG
-        }
-    }
-
-    private fun scrollToPosition(itemPosition: Int) = binding?.get()?.apply {
-        if (itemPosition >= 0 && isAdded) {
-            recyclerView.scrollToPosition(itemPosition)
-        }
-    }
-
-    private fun scrollDownWithBtnClick() {
-        adapter?.list.let { list ->
-            if (list != null) {
-                scrollToPosition(list.lastIndex)
-//                binding?.get()?.scrollDownButton?.gone()
-            }
-        }
-    }
-
-    private fun scrollDelayedOnNewMessageReceived(isLastMessageVisible: Boolean) {
-        if (!isNewMessageUpdateTimeoutOn) {
-            isNewMessageUpdateTimeoutOn = true
-            handler.postDelayed({
-                if (isAdded && adapter != null) {
-                    val itemCount = adapter!!.itemCount
-                    if (isLastMessageVisible) {
-                        scrollToPosition(itemCount - 1)
-//                        binding?.get()?.scrollDownButton.invisible()
-                    } else {
-//                        binding?.get()?.scrollDownButton.visible()
-                    }
-                }
-                isNewMessageUpdateTimeoutOn = false
-            }, 100)
-        }
-    }
-
-    private fun isLastMessageVisible(): Boolean {
-        val layoutManager =
-            (binding?.get()?.recyclerView?.layoutManager as LinearLayoutManager?) ?: return false
-        return try {
-            adapter!!.itemCount - 1 - layoutManager.findLastVisibleItemPosition() < invisibleMessagesCount
-        } catch (exc: Exception) {
-            false
-        }
-    }
-
-    private fun onScrollChange() {
-        if (adapter != null) {
-            val itemCount = adapter!!.itemCount
-            Log.e(
-                "LogFragment",
-                "!!!!!!!!!!!!!!!     onDyScrollChange()  -  ${isLastMessageVisible()}"
-            )
-            if (isLastMessageVisible()) {
-                scrollToPosition(itemCount - 1)
-                binding?.get()?.scrollDownButton?.visibility = View.INVISIBLE
-            } else {
-                binding?.get()?.scrollDownButton?.visibility = View.VISIBLE
-            }
         }
     }
 }

@@ -33,6 +33,7 @@ class ChatAppFragment : BaseAppFragment<FragmentChatBinding>(FragmentChatBinding
     }
 
     private fun initTabs() = getBinding()?.apply {
+        viewPager.isUserInputEnabled = false
         viewPager.adapter = TabAdapter(requireActivity(), this@ChatAppFragment)
         TabLayoutMediator(tabLayout, viewPager) { _, _ -> }.attach()
         for (i in 0 until tabLayout.tabCount) {

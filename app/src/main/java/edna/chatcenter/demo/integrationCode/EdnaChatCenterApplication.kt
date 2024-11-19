@@ -43,6 +43,9 @@ import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class EdnaChatCenterApplication : Application() {
     private var chatLightTheme: ChatTheme? = null
@@ -202,9 +205,11 @@ class EdnaChatCenterApplication : Application() {
             logFileSize = 50,
             logInterceptor = object : ChatLoggerConfig.LogInterceptor {
                 override fun addLogEvent(logLevel: edna.chatcenter.ui.core.logger.ChatLogLevel, logText: String) {
-                    LogViewModel.logsFlow.value?.let { logList ->
-                        logList.add(LogModel(logLevel, logText))
-                        LogViewModel.logsFlow.postValue(logList)
+                    coroutineScope.launch(Dispatchers.IO) {
+                        val pattern = "yyyy-MM-dd HH:mm:ss.SSS"
+                        val simpleDateFormat = SimpleDateFormat(pattern, Locale.getDefault())
+                        val time = simpleDateFormat.format(Date(System.currentTimeMillis()))
+                        LogViewModel.logsData.add(LogModel(time, logLevel, logText))
                     }
                 }
             }

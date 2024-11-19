@@ -74,7 +74,9 @@ class LogListAdapter : RecyclerView.Adapter<LogListAdapter.LogItemHolder>() {
         fun onBind(position: Int) {
             val logEvent = list[position]
             try {
-                binding.text.text = logEvent.logText
+                val text = "${logEvent.timeText} ${logEvent.logText}\n"
+                binding.text.text = text
+
                 when (logEvent.logLevel) {
                     ChatLogLevel.VERBOSE,
                     ChatLogLevel.DEBUG -> if (uiThemeProvider.isDarkThemeOn()) {

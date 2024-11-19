@@ -68,5 +68,5 @@
     <color name="log_flush_color">#0000ff</color>
     <color name="log_error_color">#ac030a</color>
     <color name="log_warning_color">#fd7e0d</color>
-    <color name="log_info_color">#30c106</color>
+    <color name="log_info_color">#000000</color>
 </resources>

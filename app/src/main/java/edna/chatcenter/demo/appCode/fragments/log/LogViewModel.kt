@@ -5,51 +5,36 @@ import android.view.View
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import edna.chatcenter.demo.R
 import edna.chatcenter.demo.appCode.models.LogModel
 import edna.chatcenter.ui.core.logger.ChatLogLevel
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import java.util.concurrent.CopyOnWriteArrayList
 
 class LogViewModel : ViewModel(), DefaultLifecycleObserver {
-    private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
-    private var _logLiveData = logsFlow
-    var logLiveData: MutableLiveData<ArrayList<LogModel>> = _logLiveData
-
-    private var _logListLiveData = MutableLiveData(ArrayList<LogModel>())
-    var logListLiveData: MutableLiveData<ArrayList<LogModel>> = _logListLiveData
-
-    private var _selectedLogLevelLiveData = MutableLiveData(ChatLogLevel.DEBUG)
+    private var _selectedLogLevelLiveData = MutableLiveData(ChatLogLevel.VERBOSE)
     var selectedLogLevelLiveData: MutableLiveData<ChatLogLevel> = _selectedLogLevelLiveData
+    var logsLiveData = MutableLiveData<MutableList<LogModel>>()
+
+    fun onLogViewResume() {
+        filterAndShow(selectedLogLevelLiveData.value ?: ChatLogLevel.VERBOSE)
+    }
 
     fun click(view: View) {
         val navigationController: NavController =
             (view.context as Activity).findNavController(R.id.nav_host_fragment_content_main)
         when (view.id) {
-            R.id.backButton -> navigationController.navigate(R.id.action_ServersFragment_to_LaunchFragment)
+            R.id.backButton -> {
+                navigationController.navigate(R.id.action_ServersFragment_to_LaunchFragment)
+            }
             R.id.addServer -> {
                 navigationController.navigate(R.id.action_ServerListFragment_to_AddServerFragment)
             }
-        }
-    }
-
-    @Synchronized
-    fun addItems(items: ArrayList<LogModel>) {
-        coroutineScope.launch {
-            val arr = _logListLiveData.value
-            items.forEach { logModel ->
-                selectedLogLevelLiveData.value?.let {
-                    if (logModel.logLevel >= it) {
-                        arr?.add(logModel)
-                    }
-                }
-            }
-            withContext(Dispatchers.Main) { _logListLiveData.postValue(arr) }
         }
     }
 
@@ -57,26 +42,21 @@ class LogViewModel : ViewModel(), DefaultLifecycleObserver {
         _selectedLogLevelLiveData.postValue(logLevel)
     }
 
-    internal fun filter(logLevel: ChatLogLevel) {
-        coroutineScope.launch {
-            val list = _logListLiveData.value
-            list?.clear()
-            logsFlow.value?.forEach { logModel ->
-                if (logModel.logLevel.value >= logLevel.value) {
-                    list?.add(logModel)
-                }
+    @Synchronized
+    internal fun filterAndShow(logLevel: ChatLogLevel) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val newList = logsData.filter {
+                it.logLevel.value >= logLevel.value
             }
-            withContext(Dispatchers.Main) { _logListLiveData.postValue(list) }
+            logsLiveData.postValue(newList.toMutableList())
         }
     }
 
     fun clearLog() {
-        logsFlow.value?.clear()
-        _logLiveData.value?.clear()
-        _logListLiveData.value?.clear()
+        logsData.clear()
     }
 
     companion object {
-        var logsFlow = MutableLiveData<ArrayList<LogModel>>(ArrayList())
+        var logsData = CopyOnWriteArrayList<LogModel>()
     }
 }

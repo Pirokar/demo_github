@@ -74,29 +74,15 @@
 
     </LinearLayout>
 
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:nestedScrollingEnabled="true"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/instruments" />
-
-
-    <ImageView
-        android:id="@+id/scrollDownButton"
-        android:layout_width="@dimen/ecc_scroll_down_button_width"
-        android:layout_height="@dimen/ecc_scroll_down_button_height"
-        android:padding="@dimen/ecc_margin_material"
-        android:layout_marginEnd="@dimen/ecc_margin_material"
-        android:layout_marginBottom="@dimen/ecc_margin_material"
-        android:background="@drawable/ecc_scroll_down_background"
-        android:elevation="@dimen/ecc_scroll_down_button_elevation"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:srcCompat="@drawable/ecc_scroll_down_icon" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
