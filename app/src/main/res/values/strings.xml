@@ -79,4 +79,5 @@
     <string name="edit">Изменить</string>
     <string name="pre_register">Предварительная регистрация</string>
     <string name="no_servers">Нет доступных серверов для запуска</string>
+    <string name="no_logs_text">Логов нет</string>
 </resources>

@@ -51,10 +51,16 @@ class LogFragment : BaseAppFragment<FragmentLogBinding>(FragmentLogBinding::infl
 
     private fun subscribeForData() = getBinding()?.apply {
         viewModel.logsLiveData.observe(viewLifecycleOwner) {
-            if (adapter?.getCount() == 0) {
+            if (adapter != null && adapter?.getCount() == 0) {
                 adapter?.setItems(it)
             } else {
                 adapter?.addItems(it)
+            }
+
+            if (adapter != null && adapter?.getCount() != 0) {
+                noLogsTextView.visibility = View.GONE
+            } else {
+                noLogsTextView.visibility = View.VISIBLE
             }
         }
 
