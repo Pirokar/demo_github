@@ -38,7 +38,6 @@ open class BaseScreenshotTestCase() {
             "android.permission.READ_MEDIA_IMAGES",
             "android.permission.READ_MEDIA_VIDEO",
             "android.permission.READ_MEDIA_AUDIO",
-            "android.permission.ACCESS_MEDIA_LOCATION",
             "android.permission.RECORD_AUDIO"
         )
     } else {
