@@ -34,10 +34,6 @@ class LogFragment : BaseAppFragment<FragmentLogBinding>(FragmentLogBinding::infl
     }
 
     private fun initListeners() = getBinding()?.apply {
-        subscribeToGlobalBackClick()
-        backButton.setOnClickListener {
-            requireActivity().onBackPressedDispatcher.onBackPressed()
-        }
         logLevelSelector.setOnClickListener { showSelectLogLevelMenu(logLevelSelector) }
         clearLog.setOnClickListener {
             adapter?.clear()

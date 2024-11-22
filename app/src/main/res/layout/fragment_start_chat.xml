@@ -6,35 +6,39 @@
     android:layout_height="match_parent"
     tools:context=".appCode.activity.MainActivity">
 
-    <ImageButton
-        android:id="@+id/backButton"
-        android:layout_width="@dimen/ecc_toolbar_button_width"
-        android:layout_height="@dimen/ecc_toolbar_height"
-        android:background="?android:attr/selectableItemBackground"
-        android:gravity="center"
-        app:srcCompat="@drawable/ecc_ic_arrow_back_24dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
-
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/logo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_52"
+        android:layout_marginTop="@dimen/login_screen_top_margin_small"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/backButton"
         app:srcCompat="@drawable/logo" />
 
-
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/goToChat"
-        style="@style/ButtonsStyle"
-        android:layout_marginTop="@dimen/margin_top_start_chat_btn"
-        android:text="@string/go_to_chat"
-        app:layout_constraintEnd_toEndOf="parent"
+    <LinearLayout
+        android:id="@+id/buttons_layout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/logo" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/logo"
+        app:layout_constraintBottom_toTopOf="@id/about">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/goToChat"
+            style="@style/ButtonsStyle"
+            android:text="@string/go_to_chat"/>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/logout"
+            style="@style/ButtonsStyle"
+            android:layout_marginTop="12dp"
+            android:text="@string/exit"/>
+
+    </LinearLayout>
+
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/about"

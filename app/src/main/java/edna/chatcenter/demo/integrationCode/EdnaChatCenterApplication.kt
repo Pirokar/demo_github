@@ -167,15 +167,20 @@ class EdnaChatCenterApplication : Application() {
             applicationContext,
             colors = lightColors,
             images = lightImages
-        )
+        ).apply {
+            navigationBarStyle = navigationBarStyle.copy(closeButtonEnabled = false)
+        }
 
         val darkChatComponents = ChatComponents(
             applicationContext,
             colors = darkColors,
             images = darkImages
-        )
+        ).apply {
+            navigationBarStyle = navigationBarStyle.copy(closeButtonEnabled = false)
+        }
 
         chatDarkTheme = ChatTheme(darkChatComponents)
+        chatLightTheme = ChatTheme(lightChatComponents)
 
         /*chatLightTheme = ChatTheme(
             lightChatComponents.apply {

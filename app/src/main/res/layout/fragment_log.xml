@@ -6,82 +6,87 @@
     android:layout_height="match_parent"
     tools:context=".appCode.activity.MainActivity">
 
-    <LinearLayout
+    <View
+        android:id="@+id/toolbar_shadow"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:background="@drawable/ecc_toolbar_shadow"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
-        android:layout_width="0dp"
-        android:layout_height="40dp"
-        android:background="@color/black_color"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:background="@color/ecc_chat_toolbar"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:id="@+id/backButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginStart="@dimen/margin_8"
-            android:layout_marginEnd="@dimen/margin_8"
-            android:contentDescription="@string/content_description_back_button"
-            android:padding="@dimen/margin_12"
-            android:src="@drawable/ic_back" />
-
-        <TextView
-            android:id="@+id/title"
-            style="@style/FragmentTitleTextStyle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginEnd="@dimen/margin_8"
-            android:layout_weight="1"
-            android:ellipsize="end"
-            android:lines="1"
-            android:text="@string/log" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/instruments"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@color/black_color"
-        android:orientation="horizontal"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar"
-        app:layout_constraintBottom_toTopOf="@id/recyclerView">
+        app:layout_constraintTop_toTopOf="parent"
+        app:contentInsetStart="0dp">
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/logLevelSelector"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:textColor="@color/white_color"
-            android:layout_marginEnd="16dp"
-            android:layout_marginTop="@dimen/login_screen_top_margin_small"
-            android:layout_marginBottom="@dimen/login_screen_top_margin_small"
-            android:layout_weight="1"
-            android:drawableEnd="@null"
-            android:gravity="center_vertical"
-            tools:text="Verbose"/>
+            android:orientation="vertical">
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/clearLog"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:textColor="@color/white_color"
-            android:layout_marginTop="@dimen/login_screen_top_margin_small"
-            android:layout_marginBottom="@dimen/login_screen_top_margin_small"
-            android:drawableEnd="@null"
-            android:gravity="center_vertical"
-            android:textAllCaps="true"
-            android:text="@string/clear" />
+            <TextView
+                android:id="@+id/title"
+                style="@style/FragmentTitleTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:gravity="center_vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="0dp"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:lines="1"
+                android:text="@string/log" />
 
-    </LinearLayout>
+            <LinearLayout
+                android:id="@+id/instruments"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/title"
+                app:layout_constraintBottom_toTopOf="@id/recyclerView">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/logLevelSelector"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="18sp"
+                    android:textColor="@color/white_color"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="@dimen/login_screen_top_margin_small"
+                    android:layout_marginBottom="@dimen/login_screen_top_margin_small"
+                    android:layout_weight="1"
+                    android:drawableEnd="@null"
+                    android:gravity="center_vertical"
+                    tools:text="Verbose"/>
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/clearLog"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="18sp"
+                    android:textColor="@color/white_color"
+                    android:layout_marginTop="@dimen/login_screen_top_margin_small"
+                    android:layout_marginBottom="@dimen/login_screen_top_margin_small"
+                    android:drawableEnd="@null"
+                    android:gravity="center_vertical"
+                    android:textAllCaps="true"
+                    android:text="@string/clear" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </androidx.appcompat.widget.Toolbar>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
@@ -92,7 +97,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/instruments" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/noLogsTextView"

@@ -13,7 +13,6 @@ import androidx.viewbinding.ViewBinding
 import edna.chatcenter.demo.R
 import edna.chatcenter.demo.appCode.fragments.demoSamplesList.DemoSamplesListFragment
 import edna.chatcenter.demo.integrationCode.EdnaChatCenterApplication
-import edna.chatcenter.demo.integrationCode.fragments.chatFragment.ChatAppFragment
 import edna.chatcenter.ui.visual.core.ChatCenterUI
 import edna.chatcenter.ui.visual.extensions.isDarkThemeOn
 import java.lang.ref.SoftReference
@@ -59,11 +58,7 @@ abstract class BaseAppFragment<T : ViewBinding>(
 
     protected open fun navigateUp() {
         val isDemoListFragment = this is DemoSamplesListFragment
-        val chatBackPressed = chatCenterUI?.getChatFragment()?.onBackPressed() == true
-        if ((chatBackPressed || isDemoListFragment) && isAdded) {
-            if (this@BaseAppFragment is ChatAppFragment || this@BaseAppFragment is DemoSamplesListFragment) {
-                chatCenterUI?.logout()
-            }
+        if (isDemoListFragment && isAdded) {
             findNavController().navigateUp()
         }
     }

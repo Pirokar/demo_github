@@ -9,7 +9,8 @@
     <string name="clear">Очистить</string>
     <string name="login">Войти</string>
     <string name="log">Лог</string>
-    <string name="go_to_chat">Перейти в чат</string>
+    <string name="go_to_chat">Открыть чат в окне</string>
+    <string name="exit">"Выход"</string>
     <string name="ecc_start">Старт</string>
     <string name="ecc_log">Лог</string>
     <string name="ecc_chat">Чат</string>
