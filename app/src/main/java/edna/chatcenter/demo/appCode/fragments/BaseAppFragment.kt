@@ -16,14 +16,11 @@ import edna.chatcenter.demo.integrationCode.EdnaChatCenterApplication
 import edna.chatcenter.demo.integrationCode.fragments.chatFragment.ChatAppFragment
 import edna.chatcenter.ui.visual.core.ChatCenterUI
 import edna.chatcenter.ui.visual.extensions.isDarkThemeOn
-import edna.chatcenter.ui.visual.fragments.ChatFragment
 import java.lang.ref.SoftReference
-import java.lang.ref.WeakReference
 
 abstract class BaseAppFragment<T : ViewBinding>(
     private val bindingInflater: (layoutInflater: LayoutInflater) -> T
 ) : Fragment() {
-    protected var fragment: WeakReference<ChatFragment>? = null
     protected val chatCenterUI: ChatCenterUI?
         get() {
             return (context?.applicationContext as? EdnaChatCenterApplication)?.chatCenterUI
@@ -62,7 +59,7 @@ abstract class BaseAppFragment<T : ViewBinding>(
 
     protected open fun navigateUp() {
         val isDemoListFragment = this is DemoSamplesListFragment
-        val chatBackPressed = fragment?.get()?.onBackPressed() == true
+        val chatBackPressed = chatCenterUI?.getChatFragment()?.onBackPressed() == true
         if ((chatBackPressed || isDemoListFragment) && isAdded) {
             if (this@BaseAppFragment is ChatAppFragment || this@BaseAppFragment is DemoSamplesListFragment) {
                 chatCenterUI?.logout()

@@ -9,7 +9,7 @@
     <LinearLayout
         android:id="@+id/toolbar"
         android:layout_width="0dp"
-        android:layout_height="@dimen/toolbar_height"
+        android:layout_height="40dp"
         android:background="@color/black_color"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
@@ -47,24 +47,33 @@
         android:layout_height="wrap_content"
         android:background="@color/black_color"
         android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar">
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        app:layout_constraintBottom_toTopOf="@id/recyclerView">
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/logLevelSelector"
-            style="@style/TextButtonsStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:textColor="@color/white_color"
+            android:layout_marginEnd="16dp"
             android:layout_marginTop="@dimen/login_screen_top_margin_small"
             android:layout_marginBottom="@dimen/login_screen_top_margin_small"
             android:layout_weight="1"
             android:drawableEnd="@null"
             android:gravity="center_vertical"
-            android:hint="@string/log_level" />
+            tools:text="Verbose"/>
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/clearLog"
-            style="@style/TextButtonsStyle"
             android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:textColor="@color/white_color"
             android:layout_marginTop="@dimen/login_screen_top_margin_small"
             android:layout_marginBottom="@dimen/login_screen_top_margin_small"
             android:drawableEnd="@null"
@@ -91,9 +100,46 @@
         android:layout_height="wrap_content"
         android:text="@string/no_logs_text"
         android:textSize="@dimen/text_size_22"
+        android:textColor="@color/black_color"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:animateLayoutChanges="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:paddingEnd="8dp"
+        android:paddingStart="0dp"
+        android:orientation="vertical"
+        android:layout_marginBottom="30dp"
+        android:layout_marginEnd="16dp">
+
+        <ImageView
+            android:id="@+id/scroll_up_button"
+            android:layout_width="@dimen/ecc_scroll_up_button_width"
+            android:layout_height="@dimen/ecc_scroll_down_button_height"
+            android:background="@drawable/ecc_scroll_down_background"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="5dp"
+            android:elevation="@dimen/ecc_scroll_down_button_elevation"
+            app:srcCompat="@drawable/ecc_scroll_up_icon" />
+
+        <ImageView
+            android:id="@+id/scroll_down_button"
+            android:layout_width="@dimen/ecc_scroll_down_button_width"
+            android:layout_height="@dimen/ecc_scroll_down_button_height"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/ecc_scroll_down_background"
+            android:elevation="@dimen/ecc_scroll_down_button_elevation"
+            android:padding="2dp"
+            app:srcCompat="@drawable/ecc_scroll_down_icon" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

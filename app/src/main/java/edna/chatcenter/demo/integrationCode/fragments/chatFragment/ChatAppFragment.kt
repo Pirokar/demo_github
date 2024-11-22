@@ -34,7 +34,7 @@ class ChatAppFragment : BaseAppFragment<FragmentChatBinding>(FragmentChatBinding
 
     private fun initTabs() = getBinding()?.apply {
         viewPager.isUserInputEnabled = false
-        viewPager.adapter = TabAdapter(requireActivity(), this@ChatAppFragment)
+        viewPager.adapter = TabAdapter(requireActivity())
         TabLayoutMediator(tabLayout, viewPager) { _, _ -> }.attach()
         for (i in 0 until tabLayout.tabCount) {
             tabLayout.getTabAt(i)?.view?.setPadding(0, 0, 0, 0)
@@ -90,9 +90,12 @@ class ChatAppFragment : BaseAppFragment<FragmentChatBinding>(FragmentChatBinding
         getBinding()?.viewPager?.currentItem = tabIndex
     }
 
-    internal class TabAdapter(activity: FragmentActivity, val fragment: ChatAppFragment) : FragmentStateAdapter(activity) {
-        private var chatFragment: ChatFragment = ChatFragment.newInstance(OpenWay.DEFAULT)
+    inner class TabAdapter(activity: FragmentActivity) : FragmentStateAdapter(activity) {
         private var logFragment: LogFragment = LogFragment()
+
+        init {
+            ChatFragment.newInstance(OpenWay.DEFAULT)
+        }
 
         override fun getItemCount(): Int {
             return TABS_COUNT
@@ -100,10 +103,13 @@ class ChatAppFragment : BaseAppFragment<FragmentChatBinding>(FragmentChatBinding
 
         override fun createFragment(position: Int): Fragment {
             return when (position) {
-                TAB_INDEX_CHAT -> chatFragment
+                TAB_INDEX_CHAT -> {
+                    val fragment = chatCenterUI?.getChatFragment()
+                    fragment ?: ChatFragment.newInstance(OpenWay.DEFAULT)
+                }
                 TAB_INDEX_LOG -> logFragment
                 else -> StartChatFragment { tabIndex ->
-                    fragment.changeTab(tabIndex)
+                    changeTab(tabIndex)
                 }
             }
         }
