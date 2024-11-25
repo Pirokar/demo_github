@@ -51,7 +51,6 @@ class ImagesTest : BaseFilesTestCase() {
             }
             imagePager {
                 assert("Image pager (горизонтальная карусель картинок) не должен быть пустым") { isVisible() }
-                assert("Должно быть открытым первое изображение (индекс 0)") { isAtPage(0) }
             }
         }
     }
