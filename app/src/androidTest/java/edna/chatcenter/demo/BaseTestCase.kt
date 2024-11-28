@@ -177,6 +177,10 @@ abstract class BaseTestCase(
         }
     }
 
+    protected fun sendOperatorIsTypingMessage() {
+        sendMessageToSocket(TestMessages.websocketOperatorIsTyping)
+    }
+
     protected fun prepareWsMocks(t: Throwable? = null) {
         BuildConfig.IS_MOCK_WEB_SERVER.set(true)
         MockitoAnnotations.openMocks(this)
@@ -229,6 +233,7 @@ abstract class BaseTestCase(
                     MockResponse()
                         .setResponseCode(200)
                         .setBody(configAnswer ?: TestMessages.defaultConfigMock)
+                        .setBodyDelay(withAnswerDelayInMs, TimeUnit.MILLISECONDS)
                         .addHeader("Content-Type", "application/json")
                 } else {
                     MockResponse().setResponseCode(404)

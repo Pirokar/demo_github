@@ -15,8 +15,8 @@ object TestMessages {
     const val emptyHistoryMessage = "{\"messages\":[],\"agentInfo\":{\"action\":\"AGENT_LOOKUP\",\"actionDate\":\"2023-03-22T08:51:43.124Z\"," +
         "\"thread\":{\"id\":304,\"state\":\"UNASSIGNED\"},\"agent\":null},\"allowedToSendMessages\":true}"
 
-    const val emptyNoThreadHistoryMessage = "{\"messages\":[],\"agentInfo\":{\"action\":\"AGENT_LOOKUP\",\"actionDate\":\"2023-03-22T08:51:43.124Z\"," +
-        "\"state\":\"UNASSIGNED\"},\"agent\":null},\"allowedToSendMessages\":true}"
+    const val emptyNoThreadHistoryMessage = "{\"messages\":[],\"agentInfo\":{\"action\":\"AGENT_LOOKUP\"," +
+        "\"actionDate\":\"2023-03-22T08:51:43.124Z\",\"state\":\"UNASSIGNED\"},\"agent\":null,\"allowedToSendMessages\":true}"
 
     const val operatorHelloMessage = "{\"action\":\"getMessages\",\"data\":{\"messages\":[" +
         "{\"messageId\":\"0238fafc-132e-4a7c-87e6-834d50c3a551\",\"sentAt\":\"2023-09-25T13:07:29.213Z\"," +
@@ -201,6 +201,12 @@ object TestMessages {
 
     const val websocketErrorStringMock = "Unable to resolve host tg.mobile3.chc.dte: No address associated with hostname"
 
+    const val websocketOperatorIsTyping = "{\"action\":\"getMessages\",\"data\":{\"messages\":[{\"messageId\":\"4e9ad90d-8696-40b6-b915-2991b51d5083\"," +
+        "\"sentAt\":\"2024-06-03T07:40:52.232Z\",\"notification\":null,\"content\":{\"type\":\"TYPING\",\"clientId\":\"1223\"," +
+        "\"timestamp\":\"2024-06-03T07:40:52.217Z\",\"operatorPhotoUrl\":\"20240315-c0c52896-d793-4917-8773-e9ed393e4bcd.jpg\"," +
+        "\"operatorName\":\"Оператор1 Петровна\",\"isPreRegister\":\"false\",\"aps/content-available\":\"1\",\"origin\":\"threads\"}," +
+        "\"attributes\":null,\"important\":false,\"messageType\":\"NORMAL\"}]}}"
+
     const val buttonsSurveyMock = "{\"action\":\"getMessages\",\"data\":{\"messages\":[{\"messageId\":\"08cfb72f-b480-401f-bf3c-c8eb2b6815bc\"," +
         "\"sentAt\":\"2024-08-14T11:48:59.050Z\",\"notification\":\"New chat message received\",\"content\":{\"type\":\"BUTTON_SURVEY\"," +
         "\"uuid\":\"08cfb72f-b480-401f-bf3c-c8eb2b6815bc\",\"content\":{\"id\":2,\"uuid\":\"08cfb72f-b480-401f-bf3c-c8eb2b6815bc\"," +
@@ -211,4 +217,64 @@ object TestMessages {
         "{\"text\":\"Text 3-4\",\"value\":7},{\"text\":\"Text 3-5\",\"value\":9},{\"text\":\"Text 3-6\",\"value\":11}," +
         "{\"text\":\"Text 3-7\",\"value\":13},{\"text\":\"Text 3-8\",\"value\":15},{\"text\":\"Text 3-9\",\"value\":16}," +
         "{\"text\":\"Text 3-10\",\"value\":18}]}]}},\"important\":true,\"messageType\":\"NORMAL\"}]},\"createdAt\":1723636139109}"
+
+    const val surveyDisplayTextMock = "{\"action\":\"getMessages\",\"data\":{\"messages\":[{\"messageId\":\"114f1fd2-70f3-4cf7-95a0-ab9212648e23\"," +
+        "\"sentAt\":\"2088-11-28T08:16:16.498Z\",\"notification\":\"New chat message received\",\"content\":{\"type\":\"SURVEY\"," +
+        "\"uuid\":\"114f1fd2-70f3-4cf7-95a0-ab9212648e23\",\"text\":\"{\\\"id\\\":1,\\\"uuid\\\":\\\"114f1fd2-70f3-4cf7-95a0-ab9212648e23\\\"," +
+        "\\\"sendingId\\\":1301,\\\"hideAfter\\\":9000,\\\"blockInput\\\":true,\\\"questions\\\":[{\\\"id\\\":1,\\\"sendingId\\\":1301," +
+        "\\\"text\\\":\\\"Оцените качество предоставленной консультации\\\",\\\"displayText\\\":\\\"Качество обслуживания\\\"," +
+        "\\\"surveyViewType\\\":\\\"SCALE\\\",\\\"scale\\\":5,\\\"simple\\\":false}]}\",\"content\":{\"id\":1," +
+        "\"uuid\":\"114f1fd2-70f3-4cf7-95a0-ab9212648e23\",\"sendingId\":1301,\"hideAfter\":900,\"blockInput\":true," +
+        "\"questions\":[{\"id\":1,\"sendingId\":1301,\"text\":\"Оцените насколько мы решили ваш вопрос\"," +
+        "\"displayText\":\"Насколько вам все понравилось?\",\"surveyViewType\":\"SCALE\",\"scale\":5,\"simple\":false}]}}," +
+        "\"important\":true,\"messageType\":\"NORMAL\"}]},\"createdAt\":1732782776616}"
+
+    const val surveyEmptyDisplayTextMock = "{\"action\":\"getMessages\",\"data\":{\"messages\":[{\"messageId\":\"114f1fd2-70f3-4cf7-95a0-ab9212648e23\"," +
+        "\"sentAt\":\"2088-11-28T08:16:16.498Z\",\"notification\":\"New chat message received\",\"content\":{\"type\":\"SURVEY\"," +
+        "\"uuid\":\"114f1fd2-70f3-4cf7-95a0-ab9212648e23\",\"text\":\"{\\\"id\\\":1,\\\"uuid\\\":\\\"114f1fd2-70f3-4cf7-95a0-ab9212648e23\\\"," +
+        "\\\"sendingId\\\":1301,\\\"hideAfter\\\":9000,\\\"blockInput\\\":true,\\\"questions\\\":[{\\\"id\\\":1,\\\"sendingId\\\":1301," +
+        "\\\"text\\\":\\\"Оцените качество предоставленной консультации\\\",\\\"displayText\\\":\\\"Качество обслуживания\\\"," +
+        "\\\"surveyViewType\\\":\\\"SCALE\\\",\\\"scale\\\":5,\\\"simple\\\":false}]}\",\"content\":{\"id\":1," +
+        "\"uuid\":\"114f1fd2-70f3-4cf7-95a0-ab9212648e23\",\"sendingId\":1301,\"hideAfter\":900,\"blockInput\":true," +
+        "\"questions\":[{\"id\":1,\"sendingId\":1301,\"text\":\"Оцените насколько мы решили ваш вопрос\"," +
+        "\"displayText\":\"\",\"surveyViewType\":\"SCALE\",\"scale\":5,\"simple\":false}]}}," +
+        "\"important\":true,\"messageType\":\"NORMAL\"}]},\"createdAt\":1732782776616}"
+
+    const val surveyNoDisplayTextMock = "{\"action\":\"getMessages\",\"data\":{\"messages\":[{\"messageId\":\"114f1fd2-70f3-4cf7-95a0-ab9212648e23\"," +
+        "\"sentAt\":\"2088-11-28T08:16:16.498Z\",\"notification\":\"New chat message received\",\"content\":{\"type\":\"SURVEY\"," +
+        "\"uuid\":\"114f1fd2-70f3-4cf7-95a0-ab9212648e23\",\"text\":\"{\\\"id\\\":1,\\\"uuid\\\":\\\"114f1fd2-70f3-4cf7-95a0-ab9212648e23\\\"," +
+        "\\\"sendingId\\\":1301,\\\"hideAfter\\\":9000,\\\"blockInput\\\":true,\\\"questions\\\":[{\\\"id\\\":1,\\\"sendingId\\\":1301," +
+        "\\\"text\\\":\\\"Оцените качество предоставленной консультации\\\",\\\"displayText\\\":\\\"Качество обслуживания\\\"," +
+        "\\\"surveyViewType\\\":\\\"SCALE\\\",\\\"scale\\\":5,\\\"simple\\\":false}]}\",\"content\":{\"id\":1," +
+        "\"uuid\":\"114f1fd2-70f3-4cf7-95a0-ab9212648e23\",\"sendingId\":1301,\"hideAfter\":900,\"blockInput\":true," +
+        "\"questions\":[{\"id\":1,\"sendingId\":1301,\"text\":\"Оцените насколько мы решили ваш вопрос\"," +
+        "\"surveyViewType\":\"SCALE\",\"scale\":5,\"simple\":false}]}}," +
+        "\"important\":true,\"messageType\":\"NORMAL\"}]},\"createdAt\":1732782776616}"
+
+    const val thumbsDisplayTextMock = "{\"action\":\"getMessages\",\"data\":{\"messages\":[{\"messageId\":\"2ede077a-de01-4e39-be4c-20c0552d8fab\"," +
+        "\"sentAt\":\"2084-11-28T08:45:02.418Z\",\"notification\":\"New chat message received\",\"content\":{\"type\":\"SURVEY\"," +
+        "\"uuid\":\"2ede077a-de01-4e39-be4c-20c0552d8fab\",\"text\":\"{\\\"id\\\":2,\\\"uuid\\\":\\\"2ede077a-de01-4e39-be4c-20c0552d8fab\\\"," +
+        "\\\"sendingId\\\":1302,\\\"hideAfter\\\":900,\\\"blockInput\\\":true,\\\"questions\\\":[{\\\"id\\\":2,\\\"sendingId\\\":1302," +
+        "\\\"text\\\":\\\"Доброжелательность\\\",\\\"displayText\\\":\\\"Доброжелательность\\\",\\\"surveyViewType\\\":\\\"SCALE\\\",\\\"scale\\\":2," +
+        "\\\"simple\\\":true}]}\",\"content\":{\"id\":2,\"uuid\":\"2ede077a-de01-4e39-be4c-20c0552d8fab\",\"sendingId\":1302,\"hideAfter\":900," +
+        "\"blockInput\":true,\"questions\":[{\"id\":2,\"sendingId\":1302,\"text\":\"Доброжелательность\",\"displayText\":\"Мы хороши?\"," +
+        "\"surveyViewType\":\"SCALE\",\"scale\":2,\"simple\":true}]}},\"important\":true,\"messageType\":\"NORMAL\"}]},\"createdAt\":1739783502468}"
+
+    const val thumbsEmptyDisplayTextMock = "{\"action\":\"getMessages\",\"data\":{\"messages\":[{\"messageId\":\"2ede077a-de01-4e39-be4c-20c0552d8fab\"," +
+        "\"sentAt\":\"2084-11-28T08:45:02.418Z\",\"notification\":\"New chat message received\",\"content\":{\"type\":\"SURVEY\"," +
+        "\"uuid\":\"2ede077a-de01-4e39-be4c-20c0552d8fab\",\"text\":\"{\\\"id\\\":2,\\\"uuid\\\":\\\"2ede077a-de01-4e39-be4c-20c0552d8fab\\\"," +
+        "\\\"sendingId\\\":1302,\\\"hideAfter\\\":900,\\\"blockInput\\\":true,\\\"questions\\\":[{\\\"id\\\":2,\\\"sendingId\\\":1302," +
+        "\\\"text\\\":\\\"Доброжелательность\\\",\\\"displayText\\\":\\\"Доброжелательность\\\",\\\"surveyViewType\\\":\\\"SCALE\\\",\\\"scale\\\":2," +
+        "\\\"simple\\\":true}]}\",\"content\":{\"id\":2,\"uuid\":\"2ede077a-de01-4e39-be4c-20c0552d8fab\",\"sendingId\":1302,\"hideAfter\":900," +
+        "\"blockInput\":true,\"questions\":[{\"id\":2,\"sendingId\":1302,\"text\":\"Доброжелательность\",\"displayText\":\"\"," +
+        "\"surveyViewType\":\"SCALE\",\"scale\":2,\"simple\":true}]}},\"important\":true,\"messageType\":\"NORMAL\"}]},\"createdAt\":1739783502468}"
+
+    const val thumbsNoDisplayTextMock = "{\"action\":\"getMessages\",\"data\":{\"messages\":[{\"messageId\":\"2ede077a-de01-4e39-be4c-20c0552d8fab\"," +
+        "\"sentAt\":\"2084-11-28T08:45:02.418Z\",\"notification\":\"New chat message received\",\"content\":{\"type\":\"SURVEY\"," +
+        "\"uuid\":\"2ede077a-de01-4e39-be4c-20c0552d8fab\",\"text\":\"{\\\"id\\\":2,\\\"uuid\\\":\\\"2ede077a-de01-4e39-be4c-20c0552d8fab\\\"," +
+        "\\\"sendingId\\\":1302,\\\"hideAfter\\\":900,\\\"blockInput\\\":true,\\\"questions\\\":[{\\\"id\\\":2,\\\"sendingId\\\":1302," +
+        "\\\"text\\\":\\\"Доброжелательность\\\",\\\"displayText\\\":\\\"Доброжелательность\\\",\\\"surveyViewType\\\":\\\"SCALE\\\",\\\"scale\\\":2," +
+        "\\\"simple\\\":true}]}\",\"content\":{\"id\":2,\"uuid\":\"2ede077a-de01-4e39-be4c-20c0552d8fab\",\"sendingId\":1302,\"hideAfter\":900," +
+        "\"blockInput\":true,\"questions\":[{\"id\":2,\"sendingId\":1302,\"text\":\"Доброжелательность\"," +
+        "\"surveyViewType\":\"SCALE\",\"scale\":2,\"simple\":true}]}},\"important\":true,\"messageType\":\"NORMAL\"}]},\"createdAt\":1739783502468}"
 }

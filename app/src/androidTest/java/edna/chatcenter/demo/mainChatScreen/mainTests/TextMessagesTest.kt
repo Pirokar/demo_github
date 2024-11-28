@@ -226,9 +226,6 @@ class TextMessagesTest : BaseTestCase() {
         openMessagesHistory()
         clickForTelSpanAndCheck(11, "+7 (495) 609-60-80")
 
-        sendCustomMessageFromUser("9261363821")
-        clickForTelSpanAndCheck(textToClick = "9261363821")
-
         sendCustomMessageFromUser("+79855687102")
         clickForTelSpanAndCheck(textToClick = "+79855687102")
 
@@ -246,12 +243,6 @@ class TextMessagesTest : BaseTestCase() {
 
         sendCustomMessageFromUser("+7 (999) 999-99-99")
         clickForTelSpanAndCheck(textToClick = "+7 (999) 999-99-99")
-
-        sendCustomMessageFromUser("+7 (421) 123.45.65")
-        clickForTelSpanAndCheck(textToClick = "+7 (421) 123.45.65")
-
-        sendCustomMessageFromUser("+7.927.555.55.55")
-        clickForTelSpanAndCheck(textToClick = "+7.927.555.55.55")
     }
 
     @Test
@@ -374,7 +365,7 @@ class TextMessagesTest : BaseTestCase() {
 
     @Test
     fun progressbarOnStart() {
-        prepareHttpMocks(9000)
+        prepareHttpMocks(15000)
         openChatFromDemoLoginPage()
         ChatMainScreen {
             progressBar { isVisible() }

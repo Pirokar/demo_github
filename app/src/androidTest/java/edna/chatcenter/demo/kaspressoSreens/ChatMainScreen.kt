@@ -41,6 +41,7 @@ object ChatMainScreen : KScreen<ChatMainScreen>() {
     val searchClearButton = KImageView { withId(R.id.searchClearButton) }
     val searchProgressBar = KImageView { withId(R.id.searchProgressBar) }
     val toolbarOperatorName = KTextView { withId(R.id.consult_name) }
+    val toolbarSubtitle = KTextView { withId(R.id.subtitle) }
     val recordButton = KImageView { withId(R.id.record_button) }
     val playPauseButton = KImageView { withId(R.id.quote_button_play_pause) }
     val quoteSlider = KSlider { withId(R.id.quote_slider) }
@@ -65,7 +66,7 @@ object ChatMainScreen : KScreen<ChatMainScreen>() {
         val rateStarsCount = KTextView(matcher) { withId(R.id.rate_stars_count) }
         val totalStarsCount = KTextView(matcher) { withId(R.id.total_stars_count) }
         val fromTextSurvey = KTextView(matcher) { withId(R.id.from) }
-        val askForRateText = KTextView(matcher) { withId(R.id.ask_for_rate) }
+        val questionText = KTextView(matcher) { withId(R.id.questionText) }
         val thumbUp = KImageView(matcher) { withId(R.id.thumb_up) }
         val thumbDown = KImageView(matcher) { withId(R.id.thumb_down) }
         val oneThumb = KImageView(matcher) { withId(R.id.thumb) }

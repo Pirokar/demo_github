@@ -53,27 +53,25 @@ class SystemMessages : BaseTestCase() {
     }
 
     @Test
-    fun historySurvey1Test() {
-        prepareHttpMocks(historyAnswer = readTextFileFromRawResourceId(R.raw.history_system_survey_1))
+    fun surveyDisplayTextTest() {
+        prepareHttpMocks()
         openChatFromDemoLoginPage()
+        sendMessageToSocket(TestMessages.surveyDisplayTextMock)
+
         ChatMainScreen {
             chatItemsRecyclerView {
                 waitListForNotEmpty(getSocketTimeout() + 1000)
                 assert("Список сообщений должен быть видим") { isVisible() }
 
                 lastChild<ChatMainScreen.ChatRecyclerItem> {
-                    surveyHeader {
-                        assert("Текст отзыва должен быть видим") { isVisible() }
-                        assert("Текст \"Оцените наше обслуживание\" не соответствует отображаемому") {
-                            hasText("Оцените наше обслуживание")
+                    questionText {
+                        assert("Текст \"Насколько вам все понравилось?\" должен быть видим") { isVisible() }
+                        assert("Текст \"Насколько вам все понравилось?\" не соответствует отображаемому") {
+                            hasText("Насколько вам все понравилось?")
                         }
                     }
-
-                    oneThumb {
-                        assert(
-                            "Иконка с пальцем вверх должна быть видимой",
-                            ::isVisible
-                        )
+                    ratingStars {
+                        assert("Звезды рейтинга в сообщении должны быть видимы") { isVisible() }
                     }
                 }
             }
@@ -81,29 +79,19 @@ class SystemMessages : BaseTestCase() {
     }
 
     @Test
-    fun historySurvey2Test() {
-        prepareHttpMocks(historyAnswer = readTextFileFromRawResourceId(R.raw.history_system_survey_2))
+    fun surveyEmptyDisplayTextTest() {
+        prepareHttpMocks()
         openChatFromDemoLoginPage()
+        sendMessageToSocket(TestMessages.surveyEmptyDisplayTextMock)
+
         ChatMainScreen {
             chatItemsRecyclerView {
                 waitListForNotEmpty(getSocketTimeout() + 1000)
                 assert("Список сообщений должен быть видим") { isVisible() }
 
                 lastChild<ChatMainScreen.ChatRecyclerItem> {
-                    assert("Элемент \"Звезда\" должен быть видимый") { star.isVisible() }
-                    assert("Общее число звезд должно быть видимо") { totalStarsCount.isVisible() }
-                    assert("Число проставленных звезд должно равняться 3") { rateStarsCount.hasText("3") }
-                    assert("Общее число звезд должно равняться 5") { totalStarsCount.hasText("5") }
-
-                    fromTextSurvey {
-                        assert("Текст \"${context.getString(edna.chatcenter.ui.R.string.ecc_from)}\" должен быть видим") { isVisible() }
-                        assert("Текст \"${context.getString(edna.chatcenter.ui.R.string.ecc_from)}\" не соответствует отображаемому") {
-                            hasText(edna.chatcenter.ui.R.string.ecc_from)
-                        }
-                    }
-
-                    surveyHeader {
-                        assert("Текст отзыва должен быть видим") { isVisible() }
+                    questionText {
+                        assert("Текст \"Оцените насколько мы решили ваш вопрос\" должен быть видим") { isVisible() }
                         assert("Текст \"Оцените насколько мы решили ваш вопрос\" не соответствует отображаемому") {
                             hasText("Оцените насколько мы решили ваш вопрос")
                         }
@@ -114,31 +102,21 @@ class SystemMessages : BaseTestCase() {
     }
 
     @Test
-    fun historySurvey3Test() {
-        prepareHttpMocks(historyAnswer = readTextFileFromRawResourceId(R.raw.history_system_survey_3))
+    fun surveyNoDisplayTextTest() {
+        prepareHttpMocks()
         openChatFromDemoLoginPage()
+        sendMessageToSocket(TestMessages.surveyNoDisplayTextMock)
+
         ChatMainScreen {
             chatItemsRecyclerView {
                 waitListForNotEmpty(getSocketTimeout() + 1000)
                 assert("Список сообщений должен быть видим") { isVisible() }
 
                 lastChild<ChatMainScreen.ChatRecyclerItem> {
-                    assert("Элемент \"Звезда\" должен быть видимый") { star.isVisible() }
-                    assert("Общее число звезд должно быть видимо") { totalStarsCount.isVisible() }
-                    assert("Число проставленных звезд должно равняться 4") { rateStarsCount.hasText("4") }
-                    assert("Общее число звезд должно равняться 5") { totalStarsCount.hasText("5") }
-
-                    fromTextSurvey {
-                        assert("Текст \"${context.getString(edna.chatcenter.ui.R.string.ecc_from)}\" должен быть видим") { isVisible() }
-                        assert("Текст \"${context.getString(edna.chatcenter.ui.R.string.ecc_from)}\" не соответствует отображаемому") {
-                            hasText(edna.chatcenter.ui.R.string.ecc_from)
-                        }
-                    }
-
-                    surveyHeader {
-                        assert("Текст отзыва должен быть видим") { isVisible() }
-                        assert("Текст \"Оцените насколько внимательным был наш сотрудник\" не соответствует отображаемому") {
-                            hasText("Оцените насколько внимательным был наш сотрудник")
+                    questionText {
+                        assert("Текст \"Оцените насколько мы решили ваш вопрос\" должен быть видим") { isVisible() }
+                        assert("Текст \"Оцените насколько мы решили ваш вопрос\" не соответствует отображаемому") {
+                            hasText("Оцените насколько мы решили ваш вопрос")
                         }
                     }
                 }
@@ -147,17 +125,18 @@ class SystemMessages : BaseTestCase() {
     }
 
     @Test
-    fun historySurvey4Test() {
-        prepareHttpMocks(historyAnswer = readTextFileFromRawResourceId(R.raw.history_system_survey_4))
+    fun surveyThumbsDisplayTextTest() {
+        prepareHttpMocks()
         openChatFromDemoLoginPage()
+        sendMessageToSocket(TestMessages.thumbsDisplayTextMock)
+
         ChatMainScreen {
             chatItemsRecyclerView {
                 waitListForNotEmpty(getSocketTimeout() + 1000)
                 assert("Список сообщений должен быть видим") { isVisible() }
 
-                childAt<ChatMainScreen.ChatRecyclerItem>(1) {
-                    val text = context.getString(edna.chatcenter.ui.R.string.ecc_ask_to_rate)
-                    assert("Текст должен быть \"$text") { askForRateText.hasText(text) }
+                lastChild<ChatMainScreen.ChatRecyclerItem> {
+                    assert("Текст должен быть \"Мы хороши?\"") { questionText.hasText("Мы хороши?") }
                     assert("Палец вверх должен быть видим и кликабелен") {
                         thumbUp::isVisible
                         thumbUp::isClickable
@@ -167,18 +146,41 @@ class SystemMessages : BaseTestCase() {
                         thumbDown::isClickable
                     }
                 }
+            }
+        }
+    }
 
-                childAt<ChatMainScreen.ChatRecyclerItem>(2) {
-                    assert("Текст должен быть \"Оцените насколько мы решили ваш вопрос\"") {
-                        askForRateText.hasText("Оцените насколько мы решили ваш вопрос")
-                    }
-                }
+    @Test
+    fun surveyThumbsEmptyDisplayTextTest() {
+        prepareHttpMocks()
+        openChatFromDemoLoginPage()
+        sendMessageToSocket(TestMessages.thumbsEmptyDisplayTextMock)
+
+        ChatMainScreen {
+            chatItemsRecyclerView {
+                waitListForNotEmpty(getSocketTimeout() + 1000)
+                assert("Список сообщений должен быть видим") { isVisible() }
 
                 lastChild<ChatMainScreen.ChatRecyclerItem> {
-                    assert("Текст должен быть \"Оцените насколько хорош был наш сотрудник\"") {
-                        askForRateText.hasText("Оцените насколько хорош был наш сотрудник")
-                    }
-                    assert("Звезды рейтинга в сообщении с индексом 9 должны быть видимы") { ratingStars.isVisible() }
+                    assert("Текст должен быть \"Доброжелательность\"") { questionText.hasText("Доброжелательность") }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun surveyThumbsNoDisplayTextTest() {
+        prepareHttpMocks()
+        openChatFromDemoLoginPage()
+        sendMessageToSocket(TestMessages.thumbsNoDisplayTextMock)
+
+        ChatMainScreen {
+            chatItemsRecyclerView {
+                waitListForNotEmpty(getSocketTimeout() + 1000)
+                assert("Список сообщений должен быть видим") { isVisible() }
+
+                lastChild<ChatMainScreen.ChatRecyclerItem> {
+                    assert("Текст должен быть \"Доброжелательность\"") { questionText.hasText("Доброжелательность") }
                 }
             }
         }
@@ -205,13 +207,16 @@ class SystemMessages : BaseTestCase() {
     fun typingTest() {
         prepareHttpMocks()
         openChatFromDemoLoginPage()
-        sendHelloMessageFromUser()
+        sendOperatorIsTypingMessage()
 
         ChatMainScreen {
-            chatItemsRecyclerView {
-                sendMessageToSocket(TestMessages.typingMessage)
-                assert("Список должен содержать сообщение: \"${context.getString(edna.chatcenter.ui.R.string.ecc_typing)}\"") {
-                    hasDescendant { withText(context.getString(edna.chatcenter.ui.R.string.ecc_typing)) }
+            toolbarSubtitle {
+                val typingText = context.getString(edna.chatcenter.ui.R.string.ecc_typing)
+                assert("Подзаголовок тулбара должен быть видимый") { isVisible() }
+                assert("Подзаголовок тулбара должен содержать текст: $typingText") {
+                    hasText(
+                        typingText
+                    )
                 }
             }
         }
@@ -342,36 +347,6 @@ class SystemMessages : BaseTestCase() {
             inputEditView.click()
             assert("Поле ввода не должно быть активно") {
                 inputEditView.isNotFocused()
-            }
-        }
-    }
-
-    @Test
-    fun whenHideAfterInButtonsSurveyActive_thenMessageDisappears_andInputInblocked() {
-        prepareHttpMocks()
-        openChatFromDemoLoginPage()
-        sendMessageToSocket(TestMessages.buttonsSurveyMock)
-
-        ChatMainScreen {
-            chatItemsRecyclerView {
-                waitListForNotEmpty(5000)
-                assert("Список сообщений должен быть видим") { isVisible() }
-                Thread.sleep(5000)
-                assert("Содержит опрос с текстом \"Недоброжелательность\"") {
-                    hasNotDescendant {
-                        withText("Недоброжелательность")
-                    }
-                }
-                assert("Не содержит опрос с текстом \"Доброжелательность\"") {
-                    hasNotDescendant {
-                        withText("Доброжелательность")
-                    }
-                }
-            }
-
-            inputEditView.click()
-            assert("Поле ввода должно быть активно") {
-                inputEditView.isFocused()
             }
         }
     }
