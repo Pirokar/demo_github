@@ -14,6 +14,7 @@ import edna.chatcenter.demo.integrationCode.ednaMockThreadsGateUrl
 import edna.chatcenter.demo.integrationCode.ednaMockUrl
 import edna.chatcenter.demo.kaspressoSreens.ChatMainScreen
 import edna.chatcenter.demo.kaspressoSreens.DemoLoginScreen
+import edna.chatcenter.demo.kaspressoSreens.StartChatScreen
 import edna.chatcenter.ui.core.ChatAuthType
 import edna.chatcenter.ui.core.config.ChatAuth
 import edna.chatcenter.ui.core.config.ChatConfigCore
@@ -172,6 +173,11 @@ abstract class BaseTestCase(
     protected fun openChatFromDemoLoginPage() {
         DemoLoginScreen {
             loginButton {
+                click()
+            }
+        }
+        StartChatScreen {
+            openChatButton {
                 click()
             }
         }
