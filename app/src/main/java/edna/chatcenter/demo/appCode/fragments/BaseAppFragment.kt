@@ -13,28 +13,25 @@ import androidx.viewbinding.ViewBinding
 import edna.chatcenter.demo.R
 import edna.chatcenter.demo.appCode.fragments.demoSamplesList.DemoSamplesListFragment
 import edna.chatcenter.demo.integrationCode.EdnaChatCenterApplication
-import edna.chatcenter.demo.integrationCode.fragments.chatFragment.ChatAppFragment
 import edna.chatcenter.ui.visual.core.ChatCenterUI
 import edna.chatcenter.ui.visual.extensions.isDarkThemeOn
-import edna.chatcenter.ui.visual.fragments.ChatFragment
-import java.lang.ref.WeakReference
+import java.lang.ref.SoftReference
 
 abstract class BaseAppFragment<T : ViewBinding>(
     private val bindingInflater: (layoutInflater: LayoutInflater) -> T
 ) : Fragment() {
-    protected var fragment: WeakReference<ChatFragment>? = null
     protected val chatCenterUI: ChatCenterUI?
         get() {
             return (context?.applicationContext as? EdnaChatCenterApplication)?.chatCenterUI
         }
-    private var binding: WeakReference<T>? = null
+    internal var binding: SoftReference<T>? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = WeakReference(bindingInflater.invoke(inflater))
+        binding = SoftReference(bindingInflater.invoke(inflater))
         return getBinding()?.root
     }
 
@@ -61,11 +58,7 @@ abstract class BaseAppFragment<T : ViewBinding>(
 
     protected open fun navigateUp() {
         val isDemoListFragment = this is DemoSamplesListFragment
-        val chatBackPressed = fragment?.get()?.onBackPressed() == true
-        if ((chatBackPressed || isDemoListFragment) && isAdded) {
-            if (this@BaseAppFragment is ChatAppFragment || this@BaseAppFragment is DemoSamplesListFragment) {
-                chatCenterUI?.logout()
-            }
+        if (isDemoListFragment && isAdded) {
             findNavController().navigateUp()
         }
     }

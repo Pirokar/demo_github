@@ -15,6 +15,8 @@ import edna.chatcenter.demo.appCode.business.PreferencesProvider
 import edna.chatcenter.demo.appCode.business.ServersProvider
 import edna.chatcenter.demo.appCode.business.appModule
 import edna.chatcenter.demo.appCode.business.jsonStringToMap
+import edna.chatcenter.demo.appCode.fragments.log.LogViewModel
+import edna.chatcenter.demo.appCode.models.LogModel
 import edna.chatcenter.demo.appCode.models.ServerConfig
 import edna.chatcenter.demo.appCode.push.HCMTokenRefresher
 import edna.chatcenter.demo.integrationCode.fragments.launch.LaunchFragment
@@ -41,6 +43,9 @@ import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class EdnaChatCenterApplication : Application() {
     private var chatLightTheme: ChatTheme? = null
@@ -162,15 +167,20 @@ class EdnaChatCenterApplication : Application() {
             applicationContext,
             colors = lightColors,
             images = lightImages
-        )
+        ).apply {
+            navigationBarStyle = navigationBarStyle.copy(closeButtonEnabled = false)
+        }
 
         val darkChatComponents = ChatComponents(
             applicationContext,
             colors = darkColors,
             images = darkImages
-        )
+        ).apply {
+            navigationBarStyle = navigationBarStyle.copy(closeButtonEnabled = false)
+        }
 
         chatDarkTheme = ChatTheme(darkChatComponents)
+        chatLightTheme = ChatTheme(lightChatComponents)
 
         /*chatLightTheme = ChatTheme(
             lightChatComponents.apply {
@@ -197,7 +207,17 @@ class EdnaChatCenterApplication : Application() {
     ) {
         val loggerConfig = ChatLoggerConfig(
             applicationContext,
-            logFileSize = 50
+            logFileSize = 50,
+            logInterceptor = object : ChatLoggerConfig.LogInterceptor {
+                override fun addLogEvent(logLevel: edna.chatcenter.ui.core.logger.ChatLogLevel, logText: String) {
+                    coroutineScope.launch(Dispatchers.IO) {
+                        val pattern = "yyyy-MM-dd HH:mm:ss.SSS"
+                        val simpleDateFormat = SimpleDateFormat(pattern, Locale.getDefault())
+                        val time = simpleDateFormat.format(Date(System.currentTimeMillis()))
+                        LogViewModel.logsData.add(LogModel(time, logLevel, logText))
+                    }
+                }
+            }
         )
 
         val server = serverConfig ?: try {

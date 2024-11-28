@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".appCode.activity.MainActivity">
+
+    <View
+        android:id="@+id/toolbar_shadow"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:background="@drawable/ecc_toolbar_shadow"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:background="@color/ecc_chat_toolbar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:contentInsetStart="0dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/title"
+                style="@style/FragmentTitleTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:gravity="center_vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="0dp"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:lines="1"
+                android:text="@string/log" />
+
+            <LinearLayout
+                android:id="@+id/instruments"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/title"
+                app:layout_constraintBottom_toTopOf="@id/recyclerView">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/logLevelSelector"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="18sp"
+                    android:textColor="@color/white_color"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="@dimen/login_screen_top_margin_small"
+                    android:layout_marginBottom="@dimen/login_screen_top_margin_small"
+                    android:layout_weight="1"
+                    android:drawableEnd="@null"
+                    android:gravity="center_vertical"
+                    tools:text="Verbose"/>
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/clearLog"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="18sp"
+                    android:textColor="@color/white_color"
+                    android:layout_marginTop="@dimen/login_screen_top_margin_small"
+                    android:layout_marginBottom="@dimen/login_screen_top_margin_small"
+                    android:drawableEnd="@null"
+                    android:gravity="center_vertical"
+                    android:textAllCaps="true"
+                    android:text="@string/clear" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </androidx.appcompat.widget.Toolbar>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:nestedScrollingEnabled="true"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/noLogsTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/no_logs_text"
+        android:textSize="@dimen/text_size_22"
+        android:textColor="@color/black_color"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:animateLayoutChanges="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:paddingEnd="8dp"
+        android:paddingStart="0dp"
+        android:orientation="vertical"
+        android:layout_marginBottom="30dp"
+        android:layout_marginEnd="16dp">
+
+        <ImageView
+            android:id="@+id/scroll_up_button"
+            android:layout_width="@dimen/ecc_scroll_up_button_width"
+            android:layout_height="@dimen/ecc_scroll_down_button_height"
+            android:background="@drawable/ecc_scroll_down_background"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="5dp"
+            android:elevation="@dimen/ecc_scroll_down_button_elevation"
+            app:srcCompat="@drawable/ecc_scroll_up_icon" />
+
+        <ImageView
+            android:id="@+id/scroll_down_button"
+            android:layout_width="@dimen/ecc_scroll_down_button_width"
+            android:layout_height="@dimen/ecc_scroll_down_button_height"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/ecc_scroll_down_background"
+            android:elevation="@dimen/ecc_scroll_down_button_elevation"
+            android:padding="2dp"
+            app:srcCompat="@drawable/ecc_scroll_down_icon" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

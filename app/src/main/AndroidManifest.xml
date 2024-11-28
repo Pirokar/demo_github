@@ -56,6 +56,11 @@
             android:theme="@style/Theme.EdnaChatCenter.NoActionBar"
             android:screenOrientation="portrait"/>
 
+        <activity android:name=".appCode.activity.ModalChatActivity"
+            android:exported="true"
+            android:theme="@style/Theme.EdnaChatCenter.NoActionBar"
+            android:screenOrientation="portrait"/>
+
         <activity android:name="edna.chatcenter.demo.appCode.test.TestChatActivity"/>
 
         <service android:name="edna.chatcenter.demo.appCode.push.CustomPushFcmIntentService"
