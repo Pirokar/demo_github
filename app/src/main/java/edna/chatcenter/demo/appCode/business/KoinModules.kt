@@ -4,6 +4,7 @@ import edna.chatcenter.demo.appCode.business.mockJsonProvider.CurrentJsonProvide
 import edna.chatcenter.demo.appCode.business.mockJsonProvider.SamplesJsonProvider
 import edna.chatcenter.demo.appCode.fragments.demoSamplesFragment.DemoSamplesViewModel
 import edna.chatcenter.demo.appCode.fragments.demoSamplesList.DemoSamplesListViewModel
+import edna.chatcenter.demo.appCode.fragments.log.LogViewModel
 import edna.chatcenter.demo.appCode.fragments.server.AddServerViewModel
 import edna.chatcenter.demo.appCode.fragments.server.ServerListViewModel
 import edna.chatcenter.demo.appCode.fragments.user.AddUserViewModel
@@ -26,4 +27,5 @@ val appModule = module {
     viewModel { AddServerViewModel(get()) }
     viewModel { DemoSamplesViewModel(get(), get()) }
     viewModel { DemoSamplesListViewModel(get(), get(), get()) }
+    viewModel { LogViewModel() }
 }
