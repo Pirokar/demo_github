@@ -41,6 +41,7 @@
     <color name="light_time_text">#D0D2D4</color>
     <color name="light_outgoing_image_time_background">#4D000000</color>
     <color name="light_links">#0000FF</color>
+    <color name="usual_logs_light_text">#444444</color>
 
     <!-- Dark theme colors -->
     <color name="dark_outgoing_bubble">#183D2C</color>
@@ -57,6 +58,7 @@
     <color name="dark_system_text">#f2f2f7</color>
     <color name="dark_messages_text">#f2f2f7</color>
     <color name="dark_time_text">#9fa5a9</color>
+    <color name="usual_logs_dark_text">#fdfdfd</color>
 
     <color name="alt_threads_attachments_background">@color/ecc_blue_grey_607d8b</color>
     <color name="alt_black">#000000</color>
@@ -69,4 +71,5 @@
     <color name="log_error_color">#ac030a</color>
     <color name="log_warning_color">#fd7e0d</color>
     <color name="log_info_color">#000000</color>
+    <color name="log_dark_flush_color">#00BCD4</color>
 </resources>

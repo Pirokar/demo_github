@@ -79,16 +79,19 @@ class LogListAdapter : RecyclerView.Adapter<LogListAdapter.LogItemHolder>() {
 
                 when (logEvent.logLevel) {
                     ChatLogLevel.VERBOSE,
-                    ChatLogLevel.DEBUG -> if (uiThemeProvider.isDarkThemeOn()) {
-                        setTextColor(binding.text, R.color.dark_outgoing_time_text)
+                    ChatLogLevel.DEBUG,
+                    ChatLogLevel.INFO -> if (uiThemeProvider.isDarkThemeOn()) {
+                        setTextColor(binding.text, R.color.usual_logs_dark_text)
                     } else {
-                        setTextColor(binding.text, R.color.black_color)
+                        setTextColor(binding.text, R.color.usual_logs_light_text)
                     }
-
-                    ChatLogLevel.INFO -> setTextColor(binding.text, R.color.log_info_color)
                     ChatLogLevel.WARNING -> setTextColor(binding.text, R.color.log_warning_color)
                     ChatLogLevel.ERROR -> setTextColor(binding.text, R.color.log_error_color)
-                    ChatLogLevel.FLUSH -> setTextColor(binding.text, R.color.log_flush_color)
+                    ChatLogLevel.FLUSH -> if (uiThemeProvider.isDarkThemeOn()) {
+                        setTextColor(binding.text, R.color.log_dark_flush_color)
+                    } else {
+                        setTextColor(binding.text, R.color.log_flush_color)
+                    }
                     else -> {}
                 }
             } catch (_: NullPointerException) {}
