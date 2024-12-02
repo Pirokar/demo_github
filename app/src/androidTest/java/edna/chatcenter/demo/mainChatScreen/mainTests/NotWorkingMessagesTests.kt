@@ -69,14 +69,14 @@ class NotWorkingMessagesTests : BaseTestCase() {
     }
 
     @Test
-    fun sendMessageWhenScheduleInActiveSendDuringInactiveWithMessageFromConsultant() {
+    fun whenScheduleIsActive_sendMessageFromConsult_duringInactive() {
         prepareHttpMocks(
             configAnswer = defaultConfigScheduleInactiveCanSendMock,
             historyAnswer = emptyNoThreadHistoryMessage
         )
         prepareWsMocks()
         openChatFromDemoLoginPage()
-        checkInputFieldsEnabledHasNotificationMessageWithMessageFromConsultant()
+        checkInputFieldsEnabledAndHasNotificationMessageWithMessageFromConsultant()
     }
 
     @Test
@@ -166,7 +166,7 @@ class NotWorkingMessagesTests : BaseTestCase() {
         }
     }
 
-    private fun checkInputFieldsEnabledHasNotificationMessageWithMessageFromConsultant() {
+    private fun checkInputFieldsEnabledAndHasNotificationMessageWithMessageFromConsultant() {
         ChatMainScreen {
             assert("Приветственное сообщение не должно отображаться") {
                 welcomeScreen.isGone()

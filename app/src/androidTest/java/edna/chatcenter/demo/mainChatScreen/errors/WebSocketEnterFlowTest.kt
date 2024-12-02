@@ -80,7 +80,7 @@ class WebSocketEnterFlowTest : BaseTestCase() {
         openChatFromDemoLoginPage()
 
         ChatMainScreen {
-            errorImage.waitForExists(getSocketTimeout() + 1000L)
+            errorImage.waitForExists(getSocketTimeout() + 5000L)
             errorImage {
                 assert("Изображение с ошибкой должно быть видимо") { isVisible() }
             }

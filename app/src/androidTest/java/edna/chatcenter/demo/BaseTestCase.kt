@@ -14,6 +14,7 @@ import edna.chatcenter.demo.integrationCode.ednaMockThreadsGateUrl
 import edna.chatcenter.demo.integrationCode.ednaMockUrl
 import edna.chatcenter.demo.kaspressoSreens.ChatMainScreen
 import edna.chatcenter.demo.kaspressoSreens.DemoLoginScreen
+import edna.chatcenter.demo.kaspressoSreens.StartChatScreen
 import edna.chatcenter.ui.core.ChatAuthType
 import edna.chatcenter.ui.core.config.ChatAuth
 import edna.chatcenter.ui.core.config.ChatConfigCore
@@ -175,6 +176,15 @@ abstract class BaseTestCase(
                 click()
             }
         }
+        StartChatScreen {
+            openChatButton {
+                click()
+            }
+        }
+    }
+
+    protected fun sendOperatorIsTypingMessage() {
+        sendMessageToSocket(TestMessages.websocketOperatorIsTyping)
     }
 
     protected fun prepareWsMocks(t: Throwable? = null) {
@@ -229,6 +239,7 @@ abstract class BaseTestCase(
                     MockResponse()
                         .setResponseCode(200)
                         .setBody(configAnswer ?: TestMessages.defaultConfigMock)
+                        .setBodyDelay(withAnswerDelayInMs, TimeUnit.MILLISECONDS)
                         .addHeader("Content-Type", "application/json")
                 } else {
                     MockResponse().setResponseCode(404)
