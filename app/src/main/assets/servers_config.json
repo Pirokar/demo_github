@@ -1,11 +1,112 @@
 {
   "servers": [
     {
-      "name": "Default",
+      "name": "Mobile 1",
       "threadsGateProviderUid": "MOBILE1_93jLrvripZeDXSKJzdRfEu9QpMMvIe5LKKHQl",
       "serverBaseUrl": "http://mobile1.chc.dte/",
-      "datastoreUrl": "http://datastore.mobile1.chc.dte/",
+      "datastoreUrl": "http://mobile1.chc.dte/",
       "threadsGateUrl": "ws://mobile1.chc.dte/socket"
+    },
+    {
+      "name": "Mobile 2",
+      "threadsGateProviderUid": "MOBILE2_oYrHwZ9QhTihb2d8U3I17dBHy1NB9vA9XVkM",
+      "serverBaseUrl": "http://mobile2.chc.dte/",
+      "datastoreUrl": "http://mobile2.chc.dte/",
+      "threadsGateUrl": "ws://mobile2.chc.dte/socket"
+    },
+    {
+      "name": "Mobile 3",
+      "threadsGateProviderUid": "MOBILE3_MMvIe5LKKHQlepr8vripZeDXSKJzdRfEu9Qp",
+      "serverBaseUrl": "http://mobile3.chc.dte/",
+      "datastoreUrl": "http://mobile3.chc.dte/",
+      "threadsGateUrl": "ws://mobile3.chc.dte/socket"
+    },
+    {
+      "name": "Mobile 4",
+      "threadsGateProviderUid": "MOBILE4_5_HwZ9QhTihb2d8U3I17dBHy1NB9vA9XVkMz65",
+      "serverBaseUrl": "https://arm-mobile4-ecc.edna.ru/",
+      "datastoreUrl": "https://arm-mobile4-ecc.edna.ru/",
+      "threadsGateUrl": "wss://arm-mobile4-ecc.edna.ru/socket",
+      "trustedSSLCertificates": [
+        "edna"
+      ]
+    },
+    {
+      "name": "Beta 3",
+      "threadsGateProviderUid": "BETA3_5_KtfvH538KBfjoMMY9Q9ha65CtWeMshQb6nBPhAY12SMH8",
+      "serverBaseUrl": "https://arm-beta3-ecc.edna.ru/",
+      "datastoreUrl": "https://arm-beta3-ecc.edna.ru/",
+      "threadsGateUrl": "wss://arm-beta3-ecc.edna.ru/socket"
+    },
+    {
+      "name": "Beta 3 HUAWEI",
+      "threadsGateProviderUid": "123456789qaz",
+      "serverBaseUrl": "https://arm-beta3-ecc.edna.ru/",
+      "datastoreUrl": "https://arm-beta3-ecc.edna.ru/",
+      "threadsGateUrl": "wss://arm-beta3-ecc.edna.ru/socket"
+    },
+    {
+      "name": "Dev 4",
+      "threadsGateProviderUid": "DEV4_9M2pMcnZyaXBaZURYU0tKemRSZkV1OVFwTU12SWU1TEtLSFFs",
+      "serverBaseUrl": "http://dev4.chc.dte/",
+      "datastoreUrl": "http://dev4.chc.dte/",
+      "threadsGateUrl": "ws://dev4.chc.dte/socket"
+    },
+    {
+      "name": "TGM 1",
+      "threadsGateProviderUid": "TG_OTNqTHJ2cmlwWmVEWFNLSnpkUmZFdTlRcE1NdkllNUxLS0hRbA",
+      "serverBaseUrl": "http://arm.tgm1.chc.dte/",
+      "datastoreUrl": "http://datastore.tgm1.chc.dte/",
+      "threadsGateUrl": "ws://tg.tgm1.chc.dte/gate/socket"
+    },
+    {
+      "name": "Multi 1",
+      "threadsGateProviderUid": "DEV4_9M2pMcnZyaXBaZURYU0tKemRSZkV1OVFwTU12SWU1TEtLSFFs",
+      "serverBaseUrl": "http://arm.multi1.chc.dte/",
+      "datastoreUrl": "http://datastore.multi1.chc.dte/",
+      "threadsGateUrl": "ws://tg.multi1.chc.dte/gate/socket"
+    },
+    {
+      "name": "GPB",
+      "threadsGateProviderUid": "GPB-TEST_iT6VrvripZeDCCVJzdRfEu9QpMMvIe5L5KcEM",
+      "serverBaseUrl": "http://open-ig.gpb-test.chc.dte/",
+      "datastoreUrl": "http://open-ig.gpb-test.chc.dte/",
+      "threadsGateUrl": "ws://open-ig.gpb-test.chc.dte/socket"
+    },
+    {
+      "name": "GPB2",
+      "threadsGateProviderUid": "GPB-TEST2_iT6VrvripZeDCCVJzdRfEu9QpMMvIe5L5KcEM",
+      "serverBaseUrl": "http://open-ig.gpb-test2.chc.dte/",
+      "datastoreUrl": "http://open-ig.gpb-test2.chc.dte/",
+      "threadsGateUrl": "ws://open-ig.gpb-test2.chc.dte/socket"
+    },
+    {
+      "name": "Amurtiger",
+      "threadsGateProviderUid": "PH5CbD5WOEE4WWcuQHFdOm1AcUJQIkFUQkQ2QVNsPzxAO1UuLUZENUIhRVd+Pg==",
+      "serverBaseUrl": "https://amurtiger.edna.io/",
+      "datastoreUrl": "https://amurtiger.edna.io/",
+      "threadsGateUrl": "wss://amurtiger.edna.io/socket"
+    },
+    {
+      "name": "Tg",
+      "threadsGateProviderUid": "TG_OTNqTHJ2cmlwWmVEWFNLSnpkUmZFdTlRcE1NdkllNUxLS0hRbA",
+      "serverBaseUrl": "http://tg.chc.dte/api/",
+      "datastoreUrl": "http://tg.chc.dte/api/",
+      "threadsGateUrl": "ws://tg.chc.dte/socket"
+    },
+    {
+      "name": "PROD",
+      "threadsGateProviderUid": "YmV0YS1wcm9kLmVkbmEucnU7O2FuZHJvaWQ7OzIwMjIwMzI4",
+      "serverBaseUrl": "https://beta-prod.edna.ru/",
+      "datastoreUrl": "https://beta-prod.edna.ru/",
+      "threadsGateUrl": "wss://beta-prod.edna.ru/socket"
+    },
+    {
+      "name": "SUPPORT-TEST-EDNA",
+      "threadsGateProviderUid": "android1",
+      "serverBaseUrl": "https://support-test.edna.ru/",
+      "datastoreUrl": "https://support-test.edna.ru/",
+      "threadsGateUrl": "wss://support-test.edna.ru/socket"
     }
   ]
 }
